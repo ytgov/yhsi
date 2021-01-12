@@ -11,26 +11,27 @@ services:
         ports: 
             - "1433:1433"
         volumes: 
-            - sqlvolume:/var/opt/mssql
+            - yhsi_sqlvolume:/var/opt/mssql
             - ./db/backups/:/backups
 
     #web: 
-    #    build: ./app/web
+    #    build: ./web
     #    restart: unless-stopped
     #    environment: 
     #        - "NODE_ENV=test"
     #    depends_on: 
-    #        - sql
+    #        - api
     #    ports:
-    #        - "3123:8080"
+    #        - "8080:8080"
     
     #api:
-    #    build: ./app/api
+    #    build: ./api
     #    restart: unless-stopped
     #    depends_on: 
     #        - sql
     #    ports:
-    #        - "8123:3000"
+    #        - "3000:3000"
+
 volumes: 
-    sqlvolume:
-        driver: local
+    yhsi_sqlvolume:
+        external: true

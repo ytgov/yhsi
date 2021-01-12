@@ -106,3 +106,8 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Database initialization
+db/insert_data.sql
+db/photo_data.sql
+db/place_data.sql

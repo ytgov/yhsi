@@ -18,6 +18,6 @@ Within `/api/.env.sample` you will see a listing of relevant environment variabl
 
 To run this application in development, you must copy `/api/.env.sample`, rename it `/api/.env.development` and fill it with the appropriate values.
 
-## Prodution
+## Production
 
 To be filled in later...
