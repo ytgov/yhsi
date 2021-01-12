@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+    sql:
+        image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+        restart: unless-stopped
+        environment: 
+            - "ACCEPT_EULA=Y"
+            - "SA_PASSWORD=1m5ecure!"
+            - "MSSQL_PID=Express"
+        ports: 
+            - "1433:1433"
+        volumes: 
+            - sqlvolume:/var/opt/mssql
+            - ./db/backups/:/backups
+
+    #web: 
+    #    build: ./app/web
+    #    restart: unless-stopped
+    #    environment: 
+    #        - "NODE_ENV=test"
+    #    depends_on: 
+    #        - sql
+    #    ports:
+    #        - "3123:8080"
+    
+    #api:
+    #    build: ./app/api
+    #    restart: unless-stopped
+    #    depends_on: 
+    #        - sql
+    #    ports:
+    #        - "8123:3000"
+volumes: 
+    sqlvolume:
+        driver: local
