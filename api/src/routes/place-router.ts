@@ -12,7 +12,8 @@ export const placeRouter = express.Router();
 placeRouter.get("/",
     [
         query("page").default(1).isInt({ gt: 0 })
-    ], async (req: Request, res: Response) => {
+    ],
+    async (req: Request, res: Response) => {
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
@@ -40,10 +41,29 @@ placeRouter.get("/",
         return res.status(500).send("Error")
     });
 
+placeRouter.post("/generate-id",
+    [
+        body("nTSMapSheet").isString().bail().notEmpty().trim()
+    ],
+    async (req: Request, res: Response) => {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        let { nTSMapSheet } = req.body;
+
+        let newId = await placeService.generateIdFor(nTSMapSheet);
+
+        res.json({ data: { yHSIId: newId, nTSMapSheet } });
+    });
+
 placeRouter.get("/:id",
     [
         check("id").notEmpty()
-    ], async (req: Request, res: Response) => {
+    ],
+    async (req: Request, res: Response) => {
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
