@@ -37,6 +37,56 @@ staticRouter.get("/statute", async (req: Request, res: Response) => {
     return res.json({ data: list });
 });
 
+staticRouter.get("/jurisdiction", async (req: Request, res: Response) => {
+    let list = staticService.getJurisdictions();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/owner-consent", async (req: Request, res: Response) => {
+    let list = staticService.getOwnerConsents();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/category", async (req: Request, res: Response) => {
+    let list = staticService.getCategories();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/designation-type", async (req: Request, res: Response) => {
+    let list = staticService.getDesignationTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/condition", async (req: Request, res: Response) => {
+    let list = staticService.getConditions();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/coordinate-determination", async (req: Request, res: Response) => {
+    let list = staticService.getCoordinateDeterminations();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/site-status", async (req: Request, res: Response) => {
+    let list = staticService.getSiteStatuses();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/record-type", async (req: Request, res: Response) => {
+    let list = staticService.getRecordTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/site-category", async (req: Request, res: Response) => {
+    let list = staticService.getSiteCategories();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/contributing-resource-type", async (req: Request, res: Response) => {
+    let list = staticService.getContributingResourceTypes();
+    return res.json({ data: list });
+});
+
 staticRouter.get("/photo-owner", async (req: Request, res: Response) => {
     let list = await staticService.getPhotoOwners();
     return res.json({ data: list });

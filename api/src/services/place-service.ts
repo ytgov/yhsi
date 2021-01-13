@@ -1,4 +1,5 @@
 import Knex, { Config } from "knex";
+import { max } from "moment";
 import { Place, PLACE_FIELDS } from "../data";
 
 export class PlaceService {
@@ -37,5 +38,22 @@ export class PlaceService {
 
     async updatePlace(id: number, item: Place): Promise<Place | undefined> {
         return this.knex("place").where({ id }).update(item).returning<Place>(PLACE_FIELDS);
+    }
+
+    async generateIdFor(nTSMapSheet: string): Promise<string> {
+        let maxPlace = await this.knex("place").where({ nTSMapSheet }).max("yhsiId", { as: "maxVal" });
+
+        if (maxPlace && maxPlace.length == 1 && maxPlace[0].maxVal) {
+            let val = maxPlace[0].maxVal;
+            let parts = val.split("/");
+            let lastPart = parseInt(parts[2]);
+
+            lastPart++;
+
+            let strVal = lastPart.toString().padStart(3, "0");
+            return `${nTSMapSheet}/${strVal}`;
+        }
+
+        return `${nTSMapSheet}/001`;
     }
 }

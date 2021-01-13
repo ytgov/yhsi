@@ -72,4 +72,103 @@ export class StaticService {
     async getStatutes(): Promise<Array<PlaceTheme>> {
         return this.knex<PlaceTheme>("Statute").select("id", "recognitionAuthority", "recognitionType", "description", "allStatute");
     }
+
+    getJurisdictions(): GenericEnum[] {
+        return [
+            { value: 0, text: "None Selected" },
+            { value: 1, text: "Yukon" },
+            { value: 2, text: "Federal" }
+        ];
+    }
+
+    getOwnerConsents(): GenericEnum[] {
+        return [
+            { value: 0, text: "None Selected" },
+            { value: 1, text: "Consent" },
+            { value: 2, text: "No Response" },
+            { value: 3, text: "Objection" }
+        ];
+    }
+
+    getCategories(): GenericEnum[] {
+        return [
+            { value: 0, text: "None Selected" },
+            { value: 1, text: "Building" },
+            { value: 2, text: "District" },
+            { value: 3, text: "Place" },
+            { value: 4, text: "Structure" }
+        ];
+    }
+
+    getDesignationTypes(): GenericEnum[] {
+        return [
+            { value: 4, text: "Federal" },
+            { value: 2, text: "Municipal" },
+            { value: 3, text: "Territorial" },
+            { value: 5, text: "World" },
+            { value: 0, text: "Not Designated" }
+        ];
+    }
+
+    getConditions(): GenericEnum[] {
+        return [
+            { value: 0, text: "Not Applicable" },
+            { value: 3, text: "Poor" },
+            { value: 1, text: "Fair" },
+            { value: 2, text: "Good" }
+        ];
+    }
+
+    getCoordinateDeterminations(): GenericEnum[] {
+        return [
+            { value: 4, text: "Digital Maps" },
+            { value: 5, text: "Geocoding" },
+            { value: 1, text: "GPS" },
+            { value: 2, text: "Paper Maps" },
+            { value: 3, text: "Unknown" }
+        ];
+    }
+
+    getSiteStatuses(): GenericEnum[] {
+        return [
+            { value: 1, text: "Standing" },
+            { value: 2, text: "Demolished" },
+            { value: 3, text: "Burned" },
+            { value: 4, text: "Moved" },
+            { value: 5, text: "Dimantled" },
+            { value: 6, text: "Reconstruction" }
+        ];
+    }
+
+    getRecordTypes(): GenericEnum[] {
+        return [
+            { value: 1, text: "CRHP" },
+            { value: 2, text: "WHBR" }
+        ];
+    }
+
+    getSiteCategories(): GenericEnum[] {
+        return [
+            { value: 1, text: "Architecture" },
+            { value: 4, text: "First Nation" },
+            { value: 5, text: "Gravesite" },
+            { value: 2, text: "Industrial" },
+            { value: 3, text: "Landscape" }
+        ];
+    }
+
+    getContributingResourceTypes(): GenericEnum[] {
+        return [
+            { value: 4, text: "Archaeological" },
+            { value: 2, text: "Building" },
+            { value: 9, text: "Collection" },
+            { value: 3, text: "Landscapes" },
+            { value: 1, text: "Structure" }
+        ];
+    }
+}
+
+export interface GenericEnum {
+    value: number;
+    text: string;
 }
