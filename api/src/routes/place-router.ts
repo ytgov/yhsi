@@ -1,10 +1,11 @@
 import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { body, check, query, validationResult } from "express-validator";
-import { PlaceService } from "../services";
+import { PlaceService, StaticService } from "../services";
 import { Place } from "../data";
 
 const placeService = new PlaceService(DB_CONFIG);
+const staticService = new StaticService(DB_CONFIG);
 const PAGE_SIZE = 5;
 
 export const placeRouter = express.Router();
@@ -71,17 +72,63 @@ placeRouter.get("/:id",
         }
 
         let id = parseInt(req.params.id);
+        let fnList = await staticService.getFirstNations();
+        let themeList = await staticService.getPlaceThemes();
+        let functionalTypes = await staticService.getFunctionalTypes();
 
-        let site = await placeService.getById(id).then(site => site)
+        await placeService.getById(id)
+            .then(async (place) => {
+                if (place) {
+
+                    let associations = combine(await placeService.getAssociationsFor(place.id), placeService.getAssociationTypes(), 'value', 'type', 'text');
+                    let fnAssociations = combine(await placeService.getFNAssociationsFor(place.id), placeService.getFNAssociationTypes(), 'value', 'firstNationAssociationType', "text");
+                    fnAssociations = combine(fnAssociations, fnList, "id", "firstNationId", "description");
+
+                    let names = await placeService.getNamesFor(place.id);
+                    let historicalPatterns = combine(await placeService.getHistoricalPatternsFor(place.id), placeService.getHistoricalPatterns(), 'value', "historicalPatternType", "text");
+                    let dates = combine(await placeService.getDatesFor(place.id), placeService.getDateTypes(), "value", "type", "text");
+                    let constructionPeriods = combine(await placeService.getConstructionPeriodsFor(place.id), placeService.getConstructionPeriodTypes(), "value", "type", "text")
+                    let themes = combine(combine(await placeService.getThemesFor(place.id), themeList, "id", "placeThemeId", "type", "typeName"), themeList, "id", "placeThemeId", "category", "categoryName");
+                    let functionalUses = combine(await placeService.getFunctionUsesFor(place.id), placeService.getFunctionalUseTypes(), "value", "functionalUseType", "text", "functionalUseTypeText");
+                    functionalUses = combine(functionalUses, functionalTypes, "id", "functionalTypeId", "description", "functionalTypeText")
+                    let ownerships = combine(await placeService.getOwnershipsFor(place.id), placeService.getOwnershipTypes(), "value", "ownershipType", "text");
+                    let previousOwnerships = await placeService.getPreviousOwnershipsFor(place.id);
+                    let contacts = combine(await placeService.getContactsFor(place.id), placeService.getContactTypes(), "value", "contactType", "text", "contactTypeText");
+                    let revisionLogs = combine(await placeService.getRevisionLogFor(place.id), placeService.getRevisionLogTypes(), "value", "revisionLogType", "text", "revisionLogTypeText");
+                    let webLinks = combine(await placeService.getWebLinksFor(place.id), placeService.getWebLinkTypes(), "value", "type", "text");
+                    let descriptions = combine(await placeService.getDescriptionsFor(place.id), placeService.getDescriptionTypes(), "value", "type", "text");
+                    
+                    let relationships = {
+                        associations: { data: associations },
+                        firstNationAssociations: { data: fnAssociations },
+                        names: { data: names },
+                        historicalPatterns: { data: historicalPatterns },
+                        dates: { data: dates },
+                        constructionPeriods: {data: constructionPeriods},
+                        themes: { data: themes },
+                        functionalUses: { data: functionalUses },
+                        ownerships: { data: ownerships },
+                        previousOwnerships: { data: previousOwnerships },
+                        photos: { data: [] },
+                        contacts: { data: contacts },
+                        revisionLogs: { data: revisionLogs },
+                        webLinks: { data: webLinks },
+                        descriptions: { data: descriptions },
+                    };
+
+                    return res.send({
+                        data: place,
+                        relationships
+                    });
+                }
+                else {
+                    return res.status(404).send("Site not found");
+                }
+            })
             .catch(err => {
+                console.error(err)
                 return res.status(404).send("Site not found");
             })
-
-        if (site) {
-            return res.send({ data: site });
-        }
-
-        return res.status(404).send("Site not found");
     });
 
 placeRouter.post("/",
@@ -153,3 +200,18 @@ placeRouter.put("/:id",
 
         return res.json({ data: result });
     });
+
+function combine(list1: Array<any>, list2: Array<any>, linker: any, linker2: any, value: any, typeText: any = "typeText"): any[] {
+    list1.forEach(item => {
+        let match = list2.filter(i => i[linker] == item[linker2]);
+
+        if (match && match[0]) {
+            let add = { [typeText]: match[0][value] }
+            item = Object.assign(item, add)
+        }
+        else
+            item = Object.assign(item, { [typeText]: null })
+    });
+
+    return list1;
+}

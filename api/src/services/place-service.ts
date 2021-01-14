@@ -1,6 +1,6 @@
 import Knex, { Config } from "knex";
-import { max } from "moment";
-import { Place, PLACE_FIELDS } from "../data";
+import { Association, ConstructionPeriod, Contact, Dates, FirstNationAssociation, FunctionalUse, HistoricalPattern, Name, Ownership, Place, PLACE_FIELDS, PreviousOwnership, RevisionLog, Theme, WebLink } from "../data";
+import { GenericEnum } from "./static-service";
 
 export class PlaceService {
 
@@ -56,4 +56,176 @@ export class PlaceService {
 
         return `${nTSMapSheet}/001`;
     }
+
+    async getAssociationsFor(id: number): Promise<Association[]> {
+        return this.knex("association").where({ placeId: id }).select<Association[]>(["id", "placeId", "type", "description"]);
+    }
+
+    async getFNAssociationsFor(id: number): Promise<FirstNationAssociation[]> {
+        return this.knex("FirstNationAssociation").where({ placeId: id }).select<FirstNationAssociation[]>(["id", "placeId", "firstNationId", "firstNationAssociationType", "comments"]);
+    }
+
+    async getNamesFor(id: number) {
+        return this.knex("name").where({ placeId: id }).select<Name>(["id", "placeId", "description"]);
+    }
+
+    async getHistoricalPatternsFor(id: number): Promise<HistoricalPattern[]> {
+        return this.knex("historicalpattern").where({ placeId: id }).select<HistoricalPattern[]>(["id", "placeId", "comments", "historicalPatternType"]);
+    }
+
+    async getDatesFor(id: number): Promise<Dates[]> {
+        return this.knex("dates").where({ placeId: id }).select<Dates[]>(["id", "placeId", "type", "fromDate", "toDate", "details"]);
+    }
+
+    async getConstructionPeriodsFor(id: number): Promise<ConstructionPeriod[]> {
+        return this.knex("constructionperiod").where({ placeId: id }).select<ConstructionPeriod[]>(["id", "placeId", "type"]);
+    }
+
+    async getThemesFor(id: number): Promise<Theme[]> {
+        return this.knex("theme").where({ placeId: id }).select<Theme[]>(["id", "placeId", "placeThemeId"]);
+    }
+
+    async getFunctionUsesFor(id: number): Promise<FunctionalUse[]> {
+        return this.knex("FunctionalUse").where({ placeId: id }).select<FunctionalUse[]>(["id", "placeId", "functionalTypeId", "functionalUseType", "description"]);
+    }
+
+    async getOwnershipsFor(id: number): Promise<Ownership[]> {
+        return this.knex("Ownership").where({ placeId: id }).select<Ownership[]>(["id", "placeId", "ownershipType", "comments"]);
+    }
+
+    async getPreviousOwnershipsFor(id: number): Promise<PreviousOwnership[]> {
+        return this.knex("PreviousOwnership").where({ placeId: id }).select<PreviousOwnership[]>(["id", "placeId", "ownershipNumber", "ownershipName", "ownershipDate"]);
+    }
+
+    async getContactsFor(id: number): Promise<Contact[]> {
+        return this.knex("Contact").where({ placeId: id }).select<Contact[]>(["id", "placeId", "firstName", "lastName", "phoneNumber", "email", "mailingAddress", "description", "contactType"]);
+    }
+
+    async getRevisionLogFor(id: number): Promise<RevisionLog[]> {
+        return this.knex("RevisionLog").where({ placeId: id }).select<RevisionLog[]>(["id", "placeId", "revisionLogType", "revisionDate", "revisedBy", "details"]).orderBy("revisionDate");
+    }
+
+    async getWebLinksFor(id: number): Promise<WebLink[]> {
+        return this.knex("WebLink").where({ placeId: id }).select<WebLink[]>(["id", "placeId", "type", "address"]);
+    }
+
+    async getDescriptionsFor(id: number): Promise<WebLink[]> {
+        return this.knex("Description").where({ placeId: id }).select<WebLink[]>(["id", "placeId", "descriptionText", "type"]);
+    }
+
+    getAssociationTypes(): GenericEnum[] {
+        return [
+            { value: 1, text: "Event" },
+            { value: 2, text: "Person" },
+            { value: 3, text: "Organization" },
+            { value: 4, text: "Architect Designer" },
+            { value: 5, text: "Builder" }
+        ];
+    }
+
+    getFNAssociationTypes(): GenericEnum[] {
+        return [
+            { value: 1, text: "Settlement Lands" },
+            { value: 2, text: "Traditional Territory" }
+        ];
+    }
+
+    getHistoricalPatterns(): GenericEnum[] {
+        return [
+            { value: 1, text: "Political" },
+            { value: 2, text: "Economic" },
+            { value: 3, text: "Social" },
+            { value: 4, text: "Geographic" }
+        ];
+    }
+
+    getDateTypes(): GenericEnum[] {
+        return [
+            { value: 1, text: "Construction" },
+            { value: 2, text: "Significant Date" },
+            { value: 8, text: "Construction Circa" }
+        ];
+    }
+
+    getConstructionPeriodTypes(): GenericEnum[] {
+        return [
+            { value: 1, text: "Pre 1895" },
+            { value: 2, text: "From 1896 to 1905" },
+            { value: 3, text: "From 1906 to 1939" },
+            { value: 4, text: "From 1940 to 1965" },
+            { value: 5, text: "Post 1965" }
+        ];
+    }
+
+    getFunctionalUseTypes(): GenericEnum[] {
+        return [
+            { value: 1, text: "Current" },
+            { value: 2, text: "Historic" }
+        ];
+    }
+
+    getOwnershipTypes(): GenericEnum[] {
+        return [
+            { value: 1, text: "Private" },
+            { value: 2, text: "Public Local" },
+            { value: 3, text: "Public Territorial" },
+            { value: 4, text: "Settlement Lands" },
+            { value: 5, text: "Public Federal" },
+            { value: 6, text: "Not For Profit" },
+            { value: 7, text: "Crown" },
+            { value: 8, text: "Unknown" },
+            { value: 17, text: "Gov Yukon" },
+            { value: 18, text: "First Nations Reserve" },
+            { value: 19, text: "Aboriginal Public Lands" }
+        ];
+    }
+
+    getContactTypes(): GenericEnum[] {
+        return [
+            { value: 1, text: "Owner" },
+            { value: 2, text: "Administrator" },
+            { value: 3, text: "Heritage Planner" },
+            { value: 4, text: "Other" }
+        ];
+    }
+
+    getRevisionLogTypes(): GenericEnum[] {
+        return [
+            { value: 1, text: "Initial Recording" },
+            { value: 2, text: "Monitoring Visit" },
+            { value: 3, text: "Research" },
+            { value: 4, text: "Designation Assessment" },
+            { value: 5, text: "Record Update" }
+        ];
+    }
+
+    getWebLinkTypes(): GenericEnum[] {
+        return [
+            { value: 1, text: "Historic Place" },
+            { value: 2, text: "Local Government" },
+            { value: 3, text: "Federal/Provicial/Territorial" },
+            { value: 4, text: "Other" }
+        ];
+    }
+
+    getDescriptionTypes(): GenericEnum[] {
+        return [
+            { value: 1, text: "Additional Information" },
+            { value: 2, text: "Character Defining Elements" },
+            { value: 3, text: "Cultural Period" },
+            { value: 4, text: "Heritage Value" },
+            { value: 5, text: "Place Description" },
+            { value: 6, text: "Description of Boundaries" },
+            { value: 8, text: "Historical Sources Location" },
+            { value: 9, text: "Renovation Information" },
+            { value: 10, text: "Construction Style" },
+            { value: 11, text: "Demolition Information" },
+            { value: 12, text: "Cultural History" },
+            { value: 13, text: "Documentation Location" },
+            { value: 27, text: "Archaeological Collections" },
+            { value: 29, text: "Building Style" },
+            { value: 30, text: "YRHP Additional Information" }
+        ];
+    }
+
 }

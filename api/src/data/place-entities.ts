@@ -78,6 +78,7 @@ export class Association {
     id!: number;
     placeId!: number;
     type!: number;
+    type_name?: string;
     description!: string;
 }
 
