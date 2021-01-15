@@ -43,6 +43,25 @@ photoRouter.get("/",
         return res.status(500).send("Error")
     });
 
+photoRouter.post("/search",
+    [
+        body("page").isInt().default(1)
+    ],
+    async (req: Request, res: Response) => {
+
+        let { query, sort, page } = req.body
+
+        let skip = (page - 1) * PAGE_SIZE;
+        let take = PAGE_SIZE;
+        await photoService.doSearch(query, sort, page, PAGE_SIZE, skip, take)
+            .then(results => {
+                res.json(results);
+            })
+            .catch(err => {
+                res.status(500).json({ errors: [err] });
+            })
+    });
+
 photoRouter.get("/:id",
     [
         check("id").notEmpty().isUUID()
@@ -80,7 +99,7 @@ photoRouter.get("/:id/file",
 
         await photoService.getFileById(req.params.id)
             .then(photo => {
-                if (photo) {
+                if (photo && photo.file) {
                     return res.contentType("image/jpg").send(photo.file);
                 }
 
@@ -91,7 +110,6 @@ photoRouter.get("/:id/file",
                 return res.status(404).send("Photo not found");
             })
     });
-
 
 photoRouter.get("/:id/file/thumbnail",
     [
@@ -106,7 +124,7 @@ photoRouter.get("/:id/file/thumbnail",
 
         await photoService.getFileById(req.params.id)
             .then(async photo => {
-                if (photo) {
+                if (photo && photo.file) {
                     let t = await createThumbnail(photo.file);
                     return res.contentType("image/jpg").send(t);
                 }
@@ -141,6 +159,38 @@ photoRouter.post("/", multer().single("file"),
         }
 
         let result = await photoService.addPhoto(req.body as Photo).then(item => item)
+            .catch(err => {
+                return res.json({ errors: [err.originalError.info.message] });
+            });
+
+        return res.json({ data: result });
+    });
+
+photoRouter.put("/:id", multer().single("file"),
+    [
+        check("id").notEmpty().isUUID(),
+        body("communityId").notEmpty().bail().isInt(),
+        body("isOtherRecord").notEmpty().bail().isBoolean(),
+        body("originalMediaId").notEmpty().bail().isInt(),
+        body("mediaStorage").notEmpty().bail().isInt(),
+        body("copyright").notEmpty().bail().isInt(),
+        body("ownerId").notEmpty().bail().isInt(),
+        body("photoProjectId").notEmpty().bail().isInt(),
+        body("program").notEmpty().bail().isInt(),
+        body("isComplete").notEmpty().bail().isBoolean(),
+        body("isSiteDefault").notEmpty().bail().isBoolean()
+    ],
+    async (req: Request, res: Response) => {
+        const errors = validationResult(req);
+
+        if (req.file)
+            req.body.file = req.file.buffer;
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        let result = await photoService.updatePhoto(req.params.id, req.body as Photo).then(item => item)
             .catch(err => {
                 return res.json({ errors: [err.originalError.info.message] });
             });

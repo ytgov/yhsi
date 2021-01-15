@@ -1,4 +1,5 @@
 import Knex, { Config } from "knex";
+import { QueryStatement, SortStatement } from "./";
 import { Association, ConstructionPeriod, Contact, Dates, FirstNationAssociation, FunctionalUse, HistoricalPattern, Name, Ownership, Place, PLACE_FIELDS, PreviousOwnership, RevisionLog, Theme, WebLink } from "../data";
 import { GenericEnum } from "./static-service";
 
@@ -228,7 +229,7 @@ export class PlaceService {
         ];
     }
 
-    async doSearch(query: Array<QueryStatement>, sort: any, page: number, page_size: number, skip: number, take: number): Promise<any> {
+    async doSearch(query: Array<QueryStatement>, sort: Array<SortStatement>, page: number, page_size: number, skip: number, take: number): Promise<any> {
 
         return new Promise(async (resolve, reject) => {
 
@@ -300,6 +301,15 @@ export class PlaceService {
                     }
                 })
             }
+            
+            if (sort && sort.length > 0) {
+                sort.forEach(stmt => {
+                    selectStmt.orderBy(stmt.field, stmt.direction);
+                })
+            }
+            else {
+                selectStmt.orderBy("place.id");
+            }
 
             let item_count = await countStmt.count("*", { as: "counter" })
                 .then(t => t)
@@ -317,17 +327,11 @@ export class PlaceService {
             }
 
             let page_count = Math.ceil(count / page_size);
-            let data = await selectStmt.select<Place[]>(PLACE_FIELDS).orderBy("id").offset(skip).limit(take);
+            let data = await selectStmt.select<Place[]>(PLACE_FIELDS).offset(skip).limit(take);
             let results = { data, meta: { page, page_size, item_count: count, page_count } };
 
             resolve(results);
         })
     }
 
-}
-
-interface QueryStatement {
-    field: string;
-    operator: string;
-    value: any;
 }
