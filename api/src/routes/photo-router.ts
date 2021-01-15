@@ -1,21 +1,149 @@
 import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
-import { validationResult } from "express-validator";
+import { body, check, query, validationResult } from "express-validator";
 import { PhotoService } from "../services";
+import { Photo } from "src/data";
+import multer from "multer";
+import { createThumbnail } from "../util/image";
 
 const photoService = new PhotoService(DB_CONFIG);
+const PAGE_SIZE = 5;
 
 export const photoRouter = express.Router();
 
-photoRouter.get("/", async (req: Request, res: Response) => {
-    const errors = validationResult(req);
+photoRouter.get("/",
+    [
+        query("page").default(1).isInt({ gt: 0 })
+    ],
+    async (req: Request, res: Response) => {
+        const errors = validationResult(req);
 
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
 
-    let { username, password } = req.body;
-    return res.send({ data: {} });
+        let page = parseInt(req.query.page as string);
+        let skip = (page - 1) * PAGE_SIZE;
+        let take = PAGE_SIZE;
 
-    res.send({ errors: ["Authentication failed - Username or password is not correct"] });
-});
+        let list = await photoService.getAll(skip, take)
+            .then(data => data)
+            .catch((err) => { console.error("Database Error", err); return undefined; });
+
+        let item_count = await photoService.getPhotoCount()
+            .then(data => data)
+            .catch((err) => { console.error("Database Error", err); return 0; });
+
+        let page_count = Math.ceil(item_count / PAGE_SIZE);
+
+        if (list) {
+            return res.json({ data: list, meta: { page, page_size: PAGE_SIZE, item_count, page_count } });
+        }
+
+        return res.status(500).send("Error")
+    });
+
+photoRouter.get("/:id",
+    [
+        check("id").notEmpty().isUUID()
+    ],
+    async (req: Request, res: Response) => {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        await photoService.getById(req.params.id)
+            .then(photo => {
+                if (photo)
+                    return res.json({ data: photo });
+
+                return res.status(404).send("Photo not found");
+            })
+            .catch(err => {
+                console.error(err)
+                return res.status(404).send("Photo not found");
+            })
+    });
+
+photoRouter.get("/:id/file",
+    [
+        check("id").notEmpty().isUUID()
+    ],
+    async (req: Request, res: Response) => {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        await photoService.getFileById(req.params.id)
+            .then(photo => {
+                if (photo) {
+                    return res.contentType("image/jpg").send(photo.file);
+                }
+
+                return res.status(404).send("Photo not found");
+            })
+            .catch(err => {
+                console.error(err)
+                return res.status(404).send("Photo not found");
+            })
+    });
+
+
+photoRouter.get("/:id/file/thumbnail",
+    [
+        check("id").notEmpty().isUUID()
+    ],
+    async (req: Request, res: Response) => {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        await photoService.getFileById(req.params.id)
+            .then(async photo => {
+                if (photo) {
+                    let t = await createThumbnail(photo.file);
+                    return res.contentType("image/jpg").send(t);
+                }
+
+                return res.status(404).send("Photo not found");
+            })
+            .catch(err => {
+                console.error(err)
+                return res.status(404).send("Photo not found");
+            })
+    });
+
+photoRouter.post("/", multer().single("file"),
+    [
+        body("communityId").notEmpty().bail().isInt(),
+        body("isOtherRecord").notEmpty().bail().isBoolean(),
+        body("originalMediaId").notEmpty().bail().isInt(),
+        body("mediaStorage").notEmpty().bail().isInt(),
+        body("copyright").notEmpty().bail().isInt(),
+        body("ownerId").notEmpty().bail().isInt(),
+        body("photoProjectId").notEmpty().bail().isInt(),
+        body("program").notEmpty().bail().isInt(),
+        body("isComplete").notEmpty().bail().isBoolean(),
+        body("isSiteDefault").notEmpty().bail().isBoolean()
+    ],
+    async (req: Request, res: Response) => {
+        const errors = validationResult(req);
+        req.body.file = req.file.buffer;
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        let result = await photoService.addPhoto(req.body as Photo).then(item => item)
+            .catch(err => {
+                return res.json({ errors: [err.originalError.info.message] });
+            });
+
+        return res.json({ data: result });
+    });
