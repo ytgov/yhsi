@@ -42,6 +42,22 @@ placeRouter.get("/",
         return res.status(500).send("Error")
     });
 
+placeRouter.post("/search", [
+    body("page").isInt().default(1)
+], async (req: Request, res: Response) => {
+    let { query, sort, page } = req.body
+
+    let skip = (page - 1) * PAGE_SIZE;
+    let take = PAGE_SIZE;
+    await placeService.doSearch(query, sort, page, PAGE_SIZE, skip, take)
+        .then(results => {
+            res.json(results);
+        })
+        .catch(err => {
+            res.status(500).json({ errors: [err] });
+        })
+});
+
 placeRouter.post("/generate-id",
     [
         body("nTSMapSheet").isString().bail().notEmpty().trim()
@@ -97,14 +113,14 @@ placeRouter.get("/:id",
                     let revisionLogs = combine(await placeService.getRevisionLogFor(place.id), placeService.getRevisionLogTypes(), "value", "revisionLogType", "text", "revisionLogTypeText");
                     let webLinks = combine(await placeService.getWebLinksFor(place.id), placeService.getWebLinkTypes(), "value", "type", "text");
                     let descriptions = combine(await placeService.getDescriptionsFor(place.id), placeService.getDescriptionTypes(), "value", "type", "text");
-                    
+
                     let relationships = {
                         associations: { data: associations },
                         firstNationAssociations: { data: fnAssociations },
                         names: { data: names },
                         historicalPatterns: { data: historicalPatterns },
                         dates: { data: dates },
-                        constructionPeriods: {data: constructionPeriods},
+                        constructionPeriods: { data: constructionPeriods },
                         themes: { data: themes },
                         functionalUses: { data: functionalUses },
                         ownerships: { data: ownerships },

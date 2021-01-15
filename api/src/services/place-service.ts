@@ -228,4 +228,106 @@ export class PlaceService {
         ];
     }
 
+    async doSearch(query: Array<QueryStatement>, sort: any, page: number, page_size: number, skip: number, take: number): Promise<any> {
+
+        return new Promise(async (resolve, reject) => {
+
+            let selectStmt = this.knex("place")
+                .leftOuterJoin("firstnationassociation", "place.id", "firstnationassociation.placeid")
+                .leftOuterJoin("constructionPeriod", "place.id", "constructionPeriod.placeid")
+                .leftOuterJoin("revisionLog", "place.id", "revisionLog.placeid")
+                .leftOuterJoin("description", "place.id", "description.placeid");
+
+            let countStmt = this.knex("place")
+                .leftOuterJoin("firstnationassociation", "place.id", "firstnationassociation.placeid")
+                .leftOuterJoin("constructionPeriod", "place.id", "constructionPeriod.placeid")
+                .leftOuterJoin("revisionLog", "place.id", "revisionLog.placeid")
+                .leftOuterJoin("description", "place.id", "description.placeid");
+
+            if (query && query.length > 0) {
+
+                query.forEach(stmt => {
+                    switch (stmt.operator) {
+                        case "eq": {
+                            let p = {};
+                            let m = `{"${stmt.field}": "${stmt.value}"}`;
+                            Object.assign(p, JSON.parse(m));
+                            selectStmt.where(p);
+                            countStmt.where(p);
+                            break;
+                        }
+                        case "in": {
+                            let items = stmt.value.split(',');
+                            countStmt.whereIn(stmt.field, items);
+                            selectStmt.whereIn(stmt.field, items);
+                            break;
+                        }
+                        case "notin": {
+                            let items = stmt.value.split(',');
+                            countStmt.whereNotIn(stmt.field, items);
+                            selectStmt.whereNotIn(stmt.field, items);
+                            break;
+                        }
+                        case "gt": {
+                            selectStmt.where(stmt.field, '>', stmt.value);
+                            countStmt.where(stmt.field, '>', stmt.value);
+                            break;
+                        }
+                        case "gte": {
+                            selectStmt.where(stmt.field, '>=', stmt.value);
+                            countStmt.where(stmt.field, '>=', stmt.value);
+                            break;
+                        }
+                        case "lt": {
+                            selectStmt.where(stmt.field, '<', stmt.value);
+                            countStmt.where(stmt.field, '<', stmt.value);
+                            break;
+                        }
+                        case "lte": {
+                            console.log(`Testing ${stmt.field} for IN on ${stmt.value}`)
+                            selectStmt.where(stmt.field, '<=', stmt.value);
+                            countStmt.where(stmt.field, '<=', stmt.value);
+                            break;
+                        }
+                        case "contains": {
+                            selectStmt.whereRaw(`LOWER(${stmt.field}) like '%${stmt.value.toLowerCase()}%'`);
+                            countStmt.whereRaw(`LOWER(${stmt.field}) like '%${stmt.value.toLowerCase()}%'`);
+                            break;
+                        }
+                        default: {
+                            console.log(`IGNORING ${stmt.field} on ${stmt.value}`)
+                        }
+                    }
+                })
+            }
+
+            let item_count = await countStmt.count("*", { as: "counter" })
+                .then(t => t)
+                .catch(err => {
+                    console.log("COUNT Query Error");
+                    return reject(err.originalError.info.message);
+                });
+
+            let count = 0;
+
+            if (item_count) {
+                let t = item_count[0];
+                let y = t.counter as string;
+                count = parseInt(y);
+            }
+
+            let page_count = Math.ceil(count / page_size);
+            let data = await selectStmt.select<Place[]>(PLACE_FIELDS).orderBy("id").offset(skip).limit(take);
+            let results = { data, meta: { page, page_size, item_count: count, page_count } };
+
+            resolve(results);
+        })
+    }
+
+}
+
+interface QueryStatement {
+    field: string;
+    operator: string;
+    value: any;
 }

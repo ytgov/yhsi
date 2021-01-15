@@ -1,5 +1,5 @@
 
-export const PLACE_FIELDS = ["id", "primaryName", "yHSIId", "jurisdiction", "statuteId", "statute2Id",
+export const PLACE_FIELDS = ["place.id", "primaryName", "yHSIId", "jurisdiction", "statuteId", "statute2Id",
     "recognitionDate", "ownerConsent", "category", "isPubliclyAccessible", "nTSMapSheet", "bordenNumber",
     "geocode", "hectareArea", "latitude", "longitude", "locationComment", "resourceType", "buildingSize",
     "conditionComment", "currentUseComment", "yHSPastUse", "cIHBNumber", "groupYHSI", "yGBuildingNumber",
