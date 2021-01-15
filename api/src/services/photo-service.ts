@@ -11,7 +11,7 @@ export class PhotoService {
     }
 
     async getAll(skip: number, take: number): Promise<Array<Photo>> {
-        return this.knex("photo").select<Photo[]>(PHOTO_FIELDS).orderBy("id").offset(skip).limit(take);
+        return this.knex("photo").select<Photo[]>(PHOTO_FIELDS).orderBy("rowId").offset(skip).limit(take);
     }
 
     async getById(id: string): Promise<Photo | undefined> {
@@ -46,11 +46,8 @@ export class PhotoService {
     }
 
     async doSearch(query: Array<QueryStatement>, sort: Array<SortStatement>, page: number, page_size: number, skip: number, take: number): Promise<any> {
-
         return new Promise(async (resolve, reject) => {
-
             let selectStmt = this.knex("photo");
-
             let countStmt = this.knex("photo");
 
             if (query && query.length > 0) {
@@ -108,7 +105,7 @@ export class PhotoService {
                     }
                 });
             }
-            
+
             if (sort && sort.length > 0) {
                 sort.forEach(stmt => {
                     selectStmt.orderBy(stmt.field, stmt.direction);
