@@ -4,7 +4,8 @@
   "description": "Back-end for rebuild of Historic Sites web application",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -L src/index.ts"
+    "dev": "nodemon -L src/index.ts",
+    "make": "ts-to-openapi --no-as-comment -f data/index.ts"
   },
   "author": "Michael Johnson",
   "license": "ISC",
@@ -33,6 +34,7 @@
     "moment": "^2.27.0",
     "mssql": "^6.3.1",
     "multer": "^1.4.2",
-    "sharp": "^0.27.0"
+    "sharp": "^0.27.0",
+    "ts-to-openapi": "^1.2.0"
   }
 }

@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { body, check, query, validationResult } from "express-validator";
 import { PhotoService } from "../services";
-import { Photo } from "src/data";
+import { Photo } from "../data";
 import multer from "multer";
 import { createThumbnail } from "../util/image";
 
