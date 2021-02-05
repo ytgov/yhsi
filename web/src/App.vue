@@ -121,7 +121,8 @@ export default {
       return store.getters.fullName;
     },
     isAuthenticated() {
-      return store.getters.isAuthenticated;
+      return true; // until we get auth process to show sidebar
+      // return store.getters.isAuthenticated;
     }
   },
   data: () => ({
@@ -134,8 +135,8 @@ export default {
     applicationName: config.applicationName,
     applicationIcon: config.applicationIcon,
     sections: config.sections,
-    hasSidebar: false, //config.hasSidebar,
-    hasSidebarClosable: config.hasSidebarClosable
+    hasSidebar: true, //config.hasSidebar,
+    hasSidebarClosable: false,//config.hasSidebarClosable
   }),
   created: async function() {
     await store.dispatch("checkAuthentication");

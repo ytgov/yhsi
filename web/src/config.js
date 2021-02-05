@@ -1,4 +1,3 @@
-
 export const applicationName = "Template App";
 export const applicationIcon = "mdi-cash-register";
 export const hasSidebar = true;
@@ -6,14 +5,34 @@ export const hasSidebarClosable = false;
 
 export const sections = [
     {
-        name: "Dashboard",
+        name: "Home",
         url: "/",
+        icon: "mdi-home-account"
+    },
+    {
+        name: "Dashboard",
+        url: "/dashboard",
         icon: "mdi-view-dashboard"
+    },
+    {
+        name: "Sites",
+        url: "/sites",
+        icon: "mdi-map-marker"
+    },
+    {
+        name: "Photos",
+        url: "/photos",
+        icon: "mdi-wallpaper"
+    },
+    {
+        name: "Maps",
+        url: "/maps",
+        icon: "mdi-map"
     },
     {
         name: "Basic Form",
         url: "/form",
-        icon: "mdi-book-open-variant"
+        icon: "mdi-newspaper-variant-multiple"
     },
     {
         name: "Data grid",

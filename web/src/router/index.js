@@ -28,7 +28,7 @@ const routes = [
     name: "Basic Form",
     component: Form,
     meta: {
-      requiresAuth: true
+      requiresAuth: false
     }
   },
   {
@@ -36,7 +36,7 @@ const routes = [
     name: "Data grid",
     component: Grid,
     meta: {
-      requiresAuth: true
+      requiresAuth: false
     }
   },
   {
@@ -54,7 +54,7 @@ const routes = [
     name: "Profile",
     component: Profile,
     meta: {
-      requiresAuth: true
+      requiresAuth: false
     }
   },
   {
@@ -81,7 +81,7 @@ router.beforeEach(async (to, from, next) => {
   var isAuthenticated = store.getters.isAuthenticated;
 
   if (requiresAuth && !isAuthenticated) {
-    console.log("You aren't authenticatd, redirecting to sign-in")
+    console.log("You aren't authenticatd, redirecting to sign-in");
     next("/sign-in");
     return;
   }
