@@ -9,7 +9,7 @@ import Login from "../components/Login";
 import LoginComplete from "../components/LoginComplete";
 import Profile from "../components/Profile";
 import store from "../store";
-
+import SitesForm  from "../components/SitesForm";
 Vue.use(VueRouter);
 
 const routes = [
@@ -53,6 +53,14 @@ const routes = [
     path: "/profile",
     name: "Profile",
     component: Profile,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/sites/:id/form",
+    name: "SitesForm",
+    component: SitesForm,
     meta: {
       requiresAuth: false
     }
