@@ -88,3 +88,11 @@ a {
 .v-banner.problem .v-icon {
     color: #9b1b27 !important;
 }
+
+/* BIZONT CSS CLASSES */
+.top-right-button{
+    position:absolute;
+    top:0;
+    right: 0;
+    margin: 0px;
+}
