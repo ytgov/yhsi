@@ -7,385 +7,79 @@
     >
       <v-toolbar-title><v-icon>mdi-book-open-variant</v-icon> View site: {{site}}</v-toolbar-title>
     </v-toolbar>
-    <v-tabs vertical  class="tabs-left">
-      <v-tab>
-        <v-icon left>
-          mdi-account
-        </v-icon>
-        Summary
-      </v-tab>
-      <v-tab>
-        <v-icon left>
-          mdi-account
-        </v-icon>
-        Location
-      </v-tab>
-      <v-tab>
-        <v-icon left>
-          mdi-account
-        </v-icon>
-        Dates & Condition
-      </v-tab>
-      <v-tab>
-        <v-icon left>
-          mdi-account
-        </v-icon>
-        Themes & Function
-      </v-tab>
-      <v-tab>
-        <v-icon left>
-          mdi-account
-        </v-icon>
-        Associations
-      </v-tab>
-      <v-tab>
-        <v-icon left>
-          mdi-account
-        </v-icon>
-        Legal & Zoning
-      </v-tab>
-      <v-tab>
-        <v-icon left>
-          mdi-account
-        </v-icon>
-        Photos
-      </v-tab>
-      <v-tab>
-        <v-icon left>
-          mdi-account
-        </v-icon>
-        Management
-      </v-tab>
-      <v-tab>
-        <v-icon left>
-          mdi-account
-        </v-icon>
-        Description
-      </v-tab>
-      <v-tab-item>
-        <v-card flat>
-          <v-card-title primary-title>
-            Summary
-          </v-card-title>
-          <v-divider inset></v-divider>
-          <v-form v-model="summary.valid">
-              <v-container>
-                <v-row>
-                  <v-col
-                    cols="6"
-                  >
+    <div>
+      <v-row>
+        <v-col>
+          <router-view id="sites-router"/> 
+        </v-col>
+        <v-col cols="2">
+          <v-list shaped>
+            <v-list-item-group
+              v-model="selectedItem"
+              color="primary"
+            >
+              <v-list-item
+                v-for="(item, i) in items"
+                :key="i"
+                :to="item.route"
+              >
+                <v-list-item-icon>
+                  <v-icon v-text="item.icon"></v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title v-text="item.name"></v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-col>
 
-                     <v-text-field
-                      v-model="summary.yhsiid"
-                      :rules="summary.generalRules"
-                      label="YHSI ID"
-                      required
-                    ></v-text-field>
+      </v-row>
+    </div>
+    
 
-                     <v-text-field
-                      v-model="summary.designations"
-                      :rules="summary.generalRules"
-                      label="Designations"
-                      required
-                    ></v-text-field>
-
-                     <v-text-field
-                      v-model="summary.crhp"
-                      :rules="summary.generalRules"
-                      label="CRHP Category"
-                      required
-                    ></v-text-field>
-
-                     <v-text-field
-                      v-model="summary.site_categories"
-                      :rules="summary.generalRules"
-                      label="Site Categories"
-                      required
-                    ></v-text-field>
-
-                     <v-text-field
-                      v-model="summary.records"
-                      :rules="summary.generalRules"
-                      label="Records"
-                      required
-                    ></v-text-field>
-
-                    <v-checkbox
-                      v-model="summary.show_in_register"
-                      :label="'Show in Register?'"
-                    ></v-checkbox>
-                  </v-col>
-
-                  <v-col
-                    cols="6"
-                  >
-                     <v-text-field
-                      v-model="summary.primary_name"
-                      :rules="summary.generalRules"
-                      label="Primary Name"
-                      required
-                    ></v-text-field>
-                    <v-alert
-                          outlined
-                          color="primary"
-                        >
-                          <div class="sub-title">
-                            Secondary names
-                          </div>
-                        <v-text-field v-for="(item, i) in summary.secondary_names" :key="i"
-                          :v-model="item"
-                          :label="`Name ${i+1}`"
-                          required
-                        ></v-text-field>
-                    </v-alert>
-
-                     <v-text-field 
-                      v-model="summary.contribuiting_resources"
-                      :rules="summary.generalRules"
-                      label="Contribuiting Resources"
-                      required
-                    ></v-text-field>
-
-                    <v-alert
-                          outlined
-                          color="primary"
-                        >
-                          <div class="sub-title">
-                            Historical Pattern 1
-                          </div>
-                      <v-text-field
-                        v-model="summary.historical_pattern_1"
-                        :rules="summary.generalRules"
-                        label="Historical Pattern"
-                        required
-                      ></v-text-field>
-                    </v-alert>
-                    <v-alert
-                          outlined
-                          color="primary"
-                        >
-                          <div class="sub-title">
-                            Historical Pattern 2
-                          </div>
-                      <v-text-field
-                        v-model="summary.historical_pattern_1"
-                        :rules="summary.generalRules"
-                        label="Historical Pattern"
-                        required
-                      ></v-text-field>
-                    </v-alert>
-                  </v-col>
-
-                </v-row>
-              </v-container>
-            </v-form>
-        </v-card>
-      </v-tab-item>
-      <v-tab-item>
-        <v-card flat>
-          <v-card-title primary-title>
-            Location
-          </v-card-title>
-          <v-divider inset></v-divider>
-          <v-form v-model="summary.valid">
-              <v-container>
-                <v-row>
-                  <v-col
-                    cols="6"
-                  >
-                    <v-row>
-                      <v-col
-                        cols="6"
-                      >
-
-                        <v-text-field
-                          v-model="summary.yhsiid"
-                          :rules="summary.generalRules"
-                          label="Community"
-                          required
-                        ></v-text-field>
-                      </v-col>
-                      <v-col
-                        cols="6"
-                      >
-
-                        <v-text-field
-                          v-model="summary.yhsiid"
-                          :rules="summary.generalRules"
-                          label="Other Community"
-                          required
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col>
-                        <v-alert
-                          outlined
-                          color="primary"
-                        >
-                          <div class="sub-title">
-                            Physical Address
-                          </div>
-                        <v-textarea
-                          label="Address"
-                          v-model="summary.primary_name"
-                        ></v-textarea>
-
-                        <v-text-field
-                          v-model="summary.yhsiid"
-                          :rules="summary.generalRules"
-                          label="Province"
-                          required
-                        ></v-text-field>
-                        <v-row>
-                          <v-col cols="6">
-                            <v-text-field
-                              v-model="summary.yhsiid"
-                              :rules="summary.generalRules"
-                              label="Country"
-                              required
-                            ></v-text-field>
-                          </v-col>
-                          <v-col cols="6">
-                            <v-text-field
-                              v-model="summary.yhsiid"
-                              :rules="summary.generalRules"
-                              label="Postal Code"
-                              required
-                            ></v-text-field>
-                          </v-col>
-                        </v-row>
-                        </v-alert>
-                      </v-col>
-                    </v-row>
-
-                    <v-text-field
-                            v-model="summary.yhsiid"
-                            :rules="summary.generalRules"
-                            label="Latitude"
-                            required
-                    ></v-text-field>
-                    
-                    <v-text-field
-                            v-model="summary.yhsiid"
-                            :rules="summary.generalRules"
-                            label="Longitude"
-                            required
-                    ></v-text-field>
-
-                    <v-text-field
-                            v-model="summary.yhsiid"
-                            :rules="summary.generalRules"
-                            label="Coordinate Determination"
-                            required
-                  ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="6"
-                  >
-                     <v-text-field
-                      v-model="summary.primary_name"
-                      :rules="summary.generalRules"
-                      label="Other Locality"
-                      required
-                    ></v-text-field>
-                    <v-textarea
-                      label="Previous Address"
-                      v-model="summary.primary_name"
-                    ></v-textarea>
-                    <v-textarea
-                      label="Contact"
-                      v-model="summary.primary_name"
-                    ></v-textarea>
-                    <v-row>
-                      <v-col cols="6">
-                        <v-text-field
-                          v-model="summary.primary_name"
-                          :rules="summary.generalRules"
-                          label="NTS Map Sheet"
-                          required
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="6">
-                        <v-text-field
-                          v-model="summary.primary_name"
-                          :rules="summary.generalRules"
-                          label="Area(m2)"
-                          required
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-text-field
-                      v-model="summary.primary_name"
-                      :rules="summary.generalRules"
-                      label="Border Number"
-                      required
-                    ></v-text-field>
-                    <v-textarea
-                      label="Misc. Info"
-                      v-model="summary.primary_name"
-                    ></v-textarea>
-                  </v-col>
-
-                </v-row>
-              </v-container>
-            </v-form>
-        </v-card>
-      </v-tab-item>
-    </v-tabs>
   </v-card>
 </template>
 
 <script>
+/*
+import formSummary from './SitesFormSubComponents/SitesFormSummary.vue';
+import formLocation from './SitesFormSubComponents/SitesFormLocation.vue';/*
+import formDates from './SitesFormSubComponents/SitesFormDates.vue';
+import formThemes from './SitesFormSubComponents/SitesFormThemes';
+*/
 export default {
+  name: "sitesForm",
+  components:{
+   // formSummary, formLocation//, formDates, formThemes
+  },
   data: () => ({
     site: '',
-    summary:{
-      valid: false,
-      yhsiid: '',
-      designations: '',
-      crhp: '',
-      site_categories: '',
-      records: '',
-      show_in_register: false,
-      primary_name: '',
-      secondary_names: ['YUKON RIVER','OTHER NAME'],  
-      contribuiting_resources: '',
-      historical_pattern_1: '',
-      historical_pattern_2: '',
-      generalRules: [
-        v => !!v || 'This input is required',
-        v => v.length <= 20 || 'This input must be less than 20 characters',
-      ],
-    },
-    location:{
+    items: null,
+    selectedItem: null
 
-    },
-    dates_Condition:{
-
-    },
-    themes_Function:{
-
-    },
-    associations:{
-
-    },
-    legal_Zoning:{
-
-    },
-    photos:{
-
-    },
-    management:{
-
-    },
-    description:{
-
-    }
   }),
-  beforeCreate(){//gets the id from the url before creating the component
-    console.log(this.$route.params.id);
-  }
+  created(){
+      this.items = [
+        {name: 'Summary', icon: 'mdi-view-dashboard', route: `/sites/${this.param}/summary`},
+        {name: "Location", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/location`},
+        {name: "Dates & Condition", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/dates`},
+        {name: "Themes & Function", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/themes`},
+        {name: "Associations", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/associations`},
+        {name: "Legal & Zoning", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/legal_&_zoning`},
+        {name: "Photos", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/photos`},
+        {name: "Management", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/management`},
+        {name: "Description", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/description`},
+    ]
+  },
+  methods: {
+
+  },
+  computed: {
+    param() {
+        return this.$route.params.id;
+    }
+}
 }
 </script>
 
@@ -397,5 +91,10 @@ export default {
 }
 .v-tab{
   justify-content: left;
+}
+.modTabs{
+  display: flex;
+  flex-direction: row;
+
 }
 </style>
