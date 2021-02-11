@@ -55,7 +55,7 @@
 
 <script>
 export default {
-    name: "formThemes",
+    name: "formDescription",
     data: () => ({
         /* input-fields */
             valid: false,

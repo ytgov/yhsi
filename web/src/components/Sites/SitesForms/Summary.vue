@@ -126,7 +126,7 @@
 <script>
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
-    name: "form-summary",
+    name: "formSummary",
     data: () =>({
             valid: false,
             generalRules: [

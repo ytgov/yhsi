@@ -9,16 +9,17 @@ import Login from "../components/Login";
 import LoginComplete from "../components/LoginComplete";
 import Profile from "../components/Profile";
 import store from "../store";
-import SitesForm  from "../components/SitesForm";
-import SitesFormSummary from "../components/SitesFormSubComponents/SitesFormSummary";
-import SitesFormLocation from "../components/SitesFormSubComponents/SitesFormLocation";
-import SitesFormDates from "../components/SitesFormSubComponents/SitesFormDates";
-import SitesFormThemes from "../components/SitesFormSubComponents/SitesFormThemes";
-import SitesFormAssociations from "../components/SitesFormSubComponents/SitesFormAssociations";
-import SitesFormLegal_Zoning from "../components/SitesFormSubComponents/SitesFormLegal_Zoning";
-import SitesFormPhotos from "../components/SitesFormSubComponents/SitesFormPhotos";
-import SitesFormManagement from "../components/SitesFormSubComponents/SitesFormManagement";
-import SitesFormDescription from "../components/SitesFormSubComponents/SitesFormDescription";
+import SitesForm  from "../components/Sites";
+
+import Summary from "../components/Sites/SitesForms/Summary";
+import Location from "../components/Sites/SitesForms/Location";
+import Dates from "../components/Sites/SitesForms/Dates";
+import Themes from "../components/Sites/SitesForms/Themes";
+import Associations from "../components/Sites/SitesForms/Associations";
+import LegalAndZoning from "../components/Sites/SitesForms/LegalAndZoning";
+import Photos from "../components/Sites/SitesForms/Photos";
+import Management from "../components/Sites/SitesForms/Management";
+import Description from "../components/Sites/SitesForms/Description";
 
 Vue.use(VueRouter);
 
@@ -77,40 +78,40 @@ const routes = [
     children: [
       {
         path: "summary", 
-        component: SitesFormSummary
+        component: Summary
       },
       {
         path: "location",
-        component: SitesFormLocation
+        component: Location
       },
       {
         path: "dates", 
-        component: SitesFormDates
+        component: Dates
       },
       {
         path: "themes", 
-        component: SitesFormThemes
+        component: Themes
       },
       {
         path: "associations", 
-        component: SitesFormAssociations
+        component: Associations
       },
       {
         path: "legal_&_zoning", 
-        component: SitesFormLegal_Zoning
+        component: LegalAndZoning
       },
       {
         path: "photos", 
-        component: SitesFormPhotos
+        component: Photos
       },
       {
         path: "management", 
-        component: SitesFormManagement
+        component: Management
       },
       {
         path: "description", 
-        component: SitesFormDescription
-      },
+        component: Description
+      }
     ]
   },
   {

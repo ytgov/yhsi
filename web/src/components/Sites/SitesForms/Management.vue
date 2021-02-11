@@ -279,7 +279,7 @@
 
 <script>
 export default {
-    name: "formThemes",
+    name: "formManagement",
     data: () => ({
         /* input-fields */
             valid: false,

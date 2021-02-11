@@ -101,7 +101,7 @@
 
 <script>
 export default {
-    name: "formThemes",
+    name: "formPhotos",
     data: () => ({
         /* input-fields */
             valid: false,
