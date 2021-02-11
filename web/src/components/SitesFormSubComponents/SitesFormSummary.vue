@@ -11,30 +11,33 @@
                     cols="6"
                   >
                      <v-text-field
-                      v-model="yhsiid"
-                      :rules="generalRules"
+                      v-model="fields.yHSIId"
                       label="YHSI ID"
                       required
                     ></v-text-field>
 
                     <v-combobox
+                    v-model="fields.designations"
                       label="Designations"
                     ></v-combobox>
 
                     <v-combobox
+                    v-model="fields.category"
                       label="CRHP Category"
                     ></v-combobox>
 
                     <v-combobox
-                      label="Site Categories"
+                    v-model="fields.siteCategories"
+                    label="Site Categories"
                     ></v-combobox>
 
                     <v-combobox
-                      label="Records"
+                    v-model="fields.records"
+                    label="Records"
                     ></v-combobox>
 
                     <v-checkbox
-                      v-model="show_in_register"
+                      v-model="fields.showInRegister"
                       :label="'Show in Register?'"
                     ></v-checkbox>
                   </v-col>
@@ -43,14 +46,13 @@
                     cols="6"
                   >
                      <v-text-field
-                      v-model="primary_name"
-                      :rules="generalRules"
+                      v-model="fields.primaryName"
                       label="Primary Name"
                       required
                     ></v-text-field>
 
-                    <div class="mb-2">Contacts</div>
-                    <v-alert v-for="(item, i) in secondary_names" :key="i"
+                    <div class="mb-2">Secondary Names</div>
+                    <v-alert v-for="(item, i) in secondaryNames" :key="`secondary-name-${i}`"
                           outlined
                           color="primary"
                         >
@@ -78,14 +80,13 @@
                     </v-btn>
 
                     <v-text-field 
-                      v-model="contribuiting_resources"
-                      :rules="generalRules"
+                      v-model="fields.contributingResources"
                       label="Contribuiting Resources"
                       required
                     ></v-text-field>
 
-                    <div class="mb-2">Contacts</div>
-                    <v-alert v-for="(item, i) in secondary_names" :key="i"
+                    <div class="mb-2">Historical Patterns</div>
+                    <v-alert v-for="(item, i) in historicalPatterns" :key="`historical-pattern-${i}`"
                           outlined
                           color="primary"
                         >
@@ -104,7 +105,6 @@
                       ></v-combobox>
                         <v-text-field
                           :v-model="item"
-                          :rules="generalRules"
                           label="Comments"
                           required
                         ></v-text-field>
@@ -124,27 +124,29 @@
 </template>
 
 <script>
+/* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
     name: "form-summary",
     data: () =>({
-      /* input-fields */
             valid: false,
-            yhsiid: '',
-            designations: '',
-            crhp: '',
-            site_categories: '',
-            records: '',
-            show_in_register: false,
-            primary_name: '',
-            secondary_names: ['YUKON RIVER','OTHER NAME'],  
-            contribuiting_resources: '',
-            historical_pattern_1: '',
-            historical_pattern_2: '',
             generalRules: [
                 v => !!v || 'This input is required',
                 v => v.length <= 20 || 'This input must be less than 20 characters',
             ],
-    })
-    
+            /* Placeholder variables below this line **Read disclaimer** */
+            secondaryNames: ['1','2'],
+            historicalPatterns: ['1','2'],
+            /*Field data from the swaggerhub api docs below this line*/
+            fields:  { 
+                contributingResources: '',//
+                category: '',//
+                designations: '',//
+                primaryName: '',//
+                records: '', //
+                showInRegister: '',//
+                siteCategories: '',//
+                yHSIId: '',//
+              }
+    })   
 }
 </script>
