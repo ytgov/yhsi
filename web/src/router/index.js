@@ -20,7 +20,7 @@ import LegalAndZoning from "../components/Sites/SitesForms/LegalAndZoning";
 import Photos from "../components/Sites/SitesForms/Photos";
 import Management from "../components/Sites/SitesForms/Management";
 import Description from "../components/Sites/SitesForms/Description";
-
+import SitesGrid from "../components/Sites/SitesGrid.vue";
 Vue.use(VueRouter);
 
 const routes = [
@@ -69,6 +69,14 @@ const routes = [
     }
   },
   {
+    path: "/sites",
+    name: "SitesGrid",
+    component: SitesGrid,
+    meta: {
+      requiresAuth: false
+    },
+  },
+  {
     path: "/sites/:id",
     name: "SitesForm",
     component: SitesForm,
@@ -85,11 +93,11 @@ const routes = [
         component: Location
       },
       {
-        path: "dates", 
+        path: "dates_&_condition", 
         component: Dates
       },
       {
-        path: "themes", 
+        path: "themes_&_function", 
         component: Themes
       },
       {

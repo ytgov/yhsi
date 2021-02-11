@@ -196,6 +196,7 @@
 </template>
 
 <script>
+/* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
     name: "formDates",
     data: () => ({
@@ -205,7 +206,7 @@ export default {
             v => !!v || 'This input is required',
             v => v.length <= 20 || 'This input must be less than 20 characters',
         ],
-        /* Placeholder variables below this line **Read disclaimer** */
+        /* Placeholder variables below this line **Read above** */
         dates: [{type:"construction",details: "wasd",from:"",to:""}, {type:"construction",details: "wasd",from:"",to:""}],
         constructionPeriods: [{type:"construction",details: "wasd",from:"",to:""}],
         construction_periods: ['1','2'],

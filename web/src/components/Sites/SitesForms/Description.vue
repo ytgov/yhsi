@@ -11,7 +11,7 @@
                         cols="12"
                     >
                         <div class="mb-2">Descriptions</div>
-                        <v-alert v-for="(item, i) in photos" :key="`theme-${i+1}`"
+                        <v-alert v-for="(item, i) in descriptions" :key="`theme-${i+1}`"
                           outlined
                           color="primary"
                         >
@@ -28,6 +28,7 @@
                             <v-row>
                                 <v-col cols="6">
                                     <v-combobox
+                                    :v-model="item.type"
                                     label="Decription Type"
                                     ></v-combobox>
                                 </v-col>
@@ -35,6 +36,7 @@
                             <v-row>
                                 <v-col cols="12">
                                     <v-textarea
+                                    :v-model="item.description"
                                     label=""
                                     ></v-textarea>
                                 </v-col>
@@ -54,29 +56,17 @@
 </template>
 
 <script>
+/* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
     name: "formDescription",
     data: () => ({
-        /* input-fields */
             valid: false,
-            slideNegativeIndex: '',
-            photos: ['item1','item2'],
             generalRules: [
                 v => !!v || 'This input is required',
                 v => v.length <= 20 || 'This input must be less than 20 characters',
             ],
-            date: null,
-            menu: false,
+            /* Placeholder variables below this line **Read above** */
+            descriptions: [{type: '', description: ''}],
     }),
-    methods: {
-      save (date) {
-        this.$refs.menu.save(date)
-      },
-    },
-    watch: {
-      menu (val) {
-        val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
-      },
-    },
 }
 </script>

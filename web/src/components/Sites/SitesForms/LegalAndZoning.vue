@@ -51,50 +51,50 @@
                  <v-row>
                     <v-col cols="6">
                         <v-text-field 
-                        :v-model="zoning"
+                        :v-model="fields.zoning"
                         label="Zoning"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="townSiteMapNumber"
+                        :v-model="fields.townSiteMapNumber"
                         label="Town Site Map Number"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="siteDistrict"
+                        :v-model="fields.siteDistrictNumber"
                         label="Site District"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="groupYHSI"
+                        :v-model="fields.groupYHSI"
                         label="Group YHSI"
                         required
                         ></v-text-field>
                     </v-col>
                     <v-col cols="6">
                         <v-text-field 
-                        :v-model="group"
+                        :v-model="fields.lAGroup"
                         label="Group"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="lot"
+                        :v-model="fields.lot"
                         label="Lot"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="block"
+                        :v-model="fields.block"
                         label="Block"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="planNumber"
+                        :v-model="fields.planNumber"
                         label="Plan Number"
                         required
                         ></v-text-field>
@@ -159,28 +159,33 @@
 </template>
 
 <script>
+/* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
     name: "formLegalAndZoning",
     data: () => ({
             valid: false,
+            generalRules: [
+                v => !!v || 'This input is required',
+                v => v.length <= 20 || 'This input must be less than 20 characters',
+            ],
+            /* Placeholder variables below this line **Read above** */
             ownerships: ['item1','item2'],
-            zoning: '',
-            townSiteMapNumber: '',
-            siteDistrict: '',
-            groupYHSI: '',
-            group: '',
-            lot: '',
-            block: '',
-            planNumber: '',
             previous_ownerships: ['item1','item2'],
             functionalUses: [
                 {useType: 'text1', category: ''},
                 {useType: 'text2', category: ''}
             ],
-            generalRules: [
-                v => !!v || 'This input is required',
-                v => v.length <= 20 || 'This input must be less than 20 characters',
-            ],
+            /*Field data from the swaggerhub api docs below this line*/
+            fields:  {
+                block: '',//
+                groupYHSI: '',//
+                lAGroup: '',//
+                lot: '',//
+                planNumber: '',//
+                siteDistrictNumber: '',//
+                townSiteMapNumber: '',//
+                zoning: '',//
+                }
     })
 }
 </script>
