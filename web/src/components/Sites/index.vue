@@ -36,40 +36,33 @@
 
       </v-row>
     </div>
-    
-
   </v-card>
 </template>
 
 <script>
-/*
-import formSummary from './SitesFormSubComponents/SitesFormSummary.vue';
-import formLocation from './SitesFormSubComponents/SitesFormLocation.vue';/*
-import formDates from './SitesFormSubComponents/SitesFormDates.vue';
-import formThemes from './SitesFormSubComponents/SitesFormThemes';
-*/
+
+
 export default {
   name: "sitesForm",
-  components:{
-   // formSummary, formLocation//, formDates, formThemes
+  components: {
+
   },
   data: () => ({
     site: '',
     items: null,
     selectedItem: null
-
   }),
   created(){
-      this.items = [
-        {name: 'Summary', icon: 'mdi-view-dashboard', route: `/sites/${this.param}/summary`},
-        {name: "Location", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/location`},
-        {name: "Dates & Condition", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/dates`},
-        {name: "Themes & Function", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/themes`},
-        {name: "Associations", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/associations`},
-        {name: "Legal & Zoning", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/legal_&_zoning`},
-        {name: "Photos", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/photos`},
-        {name: "Management", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/management`},
-        {name: "Description", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/description`},
+    this.items = [
+      {name: "Summary", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/summary`},
+      {name: "Location", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/location`},
+      {name: "Dates & Condition", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/dates`},
+      {name: "Themes & Function", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/themes`},
+      {name: "Associations", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/associations`},
+      {name: "Legal & Zoning", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/legal_&_zoning`},
+      {name: "Photos", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/photos`},
+      {name: "Management", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/management`},
+      {name: "Description", icon: 'mdi-view-dashboard', route: `/sites/${this.param}/description`},
     ]
   },
   methods: {
@@ -79,15 +72,15 @@ export default {
     param() {
         return this.$route.params.id;
     }
-}
+  }
 }
 </script>
 
 
 <style scoped>
 .tabs-left{
-    display: flex;
-    flex-flow: row-reverse;
+  display: flex;
+  flex-flow: row-reverse;
 }
 .v-tab{
   justify-content: left;

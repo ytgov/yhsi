@@ -197,7 +197,7 @@
 
 <script>
 export default {
-    name: "formDates-Condition",
+    name: "formDates",
     data: () => ({
         valid: false,
 

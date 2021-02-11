@@ -1,7 +1,7 @@
 <template>
     <div>
           <v-card-title primary-title>
-            Associations
+            Legal & Zoning
           </v-card-title>
           <v-divider inset></v-divider>
           <v-form v-model="valid">
@@ -10,13 +10,13 @@
                     <v-col
                         cols="12"
                     >
-                        <div class="mb-2">Associations</div>
-                        <v-alert v-for="(item, i) in associations" :key="`theme-${i+1}`"
+                        <div class="mb-2">Ownerships</div>
+                        <v-alert v-for="(item, i) in ownerships" :key="`theme-${i+1}`"
                           outlined
                           color="primary"
                         >
                             <div class="sub-title">
-                                Association {{ i+1 }}
+                                Ownership {{ i+1 }}
                             </div>
                             <v-btn
                                 icon
@@ -28,13 +28,13 @@
                             <v-row>
                                 <v-col cols="6">
                                     <v-combobox
-                                    label="Association Type"
+                                    label="Category of Property"
                                     ></v-combobox>
                                 </v-col>
                                 <v-col cols="6">
                                     <v-text-field 
                                     :v-model="item"
-                                    label="Association Name"
+                                    label="Comments"
                                     required
                                     ></v-text-field>
                                 </v-col>
@@ -48,18 +48,69 @@
                         </v-btn>
                     </v-col>
                 </v-row>
-                <v-divider class="mt-2 mb-2"></v-divider>
+                 <v-row>
+                    <v-col cols="6">
+                        <v-text-field 
+                        :v-model="zoning"
+                        label="Zoning"
+                        required
+                        ></v-text-field>
+
+                        <v-text-field 
+                        :v-model="townSiteMapNumber"
+                        label="Town Site Map Number"
+                        required
+                        ></v-text-field>
+
+                        <v-text-field 
+                        :v-model="siteDistrict"
+                        label="Site District"
+                        required
+                        ></v-text-field>
+
+                        <v-text-field 
+                        :v-model="groupYHSI"
+                        label="Group YHSI"
+                        required
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="6">
+                        <v-text-field 
+                        :v-model="group"
+                        label="Group"
+                        required
+                        ></v-text-field>
+
+                        <v-text-field 
+                        :v-model="lot"
+                        label="Lot"
+                        required
+                        ></v-text-field>
+
+                        <v-text-field 
+                        :v-model="block"
+                        label="Block"
+                        required
+                        ></v-text-field>
+
+                        <v-text-field 
+                        :v-model="planNumber"
+                        label="Plan Number"
+                        required
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
                 <v-row>
                     <v-col
                         cols="12"
                     >
-                        <div class="mb-2">First Nation Associations</div>
-                        <v-alert v-for="(item, i) in firstNationAssociations" :key="`theme-${i+1}`"
+                        <div class="mb-2">Previous Ownerships</div>
+                        <v-alert v-for="(item, i) in previous_ownerships" :key="`theme-${i+1}`"
                           outlined
                           color="primary"
                         >
                             <div class="sub-title">
-                                First Nation Association {{ i+1 }}
+                                Previous Ownership {{ i+1 }}
                             </div>
                             <v-btn
                                 icon
@@ -70,21 +121,25 @@
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
-                                    <v-combobox
-                                    label="Association"
-                                    ></v-combobox>
+                                    <v-text-field 
+                                    :v-model="item"
+                                    label="Dates"
+                                    required
+                                    ></v-text-field>
                                 </v-col>
                                 <v-col cols="6">
-                                    <v-combobox
-                                    label="First Nation"
-                                    ></v-combobox>
+                                    <v-text-field 
+                                    :v-model="item"
+                                    label="Numbers"
+                                    required
+                                    ></v-text-field>
                                 </v-col>
                             </v-row>
                             <v-row>
                                 <v-col cols="12">
                                     <v-text-field 
                                     :v-model="item"
-                                    label="Comments"
+                                    label="Names"
                                     required
                                     ></v-text-field>      
                                 </v-col>
@@ -105,13 +160,20 @@
 
 <script>
 export default {
-    name: "formThemes",
+    name: "formLegalAndZoning",
     data: () => ({
-        /* input-fields */
             valid: false,
-            yhsthemes: '',
-            associations: ['item1','item2'],
-            firstNationAssociations: [
+            ownerships: ['item1','item2'],
+            zoning: '',
+            townSiteMapNumber: '',
+            siteDistrict: '',
+            groupYHSI: '',
+            group: '',
+            lot: '',
+            block: '',
+            planNumber: '',
+            previous_ownerships: ['item1','item2'],
+            functionalUses: [
                 {useType: 'text1', category: ''},
                 {useType: 'text2', category: ''}
             ],
