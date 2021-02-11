@@ -32,7 +32,6 @@
                                     ></v-combobox>
                                     <v-text-field
                                             v-model="item.details"
-                                            :rules="generalRules"
                                             label="Details"
                                             required
                                     ></v-text-field>
@@ -42,13 +41,11 @@
                                 >
                                     <v-text-field
                                     v-model="item.from"
-                                    :rules="generalRules"
                                     label="From Date"
                                     required
                                     ></v-text-field>
                                     <v-text-field
                                     v-model="item.to"
-                                    :rules="generalRules"
                                     label="To Date"
                                     required
                                     ></v-text-field>
@@ -110,11 +107,17 @@
                         <v-row>
                             <v-col cols="6">
                                 <v-combobox
+                                :v-model="fields.siteStatus"
+                                item-text="name"
+                                item-value="id"
                                 label="Site Status"
                                 ></v-combobox>
                             </v-col>
                             <v-col cols="6">
                                 <v-combobox
+                                :v-model="fields.floorCondition"
+                                item-text="name"
+                                item-value="id"
                                 label="Floor Condition"
                                 ></v-combobox>
                             </v-col>
@@ -122,6 +125,9 @@
                         <v-row>
                             <v-col cols="6">
                                 <v-combobox
+                                :v-model="fields.roofCondition"
+                                item-text="name"
+                                item-value="id"
                                 label="Roof Condition"
                                 ></v-combobox>
                             </v-col>
@@ -135,11 +141,17 @@
                             <v-row>
                             <v-col cols="6">
                                 <v-combobox
+                                :v-model="fields.wallCondition"
+                                item-text="name"
+                                item-value="id"
                                 label="Wall Condition"
                                 ></v-combobox>
                             </v-col>
                             <v-col cols="6">
                                 <v-combobox
+                                :v-model="fields.doorCondition"
+                                item-text="name"
+                                item-value="id"
                                 label="Door Condition"
                                 ></v-combobox>
                             </v-col>
@@ -155,21 +167,25 @@
                 <v-row>
                         <v-col cols="6">
                             <v-text-field
-                            v-model="buildingSize"
-                            :rules="generalRules"
+                            :v-model="fields.buildingSize"
+                            item-text="name"
+                            item-value="id"
                             label="Building Size"
                             required
                             ></v-text-field>
                             <v-text-field
-                            v-model="otherResourceTypes"
-                            :rules="generalRules"
+                            :v-model="fields.resourceType"
+                            item-text="name"
+                            item-value="id"
                             label="All Other Resource Types"
                             required
                             ></v-text-field>
                         </v-col>
                         <v-col cols="6">
                             <v-textarea
-                            v-model="conditionNotes"
+                            :v-model="fields.conditionComment"
+                            item-text="name"
+                            item-value="id"
                             label="Condition Notes"
                             ></v-textarea>
                         </v-col>
@@ -184,22 +200,27 @@ export default {
     name: "formDates-Condition",
     data: () => ({
         valid: false,
-        dates: [{type:"construction",details: "wasd",from:"",to:""}, {type:"construction",details: "wasd",from:"",to:""}],
-        constructionPeriods: [{type:"construction",details: "wasd",from:"",to:""}],
-        siteStatus: '',
-        floorCondition: '',
-        WallCondition: '',
-        doorCondition: '',
-        roofCondition: '',
-        buildingSize: '',
-        otherResourceTypes: '',
-        conditionNotes: '',
-        selectedPeriod: '',
-        construction_periods: ['Period 1',  'Period 2'],
+
         generalRules: [
             v => !!v || 'This input is required',
             v => v.length <= 20 || 'This input must be less than 20 characters',
         ],
+        /* Placeholder variables below this line **Read disclaimer** */
+        dates: [{type:"construction",details: "wasd",from:"",to:""}, {type:"construction",details: "wasd",from:"",to:""}],
+        constructionPeriods: [{type:"construction",details: "wasd",from:"",to:""}],
+        construction_periods: ['1','2'],
+        selectedPeriod: '',
+        /*Field data from the swaggerhub api docs below this line*/
+        fields:  {
+                buildingSize: '',//
+                conditionComment: '',//
+                doorCondition: '',//
+                floorCondition: '',//
+                resourceType: '',//
+                roofCondition: '',//
+                siteStatus: '',//
+                wallCondition: '',//
+            }
     })
 }
 </script>
