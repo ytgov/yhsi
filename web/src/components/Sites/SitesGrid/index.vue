@@ -28,7 +28,7 @@ export default {
     options: {},
     totalLength: 0,
     headers: [
-      { text: "id", value: "id" },
+      // { text: "id", value: "id" },
       { text: "Name", value: "name" },
       { text: "Community", value: "community" },
       { text: "Category", value: "category" },
@@ -58,7 +58,6 @@ export default {
   },
   methods: {
     handleClick(value){   //Redirects the user to the site form
-        console.log(value);
         this.$router.push(`/sites/${value.id}/summary`);
     },
     getDataFromApi() {
@@ -83,11 +82,11 @@ export default {
         .finally(() => {
           this.loading = false;
         });*/
-      this.items=[
-          {id:1,name: 'SITE 1', community: 'None', category: 'Industrial', yhsiid: '115O/15/004', status: ''},
-          {id:2,name: 'SITE 2', community: 'None', category: 'Architecture', yhsiid: '115O/15/005', status: ''},
-          {id:3,name: 'SITE 3', community: 'None', category: 'Industrial', yhsiid: '115O/15/006', status: ''},
-          {id:4,name: 'SITE 4', community: 'None', category: 'Architecture', yhsiid: '105D/01/001', status: ''},
+      this.items = [
+          {id: 1, name: 'SITE 1', community: 'None', category: 'Industrial', yhsiid: '115O/15/004', status: ''},
+          {id: 2, name: 'SITE 2', community: 'None', category: 'Architecture', yhsiid: '115O/15/005', status: ''},
+          {id: 3, name: 'SITE 3', community: 'None', category: 'Industrial', yhsiid: '115O/15/006', status: ''},
+          {id: 4, name: 'SITE 4', community: 'None', category: 'Architecture', yhsiid: '105D/01/001', status: ''},
       ]
       this.totalLength = this.items.length;
       this.loading = false;
