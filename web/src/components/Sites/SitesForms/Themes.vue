@@ -12,7 +12,7 @@
                     >
                         <v-textarea
                             label="YHS Themes"
-                            v-model="yhsthemes"
+                            v-model="fields.yHSThemes"
                         ></v-textarea>
                         <div class="mb-2">Themes</div>
                         <v-alert v-for="(item, i) in themes" :key="`theme-${i+1}`"
@@ -86,13 +86,13 @@
                     <v-col cols="6">
                         <v-textarea
                         label="YHS Current Use"
-                        
+                        :v-model="fields.currentUseComment"
                         ></v-textarea>
                     </v-col>
                     <v-col cols="6">
                         <v-textarea
                         label="YHS Past Use"
-                        
+                        :v-model="fields.yHSPastUse"
                         ></v-textarea>
                     </v-col>
                 </v-row>
@@ -102,20 +102,27 @@
 </template>
 
 <script>
+/* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
     name: "formThemes",
     data: () => ({
             valid: false,
-            yhsthemes: '',
+            generalRules: [
+                v => !!v || 'This input is required',
+                v => v.length <= 20 || 'This input must be less than 20 characters',
+            ],
+            /* Placeholder variables below this line **Read above** */
             themes: ['item1','item2'],
             functionalUses: [
                 {useType: 'text1', category: ''},
                 {useType: 'text2', category: ''}
             ],
-            generalRules: [
-                v => !!v || 'This input is required',
-                v => v.length <= 20 || 'This input must be less than 20 characters',
-            ],
+            /*Field data from the swaggerhub api docs below this line*/
+            fields:  {
+                currentUseComment: '',//
+                yHSPastUse: '',//
+                yHSThemes: '',//
+                }
     })
 }
 </script>
