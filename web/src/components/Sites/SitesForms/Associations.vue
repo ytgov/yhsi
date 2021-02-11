@@ -104,20 +104,21 @@
 </template>
 
 <script>
+/* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
     name: "formAssociation",
     data: () => ({
         /* input-fields */
             valid: false,
-            yhsthemes: '',
-            associations: ['item1','item2'],
-            firstNationAssociations: [
-                {useType: 'text1', category: ''},
-                {useType: 'text2', category: ''}
-            ],
             generalRules: [
                 v => !!v || 'This input is required',
                 v => v.length <= 20 || 'This input must be less than 20 characters',
+            ],
+            /* Placeholder variables below this line **Read above** */
+            associations: [{id:'', name: '',type_name:''}],
+            firstNationAssociations: [
+                {name: '',firstNation:'', comments:''},
+                {name: '',firstNation:'', comments:''},
             ],
     })
 }

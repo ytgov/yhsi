@@ -11,7 +11,7 @@
                         cols="12"
                     >
                         <v-text-field 
-                        :v-model="item"
+                        :v-model="categoryOfProperty"
                         label="Category of Property"
                         required
                         ></v-text-field>
@@ -46,31 +46,31 @@
                             <v-row>
                                 <v-col cols="12">
                                     <v-text-field 
-                                    :v-model="item"
+                                    :v-model="item.name"
                                     label="Feature Name"
                                     required
                                     ></v-text-field>
 
                                     <v-text-field 
-                                    :v-model="item"
+                                    :v-model="item.caption"
                                     label="Caption"
                                     required
                                     ></v-text-field>
 
                                     <v-text-field 
-                                    :v-model="item"
+                                    :v-model="item.comments"
                                     label="Comments"
                                     required
                                     ></v-text-field>
 
                                     <v-text-field 
-                                    :v-model="item"
+                                    :v-model="item.creditLine"
                                     label="CreditLine"
                                     required
                                     ></v-text-field>
 
                                     <v-text-field 
-                                    :v-model="item"
+                                    :v-model="item.location"
                                     label="Location"
                                     required
                                     ></v-text-field>
@@ -100,80 +100,19 @@
 </template>
 
 <script>
+/* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
     name: "formPhotos",
     data: () => ({
-        /* input-fields */
             valid: false,
-            slideNegativeIndex: '',
-            photos: ['item1','item2'],
             generalRules: [
                 v => !!v || 'This input is required',
                 v => v.length <= 20 || 'This input must be less than 20 characters',
             ],
-            fields:  {
-                block: '',
-                bordenNumber: '',
-                buildingSize: '',
-                cIHBNumber: '',
-                category: '',
-                communityId: '',
-                conditionComment: '',
-                contributingResources: '',
-                coordinateDetermination: '',
-                currentUseComment: '',
-                designations: '',
-                doorCondition: '',
-                fHBRONumber: '',
-                floorCondition: '',
-                geocode: '',
-                groupYHSI: '',
-                hectareArea: '',
-                id: '',
-                isPubliclyAccessible: '',
-                jurisdiction: '',
-                lAGroup: '',
-                latitude: '',
-                locationComment: '',
-                locationContext: '',
-                longitude: '',
-                lot: '',
-                mailingAddress: '',
-                mailingCountry: '',
-                mailingPostalCode: '',
-                mailingProvince: '',
-                nTSMapSheet: '',
-                otherCommunity: '',
-                otherLocality: '',
-                ownerConsent: '',
-                physicalAddress: '',
-                physicalCountry: '',
-                physicalPostalCode: '',
-                physicalProvince: '',
-                planNumber: '',
-                previousAddress: '',
-                primaryName: '',
-                recognitionDate: '',
-                records: '',
-                resourceType: '',
-                rollNumber: '',
-                roofCondition: '',
-                showInRegister: '',
-                siteCategories: '',
-                siteDistrictNumber: '',
-                siteStatus: '',
-                slideNegativeIndex: '',
-                statute2Id: '',
-                statuteId: '',
-                townSiteMapNumber: '',
-                wallCondition: '',
-                yGBuildingNumber: '',
-                yGReserveNumber: '',
-                yHSIId: '',
-                yHSPastUse: '',
-                yHSThemes: '',
-                zoning: '',
-                }
+            /* Placeholder variables below this line **Read above** */
+            categoryOfProperty: '',
+            photos: [{id: '', name:'', caption: '', comments:'', creditLine: '', location:''},
+            {id: '', name:'', caption: '', comments:'', creditLine: '', location:''}],
     })
 }
 </script>
