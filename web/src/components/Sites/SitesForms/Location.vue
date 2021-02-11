@@ -157,7 +157,7 @@ export default {
             v => !!v || 'This input is required',
             v => v.length <= 20 || 'This input must be less than 20 characters',
         ],
-        /* Placeholder variables below this line **Read disclaimer** */
+        /* Placeholder variables below this line **Read above** */
         communities: [],
         /*Field data from the swaggerhub api docs below this line*/
         fields:  { 
