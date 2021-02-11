@@ -9,6 +9,17 @@ import Login from "../components/Login";
 import LoginComplete from "../components/LoginComplete";
 import Profile from "../components/Profile";
 import store from "../store";
+import SitesForm  from "../components/Sites";
+
+import Summary from "../components/Sites/SitesForms/Summary";
+import Location from "../components/Sites/SitesForms/Location";
+import Dates from "../components/Sites/SitesForms/Dates";
+import Themes from "../components/Sites/SitesForms/Themes";
+import Associations from "../components/Sites/SitesForms/Associations";
+import LegalAndZoning from "../components/Sites/SitesForms/LegalAndZoning";
+import Photos from "../components/Sites/SitesForms/Photos";
+import Management from "../components/Sites/SitesForms/Management";
+import Description from "../components/Sites/SitesForms/Description";
 
 Vue.use(VueRouter);
 
@@ -56,6 +67,52 @@ const routes = [
     meta: {
       requiresAuth: false
     }
+  },
+  {
+    path: "/sites/:id",
+    name: "SitesForm",
+    component: SitesForm,
+    meta: {
+      requiresAuth: false
+    },
+    children: [
+      {
+        path: "summary", 
+        component: Summary
+      },
+      {
+        path: "location",
+        component: Location
+      },
+      {
+        path: "dates", 
+        component: Dates
+      },
+      {
+        path: "themes", 
+        component: Themes
+      },
+      {
+        path: "associations", 
+        component: Associations
+      },
+      {
+        path: "legal_&_zoning", 
+        component: LegalAndZoning
+      },
+      {
+        path: "photos", 
+        component: Photos
+      },
+      {
+        path: "management", 
+        component: Management
+      },
+      {
+        path: "description", 
+        component: Description
+      }
+    ]
   },
   {
     path: "*",
