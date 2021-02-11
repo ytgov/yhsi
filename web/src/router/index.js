@@ -20,7 +20,8 @@ import LegalAndZoning from "../components/Sites/SitesForms/LegalAndZoning";
 import Photos from "../components/Sites/SitesForms/Photos";
 import Management from "../components/Sites/SitesForms/Management";
 import Description from "../components/Sites/SitesForms/Description";
-import SitesGrid from "../components/Sites/SitesGrid.vue";
+import SitesGrid from "../components/Sites/SitesGrid";
+
 Vue.use(VueRouter);
 
 const routes = [
