@@ -94,9 +94,9 @@
 
     <v-main v-bind:style="{ 'padding-left: 33px !important': !hasSidebar }">
       <!-- Provides the application the proper gutter -->
-      <v-container fluid>
+      <v-container fluid :class=" `${isSites($route.path,true)}`">
         <v-row>
-          <v-col>
+          <v-col :class=" `${isSites($route.path,false)}`">
             <router-view></router-view>
           </v-col>
         </v-row>
@@ -121,7 +121,8 @@ export default {
       return store.getters.fullName;
     },
     isAuthenticated() {
-      return store.getters.isAuthenticated;
+      return true; // until we get auth process to show sidebar
+      // return store.getters.isAuthenticated;
     }
   },
   data: () => ({
@@ -134,8 +135,8 @@ export default {
     applicationName: config.applicationName,
     applicationIcon: config.applicationIcon,
     sections: config.sections,
-    hasSidebar: false, //config.hasSidebar,
-    hasSidebarClosable: config.hasSidebarClosable
+    hasSidebar: true, //config.hasSidebar,
+    hasSidebarClosable: false,//config.hasSidebarClosable
   }),
   created: async function() {
     await store.dispatch("checkAuthentication");
@@ -165,6 +166,12 @@ export default {
     signOut: function() {
       store.dispatch("signOut");
       router.push("/");
+    },
+    isSites(route, chooser){//this function helps to show certain classes depending on the route
+      if(chooser)
+        return route.includes('sites/') ? 'siteslp' :  '';
+      else
+        return route.includes('sites/') ? 'sitesnp' :  '';
     }
   }
 };
