@@ -11,14 +11,14 @@
                         cols="12"
                     >
                         <v-text-field 
-                        :v-model="categoryOfProperty"
+                        v-model="categoryOfProperty"
                         label="Category of Property"
                         required
                         ></v-text-field>
                     </v-col>
                 </v-row>
                 <v-row>  
-                    <v-col cols="6" v-for="(item, i) in photos" :key="`theme-${i+1}`">
+                    <v-col cols="6" v-for="(item, i) in fields.photos" :key="`theme-${i+1}`">
                         <v-alert 
                             outlined
                             color="primary"
@@ -30,6 +30,7 @@
                                 icon
                                 color="primary"
                                 class="top-right-button"
+                                @click="removeItem('photos', i)"
                             >
                                 <v-icon dark>mdi-minus-circle</v-icon>
                             </v-btn>
@@ -46,31 +47,31 @@
                             <v-row>
                                 <v-col cols="12">
                                     <v-text-field 
-                                    :v-model="item.name"
+                                    v-model="item.name"
                                     label="Feature Name"
                                     required
                                     ></v-text-field>
 
                                     <v-text-field 
-                                    :v-model="item.caption"
+                                    v-model="item.caption"
                                     label="Caption"
                                     required
                                     ></v-text-field>
 
                                     <v-text-field 
-                                    :v-model="item.comments"
+                                    v-model="item.comments"
                                     label="Comments"
                                     required
                                     ></v-text-field>
 
                                     <v-text-field 
-                                    :v-model="item.creditLine"
+                                    v-model="item.creditLine"
                                     label="CreditLine"
                                     required
                                     ></v-text-field>
 
                                     <v-text-field 
-                                    :v-model="item.location"
+                                    v-model="item.location"
                                     label="Location"
                                     required
                                     ></v-text-field>
@@ -88,6 +89,7 @@
                         <v-btn
                         outlined
                         color="primary"
+                        @click="addItem('photos')"
                         >
                             Add New
                         </v-btn>
@@ -111,8 +113,26 @@ export default {
             ],
             /* Placeholder variables below this line **Read above** */
             categoryOfProperty: '',
-            photos: [{id: '', name:'', caption: '', comments:'', creditLine: '', location:''},
-            {id: '', name:'', caption: '', comments:'', creditLine: '', location:''}],
-    })
+            fields:{
+                photos: [{id: '', name:'', caption: '', comments:'', creditLine: '', location:''},
+                {id: '', name:'', caption: '', comments:'', creditLine: '', location:''}],
+            }
+
+
+    }),
+    methods:{
+        removeItem(objName, position){
+            if (position > -1) {
+              this.fields[objName].splice(position, 1);
+            }
+        },
+        addItem(objName){
+          switch(objName){// Selects which structure to add to the new element of the array
+            case 'photos':
+              this.fields[objName].push({ name:'', caption: '', comments:'', creditLine: '', location:''});
+              break;
+          }
+        }
+    }
 }
 </script>

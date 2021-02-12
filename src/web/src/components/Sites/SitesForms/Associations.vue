@@ -11,7 +11,7 @@
                         cols="12"
                     >
                         <div class="mb-2">Associations</div>
-                        <v-alert v-for="(item, i) in associations" :key="`theme-${i+1}`"
+                        <v-alert v-for="(item, i) in fields.associations" :key="`theme-${i+1}`"
                           outlined
                           color="primary"
                         >
@@ -22,18 +22,20 @@
                                 icon
                                 color="primary"
                                 class="top-right-button"
+                                @click="removeItem('associations', i)"
                             >
                                 <v-icon dark>mdi-minus-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
                                     <v-combobox
+                                    v-model="item.type_name"
                                     label="Association Type"
                                     ></v-combobox>
                                 </v-col>
                                 <v-col cols="6">
                                     <v-text-field 
-                                    :v-model="item"
+                                    v-model="item.name"
                                     label="Association Name"
                                     required
                                     ></v-text-field>
@@ -43,6 +45,7 @@
                         <v-btn
                         outlined
                         color="primary"
+                        @click="addItem('associations')"
                         >
                             Add New
                         </v-btn>
@@ -54,7 +57,7 @@
                         cols="12"
                     >
                         <div class="mb-2">First Nation Associations</div>
-                        <v-alert v-for="(item, i) in firstNationAssociations" :key="`theme-${i+1}`"
+                        <v-alert v-for="(item, i) in fields.firstNationAssociations" :key="`theme-${i+1}`"
                           outlined
                           color="primary"
                         >
@@ -65,17 +68,20 @@
                                 icon
                                 color="primary"
                                 class="top-right-button"
+                                @click="removeItem('firstNationAssociations', i)"
                             >
                                 <v-icon dark>mdi-minus-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
                                     <v-combobox
+                                    v-model="item.association"
                                     label="Association"
                                     ></v-combobox>
                                 </v-col>
                                 <v-col cols="6">
                                     <v-combobox
+                                    v-model="item.firstNation"
                                     label="First Nation"
                                     ></v-combobox>
                                 </v-col>
@@ -83,7 +89,7 @@
                             <v-row>
                                 <v-col cols="12">
                                     <v-text-field 
-                                    :v-model="item"
+                                    v-model="item.comments"
                                     label="Comments"
                                     required
                                     ></v-text-field>      
@@ -93,6 +99,7 @@
                         <v-btn
                         outlined
                         color="primary"
+                        @click="addItem('firstNationAssociations')"
                         >
                             Add New
                         </v-btn>
@@ -115,11 +122,30 @@ export default {
                 v => v.length <= 20 || 'This input must be less than 20 characters',
             ],
             /* Placeholder variables below this line **Read above** */
-            associations: [{id:'', name: '',type_name:''}],
-            firstNationAssociations: [
-                {name: '',firstNation:'', comments:''},
-                {name: '',firstNation:'', comments:''},
-            ],
-    })
+            fields:{
+                associations: [{id:'', name: '',type_name:''}],
+                firstNationAssociations: [
+                    {name: '',firstNation:'', comments:''},
+                    {name: '',firstNation:'', comments:''},
+                ],
+            }
+    }),
+    methods:{
+        removeItem(objName, position){
+            if (position > -1) {
+              this.fields[objName].splice(position, 1);
+            }
+        },
+        addItem(objName){
+          switch(objName){// Selects which structure to add to the new element of the array
+            case 'associations':
+              this.fields[objName].push({name: '',type_name:''});
+              break;
+            case 'firstNationAssociations':
+              this.fields[objName].push({name: '',firstNation:'', comments:''});
+              break;
+          }
+        }
+    }
 }
 </script>

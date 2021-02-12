@@ -11,7 +11,7 @@
                         cols="12"
                     >
                         <div class="mb-2">Descriptions</div>
-                        <v-alert v-for="(item, i) in descriptions" :key="`theme-${i+1}`"
+                        <v-alert v-for="(item, i) in fields.descriptions" :key="`theme-${i+1}`"
                           outlined
                           color="primary"
                         >
@@ -22,13 +22,14 @@
                             icon
                             color="primary"
                             class="top-right-button"
+                            @click="removeItem('descriptions', i)"
                             >
                             <v-icon dark>mdi-minus-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
                                     <v-combobox
-                                    :v-model="item.type"
+                                    v-model="item.type"
                                     label="Decription Type"
                                     ></v-combobox>
                                 </v-col>
@@ -36,7 +37,7 @@
                             <v-row>
                                 <v-col cols="12">
                                     <v-textarea
-                                    :v-model="item.description"
+                                    v-model="item.description"
                                     label=""
                                     ></v-textarea>
                                 </v-col>
@@ -45,6 +46,7 @@
                         <v-btn
                         outlined
                         color="primary"
+                        @click="addItem('descriptions')"
                         >
                             Add New
                         </v-btn>
@@ -66,7 +68,24 @@ export default {
                 v => v.length <= 20 || 'This input must be less than 20 characters',
             ],
             /* Placeholder variables below this line **Read above** */
-            descriptions: [{type: '', description: ''}],
+            fields:{
+                descriptions: [{type: '', description: ''}],
+            }
+            
     }),
+    methods:{
+        removeItem(objName, position){
+            if (position > -1) {
+              this.fields[objName].splice(position, 1);
+            }
+        },
+        addItem(objName){
+          switch(objName){// Selects which structure to add to the new element of the array
+            case 'descriptions':
+              this.fields[objName].push({type: '', description: ''});
+              break;
+          }
+        }
+    }
 }
 </script>

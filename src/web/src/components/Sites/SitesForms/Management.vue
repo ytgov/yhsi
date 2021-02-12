@@ -11,7 +11,7 @@
                         cols="12"
                     >
                         <div class="mb-2">Revision Logs</div>
-                        <v-alert v-for="(item, i) in revisionLogs" :key="`theme-${i+1}`"
+                        <v-alert v-for="(item, i) in fields.revisionLogs" :key="`theme-${i+1}`"
                           outlined
                           color="primary"
                         >
@@ -22,30 +22,32 @@
                             icon
                             color="primary"
                             class="top-right-button"
+                            @click="removeItem('revisionLogs', i)"
                             >
                             <v-icon dark>mdi-minus-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
                                     <v-combobox
+                                    v-model="item.revisionType"
                                     label="Revision Type"
                                     ></v-combobox>
 
                                     <v-text-field 
-                                    :v-model="item.revisedBy"
+                                    v-model="item.revisedBy"
                                     label="Revised By"
                                     required
                                     ></v-text-field>
                                 </v-col>
                                 <v-col cols="6">
                                     <v-text-field 
-                                    :v-model="item.date"
+                                    v-model="item.date"
                                     label="Date"
                                     required
                                     ></v-text-field>
 
                                     <v-text-field 
-                                    :v-model="item.details"
+                                    v-model="item.details"
                                     label="Details"
                                     required
                                     ></v-text-field>
@@ -55,6 +57,7 @@
                         <v-btn
                         outlined
                         color="primary"
+                        @click="addItem('revisionLogs')"
                         >
                             Add New
                         </v-btn>
@@ -66,7 +69,7 @@
                         cols="12"
                     >
                         <div class="mb-2">Contacts</div>
-                        <v-alert v-for="(item, i) in contacts" :key="`theme-${i+1}`"
+                        <v-alert v-for="(item, i) in fields.contacts" :key="`theme-${i+1}`"
                           outlined
                           color="primary"
                         >
@@ -77,12 +80,14 @@
                             icon
                             color="primary"
                             class="top-right-button"
+                            @click="removeItem('contacts', i)"
                             >
                             <v-icon dark>mdi-minus-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
                                     <v-combobox
+                                    v-model="item.type"
                                     label="Type"
                                     ></v-combobox>
                                 </v-col>
@@ -90,13 +95,13 @@
                             <v-row>
                                  <v-col cols="6">
                                     <v-text-field 
-                                    :v-model="item.firstName"
+                                    v-model="item.firstName"
                                     label="First Name"
                                     required
                                     ></v-text-field>
 
                                     <v-text-field 
-                                    :v-model="item.phone"
+                                    v-model="item.phone"
                                     label="Phone"
                                     required
                                     ></v-text-field>
@@ -108,13 +113,13 @@
                                 </v-col>
                                  <v-col cols="6">
                                     <v-text-field 
-                                    :v-model="item.lastName"
+                                    v-model="item.lastName"
                                     label="Last Name"
                                     required
                                     ></v-text-field>
 
                                     <v-text-field 
-                                    :v-model="item.email"
+                                    v-model="item.email"
                                     label="Email"
                                     required
                                     ></v-text-field>
@@ -129,6 +134,7 @@
                         <v-btn
                         outlined
                         color="primary"
+                        @click="addItem('contacts')"
                         >
                             Add New
                         </v-btn>
@@ -140,7 +146,7 @@
                         cols="12"
                     >
                         <div class="mb-2">Web Links</div>
-                        <v-alert v-for="(item, i) in webLinks" :key="`theme-${i+1}`"
+                        <v-alert v-for="(item, i) in fields.webLinks" :key="`theme-${i+1}`"
                           outlined
                           color="primary"
                         >
@@ -151,12 +157,14 @@
                             icon
                             color="primary"
                             class="top-right-button"
+                            @click="removeItem('webLinks', i)"
                             >
                             <v-icon dark>mdi-minus-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
                                     <v-combobox
+                                    v-model="item.type"
                                     label="Link Type"
                                     ></v-combobox>
                                 </v-col>
@@ -164,7 +172,7 @@
                             <v-row>
                                  <v-col cols="6">
                                     <v-text-field 
-                                    :v-model="item.webAddress"
+                                    v-model="item.webAddress"
                                     label="Web Address"
                                     required
                                     ></v-text-field>
@@ -174,6 +182,7 @@
                         <v-btn
                         outlined
                         color="primary"
+                        @click="addItem('webLinks')"
                         >
                             Add New
                         </v-btn>
@@ -191,7 +200,7 @@
                             <v-row>
                                 <v-col cols="12">
                                     <v-combobox
-                                    :v-model="fields.jurisdiction"
+                                    v-model="fields.jurisdiction"
                                     label="Jurisdiction"
                                     ></v-combobox>
 
@@ -223,7 +232,7 @@
                                     </v-menu>
 
                                     <v-combobox
-                                    :v-model="fields.ownerConsent"
+                                    v-model="fields.ownerConsent"
                                     label="Owner Consent"
                                     ></v-combobox>
 
@@ -237,25 +246,25 @@
                     </v-col>
                     <v-col cols="6">
                         <v-text-field 
-                        :v-model="fields.yGBuildingNumber"
+                        v-model="fields.yGBuildingNumber"
                         label="YG Building Number"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="fields.yGReserveNumber"
+                        v-model="fields.yGReserveNumber"
                         label="YG Reserve Number"
                         required
                         ></v-text-field>
                         
                         <v-text-field 
-                        :v-model="fields.cIHBNumber"
+                        v-model="fields.cIHBNumber"
                         label=" CIHB Number"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="fields.fHBRONumber"
+                        v-model="fields.fHBRONumber"
                         label="FHBRO Number"
                         required
                         ></v-text-field>
@@ -284,7 +293,6 @@
 export default {
     name: "formManagement",
     data: () => ({
-        /* input-fields */
             valid: false,
             generalRules: [
                 v => !!v || 'This input is required',
@@ -292,13 +300,13 @@ export default {
             ],
             date: null,
             menu: false,
-            /* Placeholder variables below this line **Read above** */
-            revisionLogs: [{revisionType: '', date: '', revisedBy: '', details: ''},
-                            {revisionType: '', date: '', revisedBy: '', details: ''}],
-            contacts: [{type:'', firstName: '', lastName: '', phone: '', email: '', mailingAddress: '', description: ''},],
-            webLinks: [{type: '', webAddress: ''}],
-            /*Field data from the swaggerhub api docs below this line*/
             fields:  {
+                /* Placeholder variables below this line **Read above** */
+                revisionLogs: [{revisionType: '', date: '', revisedBy: '', details: ''},
+                                {revisionType: '', date: '', revisedBy: '', details: ''}],
+                contacts: [{type:'', firstName: '', lastName: '', phone: '', email: '', mailingAddress: '', description: ''},],
+                webLinks: [{type: '', webAddress: ''}],
+                /*Field data from the swaggerhub api docs below this line*/
                 cIHBNumber: '',//
                 doorCondition: '',
                 fHBRONumber: '',//
@@ -313,9 +321,27 @@ export default {
                 }
     }),
     methods: {
-      save (date) {
-        this.$refs.menu.save(date)
-      },
+        save (date) {
+            this.$refs.menu.save(date)
+        },
+        removeItem(objName, position){
+            if (position > -1) {
+              this.fields[objName].splice(position, 1);
+            }
+        },
+        addItem(objName){
+          switch(objName){// Selects which structure to add to the new element of the array
+            case 'revisionLogs':
+              this.fields[objName].push({revisionType: '', date: '', revisedBy: '', details: ''});
+              break;
+            case 'contacts':
+              this.fields[objName].push({type:'', firstName: '', lastName: '', phone: '', email: '', mailingAddress: '', description: ''});
+              break;
+            case 'webLinks':
+              this.fields[objName].push({type: '', webAddress: ''});
+              break;
+          }
+        }
     },
     watch: {
       menu (val) {
