@@ -9,7 +9,7 @@
                 <v-row>
                     <v-col cols="12">
                         <div class="mb-2">Dates</div>
-                        <v-alert v-for="(item, i) in dates" :key="`date:${i}`"
+                        <v-alert v-for="(item, i) in fields.dates" :key="`date:${i}`"
                                 outlined
                                 color="primary"
                             >
@@ -20,6 +20,7 @@
                                 icon
                                 color="primary"
                                 class="top-right-button"
+                                @click="removeItem('dates', i)"
                             >
                                 <v-icon dark>mdi-minus-circle</v-icon>
                             </v-btn>
@@ -55,6 +56,7 @@
                         <v-btn
                         outlined
                         color="primary"
+                        @click="addItem('dates')"
                         >
                             Add New
                         </v-btn>
@@ -65,7 +67,7 @@
                 <div class="mb-2">Construction Periods</div>
                 <v-row>
                     <v-col cols="12">
-                        <v-alert v-for="(item, i) in constructionPeriods" :key="`period:${i}`"
+                        <v-alert v-for="(item, i) in fields.constructionPeriods" :key="`period:${i}`"
                                 outlined
                                 color="primary"
                             >
@@ -76,6 +78,7 @@
                                 icon
                                 color="primary"
                                 class="top-right-button"
+                                @click="removeItem('constructionPeriods', i)"
                             >
                                 <v-icon dark>mdi-minus-circle</v-icon>
                             </v-btn>
@@ -84,8 +87,8 @@
                                     cols="12"
                                 >
                                     <v-combobox
-                                    v-model="selectedPeriod"
-                                    :items="construction_periods"
+                                    v-model="item.period"
+                                    :items="fields.construction_periods"
                                     label=""
                                     dense
                                     ></v-combobox>
@@ -95,6 +98,7 @@
                         <v-btn
                         outlined
                         color="primary"
+                        @click="addItem('constructionPeriods')"
                         >
                             Add New
                         </v-btn>
@@ -107,7 +111,7 @@
                         <v-row>
                             <v-col cols="6">
                                 <v-combobox
-                                :v-model="fields.siteStatus"
+                                v-model="fields.siteStatus"
                                 item-text="name"
                                 item-value="id"
                                 label="Site Status"
@@ -115,7 +119,7 @@
                             </v-col>
                             <v-col cols="6">
                                 <v-combobox
-                                :v-model="fields.floorCondition"
+                                v-model="fields.floorCondition"
                                 item-text="name"
                                 item-value="id"
                                 label="Floor Condition"
@@ -125,7 +129,7 @@
                         <v-row>
                             <v-col cols="6">
                                 <v-combobox
-                                :v-model="fields.roofCondition"
+                                v-model="fields.roofCondition"
                                 item-text="name"
                                 item-value="id"
                                 label="Roof Condition"
@@ -141,7 +145,7 @@
                             <v-row>
                             <v-col cols="6">
                                 <v-combobox
-                                :v-model="fields.wallCondition"
+                                v-model="fields.wallCondition"
                                 item-text="name"
                                 item-value="id"
                                 label="Wall Condition"
@@ -149,7 +153,7 @@
                             </v-col>
                             <v-col cols="6">
                                 <v-combobox
-                                :v-model="fields.doorCondition"
+                                v-model="fields.doorCondition"
                                 item-text="name"
                                 item-value="id"
                                 label="Door Condition"
@@ -167,14 +171,14 @@
                 <v-row>
                         <v-col cols="6">
                             <v-text-field
-                            :v-model="fields.buildingSize"
+                            v-model="fields.buildingSize"
                             item-text="name"
                             item-value="id"
                             label="Building Size"
                             required
                             ></v-text-field>
                             <v-text-field
-                            :v-model="fields.resourceType"
+                            v-model="fields.resourceType"
                             item-text="name"
                             item-value="id"
                             label="All Other Resource Types"
@@ -183,7 +187,7 @@
                         </v-col>
                         <v-col cols="6">
                             <v-textarea
-                            :v-model="fields.conditionComment"
+                            v-model="fields.conditionComment"
                             item-text="name"
                             item-value="id"
                             label="Condition Notes"
@@ -206,13 +210,12 @@ export default {
             v => !!v || 'This input is required',
             v => v.length <= 20 || 'This input must be less than 20 characters',
         ],
-        /* Placeholder variables below this line **Read above** */
-        dates: [{type:"construction",details: "wasd",from:"",to:""}, {type:"construction",details: "wasd",from:"",to:""}],
-        constructionPeriods: [{type:"construction",details: "wasd",from:"",to:""}],
-        construction_periods: ['1','2'],
-        selectedPeriod: '',
-        /*Field data from the swaggerhub api docs below this line*/
         fields:  {
+                /* Placeholder variables below this line **Read above** */
+                dates: [{type:"construction",details: "wasd",from:"",to:""}, {type:"construction",details: "",from:"",to:""}],
+                constructionPeriods: [{period:"1234"}],
+                construction_periods: ['1','2'],//select input
+                /*Field data from the swaggerhub api docs below this line*/
                 buildingSize: '',//
                 conditionComment: '',//
                 doorCondition: '',//
@@ -222,6 +225,23 @@ export default {
                 siteStatus: '',//
                 wallCondition: '',//
             }
-    })
+    }),
+    methods:{
+        removeItem(objName, position){
+            if (position > -1) {
+              this.fields[objName].splice(position, 1);
+            }
+        },
+        addItem(objName){
+          switch(objName){// Selects which structure to add to the new element of the array
+            case 'dates':
+              this.fields[objName].push({type:"construction",details: "wasd",from:"",to:""});
+              break;
+            case 'constructionPeriods':
+              this.fields[objName].push({period:""});
+              break;
+          }
+        }
+    }
 }
 </script>

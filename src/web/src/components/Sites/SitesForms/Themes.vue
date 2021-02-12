@@ -15,7 +15,7 @@
                             v-model="fields.yHSThemes"
                         ></v-textarea>
                         <div class="mb-2">Themes</div>
-                        <v-alert v-for="(item, i) in themes" :key="`theme-${i+1}`"
+                        <v-alert v-for="(item, i) in fields.themes" :key="`theme-${i+1}`"
                           outlined
                           color="primary"
                         >
@@ -26,16 +26,19 @@
                                 icon
                                 color="primary"
                                 class="top-right-button"
+                                @click="removeItem('themes', i)"
                             >
                                 <v-icon dark>mdi-minus-circle</v-icon>
                             </v-btn>
                             <v-combobox
+                            v-model="item.category"
                             label="Category / Type"
                             ></v-combobox>
                         </v-alert>
                         <v-btn
                         outlined
                         color="primary"
+                        @click="addItem('themes')"
                         >
                             Add New
                         </v-btn>
@@ -47,7 +50,7 @@
                         cols="12"
                     >                
                     <div class="mb-2">Functional Users</div>
-                        <v-alert v-for="(item, i) in functionalUses" :key="`theme-${i+1}`"
+                        <v-alert v-for="(item, i) in fields.functionalUses" :key="`theme-${i+1}`"
                                         outlined
                                         color="primary"
                                         >
@@ -58,6 +61,7 @@
                                 icon
                                 color="primary"
                                 class="top-right-button"
+                                @click="removeItem('functionalUses', i)"
                             >
                                 <v-icon dark>mdi-minus-circle</v-icon>
                             </v-btn>
@@ -65,10 +69,12 @@
                                 <v-col cols="4"> 
                                     <v-combobox
                                     label="Use Type"
+                                    v-model="item.useType"
                                     ></v-combobox>
                                 </v-col>
                                 <v-col cols="8">
                                     <v-combobox
+                                    v-model="item.category"
                                     label="Functional Category / Type"
                                     ></v-combobox>
                                 </v-col>
@@ -77,6 +83,7 @@
                         <v-btn
                         outlined
                         color="primary"
+                        @click="addItem('functionalUses')"
                         >
                             Add New
                         </v-btn>
@@ -86,13 +93,13 @@
                     <v-col cols="6">
                         <v-textarea
                         label="YHS Current Use"
-                        :v-model="fields.currentUseComment"
+                        v-model="fields.currentUseComment"
                         ></v-textarea>
                     </v-col>
                     <v-col cols="6">
                         <v-textarea
                         label="YHS Past Use"
-                        :v-model="fields.yHSPastUse"
+                        v-model="fields.yHSPastUse"
                         ></v-textarea>
                     </v-col>
                 </v-row>
@@ -111,18 +118,35 @@ export default {
                 v => !!v || 'This input is required',
                 v => v.length <= 20 || 'This input must be less than 20 characters',
             ],
-            /* Placeholder variables below this line **Read above** */
-            themes: ['item1','item2'],
-            functionalUses: [
-                {useType: 'text1', category: ''},
-                {useType: 'text2', category: ''}
-            ],
-            /*Field data from the swaggerhub api docs below this line*/
             fields:  {
+                /* Placeholder variables below this line **Read above** */
+                themes: [{category: ''}],
+                functionalUses: [
+                    {useType: 'text1', category: ''},
+                    {useType: 'text2', category: ''}
+                ],
+                /*Field data from the swaggerhub api docs below this line*/
                 currentUseComment: '',//
                 yHSPastUse: '',//
                 yHSThemes: '',//
                 }
-    })
+    }),
+    methods:{
+        removeItem(objName, position){
+            if (position > -1) {
+              this.fields[objName].splice(position, 1);
+            }
+        },
+        addItem(objName){
+          switch(objName){// Selects which structure to add to the new element of the array
+            case 'themes':
+              this.fields[objName].push({category: ''});
+              break;
+            case 'functionalUses':
+              this.fields[objName].push({useType: '', category: ''});
+              break;
+          }
+        }
+    }
 }
 </script>

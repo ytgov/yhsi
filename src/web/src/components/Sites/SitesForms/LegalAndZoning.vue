@@ -11,7 +11,7 @@
                         cols="12"
                     >
                         <div class="mb-2">Ownerships</div>
-                        <v-alert v-for="(item, i) in ownerships" :key="`theme-${i+1}`"
+                        <v-alert v-for="(item, i) in fields.ownerships" :key="`theme-${i+1}`"
                           outlined
                           color="primary"
                         >
@@ -22,18 +22,20 @@
                                 icon
                                 color="primary"
                                 class="top-right-button"
+                                @click="removeItem('ownerships', i)"
                             >
                                 <v-icon dark>mdi-minus-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
                                     <v-combobox
+                                    v-model="item.category"
                                     label="Category of Property"
                                     ></v-combobox>
                                 </v-col>
                                 <v-col cols="6">
                                     <v-text-field 
-                                    :v-model="item"
+                                    v-model="item.comments"
                                     label="Comments"
                                     required
                                     ></v-text-field>
@@ -43,6 +45,7 @@
                         <v-btn
                         outlined
                         color="primary"
+                        @click="addItem('ownerships')"
                         >
                             Add New
                         </v-btn>
@@ -51,50 +54,50 @@
                  <v-row>
                     <v-col cols="6">
                         <v-text-field 
-                        :v-model="fields.zoning"
+                        v-model="fields.zoning"
                         label="Zoning"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="fields.townSiteMapNumber"
+                        v-model="fields.townSiteMapNumber"
                         label="Town Site Map Number"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="fields.siteDistrictNumber"
+                        v-model="fields.siteDistrictNumber"
                         label="Site District"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="fields.groupYHSI"
+                        v-model="fields.groupYHSI"
                         label="Group YHSI"
                         required
                         ></v-text-field>
                     </v-col>
                     <v-col cols="6">
                         <v-text-field 
-                        :v-model="fields.lAGroup"
+                        v-model="fields.lAGroup"
                         label="Group"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="fields.lot"
+                        v-model="fields.lot"
                         label="Lot"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="fields.block"
+                        v-model="fields.block"
                         label="Block"
                         required
                         ></v-text-field>
 
                         <v-text-field 
-                        :v-model="fields.planNumber"
+                        v-model="fields.planNumber"
                         label="Plan Number"
                         required
                         ></v-text-field>
@@ -105,7 +108,7 @@
                         cols="12"
                     >
                         <div class="mb-2">Previous Ownerships</div>
-                        <v-alert v-for="(item, i) in previous_ownerships" :key="`theme-${i+1}`"
+                        <v-alert v-for="(item, i) in fields.previous_ownerships" :key="`theme-${i+1}`"
                           outlined
                           color="primary"
                         >
@@ -116,20 +119,21 @@
                                 icon
                                 color="primary"
                                 class="top-right-button"
+                                @click="removeItem('previous_ownerships', i)"
                             >
                                 <v-icon dark>mdi-minus-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
                                     <v-text-field 
-                                    :v-model="item"
+                                    v-model="item.dates"
                                     label="Dates"
                                     required
                                     ></v-text-field>
                                 </v-col>
                                 <v-col cols="6">
                                     <v-text-field 
-                                    :v-model="item"
+                                    v-model="item.numbers"
                                     label="Numbers"
                                     required
                                     ></v-text-field>
@@ -138,7 +142,7 @@
                             <v-row>
                                 <v-col cols="12">
                                     <v-text-field 
-                                    :v-model="item"
+                                    v-model="item.names"
                                     label="Names"
                                     required
                                     ></v-text-field>      
@@ -148,6 +152,7 @@
                         <v-btn
                         outlined
                         color="primary"
+                        @click="addItem('previous_ownerships')"
                         >
                             Add New
                         </v-btn>
@@ -168,15 +173,11 @@ export default {
                 v => !!v || 'This input is required',
                 v => v.length <= 20 || 'This input must be less than 20 characters',
             ],
-            /* Placeholder variables below this line **Read above** */
-            ownerships: ['item1','item2'],
-            previous_ownerships: ['item1','item2'],
-            functionalUses: [
-                {useType: 'text1', category: ''},
-                {useType: 'text2', category: ''}
-            ],
-            /*Field data from the swaggerhub api docs below this line*/
             fields:  {
+                /* Placeholder variables below this line **Read above** */
+                ownerships: [{category: '', comments: ''}],
+                previous_ownerships: [{dates: '', numbers: '', names:''}],
+                /*Field data from the swaggerhub api docs below this line*/
                 block: '',//
                 groupYHSI: '',//
                 lAGroup: '',//
@@ -186,6 +187,23 @@ export default {
                 townSiteMapNumber: '',//
                 zoning: '',//
                 }
-    })
+    }),
+    methods:{
+        removeItem(objName, position){
+            if (position > -1) {
+              this.fields[objName].splice(position, 1);
+            }
+        },
+        addItem(objName){
+          switch(objName){// Selects which structure to add to the new element of the array
+            case 'ownerships':
+              this.fields[objName].push({category: '', comments: ''});
+              break;
+            case 'previous_ownerships':
+              this.fields[objName].push({dates: '', numbers: '', names:''});
+              break;
+          }
+        }
+    }
 }
 </script>
