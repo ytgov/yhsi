@@ -36,12 +36,18 @@
                             </v-btn>
                             <v-row>
                                 <v-col cols="12">
-                                    <v-img
-                                    lazy-src="https://picsum.photos/id/11/10/6"
+                                    <v-img v-if="item.img == null"
+                                    class="center-img"
                                     max-height="150"
                                     max-width="250"
-                                    src="https://picsum.photos/id/11/500/300"
-                                    ></v-img>
+                                    :src="require('../../../assets/no_photo.png')">
+                                    </v-img>
+                                    <v-img v-else
+                                    class="center-img"
+                                    max-height="150"
+                                    max-width="250"
+                                    :src="item.img">
+                                    </v-img>
                                 </v-col>
                             </v-row>
                             <v-row>
@@ -75,11 +81,12 @@
                                     label="Location"
                                     required
                                     ></v-text-field>
-
                                     <v-file-input
-                                        label="Photo"
+                                        :id="`fi-${i}`"
+                                        label="Upload image"
                                         prepend-icon="mdi-camera"
-                                        hide-input
+                                        accept="image/*"
+                                        @change="onFileSelection($event, i)"
                                     ></v-file-input>
                                 </v-col>
                             </v-row>
@@ -97,6 +104,7 @@
 
                 </v-row>
               </v-container>
+
             </v-form>
         </div>
 </template>
@@ -114,8 +122,8 @@ export default {
             /* Placeholder variables below this line **Read above** */
             categoryOfProperty: '',
             fields:{
-                photos: [{id: '', name:'', caption: '', comments:'', creditLine: '', location:''},
-                {id: '', name:'', caption: '', comments:'', creditLine: '', location:''}],
+                photos: [{id: '', name:'', caption: '', comments:'', creditLine: '', location:'', img: null},
+                {id: '', name:'', caption: '', comments:'', creditLine: '', location:'', img:null}],
             }
 
 
@@ -132,7 +140,37 @@ export default {
               this.fields[objName].push({ name:'', caption: '', comments:'', creditLine: '', location:''});
               break;
           }
+        },
+        onFileSelection(event, i){
+            if(event){
+                //this.fields.photos[i].img = URL.createObjectURL(event.target.files[0]);
+                this.fields.photos[i].img = URL.createObjectURL(event);
+            }
+            else{
+                this.fields.photos[i].img = null;
+            }
+        },
+        altImg(i){//this function returns the src if 
+            console.log('hola',i);
+
         }
     }
 }
 </script>
+
+<style scoped>
+#backgroundimgsw{
+    background-image: '../../assets/greyimg.jpg';
+}
+.center-img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+.divback{
+    background-image: url("../../../assets/no_photo.png");
+    width: 100px; 
+    height: 100px;
+}
+</style>
