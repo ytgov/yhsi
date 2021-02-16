@@ -18,6 +18,7 @@ import Themes from "../components/Sites/SitesForms/Themes";
 import Associations from "../components/Sites/SitesForms/Associations";
 import LegalAndZoning from "../components/Sites/SitesForms/LegalAndZoning";
 import Photos from "../components/Sites/SitesForms/Photos";
+import MainPhotos from "../components/MainPhotos";
 import Management from "../components/Sites/SitesForms/Management";
 import Description from "../components/Sites/SitesForms/Description";
 import SitesGrid from "../components/Sites/SitesGrid";
@@ -73,6 +74,14 @@ const routes = [
     path: "/sites",
     name: "SitesGrid",
     component: SitesGrid,
+    meta: {
+      requiresAuth: false
+    },
+  },
+  {
+    path: "/photos",
+    name: "Photos",
+    component: MainPhotos,
     meta: {
       requiresAuth: false
     },
