@@ -3,21 +3,30 @@
    <v-app-bar
       color="primary"
       dark
-      flat
-      
+      flat    
     >
       <v-btn color="primary" @click="goBack()">
-        <v-icon class="mr-2">mdi-arrow-left-drop-circle</v-icon> 
-        <div>
-          Back to sites
+        <v-icon>mdi-arrow-left-drop-circle</v-icon>
+        <div class="ml-2">
+           Back to Sites
         </div>
       </v-btn>
       <v-spacer></v-spacer>
-      <v-btn icon>
+      <v-btn color="primary" @click="goToSummary()">
         <v-icon>mdi-book-open-variant</v-icon>
+        <div class="ml-2">
+          <v-toolbar-title> View site: {{site}} </v-toolbar-title>
+        </div>
       </v-btn>
-      <v-toolbar-title> View site: {{site}} </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn color="primary" @click="showDialog()">
+        <v-icon class="mr-2">mdi-printer</v-icon> 
+        <div>
+          Print Site
+        </div>
+      </v-btn>
     </v-app-bar>
+    <PrintDialog :dialog="dialog" :sitename="'Site Name'" @closeDialog="closeDialog"/>
     <div>
       <v-row>
         <v-col>
@@ -50,17 +59,17 @@
 </template>
 
 <script>
-
-
+import PrintDialog from './PrintDialog';
 export default {
   name: "sitesForm",
   components: {
-
+    PrintDialog
   },
   data: () => ({
     site: 'site name',
     items: null,
-    selectedItem: null
+    selectedItem: null,
+    dialog: false //tells the print dialog when to show itself
   }),
   created(){
     this.items = [
@@ -78,6 +87,15 @@ export default {
   methods: {
     goBack(){
       this.$router.push('/sites');
+    },
+    goToSummary(){
+      this.$router.push(`/sites/${this.param}/summary`);
+    },
+    showDialog(){
+      this.dialog =  true;
+    },
+    closeDialog(){
+      this.dialog = false;
     }
   },
   computed: {
