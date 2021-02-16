@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import PrintDialog from './PrintDialog';
+import PrintDialog from './SitesGrid/PrintDialog';
 export default {
   name: "sitesForm",
   components: {
