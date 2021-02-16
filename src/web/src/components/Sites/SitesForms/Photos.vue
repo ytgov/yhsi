@@ -38,14 +38,12 @@
                                 <v-col cols="12">
                                     <v-img v-if="item.img == null"
                                     class="center-img"
-                                    max-height="150"
-                                    max-width="250"
-                                    :src="require('../../../assets/no_photo.png')">
+                                    max-width="128"
+                                    :src="require('../../../assets/add_photo.png')">
                                     </v-img>
                                     <v-img v-else
                                     class="center-img"
-                                    max-height="150"
-                                    max-width="250"
+                                    max-width="128"
                                     :src="item.img">
                                     </v-img>
                                 </v-col>
@@ -142,17 +140,16 @@ export default {
           }
         },
         onFileSelection(event, i){
-            if(event){
+            if(event) {
                 //this.fields.photos[i].img = URL.createObjectURL(event.target.files[0]);
                 this.fields.photos[i].img = URL.createObjectURL(event);
             }
-            else{
+            else {
                 this.fields.photos[i].img = null;
             }
         },
-        altImg(i){//this function returns the src if 
-            console.log('hola',i);
-
+        altImg(i){ // this function returns the src if 
+            console.log('', i);
         }
     }
 }
@@ -169,7 +166,7 @@ export default {
   width: 50%;
 }
 .divback{
-    background-image: url("../../../assets/no_photo.png");
+    background-image: url("../../../assets/add_photo.png");
     width: 100px; 
     height: 100px;
 }
