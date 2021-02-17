@@ -100,11 +100,11 @@ export default {
                 creator: "",//
                 dateCreated: "",//
                 location: "",//
-                originalMediaId: 0,//
+                originalMediaId: '',//
                 originalRecord: "",//
                 paleoRecord: "",//
-                photoProjectId: 0,//
-                program: 0,//
+                photoProjectId: '',//
+                program: '',//
             }
     }),
     methods:{

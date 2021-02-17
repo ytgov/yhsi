@@ -26,6 +26,7 @@
         </div>
       </v-btn>
     </v-app-bar>
+    <PrintDialog :dialog="dialog" :photoname="'Photo Name'" @closeDialog="closeDialog"/>
     <div>
       <v-row>
         <v-col>
@@ -58,8 +59,10 @@
 </template>
 
 <script>
+import PrintDialog from "./PrintDialog";
 export default {
   name: "Photos",
+  components: { PrintDialog },
   data: () => ({
     site: 'site name',
     items: null,
