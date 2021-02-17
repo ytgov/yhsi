@@ -30,7 +30,7 @@
               v-for="(item, i) in sortOptions"
               :key="i"
               link
-              @click="sortSelect(item)"
+              
             >
               <v-list-item-title>{{ item.name }}</v-list-item-title>
             </v-list-item>
@@ -50,7 +50,7 @@
     <v-text-field v-model="search" label="Search"></v-text-field>
     <v-row>
       <v-col
-        v-for="(item, i) in sortedPhotos"
+        v-for="(item, i) in sortedData"
         :key="`photo-${i}`"
         class="d-flex child-flex"
         cols="2"
@@ -59,7 +59,7 @@
           <template v-slot:default="{ hover }">
             <v-card
               class="mx-auto"
-              
+              @click="sortData()"
             >
               <v-img
                 :src="item.photo"
@@ -108,20 +108,14 @@ export default {
       {name: 'Age'},
     ],
     photos: [],
-    sortedPhotos: [],
-
+    sortedData: []
 
   }),
   watch: {
-    options: {
-      handler() {
-        this.getDataFromApi();
-      },
-      deep: true,
-    },
     search: {
       handler() {
-        this.getDataFromApi();
+        //this.getDataFromApi();
+        this.sortData();
       },
       deep: true,
     },
@@ -137,33 +131,32 @@ export default {
       for(let i =0; i<12; i++){
         this.photos.push({name: `photo-${i+1}.png`, photo: `https://picsum.photos/500/300?image=${i * 5 + 10}`, date: new Date(2019,2,(Math.floor(Math.random() * 30)+1)), rating: (Math.floor(Math.random() * 6))});
       }
-      this.sortedPhotos = JSON.parse(JSON.stringify(this.photos));
-      this.sortSelect('Feature name');
+      this.sortData();
     },
-    sortSelect(item){//this function handles the logic for the data sorter
-      switch(item.name){
-        case 'Feature name':
-          this.sortedPhotos = this.sortByName;
-          break;
-        case 'Rating':
-          this.sortedPhotos = this.sortByRating;
-          break;
-        case 'Age':
-          this.sortedPhotos = this.sortByAge;
-          break;
-      }
-    }
+    sortData(){//this function handles the logic for the data sorter
+          switch(this.selectedSorter){
+            case 0:
+              this.sortedData = this.sortByName;
+              break;
+            case 1:
+              this.sortedData = this.sortByRating;
+              break;
+            case 2:
+              this.sortedData = this.sortByAge;
+              break;
+          }
+        },
   },
   computed:{
-    sortByName(){
-        return this.photos.slice().sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+    sortByName: function(){
+      return this.photos.slice().filter(a => a.name.toLowerCase().includes(this.search.toLowerCase())).sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
     },
     sortByRating(){
-        return this.photos.slice().sort((a,b) => (a.rating > b.rating) ? 1 : ((b.rating > a.rating) ? -1 : 0));
+        return this.photos.filter(a => a.name.toLowerCase().includes(this.search.toLowerCase())).slice().sort((a,b) => (a.rating > b.rating) ? 1 : ((b.rating > a.rating) ? -1 : 0));
     },
     sortByAge(){
       //let photos =JSON.parse(JSON.stringify(this.photos));
-        return this.photos.slice().sort(((a, b) => b.date - a.date));
+        return this.photos.filter(a => a.name.toLowerCase().includes(this.search.toLowerCase())).slice().sort(((a, b) => b.date - a.date));
     }
   }
 };
