@@ -82,15 +82,15 @@ export default {
             ],
             fields: {
                 /* Placeholder variables below this line **Read above** */
-                photo: '',
+                photo: "",
                 /*Field data from the swaggerhub api docs below this line*/
                 caption: "",//
                 comments: "",//
-                copyright: 0,//
+                copyright: "",//
                 creditLine: "",//
                 isComplete: false,//
-                ownerId: 0,//
-                photoProjectId: 0,//
+                ownerId: "",//
+                photoProjectId: "",//
                 subjects: "",//
             }
     }),

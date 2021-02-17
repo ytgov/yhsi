@@ -39,7 +39,7 @@
       </v-menu>
       
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="showDialog()">
+      <v-btn color="primary" @click="handleClick('23')">
          <v-icon>mdi-plus</v-icon>
         <div>
           Add Photo
@@ -55,22 +55,38 @@
         class="d-flex child-flex"
         cols="2"
       >
-      
-        <v-card @click="handleClick(1)">
-          <v-img
-            :src="item.photo"
-            :lazy-src="item.photo"
-            class="white--text align-end"
-            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-          >
-          </v-img>
+        <v-hover>
+          <template v-slot:default="{ hover }">
+            <v-card
+              class="mx-auto"
+              
+            >
+              <v-img
+                :src="item.photo"
+                :lazy-src="item.photo"
+                class="white--text align-end"
+                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+              >
+              </v-img>
 
-          <v-card-actions>
-            <v-card-subtitle v-text="`Photo taken, ${item.date}`"></v-card-subtitle>
-          </v-card-actions>
-        </v-card>
-      
+              <v-card-actions>
+                <v-card-subtitle v-if="selectedSorter == 0" v-text="item.name"></v-card-subtitle>
+                <v-card-subtitle v-else-if="selectedSorter == 1" v-text="`Rating: ${item.rating}`"></v-card-subtitle>
+                <v-card-subtitle v-else v-text="`Photo taken, ${new Date(item.date).toLocaleDateString()}`"></v-card-subtitle>
+              </v-card-actions>
 
+              <v-fade-transition>
+                <v-overlay
+                  v-if="hover"
+                  absolute
+                  color="#036358"
+                >
+                  <v-btn @click="handleClick(i)">Edit Photo</v-btn>
+                </v-overlay>
+              </v-fade-transition>
+            </v-card>
+          </template>
+        </v-hover>
       </v-col>
     </v-row>
   </v-container>
@@ -81,7 +97,6 @@
 </template>
 
 <script>
-
 export default {
   name: "Grid",
   data: () => ({
@@ -119,12 +134,11 @@ export default {
         this.$router.push(`/photos/${value}/feature`);
     },
     getDataFromApi() {
-      let images =Math.floor(Math.random() * 21);
-      for(let i =0; i<images; i++){
-        this.photos.push({name: `photo ${i+1}`, photo: `https://picsum.photos/500/300?image=${i * 5 + 10}`, date: '01/02/2019', rating: (Math.floor(Math.random() * 6))});
+      for(let i =0; i<12; i++){
+        this.photos.push({name: `photo-${i+1}.png`, photo: `https://picsum.photos/500/300?image=${i * 5 + 10}`, date: new Date(2019,2,(Math.floor(Math.random() * 30)+1)), rating: (Math.floor(Math.random() * 6))});
       }
-      console.log(this.photos);
       this.sortedPhotos = JSON.parse(JSON.stringify(this.photos));
+      this.sortSelect('Feature name');
     },
     sortSelect(item){//this function handles the logic for the data sorter
       switch(item.name){
@@ -142,16 +156,14 @@ export default {
   },
   computed:{
     sortByName(){
-      let photos =JSON.parse(JSON.stringify(this.photos));
-        return photos.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+        return this.photos.slice().sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
     },
     sortByRating(){
-      let photos =JSON.parse(JSON.stringify(this.photos));
-        return photos.sort((a,b) => (a.rating > b.rating) ? 1 : ((b.rating > a.rating) ? -1 : 0));
+        return this.photos.slice().sort((a,b) => (a.rating > b.rating) ? 1 : ((b.rating > a.rating) ? -1 : 0));
     },
     sortByAge(){
-      let photos =JSON.parse(JSON.stringify(this.photos));
-        return photos.sort((a,b) => (a.rating > b.rating) ? 1 : ((b.rating > a.rating) ? -1 : 0));
+      //let photos =JSON.parse(JSON.stringify(this.photos));
+        return this.photos.slice().sort(((a, b) => b.date - a.date));
     }
   }
 };
