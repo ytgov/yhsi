@@ -29,6 +29,11 @@ export const sections = [
         url: "/maps",
         icon: "mdi-map"
     },
+    {
+        name: "Users",
+        url: "/users",
+        icon: "mdi-account-group"
+    }
     // {
     //     name: "Basic Form",
     //     url: "/form",
