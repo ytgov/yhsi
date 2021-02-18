@@ -169,9 +169,9 @@ export default {
     },
     isSites(route, chooser){//this function helps to show certain classes depending on the route
       if(chooser)
-        return route.includes('sites/') ? 'siteslp' :  '';
+        return (route.includes('sites/') || route.includes('photos')) ? 'siteslp' :  '';
       else
-        return route.includes('sites/') ? 'sitesnp' :  '';
+        return (route.includes('sites/') || route.includes('photos')) ? 'sitesnp' :  '';
     }
   }
 };

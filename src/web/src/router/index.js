@@ -22,7 +22,11 @@ import MainPhotos from "../components/MainPhotos";
 import Management from "../components/Sites/SitesForms/Management";
 import Description from "../components/Sites/SitesForms/Description";
 import SitesGrid from "../components/Sites/SitesGrid";
-
+import PhotosGrid from "../components/MainPhotos/PhotosGrid";
+import Feature from "../components/MainPhotos/PhotosComponents/Feature";
+import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
+import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSites";
+import Photo from "../components/MainPhotos/PhotosComponents/Photo";
 Vue.use(VueRouter);
 
 const routes = [
@@ -81,7 +85,7 @@ const routes = [
   {
     path: "/photos",
     name: "Photos",
-    component: MainPhotos,
+    component: PhotosGrid,
     meta: {
       requiresAuth: false
     },
@@ -129,6 +133,32 @@ const routes = [
       {
         path: "description", 
         component: Description
+      }
+    ]
+  },
+  {
+    path: "/photos/:id",
+    name: "PhotosForm",
+    component: MainPhotos,
+    meta: {
+      requiresAuth: false
+    },
+    children: [
+      {
+        path: "feature", 
+        component: Feature
+      },
+      {
+        path: "site_record",
+        component: SiteRecord
+      },
+      {
+        path: "historic_sites",
+        component: HistoricSites
+      },
+      {
+        path: "photo", 
+        component: Photo
       }
     ]
   },
