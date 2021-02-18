@@ -27,6 +27,8 @@ import Feature from "../components/MainPhotos/PhotosComponents/Feature";
 import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
 import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSites";
 import Photo from "../components/MainPhotos/PhotosComponents/Photo";
+import Users from "../components/Users/UsersGrid";
+import EditUser from "../components/Users/UsersComponents/Edit";
 Vue.use(VueRouter);
 
 const routes = [
@@ -89,6 +91,21 @@ const routes = [
     meta: {
       requiresAuth: false
     },
+  },
+  {
+    path: "/users",
+    name: "Users",
+    component: Users,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+      path: "/users/:id/edit",
+      component: EditUser,
+      meta: {
+        requiresAuth: false
+      }
   },
   {
     path: "/sites/:id",

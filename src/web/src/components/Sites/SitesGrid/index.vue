@@ -9,8 +9,7 @@
       :items="items"
       :headers="headers"
       :options.sync="options"
-      :loading="loading"
-      :server-items-length="totalLength"      
+      :loading="loading"  
       :search="search"
        @click:row="handleClick"
     ></v-data-table>
@@ -39,20 +38,6 @@ export default {
     pageCount: 0,
     iteamsPerPage: 10,
   }),
-  watch: {
-    options: {
-      handler() {
-        this.getDataFromApi();
-      },
-      deep: true,
-    },
-    search: {
-      handler() {
-        this.getDataFromApi();
-      },
-      deep: true,
-    },
-  },
   mounted() {
     this.getDataFromApi();
   },
