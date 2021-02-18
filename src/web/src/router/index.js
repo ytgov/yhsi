@@ -23,10 +23,10 @@ import Management from "../components/Sites/SitesForms/Management";
 import Description from "../components/Sites/SitesForms/Description";
 import SitesGrid from "../components/Sites/SitesGrid";
 import PhotosGrid from "../components/MainPhotos/PhotosGrid";
-import Feature from "../components/MainPhotos/PhotosForms/Feature";
-import SiteRecord from "../components/MainPhotos/PhotosForms/SiteRecord";
-import HistoricSites from "../components/MainPhotos/PhotosForms/HistoricSites";
-import Photo from "../components/MainPhotos/PhotosForms/Photo";
+import Feature from "../components/MainPhotos/PhotosComponents/Feature";
+import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
+import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSites";
+import Photo from "../components/MainPhotos/PhotosComponents/Photo";
 Vue.use(VueRouter);
 
 const routes = [

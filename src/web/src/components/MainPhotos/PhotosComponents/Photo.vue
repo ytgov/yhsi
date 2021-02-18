@@ -10,11 +10,22 @@
                   <v-col
                     cols="6"
                   >
+                    <v-img v-if="fields.photo == null"
+                      class="mr-auto ml-auto"
+                      max-width="128"
+                      :src="require('../../../assets/add_photo.png')">
+                      </v-img>
+                      <v-img v-else
+                      class="mr-auto ml-auto"
+                      max-width="128"
+                      :src="fields.photo">
+                    </v-img>
+
                     <v-file-input
                         label="Choose photo to upload"
                         prepend-icon="mdi-camera"
                         accept="image/*"
-                        @change="onFileSelection($event, i)"
+                        @change="onFileSelection($event)"
                     ></v-file-input>
 
                     <v-combobox
@@ -65,6 +76,7 @@
                     ></v-textarea>
                   </v-col>
                 </v-row>
+                <v-btn color="success">Save Changes</v-btn>
               </v-container>
             </v-form>
         </div> 
@@ -82,7 +94,7 @@ export default {
             ],
             fields: {
                 /* Placeholder variables below this line **Read above** */
-                photo: "",
+                photo: null,
                 /*Field data from the swaggerhub api docs below this line*/
                 caption: "",//
                 comments: "",//
@@ -95,13 +107,13 @@ export default {
             }
     }),
     methods:{
-        onFileSelection(event, i){
+        onFileSelection(event){
             if(event) {
                 //this.fields.photos[i].img = URL.createObjectURL(event.target.files[0]);
-                this.fields.photos[i].img = URL.createObjectURL(event);
+                this.fields.photo = URL.createObjectURL(event);
             }
             else {
-                this.fields.photos[i].img = null;
+                this.fields.photo = null;
             }
         },
     },

@@ -19,6 +19,7 @@
         </div>
       </v-btn>
       <v-spacer></v-spacer>
+      <Search :data="photos"/>
       <v-btn color="primary" @click="showDialog()">
         <v-icon class="mr-2">mdi-printer</v-icon> 
         <div>
@@ -60,14 +61,16 @@
 
 <script>
 import PrintDialog from "./PrintDialog";
+import Search from "./PhotosComponents/Search";
 export default {
   name: "Photos",
-  components: { PrintDialog },
+  components: { PrintDialog, Search },
   data: () => ({
     site: 'site name',
     items: null,
     selectedItem: null,
-    dialog: false //tells the print dialog when to show itself
+    dialog: false, //tells the print dialog when to show itself,
+    photos: []
   }),
   created(){
     this.items = [
@@ -75,9 +78,15 @@ export default {
       {name: "Site Record", icon: 'mdi-map-check', route: `/photos/${this.param}/site_record`},
       {name: "Historic Sites", icon: 'mdi-calendar-range', route: `/photos/${this.param}/historic_sites`},
       {name: "Photo", icon: 'mdi-shape', route: `/photos/${this.param}/photo`},
-    ]
+    ];
+    this.getDataFromApi();
   },
   methods: {
+    getDataFromApi() {
+      for(let i =0; i<12; i++){
+        this.photos.push({id: i, name: `photo-${i+1}.png`, photo: `https://picsum.photos/500/300?image=${i * 5 + 10}`, date: new Date(2019,2,(Math.floor(Math.random() * 30)+1)), rating: (Math.floor(Math.random() * 6))});
+      }
+    },
     goBack(){
       this.$router.push('/photos');
     },

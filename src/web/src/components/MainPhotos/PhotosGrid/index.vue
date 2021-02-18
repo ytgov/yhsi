@@ -37,8 +37,8 @@
           </v-list-item-group>
         </v-list>
       </v-menu>
-      
       <v-spacer></v-spacer>
+      <Search :data="photos"/>
       <v-btn color="primary" @click="handleClick('23')">
          <v-icon>mdi-plus</v-icon>
         <div>
@@ -97,8 +97,10 @@
 </template>
 
 <script>
+import Search from "../PhotosComponents/Search";
 export default {
   name: "Grid",
+  components: { Search },
   data: () => ({
     search: "",
     selectedSorter: 0,
@@ -129,7 +131,7 @@ export default {
     },
     getDataFromApi() {
       for(let i =0; i<12; i++){
-        this.photos.push({name: `photo-${i+1}.png`, photo: `https://picsum.photos/500/300?image=${i * 5 + 10}`, date: new Date(2019,2,(Math.floor(Math.random() * 30)+1)), rating: (Math.floor(Math.random() * 6))});
+        this.photos.push({id: i, name: `photo-${i+1}.png`, photo: `https://picsum.photos/500/300?image=${i * 5 + 10}`, date: new Date(2019,2,(Math.floor(Math.random() * 30)+1)), rating: (Math.floor(Math.random() * 6))});
       }
       this.sortData();
     },
