@@ -154,17 +154,16 @@ export default {
       this.totalLength = this.users.length;
       this.loading = false;
     },
-    filter(data, arr){
+    filter(data, arr){// this is a helper function for "filteredData", applies filters and returns an array.
       return arr.length == 1 ? data.filter( a => a.status == arr[0])
             : arr.length == 2 ? data.filter( a => (a.status == arr[0] || a.status == arr[1]))
             : arr.length == 3 ? data.filter( a => (a.status == arr[0] || a.status == arr[1] || a.status == arr[2]))
             : data;
     },
 
-
   },
   computed: {
-    filteredData(){
+    filteredData(){// returns a filtered users array depending on the selected filters
       let sorters = JSON.parse(JSON.stringify(this.selectedFilter));
       let data = JSON.parse(JSON.stringify(this.users));
       for(let i=0; i<sorters.length; i++){
