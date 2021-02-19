@@ -29,6 +29,8 @@ import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSit
 import Photo from "../components/MainPhotos/PhotosComponents/Photo";
 import Users from "../components/Users/UsersGrid";
 import EditUser from "../components/Users/UsersComponents/Edit";
+import OwnersGrid from "../components/PhotoOwners/OwnersGrid";
+import EditOwner from "../components/PhotoOwners/OwnersComponents/Edit";
 Vue.use(VueRouter);
 
 const routes = [
@@ -101,11 +103,26 @@ const routes = [
     }
   },
   {
+    path: "/photo-owners",
+    name: "PhotoOwners",
+    component: OwnersGrid,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
       path: "/users/:id/edit",
       component: EditUser,
       meta: {
         requiresAuth: false
       }
+  },
+  {
+    path: "/photo-owners/:id/edit",
+    component: EditOwner,
+    meta: {
+      requiresAuth: false
+    }
   },
   {
     path: "/sites/:id",
