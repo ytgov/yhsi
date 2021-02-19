@@ -51,7 +51,7 @@
           v-model="search"
         ></v-text-field>
       </div>
-      <v-btn color="primary" @click="handleClick('23')">
+      <v-btn color="primary" @click="handleClickAdd()">
          <v-icon>mdi-plus</v-icon>
         <div>
           Add Photo
@@ -64,7 +64,7 @@
          <h2>{{sortedData.length}} Results</h2>
       </v-col>
     </v-row>
-    <v-divider class="mb-4"></v-divider>
+    <v-divider inset class="mb-4"></v-divider>
     <v-row>
       <v-col
         v-for="(item, i) in sortedData"
@@ -98,7 +98,7 @@
                   absolute
                   color="#036358"
                 >
-                  <v-btn @click="handleClick(i)">Edit Photo</v-btn>
+                  <v-btn @click="handleClickEdit(i)">Edit Photo</v-btn>
                 </v-overlay>
               </v-fade-transition>
             </v-card>
@@ -142,8 +142,11 @@ export default {
     this.getDataFromApi();
   },
   methods: {
-    handleClick(value){   //Redirects the user to the site form
-        this.$router.push(`/photos/${value}/feature`);
+    handleClickEdit(value){   //Redirects the user to the site form
+        this.$router.push(`/photos/edit/${value}/feature`);
+    },
+    handleClickAdd(){   //Redirects the user to the site form
+        this.$router.push(`/photos/add/feature`);
     },
     getDataFromApi() {
       for(let i =0; i<12; i++){

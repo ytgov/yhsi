@@ -78,7 +78,7 @@
           <h2>{{filteredData.length}} Results</h2><!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
         </v-col>
       </v-row>
-      <v-divider class="mb-4"></v-divider>
+      <v-divider inset class="mb-4"></v-divider>
       <v-row>
         <v-col>
             <v-data-table
@@ -135,7 +135,7 @@ export default {
   },
   methods: {
     handleClick(value){   //Redirects the user to the edit user form
-        this.$router.push(`/users/${value.id}/edit`);
+        this.$router.push(`/users/edit/${value.id}`);
     },
     removeItem(item){ //removes one element from the users array
       const index = this.users.indexOf(item);
@@ -179,7 +179,6 @@ export default {
             break;
         }
       }
-      console.log(sorters);
       return this.filter(data, sorters);
     },
   }

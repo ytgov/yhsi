@@ -17,12 +17,13 @@
       <v-container>
         <v-row>
           <v-col cols="12">
-            <div class="d-flex">
+            <div class="d-flex mb-2">
               <v-icon>mdi-account</v-icon>
               <h2 class="mb-0 ml-3">Edit User {{username}}</h2>
             </div>
           </v-col>
         </v-row>
+        <v-divider inset class="mb-2"></v-divider>
         <v-row>
           <v-col cols="6">
             
