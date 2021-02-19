@@ -33,6 +33,16 @@ export const sections = [
         name: "Users",
         url: "/users",
         icon: "mdi-account-group"
+    },
+    {
+        name: "PhotoOwners",
+        url: "/photo-owners",
+        icon: "mdi-image-album"
+    },
+    {
+        name: "Communities",
+        url: "/communities",
+        icon: "mdi-home-group"
     }
     // {
     //     name: "Basic Form",
