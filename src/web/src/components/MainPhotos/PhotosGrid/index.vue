@@ -5,6 +5,13 @@
       flat    
       dark
     >
+    <v-btn color="primary">
+        <v-icon>mdi-wallpaper</v-icon>
+        <div class="ml-2">
+          <v-toolbar-title> Photos </v-toolbar-title>
+        </div>
+    </v-btn>
+            
       <v-toolbar-title class="mr-2"> Photos </v-toolbar-title>
       <v-menu
         transition="slide-y-transition"
