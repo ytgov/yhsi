@@ -58,7 +58,7 @@
         </div>
       </v-btn>
     </v-app-bar>
-  <v-container grid-list-xs>
+  <v-container>
     <v-row>
       <v-col cols="12">
          <h2>{{sortedData.length}} Results</h2>
