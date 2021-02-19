@@ -28,9 +28,11 @@ import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
 import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSites";
 import Photo from "../components/MainPhotos/PhotosComponents/Photo";
 import Users from "../components/Users/UsersGrid";
-import EditUser from "../components/Users/UsersComponents/Edit";
+import UserForm from "../components/Users/UsersComponents/Form";
 import OwnersGrid from "../components/PhotoOwners/OwnersGrid";
-import EditOwner from "../components/PhotoOwners/OwnersComponents/Edit";
+import OwnerForm from "../components/PhotoOwners/OwnersComponents/Form";
+import Communities from "../components/Communities/CommunitiesGrid";
+import CommunitiesForm from "../components/Communities/CommunitiesComponents/Form";
 Vue.use(VueRouter);
 
 const routes = [
@@ -111,15 +113,44 @@ const routes = [
     }
   },
   {
-      path: "/users/:id/edit",
-      component: EditUser,
+    path: "/communities",
+    name: "Communities",
+    component: Communities,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+      path: "/users/edit/:id",
+      component: UserForm,
       meta: {
         requiresAuth: false
       }
   },
   {
-    path: "/photo-owners/:id/edit",
-    component: EditOwner,
+    path: "/photo-owners/edit/:id",
+    component: OwnerForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/photo-owners/add",
+    component: OwnerForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities/edit/:id",
+    component: CommunitiesForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities/add",
+    component: CommunitiesForm,
     meta: {
       requiresAuth: false
     }
@@ -171,7 +202,33 @@ const routes = [
     ]
   },
   {
-    path: "/photos/:id",
+    path: "/photos/edit/:id",
+    name: "PhotosForm",
+    component: MainPhotos,
+    meta: {
+      requiresAuth: false
+    },
+    children: [
+      {
+        path: "feature", 
+        component: Feature
+      },
+      {
+        path: "site_record",
+        component: SiteRecord
+      },
+      {
+        path: "historic_sites",
+        component: HistoricSites
+      },
+      {
+        path: "photo", 
+        component: Photo
+      }
+    ]
+  },
+  {
+    path: "/photos/add",
     name: "PhotosForm",
     component: MainPhotos,
     meta: {

@@ -17,12 +17,13 @@
       <v-container>
         <v-row>
           <v-col cols="12">
-            <div class="d-flex">
+            <div class="d-flex mb-2">
               <v-icon>mdi-image-album</v-icon>
-              <h2 class="mb-0 ml-3">Edit Photo Owner {{username}}</h2>
+              <h2 class="mb-0 ml-3">{{title}} Photo Owner <span v-if="title == 'Edit'">{{username}}</span></h2>
             </div>
           </v-col>
         </v-row>
+        <v-divider inset class="mb-2"></v-divider>
         <v-row>
           <v-col cols="6">
             
@@ -66,12 +67,13 @@
 
 <script>
 export default {
-  name: "editowner",
+  name: "ownersform",
   components: {
     
   },
   data: () => ({
     username: 'username',
+    title: "",
     items: null,
     selectedItem: null,
     dialog: false, //tells the print dialog when to show itself
@@ -84,6 +86,14 @@ export default {
     },
   }),
   created(){
+    if(this.$route.path.includes("edit")){
+      this.title = "Edit";
+      //after this a function should be called to fill the fields with the data
+    }
+    else{//doesnt fill the inputs
+      this.title = "Add";
+    }
+    
   },
   methods: {
     goBack(){
