@@ -1,40 +1,53 @@
 <template>
-  <div class="books">
-    <h1>Users</h1>
-
-    <v-text-field v-model="search" label="Search"></v-text-field>
-
-    <v-data-table
-    
-      :items="users"
-      :headers="headers"
-      :loading="loading"    
-      :search="search"
+  <div class="">
+    <v-app-bar
+      color="primary"
+      dark
+      flat    
     >
-    <template v-slot:item.name="{ item }">
-        <div @click="handleClick(item)">
-          {{item.name}}
-        </div>  
-    </template>
-    <template v-slot:item.role="{ item }">
-        <div @click="handleClick(item)">
-          {{item.role}}
-        </div>  
-    </template>
-    <template v-slot:item.status="{ item }">
-        <div @click="handleClick(item)">
-          {{item.status}}
-        </div>  
-    </template>
-    <template v-slot:item.access="{ item }">
-        <div @click="handleClick(item)">
-          {{item.access}}
-        </div>  
-    </template>
-     <template v-slot:item.button="{ item }">
-        <v-btn color="success" @click="removeItem(item)">Remove</v-btn>
-    </template>
-    </v-data-table>
+      <v-btn color="primary" @click="goToSummary()">
+        <v-icon>mdi-account-group</v-icon>
+        <div class="ml-2">
+          <v-toolbar-title> Users </v-toolbar-title>
+        </div>
+      </v-btn>
+      <v-btn color="primary">
+        <v-icon>mdi-filter</v-icon>
+        Filter
+      </v-btn>
+      <v-spacer></v-spacer>
+      <div>
+        <v-text-field
+        dense
+        filled
+        solo-inverted
+        flat
+        append-icon="mdi-magnify"
+        class="mx-4"
+        hide-details
+        label="Search"
+        v-model="search"
+      ></v-text-field>
+      </div>
+    </v-app-bar>
+
+    <v-container>
+      <v-data-table
+        :items="users"
+        :headers="headers"
+        :loading="loading"    
+        :search="search"
+      >
+      <template v-slot:item.name="{ item }">
+          <div @click="handleClick(item)" class="hoverclicklink">
+            {{item.name}}
+          </div>  
+      </template>
+      <template v-slot:item.button="{ item }">
+          <v-btn color="success" outlined @click="removeItem(item)">Remove</v-btn>
+      </template>
+      </v-data-table>
+    </v-container>
   </div>
 </template>
 
@@ -86,3 +99,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.hoverclicklink:hover{
+  color:  #0097a9;
+  text-decoration: underline;
+  cursor: pointer;
+}
+</style>

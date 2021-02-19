@@ -38,7 +38,19 @@
         </v-list>
       </v-menu>
       <v-spacer></v-spacer>
-      <Search :data="photos"/>
+      <div>
+        <v-text-field
+          dense
+          filled
+          solo-inverted
+          flat
+          append-icon="mdi-magnify"
+          class="mx-4"
+          hide-details
+          label="Search"
+          v-model="search"
+        ></v-text-field>
+      </div>
       <v-btn color="primary" @click="handleClick('23')">
          <v-icon>mdi-plus</v-icon>
         <div>
@@ -47,7 +59,12 @@
       </v-btn>
     </v-app-bar>
   <v-container grid-list-xs>
-    <v-text-field v-model="search" label="Search"></v-text-field>
+    <v-row>
+      <v-col cols="12">
+         <h2>{{sortedData.length}} Results</h2>
+      </v-col>
+    </v-row>
+    <v-divider class="mb-4"></v-divider>
     <v-row>
       <v-col
         v-for="(item, i) in sortedData"
@@ -97,10 +114,9 @@
 </template>
 
 <script>
-import Search from "../PhotosComponents/Search";
 export default {
-  name: "Grid",
-  components: { Search },
+  name: "photosgrid",
+  components: {  },
   data: () => ({
     search: "",
     selectedSorter: 0,
