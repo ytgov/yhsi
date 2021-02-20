@@ -50,7 +50,7 @@
           </v-col>
           <v-col cols="6">
             <v-text-field
-                    v-model="fields.contact"
+                    v-model="fields.contactPerson"
                     label="Contact Name"
             ></v-text-field>
 
@@ -80,7 +80,7 @@ export default {
     fields:{
       name: "",
       email: "",
-      contact: "",
+      contactPerson: "",
       address: "",
       telephone: null
     },
