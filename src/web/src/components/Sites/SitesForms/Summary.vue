@@ -65,7 +65,7 @@
                           class="top-right-button"
                           @click="removeItem('secondaryNames', i)"
                         >
-                          <v-icon dark>mdi-minus-circle</v-icon>
+                          <v-icon dark>mdi-close-circle</v-icon>
                         </v-btn>
                         <v-text-field 
                           v-model="item.name"
@@ -83,7 +83,7 @@
 
                     <v-text-field 
                       v-model="fields.contributingResources"
-                      label="Contribuiting Resources"
+                      label="Contributing Resources"
                       required
                     ></v-text-field>
 
@@ -101,7 +101,7 @@
                           class="top-right-button"
                           @click="removeItem('historicalPatterns', i)"
                         >
-                          <v-icon dark>mdi-minus-circle</v-icon>
+                          <v-icon dark>mdi-close-circle</v-icon>
                         </v-btn>
                         <v-combobox
                         v-model="item.pattern"

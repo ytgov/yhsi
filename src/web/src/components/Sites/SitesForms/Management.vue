@@ -24,7 +24,7 @@
                             class="top-right-button"
                             @click="removeItem('revisionLogs', i)"
                             >
-                            <v-icon dark>mdi-minus-circle</v-icon>
+                            <v-icon dark>mdi-close-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
@@ -82,7 +82,7 @@
                             class="top-right-button"
                             @click="removeItem('contacts', i)"
                             >
-                            <v-icon dark>mdi-minus-circle</v-icon>
+                            <v-icon dark>mdi-close-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
@@ -159,7 +159,7 @@
                             class="top-right-button"
                             @click="removeItem('webLinks', i)"
                             >
-                            <v-icon dark>mdi-minus-circle</v-icon>
+                            <v-icon dark>mdi-close-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
