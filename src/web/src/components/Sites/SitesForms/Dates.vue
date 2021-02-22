@@ -22,7 +22,7 @@
                                 class="top-right-button"
                                 @click="removeItem('dates', i)"
                             >
-                                <v-icon dark>mdi-minus-circle</v-icon>
+                                <v-icon dark>mdi-close-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col
@@ -80,7 +80,7 @@
                                 class="top-right-button"
                                 @click="removeItem('constructionPeriods', i)"
                             >
-                                <v-icon dark>mdi-minus-circle</v-icon>
+                                <v-icon dark>mdi-close-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col

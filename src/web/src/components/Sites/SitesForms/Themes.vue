@@ -28,7 +28,7 @@
                                 class="top-right-button"
                                 @click="removeItem('themes', i)"
                             >
-                                <v-icon dark>mdi-minus-circle</v-icon>
+                                <v-icon dark>mdi-close-circle</v-icon>
                             </v-btn>
                             <v-combobox
                             v-model="item.category"
@@ -55,7 +55,7 @@
                                         color="primary"
                                         >
                             <div class="sub-title">
-                                Funcitonal Use {{ i+1 }}
+                                Functional Use {{ i+1 }}
                             </div>
                             <v-btn
                                 icon
@@ -63,7 +63,7 @@
                                 class="top-right-button"
                                 @click="removeItem('functionalUses', i)"
                             >
-                                <v-icon dark>mdi-minus-circle</v-icon>
+                                <v-icon dark>mdi-close-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="4"> 

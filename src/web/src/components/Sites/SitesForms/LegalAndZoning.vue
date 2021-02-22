@@ -24,7 +24,7 @@
                                 class="top-right-button"
                                 @click="removeItem('ownerships', i)"
                             >
-                                <v-icon dark>mdi-minus-circle</v-icon>
+                                <v-icon dark>mdi-close-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
@@ -121,7 +121,7 @@
                                 class="top-right-button"
                                 @click="removeItem('previous_ownerships', i)"
                             >
-                                <v-icon dark>mdi-minus-circle</v-icon>
+                                <v-icon dark>mdi-close-circle</v-icon>
                             </v-btn>
                             <v-row>
                                 <v-col cols="6">
