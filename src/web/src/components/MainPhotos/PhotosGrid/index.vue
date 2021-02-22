@@ -5,6 +5,13 @@
       flat    
       dark
     >
+    <v-btn color="primary">
+        <v-icon>mdi-wallpaper</v-icon>
+        <div class="ml-2">
+          <v-toolbar-title> Photos </v-toolbar-title>
+        </div>
+    </v-btn>
+            
       <v-toolbar-title class="mr-2"> Photos </v-toolbar-title>
       <v-menu
         transition="slide-y-transition"
@@ -38,16 +45,33 @@
         </v-list>
       </v-menu>
       <v-spacer></v-spacer>
-      <Search :data="photos"/>
-      <v-btn color="primary" @click="handleClick('23')">
+      <div>
+        <v-text-field
+          dense
+          filled
+          solo-inverted
+          flat
+          append-icon="mdi-magnify"
+          class="mx-4"
+          hide-details
+          label="Search"
+          v-model="search"
+        ></v-text-field>
+      </div>
+      <v-btn color="primary" @click="handleClickAdd()">
          <v-icon>mdi-plus</v-icon>
         <div>
           Add Photo
         </div>
       </v-btn>
     </v-app-bar>
-  <v-container grid-list-xs>
-    <v-text-field v-model="search" label="Search"></v-text-field>
+  <v-container>
+    <v-row>
+      <v-col cols="12">
+         <h2>{{sortedData.length}} Results</h2>
+      </v-col>
+    </v-row>
+    <v-divider inset class="mb-4"></v-divider>
     <v-row>
       <v-col
         v-for="(item, i) in sortedData"
@@ -81,7 +105,7 @@
                   absolute
                   color="#036358"
                 >
-                  <v-btn @click="handleClick(i)">Edit Photo</v-btn>
+                  <v-btn @click="handleClickEdit(i)">Edit Photo</v-btn>
                 </v-overlay>
               </v-fade-transition>
             </v-card>
@@ -97,10 +121,9 @@
 </template>
 
 <script>
-import Search from "../PhotosComponents/Search";
 export default {
-  name: "Grid",
-  components: { Search },
+  name: "photosgrid",
+  components: {  },
   data: () => ({
     search: "",
     selectedSorter: 0,
@@ -126,8 +149,11 @@ export default {
     this.getDataFromApi();
   },
   methods: {
-    handleClick(value){   //Redirects the user to the site form
-        this.$router.push(`/photos/${value}/feature`);
+    handleClickEdit(value){   //Redirects the user to the site form
+        this.$router.push(`/photos/edit/${value}/feature`);
+    },
+    handleClickAdd(){   //Redirects the user to the site form
+        this.$router.push(`/photos/add/feature`);
     },
     getDataFromApi() {
       for(let i =0; i<12; i++){

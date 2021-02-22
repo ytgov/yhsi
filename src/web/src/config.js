@@ -29,6 +29,21 @@ export const sections = [
         url: "/maps",
         icon: "mdi-map"
     },
+    {
+        name: "Users",
+        url: "/users",
+        icon: "mdi-account-group"
+    },
+    {
+        name: "PhotoOwners",
+        url: "/photo-owners",
+        icon: "mdi-image-album"
+    },
+    {
+        name: "Communities",
+        url: "/communities",
+        icon: "mdi-home-group"
+    }
     // {
     //     name: "Basic Form",
     //     url: "/form",
