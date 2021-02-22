@@ -1,19 +1,54 @@
 <template>
-  <div class="books">
-    <h1>Sites</h1>
+  <div class="">
+        <v-app-bar
+          color="primary"
+          dark
+          flat    
+        >
+          <v-btn color="primary" @click="goToSummary()">
+            <v-icon>mdi-account-group</v-icon>
+            <div class="ml-2">
+              <v-toolbar-title> Users </v-toolbar-title>
+            </div>
+          </v-btn>
+          <v-spacer></v-spacer>
+          <div>
+            <v-text-field
+            dense
+            filled
+            solo-inverted
+            flat
+            append-icon="mdi-magnify"
+            class="mx-4"
+            hide-details
+            label="Search"
+            v-model="search"
+          ></v-text-field>
+          </div>
+        </v-app-bar>
+    <v-container>
+      <v-row>
+        <v-col cols="12">
+          <h2>{{items.length}} Results</h2><!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
+        </v-col>
+      </v-row>
+      <v-divider inset class="mb-2"></v-divider>
+      <v-row>
+        <v-col>
+          <v-data-table
+            :items="items"
+            :headers="headers"
+            :options.sync="options"
+            :loading="loading"  
+            :search="search"
+            @click:row="handleClick"
+          ></v-data-table>
+        </v-col>
+      </v-row>
 
-    <v-text-field v-model="search" label="Search"></v-text-field>
+    </v-container>
 
-    <v-data-table
-      dense
-      :items="items"
-      :headers="headers"
-      :options.sync="options"
-      :loading="loading"
-      :server-items-length="totalLength"      
-      :search="search"
-       @click:row="handleClick"
-    ></v-data-table>
+   
   </div>
 </template>
 
@@ -39,20 +74,6 @@ export default {
     pageCount: 0,
     iteamsPerPage: 10,
   }),
-  watch: {
-    options: {
-      handler() {
-        this.getDataFromApi();
-      },
-      deep: true,
-    },
-    search: {
-      handler() {
-        this.getDataFromApi();
-      },
-      deep: true,
-    },
-  },
   mounted() {
     this.getDataFromApi();
   },
