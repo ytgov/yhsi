@@ -96,14 +96,11 @@ export default {
                 /* Placeholder variables below this line **Read above** */
                 search: '',
                 /*Field data from the swaggerhub api docs below this line*/
-                archivalRecord: "",//
-                bordenRecord: "",//
                 creator: "",//
                 dateCreated: "",//
                 location: "",//
                 originalMediaId: '',//
                 originalRecord: "",//
-                paleoRecord: "",//
                 photoProjectId: '',//
                 program: '',//
             }

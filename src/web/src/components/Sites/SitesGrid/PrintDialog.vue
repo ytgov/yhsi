@@ -35,7 +35,7 @@
           <v-btn
             color="primary darken-1"
             text
-            @click="closeDialog"
+            @click="exportPDF"
           >
             Print
           </v-btn>
@@ -45,6 +45,9 @@
 </template>
 
 <script>
+import { jsPDF } from "jspdf";
+import 'jspdf-autotable';
+import _ from 'lodash';
 export default {
     props: [ 'dialog', 'sitename' ],
     data: () => ({
@@ -56,11 +59,220 @@ export default {
                   { name: 'Legal & Zoning', print: false},
                   { name: 'Photos', print: false},
                   { name: 'Management', print: false},
-                  { name: 'Description', print: false}]
+                  { name: 'Description', print: false}],
+        doc: null,
+        data: {
+            associations:"associations",
+            firstNationAssociations:"firstNationAssociations",
+            dates:"dates",
+            constructionPeriods:"constructionPeriods",
+            buildingSize:"buildingSize",//
+            conditionComment:"conditionComment",//
+            floorCondition:"floorCondition",//
+            resourceType:"resourceType",//
+            roofCondition:"roofCondition",//
+            siteStatus:"siteStatus",//
+            wallCondition:"wallCondition",//
+            descriptions:"descriptions",
+            ownerships:"ownerships",
+            previous_ownerships:"previous_ownerships",
+            block:"block",//
+            groupYHSI:"groupYHSI",//
+            lAGroup:"lAGroup",//
+            lot:"lot",//
+            planNumber:"planNumber",//
+            siteDistrictNumber:"siteDistrictNumber",//
+            townSiteMapNumber:"townSiteMapNumber",//
+            zoning:"zoning",//
+            bordenNumber:"bordenNumber",//
+            communityId:"communityId",
+            coordinateDetermination:"coordinateDetermination",
+            hectareArea:"hectareArea",
+            latitude:"latitude",
+            locationComment:"locationComment",
+            locationContext:"locationContext",
+            longitude:"longitude",
+            nTSMapSheet:"nTSMapSheet",
+            otherCommunity:"otherCommunity",
+            otherLocality:"otherLocality",
+            physicalAddress:"physicalAddress",
+            physicalCountry:"physicalCountry",
+            physicalPostalCode:"physicalPostalCode",
+            physicalProvince:"physicalProvince",
+            previousAddress:"previousAddress",
+            revisionLogs:"revisionLogs",
+            contacts:"contacts",
+            webLinks:"webLinks",
+            cIHBNumber:"cIHBNumber",
+            doorCondition:"doorCondition",
+            fHBRONumber:"fHBRONumber",
+            jurisdiction:"jurisdiction",
+            ownerConsent:"ownerConsent",
+            recognitionDate:"recognitionDate",
+            statute2Id:"statute2Id",
+            statuteId:"statuteId",
+            yGBuildingNumber:"yGBuildingNumber",
+            yGReserveNumber:"yGReserveNumber",
+            secondaryNames:"secondaryNames",
+            historicalPatterns:"historicalPatterns",
+            contributingResources:"contributingResources",
+            category:"category",
+            designations:"designations",
+            primaryName:"primaryName",
+            records:"records",
+            showInRegister:"showInRegister",
+            siteCategories:"siteCategories",
+            yHSIId:"yHSIId",
+            photos:"photos",
+            themes:"themes",
+            functionalUses:"functionalUses",
+            currentUseComment:"currentUseComment",
+            yHSPastUse:"yHSPastUse",
+            yHSThemes:"yHSThemes",
+        },
+        associations: [
+          "associations",
+          "firstNationAssociations"
+        ],
+        dates:  [
+              "dates",
+              "constructionPeriods",
+              "buildingSize",//
+              "conditionComment",//
+              "doorCondition",//
+              "floorCondition",//
+              "resourceType",//
+              "roofCondition",//
+              "siteStatus",//
+              "wallCondition",//
+            ],
+        description: [
+            "descriptions",
+            ],
+        legal:  [
+            "ownerships",
+            "previous_ownerships",
+            "block",//
+            "groupYHSI",//
+            "lAGroup",//
+            "lot",//
+            "planNumber",//
+            "siteDistrictNumber",//
+            "townSiteMapNumber",//
+            "zoning"//
+                ],
+        location:  [
+            "bordenNumber",//
+            "communityId",
+            "coordinateDetermination",
+            "hectareArea",
+            "latitude",
+            "locationComment",
+            "locationContext",
+            "longitude",
+            "nTSMapSheet",
+            "otherCommunity",
+            "otherLocality",
+            "physicalAddress",
+            "physicalCountry",
+            "physicalPostalCode",
+            "physicalProvince",
+            "previousAddress",
+          ],
+          management:  [
+              "revisionLogs",
+              "contacts",
+              "webLinks",
+              "cIHBNumber",
+              "doorCondition",
+              "fHBRONumber",
+              "jurisdiction",
+              "ownerConsent",
+              "recognitionDate",
+              "showInRegister",
+              "statute2Id",
+              "statuteId",
+              "yGBuildingNumber",
+              "yGReserveNumber",
+                ],
+          photos: [
+              "photos"
+            ],
+          summary: [ 
+              "secondaryNames",
+              "historicalPatterns",
+              "contributingResources",
+              "category",
+              "designations",
+              "primaryName",
+              "records",
+              "showInRegister",
+              "siteCategories",
+              "yHSIId",
+          ],
+          themes: [ 
+              "themes",
+              "functionalUses",
+              "currentUseComment",
+              "yHSPastUse",
+              "yHSThemes",
+              ],
+        toPrint: {}
     }),
+    created(){
+      this.mapData();
+    },
     methods:{
+      mapData(){
+        this.toPrint.associations = _.pickBy(this.data, (value, key) => _.includes(this.associations, key));
+        this.toPrint.dates = _.pickBy(this.data, (value, key) => _.includes(this.dates, key));
+        this.toPrint.description = _.pickBy(this.data, (value, key) => _.includes(this.description, key));
+        this.toPrint.legal = _.pickBy(this.data, (value, key) => _.includes(this.legal, key));
+        this.toPrint.location = _.pickBy(this.data, (value, key) => _.includes(this.location, key));
+        this.toPrint.management = _.pickBy(this.data, (value, key) => _.includes(this.management, key));
+        this.toPrint.photos = _.pickBy(this.data, (value, key) => _.includes(this.photos, key));
+        this.toPrint.summary = _.pickBy(this.data, (value, key) => _.includes(this.summary, key));
+        this.toPrint.themes = _.pickBy(this.data, (value, key) => _.includes(this.themes, key));
+      },
       closeDialog(){
         this.$emit('closeDialog');
+      },
+      checkRemainingSize(textpos){
+        if (textpos >= 800){
+          this.doc.addPage();
+          return 40;
+        }
+        else{
+          return textpos+20;
+        }
+      },
+      exportPDF() {
+        this.doc = new jsPDF('p', 'pt');
+        this.doc.text('Site_1', 40, 40);
+        let textpos = 70; 
+        let sections = Object.keys(this.toPrint);
+        for(let k = 0; k<sections.length; k++){
+            if(this.sections[k].print == true){
+            textpos = this.checkRemainingSize(textpos);
+            this.doc.setFontSize(14);
+            this.doc.text(this.sections[k].name, 40, textpos);
+            textpos = this.checkRemainingSize(textpos);
+            let data = Object.values(this.toPrint[sections[k]]);
+            let cols = Object.keys(this.toPrint[sections[k]]);
+            console.log(textpos);
+            for(let i = 0; i<data.length; i++){
+              this.doc.setFontSize(10);
+              this.doc.text(`${cols[i].toUpperCase()}`, 40, textpos);
+              textpos = this.checkRemainingSize(textpos);
+              this.doc.setFontSize(9);
+              this.doc.text(`${data[i]}`, 40, textpos);
+              textpos = this.checkRemainingSize(textpos);
+            } 
+          } 
+        }
+  
+        this.doc.save('Site_1.pdf');
+        this.closeDialog();
       }
     }
 }
