@@ -101,6 +101,8 @@
                     </v-col>
 
                 </v-row>
+                <v-divider class="mt-2 mb-2"></v-divider>
+                <v-btn color="success">Save Changes</v-btn>
               </v-container>
 
             </v-form>
