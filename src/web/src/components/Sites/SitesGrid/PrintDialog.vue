@@ -8,14 +8,18 @@
         <v-card-title>Print {{sitename}}</v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-          <v-row>
-            <v-col class="pa-0" cols="6" v-for="(item, i) in sections" :key="`dcheck-${i}`">
-              <v-checkbox 
-                v-model="item.print"
-                :label="`Include ${item.name}?`"
-              ></v-checkbox>
-            </v-col>
+          <v-container>
+            <v-row class="mt-2">
+              <v-col class="pa-0" cols="6"  v-for="(item, i) in sections" :key="`dcheck-${i}`" >
+                <v-checkbox
+                  v-model="item.print"
+                  :label="`Include ${item.name}?`"
+                  class="ma-0 pa-0"
+                ></v-checkbox>
+              </v-col>
           </v-row>
+          </v-container>
+          
 
         </v-card-text>
         <v-divider></v-divider>
