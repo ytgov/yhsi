@@ -33,6 +33,9 @@ import OwnersGrid from "../components/PhotoOwners/OwnersGrid";
 import OwnerForm from "../components/PhotoOwners/OwnersComponents/Form";
 import Communities from "../components/Communities/CommunitiesGrid";
 import CommunitiesForm from "../components/Communities/CommunitiesComponents/Form";
+import Boats from "../components/Boats/Grid";
+import BoatsGrid from "../components/Boats/Grid/Boats";
+import OwnerGrid from "../components/Boats/Grid/Owner";
 Vue.use(VueRouter);
 
 const routes = [
@@ -250,6 +253,26 @@ const routes = [
       {
         path: "photo", 
         component: Photo
+      }
+    ]
+  },
+  {
+    path: "/boats",
+    name: "Boats",
+    component: Boats,
+    meta: {
+      requiresAuth: false
+    },
+    children: [
+      {
+        path: "general",
+        name: "generalBoats",
+        component: BoatsGrid,
+        props: true
+      },
+      {
+        path: "owner",
+        component: OwnerGrid
       }
     ]
   },
