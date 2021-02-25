@@ -55,7 +55,7 @@
                                         color="primary"
                                         >
                             <div class="sub-title">
-                                Functional Use {{ i+1 }}
+                                Functional User {{ i+1 }}
                             </div>
                             <v-btn
                                 icon
