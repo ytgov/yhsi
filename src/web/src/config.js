@@ -46,7 +46,7 @@ export const sections = [
     },
     {
         name: "Boats",
-        url: "/boats/general",
+        url: "/boats/",
         icon: "mdi-ferry"
     }
     // {

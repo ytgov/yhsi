@@ -25,8 +25,10 @@
                     class="black--text"
                     v-bind="attrs"
                     v-on="on"
-                > <v-icon class="black--text">mdi-filter</v-icon>
+                > <v-icon class="black--text mr-1">mdi-filter</v-icon>
                     Filter
+
+                  <v-icon class="black--text">mdi-chevron-right</v-icon>
                 </v-btn>
                 </template>
                 <v-list>
@@ -62,16 +64,21 @@
             </v-menu>
         </v-col>
         <v-spacer></v-spacer>
-        <v-col cols="auto">
-            <v-btn color="transparent" class="black--text mx-1">Add Boat</v-btn>
-            <v-btn color="transparent" class="black--text mx-1">Export</v-btn>
-            <v-btn color="transparent" class="black--text mx-1">Print</v-btn>
+        <v-col cols="auto" v-if="$route.path.includes('owner')">
+            <v-btn  class="black--text mx-1">Add Owner</v-btn>
+            <v-btn  class="black--text mx-1">Export</v-btn>
+            <v-btn  class="black--text mx-1">Print</v-btn>
+        </v-col>
+        <v-col cols="auto" v-else >
+            <v-btn  class="black--text mx-1">Add Boat</v-btn>
+            <v-btn  class="black--text mx-1">Export</v-btn>
+            <v-btn  class="black--text mx-1">Print</v-btn>
         </v-col>
     </v-row>
     <div class="mt-2">
         <v-card>
             <v-tabs>
-                <v-tab :to="{name:'generalBoats', query: { selectedFilters: [1,2,3] }}">
+                <v-tab :to="{path:'/boats/'}">
                   <v-icon class="mr-1">mdi-ferry</v-icon>
                   Boats
                 </v-tab>
@@ -92,6 +99,7 @@
 export default {
   name: "boatsgrid-index",
   data: () => ({
+    route: "",
     loading: false,
     users: [],
     search: "",
@@ -124,7 +132,13 @@ export default {
         { text: 'Conversions', icon: 'mdi-flag' },
       ],
   }),
-  mounted() {
+  created() {
+    if(this.$route.path.includes("owner")){//shows the buttons for owner
+      this.route = "owner";
+    }
+    else{//shows the buttons for boats
+      this.route = "boats";
+    }
     this.getDataFromApi();
   },
   methods: {
@@ -185,11 +199,6 @@ export default {
 </script>
 
 <style scoped>
-.hoverclicklink:hover{
-  color:  #0097a9;
-  text-decoration: underline;
-  cursor: pointer;
-}
 #horizontal-list{
     display: flex;
 }
