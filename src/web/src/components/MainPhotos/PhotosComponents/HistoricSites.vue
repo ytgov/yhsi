@@ -37,7 +37,7 @@
                         <template v-slot:activator="{ on, attrs }">
                         <v-text-field
                             v-model="fields.dateCreated"
-                            label="Date Created"
+                            label="Date Photo Taken"
                             append-icon="mdi-calendar"
                             readonly
                             v-bind="attrs"
