@@ -5,10 +5,22 @@
             <v-col cols="12" class="d-flex">
                 <h1>{{name}}</h1>
                 <v-spacer></v-spacer>
-                <v-btn class="black--text mx-1" @click="changeEdit" v-if="!edit">Edit</v-btn>
-                <v-btn class="black--text mx-1" @click="changeEdit" v-if="edit">Cancel</v-btn>
-                <v-btn color="success" :disabled="!showSave" v-if="edit" >Save Changes</v-btn>
-                <v-btn class="black--text mx-1" v-if="!edit">Print</v-btn>
+                <v-btn class="black--text mx-1" @click="changeEdit" v-if="!edit">
+                    <v-icon class="mr-1">mdi-pencil</v-icon>
+                    Edit
+                </v-btn>
+                <v-btn class="black--text mx-1" @click="changeEdit" v-if="edit">
+                    <v-icon>mdi-close</v-icon>
+                    Cancel
+                </v-btn>
+                <v-btn color="success" :disabled="showSave < 2" v-if="edit" >
+                    <v-icon class="mr-1">mdi-check</v-icon>
+                    Save Changes
+                </v-btn>
+                <v-btn class="black--text mx-1" v-if="!edit">
+                    <v-icon class="mr-1">mdi-printer</v-icon>
+                    Print
+                </v-btn>
             </v-col>
         </v-row>
         <v-row>
@@ -223,15 +235,40 @@
                         :items="fields.historicRecords"
                         :search="search"
                     >
+                        <template v-slot:item.historicRecord="{ item }">
+                            <div v-if="editTable">
+                                <v-text-field
+                                    v-model="fields.historicRecord"
+                                ></v-text-field>
+                            </div>
+                            <div v-else>{{item.historicRecord}}</div>
+                        </template>
+                        <template v-slot:item.reference="{ item }">
+                            <div v-if="editTable">
+                                <v-text-field
+                                    v-model="fields.reference"
+                                ></v-text-field>
+                            </div>
+                            <div v-else>{{item.reference}}</div>
+                        </template>
                         <template v-slot:item.actions="{ }">
-                            <v-btn class="black--text" color="transparent" v-if="edit">
+                            <v-btn icon class="black--text" color="transparent"   v-if="!editTable">
                                 <v-icon
                                     small
                                     class="mr-2"
                                 > mdi-pencil</v-icon>
                                 Edit
                             </v-btn>
-
+                            <v-btn icon class="black--text" v-if="editTable"  >
+                                <v-icon
+                                small
+                                >mdi-pencil</v-icon>  
+                            </v-btn>
+                            <v-btn icon class="black--text" color="success" v-if="editTable"  >
+                                <v-icon
+                                small
+                                >mdi-check</v-icon>  
+                            </v-btn>
                         </template>
                     </v-data-table>
                 </v-card>
@@ -245,8 +282,12 @@ export default {
     name: "boatsForm",
     data: ()=> ({
         name: "Evelyn",
+        //helper vars, they are used to determine if the component is in an edit state
         edit: false,
-        showSave: false,
+        editTable: false,
+        showSave: 0,
+        watch: null,
+        //input fields, datatable, etc
         menu1: "",
         menu2: "",
         menu3: "",
@@ -275,6 +316,8 @@ export default {
         ]
 
     }),
+    created(){
+    },
     methods:{
         save (date) {
             this.$refs.menu.save(date)
@@ -282,15 +325,17 @@ export default {
         changeEdit(){
             this.fieldsHistory = this.edit == false ? {...this.fields} : {...this.fieldsHistory};
             this.fields = this.edit == true ? {...this.fieldsHistory} : {...this.fields};
+            this.showSave = 0;
+            console.log(this.showSave);
             this.edit=!this.edit;
-            this.showSave = false;
+            
         }
     },
     watch: {
         fields: {
-            handler(val){
-                console.log(val);
-                this.showSave = true;
+            handler(newval){
+                console.log("Value changed",newval);
+                this.showSave = this.showSave+1;
             },
             deep: true
         },
