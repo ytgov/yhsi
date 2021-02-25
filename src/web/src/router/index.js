@@ -36,6 +36,8 @@ import CommunitiesForm from "../components/Communities/CommunitiesComponents/For
 import Boats from "../components/Boats/Grid";
 import BoatsGrid from "../components/Boats/Grid/Boats";
 import OwnerGrid from "../components/Boats/Grid/Owner";
+import BoatsForm from "../components/Boats/BoatsComponents/BoatsForm";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -265,16 +267,24 @@ const routes = [
     },
     children: [
       {
-        path: "general",
-        name: "generalBoats",
-        component: BoatsGrid,
-        props: true
+        path: "",
+        component: BoatsGrid
       },
       {
         path: "owner",
         component: OwnerGrid
       }
     ]
+  },
+  {
+    path: "/boats/:name",
+    name: "boatView",
+    component: BoatsForm
+  },
+  {
+    path: "/boats/:name/edit",
+    name: "boatEditView",
+    component: BoatsForm
   },
   {
     path: "*",
