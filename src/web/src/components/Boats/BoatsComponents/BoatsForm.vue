@@ -180,7 +180,7 @@
             </v-col>
             <v-col cols="7">
                 <v-row>
-                    <v-col cols="6">
+                    <v-col cols="4">
                         <v-combobox
                         v-model="fields.vesselType"
                         label="Vessel Type"
@@ -199,13 +199,8 @@
                             :readonly="!edit"
                         ></v-textarea>
                     </v-col>
-                    <v-col cols="6">
-                        <v-img class="mx-auto"
-                        contain
-                        max-height="339"
-                        max-width="339"
-                        src="https://picsum.photos/id/11/500/300"
-                        ></v-img>
+                    <v-col cols="8">
+                            <Photos :photos="photos" :dialog="dialog" @closeDialog="closeDialog" @showDialog="showDialog"/>
                     </v-col>
                 </v-row>
             </v-col>
@@ -227,6 +222,7 @@
                 <v-btn class="black--text" v-if="edit">Add Historic Record</v-btn>
             </v-col>
         </v-row>
+        
         <v-row>
             <v-col cols="12" >
                 <v-card>
@@ -235,40 +231,64 @@
                         :items="fields.historicRecords"
                         :search="search"
                     >
-                        <template v-slot:item.historicRecord="{ item }">
-                            <div v-if="editTable">
+                        <template v-slot:item.historicRecord="{ item, index }">
+                            <div v-if="editTable == index">
                                 <v-text-field
-                                    v-model="fields.historicRecord"
+                                :value="item.historicRecord"
+                                @input="editHistoricRecord"
                                 ></v-text-field>
                             </div>
                             <div v-else>{{item.historicRecord}}</div>
                         </template>
-                        <template v-slot:item.reference="{ item }">
-                            <div v-if="editTable">
-                                <v-text-field
-                                    v-model="fields.reference"
+                        <template v-slot:item.reference="{ item, index }">
+                            <div v-if="editTable == index">
+                                <v-text-field 
+                                :value="item.reference"
+                                @change="editReference"
                                 ></v-text-field>
                             </div>
                             <div v-else>{{item.reference}}</div>
                         </template>
-                        <template v-slot:item.actions="{ }">
-                            <v-btn icon class="black--text" color="transparent"   v-if="!editTable">
-                                <v-icon
-                                    small
-                                    class="mr-2"
-                                > mdi-pencil</v-icon>
-                                Edit
-                            </v-btn>
-                            <v-btn icon class="black--text" v-if="editTable"  >
-                                <v-icon
-                                small
-                                >mdi-pencil</v-icon>  
-                            </v-btn>
-                            <v-btn icon class="black--text" color="success" v-if="editTable"  >
-                                <v-icon
-                                small
-                                >mdi-check</v-icon>  
-                            </v-btn>
+                        <template v-slot:item.actions="{  index }">
+                            <v-tooltip bottom v-if="editTable != index">
+                                <template v-slot:activator="{ on, attrs }">
+                                        <v-btn 
+                                        v-bind="attrs"
+                                        v-on="on"
+                                        icon class="black--text"   @click="changeEditTable(index)">
+                                            <v-icon
+                                                small
+                                            > mdi-pencil</v-icon>
+                                        </v-btn>
+                                </template>
+                                <span>Edit</span>
+                            </v-tooltip>
+                            <v-tooltip bottom v-if="editTable == index">
+                                <template v-slot:activator="{ on, attrs }">
+                                        <v-btn
+                                        v-bind="attrs"
+                                        v-on="on" 
+                                        icon class="black--text" color="success"  @click="closeEditTable(index)">
+                                            <v-icon
+                                            small
+                                            >mdi-check</v-icon>  
+                                        </v-btn>
+                                </template>
+                                <span>Save changes</span>
+                            </v-tooltip>
+                            <v-tooltip bottom v-if="editTable == index">
+                                <template v-slot:activator="{ on, attrs }">
+                                        <v-btn 
+                                        v-bind="attrs"
+                                        v-on="on"
+                                        icon class="black--text"  @click="saveTable(index)">
+                                            <v-icon
+                                            small
+                                            >mdi-close</v-icon>  
+                                        </v-btn>
+                                </template>
+                                <span>Cancel</span>
+                            </v-tooltip> 
                         </template>
                     </v-data-table>
                 </v-card>
@@ -278,15 +298,20 @@
 </template>
 
 <script>
+import Photos from "./Photos";
 export default {
     name: "boatsForm",
+    components: { Photos },
     data: ()=> ({
         name: "Evelyn",
+        dialog: false, //tells the print dialog when to show itself,
         //helper vars, they are used to determine if the component is in an edit state
         edit: false,
-        editTable: false,
+        editTable: -1,
         showSave: 0,
-        watch: null,
+        //helper vars for when v-model is not an option (inside the datatable)
+        historiRecordHelper: "",
+        recordHelper: "",
         //input fields, datatable, etc
         menu1: "",
         menu2: "",
@@ -306,14 +331,43 @@ export default {
             historicRecords: [
                 {historicRecord: "some text", reference: "wdadwdawdad"},
                 {historicRecord: "historic record 2", reference: "adawddad"}
-            ]
+            ],
+            
         },
         fieldsHistory: null,
         headers: [
             { text: "Historic Record", value: "historicRecord"},
             { text: "Reference", value: "reference"},
             { text: "Actions", value: "actions", sortable: false},
-        ]
+        ],
+        photos: [
+          {
+            src: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
+          },
+          {
+            src: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
+          },
+          {
+            src: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
+          },
+          {
+            src: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
+          },
+        ],
+                items: [
+          {
+            src: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
+          },
+          {
+            src: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
+          },
+          {
+            src: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
+          },
+          {
+            src: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
+          },
+        ],
 
     }),
     created(){
@@ -322,14 +376,35 @@ export default {
         save (date) {
             this.$refs.menu.save(date)
         },
-        changeEdit(){
+        changeEdit(){//this method handles the logic behind the top edit, cancel & save changes buttons
             this.fieldsHistory = this.edit == false ? {...this.fields} : {...this.fieldsHistory};
             this.fields = this.edit == true ? {...this.fieldsHistory} : {...this.fields};
             this.showSave = 0;
             console.log(this.showSave);
             this.edit=!this.edit;
-            
-        }
+        },
+        changeEditTable(index){
+            console.log(index);
+            this.editTable = index;
+        },
+        closeEditTable(){
+            this.editTable = -1;
+        },
+        saveTable(){
+            this.editTable = -1;
+        },
+        editHistoricRecord(newVal){
+            this.historiRecordHelper = newVal;
+        },
+        editReference(newVal){
+            this.referenceHelper = newVal;
+        },
+        closeDialog(){
+            this.dialog = false;
+        },
+        showDialog(){
+            this.dialog = true;
+        },
     },
     watch: {
         fields: {
