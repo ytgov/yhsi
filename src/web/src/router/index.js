@@ -37,6 +37,7 @@ import Boats from "../components/Boats/Grid";
 import BoatsGrid from "../components/Boats/Grid/Boats";
 import OwnerGrid from "../components/Boats/Grid/Owner";
 import BoatsForm from "../components/Boats/BoatsComponents/BoatsForm";
+import BoatsOwnerForm from "../components/Boats/BoatsComponents/OwnerForm";
 
 Vue.use(VueRouter);
 
@@ -285,6 +286,16 @@ const routes = [
     path: "/boats/:name/edit",
     name: "boatEditView",
     component: BoatsForm
+  },
+  {
+    path: "/boats/owner/:name",
+    name: "ownerView",
+    component: BoatsOwnerForm
+  },
+  {
+    path: "/boats/owner/:name/edit",
+    name: "ownerEditView",
+    component: BoatsOwnerForm
   },
   {
     path: "*",

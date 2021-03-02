@@ -63,7 +63,7 @@ export default {
         getDataFromApi() {
         this.loading = true;
         this.boats = [
-            {id: 1, name: 'Name 1', owner: 'Ownername 2', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
+            {id: 1, name: 'Evelyn', owner: 'Ownername 2', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
             serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
             {id: 2, name: 'Name 2', owner: 'Ownername 4', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
             serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},

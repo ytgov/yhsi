@@ -1,6 +1,7 @@
 <template>
   <div class="">
     <h1>Boats</h1>
+    <Breadcrumbs/>
     <v-row>
         <v-col cols="6" class="d-flex">
             <v-text-field
@@ -64,25 +65,25 @@
             </v-menu>
         </v-col>
         <v-spacer></v-spacer>
-        <v-col cols="auto" v-if="$route.path.includes('owner')">
+        <v-col cols="auto" v-if="$route.path.includes('owner')" class="d-flex">
             <v-btn  class="black--text mx-1">Add Owner</v-btn>
-            <v-btn  class="black--text mx-1">Export</v-btn>
+            <JsonCSV :data="owners"><v-btn  class="black--text mx-1">Export</v-btn></JsonCSV>
             <v-btn  class="black--text mx-1">Print</v-btn>
         </v-col>
-        <v-col cols="auto" v-else >
+        <v-col cols="auto" v-else class="d-flex" >
             <v-btn  class="black--text mx-1">Add Boat</v-btn>
-            <v-btn  class="black--text mx-1">Export</v-btn>
+            <JsonCSV :data="boats"><v-btn  class="black--text mx-1">Export</v-btn></JsonCSV>
             <v-btn  class="black--text mx-1">Print</v-btn>
         </v-col>
     </v-row>
     <div class="mt-2">
         <v-card>
-            <v-tabs>
-                <v-tab :to="{path:'/boats/'}">
+            <v-tabs v-model="active_tab">
+                <v-tab key="1" :to="{path:'/boats/'}" :class="`${isActive($route.path)}`">
                   <v-icon class="mr-1">mdi-ferry</v-icon>
                   Boats
                 </v-tab>
-                <v-tab :to="{path:'/boats/owner'}">
+                <v-tab key="2" :to="{path:'/boats/owner'}">
                   <v-icon class="mr-1">mdi-account-tie</v-icon>
                   Owner
                 </v-tab>
@@ -95,26 +96,17 @@
 </template>
 
 <script>
-
+import JsonCSV from 'vue-json-csv'
+import Breadcrumbs from "../../Breadcrumbs";
 export default {
   name: "boatsgrid-index",
+  components: { Breadcrumbs, JsonCSV },
   data: () => ({
     route: "",
-    loading: false,
-    users: [],
+    active_tab: "",
+    boats: [],
+    owners: [],
     search: "",
-    totalLength: 0,
-    headers: [
-      { text: "User Name", value: "name"},
-      { text: "System Role", value: "role" },
-      { text: "Status", value: "status"},
-      { text: "Expiration Date", value: "date"},
-      { text: "Authorized Access", value: "access"},
-      { text: "", value: "button"}
-    ],
-    page: 1,
-    pageCount: 0,
-    iteamsPerPage: 10,
     selectedFilter: [],
     filterOptions: [
       {name: 'Boat Name'},
@@ -125,12 +117,12 @@ export default {
       {name: 'Service End'},
       {name: 'Vessel Type'},
     ],
-          selectedItem: 1,
-      items: [
-        { text: 'Real-Time', icon: 'mdi-clock' },
-        { text: 'Audience', icon: 'mdi-account' },
-        { text: 'Conversions', icon: 'mdi-flag' },
-      ],
+    selectedItem: 1,
+    items: [
+      { text: 'Real-Time', icon: 'mdi-clock' },
+      { text: 'Audience', icon: 'mdi-account' },
+      { text: 'Conversions', icon: 'mdi-flag' },
+    ],
   }),
   created() {
     if(this.$route.path.includes("owner")){//shows the buttons for owner
@@ -150,50 +142,23 @@ export default {
         console.log("hola");
         this.$store.commit("boats/setSelectedFilters", this.selectedFilter);
     },
-    removeItem(item){ //removes one element from the users array
-      const index = this.users.indexOf(item);
-      if (index > -1) {
-        this.users.splice(index, 1);
-      }
-    },
     getDataFromApi() {
-      this.loading = true;
       this.boats = [
-          {id: 1, name: 'Name 1', role: 'BackendUser', status: 'Active', date: '01/02/2020', access: 'First Nation Name', button: "Remove"},
+          {id: 1, name: 'Evelyn', role: 'BackendUser', status: 'Active', date: '01/02/2020', access: 'First Nation Name', button: "Remove"},
           {id: 2, name: 'Name 2', role: 'BackendUser', status: 'Expired', date: '01/02/2020', access: 'First Nation Name', button: "Remove"},
           {id: 3, name: 'Name 3', role: 'BackendUser', status: 'Active', date: '01/02/2020', access: 'First Nation Name', button: "Remove"},
           {id: 4, name: 'Name 4', role: 'BackendUser', status: 'Pending', date: '01/02/2020', access: 'First Nation Name', button: "Remove"},
-      ]
-      this.totalLength = this.users.length;
-      this.loading = false;
-    },
-    filter(data, arr){// this is a helper function for "filteredData", applies filters and returns an array.
-      return arr.length == 1 ? data.filter( a => a.status == arr[0])
-            : arr.length == 2 ? data.filter( a => (a.status == arr[0] || a.status == arr[1]))
-            : arr.length == 3 ? data.filter( a => (a.status == arr[0] || a.status == arr[1] || a.status == arr[2]))
-            : data;
-    },
+      ];
+      this.owners = [
+            {id: 1, owner: 'Ownername 1'},
+            {id: 2, owner: 'Ownername 2'},
+            {id: 3, owner: 'Ownername 3'},
+        ];
 
-  },
-  computed: {
-    filteredData(){// returns a filtered users array depending on the selected filters
-      let sorters = JSON.parse(JSON.stringify(this.selectedFilter));
-      let data = JSON.parse(JSON.stringify(this.users));
-      for(let i=0; i<sorters.length; i++){
-        switch(sorters[i]){
-          case 0:
-            sorters[i] = "Active"
-            break;
-          case 1:
-            sorters[i] = "Expired"
-            break;
-          case 2:
-            sorters[i] = "Pending"
-            break;
-        }
-      }
-      return this.filter(data, sorters);
     },
+    isActive(route){//this function helps to show certain classes depending on the route
+        return (route.includes('owner')) ? 'notActive' :  '';
+    }
   }
 };
 </script>
@@ -201,5 +166,8 @@ export default {
 <style scoped>
 #horizontal-list{
     display: flex;
+}
+.notActive{
+  color: rgba(0,0,0,.54) !important;
 }
 </style>

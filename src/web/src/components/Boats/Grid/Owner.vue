@@ -51,7 +51,7 @@ export default {
     },
     methods: {
         handleClick(value){   //Redirects the user to the edit user form
-            this.$router.push(`/boats/edit/${value.id}`);
+            this.$router.push(`/boats/owner/${value.owner}`);
         },
         getDataFromApi() {
         this.loading = true;
