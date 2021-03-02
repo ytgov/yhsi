@@ -1,6 +1,7 @@
 <template>
     <div>
         <h3>Boats</h3>
+        <Breadcrumbs/>
         <v-row>
             <v-col cols="12" class="d-flex">
                 <h1>{{name}}</h1>
@@ -298,10 +299,11 @@
 </template>
 
 <script>
+import Breadcrumbs from '../../Breadcrumbs.vue';
 import Photos from "./Photos";
 export default {
     name: "boatsForm",
-    components: { Photos },
+    components: { Photos, Breadcrumbs },
     data: ()=> ({
         name: "Evelyn",
         dialog: false, //tells the print dialog when to show itself,
