@@ -36,8 +36,8 @@ import CommunitiesForm from "../components/Communities/CommunitiesComponents/For
 import Boats from "../components/Boats/Grid";
 import BoatsGrid from "../components/Boats/Grid/Boats";
 import OwnerGrid from "../components/Boats/Grid/Owner";
-import BoatsForm from "../components/Boats/BoatsComponents/BoatsForm";
-import BoatsOwnerForm from "../components/Boats/BoatsComponents/OwnerForm";
+import BoatsForm from "../components/Boats/BoatsComponents/Boat/BoatsForm";
+import BoatsOwnerForm from "../components/Boats/BoatsComponents/Owner/OwnerForm";
 
 Vue.use(VueRouter);
 
@@ -278,22 +278,32 @@ const routes = [
     ]
   },
   {
-    path: "/boats/:name",
+    path: "/boats/view/:name",
     name: "boatView",
     component: BoatsForm
   },
   {
-    path: "/boats/:name/edit",
+    path: "/boats/edit/:name",
     name: "boatEditView",
     component: BoatsForm
   },
   {
-    path: "/boats/owner/:name",
+    path: "/boats/new",
+    name: "boatEditView",
+    component: BoatsForm
+  },
+  {
+    path: "/boats/owner/view/:name",
     name: "ownerView",
     component: BoatsOwnerForm
   },
   {
-    path: "/boats/owner/:name/edit",
+    path: "/boats/owner/edit/:name",
+    name: "ownerEditView",
+    component: BoatsOwnerForm
+  },
+  {
+    path: "/boats/owner/new",
     name: "ownerEditView",
     component: BoatsOwnerForm
   },

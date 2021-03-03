@@ -4,12 +4,22 @@
     <Breadcrumbs/>
     <v-row>
         <v-col cols="6" class="d-flex">
-            <v-text-field
+            <v-text-field v-if="$route.path.includes('owner')"
             flat
             prepend-icon="mdi-magnify"
             class="mx-4"
             hide-details
-            label="Search"
+            label="Search by Owner Name"
+            v-model="search"
+            v-on:input="searchChange()"
+            ></v-text-field>
+
+            <v-text-field v-else
+            flat
+            prepend-icon="mdi-magnify"
+            class="mx-4"
+            hide-details
+            label="Search by Boat Name"
             v-model="search"
             v-on:input="searchChange()"
             ></v-text-field>
@@ -22,6 +32,19 @@
             >
                 <template v-slot:activator="{ on, attrs }">
                 <v-btn
+                    v-if="$route.path.includes('owner')"
+                    color="transparent"
+                    class="black--text"
+                    v-bind="attrs"
+                    v-on="on"
+                    disabled
+                > <v-icon class="black--text mr-1">mdi-filter</v-icon>
+                    Filter
+
+                  <v-icon class="black--text">mdi-chevron-right</v-icon>
+                </v-btn>
+                <v-btn
+                    v-else
                     color="transparent"
                     class="black--text"
                     v-bind="attrs"
@@ -34,31 +57,20 @@
                 </template>
                 <v-list>
                 <v-list-item-group
-                    v-model="selectedFilter"
                     color="primary"
                     multiple
-                    @change="filterChange"
                 >
                     <v-list-item
                     v-for="(item, i) in filterOptions"
                     :key="i"
                     link
                     >   
-                    <template v-slot:default="{ active }">
-                        <v-list-item-action>
-                            <v-icon
-                            v-if="!active"
-                            >
-                            mdi-checkbox-blank-outline
-                            </v-icon>
-                            <v-icon
-                            v-else
-                            >
-                            mdi-checkbox-marked-outline
-                            </v-icon>
-                        </v-list-item-action>
-                        <v-list-item-title>{{ item.name }}</v-list-item-title>
-                        </template>
+                      <v-text-field
+                        clearable
+                        @change="filterChange"
+                        v-model="item.value"
+                        :label="item.name"
+                      ></v-text-field>
                     </v-list-item>
                 </v-list-item-group>
                 </v-list>
@@ -66,12 +78,12 @@
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="auto" v-if="$route.path.includes('owner')" class="d-flex">
-            <v-btn  class="black--text mx-1">Add Owner</v-btn>
+            <v-btn  class="black--text mx-1" @click="addNewOwner">Add Owner</v-btn>
             <JsonCSV :data="owners"><v-btn  class="black--text mx-1">Export</v-btn></JsonCSV>
             <v-btn  class="black--text mx-1">Print</v-btn>
         </v-col>
         <v-col cols="auto" v-else class="d-flex" >
-            <v-btn  class="black--text mx-1">Add Boat</v-btn>
+            <v-btn  class="black--text mx-1" @click="addNewBoat">Add Boat</v-btn>
             <JsonCSV :data="boats"><v-btn  class="black--text mx-1">Export</v-btn></JsonCSV>
             <v-btn  class="black--text mx-1">Print</v-btn>
         </v-col>
@@ -107,15 +119,12 @@ export default {
     boats: [],
     owners: [],
     search: "",
-    selectedFilter: [],
     filterOptions: [
-      {name: 'Boat Name'},
-      {name: 'Owner'},
-      {name: 'Construction Date'},
-      {name: 'Owner'},
-      {name: 'Service Start'},
-      {name: 'Service End'},
-      {name: 'Vessel Type'},
+      {name: 'Owner', value: ""},
+      {name: 'Construction Date', value: ""},
+      {name: 'Service Start', value: ""},
+      {name: 'Service End', value: ""},
+      {name: 'Vessel Type', value: ""},
     ],
     selectedItem: 1,
     items: [
@@ -130,17 +139,22 @@ export default {
     }
     else{//shows the buttons for boats
       this.route = "boats";
+      
     }
     this.getDataFromApi();
   },
   methods: {
+    addNewBoat(){
+        this.$router.push(`/boats/new`);
+    },
+    addNewOwner(){
+        this.$router.push(`/boats/owner/new`);
+    },
     searchChange(){
         this.$store.commit("boats/setSearch", this.search);
-        console.log(this.$store.getters['boats/search']);
     },
     filterChange(){
-        console.log("hola");
-        this.$store.commit("boats/setSelectedFilters", this.selectedFilter);
+        this.$store.commit("boats/setSelectedFilters", this.filterOptions);
     },
     getDataFromApi() {
       this.boats = [
