@@ -26,7 +26,7 @@ export default {
     name: "boatsGrid",
     data: ()=> ({
         loading: false,
-        boats: [0],
+        boats: [],
         totalLength: 0,
         headers: [
         { text: "Name", value: "name"},
@@ -41,15 +41,7 @@ export default {
         page: 1,
         pageCount: 0,
         iteamsPerPage: 10,
-        filterOptions: [
-            {name: 'Boat Name'},
-            {name: 'Owner'},
-            {name: 'Construction Date'},
-            {name: 'Owner'},
-            {name: 'Service Start'},
-            {name: 'Service End'},
-            {name: 'Vessel Type'},
-        ],
+        filterOptions: null,
     }),
     created(){
         console.log(this.selectedFilters);
@@ -58,7 +50,7 @@ export default {
     },
     methods: {
         handleClick(value){   //Redirects the user to the edit user form
-            this.$router.push(`/boats/${value.name}`);
+            this.$router.push(`/boats/view/${value.name}`);
         },
         getDataFromApi() {
         this.loading = true;
@@ -73,12 +65,6 @@ export default {
         this.totalLength = this.boats.length;
         this.loading = false;
         },
-        filter(data, arr){// this is a helper function for "filteredData", applies filters and returns an array.
-        return arr.length == 1 ? data.filter( a => a.status == arr[0])
-                : arr.length == 2 ? data.filter( a => (a.status == arr[0] || a.status == arr[1]))
-                : arr.length == 3 ? data.filter( a => (a.status == arr[0] || a.status == arr[1] || a.status == arr[2]))
-                : data;
-        },
 
     },
     computed: {
@@ -89,43 +75,28 @@ export default {
             return this.$store.getters['boats/search'];
         },
         filteredData(){// returns a filtered users array depending on the selected filters
-            if(this.selectedFilters){
-                console.log(this.boats);
-                let sorters = JSON.parse(JSON.stringify(this.selectedFilters));
+            if(this.filterOptions){
+                let sorters = JSON.parse(JSON.stringify(this.filterOptions));
                 let data = JSON.parse(JSON.stringify(this.boats));
-                for(let i=0; i<sorters.length; i++){
-                    switch(sorters[i]){
-                    case 0:
-                        sorters[i] = "Boat Name"
-                        break;
-                    case 1:
-                        sorters[i] = "Owner"
-                        break;
-                    case 2:
-                        sorters[i] = "Construction Date"
-                        break;
-                    case 3:
-                        sorters[i] = "Service Start"
-                        break;
-                    case 4:
-                        sorters[i] = "Service End"
-                        break;
-                    case 5:
-                        sorters[i] = "Vessel Type"
-                        break;
-                    }
-                }
-                return this.filter(data, sorters);
+                data = data.filter( x => x.owner.toLowerCase().includes(sorters[0].value.toLowerCase()));  
+                data = data.filter( x => x.constructionDate.toLowerCase().includes(sorters[2].value.toLowerCase()));  
+                data = data.filter( x => x.serviceStartDate.toLowerCase().includes(sorters[3].value.toLowerCase()));  
+                data = data.filter( x => x.serviceEndDate.toLowerCase().includes(sorters[4].value.toLowerCase()));  
+                data = data.filter( x => x.vesselType.toLowerCase().includes(sorters[1].value.toLowerCase())); 
+                return data;
             }
             else{
-                return [];
+                return this.boats;
             }
-            
         },
     },
     watch: {
         selectedFilters(newv, oldv){
-            console.log(oldv,newv);
+            console.log("old value:");
+            console.log(oldv);
+            console.log("new value");
+            console.log(newv);
+            this.filterOptions = newv;
         },
         search (newv, oldv) {
             //this.search = newv;

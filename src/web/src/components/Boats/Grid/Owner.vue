@@ -26,7 +26,7 @@ export default {
     name: "boatsGrid",
     data: ()=> ({
         loading: false,
-        owners: [0],
+        owners: [],
         totalLength: 0,
         headers: [
         { text: "Owner", value: "owner" },
@@ -51,7 +51,7 @@ export default {
     },
     methods: {
         handleClick(value){   //Redirects the user to the edit user form
-            this.$router.push(`/boats/owner/${value.owner}`);
+            this.$router.push(`/boats/owner/view/${value.owner}`);
         },
         getDataFromApi() {
         this.loading = true;
@@ -63,54 +63,14 @@ export default {
         this.totalLength = this.owners.length;
         this.loading = false;
         },
-        filter(data, arr){// this is a helper function for "filteredData", applies filters and returns an array.
-        return arr.length == 1 ? data.filter( a => a.status == arr[0])
-                : arr.length == 2 ? data.filter( a => (a.status == arr[0] || a.status == arr[1]))
-                : arr.length == 3 ? data.filter( a => (a.status == arr[0] || a.status == arr[1] || a.status == arr[2]))
-                : data;
-        },
 
     },
     computed: {
-        selectedFilters(){
-            return this.$store.getters['boats/selectedFilters'];
-        },
         search () {
             return this.$store.getters['boats/search'];
         },
         filteredData(){// returns a filtered users array depending on the selected filters
-            if(this.selectedFilters){
-                console.log(this.owners);
-                let sorters = JSON.parse(JSON.stringify(this.selectedFilters));
-                let data = JSON.parse(JSON.stringify(this.owners));
-                for(let i=0; i<sorters.length; i++){
-                    switch(sorters[i]){
-                    case 0:
-                        sorters[i] = "Boat Name"
-                        break;
-                    case 1:
-                        sorters[i] = "Owner"
-                        break;
-                    case 2:
-                        sorters[i] = "Construction Date"
-                        break;
-                    case 3:
-                        sorters[i] = "Service Start"
-                        break;
-                    case 4:
-                        sorters[i] = "Service End"
-                        break;
-                    case 5:
-                        sorters[i] = "Vessel Type"
-                        break;
-                    }
-                }
-                return this.filter(data, sorters);
-            }
-            else{
-                return [];
-            }
-            
+           return this.owners;  
         },
     },
     watch: {
