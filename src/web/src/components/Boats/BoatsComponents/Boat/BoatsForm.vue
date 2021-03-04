@@ -1,5 +1,6 @@
 <template>
-    <div>
+    <div >
+        
         <h3>Boats</h3>
         <Breadcrumbs/>
         <v-row>
@@ -12,10 +13,7 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <v-btn class="black--text mx-1" v-if="mode == 'view'">
-                    <v-icon class="mr-1">mdi-printer</v-icon>
-                    Print
-                </v-btn>
+                <PrintButton  v-if="mode == 'view'" :data="fields" :name="name"/>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
                     <v-icon>mdi-close</v-icon>
@@ -36,9 +34,9 @@
                 </v-btn>
             </v-col>
         </v-row>
-        <v-row>
+        <v-row >
             <v-col cols="5">
-                <v-row>
+                <v-row >
                     <v-col cols="6">
                         <v-card>
                             <v-list class="pa-0" >
@@ -211,7 +209,7 @@
                     <v-col cols="8">
                         <v-card>
                             <v-list class="pa-0" >
-                                <v-subheader>Owners/s:</v-subheader>
+                                <v-subheader>Owner/s:</v-subheader>
                                 <v-divider></v-divider>
                                 <template v-for="(item, index) in fields.owners">
                                     <v-list-item :key="`nl-${index}`">
@@ -324,6 +322,7 @@
         </v-row>
         <v-divider class="my-5"></v-divider>
         <HistoricRecord :historicRecords="fields.historicRecords" :mode="mode"/>
+
     </div>
 </template>
 
@@ -331,9 +330,10 @@
 import Breadcrumbs from '../../../Breadcrumbs.vue';
 import Photos from "./Photos";
 import HistoricRecord from "../HistoricRecord";
+import PrintButton from "./PrintButton";
 export default {
     name: "boatsForm",
-    components: { Photos, Breadcrumbs, HistoricRecord },
+    components: { Photos, Breadcrumbs, HistoricRecord, PrintButton },
     data: ()=> ({
         name: "Evelyn",
         dialog: false, //tells the print dialog when to show itself
