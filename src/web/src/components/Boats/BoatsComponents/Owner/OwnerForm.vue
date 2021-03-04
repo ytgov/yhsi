@@ -12,10 +12,7 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <v-btn class="black--text mx-1" v-if="mode == 'view'">
-                    <v-icon class="mr-1">mdi-printer</v-icon>
-                    Print
-                </v-btn>
+                <PrintButton  v-if="mode == 'view'" :name="name" :data="fields"/>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
                     <v-icon>mdi-close</v-icon>
@@ -41,6 +38,7 @@
                 <v-row>
                     <v-col cols="6">
                         <v-text-field
+                            v-model="fields.ownerName"
                             label="Owner Name"
                         ></v-text-field>
                     </v-col>
@@ -160,9 +158,10 @@
 <script>
 import Breadcrumbs from "../../../Breadcrumbs";
 import HistoricRecord from "../HistoricRecord";
+import PrintButton from "./PrintButton";
 export default {
     name: "ownerForm",
-    components: { Breadcrumbs, HistoricRecord },
+    components: { Breadcrumbs, HistoricRecord, PrintButton },
     data: ()=> ({
         name: "British Yukon Navigation Company",
     //helper vars, they are used to determine if the component is in an edit, view or add new state
@@ -186,6 +185,7 @@ export default {
         menu3: "",
         search: "",
         fields: {
+            ownerName: "",
             alias: [ "Alias 1", "Alias 2", "Alias 3"],
             boatsOwned: ["Boat 1","Boat 2","Boat 3","Boat 4","Boat 4","Boat 4","Boat 4"],
             historicRecords: [
