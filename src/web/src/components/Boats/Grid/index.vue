@@ -78,14 +78,38 @@
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="auto" v-if="$route.path.includes('owner')" class="d-flex">
-            <v-btn  class="black--text mx-1" @click="addNewOwner">Add Owner</v-btn>
-            <JsonCSV :data="owners"><v-btn  class="black--text mx-1">Export</v-btn></JsonCSV>
-            <v-btn  class="black--text mx-1">Print</v-btn>
+            <v-btn  class="black--text mx-1" @click="addNewOwner">
+              <v-icon class="mr-1">mdi-plus-circle-outline</v-icon> 
+              Add Owner
+            </v-btn>
+
+            <JsonCSV :data="owners">
+              <v-btn  class="black--text mx-1">
+                <v-icon class="mr-1">
+                  mdi-export
+                </v-icon>
+                Export
+              </v-btn>
+            </JsonCSV>
+
+            <PrintButton key="prt-1" :data="{owners}"/>
         </v-col>
         <v-col cols="auto" v-else class="d-flex" >
-            <v-btn  class="black--text mx-1" @click="addNewBoat">Add Boat</v-btn>
-            <JsonCSV :data="boats"><v-btn  class="black--text mx-1">Export</v-btn></JsonCSV>
-            <v-btn  class="black--text mx-1">Print</v-btn>
+            <v-btn  class="black--text mx-1" @click="addNewBoat">
+              <v-icon class="mr-1">mdi-plus-circle-outline</v-icon> 
+              Add Owner
+            </v-btn>
+
+            <JsonCSV :data="boats">
+              <v-btn  class="black--text mx-1">
+                <v-icon class="mr-1">
+                  mdi-export
+                </v-icon>
+                Export
+              </v-btn>
+            </JsonCSV>
+
+            <PrintButton key="prt-2" :data="{boats}"/>
         </v-col>
     </v-row>
     <div class="mt-2">
@@ -110,9 +134,10 @@
 <script>
 import JsonCSV from 'vue-json-csv'
 import Breadcrumbs from "../../Breadcrumbs";
+import PrintButton from "./PrintButton";
 export default {
   name: "boatsgrid-index",
-  components: { Breadcrumbs, JsonCSV },
+  components: { Breadcrumbs, JsonCSV, PrintButton },
   data: () => ({
     route: "",
     active_tab: "",
@@ -158,15 +183,17 @@ export default {
     },
     getDataFromApi() {
       this.boats = [
-          {id: 1, name: 'Evelyn', role: 'BackendUser', status: 'Active', date: '01/02/2020', access: 'First Nation Name', button: "Remove"},
-          {id: 2, name: 'Name 2', role: 'BackendUser', status: 'Expired', date: '01/02/2020', access: 'First Nation Name', button: "Remove"},
-          {id: 3, name: 'Name 3', role: 'BackendUser', status: 'Active', date: '01/02/2020', access: 'First Nation Name', button: "Remove"},
-          {id: 4, name: 'Name 4', role: 'BackendUser', status: 'Pending', date: '01/02/2020', access: 'First Nation Name', button: "Remove"},
-      ];
+          {name: 'Evelyn', owner: 'Ownername 2', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
+          serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
+          {name: 'Name 2', owner: 'Ownername 4', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
+          serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
+          {name: 'Name 3', owner: 'Ownername 1', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
+          serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
+      ]
       this.owners = [
-            {id: 1, owner: 'Ownername 1'},
-            {id: 2, owner: 'Ownername 2'},
-            {id: 3, owner: 'Ownername 3'},
+            { owner: 'Ownername 1'},
+            { owner: 'Ownername 2'},
+            { owner: 'Ownername 3'},
         ];
 
     },
