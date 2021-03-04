@@ -5,7 +5,7 @@
         <v-row>
             <v-col cols="12" class="d-flex">
                 <h1 v-if="mode != 'new'">{{name}}</h1>
-                <h1 v-else>New Boat</h1>
+                <h1 v-else>New Owner</h1>
                 <v-spacer></v-spacer>
 <!-- buttons for the view state -->
                 <v-btn class="black--text mx-1" @click="editMode" v-if="mode == 'view'">
