@@ -97,7 +97,7 @@
         <v-col cols="auto" v-else class="d-flex" >
             <v-btn  class="black--text mx-1" @click="addNewBoat">
               <v-icon class="mr-1">mdi-plus-circle-outline</v-icon> 
-              Add Owner
+              Add Boat
             </v-btn>
 
             <JsonCSV :data="boats">
