@@ -35,18 +35,14 @@ export default {
             let alias = this.data.alias;
             this.toPrint.alias = [];
             for(let i = 0; i<alias.length; i++){
-              console.log(alias[i]);
               this.toPrint.alias.push([alias[i]]);
             }
 
             let boatsOwned = this.data.boatsOwned;
             this.toPrint.boatsOwned = [];
             for(let i = 0; i<boatsOwned.length; i++){
-              console.log(boatsOwned[i]);
               this.toPrint.boatsOwned.push([boatsOwned[i]]);
             }
-
-            console.log(this.toPrint);
       },
       exportPDF() {
         this.doc = new jsPDF('p', 'pt');

@@ -315,7 +315,7 @@
                         ></v-textarea>
                     </v-col>
                     <v-col cols="8">
-                            <Photos :photos="photos" :dialog="dialog" @closeDialog="closeDialog" @showDialog="showDialog"/>
+                            <Photos :photos="photos" />
                     </v-col>
                 </v-row>
             </v-col>
@@ -336,7 +336,6 @@ export default {
     components: { Photos, Breadcrumbs, HistoricRecord, PrintButton },
     data: ()=> ({
         name: "Evelyn",
-        dialog: false, //tells the print dialog when to show itself
     //helper vars used for the name list functions
         editTableNames: -1,// tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
         addingName: false,// tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
@@ -472,13 +471,6 @@ export default {
             this.editTableOwners = -1;
             this.addingName = false;
             this.editTableNames = -1;
-        },
-    // photos dialog close/open
-        closeDialog(){
-            this.dialog = false;
-        },
-        showDialog(){
-            this.dialog = true;
         },
     //functions for editing the table "Names" values
         changeEditTableNames(item,index){
