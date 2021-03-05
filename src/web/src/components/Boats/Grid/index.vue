@@ -135,6 +135,7 @@
 import JsonCSV from 'vue-json-csv'
 import Breadcrumbs from "../../Breadcrumbs";
 import PrintButton from "./PrintButton";
+import axios from 'axios';
 export default {
   name: "boatsgrid-index",
   components: { Breadcrumbs, JsonCSV, PrintButton },
@@ -181,21 +182,30 @@ export default {
     filterChange(){
         this.$store.commit("boats/setSelectedFilters", this.filterOptions);
     },
-    getDataFromApi() {
-      this.boats = [
-          {name: 'Evelyn', owner: 'Ownername 2', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
-          serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
-          {name: 'Name 2', owner: 'Ownername 4', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
-          serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
-          {name: 'Name 3', owner: 'Ownername 1', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
-          serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
-      ]
-      this.owners = [
-            { owner: 'Ownername 1'},
-            { owner: 'Ownername 2'},
-            { owner: 'Ownername 3'},
-        ];
-
+    async getDataFromApi() {
+        await axios.get(`https://jsonplaceholder.typicode.com/users`)
+        .then(res => {
+          //handle data response
+          console.log("jsonplaceholder");
+          console.log(res.data);
+        }).catch(error =>{
+          // handle error
+          console.log(error);
+        });
+        console.log("after await");
+        this.boats = [
+            {name: 'Evelyn', owner: 'Ownername 2', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
+            serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
+            {name: 'Name 2', owner: 'Ownername 4', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
+            serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
+            {name: 'Name 3', owner: 'Ownername 1', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
+            serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
+        ]
+        this.owners = [
+              { owner: 'Ownername 1'},
+              { owner: 'Ownername 2'},
+              { owner: 'Ownername 3'},
+          ];
     },
     isActive(route){//this function helps to show certain classes depending on the route
         return (route.includes('owner')) ? 'notActive' :  '';

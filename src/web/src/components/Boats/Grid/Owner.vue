@@ -45,8 +45,6 @@ export default {
         ],
     }),
     created(){
-        console.log(this.selectedFilters);
-        console.log(this.$route.params);
         this.getDataFromApi();
     },
     methods: {
@@ -54,14 +52,14 @@ export default {
             this.$router.push(`/boats/owner/view/${value.owner}`);
         },
         getDataFromApi() {
-        this.loading = true;
-        this.owners = [
-            {id: 1, owner: 'Ownername 1'},
-            {id: 2, owner: 'Ownername 2'},
-            {id: 3, owner: 'Ownername 3'},
-        ]
-        this.totalLength = this.owners.length;
-        this.loading = false;
+            this.loading = true;
+            this.owners = [
+                {id: 1, owner: 'Ownername 1'},
+                {id: 2, owner: 'Ownername 2'},
+                {id: 3, owner: 'Ownername 3'},
+            ]
+            this.totalLength = this.owners.length;
+            this.loading = false;
         },
 
     },

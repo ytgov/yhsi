@@ -43,27 +43,14 @@ export default {
             let names = this.toPrint.general.names;
             this.toPrint.general.names = [];
             for(let i = 0; i<names.length; i++){
-              console.log(names[i]);
               this.toPrint.general.names.push([names[i]]);
             }
 
             let owners = this.toPrint.general.owners;
             this.toPrint.general.owners = [];
             for(let i = 0; i<owners.length; i++){
-              console.log(owners[i]);
               this.toPrint.general.owners.push([owners[i]]);
             }
-
-            console.log(this.toPrint);
-      },
-        checkRemainingSize(textpos){
-        if (textpos >= 800){
-          this.doc.addPage();
-          return 40;
-        }
-        else{
-          return textpos+20;
-        }
       },
       exportPDF() {
         this.doc = new jsPDF('p', 'pt');
