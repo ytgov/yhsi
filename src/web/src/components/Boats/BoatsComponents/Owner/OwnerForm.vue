@@ -18,7 +18,7 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'edit'" @click="mode = 'view'" >
+                <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'edit'" @click="saveChanges()" >
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Save Changes
                 </v-btn>
@@ -135,10 +135,19 @@
                                                 <v-list-item-title>{{item}}</v-list-item-title>
                                             </v-list-item-content>
                                             <v-list-item-action>
-                                            <v-btn class="grey--text text--darken-2 my-0">
-                                                <v-icon color="grey darken-2" class="mr-2">mdi-information</v-icon>
-                                                Details
-                                            </v-btn>
+                                            <v-tooltip bottom v-if="mode == 'view'">
+                                                <template v-slot:activator="{ on, attrs }">
+                                                        <v-btn 
+                                                        v-bind="attrs"
+                                                        v-on="on" @click="goToBoat(item)"
+                                                        icon class="grey--text text--darken-2"   >
+                                                            <v-icon
+                                                                small
+                                                            > mdi-information</v-icon>
+                                                        </v-btn>
+                                                </template>
+                                                <span>Details</span>
+                                            </v-tooltip>
                                             </v-list-item-action>
                                         </v-list-item>
                                         <v-divider  :key="`ldiv-${i}`"></v-divider>
@@ -159,6 +168,7 @@
 import Breadcrumbs from "../../../Breadcrumbs";
 import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
+import boats from "../../../../controllers/boats";
 export default {
     name: "ownerForm",
     components: { Breadcrumbs, HistoricRecord, PrintButton },
@@ -166,7 +176,6 @@ export default {
         name: "British Yukon Navigation Company",
     //helper vars, they are used to determine if the component is in an edit, view or add new state
         mode: "",
-        edit: false,
         showSave: 0,
     //helper vars used for the Alias list functions
         editTableAlias: -1,// tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
@@ -184,7 +193,37 @@ export default {
         menu2: "",
         menu3: "",
         search: "",
-        fields: {
+        fields: null,
+        fieldsHistory: null,
+
+    }),
+    created(){
+        if(this.$route.path.includes("edit")){
+            this.mode= "edit";
+            //after this, the fields get filled with the info obtained from the api
+            this.getDataFromAPI();
+        }
+        else if(this.$route.path.includes("new")){
+            this.mode="new";
+            //inputs remain empty
+            this.noData();
+        }
+        else if(this.$route.path.includes("view")){
+            this.mode="view";
+            this.getDataFromAPI();
+        }
+    },
+    methods:{
+        noData(){
+            this.fields =  {
+            ownerName: "",
+            alias: [],
+            boatsOwned: [],
+            historicRecords: [],
+          };
+        },
+        async getDataFromAPI(){
+            this.fields = {
             ownerName: "",
             alias: [ "Alias 1", "Alias 2", "Alias 3"],
             boatsOwned: ["Boat 1","Boat 2","Boat 3","Boat 4","Boat 4","Boat 4","Boat 4"],
@@ -192,33 +231,10 @@ export default {
                 {historicRecord: "some text", reference: "wdadwdawdad"},
                 {historicRecord: "historic record 2", reference: "adawddad"}
             ],
-            
+            };
+            await boats.get();
         },
-        fieldsHistory: null,
-        headers: [
-            { text: "Historic Record", value: "historicRecord"},
-            { text: "Reference", value: "reference"},
-            { text: "Actions", value: "actions", sortable: false},
-        ],
-
-    }),
-    created(){
-        if(this.$route.path.includes("edit")){
-            this.mode= "edit";
-            this.edit = true;
-            //after this, the fields get filled with the info obtained from the api
-        }
-        else if(this.$route.path.includes("new")){
-            this.mode="new";
-            //inputs remain empty
-        }
-        else if(this.$route.path.includes("view")){
-            this.mode="view";
-            this.edit = false;
-        }
-    },
-    methods:{
-        save (date) {
+        save (date) {//this function saves the state of the date picker
             this.$refs.menu.save(date)
         },
         changeEdit(){//this method handles the logic behind the top edit, cancel & save changes buttons
@@ -232,6 +248,9 @@ export default {
                 this.$router.push(`/boats/owner/edit/${this.name}`);
             }
             this.edit=!this.edit;
+        },
+        goToBoat(item){
+            this.$router.push(`/boats/view/${item}`);
         },
     //Functions dedicated to handle the edit, add, view modes
         cancelEdit(){
@@ -255,6 +274,17 @@ export default {
             this.resetListVariables();
             this.$router.push(`/boats/owner/edit/${this.name}`);
             this.showSave = 0;
+        },
+        saveChanges(){
+            if(this.mode == 'add'){
+                //makes an axios post request
+                //boats.post(somedata);
+            }
+            else{
+                //makes an axios put request
+                //boats.put(somedata);
+            }
+            this.mode = 'view';
         },
         editHistoricRecord(newVal){
             this.historiRecordHelper = newVal;

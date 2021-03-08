@@ -18,9 +18,6 @@ export default {
         toPrint: {},
         textpos: 0,
     }),
-    created(){
-      this.mapData();
-    },
     methods: {
         mapData(){
             this.toPrint.historicRecords = this.data.historicRecords;
@@ -45,6 +42,7 @@ export default {
             }
       },
       exportPDF() {
+        this.mapData();
         this.doc = new jsPDF('p', 'pt');
         this.doc.text(`Owner: ${this.name}`, 40, 40);
         this.textpos = 70; 

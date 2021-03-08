@@ -56,10 +56,6 @@
                 </v-btn>
                 </template>
                 <v-list>
-                <v-list-item-group
-                    color="primary"
-                    multiple
-                >
                     <v-list-item
                     v-for="(item, i) in filterOptions"
                     :key="i"
@@ -72,7 +68,6 @@
                         :label="item.name"
                       ></v-text-field>
                     </v-list-item>
-                </v-list-item-group>
                 </v-list>
             </v-menu>
         </v-col>

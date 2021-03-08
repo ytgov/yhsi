@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import boats from "../../../controllers/boats";
 export default {
     name: "boatsGrid",
     data: ()=> ({
@@ -51,8 +52,9 @@ export default {
         handleClick(value){   //Redirects the user to the edit user form
             this.$router.push(`/boats/owner/view/${value.owner}`);
         },
-        getDataFromApi() {
+        async getDataFromApi() {
             this.loading = true;
+            await boats.get();
             this.owners = [
                 {id: 1, owner: 'Ownername 1'},
                 {id: 2, owner: 'Ownername 2'},

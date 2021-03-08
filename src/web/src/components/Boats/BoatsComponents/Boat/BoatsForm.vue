@@ -1,6 +1,5 @@
 <template>
     <div >
-        
         <h3>Boats</h3>
         <Breadcrumbs/>
         <v-row>
@@ -19,7 +18,7 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'edit'" @click="mode = 'view'" >
+                <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'edit'" @click="saveChanges" >
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Save Changes
                 </v-btn>
@@ -38,6 +37,7 @@
             <v-col cols="5">
                 <v-row >
                     <v-col cols="6">
+<!-- Names list -->
                         <v-card>
                             <v-list class="pa-0" >
                                 <v-subheader>Name/s:</v-subheader>
@@ -207,6 +207,7 @@
                 </v-row>
                 <v-row>
                     <v-col cols="8">
+<!-- Owners list -->
                         <v-card>
                             <v-list class="pa-0" >
                                 <v-subheader>Owner/s:</v-subheader>
@@ -216,12 +217,16 @@
                                         <v-list-item-content>
                                             <v-list-item-title v-if="editTableOwners != index || mode == 'view'">{{item}}</v-list-item-title>
                                             <v-form v-model="validOwner" v-if="mode != 'view'">
-                                                <v-text-field
+                                                <v-autocomplete
+                                                clearable
                                                 v-if="editTableOwners == index"
                                                 label="Owner Name"
                                                 v-model="helperOwner"
                                                 :rules="ownerRules"
-                                                ></v-text-field>
+                                                :items="owners"
+                                                item-text="name"
+                                                return-object
+                                                ></v-autocomplete>
                                             </v-form>
                                         </v-list-item-content>
                                         <v-list-item-action class="d-flex flex-row">
@@ -229,7 +234,7 @@
                                                 <template v-slot:activator="{ on, attrs }">
                                                         <v-btn 
                                                         v-bind="attrs"
-                                                        v-on="on"
+                                                        v-on="on" @click="goToOwner(item)"
                                                         icon class="grey--text text--darken-2"   >
                                                             <v-icon
                                                                 small
@@ -315,12 +320,14 @@
                         ></v-textarea>
                     </v-col>
                     <v-col cols="8">
+<!-- Photos component, it includes a carousel and some dialogs for the button actions -->
                             <Photos :photos="photos" />
                     </v-col>
                 </v-row>
             </v-col>
         </v-row>
-        <v-divider class="my-5"></v-divider>
+        <v-divider class="my-5"></v-divider> 
+<!-- Historic Record component -->
         <HistoricRecord :historicRecords="fields.historicRecords" :mode="mode"/>
 
     </div>
@@ -331,6 +338,7 @@ import Breadcrumbs from '../../../Breadcrumbs.vue';
 import Photos from "./Photos";
 import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
+import boats from "../../../../controllers/boats";
 export default {
     name: "boatsForm",
     components: { Photos, Breadcrumbs, HistoricRecord, PrintButton },
@@ -380,8 +388,7 @@ export default {
             src: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
           },
         ],
-
-
+        owners: [{id:1, name:"Owner 200"}, {id:2, name:"Owner 201"}, {id:2, name:"Owner 202"}]
     }),
     created(){
         if(this.$route.path.includes("edit")){
@@ -416,7 +423,8 @@ export default {
                 historicRecords: []
             };
         },
-        getDataFromApi(){
+        async getDataFromApi(){
+            
             this.fields = {
                 names: ["Evelyn", "Norcom"],
                 constructionDate: "",
@@ -433,9 +441,14 @@ export default {
                     {historicRecord: "historic record 2", reference: "adawddad"}
                 ]
             };
+
+            await boats.get();
         },
         save (date) {
             this.$refs.menu.save(date);
+        },
+        goToOwner(owner){
+            this.$router.push(`/boats/owner/view/${owner}`);
         },
     //Functions dedicated to handle the edit, add, view modes
         cancelEdit(){
@@ -459,6 +472,17 @@ export default {
             this.$router.push(`/boats/edit/${this.name}`);
             this.showSave = 0;
             this.resetListVariables();
+        },
+        saveChanges(){
+            if(this.mode == 'add'){
+                //makes an axios post request
+                //boats.post(somedata);
+            }
+            else{
+                //makes an axios put request
+                //boats.put(somedata);
+            }
+            this.mode = 'view';
         },
         editHistoricRecord(newVal){
             this.historiRecordHelper = newVal;
@@ -516,7 +540,7 @@ export default {
                 
         },
         saveTableOwners(index){
-            this.fields.owners[index] = this.helperOwner;   
+            this.fields.owners[index] = this.helperOwner.name ? this.helperOwner.name : this.helperOwner;   
             this.addingOwner = false;  
             this.editTableOwners = -1;    
         },

@@ -113,6 +113,7 @@
                                                 color="primary darken-1"
                                                 text
                                                 class="ma-1"
+                                                @click="savePhoto"
                                             >
                                                 Save 
                                             </v-btn>    
@@ -190,6 +191,7 @@
                                             color="primary darken-1"
                                             text
                                             class="ma-1"
+                                            @click="saveAndLink"
                                         >
                                             Save and Link
                                         </v-btn>    
@@ -291,6 +293,7 @@
 </template>
 
 <script>
+import boats from "../../../../controllers/boats";
 export default {
     name: "photos",
     props: ["photos"],
@@ -313,6 +316,7 @@ export default {
         photos1: [],
     }),
     created(){
+        this.getDataFromAPI();
         this.photos1= [
             { selected: false, name: "photo-1", photo: "https://picsum.photos/500/300?image=1",},
             { selected: false, name: "photo-2", photo: "https://picsum.photos/500/300?image=2",},
@@ -328,11 +332,22 @@ export default {
         ];
     },
     methods: {
+        async getDataFromAPI(){
+            await boats.get();
+        },
         selectImage(item){
             let index = this.photos1.indexOf(item);
             if(index >-1){
                 this.photos1[index].selected =  !this.photos1[index].selected;
             }
+        },
+        savePhoto(){
+            //makes axios request to save the data
+            //boats.post();
+        },
+        saveAndLink(){
+            //makes axios request to save the data
+            //boats.post();
         }
     },
     computed: {

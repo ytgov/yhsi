@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import boats from "../../../controllers/boats";
 export default {
     name: "boatsGrid",
     data: ()=> ({
@@ -53,15 +53,7 @@ export default {
         },
         async getDataFromApi() {
             this.loading = true;
-            await axios.get(`https://jsonplaceholder.typicode.com/users`)
-                .then(res => {
-                //handle data response
-                console.log("jsonplaceholder");
-                console.log(res.data);
-                }).catch(error =>{
-                // handle error
-                console.log(error);
-            });
+            await boats.get();
             this.boats = [
                 {id: 1, name: 'Evelyn', owner: 'Ownername 2', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
                 serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
@@ -83,14 +75,16 @@ export default {
             return this.$store.getters['boats/search'];
         },
         filteredData(){// returns a filtered users array depending on the selected filters
+        console.log(this.filterOptions);
             if(this.filterOptions){
                 let sorters = JSON.parse(JSON.stringify(this.filterOptions));
                 let data = JSON.parse(JSON.stringify(this.boats));
-                data = data.filter( x => x.owner.toLowerCase().includes(sorters[0].value.toLowerCase()));  
-                data = data.filter( x => x.constructionDate.toLowerCase().includes(sorters[2].value.toLowerCase()));  
-                data = data.filter( x => x.serviceStartDate.toLowerCase().includes(sorters[3].value.toLowerCase()));  
-                data = data.filter( x => x.serviceEndDate.toLowerCase().includes(sorters[4].value.toLowerCase()));  
-                data = data.filter( x => x.vesselType.toLowerCase().includes(sorters[1].value.toLowerCase())); 
+                console.log(data);
+                data = sorters[0].value == null ? data : data.filter( x => x.owner.toLowerCase().includes(sorters[0].value.toLowerCase()));  
+                data = sorters[1].value == null ? data : data.filter( x => x.constructionDate.toLowerCase().includes(sorters[1].value.toLowerCase()));  
+                data = sorters[2].value == null ? data : data.filter( x => x.serviceStartDate.toLowerCase().includes(sorters[2].value.toLowerCase()));  
+                data = sorters[3].value == null ? data : data.filter( x => x.serviceEndDate.toLowerCase().includes(sorters[3].value.toLowerCase()));  
+                data = sorters[4].value == null ? data : data.filter( x => x.vesselType.toLowerCase().includes(sorters[4].value.toLowerCase())); 
                 return data;
             }
             else{

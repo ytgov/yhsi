@@ -24,18 +24,16 @@ export default {
         toPrint: {},
         textpos: 0,
     }),
-    created(){
-      this.mapData();
-    },
+
     methods: {
         mapData(){
             let props = Object.getOwnPropertyNames(this.data);
             props = _.filter(props, x=> x != 'photos' && x != 'historicRecords');
             this.toPrint.general = _.pickBy(this.data, (value,key) => _.includes(props, key));
             this.toPrint.photos = this.data.photos;
-            this.toPrint.historicRecords = this.data.historicRecords;
-            let hR = this.toPrint.historicRecords;
+
             this.toPrint.historicRecords = [];
+            let hR = this.data.historicRecords;
             for(let i = 0; i<hR.length; i++){
               this.toPrint.historicRecords.push(Object.values(hR[i]));
             }
@@ -45,7 +43,7 @@ export default {
             for(let i = 0; i<names.length; i++){
               this.toPrint.general.names.push([names[i]]);
             }
-
+            
             let owners = this.toPrint.general.owners;
             this.toPrint.general.owners = [];
             for(let i = 0; i<owners.length; i++){
@@ -53,6 +51,8 @@ export default {
             }
       },
       exportPDF() {
+        this.mapData();
+
         this.doc = new jsPDF('p', 'pt');
         this.doc.text(`Boat: ${this.name}`, 40, 40);
         this.textpos = 70; 
