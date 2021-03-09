@@ -130,7 +130,6 @@
 import JsonCSV from 'vue-json-csv'
 import Breadcrumbs from "../../Breadcrumbs";
 import PrintButton from "./PrintButton";
-import axios from 'axios';
 export default {
   name: "boatsgrid-index",
   components: { Breadcrumbs, JsonCSV, PrintButton },
@@ -178,16 +177,6 @@ export default {
         this.$store.commit("boats/setSelectedFilters", this.filterOptions);
     },
     async getDataFromApi() {
-        await axios.get(`https://jsonplaceholder.typicode.com/users`)
-        .then(res => {
-          //handle data response
-          console.log("jsonplaceholder");
-          console.log(res.data);
-        }).catch(error =>{
-          // handle error
-          console.log(error);
-        });
-        console.log("after await");
         this.boats = [
             {name: 'Evelyn', owner: 'Ownername 2', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
             serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},

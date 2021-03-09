@@ -27,7 +27,7 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'new'" >
+                <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'new'" @click="saveChanges">
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Save Changes
                 </v-btn>
@@ -46,7 +46,7 @@
                                     <v-list-item :key="`nl-${index}`">
                                         <v-list-item-content>
                                             <v-list-item-title v-if="index != editTableNames || mode == 'view'">{{item}}</v-list-item-title>
-                                            <v-form v-model="validName" v-if="mode != 'view'">
+                                            <v-form v-model="validName" v-if="mode != 'view'" v-on:submit.prevent>
                                                 <v-text-field
                                                 v-if="editTableNames == index "
                                                 label="Name"
@@ -216,7 +216,7 @@
                                     <v-list-item :key="`nl-${index}`">
                                         <v-list-item-content>
                                             <v-list-item-title v-if="editTableOwners != index || mode == 'view'">{{item}}</v-list-item-title>
-                                            <v-form v-model="validOwner" v-if="mode != 'view'">
+                                            <v-form v-model="validOwner" v-if="mode != 'view'" v-on:submit.prevent>
                                                 <v-autocomplete
                                                 clearable
                                                 v-if="editTableOwners == index"
@@ -364,9 +364,6 @@ export default {
         mode: "",
         edit: false,
         showSave: 0,
-    //helper vars for when v-model is not an option (inside the datatable)
-        historiRecordHelper: "",
-        referenceHelper: "",
     //input fields, datatable, etc
         menu1: "",
         menu2: "",
@@ -483,6 +480,7 @@ export default {
                 //boats.put(somedata);
             }
             this.mode = 'view';
+            this.$router.push(`/boats/view/${this.name}`);
         },
         editHistoricRecord(newVal){
             this.historiRecordHelper = newVal;
