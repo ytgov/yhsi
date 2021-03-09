@@ -27,7 +27,7 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'new'" >
+                <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'new'" @click="saveChanges()" >
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Save Changes
                 </v-btn>
@@ -54,12 +54,13 @@
                                         <v-list-item :key="`nl-${index}`">
                                             <v-list-item-content>
                                                 <v-list-item-title v-if="index != editTableAlias || mode == 'view'">{{item}}</v-list-item-title>
-                                                <v-form v-model="validAlias" v-if="mode != 'view'">
+                                                <v-form v-model="validAlias" v-if="mode != 'view'" v-on:submit.prevent>
                                                     <v-text-field
                                                     v-if="editTableAlias == index"
                                                     label="Alias"
                                                     v-model="helperAlias"
                                                     :rules="aliasRules"
+                                                    
                                                     ></v-text-field>
                                                 </v-form>
                                                 
@@ -114,7 +115,7 @@
                         <v-row>
                             <v-col cols="12" class="d-flex ">
                                 <v-spacer></v-spacer>
-                                <v-btn class="mx-1 black--text align" v-if="mode != 'view' && editTableAlias == -1">Add Alias</v-btn>
+                                <v-btn class="mx-1 black--text align" v-if="mode != 'view' && editTableAlias == -1" @click="addAlias()">Add Alias</v-btn>
                             </v-col>
                         </v-row>
                     </v-col>
@@ -285,6 +286,7 @@ export default {
                 //boats.put(somedata);
             }
             this.mode = 'view';
+            this.$router.push(`/boats/owner/view/${this.name}`);
         },
         editHistoricRecord(newVal){
             this.historiRecordHelper = newVal;
@@ -325,6 +327,15 @@ export default {
             this.editTableAlias = this.fields.alias.length-1;
         },
     },
+    watch: {
+        fields: {
+            handler(newval){
+                console.log("Value changed",newval);
+                this.showSave = this.showSave+1;
+            },
+            deep: true
+        },
+    }
 }
 </script>
 

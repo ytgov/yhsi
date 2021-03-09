@@ -13,7 +13,7 @@
 
                 <v-spacer></v-spacer>
 
-                <v-btn class="black--text" v-if="mode != 'view'">Add Historic Record</v-btn>
+                <v-btn class="black--text" v-if="mode != 'view'" @click="addRecord">Add Historic Record</v-btn>
             </v-col>
         </v-row>
         
@@ -22,14 +22,13 @@
                 <v-card>
                     <v-data-table
                         :headers="headers"
-                        :items="historicRecords"
+                        :items="data"
                         :search="search"
                     >
                         <template v-slot:item.historicRecord="{ item, index }">
                             <div v-if="editTable == index">
                                 <v-text-field
-                                :value="item.historicRecord"
-                                @input="editHistoricRecord"
+                                v-model="historicRecordHelper "
                                 ></v-text-field>
                             </div>
                             <div v-else>{{item.historicRecord}}</div>
@@ -37,19 +36,18 @@
                         <template v-slot:item.reference="{ item, index }">
                             <div v-if="editTable == index">
                                 <v-text-field 
-                                :value="item.reference"
-                                @change="editReference"
+                                v-model="referenceHelper"
                                 ></v-text-field>
                             </div>
                             <div v-else>{{item.reference}}</div>
                         </template>
-                        <template v-slot:item.actions="{  index }">
+                        <template v-slot:item.actions="{  index, item }">
                             <v-tooltip bottom v-if="editTable != index">
                                 <template v-slot:activator="{ on, attrs }">
                                         <v-btn 
                                         v-bind="attrs"
                                         v-on="on"
-                                        icon class="black--text"   @click="changeEditTable(index)">
+                                        icon class="black--text"   @click="changeEditTable(index,item)">
                                             <v-icon
                                                 small
                                             > mdi-pencil</v-icon>
@@ -62,7 +60,7 @@
                                         <v-btn
                                         v-bind="attrs"
                                         v-on="on" 
-                                        icon class="black--text" color="success"  @click="closeEditTable(index)">
+                                        icon class="black--text" color="success"  @click="saveTable(index)">
                                             <v-icon
                                             small
                                             >mdi-check</v-icon>  
@@ -75,7 +73,7 @@
                                         <v-btn 
                                         v-bind="attrs"
                                         v-on="on"
-                                        icon class="black--text"  @click="saveTable(index)">
+                                        icon class="black--text"  @click="closeEditTable(index) ">
                                             <v-icon
                                             small
                                             >mdi-close</v-icon>  
@@ -105,19 +103,44 @@ export default {
             { text: "Actions", value: "actions", sortable: false},
         ],
         editTable: -1,
+        data: [],
+    //helper vars for when v-model is not an option (inside the datatable)
+        historicRecordHelper: "",
+        referenceHelper: "",
     }),
+    created(){
+        this.data = this.historicRecords;
+    },
     methods:{
         //functions for editing the table values
-        changeEditTable(index){
-            console.log(index);
+        changeEditTable(index, item){
             this.editTable = index;
+            this.historicRecordHelper = item.historicRecord;
+            this.referenceHelper = item.reference;
+            console.log(this.referenceHelper, this.historicRecordHelper);
         },
         closeEditTable(){
             this.editTable = -1;
         },
-        saveTable(){
+        saveTable(index){
+            console.log("data");
+            console.log(this.referenceHelper, this.historicRecordHelper);
+            this.data[index].reference = this.referenceHelper;
+            this.data[index].historicRecord = this.historicRecordHelper;
             this.editTable = -1;
         },
+        addRecord(){
+            //this.$emit('addRecord')
+            this.data.push({historicRecord: "", reference: ""});
+            this.editTable = this.data.length - 1;
+            this.historicRecordHelper = "";
+            this.referenceHelper = "";
+        }
+    },
+    watch:{
+        historicRecords(val){
+            this.data = val;
+        }
     }
 }
 </script>

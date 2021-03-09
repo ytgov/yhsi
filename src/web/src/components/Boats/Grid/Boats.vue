@@ -79,7 +79,7 @@ export default {
             if(this.filterOptions){
                 let sorters = JSON.parse(JSON.stringify(this.filterOptions));
                 let data = JSON.parse(JSON.stringify(this.boats));
-                console.log(data);
+                
                 data = sorters[0].value == null ? data : data.filter( x => x.owner.toLowerCase().includes(sorters[0].value.toLowerCase()));  
                 data = sorters[1].value == null ? data : data.filter( x => x.constructionDate.toLowerCase().includes(sorters[1].value.toLowerCase()));  
                 data = sorters[2].value == null ? data : data.filter( x => x.serviceStartDate.toLowerCase().includes(sorters[2].value.toLowerCase()));  
