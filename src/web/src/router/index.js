@@ -9,7 +9,24 @@ import Login from "../components/Login";
 import LoginComplete from "../components/LoginComplete";
 import Profile from "../components/Profile";
 import store from "../store";
+import SitesForm  from "../components/Sites";
 
+import Summary from "../components/Sites/SitesForms/Summary";
+import Location from "../components/Sites/SitesForms/Location";
+import Dates from "../components/Sites/SitesForms/Dates";
+import Themes from "../components/Sites/SitesForms/Themes";
+import Associations from "../components/Sites/SitesForms/Associations";
+import LegalAndZoning from "../components/Sites/SitesForms/LegalAndZoning";
+import Photos from "../components/Sites/SitesForms/Photos";
+import MainPhotos from "../components/MainPhotos";
+import Management from "../components/Sites/SitesForms/Management";
+import Description from "../components/Sites/SitesForms/Description";
+import SitesGrid from "../components/Sites/SitesGrid";
+import PhotosGrid from "../components/MainPhotos/PhotosGrid";
+import Feature from "../components/MainPhotos/PhotosComponents/Feature";
+import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
+import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSites";
+import Photo from "../components/MainPhotos/PhotosComponents/Photo";
 Vue.use(VueRouter);
 
 const routes = [
@@ -28,7 +45,7 @@ const routes = [
     name: "Basic Form",
     component: Form,
     meta: {
-      requiresAuth: true
+      requiresAuth: false
     }
   },
   {
@@ -36,7 +53,7 @@ const routes = [
     name: "Data grid",
     component: Grid,
     meta: {
-      requiresAuth: true
+      requiresAuth: false
     }
   },
   {
@@ -54,8 +71,96 @@ const routes = [
     name: "Profile",
     component: Profile,
     meta: {
-      requiresAuth: true
+      requiresAuth: false
     }
+  },
+  {
+    path: "/sites",
+    name: "SitesGrid",
+    component: SitesGrid,
+    meta: {
+      requiresAuth: false
+    },
+  },
+  {
+    path: "/photos",
+    name: "Photos",
+    component: PhotosGrid,
+    meta: {
+      requiresAuth: false
+    },
+  },
+  {
+    path: "/sites/:id",
+    name: "SitesForm",
+    component: SitesForm,
+    meta: {
+      requiresAuth: false
+    },
+    children: [
+      {
+        path: "summary", 
+        component: Summary
+      },
+      {
+        path: "location",
+        component: Location
+      },
+      {
+        path: "dates_&_condition", 
+        component: Dates
+      },
+      {
+        path: "themes_&_function", 
+        component: Themes
+      },
+      {
+        path: "associations", 
+        component: Associations
+      },
+      {
+        path: "legal_&_zoning", 
+        component: LegalAndZoning
+      },
+      {
+        path: "photos", 
+        component: Photos
+      },
+      {
+        path: "management", 
+        component: Management
+      },
+      {
+        path: "description", 
+        component: Description
+      }
+    ]
+  },
+  {
+    path: "/photos/:id",
+    name: "PhotosForm",
+    component: MainPhotos,
+    meta: {
+      requiresAuth: false
+    },
+    children: [
+      {
+        path: "feature", 
+        component: Feature
+      },
+      {
+        path: "site_record",
+        component: SiteRecord
+      },
+      {
+        path: "historic_sites",
+        component: HistoricSites
+      },
+      {
+        path: "photo", 
+        component: Photo
+      }
+    ]
   },
   {
     path: "*",
@@ -81,7 +186,7 @@ router.beforeEach(async (to, from, next) => {
   var isAuthenticated = store.getters.isAuthenticated;
 
   if (requiresAuth && !isAuthenticated) {
-    console.log("You aren't authenticatd, redirecting to sign-in")
+    console.log("You aren't authenticatd, redirecting to sign-in");
     next("/sign-in");
     return;
   }
