@@ -43,6 +43,11 @@ export const sections = [
         name: "Communities",
         url: "/communities",
         icon: "mdi-home-group"
+    },
+    {
+        name: "Boats",
+        url: "/boats/",
+        icon: "mdi-ferry"
     }
     // {
     //     name: "Basic Form",

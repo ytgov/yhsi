@@ -33,6 +33,12 @@ import OwnersGrid from "../components/PhotoOwners/OwnersGrid";
 import OwnerForm from "../components/PhotoOwners/OwnersComponents/Form";
 import Communities from "../components/Communities/CommunitiesGrid";
 import CommunitiesForm from "../components/Communities/CommunitiesComponents/Form";
+import Boats from "../components/Boats/Grid";
+import BoatsGrid from "../components/Boats/Grid/Boats";
+import OwnerGrid from "../components/Boats/Grid/Owner";
+import BoatsForm from "../components/Boats/BoatsComponents/Boat/BoatsForm";
+import BoatsOwnerForm from "../components/Boats/BoatsComponents/Owner/OwnerForm";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -252,6 +258,54 @@ const routes = [
         component: Photo
       }
     ]
+  },
+  {
+    path: "/boats",
+    name: "Boats",
+    component: Boats,
+    meta: {
+      requiresAuth: false
+    },
+    children: [
+      {
+        path: "",
+        component: BoatsGrid
+      },
+      {
+        path: "owner",
+        component: OwnerGrid
+      }
+    ]
+  },
+  {
+    path: "/boats/view/:name",
+    name: "boatView",
+    component: BoatsForm
+  },
+  {
+    path: "/boats/edit/:name",
+    name: "boatEditView",
+    component: BoatsForm
+  },
+  {
+    path: "/boats/new",
+    name: "boatEditView",
+    component: BoatsForm
+  },
+  {
+    path: "/boats/owner/view/:name",
+    name: "ownerView",
+    component: BoatsOwnerForm
+  },
+  {
+    path: "/boats/owner/edit/:name",
+    name: "ownerEditView",
+    component: BoatsOwnerForm
+  },
+  {
+    path: "/boats/owner/new",
+    name: "ownerEditView",
+    component: BoatsOwnerForm
   },
   {
     path: "*",

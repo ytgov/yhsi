@@ -92,13 +92,15 @@
                     {{item.name}}
                   </div>  
               </template>
-              <template v-slot:item.button="{ item }">
-                  <v-btn color="success" outlined @click="removeItem(item)">Remove</v-btn>
+              <template v-slot:item.actions="{ item }">
+                  <v-btn color="success" outlined @click="removeItem(item)">
+                    <v-icon class="mr-1">mdi-delete</v-icon>
+                    Remove
+                  </v-btn>
               </template>
             </v-data-table>
         </v-col>
       </v-row>
-      
     </v-container>
   </div>
 </template>
@@ -118,7 +120,7 @@ export default {
       { text: "Status", value: "status"},
       { text: "Expiration Date", value: "date"},
       { text: "Authorized Access", value: "access"},
-      { text: "", value: "button"}
+      { text: "Actions", value: "actions"}
     ],
     page: 1,
     pageCount: 0,
@@ -138,7 +140,8 @@ export default {
         this.$router.push(`/users/edit/${value.id}`);
     },
     removeItem(item){ //removes one element from the users array
-      const index = this.users.indexOf(item);
+      const index = this.users.findIndex(a=> a.id == item.id);
+      console.log(index);
       if (index > -1) {
         this.users.splice(index, 1);
       }
@@ -146,10 +149,10 @@ export default {
     getDataFromApi() {
       this.loading = true;
       this.users = [
-          {id: 1, name: 'Name 1', role: 'BackendUser', status: 'Active', date: '01/02/2020', access: 'First Nation Name', button: "Remove"},
-          {id: 2, name: 'Name 2', role: 'BackendUser', status: 'Expired', date: '01/02/2020', access: 'First Nation Name', button: "Remove"},
-          {id: 3, name: 'Name 3', role: 'BackendUser', status: 'Active', date: '01/02/2020', access: 'First Nation Name', button: "Remove"},
-          {id: 4, name: 'Name 4', role: 'BackendUser', status: 'Pending', date: '01/02/2020', access: 'First Nation Name', button: "Remove"},
+          {id: 1, name: 'Name 1', role: 'BackendUser', status: 'Active', date: '01/02/2020', access: 'First Nation Name'},
+          {id: 2, name: 'Name 2', role: 'BackendUser', status: 'Expired', date: '01/02/2020', access: 'First Nation Name'},
+          {id: 3, name: 'Name 3', role: 'BackendUser', status: 'Active', date: '01/02/2020', access: 'First Nation Name'},
+          {id: 4, name: 'Name 4', role: 'BackendUser', status: 'Pending', date: '01/02/2020', access: 'First Nation Name'},
       ]
       this.totalLength = this.users.length;
       this.loading = false;
