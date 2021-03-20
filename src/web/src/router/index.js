@@ -27,6 +27,18 @@ import Feature from "../components/MainPhotos/PhotosComponents/Feature";
 import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
 import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSites";
 import Photo from "../components/MainPhotos/PhotosComponents/Photo";
+import Users from "../components/Users/UsersGrid";
+import UserForm from "../components/Users/UsersComponents/Form";
+import OwnersGrid from "../components/PhotoOwners/OwnersGrid";
+import OwnerForm from "../components/PhotoOwners/OwnersComponents/Form";
+import Communities from "../components/Communities/CommunitiesGrid";
+import CommunitiesForm from "../components/Communities/CommunitiesComponents/Form";
+import Boats from "../components/Boats/Grid";
+import BoatsGrid from "../components/Boats/Grid/Boats";
+import OwnerGrid from "../components/Boats/Grid/Owner";
+import BoatsForm from "../components/Boats/BoatsComponents/Boat/BoatsForm";
+import BoatsOwnerForm from "../components/Boats/BoatsComponents/Owner/OwnerForm";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -91,6 +103,65 @@ const routes = [
     },
   },
   {
+    path: "/users",
+    name: "Users",
+    component: Users,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/photo-owners",
+    name: "PhotoOwners",
+    component: OwnersGrid,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities",
+    name: "Communities",
+    component: Communities,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+      path: "/users/edit/:id",
+      component: UserForm,
+      meta: {
+        requiresAuth: false
+      }
+  },
+  {
+    path: "/photo-owners/edit/:id",
+    component: OwnerForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/photo-owners/add",
+    component: OwnerForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities/edit/:id",
+    component: CommunitiesForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities/add",
+    component: CommunitiesForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
     path: "/sites/:id",
     name: "SitesForm",
     component: SitesForm,
@@ -137,7 +208,7 @@ const routes = [
     ]
   },
   {
-    path: "/photos/:id",
+    path: "/photos/edit/:id",
     name: "PhotosForm",
     component: MainPhotos,
     meta: {
@@ -161,6 +232,80 @@ const routes = [
         component: Photo
       }
     ]
+  },
+  {
+    path: "/photos/add",
+    name: "PhotosForm",
+    component: MainPhotos,
+    meta: {
+      requiresAuth: false
+    },
+    children: [
+      {
+        path: "feature", 
+        component: Feature
+      },
+      {
+        path: "site_record",
+        component: SiteRecord
+      },
+      {
+        path: "historic_sites",
+        component: HistoricSites
+      },
+      {
+        path: "photo", 
+        component: Photo
+      }
+    ]
+  },
+  {
+    path: "/boats",
+    name: "Boats",
+    component: Boats,
+    meta: {
+      requiresAuth: false
+    },
+    children: [
+      {
+        path: "",
+        component: BoatsGrid
+      },
+      {
+        path: "owner",
+        component: OwnerGrid
+      }
+    ]
+  },
+  {
+    path: "/boats/view/:name",
+    name: "boatView",
+    component: BoatsForm
+  },
+  {
+    path: "/boats/edit/:name",
+    name: "boatEditView",
+    component: BoatsForm
+  },
+  {
+    path: "/boats/new",
+    name: "boatEditView",
+    component: BoatsForm
+  },
+  {
+    path: "/boats/owner/view/:name",
+    name: "ownerView",
+    component: BoatsOwnerForm
+  },
+  {
+    path: "/boats/owner/edit/:name",
+    name: "ownerEditView",
+    component: BoatsOwnerForm
+  },
+  {
+    path: "/boats/owner/new",
+    name: "ownerEditView",
+    component: BoatsOwnerForm
   },
   {
     path: "*",
