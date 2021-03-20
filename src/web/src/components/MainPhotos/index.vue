@@ -15,7 +15,7 @@
       <v-btn color="primary" @click="goToFeature()">
         <v-icon>mdi-image-edit</v-icon>
         <div class="ml-2">
-          <v-toolbar-title> Edit Photo </v-toolbar-title>
+          <v-toolbar-title> {{title}} Photo <span v-if="title == 'Edit'">{{photoname}}</span></v-toolbar-title>
         </div>
       </v-btn>
       <v-spacer></v-spacer>
@@ -66,22 +66,42 @@ export default {
   name: "Photos",
   components: { PrintDialog, Search },
   data: () => ({
-    site: 'site name',
+    photoname: 'photoname.png',
+    title: "",
     items: null,
     selectedItem: null,
     dialog: false, //tells the print dialog when to show itself,
     photos: []
   }),
   created(){
-    this.items = [
-      {name: "Feature", icon: 'mdi-note-text-outline', route: `/photos/${this.param}/feature`},
-      {name: "Site Record", icon: 'mdi-map-check', route: `/photos/${this.param}/site_record`},
-      {name: "Historic Sites", icon: 'mdi-calendar-range', route: `/photos/${this.param}/historic_sites`},
-      {name: "Photo", icon: 'mdi-shape', route: `/photos/${this.param}/photo`},
-    ];
+    if(this.$route.path.includes("edit")){
+      this.title = "Edit";
+      this.setMenuItemsEdit();
+      //after this a function should be called to fill the fields with the data
+    }
+    else{//doesnt fill the inputs
+      this.title = "Add";
+      this.setMenuItemsAdd();
+    }
     this.getDataFromApi();
   },
   methods: {
+    setMenuItemsEdit(){
+        this.items = [
+        {name: "Feature", icon: 'mdi-note-text-outline', route: `/photos/edit/${this.param}/feature`},
+        {name: "Site Record", icon: 'mdi-map-check', route: `/photos/edit/${this.param}/site_record`},
+        {name: "Historic Sites", icon: 'mdi-calendar-range', route: `/photos/edit/${this.param}/historic_sites`},
+        {name: "Photo", icon: 'mdi-shape', route: `/photos/edit/${this.param}/photo`},
+      ];
+    },
+    setMenuItemsAdd(){
+        this.items = [
+        {name: "Feature", icon: 'mdi-note-text-outline', route: `/photos/add/feature`},
+        {name: "Site Record", icon: 'mdi-map-check', route: `/photos/add/site_record`},
+        {name: "Historic Sites", icon: 'mdi-calendar-range', route: `/photos/add/historic_sites`},
+        {name: "Photo", icon: 'mdi-shape', route: `/photos/add/photo`},
+      ];
+    },
     getDataFromApi() {
       for(let i =0; i<12; i++){
         this.photos.push({id: i, name: `photo-${i+1}.png`, photo: `https://picsum.photos/500/300?image=${i * 5 + 10}`, date: new Date(2019,2,(Math.floor(Math.random() * 30)+1)), rating: (Math.floor(Math.random() * 6))});
