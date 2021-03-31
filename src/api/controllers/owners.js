@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var authenticateToken = require('../utils');
+var authenticateToken = require('../middlewares');
 
 router.get('/', authenticateToken, async (req, res) => {
   const permissions = req.decodedToken['yg-claims'].permissions;
