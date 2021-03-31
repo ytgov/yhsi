@@ -4,15 +4,15 @@ module.exports = {
      * http://pm2.keymetrics.io/docs/usage/application-declaration/
      */
   apps: [{
-    name: 'ykgov-covid-api',
+    name: 'ykgov-hsif-api',
     script: './server.js',
-    watch: ['server.js', './package.json'],
+    watch: ['server.js', './package.json', './controllers'],
     merge_logs: true,
     env: {
-      NODE_ENV: "development",
+      NODE_ENV: 'development',
     },
     env_production: {
-      NODE_ENV: "production",
+      NODE_ENV: 'production',
     }
   }]
 };
