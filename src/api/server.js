@@ -3,6 +3,7 @@ require('dotenv').config();
 var boatsRouter = require('./controllers/boats');
 var ownersRouter = require('./controllers/owners');
 var historiesRouter = require('./controllers/histories');
+var photosRouter = require('./controllers/photos');
 
 var knex = require('knex');
 var express = require('express');
@@ -51,6 +52,7 @@ app.get('/', function (req, res) {
 app.use('/api/boats', boatsRouter);
 app.use('/api/owners', ownersRouter);
 app.use('/api/histories', historiesRouter);
+app.use('/api/photos', photosRouter);
 
 console.log(`Database Info: ${process.env.DB_HOST} ${process.env.DB_NAME}`);
 app.listen(port);

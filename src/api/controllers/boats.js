@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var authenticateToken = require('../utils');
+var authenticateToken = require('../middlewares');
 
 router.use(express.json()) // for parsing application/json
 router.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
