@@ -8,6 +8,6 @@ services:
         volumes:
             - "./:/usr/src/app"
             - "./.env:/.env"
-            - "./database.db:/database.db"
         ports:
             - 8888:3000
+            - 1433:1433
