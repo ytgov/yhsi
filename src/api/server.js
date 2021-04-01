@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const cors = require('cors')// might want to remove before going to prod
+ 
 var boatsRouter = require('./controllers/boats');
 var ownersRouter = require('./controllers/owners');
 var historiesRouter = require('./controllers/histories');
@@ -14,7 +16,7 @@ var _ = require('lodash');
 
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
-
+app.use(cors()); //only for dev ** remove if its not needed for prod
 var conn = knex({
   client: 'mssql',
   connection: {
@@ -26,7 +28,7 @@ var conn = knex({
       enableArithAbort: true,
     }
   },
-  useNullAsDefault: true
+  useNullAsDefault: true 
 });
 
 app.set("db", conn);

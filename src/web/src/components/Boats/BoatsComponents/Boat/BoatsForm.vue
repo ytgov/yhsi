@@ -4,7 +4,7 @@
         <Breadcrumbs/>
         <v-row>
             <v-col cols="12" class="d-flex">
-                <h1 v-if="mode != 'new'">{{name}}</h1>
+                <h1 v-if="mode != 'new'">{{fields.Name}}</h1>
                 <h1 v-else>New Boat</h1>
                 <v-spacer></v-spacer>
 <!-- buttons for the view state -->
@@ -113,7 +113,7 @@
                             <v-col cols="12" >
                                 <v-text-field
                                     label="Registration Number"
-                                    v-model="fields.registrationNumber"
+                                    v-model="fields.RegistrationNumber"
                                     :readonly="mode == 'view'"
                                 ></v-text-field>
                             </v-col>
@@ -131,7 +131,7 @@
                         >
                             <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                v-model="fields.constructionDate"
+                                v-model="fields.ConstructionDate"
                                 label="Construction Date"
                                 append-icon="mdi-calendar"
                                 readonly
@@ -141,7 +141,7 @@
                             </template>
                             <v-date-picker
                             ref="picker"
-                            v-model="fields.constructionDate"
+                            v-model="fields.ConstructionDate"
                             :max="new Date().toISOString().substr(0, 10)"
                             min="1950-01-01"
                             @change="save"
@@ -159,7 +159,7 @@
                         >
                             <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                v-model="fields.serviceStartDate"
+                                v-model="fields.ServiceStart"
                                 label="Service Start Date"
                                 append-icon="mdi-calendar"
                                 readonly
@@ -169,7 +169,7 @@
                             </template>
                             <v-date-picker
                             ref="picker"
-                            v-model="fields.serviceStartDate"
+                            v-model="fields.ServiceStart"
                             :max="new Date().toISOString().substr(0, 10)"
                             min="1950-01-01"
                             @change="save"
@@ -187,7 +187,7 @@
                         >
                             <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                v-model="fields.serviceEndDate"
+                                v-model="fields.ServiceEnd"
                                 label="Service End Date"
                                 append-icon="mdi-calendar"
                                 readonly
@@ -197,7 +197,7 @@
                             </template>
                             <v-date-picker
                             ref="picker"
-                            v-model="fields.serviceEndDate"
+                            v-model="fields.ServiceEnd"
                             :max="new Date().toISOString().substr(0, 10)"
                             min="1950-01-01"
                             @change="save"
@@ -215,7 +215,7 @@
                                 <template v-for="(item, index) in fields.owners">
                                     <v-list-item :key="`nl-${index}`">
                                         <v-list-item-content>
-                                            <v-list-item-title v-if="editTableOwners != index || mode == 'view'">{{item}}</v-list-item-title>
+                                            <v-list-item-title v-if="editTableOwners != index || mode == 'view'">{{item.OwnerName}}</v-list-item-title>
                                             <v-form v-model="validOwner" v-if="mode != 'view'" v-on:submit.prevent>
                                                 <v-autocomplete
                                                 clearable
@@ -302,20 +302,20 @@
                 <v-row>
                     <v-col cols="4">
                         <v-combobox
-                        v-model="fields.vesselType"
+                        v-model="fields.VesselType"
                         label="Vessel Type"
                         :readonly="mode == 'view'"
                         ></v-combobox>
 
                         <v-textarea
                             label="Current Location Description"
-                            v-model="fields.currentLocationDescription"
+                            v-model="fields.CurrentLocation"
                             :readonly="mode == 'view'"
                         ></v-textarea>
 
                         <v-textarea
                             label="Notes"
-                            v-model="fields.notes"
+                            v-model="fields.Notes"
                             :readonly="mode == 'view'"
                         ></v-textarea>
                     </v-col>
@@ -328,7 +328,7 @@
         </v-row>
         <v-divider class="my-5"></v-divider> 
 <!-- Historic Record component -->
-        <HistoricRecord :historicRecords="fields.historicRecords" :mode="mode"/>
+        <HistoricRecord :historicRecords="fields.histories" :mode="mode"/>
 
     </div>
 </template>
@@ -421,25 +421,7 @@ export default {
             };
         },
         async getDataFromApi(){
-            
-            this.fields = {
-                names: ["Evelyn", "Norcom"],
-                constructionDate: "",
-                serviceStartDate: "",
-                serviceEndDate: "",
-                registrationNumber: "registrationNumber",
-                vesselType: "vesselType",
-                currentLocationDescription: "currentLocationDescription",
-                notes: "notesnotesnotesnotesnotesnotesnotes",
-                photos: [],
-                owners: [ "Owner 1", "Owner 2", "Owner 3"],
-                historicRecords: [
-                    {historicRecord: "some text", reference: "wdadwdawdad"},
-                    {historicRecord: "historic record 2", reference: "adawddad"}
-                ]
-            };
-
-            await boats.get();
+            this.fields = await boats.getById(this.$route.params.id);
         },
         save (date) {
             this.$refs.menu.save(date);

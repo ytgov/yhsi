@@ -15,7 +15,13 @@
               :search="search"
               @click:row="handleClick"
             >
+                <template v-slot:item.owners="{ item }">
+                    <div v-if="item.owners.length > 0">
+                        {{ item.owners[0].OwnerName }}
+                    </div>
+                </template>
             </v-data-table>
+            
         </v-col>
       </v-row>
     </v-container>
@@ -30,14 +36,14 @@ export default {
         boats: [],
         totalLength: 0,
         headers: [
-        { text: "Name", value: "name"},
-        { text: "Owner", value: "owner" },
-        { text: "Vessel Type", value: "vesselType"},
-        { text: "Construction Date", value: "constructionDate"},
-        { text: "Service Start Date", value: "serviceStartDate"},
-        { text: "Service End Date", value: "serviceEndDate"},
-        { text: "Current Location Description", value: "currentLocationDescription"},
-        { text: "Req Number", value: "reqNumber"},
+        { text: "Name", value: "Name"},
+        { text: "Owner", value: "owners" },
+        { text: "Vessel Type", value: "VesselType"},
+        { text: "Construction Date", value: "ConstructionDate"},
+        { text: "Service Start Date", value: "ServiceStart"},
+        { text: "Service End Date", value: "ServiceEnd"},
+        { text: "Current Location Description", value: "CurrentLocation"},
+        { text: "Req Number", value: "RegistrationNumber"},
         ],
         page: 1,
         pageCount: 0,
@@ -49,11 +55,14 @@ export default {
     },
     methods: {
         handleClick(value){   //Redirects the user to the edit user form
-            this.$router.push(`/boats/view/${value.name}`);
+            this.$router.push({name: 'boatView', params: { name: value.Name, id: value.Id}});
         },
         async getDataFromApi() {
             this.loading = true;
-            await boats.get();
+            console.log("DATA FROM API");
+            this.boats = await boats.get();
+            console.log(this.boats);
+            /*
             this.boats = [
                 {id: 1, name: 'Evelyn', owner: 'Ownername 2', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
                 serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
@@ -61,7 +70,7 @@ export default {
                 serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
                 {id: 3, name: 'Name 3', owner: 'Ownername 1', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
                 serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
-            ]
+            ]*/
             this.totalLength = this.boats.length;
             this.loading = false;
         },

@@ -4,7 +4,7 @@
         <Breadcrumbs/>
         <v-row>
             <v-col cols="12" class="d-flex">
-                <h1 v-if="mode != 'new'">{{name}}</h1>
+                <h1 v-if="mode != 'new'">{{fields.OwnerName}}</h1>
                 <h1 v-else>New Owner</h1>
                 <v-spacer></v-spacer>
 <!-- buttons for the view state -->
@@ -38,7 +38,7 @@
                 <v-row>
                     <v-col cols="6">
                         <v-text-field
-                            v-model="fields.ownerName"
+                            v-model="fields.OwnerName"
                             label="Owner Name"
                         ></v-text-field>
                     </v-col>
@@ -130,10 +130,10 @@
                                 <v-subheader>Boats Owned:</v-subheader>
                                 <v-divider></v-divider>
                                 <div class="scrollBoats">
-                                    <template v-for="(item, i) in fields.boatsOwned" >
+                                    <template v-for="(item, i) in fields.boats" >
                                         <v-list-item :key="`nl-${i}`">
                                             <v-list-item-content>
-                                                <v-list-item-title>{{item}}</v-list-item-title>
+                                                <v-list-item-title>{{item.Name}}</v-list-item-title>
                                             </v-list-item-content>
                                             <v-list-item-action>
                                             <v-tooltip bottom v-if="mode == 'view'">
@@ -161,7 +161,7 @@
             </v-col>
         </v-row>
         <v-divider class="my-5"></v-divider>
-        <HistoricRecord :historicRecords="fields.historicRecords" :mode="mode"/>
+        <HistoricRecord :historicRecords="fields.histories" :mode="mode"/>
     </div>
 </template>
 
@@ -169,7 +169,7 @@
 import Breadcrumbs from "../../../Breadcrumbs";
 import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
-import boats from "../../../../controllers/boats";
+import owners from "../../../../controllers/owners";
 export default {
     name: "ownerForm",
     components: { Breadcrumbs, HistoricRecord, PrintButton },
@@ -217,23 +217,16 @@ export default {
     methods:{
         noData(){
             this.fields =  {
-            ownerName: "",
+            OwnerName: "",
             alias: [],
-            boatsOwned: [],
-            historicRecords: [],
+            boats: [],
+            histories: [],
           };
         },
         async getDataFromAPI(){
-            this.fields = {
-            ownerName: "",
-            alias: [ "Alias 1", "Alias 2", "Alias 3"],
-            boatsOwned: ["Boat 1","Boat 2","Boat 3","Boat 4","Boat 4","Boat 4","Boat 4"],
-            historicRecords: [
-                {historicRecord: "some text", reference: "wdadwdawdad"},
-                {historicRecord: "historic record 2", reference: "adawddad"}
-            ],
-            };
-            await boats.get();
+            console.log("SEEE DATA BELOW");
+            this.fields = await owners.getById(this.$route.params.id);
+            console.log(this.fields);
         },
         save (date) {//this function saves the state of the date picker
             this.$refs.menu.save(date)
