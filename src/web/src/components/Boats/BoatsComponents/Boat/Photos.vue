@@ -9,7 +9,8 @@
             <v-carousel-item
             v-for="(item,i) in photos"
             :key="i"
-            :src="item.src"
+            :src="item.File.base64"
+            :lazy-src="item.File.base64"
             ></v-carousel-item>
         </v-carousel>
         <v-row>
@@ -145,8 +146,8 @@
                                         hover
                                         >
                                             <v-img
-                                                :src="item.photo"
-                                                :lazy-src="item.photo"
+                                                :src="item.File.base64"
+                                                :lazy-src="item.File.base64"
                                                 aspect-ratio="1"
                                                 class="grey lighten-2"
                                             >
@@ -165,7 +166,7 @@
                                             </v-img>
                                             <v-row>
                                                 <v-col cols="12" class="d-flex">
-                                                    <v-card-text>{{item.name}}</v-card-text>
+                                                    <v-card-text>{{item.FeatureName}}</v-card-text>
                                                     <v-checkbox
                                                     readonly
                                                     v-model="item.selected"
@@ -245,8 +246,8 @@
                                         hover
                                         >
                                             <v-img
-                                                :src="item.photo"
-                                                :lazy-src="item.photo"
+                                                :src="item.File.base64"
+                                                :lazy-src="item.File.base64"
                                                 aspect-ratio="1"
                                                 class="grey lighten-2"
                                             >
@@ -265,7 +266,7 @@
                                             </v-img>
                                             <v-row>
                                                 <v-col cols="12" class="d-flex">
-                                                    <v-card-text>{{item.name}}</v-card-text>
+                                                    <v-card-text>{{item.FeatureName}}</v-card-text>
                                                 </v-col>
                                             </v-row>     
                                         </v-card>
@@ -293,10 +294,10 @@
 </template>
 
 <script>
-import boats from "../../../../controllers/boats";
+import photos from "../../../../controllers/photos";
 export default {
     name: "photos",
-    props: ["photos"],
+    props: ["boatID"],
     data: ()=>({
         searchPhotos: "",
         dialog1: false,
@@ -313,32 +314,26 @@ export default {
             creditLine: "",
             photo: null,
         },
-        photos1: [],
+        photos: [],
     }),
     created(){
         this.getDataFromAPI();
-        this.photos1= [
-            { selected: false, name: "photo-1", photo: "https://picsum.photos/500/300?image=1",},
-            { selected: false, name: "photo-2", photo: "https://picsum.photos/500/300?image=2",},
-            { selected: false, name: "photo-3", photo: "https://picsum.photos/500/300?image=3",},
-            { selected: false, name: "photo-4", photo: "https://picsum.photos/500/300?image=4",},
-            { selected: false, name: "photo-5", photo: "https://picsum.photos/500/300?image=5",},
-            { selected: false, name: "photo-6", photo: "https://picsum.photos/500/300?image=6",},
-            { selected: false, name: "photo-7", photo: "https://picsum.photos/500/300?image=7",},
-            { selected: false, name: "photo-8", photo: "https://picsum.photos/500/300?image=8",},
-            { selected: false, name: "photo-6", photo: "https://picsum.photos/500/300?image=6",},
-            { selected: false, name: "photo-7", photo: "https://picsum.photos/500/300?image=7",},
-            { selected: false, name: "photo-8", photo: "https://picsum.photos/500/300?image=8",},
-        ];
     },
     methods: {
         async getDataFromAPI(){
-            await boats.get();
+            let data = await photos.get(); // this request should be "getByBoatID"... needs to be changed when available
+            for(let i=0;i<data.length; i++){
+                if(data[i].File.data.length > 0){
+                    data[i].File.base64 = `data:image/png;base64,${this.toBase64(data[i].File.data)}`;
+                }
+                data[i].selected = false;
+            }
+            this.photos = data;
         },
         selectImage(item){
-            let index = this.photos1.indexOf(item);
+            let index = this.photos.indexOf(item);
             if(index >-1){
-                this.photos1[index].selected =  !this.photos1[index].selected;
+                this.photos[index].selected =  !this.photos[index].selected;
             }
         },
         savePhoto(){
@@ -348,11 +343,21 @@ export default {
         saveAndLink(){
             //makes axios request to save the data
             //boats.post();
-        }
+        },
+        toBase64(arr) {
+            return btoa(
+                arr.reduce((data, byte) => data + String.fromCharCode(byte), '')
+        );
+}
     },
     computed: {
         filteredPhotos(){
-            return this.photos1.filter(a => a.name.includes(this.searchPhotos));
+            if(this.photos.length > 0 ){
+                return this.photos.filter(a => a.FeatureName.toLowerCase().includes(this.searchPhotos.toLowerCase()));
+            }
+            else{
+                return this.photos;
+            }
         }
     }
 }
