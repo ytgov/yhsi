@@ -280,12 +280,14 @@ const routes = [
   {
     path: "/boats/view/:name",
     name: "boatView",
-    component: BoatsForm
+    component: BoatsForm,
+    props: true
   },
   {
     path: "/boats/edit/:name",
     name: "boatEditView",
-    component: BoatsForm
+    component: BoatsForm,
+    props: true
   },
   {
     path: "/boats/new",
@@ -295,12 +297,14 @@ const routes = [
   {
     path: "/boats/owner/view/:name",
     name: "ownerView",
-    component: BoatsOwnerForm
+    component: BoatsOwnerForm,
+    props: true
   },
   {
     path: "/boats/owner/edit/:name",
     name: "ownerEditView",
-    component: BoatsOwnerForm
+    component: BoatsOwnerForm,
+    props: true
   },
   {
     path: "/boats/owner/new",

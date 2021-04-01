@@ -11,7 +11,7 @@ const api = axios.create({
 
   export default {
     async get(){
-        return await api.get(`boats`)
+        return await api.get('owners')
         .then(res => {
           return res.data;
         }).catch(error =>{
@@ -20,12 +20,12 @@ const api = axios.create({
         });
     },
     async getById(id){
-      return await api.get(`boats/${id}`)
-      .then(res => {
-        return res.data;
-      }).catch(error =>{
-        // handle error
-        console.log(error);
-      });
-  },
+        return await api.get(`owners/${id}`)
+        .then(res => {
+          return res.data;
+        }).catch(error =>{
+          // handle error
+          console.log(error);
+        });
+    }
   }

@@ -98,8 +98,8 @@ export default {
     data: ()=>({
         search: "",
         headers: [
-            { text: "Historic Record", value: "historicRecord"},
-            { text: "Reference", value: "reference"},
+            { text: "Historic Record", value: "HistoryText"},
+            { text: "Reference", value: "Reference"},
             { text: "Actions", value: "actions", sortable: false},
         ],
         editTable: -1,
