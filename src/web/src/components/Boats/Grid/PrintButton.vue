@@ -23,7 +23,6 @@ export default {
     },
     methods: {
         mapData(){
-          console.log(this.data);
             if(this.data.owners){
               let owners = this.data.owners;
               this.toPrint.owners = [];
@@ -35,11 +34,9 @@ export default {
               let boats = this.data.boats;
               this.toPrint.boats = [];
               for(let i = 0; i<boats.length; i++){
-                console.log(boats[i]);
                 this.toPrint.boats.push(Object.values(boats[i]));
               }
             }
-            console.log(this.toPrint);
       },
       exportPDF() {
         this.doc = new jsPDF('p', 'pt');

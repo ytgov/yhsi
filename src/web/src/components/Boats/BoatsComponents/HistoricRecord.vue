@@ -123,8 +123,6 @@ export default {
             this.editTable = -1;
         },
         saveTable(index){
-            console.log("data");
-            console.log(this.referenceHelper, this.historicRecordHelper);
             this.data[index].reference = this.referenceHelper;
             this.data[index].historicRecord = this.historicRecordHelper;
             this.editTable = -1;

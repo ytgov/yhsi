@@ -26,7 +26,6 @@ router.get('/:ownerId', authenticateToken, async (req, res) => {
 
   const db = req.app.get('db');
   const { ownerId } = req.params;
-
   const owner = await db.select('*')
     .distinct('boat.boatowner.ownerid')
     .from('boat.boatowner')

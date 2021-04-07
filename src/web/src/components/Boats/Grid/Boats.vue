@@ -59,18 +59,7 @@ export default {
         },
         async getDataFromApi() {
             this.loading = true;
-            console.log("DATA FROM API");
             this.boats = await boats.get();
-            console.log(this.boats);
-            /*
-            this.boats = [
-                {id: 1, name: 'Evelyn', owner: 'Ownername 2', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
-                serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
-                {id: 2, name: 'Name 2', owner: 'Ownername 4', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
-                serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
-                {id: 3, name: 'Name 3', owner: 'Ownername 1', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
-                serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
-            ]*/
             this.totalLength = this.boats.length;
             this.loading = false;
         },
@@ -101,18 +90,20 @@ export default {
             }
         },
     },
-    watch: {
+    watch: {/* eslint-disable */
         selectedFilters(newv, oldv){
+            /*
             console.log("old value:");
             console.log(oldv);
             console.log("new value");
             console.log(newv);
+            */
             this.filterOptions = newv;
         },
         search (newv, oldv) {
             //this.search = newv;
-            console.log(oldv,newv);
-        }
+            //console.log(oldv,newv);
+        }/* eslint-enable */
     }
 }
 </script>

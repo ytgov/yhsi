@@ -68,14 +68,14 @@ export default {
            return this.owners;  
         },
     },
-    watch: {
+    watch: {/* eslint-disable */
         selectedFilters(newv, oldv){
-            console.log(oldv,newv);
+            //console.log(oldv,newv);
         },
         search (newv, oldv) {
             //this.search = newv;
-            console.log(oldv,newv);
-        }
+            //console.log(oldv,newv);
+        }/* eslint-enable */
     }
 }
 </script>

@@ -12,7 +12,7 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  v-if="mode == 'view'" :name="name" :data="fields"/>
+                <PrintButton  v-if="mode == 'view'" :name="fields.OwnerName" :data="fields"/>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
                     <v-icon>mdi-close</v-icon>
@@ -53,7 +53,7 @@
                                     <template v-for="(item, index) in fields.alias">
                                         <v-list-item :key="`nl-${index}`">
                                             <v-list-item-content>
-                                                <v-list-item-title v-if="index != editTableAlias || mode == 'view'">{{item}}</v-list-item-title>
+                                                <v-list-item-title v-if="index != editTableAlias || mode == 'view'">{{item.Alias}}</v-list-item-title>
                                                 <v-form v-model="validAlias" v-if="mode != 'view'" v-on:submit.prevent>
                                                     <v-text-field
                                                     v-if="editTableAlias == index"
@@ -162,6 +162,12 @@
         </v-row>
         <v-divider class="my-5"></v-divider>
         <HistoricRecord :historicRecords="fields.histories" :mode="mode"/>
+        <v-overlay :value="overlay">
+            <v-progress-circular
+                indeterminate
+                size="64"
+            ></v-progress-circular>
+        </v-overlay>
     </div>
 </template>
 
@@ -174,7 +180,7 @@ export default {
     name: "ownerForm",
     components: { Breadcrumbs, HistoricRecord, PrintButton },
     data: ()=> ({
-        name: "British Yukon Navigation Company",
+        overlay: false,
     //helper vars, they are used to determine if the component is in an edit, view or add new state
         mode: "",
         showSave: 0,
@@ -194,7 +200,7 @@ export default {
         menu2: "",
         menu3: "",
         search: "",
-        fields: null,
+        fields: {},
         fieldsHistory: null,
 
     }),
@@ -223,10 +229,16 @@ export default {
             histories: [],
           };
         },
+        saveCurrentOwner(){
+            localStorage.currentOwnerID = this.$route.params.id;
+        },
         async getDataFromAPI(){
-            console.log("SEEE DATA BELOW");
-            this.fields = await owners.getById(this.$route.params.id);
-            console.log(this.fields);
+            this.overlay = true;
+            if(this.$route.params.id){
+                this.saveCurrentOwner();
+            }
+            this.fields = await owners.getById(localStorage.currentOwnerID);
+            this.overlay = false;
         },
         save (date) {//this function saves the state of the date picker
             this.$refs.menu.save(date)
@@ -243,8 +255,8 @@ export default {
             }
             this.edit=!this.edit;
         },
-        goToBoat(item){
-            this.$router.push(`/boats/view/${item}`);
+        goToBoat(value){
+            this.$router.push({name: 'boatView', params: { name: value.Name, id: value.Id}});
         },
     //Functions dedicated to handle the edit, add, view modes
         cancelEdit(){

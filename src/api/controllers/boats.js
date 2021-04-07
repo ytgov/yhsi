@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var authenticateToken = require('../middlewares');
-
+var _ = require('lodash');//added for testing
 router.use(express.json()) // for parsing application/json
 router.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
 
@@ -46,7 +46,7 @@ router.get('/:boatId', authenticateToken, async (req, res) => {
       return
   };
 
-  boat.owners = await db.select('boat.boatowner.currentowner', 'boat.Owner.OwnerName')
+  boat.owners = await db.select('boat.boatowner.currentowner', 'boat.Owner.OwnerName', 'boat.owner.id' )//added boat.owner.id to the query (I need this for the details button)
     .from('boat.boatowner')
     .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
     .where('boat.boatowner.boatid', boatId);
@@ -95,6 +95,24 @@ router.post('/new', authenticateToken, async (req, res) => {
 
       return newBoat;
     });
+
+  res.status(200).send(response);
+});
+
+//this is a test
+router.put('/:boatId', authenticateToken, async (req, res) => {
+  const db = req.app.get('db');
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('create')) res.sendStatus(403);
+
+  const { boat = {}, owners = [], histories = [] } = req.body;
+  const { boatId } = req.params;
+  //make the update?
+  await db('boat.boat')
+      .update(boat)
+      .where('boat.boat.id', boatId);
+
+  const response = { boat, owners, histories };
 
   res.status(200).send(response);
 });
