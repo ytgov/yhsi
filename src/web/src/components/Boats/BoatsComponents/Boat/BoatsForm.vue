@@ -12,7 +12,7 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  v-if="mode == 'view'" :data="fields" :name="name"/>
+                <PrintButton  v-if="mode == 'view'" :data="fields" :name="fields.Name"/>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
                     <v-icon>mdi-close</v-icon>
@@ -206,7 +206,7 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col cols="8">
+                    <v-col cols="12">
 <!-- Owners list -->
                         <v-card>
                             <v-list class="pa-0" >
@@ -218,15 +218,22 @@
                                             <v-list-item-title v-if="editTableOwners != index || mode == 'view'">{{item.OwnerName}}</v-list-item-title>
                                             <v-form v-model="validOwner" v-if="mode != 'view'" v-on:submit.prevent>
                                                 <v-autocomplete
+                                                @click="getOwners"
+                                                v-model="helperOwner"
+                                                :items="owners"
+                                                :loading="isLoadingOwner"
                                                 clearable
                                                 v-if="editTableOwners == index"
                                                 label="Owner Name"
-                                                v-model="helperOwner"
                                                 :rules="ownerRules"
-                                                :items="owners"
-                                                item-text="name"
+                                                item-text="OwnerName"
                                                 return-object
+                                                
                                                 ></v-autocomplete>
+                                                <!--
+                                                    v-model="helperOwner"
+                                                :items="owners"
+                                                -->
                                             </v-form>
                                         </v-list-item-content>
                                         <v-list-item-action class="d-flex flex-row">
@@ -321,7 +328,7 @@
                     </v-col>
                     <v-col cols="8">
 <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-                            <Photos :photos="photos" />
+                            <Photos />
                     </v-col>
                 </v-row>
             </v-col>
@@ -329,7 +336,12 @@
         <v-divider class="my-5"></v-divider> 
 <!-- Historic Record component -->
         <HistoricRecord :historicRecords="fields.histories" :mode="mode"/>
-
+        <v-overlay :value="overlay">
+            <v-progress-circular
+                indeterminate
+                size="64"
+            ></v-progress-circular>
+        </v-overlay>
     </div>
 </template>
 
@@ -339,11 +351,12 @@ import Photos from "./Photos";
 import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
 import boats from "../../../../controllers/boats";
+import owners from "../../../../controllers/owners";
 export default {
     name: "boatsForm",
     components: { Photos, Breadcrumbs, HistoricRecord, PrintButton },
     data: ()=> ({
-        name: "Evelyn",
+        overlay: false,
     //helper vars used for the name list functions
         editTableNames: -1,// tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
         addingName: false,// tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
@@ -353,6 +366,7 @@ export default {
             v => !!v || 'Name is required',
         ],
     //helper vars used for the name list functions
+        isLoadingOwner: false,
         editTableOwners: -1,// tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
         addingOwner: false,// tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
         helperOwner: null,
@@ -371,21 +385,7 @@ export default {
         search: "",
         fields: {},
         fieldsHistory: null,
-        photos: [
-          {
-            src: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
-          },
-          {
-            src: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
-          },
-          {
-            src: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
-          },
-          {
-            src: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
-          },
-        ],
-        owners: [{id:1, name:"Owner 200"}, {id:2, name:"Owner 201"}, {id:2, name:"Owner 202"}]
+        owners: []
     }),
     created(){
         if(this.$route.path.includes("edit")){
@@ -407,27 +407,38 @@ export default {
     methods:{
         noData(){
             this.fields = {
+                Name: "",
                 names: [],
-                constructionDate: "",
-                serviceStartDate: "",
-                serviceEndDate: "",
-                registrationNumber: "",
-                vesselType: "",
-                currentLocationDescription: "",
-                notes: "",
+                ConstructionDate: "",
+                ServiceStart: "",
+                ServiceEnd: "",
+                RegistrationNumber: "",
+                VesselType: "",
+                CurrentLocation: "",
+                Notes: "",
                 photos: [],
                 owners: [],
-                historicRecords: []
+                histories: []
             };
         },
+        saveCurrentBoat(){
+            localStorage.currentBoatID = this.$route.params.id;
+        },
         async getDataFromApi(){
-            this.fields = await boats.getById(this.$route.params.id);
+            this.overlay = true;
+            if(this.$route.params.id){
+                this.saveCurrentBoat();
+            }
+            this.fields = await boats.getById(localStorage.currentBoatID);
+            console.log("FIELDS");
+            console.log(this.fields);
+            this.overlay = false;
         },
         save (date) {
             this.$refs.menu.save(date);
         },
-        goToOwner(owner){
-            this.$router.push(`/boats/owner/view/${owner}`);
+        goToOwner(value){
+            this.$router.push({name: 'ownerView', params: { name: value.OwnerName, id: value.id}});
         },
     //Functions dedicated to handle the edit, add, view modes
         cancelEdit(){
@@ -436,33 +447,51 @@ export default {
             }
             this.mode="view";
             this.resetListVariables();
-            this.$router.push(`/boats/view/${this.name}`);
+            this.$router.push(`/boats/view/${this.fields.Name}`);
         },
         cancelNew(){
             this.$router.push(`/boats/`);
         },
         viewMode(){
             this.mode="view";
-            this.$router.push(`/boats/view/${this.name}`);
+            this.$router.push(`/boats/view/${this.fields.Name}`);
         },
         editMode(){
             this.fieldsHistory = {...this.fields};
             this.mode="edit";
-            this.$router.push(`/boats/edit/${this.name}`);
+            this.$router.push(`/boats/edit/${this.fields.Name}`);
             this.showSave = 0;
             this.resetListVariables();
         },
-        saveChanges(){
-            if(this.mode == 'add'){
+        async saveChanges(){
+            this.overlay = true;
+             let data = {
+                    boat: {
+                        Name: this.fields.Name,
+                        ConstructionDate: this.fields.ConstructionDate,
+                        ServiceStart:this.fields.ServiceStart,
+                        ServiceEnd: this.fields.ServiceEnd,
+                        RegistrationNumber: this.fields.RegistrationNumber,
+                        VesselType: this.fields.VesselType,
+                        CurrentLocation: this.fields.CurrentLocation,
+                        Notes: this.fields.Notes,
+                    },
+                    owners: this.fields.owners,
+                    histories: this.fields.histories
+                };
+                console.log(data);
+            if(this.mode == 'new'){
                 //makes an axios post request
-                //boats.post(somedata);
+                console.log( await boats.post(data));
             }
             else{
                 //makes an axios put request
                 //boats.put(somedata);
+                await boats.put(localStorage.currentBoatID,data);
             }
+            this.overlay = false;
             this.mode = 'view';
-            this.$router.push(`/boats/view/${this.name}`);
+            this.$router.push({name: 'boatView', params: { name: this.fields.Name, id: this.fields.Id}});
         },
         editHistoricRecord(newVal){
             this.historiRecordHelper = newVal;
@@ -530,13 +559,28 @@ export default {
             this.addingOwner = true;  
             this.editTableOwners = this.fields.owners.length-1;
         },
+        async getOwners(){
+            this.isLoadingOwner = true;
+            this.owners = await owners.get();
+            this.isLoadingOwner = false;
+        }
+    },
+    computed:{/* MIGHT NEED THIS LATER
+        availableOwners(){
+            let allowners = this.owners;
+            let boatOwners = this.fields.owners;
+
+            const index = array.indexOf(5);
+            if (index > -1) {
+            array.splice(index, 1);
+            }
+        }*/
     },
     watch: {
-        fields: {
+        fields: {/* eslint-disable */
             handler(newval){
-                console.log("Value changed",newval);
                 this.showSave = this.showSave+1;
-            },
+            },/* eslint-enable */
             deep: true
         },
         menu1 (val) {
@@ -548,7 +592,6 @@ export default {
         menu3 (val) {
             val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
         },
-
     },
 }
 </script>

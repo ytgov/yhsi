@@ -27,5 +27,23 @@ const api = axios.create({
         // handle error
         console.log(error);
       });
-  },
-  }
+    },
+    async put(id, data){
+      return await api.put(`boats/${id}`,data)
+      .then(res => {
+        return res.data;
+      }).catch(error =>{
+        // handle error
+        console.log(error);
+      });
+    },
+    async post(data){
+      return await api.post(`boats/new`,data)
+      .then(res => {
+        return res.data;
+      }).catch(error =>{
+        // handle error
+        console.log(error);
+      });
+    }
+}

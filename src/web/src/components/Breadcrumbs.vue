@@ -32,8 +32,8 @@ export default {
             let items = this.$route.path.split("/");
             //items = items.filter(x => x != "");
             items.shift();
-            for(let i = 0; i < items.length; i++){
-                this.items.push({text: items[i].replace("%20"," "), to: {path: "/"+items.slice(0,i+1).join("/")}, disabled: !this.checkAvailableRoutes("/"+items.slice(0,i+1).join("/")) });
+            for(let i = 0; i < items.length; i++){ 
+                this.items.push({text: items[i].replace(/%20/g," ").replace(/%23/g,"#"), to: {path: "/"+items.slice(0,i+1).join("/")}, disabled: !this.checkAvailableRoutes("/"+items.slice(0,i+1).join("/")) });
             }
         },
         generateRoutes(){
