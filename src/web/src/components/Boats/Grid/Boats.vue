@@ -2,7 +2,7 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h2>{{filteredData.length}} Results</h2><!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
+          <h2 v-if="boats">{{filteredData.length}} Results</h2><!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
         </v-col>
       </v-row>
       <v-divider  class="mb-4"></v-divider>
@@ -13,13 +13,17 @@
               :headers="headers"
               :loading="loading"    
               :search="search"
+              :page="page"
+              :options.sync="options"
+              :server-items-length="totalLength"
+              :pageCount="pageCount"
               @click:row="handleClick"
             >
                 <template v-slot:item.owners="{ item }">
                     <div v-if="item.owners.length > 0">
                         {{ item.owners[0].OwnerName }}
                     </div>
-                </template>
+                </template>            
             </v-data-table>
             
         </v-col>
@@ -34,7 +38,6 @@ export default {
     data: ()=> ({
         loading: false,
         boats: [],
-        totalLength: 0,
         headers: [
         { text: "Name", value: "Name"},
         { text: "Owner", value: "owners" },
@@ -45,9 +48,11 @@ export default {
         { text: "Current Location Description", value: "CurrentLocation"},
         { text: "Req Number", value: "RegistrationNumber"},
         ],
-        page: 1,
+        //table options
+        page: 0,
         pageCount: 0,
-        iteamsPerPage: 10,
+        options: {},
+        totalLength: 0,
         filterOptions: null,
     }),
     created(){
@@ -59,10 +64,25 @@ export default {
         },
         async getDataFromApi() {
             this.loading = true;
-            this.boats = await boats.get();
+            let { page, itemsPerPage} = this.options;
+            page = page > 0 ? page-1 : 0;
+            itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
+            this.boats = await boats.get(page,itemsPerPage);
+            this.boats.map(x => {
+                x.ConstructionDate = this.formatDate(x.ConstructionDate);
+                x.ServiceStart = this.formatDate(x.ServiceStart);
+                x.ServiceEnd = this.formatDate(x.ServiceEnd);
+            });
+            console.log(this.boats);
             this.totalLength = this.boats.length;
             this.loading = false;
         },
+        formatDate (date) {
+        if (!date) return null
+        date = date.substr(0, 10);
+        const [year, month, day] = date.split('-')
+        return `${month}/${day}/${year}`
+      },
 
     },
     computed: {
@@ -78,17 +98,17 @@ export default {
                 let sorters = JSON.parse(JSON.stringify(this.filterOptions));
                 let data = JSON.parse(JSON.stringify(this.boats));
                 
-                data = sorters[0].value == null ? data : data.filter( x => x.owner.toLowerCase().includes(sorters[0].value.toLowerCase()));  
-                data = sorters[1].value == null ? data : data.filter( x => x.constructionDate.toLowerCase().includes(sorters[1].value.toLowerCase()));  
-                data = sorters[2].value == null ? data : data.filter( x => x.serviceStartDate.toLowerCase().includes(sorters[2].value.toLowerCase()));  
-                data = sorters[3].value == null ? data : data.filter( x => x.serviceEndDate.toLowerCase().includes(sorters[3].value.toLowerCase()));  
-                data = sorters[4].value == null ? data : data.filter( x => x.vesselType.toLowerCase().includes(sorters[4].value.toLowerCase())); 
+                data = sorters[0].value == null ? data : data.filter( x => x.owners[0].toLowerCase().includes(sorters[0].value.toLowerCase()));  
+                data = sorters[1].value == null ? data : data.filter( x => x.ConstructionDate.toLowerCase().includes(sorters[1].value.toLowerCase()));  
+                data = sorters[2].value == null ? data : data.filter( x => x.ServiceStart.toLowerCase().includes(sorters[2].value.toLowerCase()));  
+                data = sorters[3].value == null ? data : data.filter( x => x.ServiceEnd.toLowerCase().includes(sorters[3].value.toLowerCase()));  
+                data = sorters[4].value == null ? data : data.filter( x => x.VesselType.toLowerCase().includes(sorters[4].value.toLowerCase())); 
                 return data;
             }
             else{
                 return this.boats;
             }
-        },
+        },        
     },
     watch: {/* eslint-disable */
         selectedFilters(newv, oldv){

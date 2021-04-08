@@ -21,7 +21,7 @@ const api = axios.create({
           console.log(error);
         });
     },
-    async getByBoatId(id){
+    async getByPhotoId(id){//doesnt work rn
       return await api.get(`photos/${id}`)
       .then(res => {
         return res.data;

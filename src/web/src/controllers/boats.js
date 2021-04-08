@@ -10,8 +10,13 @@ const api = axios.create({
   });
 
   export default {
-    async get(){
-        return await api.get(`boats`)
+    async get(page, limit){
+        return await api.get(`boats`,{
+          params: {
+            page,
+            limit
+          }
+        })
         .then(res => {
           return res.data;
         }).catch(error =>{

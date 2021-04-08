@@ -18,7 +18,7 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'edit'" @click="saveChanges" >
+                <v-btn color="success" :disabled="showSave < 1" v-if="mode == 'edit'" @click="saveChanges" >
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Save Changes
                 </v-btn>
@@ -27,7 +27,7 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'new'" @click="saveChanges">
+                <v-btn color="success" :disabled="showSave < 1" v-if="mode == 'new'" @click="saveChanges">
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Save Changes
                 </v-btn>
@@ -37,8 +37,13 @@
             <v-col cols="5">
                 <v-row >
                     <v-col cols="6">
+                        <v-text-field
+                                v-model="fields.Name"
+                                v-if="mode == 'new'"
+                                label="Name"
+                        ></v-text-field>
 <!-- Names list -->
-                        <v-card>
+                        <v-card v-if="mode != 'new'">
                             <v-list class="pa-0" >
                                 <v-subheader>Name/s:</v-subheader>
                                 <v-divider></v-divider>
@@ -106,7 +111,7 @@
                         <v-row>
                             <v-col cols="12" class="d-flex ">
                                 <v-spacer></v-spacer>
-                                <v-btn class="mx-1 black--text align" @click="addName" v-if="mode != 'view' && editTableNames == -1">Add Name</v-btn>
+                                <v-btn class="mx-1 black--text align" @click="addName" v-if="mode == 'edit' && editTableNames == -1">Add Name</v-btn>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -131,7 +136,7 @@
                         >
                             <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                v-model="fields.ConstructionDate"
+                                v-model="constructionDate"
                                 label="Construction Date"
                                 append-icon="mdi-calendar"
                                 readonly
@@ -143,7 +148,7 @@
                             ref="picker"
                             v-model="fields.ConstructionDate"
                             :max="new Date().toISOString().substr(0, 10)"
-                            min="1950-01-01"
+                            min="1750-01-01"
                             @change="save"
                             ></v-date-picker>
                         </v-menu>
@@ -159,7 +164,7 @@
                         >
                             <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                v-model="fields.ServiceStart"
+                                v-model="serviceStart"
                                 label="Service Start Date"
                                 append-icon="mdi-calendar"
                                 readonly
@@ -171,7 +176,7 @@
                             ref="picker"
                             v-model="fields.ServiceStart"
                             :max="new Date().toISOString().substr(0, 10)"
-                            min="1950-01-01"
+                            min="1750-01-01"
                             @change="save"
                             ></v-date-picker>
                         </v-menu>
@@ -187,7 +192,7 @@
                         >
                             <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                v-model="fields.ServiceEnd"
+                                v-model="serviceEnd"
                                 label="Service End Date"
                                 append-icon="mdi-calendar"
                                 readonly
@@ -199,7 +204,7 @@
                             ref="picker"
                             v-model="fields.ServiceEnd"
                             :max="new Date().toISOString().substr(0, 10)"
-                            min="1950-01-01"
+                            min="1750-01-01"
                             @change="save"
                             ></v-date-picker>
                         </v-menu>
@@ -308,11 +313,12 @@
             <v-col cols="7">
                 <v-row>
                     <v-col cols="4">
-                        <v-combobox
+                        <v-select
                         v-model="fields.VesselType"
                         label="Vessel Type"
+                        :items="vesselTypeOptions"
                         :readonly="mode == 'view'"
-                        ></v-combobox>
+                        ></v-select>
 
                         <v-textarea
                             label="Current Location Description"
@@ -335,7 +341,7 @@
         </v-row>
         <v-divider class="my-5"></v-divider> 
 <!-- Historic Record component -->
-        <HistoricRecord :historicRecords="fields.histories" :mode="mode"/>
+        <HistoricRecord v-if="fields.histories != undefined" :historicRecords="fields.histories" :mode="mode"  />
         <v-overlay :value="overlay">
             <v-progress-circular
                 indeterminate
@@ -385,7 +391,10 @@ export default {
         search: "",
         fields: {},
         fieldsHistory: null,
-        owners: []
+        owners: [],
+    // vessel typle select options
+        vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
+        dateFormatted: ""
     }),
     created(){
         if(this.$route.path.includes("edit")){
@@ -430,8 +439,9 @@ export default {
                 this.saveCurrentBoat();
             }
             this.fields = await boats.getById(localStorage.currentBoatID);
-            console.log("FIELDS");
-            console.log(this.fields);
+            this.fields.ConstructionDate = this.fields.ConstructionDate ? this.fields.ConstructionDate.substr(0, 10) : "";
+            this.fields.ServiceStart = this.fields.ServiceStart ? this.fields.ServiceStart.substr(0, 10) : "";
+            this.fields.ServiceEnd = this.fields.ServiceEnd ? this.fields.ServiceEnd.substr(0, 10) : "";
             this.overlay = false;
         },
         save (date) {
@@ -476,22 +486,28 @@ export default {
                         CurrentLocation: this.fields.CurrentLocation,
                         Notes: this.fields.Notes,
                     },
-                    owners: this.fields.owners,
-                    histories: this.fields.histories
+                    owners: this.fields.owners.map( x => {
+                        return { OwnerID: x.ownerid, CurrentOwner: x.currentowner }
+                    }),
+                    histories: this.fields.histories.map( x => {
+                        return { HistoryText: x.HistoryText, Reference: x.Reference }
+                    }),
                 };
                 console.log(data);
+            let currentBoat= {};
             if(this.mode == 'new'){
-                //makes an axios post request
-                console.log( await boats.post(data));
+                let resp =  await boats.post(data);
+                currentBoat.id = resp.Id;
+                currentBoat.name = resp.Name;
             }
             else{
-                //makes an axios put request
-                //boats.put(somedata);
-                await boats.put(localStorage.currentBoatID,data);
+                let resp = await boats.put(localStorage.currentBoatID,data);
+                currentBoat.id = localStorage.currentBoatID;
+                currentBoat.name = resp.boat.Name; 
             }
             this.overlay = false;
             this.mode = 'view';
-            this.$router.push({name: 'boatView', params: { name: this.fields.Name, id: this.fields.Id}});
+            this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});
         },
         editHistoricRecord(newVal){
             this.historiRecordHelper = newVal;
@@ -563,8 +579,18 @@ export default {
             this.isLoadingOwner = true;
             this.owners = await owners.get();
             this.isLoadingOwner = false;
-        }
-    },
+        },
+        //handles the new values added to the historic records
+        historicRecordChange(val){
+            this.fields.histories = val;
+        },
+        formatDate (date) {
+        if (!date) return null
+        //date = date.substr(0, 10);
+        const [year, month, day] = date.split('-')
+        return `${month}/${day}/${year}`
+      },
+    },   
     computed:{/* MIGHT NEED THIS LATER
         availableOwners(){
             let allowners = this.owners;
@@ -575,6 +601,15 @@ export default {
             array.splice(index, 1);
             }
         }*/
+        constructionDate () {
+            return this.formatDate(this.fields.ConstructionDate);
+        },
+        serviceStart(){
+            return this.formatDate(this.fields.ServiceStart);
+        },
+        serviceEnd(){
+            return this.formatDate(this.fields.ServiceEnd);
+        }
     },
     watch: {
         fields: {/* eslint-disable */
@@ -591,7 +626,10 @@ export default {
         },
         menu3 (val) {
             val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
-        },
+        },/* eslint-disable */
+        'fields.ConstructionDate': function  (val) {
+        this.dateFormatted = this.formatDate(this.date)
+        },/* eslint-enable */
     },
 }
 </script>
