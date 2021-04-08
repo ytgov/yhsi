@@ -25,21 +25,21 @@
                         :items="data"
                         :search="search"
                     >
-                        <template v-slot:item.historicRecord="{ item, index }">
+                        <template v-slot:item.HistoryText="{ item, index }">
                             <div v-if="editTable == index">
                                 <v-text-field
                                 v-model="historicRecordHelper "
                                 ></v-text-field>
                             </div>
-                            <div v-else>{{item.historicRecord}}</div>
+                            <div v-else>{{item.HistoryText}}</div>
                         </template>
-                        <template v-slot:item.reference="{ item, index }">
+                        <template v-slot:item.Reference="{ item, index }">
                             <div v-if="editTable == index">
                                 <v-text-field 
                                 v-model="referenceHelper"
                                 ></v-text-field>
                             </div>
-                            <div v-else>{{item.reference}}</div>
+                            <div v-else>{{item.Reference}}</div>
                         </template>
                         <template v-slot:item.actions="{  index, item }">
                             <v-tooltip bottom v-if="editTable != index">
@@ -115,30 +115,35 @@ export default {
         //functions for editing the table values
         changeEditTable(index, item){
             this.editTable = index;
-            this.historicRecordHelper = item.historicRecord;
-            this.referenceHelper = item.reference;
+            this.historicRecordHelper = item.HistoryText;
+            this.referenceHelper = item.Reference;
             console.log(this.referenceHelper, this.historicRecordHelper);
         },
         closeEditTable(){
             this.editTable = -1;
+            this.data.pop();
         },
         saveTable(index){
-            this.data[index].reference = this.referenceHelper;
-            this.data[index].historicRecord = this.historicRecordHelper;
+            this.data[index].Reference = this.referenceHelper;
+            this.data[index].HistoryText = this.historicRecordHelper;
             this.editTable = -1;
         },
         addRecord(){
             //this.$emit('addRecord')
-            this.data.push({historicRecord: "", reference: ""});
+            this.data.push({HistoryText: "", Reference: ""});
             this.editTable = this.data.length - 1;
             this.historicRecordHelper = "";
             this.referenceHelper = "";
         }
     },
     watch:{
-        historicRecords(val){
-            this.data = val;
-        }
+        data(val){
+            if(val != undefined){
+                this.$emit('historicRecordChange', val);
+            }
+            
+        },
+
     }
 }
 </script>
