@@ -13,6 +13,8 @@
               :headers="headers"
               :loading="loading"    
               :search="search"
+              :options.sync="options"
+              :server-items-length="totalLength"
               @click:row="handleClick"
             >
             </v-data-table>
@@ -28,13 +30,9 @@ export default {
     data: ()=> ({
         loading: false,
         owners: [],
-        totalLength: 0,
         headers: [
         { text: "Owner", value: "OwnerName" },
         ],
-        page: 1,
-        pageCount: 0,
-        iteamsPerPage: 10,
         filterOptions: [
             {name: 'Boat Name'},
             {name: 'Owner'},
@@ -44,8 +42,13 @@ export default {
             {name: 'Service End'},
             {name: 'Vessel Type'},
         ],
+         //table options
+        page: 0,
+        pageCount: 6,
+        options: {},
+        totalLength: 100,
     }),
-    created(){
+    mounted(){
         this.getDataFromApi();
     },
     methods: {
@@ -54,8 +57,11 @@ export default {
         },
         async getDataFromApi() {
             this.loading = true;
-            this.owners = await owners.get();
-            this.totalLength = this.owners.length;
+            let { page, itemsPerPage } = this.options;
+            console.log(page, itemsPerPage);
+            page = page > 0 ? page-1 : 0;
+            itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;;
+            this.owners = await owners.get(page,itemsPerPage);
             this.loading = false;
         },
 
@@ -68,7 +74,14 @@ export default {
            return this.owners;  
         },
     },
-    watch: {/* eslint-disable */
+    watch: {
+        options: {
+            handler () {
+                this.getDataFromApi()
+            },
+            deep: true,
+        },
+        /* eslint-disable */
         selectedFilters(newv, oldv){
             //console.log(oldv,newv);
         },

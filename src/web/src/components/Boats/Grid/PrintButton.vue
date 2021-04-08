@@ -18,9 +18,6 @@ export default {
         toPrint: {},
         textpos: 0,
     }),
-    created(){
-      this.mapData();
-    },
     methods: {
         mapData(){
             if(this.data.owners){
@@ -39,6 +36,8 @@ export default {
             }
       },
       exportPDF() {
+        this.mapData();
+
         this.doc = new jsPDF('p', 'pt');
         if(this.data.owners){
           this.doc.text(`Owners`, 40, 40);

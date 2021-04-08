@@ -10,15 +10,20 @@ const api = axios.create({
   });
 
   export default {
-    async get(){
-        return await api.get('owners')
-        .then(res => {
-          return res.data;
-        }).catch(error =>{
-          // handle error
-          console.log(error);
-        });
-    },
+    async get(page, limit){
+      return await api.get(`owners`,{
+        params: {
+          page,
+          limit
+        }
+      })
+      .then(res => {
+        return res.data;
+      }).catch(error =>{
+        // handle error
+        console.log(error);
+      });
+  },
     async getById(id){
         return await api.get(`owners/${id}`)
         .then(res => {
