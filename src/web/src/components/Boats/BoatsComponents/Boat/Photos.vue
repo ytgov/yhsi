@@ -316,7 +316,7 @@ export default {
         },
         photos: [],
     }),
-    created(){
+    mounted(){
         this.getDataFromAPI();
     },
     methods: {

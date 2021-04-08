@@ -20,7 +20,7 @@
                 </v-btn>
                 <v-btn color="success" :disabled="showSave < 1" v-if="mode == 'edit'" @click="saveChanges" >
                     <v-icon class="mr-1">mdi-check</v-icon>
-                    Save Changes
+                    Done
                 </v-btn>
 <!-- buttons for the new state -->
                 <v-btn class="black--text mx-1" @click="cancelNew" v-if="mode == 'new'">
@@ -29,7 +29,7 @@
                 </v-btn>
                 <v-btn color="success" :disabled="showSave < 1" v-if="mode == 'new'" @click="saveChanges">
                     <v-icon class="mr-1">mdi-check</v-icon>
-                    Save Changes
+                    Create Boat
                 </v-btn>
             </v-col>
         </v-row>
@@ -396,7 +396,7 @@ export default {
         vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
         dateFormatted: ""
     }),
-    created(){
+    mounted(){
         if(this.$route.path.includes("edit")){
             this.mode= "edit";
             //after this, the fields get filled with the info obtained from the api

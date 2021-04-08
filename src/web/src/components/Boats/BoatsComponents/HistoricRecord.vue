@@ -9,57 +9,12 @@
                 hide-details
                 label="Search"
                 v-model="search"
+                v-if="mode != 'new'"
                 ></v-text-field>
 
                 <v-spacer></v-spacer>
 
                 <v-btn class="black--text" v-if="mode != 'view'" :disabled="addingItem" @click="addRecord">Add Historic Record</v-btn>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="12" v-if="addingItem">
-                <v-row>
-                    <v-col cols="5">
-                        <v-text-field
-                        label="Historic Record"
-                        v-model="historicRecordHelper "
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="5">
-                        <v-text-field 
-                        label="Reference"
-                        v-model="referenceHelper"
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="2">
-                        <v-tooltip bottom>
-                            <template v-slot:activator="{ on, attrs }">
-                                    <v-btn
-                                    v-bind="attrs"
-                                    v-on="on" 
-                                    icon class="black--text" color="success"  @click="saveItem()">
-                                        <v-icon
-                                        small
-                                        >mdi-check</v-icon>  
-                                    </v-btn>
-                            </template>
-                            <span>Save changes</span>
-                        </v-tooltip>
-                        <v-tooltip bottom>
-                            <template v-slot:activator="{ on, attrs }">
-                                    <v-btn 
-                                    v-bind="attrs"
-                                    v-on="on"
-                                    icon class="black--text"  @click="cancelItem() ">
-                                        <v-icon
-                                        small
-                                        >mdi-close</v-icon>  
-                                    </v-btn>
-                            </template>
-                            <span>Cancel</span>
-                        </v-tooltip> 
-                    </v-col>
-                </v-row>       
             </v-col>
         </v-row>
         <v-row>
@@ -70,6 +25,48 @@
                         :items="data"
                         :search="search"
                     >
+                        <template v-slot:body.prepend="{}" v-if="addingItem">
+                            <tr>
+                                <td>
+                                    <v-text-field
+                                    v-model="historicRecordHelper "
+                                    ></v-text-field>
+                                </td>
+                                <td>
+                                    <v-text-field 
+                                    v-model="referenceHelper"
+                                    ></v-text-field>
+                                </td>
+                                <td>
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                                <v-btn
+                                                v-bind="attrs"
+                                                v-on="on" 
+                                                icon class="black--text" color="success"  @click="saveItem()">
+                                                    <v-icon
+                                                    small
+                                                    >mdi-check</v-icon>  
+                                                </v-btn>
+                                        </template>
+                                        <span>Save changes</span>
+                                    </v-tooltip>
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                v-bind="attrs"
+                                                v-on="on"
+                                                icon class="black--text"  @click="cancelItem() ">
+                                                    <v-icon
+                                                    small
+                                                    >mdi-close</v-icon>  
+                                                </v-btn>
+                                        </template>
+                                        <span>Cancel</span>
+                                    </v-tooltip> 
+                                </td>
+                            </tr>  
+                        </template>
                         <template v-slot:item.HistoryText="{ item, index }">
                             <div v-if="editTable == index">
                                 <v-text-field
@@ -154,7 +151,7 @@ export default {
         referenceHelper: "",
         addingItem: false,
     }),
-    created(){
+    mounted(){
         this.data = this.historicRecords;
     },
     methods:{
@@ -163,11 +160,10 @@ export default {
             this.editTable = index;
             this.historicRecordHelper = item.HistoryText;
             this.referenceHelper = item.Reference;
-            console.log(this.referenceHelper, this.historicRecordHelper);
         },
         closeEditTable(){
             this.editTable = -1;
-            this.data.pop();
+            //this.data.shift();
         },
         saveTable(index){
             this.data[index].Reference = this.referenceHelper;

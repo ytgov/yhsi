@@ -13,15 +13,13 @@
               :headers="headers"
               :loading="loading"    
               :search="search"
-              :page="page"
               :options.sync="options"
               :server-items-length="totalLength"
-              :pageCount="pageCount"
               @click:row="handleClick"
             >
                 <template v-slot:item.owners="{ item }">
                     <div v-if="item.owners.length > 0">
-                        {{ item.owners[0].OwnerName }}
+                        {{ getCurrentOwner(item.owner) }}
                     </div>
                 </template>            
             </v-data-table>
@@ -50,12 +48,12 @@ export default {
         ],
         //table options
         page: 0,
-        pageCount: 0,
+        pageCount: 6,
         options: {},
-        totalLength: 0,
+        totalLength: 100,
         filterOptions: null,
     }),
-    created(){
+    mounted(){
         this.getDataFromApi();
     },
     methods: {
@@ -64,9 +62,10 @@ export default {
         },
         async getDataFromApi() {
             this.loading = true;
-            let { page, itemsPerPage} = this.options;
+            let { page, itemsPerPage } = this.options;
+            console.log(page, itemsPerPage);
             page = page > 0 ? page-1 : 0;
-            itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
+            itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;;
             this.boats = await boats.get(page,itemsPerPage);
             this.boats.map(x => {
                 x.ConstructionDate = this.formatDate(x.ConstructionDate);
@@ -74,15 +73,20 @@ export default {
                 x.ServiceEnd = this.formatDate(x.ServiceEnd);
             });
             console.log(this.boats);
-            this.totalLength = this.boats.length;
             this.loading = false;
         },
         formatDate (date) {
-        if (!date) return null
-        date = date.substr(0, 10);
-        const [year, month, day] = date.split('-')
-        return `${month}/${day}/${year}`
-      },
+            if (!date) return null
+            date = date.substr(0, 10);
+            const [year, month, day] = date.split('-')
+            return `${month}/${day}/${year}`
+        },
+        getCurrentOwner(owners){
+            if(!owners) return null;
+            let owner = owners.filter( x => x.currentowner === true);  
+            console.log(owner);
+            return owner.OwnerName;
+        }
 
     },
     computed: {
@@ -111,6 +115,12 @@ export default {
         },        
     },
     watch: {/* eslint-disable */
+        options: {
+            handler () {
+                this.getDataFromApi()
+            },
+            deep: true,
+        },
         selectedFilters(newv, oldv){
             /*
             console.log("old value:");
@@ -124,6 +134,7 @@ export default {
             //this.search = newv;
             //console.log(oldv,newv);
         }/* eslint-enable */
+        
     }
 }
 </script>
