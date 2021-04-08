@@ -13,10 +13,55 @@
 
                 <v-spacer></v-spacer>
 
-                <v-btn class="black--text" v-if="mode != 'view'" @click="addRecord">Add Historic Record</v-btn>
+                <v-btn class="black--text" v-if="mode != 'view'" :disabled="addingItem" @click="addRecord">Add Historic Record</v-btn>
             </v-col>
         </v-row>
-        
+        <v-row>
+            <v-col cols="12" v-if="addingItem">
+                <v-row>
+                    <v-col cols="5">
+                        <v-text-field
+                        label="Historic Record"
+                        v-model="historicRecordHelper "
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="5">
+                        <v-text-field 
+                        label="Reference"
+                        v-model="referenceHelper"
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="2">
+                        <v-tooltip bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                                    <v-btn
+                                    v-bind="attrs"
+                                    v-on="on" 
+                                    icon class="black--text" color="success"  @click="saveItem()">
+                                        <v-icon
+                                        small
+                                        >mdi-check</v-icon>  
+                                    </v-btn>
+                            </template>
+                            <span>Save changes</span>
+                        </v-tooltip>
+                        <v-tooltip bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                                    <v-btn 
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    icon class="black--text"  @click="cancelItem() ">
+                                        <v-icon
+                                        small
+                                        >mdi-close</v-icon>  
+                                    </v-btn>
+                            </template>
+                            <span>Cancel</span>
+                        </v-tooltip> 
+                    </v-col>
+                </v-row>       
+            </v-col>
+        </v-row>
         <v-row>
             <v-col cols="12" >
                 <v-card>
@@ -107,6 +152,7 @@ export default {
     //helper vars for when v-model is not an option (inside the datatable)
         historicRecordHelper: "",
         referenceHelper: "",
+        addingItem: false,
     }),
     created(){
         this.data = this.historicRecords;
@@ -130,10 +176,19 @@ export default {
         },
         addRecord(){
             //this.$emit('addRecord')
-            this.data.push({HistoryText: "", Reference: ""});
-            this.editTable = this.data.length - 1;
             this.historicRecordHelper = "";
             this.referenceHelper = "";
+            this.addingItem = true;
+        },
+        //for adding a new item
+        saveItem(){
+            this.data.push({HistoryText: this.historicRecordHelper, Reference: this.referenceHelper });
+            this.historicRecordHelper = "";
+            this.referenceHelper = "";
+            this.addingItem = false;
+        },
+        cancelItem(){
+            this.addingItem = false;
         }
     },
     watch:{
