@@ -9,7 +9,7 @@ router.get('/', authenticateToken, async (req, res) => {
   const db = req.app.get('db');
   const { page = 0, limit = 10 } = req.query;
   const offset = (page*limit) || 0;
-
+  const counter = await db.from('boat.boatowner').count('ownerid', {as: 'count'});
   const owners = await db.select('boat.boatowner.currentowner', 'boat.Owner.OwnerName', 'boat.owner.id')
     .distinct('boat.boatowner.ownerid')
     .from('boat.boatowner')
@@ -17,7 +17,7 @@ router.get('/', authenticateToken, async (req, res) => {
     .orderBy('boat.boatowner.ownerid', 'asc')
     .limit(limit).offset(offset);
 
-  res.status(200).send(owners);
+    res.status(200).send({count: counter[0].count, body: owners});
 });
 
 router.get('/:ownerId', authenticateToken, async (req, res) => {
