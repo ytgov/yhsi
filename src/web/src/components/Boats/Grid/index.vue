@@ -78,8 +78,8 @@
               Add Owner
             </v-btn>
 
-            <JsonCSV :data="owners">
-              <v-btn  class="black--text mx-1">
+            <JsonCSV :data="owners" >
+              <v-btn  class="black--text mx-1" :disabled="owners.length == 0">
                 <v-icon class="mr-1">
                   mdi-export
                 </v-icon>
@@ -87,7 +87,7 @@
               </v-btn>
             </JsonCSV>
 
-            <PrintButton key="prt-1" :data="{owners}"/>
+            <PrintButton key="prt-1" :data="{owners}" :disabled="owners.length == 0"/>
         </v-col>
         <v-col cols="auto" v-else class="d-flex" >
             <v-btn  class="black--text mx-1" @click="addNewBoat">
@@ -95,8 +95,8 @@
               Add Boat
             </v-btn>
 
-            <JsonCSV :data="boats">
-              <v-btn  class="black--text mx-1">
+            <JsonCSV :data="boats" >
+              <v-btn  class="black--text mx-1" :disabled="boats.length == 0">
                 <v-icon class="mr-1">
                   mdi-export
                 </v-icon>
@@ -104,7 +104,7 @@
               </v-btn>
             </JsonCSV>
 
-            <PrintButton key="prt-2" :data="{boats}"/>
+            <PrintButton key="prt-2" :data="{boats}" :disabled="boats.length == 0"/>
         </v-col>
     </v-row>
     <div class="mt-2">
@@ -130,16 +130,12 @@
 import JsonCSV from 'vue-json-csv'
 import Breadcrumbs from "../../Breadcrumbs";
 import PrintButton from "./PrintButton";
-import owners from "../../../controllers/owners";
-import boats from "../../../controllers/boats";
 export default {
   name: "boatsgrid-index",
   components: { Breadcrumbs, JsonCSV, PrintButton },
   data: () => ({
     route: "",
     active_tab: "",
-    boats: [],
-    owners: [],
     search: "",
     filterOptions: [
       {name: 'Owner', value: ""},
@@ -155,7 +151,7 @@ export default {
       { text: 'Conversions', icon: 'mdi-flag' },
     ],
   }),
-  created() {
+  mounted() {
     if(this.$route.path.includes("owner")){//shows the buttons for owner
       this.route = "owner";
     }
@@ -163,7 +159,6 @@ export default {
       this.route = "boats";
       
     }
-    this.getDataFromApi();
   },
   methods: {
     addNewBoat(){
@@ -178,14 +173,18 @@ export default {
     filterChange(){
         this.$store.commit("boats/setSelectedFilters", this.filterOptions);
     },
-    async getDataFromApi() {
-        this.boats = await boats.get();
-        this.owners = await owners.get();
 
-    },
     isActive(route){//this function helps to show certain classes depending on the route
         return (route.includes('owner')) ? 'notActive' :  '';
     }
+  },
+  computed:{
+      boats(){
+        return this.$store.getters['boats/boats'];
+      },
+      owners(){
+        return this.$store.getters['boats/owners'];
+      }
   }
 };
 </script>

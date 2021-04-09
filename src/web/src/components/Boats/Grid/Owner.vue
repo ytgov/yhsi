@@ -58,10 +58,12 @@ export default {
         async getDataFromApi() {
             this.loading = true;
             let { page, itemsPerPage } = this.options;
-            console.log(page, itemsPerPage);
             page = page > 0 ? page-1 : 0;
             itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;;
-            this.owners = await owners.get(page,itemsPerPage);
+            let data = await owners.get(page,itemsPerPage);
+            this.owners = data.body;
+            this.totalLength = data.count;
+            this.$store.commit('boats/setOwners', this.owners);
             this.loading = false;
         },
 
