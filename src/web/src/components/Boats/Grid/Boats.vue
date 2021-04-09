@@ -63,16 +63,17 @@ export default {
         async getDataFromApi() {
             this.loading = true;
             let { page, itemsPerPage } = this.options;
-            console.log(page, itemsPerPage);
             page = page > 0 ? page-1 : 0;
             itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;;
-            this.boats = await boats.get(page,itemsPerPage);
+            let data = await boats.get(page,itemsPerPage);
+            this.boats = data.body;
+            this.totalLength = data.count;
             this.boats.map(x => {
                 x.ConstructionDate = this.formatDate(x.ConstructionDate);
                 x.ServiceStart = this.formatDate(x.ServiceStart);
                 x.ServiceEnd = this.formatDate(x.ServiceEnd);
             });
-            console.log(this.boats);
+            this.$store.commit("boats/setBoats", this.boats);
             this.loading = false;
         },
         formatDate (date) {
