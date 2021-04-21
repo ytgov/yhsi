@@ -70,17 +70,17 @@
                         </template>
                         <template v-slot:item.HistoryText="{ item, index }">
                             <div v-if="editTable == index">
-                                <v-text-field
+                                <v-textarea
                                 v-model="historicRecordHelper "
-                                ></v-text-field>
+                                ></v-textarea>
                             </div>
                             <div v-else>{{item.HistoryText}}</div>
                         </template>
                         <template v-slot:item.Reference="{ item, index }">
                             <div v-if="editTable == index">
-                                <v-text-field 
+                                <v-textarea
                                 v-model="referenceHelper"
-                                ></v-text-field>
+                                ></v-textarea>
                             </div>
                             <div v-else>{{item.Reference}}</div>
                         </template>
