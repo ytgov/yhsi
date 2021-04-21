@@ -16,11 +16,12 @@
               :options.sync="options"
               :server-items-length="totalLength"
               @click:row="handleClick"
+              disable-sort
               :footer-props="{'items-per-page-options': [10, 20, 30]}"
             >
                 <template v-slot:item.owners="{ item }">
                     <div v-if="item.owners.length > 0">
-                        {{ getCurrentOwner(item.owner) }}
+                        {{ getCurrentOwner(item.owners) }}
                     </div>
                 </template>            
             </v-data-table>
@@ -75,6 +76,7 @@ export default {
                 x.ServiceStart = this.formatDate(x.ServiceStart);
                 x.ServiceEnd = this.formatDate(x.ServiceEnd);
             });
+            console.log(this.boats);
             this.$store.commit("boats/setBoats", this.boats);
             this.loading = false;
         },
@@ -86,11 +88,10 @@ export default {
         },
         getCurrentOwner(owners){
             if(!owners) return null;
-            let owner = owners.filter( x => x.currentowner === true);  
-            console.log(owner);
-            return owner.OwnerName;
-        }
-
+            //let owner = owners.filter( x => x.currentowner === true);  
+            //console.log(owner);
+            return owners[0].OwnerName;
+        },
     },
     computed: {
         selectedFilters(){
@@ -100,16 +101,14 @@ export default {
             return this.$store.getters['boats/boatSearch'];
         },
         filteredData(){// returns a filtered users array depending on the selected filters
-        console.log(this.filterOptions);
             if(this.filterOptions){
                 let sorters = JSON.parse(JSON.stringify(this.filterOptions));
                 let data = JSON.parse(JSON.stringify(this.boats));
-                
-                data = sorters[0].value == null ? data : data.filter( x => x.owners[0].toLowerCase().includes(sorters[0].value.toLowerCase()));  
-                data = sorters[1].value == null ? data : data.filter( x => x.ConstructionDate.toLowerCase().includes(sorters[1].value.toLowerCase()));  
-                data = sorters[2].value == null ? data : data.filter( x => x.ServiceStart.toLowerCase().includes(sorters[2].value.toLowerCase()));  
-                data = sorters[3].value == null ? data : data.filter( x => x.ServiceEnd.toLowerCase().includes(sorters[3].value.toLowerCase()));  
-                data = sorters[4].value == null ? data : data.filter( x => x.VesselType.toLowerCase().includes(sorters[4].value.toLowerCase())); 
+                data = sorters[0].value == null || sorters[0].value == "" ? data : data.filter( x => x.owners[0] ? x.owners[0].OwnerName.toLowerCase().includes(sorters[0].value.toLowerCase()) : false);  
+                data = sorters[1].value === null || sorters[1].value === "" ? data : data.filter( x => x.ConstructionDate ? x.ConstructionDate.includes(sorters[1].value.toLowerCase()) : false);  
+                data = sorters[2].value === null || sorters[2].value === "" ? data : data.filter( x => x.ServiceStart ? x.ServiceStart.toLowerCase().includes(sorters[2].value.toLowerCase()) : false);  
+                data = sorters[3].value === null || sorters[3].value === "" ? data : data.filter( x => x.ServiceEnd ? x.ServiceEnd.toLowerCase().includes(sorters[3].value.toLowerCase()) : false);  
+                data = sorters[4].value === null || sorters[4].value === "" ? data : data.filter( x => x.VesselType ? x.VesselType.toLowerCase().includes(sorters[4].value.toLowerCase()) : false); 
                 return data;
             }
             else{
@@ -124,7 +123,8 @@ export default {
             },
             deep: true,
         },
-        selectedFilters(newv, oldv){
+        selectedFilters(newv){
+            console.log(newv);
             this.filterOptions = newv;
         },
         search (newv, oldv) {

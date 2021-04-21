@@ -63,7 +63,7 @@
                     >   
                       <v-text-field
                         clearable
-                        @change="filterChange"
+                        @input="filterChange"
                         v-model="item.value"
                         :label="item.name"
                       ></v-text-field>

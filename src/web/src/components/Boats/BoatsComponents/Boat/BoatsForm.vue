@@ -577,7 +577,8 @@ export default {
         },
         async getOwners(){
             this.isLoadingOwner = true;
-            this.owners = await owners.get();
+            let data = await owners.get();
+            this.owners = data.body;
             this.isLoadingOwner = false;
         },
         //handles the new values added to the historic records

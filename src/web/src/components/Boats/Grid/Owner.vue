@@ -16,6 +16,7 @@
               :options.sync="options"
               :server-items-length="totalLength"
               @click:row="handleClick"
+              disable-sort
               :footer-props="{'items-per-page-options': [10, 20, 30]}"
             >
             </v-data-table>
