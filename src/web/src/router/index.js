@@ -209,7 +209,7 @@ const routes = [
   },
   {
     path: "/photos/edit/:id",
-    name: "PhotosForm",
+    name: "PhotosFormEdit",
     component: MainPhotos,
     meta: {
       requiresAuth: false
@@ -235,7 +235,7 @@ const routes = [
   },
   {
     path: "/photos/add",
-    name: "PhotosForm",
+    name: "PhotosFormAdd",
     component: MainPhotos,
     meta: {
       requiresAuth: false
@@ -261,7 +261,7 @@ const routes = [
   },
   {
     path: "/boats",
-    name: "Boats",
+    
     component: Boats,
     meta: {
       requiresAuth: false
@@ -269,6 +269,7 @@ const routes = [
     children: [
       {
         path: "",
+        name: "Boats",
         component: BoatsGrid
       },
       {
@@ -291,7 +292,7 @@ const routes = [
   },
   {
     path: "/boats/new",
-    name: "boatEditView",
+    name: "boatAddView",
     component: BoatsForm
   },
   {
@@ -308,7 +309,7 @@ const routes = [
   },
   {
     path: "/boats/owner/new",
-    name: "ownerEditView",
+    name: "ownerAddView",
     component: BoatsOwnerForm
   },
   {

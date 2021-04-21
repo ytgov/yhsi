@@ -2,19 +2,24 @@
 
 const state = {
     selectedFilters: [],
-    search: "",
+    ownerSearch: "",
+    boatSearch: "",
     boats: [],
     owners: [],
 };
 const getters = {
     selectedFilters: state => state.selectedFilters,
-    search: state => state.search,
+    ownerSearch: state => state.ownerSearch,
+    boatSearch: state => state.boatSearch,
     boats: state => state.boats,
     owners: state => state.owners
 };
 const mutations = {
-    setSearch(state, search) {
-        state.search = search;
+    setBoatSearch(state, search) {
+        state.boatSearch = search;
+    },
+    setOwnerSearch(state, search) {
+        state.ownerSearch = search;
     },
     setSelectedFilters(state, arr) {
         state.selectedFilters = arr;

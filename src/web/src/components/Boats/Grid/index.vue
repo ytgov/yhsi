@@ -10,8 +10,8 @@
             class="mx-4"
             hide-details
             label="Search by Owner Name"
-            v-model="search"
-            v-on:input="searchChange()"
+            v-model="searchOwner"
+            v-on:input="ownerSearchChange()"
             ></v-text-field>
 
             <v-text-field v-else
@@ -20,8 +20,8 @@
             class="mx-4"
             hide-details
             label="Search by Boat Name"
-            v-model="search"
-            v-on:input="searchChange()"
+            v-model="searchBoat"
+            v-on:input="boatSearchChange()"
             ></v-text-field>
 
             <v-menu
@@ -130,13 +130,15 @@
 import JsonCSV from 'vue-json-csv'
 import Breadcrumbs from "../../Breadcrumbs";
 import PrintButton from "./PrintButton";
+import _ from 'lodash';
 export default {
   name: "boatsgrid-index",
   components: { Breadcrumbs, JsonCSV, PrintButton },
   data: () => ({
     route: "",
     active_tab: "",
-    search: "",
+    searchOwner: "",
+    searchBoat: "",
     filterOptions: [
       {name: 'Owner', value: ""},
       {name: 'Construction Date', value: ""},
@@ -157,8 +159,8 @@ export default {
     }
     else{//shows the buttons for boats
       this.route = "boats";
-      
     }
+
   },
   methods: {
     addNewBoat(){
@@ -167,13 +169,15 @@ export default {
     addNewOwner(){
         this.$router.push(`/boats/owner/new`);
     },
-    searchChange(){
-        this.$store.commit("boats/setSearch", this.search);
-    },
+    ownerSearchChange: _.debounce(function () {
+        this.$store.commit("boats/setOwnerSearch", this.searchOwner);
+      }, 400),
+    boatSearchChange: _.debounce(function () {
+        this.$store.commit("boats/setBoatSearch", this.searchBoat);
+      }, 400),
     filterChange(){
         this.$store.commit("boats/setSelectedFilters", this.filterOptions);
     },
-
     isActive(route){//this function helps to show certain classes depending on the route
         return (route.includes('owner')) ? 'notActive' :  '';
     }
