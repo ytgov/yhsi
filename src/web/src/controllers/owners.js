@@ -10,11 +10,12 @@ const api = axios.create({
   });
 
   export default {
-    async get(page, limit){
+    async get(page, limit, textToMatch){
       return await api.get(`owners`,{
         params: {
           page,
-          limit
+          limit,
+          textToMatch
         }
       })
       .then(res => {
