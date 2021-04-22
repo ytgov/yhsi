@@ -35,7 +35,7 @@ router.get('/', authenticateToken, async (req, res) => {
       .where('boat.boatowner.boatid', boat.Id);
   }
 
-  res.status(200).send({count: counter[0].count, body: boats });
+  res.status(200).send({ count: counter[0].count, body: boats });
 });
   
 router.get('/:boatId', authenticateToken, async (req, res) => {
