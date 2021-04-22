@@ -4,7 +4,11 @@
         <Breadcrumbs/>
         <v-row>
             <v-col cols="12" class="d-flex">
-                <h1 v-if="mode != 'new'">{{fields.Name}}</h1>
+                <h1 v-if="mode == 'view'">{{fields.Name}}</h1>
+                <v-text-field v-else-if="mode == 'edit'"
+                    label="Boat name"
+                    v-model="fields.Name"
+                ></v-text-field>
                 <h1 v-else>New Boat</h1>
                 <v-spacer></v-spacer>
 <!-- buttons for the view state -->
@@ -43,14 +47,14 @@
                                 label="Name"
                         ></v-text-field>
 <!-- Names list -->
-                        <v-card v-if="mode != 'new'">
+                        <v-card>
                             <v-list class="pa-0" >
                                 <v-subheader>Name/s:</v-subheader>
                                 <v-divider></v-divider>
-                                <template v-for="(item, index) in fields.names">
+                                <template v-for="(item, index) in fields.pastNames">
                                     <v-list-item :key="`nl-${index}`">
                                         <v-list-item-content>
-                                            <v-list-item-title v-if="index != editTableNames || mode == 'view'">{{item}}</v-list-item-title>
+                                            <v-list-item-title v-if="index != editTableNames || mode == 'view'">{{item.BoatName}}</v-list-item-title>
                                             <v-form v-model="validName" v-if="mode != 'view'" v-on:submit.prevent>
                                                 <v-text-field
                                                 v-if="editTableNames == index "
@@ -111,7 +115,7 @@
                         <v-row>
                             <v-col cols="12" class="d-flex ">
                                 <v-spacer></v-spacer>
-                                <v-btn class="mx-1 black--text align" @click="addName" v-if="mode == 'edit' && editTableNames == -1">Add Name</v-btn>
+                                <v-btn class="mx-1 black--text align" @click="addName" v-if="mode != 'view' && editTableNames == -1">Add Name</v-btn>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -334,7 +338,7 @@
                     </v-col>
                     <v-col cols="8">
 <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-                            <Photos :boatID="getBoatID"/>
+                            <Photos :showDefault="showPhotosDefault" :boatID="getBoatID"/>
                     </v-col>
                 </v-row>
             </v-col>
@@ -394,7 +398,9 @@ export default {
         owners: [],
     // vessel typle select options
         vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
-        dateFormatted: ""
+        dateFormatted: "",
+    //show a deafult photos component for when the user is adding a new boat
+        showPhotosDefault: false
     }),
     mounted(){
         if(this.$route.path.includes("edit")){
@@ -406,6 +412,7 @@ export default {
             this.mode="new";
             //inputs remain empty
             this.noData();
+            this.showPhotosDefault = true;
         }
         else if(this.$route.path.includes("view")){
             this.mode="view";
@@ -417,7 +424,7 @@ export default {
         noData(){
             this.fields = {
                 Name: "",
-                names: [],
+                pastNames: [],
                 ConstructionDate: "",
                 ServiceStart: "",
                 ServiceEnd: "",
@@ -476,10 +483,10 @@ export default {
         },
         async saveChanges(){
             this.overlay = true;
-            console.log(this.fields.owners);
              let data = {
                     boat: {
                         Name: this.fields.Name,
+                        pastNames: this.fields.pastNames,
                         ConstructionDate: this.fields.ConstructionDate,
                         ServiceStart:this.fields.ServiceStart,
                         ServiceEnd: this.fields.ServiceEnd,
@@ -526,11 +533,11 @@ export default {
     //functions for editing the table "Names" values
         changeEditTableNames(item,index){
             this.editTableNames = index;
-            this.helperName = item;
+            this.helperName = item.BoatName;
         },
         cancelEditTableNames(){
             if(this.addingName){
-                this.fields.names.pop();
+                this.fields.pastNames.pop();
                 this.addingName = false;
                 this.editTableNames = -1;
             }
@@ -540,15 +547,15 @@ export default {
                 
         },
         saveTableNames(index){
-            this.fields.names[index] = this.helperName;
+            this.fields.pastNames[index] = {BoatName: this.helperName};
             this.addingName = false;  
-            this.editTableNames = -1;      
+            this.editTableNames = -1;     
         },
         addName(){
             this.helperName="";
-            this.fields.names.push(""); 
+            this.fields.pastNames.push(""); 
             this.addingName = true;
-            this.editTableNames = this.fields.names.length-1;
+            this.editTableNames = this.fields.pastNames.length-1;
         },
     //functions for editing the table "Owners" values
         changeEditTableOwners(item,index){
