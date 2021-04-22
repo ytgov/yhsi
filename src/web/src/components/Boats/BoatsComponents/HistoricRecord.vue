@@ -24,6 +24,7 @@
                         :headers="headers"
                         :items="data"
                         :search="search"
+                        :footer-props="{'items-per-page-options': [10, 20, 30]}"
                     >
                         <template v-slot:body.prepend="{}" v-if="addingItem">
                             <tr>
@@ -69,17 +70,17 @@
                         </template>
                         <template v-slot:item.HistoryText="{ item, index }">
                             <div v-if="editTable == index">
-                                <v-text-field
+                                <v-textarea
                                 v-model="historicRecordHelper "
-                                ></v-text-field>
+                                ></v-textarea>
                             </div>
                             <div v-else>{{item.HistoryText}}</div>
                         </template>
                         <template v-slot:item.Reference="{ item, index }">
                             <div v-if="editTable == index">
-                                <v-text-field 
+                                <v-textarea
                                 v-model="referenceHelper"
-                                ></v-text-field>
+                                ></v-textarea>
                             </div>
                             <div v-else>{{item.Reference}}</div>
                         </template>

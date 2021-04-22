@@ -16,6 +16,8 @@
               :options.sync="options"
               :server-items-length="totalLength"
               @click:row="handleClick"
+              disable-sort
+              :footer-props="{'items-per-page-options': [10, 20, 30]}"
             >
             </v-data-table>
         </v-col>
@@ -59,8 +61,9 @@ export default {
             this.loading = true;
             let { page, itemsPerPage } = this.options;
             page = page > 0 ? page-1 : 0;
-            itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;;
-            let data = await owners.get(page,itemsPerPage);
+            itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
+            let textToMatch = this.search;
+            let data = await owners.get(page,itemsPerPage,textToMatch);
             this.owners = data.body;
             this.totalLength = data.count;
             this.$store.commit('boats/setOwners', this.owners);
@@ -70,7 +73,7 @@ export default {
     },
     computed: {
         search () {
-            return this.$store.getters['boats/search'];
+            return this.$store.getters['boats/ownerSearch'];
         },
         filteredData(){// returns a filtered users array depending on the selected filters
            return this.owners;  
@@ -89,7 +92,7 @@ export default {
         },
         search (newv, oldv) {
             //this.search = newv;
-            //console.log(oldv,newv);
+            this.getDataFromApi();
         }/* eslint-enable */
     }
 }
