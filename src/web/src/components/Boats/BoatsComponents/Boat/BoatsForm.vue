@@ -334,7 +334,7 @@
                     </v-col>
                     <v-col cols="8">
 <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-                            <Photos />
+                            <Photos :boatID="getBoatID"/>
                     </v-col>
                 </v-row>
             </v-col>
@@ -498,9 +498,9 @@ export default {
                 console.log(data);
             let currentBoat= {};
             if(this.mode == 'new'){
-                //let resp =  await boats.post(data);
-                //currentBoat.id = resp.Id;
-                //currentBoat.name = resp.Name;
+                let resp =  await boats.post(data);
+                currentBoat.id = resp.Id;
+                currentBoat.name = resp.Name;
             }
             else{
                 let resp = await boats.put(localStorage.currentBoatID,data);
@@ -604,6 +604,12 @@ export default {
             array.splice(index, 1);
             }
         }*/
+        getBoatID(){
+            if(this.$route.params.id){
+                return  this.$route.params.id;
+            }
+            else return localStorage.currentBoatID;
+        },
         constructionDate () {
             return this.formatDate(this.fields.ConstructionDate);
         },
