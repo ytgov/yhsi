@@ -439,6 +439,7 @@ export default {
                 this.saveCurrentBoat();
             }
             this.fields = await boats.getById(localStorage.currentBoatID);
+            console.log(this.fields);
             this.fields.ConstructionDate = this.fields.ConstructionDate ? this.fields.ConstructionDate.substr(0, 10) : "";
             this.fields.ServiceStart = this.fields.ServiceStart ? this.fields.ServiceStart.substr(0, 10) : "";
             this.fields.ServiceEnd = this.fields.ServiceEnd ? this.fields.ServiceEnd.substr(0, 10) : "";
@@ -475,6 +476,7 @@ export default {
         },
         async saveChanges(){
             this.overlay = true;
+            console.log(this.fields.owners);
              let data = {
                     boat: {
                         Name: this.fields.Name,
@@ -487,7 +489,7 @@ export default {
                         Notes: this.fields.Notes,
                     },
                     owners: this.fields.owners.map( x => {
-                        return { OwnerID: x.ownerid, CurrentOwner: x.currentowner }
+                        return { OwnerID: x.ownerid ? x.ownerid : x.id, CurrentOwner: x.currentowner }
                     }),
                     histories: this.fields.histories.map( x => {
                         return { HistoryText: x.HistoryText, Reference: x.Reference }
@@ -496,9 +498,9 @@ export default {
                 console.log(data);
             let currentBoat= {};
             if(this.mode == 'new'){
-                let resp =  await boats.post(data);
-                currentBoat.id = resp.Id;
-                currentBoat.name = resp.Name;
+                //let resp =  await boats.post(data);
+                //currentBoat.id = resp.Id;
+                //currentBoat.name = resp.Name;
             }
             else{
                 let resp = await boats.put(localStorage.currentBoatID,data);
