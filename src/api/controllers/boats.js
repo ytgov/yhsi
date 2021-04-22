@@ -55,6 +55,10 @@ router.get('/:boatId', authenticateToken, async (req, res) => {
       return
   };
 
+  boat.pastNames = await db.select('*')
+  .from('boat.pastnames')
+  .where('boat.pastnames.boatid', boatId);
+
   boat.owners = await db.select('boat.boatowner.currentowner', 'boat.Owner.OwnerName', 'boat.owner.id' )//added boat.owner.id to the query (I need this for the details button)
     .from('boat.boatowner')
     .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
