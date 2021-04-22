@@ -10,4 +10,13 @@ import api from './config';
         console.log(error);
       });
   },
+  async post(boatID,data){
+    return await api.post(`photos/${boatID}`,data)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      // handle error
+      console.log(error);
+    });
+  }
   }

@@ -1,19 +1,38 @@
 <template>
     <v-card>
-        <v-carousel
+        <div v-if="showDefault"
+            class="center-children"
+            style="height: 400px;"
+            
+        >
+
+            <v-img 
+            height="200"
+            width="200"
+            :src="require('../../../../assets/add_photo.png')"
+            :lazy-src="require('../../../../assets/add_photo.png')"
+            ></v-img>
+        </div>
+        <v-carousel v-else
             id="carousell"
             cycle
             height="400"
             hide-delimiter-background
         >
-            <v-carousel-item
+            <v-carousel-item 
             v-for="(item,i) in photos"
             :key="i"
             :src="item.File.base64"
             :lazy-src="item.File.base64"
             ></v-carousel-item>
         </v-carousel>
-        <v-row>
+        <v-divider></v-divider>
+        <v-row v-if="showDefault">
+            <v-col cols="12">
+                <p class="text-center font-weight-bold pt-3">Once you upload your new boat data, you will be able to attach photos</p>
+            </v-col>
+        </v-row>
+        <v-row v-else>
             <v-col cols="12" class="d-flex">
                 <v-dialog
                 v-model="dialog1"
@@ -299,31 +318,35 @@
 import photos from "../../../../controllers/photos";
 export default {
     name: "photos",
-    props: ["boatID"],
+    props: ["boatID", "showDefault"],
     data: ()=>({
         searchPhotos: "",
         dialog1: false,
         dialog2: false,
         fields: {
             private: false,
-            featureName: "",
-            owner: "",
-            community: "",
-            copyright: "",
-            usageRights: "",
-            caption: "",
-            comments: "",
-            creditLine: "",
-            photo: null,
+            Caption: "SS Casca Hull",
+            FeatureName: "SS Casca Hull",
+            OwnerId: 57,
+            UsageRights: 0,
+            CommunityId: 40,
+            Copyright: 1,
+            Comments: "Submerged hull on east shore of Thirty Mile River",
+            CreditLine: "Yukon Government Historic Sites Unit",
+            File: {
+                base64: "data:image/png;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/",
+            }      
         },
         photos: [],
     }),
     mounted(){
-        this.getDataFromAPI();
+        if(this.boatID && !this.showPhotosDefault)
+            this.getDataFromAPI();
     },
     methods: {
         async getDataFromAPI(){
             let data = await photos.getByBoatId(this.boatID);
+            console.log(data);
             for(let i=0;i<data.length; i++){
                 if(data[i].File.data.length > 0){
                     data[i].File.base64 = `data:image/png;base64,${this.toBase64(data[i].File.data)}`;
@@ -354,7 +377,7 @@ export default {
     computed: {
         filteredPhotos(){
             if(this.photos.length > 0 ){
-                return this.photos.filter(a => a.FeatureName.toLowerCase().includes(this.searchPhotos.toLowerCase()));
+                return this.photos.filter(a => a.FeatureName ? a.FeatureName.toLowerCase().includes(this.searchPhotos.toLowerCase()) : false);
             }
             else{
                 return this.photos;
@@ -369,5 +392,9 @@ export default {
 .scroll{
     height: 720px;
     overflow: auto;
+}
+.center-children{
+    display: grid;
+    place-items: center;
 }
 </style>
