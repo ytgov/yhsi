@@ -287,7 +287,7 @@
                                             </v-img>
                                             <v-row>
                                                 <v-col cols="12" class="d-flex">
-                                                    <v-card-text>{{item.FeatureName}}</v-card-text>
+                                                    <v-card-text v-if="item.FeatureName">{{item.FeatureName}}</v-card-text>
                                                 </v-col>
                                             </v-row>     
                                         </v-card>
@@ -320,10 +320,11 @@ export default {
     name: "photos",
     props: ["boatID", "showDefault"],
     data: ()=>({
-        searchPhotos: "",
+        searchPhotos: null,
         dialog1: false,
         dialog2: false,
         fields: {
+            selected: false,
             private: false,
             Caption: "SS Casca Hull",
             FeatureName: "SS Casca Hull",
@@ -376,7 +377,7 @@ export default {
     },
     computed: {
         filteredPhotos(){
-            if(this.photos.length > 0 ){
+            if(this.photos.length > 0 && this.searchPhotos ){
                 return this.photos.filter(a => a.FeatureName ? a.FeatureName.toLowerCase().includes(this.searchPhotos.toLowerCase()) : false);
             }
             else{
