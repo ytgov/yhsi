@@ -28,6 +28,7 @@
                         v-on="on"
                         class="ml-3"
                         >
+                        <v-icon class="mr-1">mdi-plus</v-icon>
                         Add Photo
                         </v-btn>
                     </template>
@@ -217,6 +218,7 @@
                     v-on="on"
                     class="mr-3"
                     >
+                    <v-icon class="mr-1">mdi-view-grid</v-icon>
                     View all Photos
                     </v-btn>
                 </template>
