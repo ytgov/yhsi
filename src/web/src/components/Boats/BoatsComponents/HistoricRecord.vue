@@ -24,7 +24,7 @@
                         :headers="headers"
                         :items="data"
                         :search="search"
-                        :footer-props="{'items-per-page-options': [10, 20, 30]}"
+                        :footer-props="{'items-per-page-options': [10, 30, 100]}"
                     >
                         <template v-slot:body.prepend="{}" v-if="addingItem">
                             <tr>
