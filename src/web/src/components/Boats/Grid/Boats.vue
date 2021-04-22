@@ -17,7 +17,7 @@
               :server-items-length="totalLength"
               @click:row="handleClick"
               disable-sort
-              :footer-props="{'items-per-page-options': [10, 20, 30]}"
+              :footer-props="{'items-per-page-options': [10, 30, 100]}"
             >
                 <template v-slot:item.owners="{ item }">
                     <div v-if="item.owners.length > 0">

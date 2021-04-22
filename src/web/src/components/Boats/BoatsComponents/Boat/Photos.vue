@@ -323,7 +323,7 @@ export default {
     },
     methods: {
         async getDataFromAPI(){
-            let data = await photos.get(); // this request should be "getByBoatID"... needs to be changed when available
+            let data = await photos.getByBoatId(this.boatID);
             for(let i=0;i<data.length; i++){
                 if(data[i].File.data.length > 0){
                     data[i].File.base64 = `data:image/png;base64,${this.toBase64(data[i].File.data)}`;
@@ -347,8 +347,7 @@ export default {
             //boats.post();
         },
         toBase64(arr) {
-            return btoa(
-                arr.reduce((data, byte) => data + String.fromCharCode(byte), '')
+            return btoa(arr.reduce((data, byte) => data + String.fromCharCode(byte), '')
         );
 }
     },
