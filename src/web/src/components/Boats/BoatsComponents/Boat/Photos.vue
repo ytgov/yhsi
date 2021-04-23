@@ -63,60 +63,65 @@
                                 <v-container>
                                     <v-row >
                                         <v-col cols="12">
-                                            <v-row>
-                                                <v-col cols="12" class="d-flex my-0 py-0">
-                                                <v-spacer></v-spacer>
-                                                <v-checkbox
-                                                    class="align-self-end"
-                                                    label="Private"
-                                                    v-model="fields.private"
-                                                ></v-checkbox>
-                                            </v-col>
-                                            </v-row>       
-                                            
-                                            <v-text-field
-                                                v-model="fields.featureName"
-                                                label="Feature Name">
-                                            </v-text-field>
-                                            <v-combobox
-                                                v-model="fields.owner"
-                                                label="Owner">   
-                                            </v-combobox>
-                                            <v-combobox
-                                                v-model="fields.community"
-                                                label="Community">   
-                                            </v-combobox>
-                                            <v-combobox
-                                                v-model="fields.copyright"
-                                                label="Copyright">
-                                            </v-combobox>
-                                            <v-combobox
-                                                v-model="fields.usageRights"
-                                                label="Usage Rights">   
-                                            </v-combobox>   
-                                            <v-textarea
-                                                v-model="fields.caption"
-                                                dense
-                                                label="Caption"
-                                                rows="2">
-                                            </v-textarea>
-                                            <v-textarea
-                                                v-model="fields.comments"
-                                                dense
-                                                label="Comments"
-                                                rows="2">
-                                            </v-textarea>
-                                            <v-textarea
-                                                v-model="fields.creditLine"
-                                                dense
-                                                label="Credit Line"
-                                                rows="2">
-                                            </v-textarea>
+                                            <v-form method="post" enctype="multipart/form-data">
+                                                <v-row>
+                                                    <v-col cols="12" class="d-flex my-0 py-0">
+                                                    <v-spacer></v-spacer>
+                                                    <v-checkbox
+                                                        class="align-self-end"
+                                                        label="Private"
+                                                        v-model="fields.private"
+                                                    ></v-checkbox>
+                                                </v-col>
+                                                </v-row>       
+                                                
+                                                <v-text-field
+                                                    v-model="fields.featureName"
+                                                    label="Feature Name">
+                                                </v-text-field>
+                                                <v-combobox
+                                                    v-model="fields.owner"
+                                                    label="Owner">   
+                                                </v-combobox>
+                                                <v-combobox
+                                                    v-model="fields.community"
+                                                    label="Community">   
+                                                </v-combobox>
+                                                <v-combobox
+                                                    v-model="fields.copyright"
+                                                    label="Copyright">
+                                                </v-combobox>
+                                                <v-combobox
+                                                    v-model="fields.usageRights"
+                                                    label="Usage Rights">   
+                                                </v-combobox>   
+                                                <v-textarea
+                                                    v-model="fields.caption"
+                                                    dense
+                                                    label="Caption"
+                                                    rows="2">
+                                                </v-textarea>
+                                                <v-textarea
+                                                    v-model="fields.comments"
+                                                    dense
+                                                    label="Comments"
+                                                    rows="2">
+                                                </v-textarea>
+                                                <v-textarea
+                                                    v-model="fields.creditLine"
+                                                    dense
+                                                    label="Credit Line"
+                                                    rows="2">
+                                                </v-textarea>
 
-                                            <v-file-input
-                                            label="Choose photo for upload"
-                                            prepend-icon="mdi-camera"
-                                            ></v-file-input>
+                                                <v-file-input
+                                                accept="image/*"
+                                                label="Choose photo for upload"
+                                                prepend-icon="mdi-camera"
+                                                @change="onFileSelected"
+                                                ></v-file-input>
+                                            </v-form>
+                                            
                                         </v-col>
                                     </v-row>
                                     <v-divider></v-divider>
@@ -323,21 +328,26 @@ export default {
         searchPhotos: null,
         dialog1: false,
         dialog2: false,
+        fileValue: null,
         fields: {
-            selected: false,
-            private: false,
-            Caption: "SS Casca Hull",
-            FeatureName: "SS Casca Hull",
-            OwnerId: 57,
+            BoatId: 1,
+            Caption: "",
+            FeatureName: "",
+            OwnerId: 328,
             UsageRights: 0,
-            CommunityId: 40,
-            Copyright: 1,
-            Comments: "Submerged hull on east shore of Thirty Mile River",
-            CreditLine: "Yukon Government Historic Sites Unit",
-            File: {
-                base64: "data:image/png;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/",
-            }      
+            CommunityId: 46,
+            Comments: "",
+            CreditLine: null,  
+            PhotoProjectId:79,
+            IsOtherRecord:false,
+            OriginalMediaId:1,
+            MediaStorage:2,
+            Copyright:1,
+            Program:4,
+            IsComplete:true,
+            Rating:3,
         },
+        File: null,
         photos: [],
     }),
     mounted(){
@@ -362,18 +372,36 @@ export default {
                 this.photos[index].selected =  !this.photos[index].selected;
             }
         },
-        savePhoto(){
-            //makes axios request to save the data
-            //boats.post();
+        async savePhoto(){
+            this.fields.bBatId = this.boatID;
+            const formData = new FormData();
+            let prevFields = Object.entries(this.fields);
+            for(let i=0;i<prevFields.length; i++){
+                formData.append(prevFields[i][0],prevFields[i][1]);
+            }
+            formData.append("file", this.File);
+            await photos.post(formData);
         },
-        saveAndLink(){
+        async saveAndLink(){
             //makes axios request to save the data
-            //boats.post();
+            
         },
         toBase64(arr) {
-            return btoa(arr.reduce((data, byte) => data + String.fromCharCode(byte), '')
-        );
-}
+            return btoa(arr.reduce((data, byte) => data + String.fromCharCode(byte), ''));
+        },
+        async onFileSelected(event){
+            this.File = event;
+        },
+        getBase64(file) {//this function is not used currently
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+            console.log(reader.result);
+        };
+        reader.onerror = function (error) {
+            console.log('Error: ', error);
+        };
+        }
     },
     computed: {
         filteredPhotos(){
