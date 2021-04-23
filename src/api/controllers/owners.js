@@ -49,5 +49,78 @@ router.get('/:ownerId', authenticateToken, async (req, res) => {
   res.status(200).send(owner);
 });
 
+router.put('/:ownerId', authenticateToken, async (req, res) => {
+  const db = req.app.get('db');
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('edit')) res.sendStatus(403);
 
-module.exports = router
+  const { ownerId } = req.params;
+
+
+  const { owner = {}, ownerAlias = [] } = req.body;
+  const { OwnerName } = owner;
+
+  //make the update
+  await db('boat.owner')
+      .update({ OwnerName })
+      .where('boat.boat.id', ownerId);
+
+  const newArray = [];
+  const editArray = [];
+
+  ownerAlias.forEach(alias => {
+    // if statements or switch statement depending on how you want to split
+    if (alias.id) editArray.push(alias);
+    else newArray.push(alias);
+  });
+
+  await db.insert(newArray)
+    .into('boat.OwnerAlias')
+    .returning('*')
+    .then(rows => {
+      return rows;
+    });
+  
+  for (const obj of editArray) {
+    await db('boat.OwnerAlias')
+    .update(obj.Alias)
+    .where('boat.OwnerAlias.id', alias.Id);
+  }
+
+  const response = { owner };
+
+  res.status(200).send(response);
+});
+
+router.post('/new', authenticateToken, async (req, res) => {
+  const db = req.app.get('db');
+
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('create')) res.sendStatus(403);
+
+  const { owner = {}, ownerAlias = [] } = req.body;
+  
+  const response = await db.insert(owner)
+    .into('boat.owner')
+    .returning('*')
+    .then(async rows => {
+      const newOwner = rows[0];
+
+      if (ownerAlias.length) {
+        const newOwnerAlias = ownerAlias.map(alias => ({ ...alias, OwnerId: newOwner.Id }))
+
+        await db.insert(newOwnerAlias)
+        .into('boat.OwnerAlias')
+        .returning('*')
+        .then(rows => {
+          return rows;
+        });
+      }
+
+      return newOwner;
+    });
+
+  res.status(200).send(response);
+});
+
+module.exports = router;
