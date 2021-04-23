@@ -112,15 +112,14 @@ router.post('/new', authenticateToken, async (req, res) => {
   res.status(200).send(response);
 });
 
-//this is a test
 router.put('/:boatId', authenticateToken, async (req, res) => {
   const db = req.app.get('db');
   const permissions = req.decodedToken['yg-claims'].permissions;
   if (!permissions.includes('edit')) res.sendStatus(403);
 
-  const { boat = {}, owners = [], histories = [] } = req.body;
+  const { boat = {}, owners = [] } = req.body;
   const { boatId } = req.params;
-  //make the update?
+  //make the update
   await db('boat.boat')
       .update(boat)
       .where('boat.boat.id', boatId);
@@ -130,4 +129,4 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
   res.status(200).send(response);
 });
 
-module.exports = router
+module.exports = router;

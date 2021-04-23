@@ -20,4 +20,35 @@ router.get('/', authenticateToken, async (req, res) => {
   res.status(200).send(histories);
 });
 
+router.post('/new', authenticateToken, async (req, res) => {
+  const db = req.app.get('db');
+
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('create')) res.sendStatus(403);
+
+  const { history = {} } = req.body;
+  const { boatId } = req.params;
+
+  const response = await db.insert(history)
+    .into('boat.History')
+    .returning('*');
+
+  res.status(200).send(response);
+});
+
+router.put('/:historyId', authenticateToken, async (req, res) => {
+  const db = req.app.get('db');
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('edit')) res.sendStatus(403);
+
+  const { history } = req.body;
+  const { historyId } = req.params;
+  //make the update
+  const response = await db('boat.History')
+      .update(history)
+      .where('boat.History.id', historyId);
+
+  res.status(200).send(response);
+});
+
 module.exports = router
