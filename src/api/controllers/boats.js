@@ -117,9 +117,9 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
   const permissions = req.decodedToken['yg-claims'].permissions;
   if (!permissions.includes('edit')) res.sendStatus(403);
 
-  const { boat = {}, owners = [], histories = [] } = req.body;
+  const { boat = {}, owners = [] } = req.body;
   const { boatId } = req.params;
-  //make the update?
+  //make the update
   await db('boat.boat')
       .update(boat)
       .where('boat.boat.id', boatId);
