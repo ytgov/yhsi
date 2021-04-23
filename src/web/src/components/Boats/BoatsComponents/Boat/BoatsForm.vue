@@ -237,7 +237,6 @@
                                                 :rules="ownerRules"
                                                 item-text="OwnerName"
                                                 return-object
-                                                
                                                 ></v-autocomplete>
                                                 <!--
                                                     v-model="helperOwner"
@@ -345,7 +344,7 @@
         </v-row>
         <v-divider class="my-5"></v-divider> 
 <!-- Historic Record component -->
-        <HistoricRecord v-if="fields.histories != undefined" :historicRecords="fields.histories" :mode="mode"  />
+        <HistoricRecord v-if="fields.histories != undefined" :historicRecords="fields.histories" :mode="'edit'"  />
         <v-overlay :value="overlay">
             <v-progress-circular
                 indeterminate
@@ -403,24 +402,34 @@ export default {
         showPhotosDefault: false
     }),
     mounted(){
-        if(this.$route.path.includes("edit")){
+        if(this.checkPath("edit")){
             this.mode= "edit";
             //after this, the fields get filled with the info obtained from the api
             this.getDataFromApi();
         }
-        else if(this.$route.path.includes("new")){
+        else if(this.checkPath("new")){
             this.mode="new";
             //inputs remain empty
             this.noData();
             this.showPhotosDefault = true;
         }
-        else if(this.$route.path.includes("view")){
+        else if(this.checkPath("view")){
             this.mode="view";
             //after this, the fields get filled with the info obtained from the api
             this.getDataFromApi();
         }
     },
     methods:{
+        /*this function checks if the current path contains a specific word, this can be done with a simple includes but 
+        //it causes confusion when a boat or owner has 'new' in its name, leading the component to think it should use the 'new' mode,
+        this problem is solved by using this funtion.*/
+        checkPath(word){
+            let path = this.$route.path.split("/");
+            if(path[2] == word){
+                return true;
+            }
+            return false;
+        },
         noData(){
             this.fields = {
                 Name: "",
