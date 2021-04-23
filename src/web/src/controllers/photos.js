@@ -1,4 +1,4 @@
-import api from './config';
+import { api, apiP } from './config';
 
   export default {
     async getByBoatId(id){//doesnt work rn
@@ -10,8 +10,8 @@ import api from './config';
         console.log(error);
       });
   },
-  async post(boatID,data){
-    return await api.post(`photos/${boatID}`,data)
+  async post(data){
+    return await apiP.post(`photos/new`,data)
     .then(res => {
       return res.data;
     }).catch(error =>{
