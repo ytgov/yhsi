@@ -112,7 +112,6 @@ router.post('/new', authenticateToken, async (req, res) => {
   res.status(200).send(response);
 });
 
-//this is a test
 router.put('/:boatId', authenticateToken, async (req, res) => {
   const db = req.app.get('db');
   const permissions = req.decodedToken['yg-claims'].permissions;
@@ -130,4 +129,4 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
   res.status(200).send(response);
 });
 
-module.exports = router
+module.exports = router;
