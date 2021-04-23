@@ -160,8 +160,11 @@
                 </v-row>     
             </v-col>
         </v-row>
+        <!--
         <v-divider class="my-5"></v-divider>
-        <HistoricRecord :historicRecords="fields.histories" :mode="mode"/>
+        
+        <HistoricRecord :historicRecords="fields.histories" :mode="'view'"/>
+        -->
         <v-overlay :value="overlay">
             <v-progress-circular
                 indeterminate
@@ -173,12 +176,12 @@
 
 <script>
 import Breadcrumbs from "../../../Breadcrumbs";
-import HistoricRecord from "../HistoricRecord";
+//import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
 import owners from "../../../../controllers/owners";
 export default {
     name: "ownerForm",
-    components: { Breadcrumbs, HistoricRecord, PrintButton },
+    components: { Breadcrumbs, PrintButton, },// HistoricRecord,  },
     data: ()=> ({
         overlay: false,
     //helper vars, they are used to determine if the component is in an edit, view or add new state
@@ -204,23 +207,33 @@ export default {
         fieldsHistory: null,
 
     }),
-    created(){
-        if(this.$route.path.includes("edit")){
+    mounted(){
+        if(this.checkPath("edit")){
             this.mode= "edit";
             //after this, the fields get filled with the info obtained from the api
             this.getDataFromAPI();
         }
-        else if(this.$route.path.includes("new")){
+        else if(this.checkPath("new")){
             this.mode="new";
             //inputs remain empty
             this.noData();
         }
-        else if(this.$route.path.includes("view")){
+        else if(this.checkPath("view")){
             this.mode="view";
             this.getDataFromAPI();
         }
     },
     methods:{
+        /*this function checks if the current path contains a specific word, this can be done with a simple includes but 
+        //it causes confusion when a boat or owner has 'new' in its name, leading the component to think it should use the 'new' mode,
+        this problem is solved by using this funtion.*/
+        checkPath(word){
+            let path = this.$route.path.split("/");
+            if(path[3] == word){
+                return true;
+            }
+            return false;
+        },
         noData(){
             this.fields =  {
             OwnerName: "",
@@ -238,6 +251,7 @@ export default {
                 this.saveCurrentOwner();
             }
             this.fields = await owners.getById(localStorage.currentOwnerID);
+            console.log(this.fields);
             this.overlay = false;
         },
         save (date) {//this function saves the state of the date picker
@@ -281,17 +295,32 @@ export default {
             this.$router.push(`/boats/owner/edit/${this.name}`);
             this.showSave = 0;
         },
-        saveChanges(){
-            if(this.mode == 'add'){
-                //makes an axios post request
-                //boats.post(somedata);
+        async saveChanges(){
+            this.overlay = true;
+             let data = {
+                    owner: {
+                        OwnerName:  this.fields.OwnerName,
+                        alias: this.fields.alias,
+                        boats: [],
+                    },
+                };
+                console.log(data);
+            let currentOwner= {};
+            if(this.mode == 'new'){
+                let resp =  await owners.post(data);
+                currentOwner.id = resp.Id;
+                currentOwner.name = resp.Name;
             }
             else{
-                //makes an axios put request
-                //boats.put(somedata);
+                let resp = await owners.put(localStorage.currentOwnerID,data);
+                currentOwner.id = localStorage.currentOwnerID;
+                currentOwner.name = resp.owner.Name; 
             }
+            this.overlay = false;
             this.mode = 'view';
-            this.$router.push(`/boats/owner/view/${this.name}`);
+            this.$router.push({name: 'ownerView', params: { name: currentOwner.name, id: currentOwner.id}});
+
+            
         },
         editHistoricRecord(newVal){
             this.historiRecordHelper = newVal;
@@ -322,13 +351,13 @@ export default {
         },
         saveTableAlias(index){
             if(this.validAlias){
-                this.fields.alias[index] = this.helperAlias;
+                this.fields.alias[index].Alias = this.helperAlias;
                 this.editTableAlias = -1;
             }           
         },
         addAlias(){
             this.helperAlias="";
-            this.fields.alias.push(""); 
+            this.fields.alias.push({Alias: ""}); 
             this.editTableAlias = this.fields.alias.length-1;
         },
     },
