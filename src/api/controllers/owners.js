@@ -87,9 +87,7 @@ router.put('/:ownerId', authenticateToken, async (req, res) => {
     .where('boat.OwnerAlias.id', alias.Id);
   }
 
-  const response = { owner };
-
-  res.status(200).send(response);
+  res.status(200).send({ message: 'success' });
 });
 
 router.post('/new', authenticateToken, async (req, res) => {

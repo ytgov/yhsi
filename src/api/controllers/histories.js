@@ -33,6 +33,7 @@ router.post('/new', authenticateToken, async (req, res) => {
     .returning('*');
 
   res.status(200).send(response);
+
 });
 
 router.put('/:historyId', authenticateToken, async (req, res) => {
@@ -43,11 +44,11 @@ router.put('/:historyId', authenticateToken, async (req, res) => {
   const { history } = req.body;
   const { historyId } = req.params;
   //make the update
-  const response = await db('boat.History')
+  await db('boat.History')
       .update(history)
       .where('boat.History.id', historyId);
 
-  res.status(200).send(response);
+  res.status(200).send({ message: 'success' });
 });
 
 module.exports = router
