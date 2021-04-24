@@ -124,9 +124,7 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
       .update(boat)
       .where('boat.boat.id', boatId);
 
-  const response = { boat, owners, histories };
-
-  res.status(200).send(response);
+  res.status(200).send({ message: 'success' });
 });
 
 module.exports = router;
