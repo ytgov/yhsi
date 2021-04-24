@@ -344,7 +344,7 @@
         </v-row>
         <v-divider class="my-5"></v-divider> 
 <!-- Historic Record component -->
-        <HistoricRecord v-if="fields.histories != undefined" :historicRecords="fields.histories" :mode="'edit'"  />
+        <HistoricRecord v-if="fields.histories != undefined" :historicRecords="fields.histories" :mode="'edit'" :boatID="getBoatID" />
         <v-overlay :value="overlay">
             <v-progress-circular
                 indeterminate
