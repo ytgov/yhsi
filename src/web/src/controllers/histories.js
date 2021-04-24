@@ -11,7 +11,7 @@ export default {
       });
     },
     async put(historyId, data){
-      return await api.post(`histories/${historyId}`,data)
+      return await api.put(`histories/${historyId}`,data)
       .then(res => {
         return res.data;
       }).catch(error =>{
