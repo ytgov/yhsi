@@ -177,9 +177,7 @@ export default {
                     UID: this.boatID 
                 }  
             };
-            let resp = await histories.put( this.data[index].id, data);
-            console.log(resp);
-
+            await histories.put( this.data[index].id, data);
             this.data[index].Reference = this.referenceHelper;
             this.data[index].HistoryText = this.historicRecordHelper;
             this.editTable = -1;

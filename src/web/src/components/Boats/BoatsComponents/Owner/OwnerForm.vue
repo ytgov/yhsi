@@ -197,6 +197,7 @@ export default {
         aliasRules: [
             v => !!v || 'Alias is required',
         ],
+        aliasArray: [],
     //helper vars for when v-model is not an option (inside the datatable)
         historiRecordHelper: "",
         recordHelper: "",
@@ -253,6 +254,7 @@ export default {
                 this.saveCurrentOwner();
             }
             this.fields = await owners.getById(localStorage.currentOwnerID);
+            this.fields.alias = this.fields.alias.map(x =>({ ...x, isEdited:false}));
             console.log(this.fields);
             this.overlay = false;
         },
@@ -299,30 +301,34 @@ export default {
         },
         async saveChanges(){
             this.overlay = true;
+            let alias = this.fields.alias.filter(x => x.isNew == true || x.isEdited == true);
+            alias.map(x => {
+                delete x.isNew;
+                delete x.isEdited;
+            })
+            
              let data = {
                     owner: {
                         OwnerName:  this.fields.OwnerName,
                     },
-                    ownerAlias: this.fields.alias,
+                    ownerAlias: alias,
                 };
                 console.log(data);
             let currentOwner= {};
             if(this.mode == 'new'){
-                let resp =  await owners.post(data);
-                //currentOwner.id = resp.Id;
-                //currentOwner.name = resp.Name;
+                let resp = await owners.post(data);
                 console.log(resp);
+                this.$router.push(`/boats/owner`);
             }
             else{
                 let resp = await owners.put(localStorage.currentOwnerID,data);
-                //currentOwner.id = localStorage.currentOwnerID;
-                //currentOwner.name = resp.owner.Name; 
                 console.log(resp);
+                currentOwner.id = localStorage.currentOwnerID;
+                currentOwner.name = this.fields.OwnerName; 
+                this.overlay = false;
+                this.mode = 'view';
+                this.$router.push({name: 'ownerView', params: { name: currentOwner.name, id: currentOwner.id}});
             }
-            this.overlay = false;
-            this.mode = 'view';
-            this.$router.push({name: 'ownerView', params: { name: currentOwner.name, id: currentOwner.id}});
-
             
         },
         editHistoricRecord(newVal){
@@ -340,7 +346,8 @@ export default {
     //functions for editing the table "Owners" values
         changeEditTableAlias(item,index){
             this.editTableAlias = index;
-            this.helperAlias = item;
+            this.fields.alias[index].isEdited = true;
+            this.helperAlias = item.Alias;
         },
         cancelEditTableAlias(){
             if(this.validAlias && this.addingAlias){
@@ -360,7 +367,7 @@ export default {
         },
         addAlias(){
             this.helperAlias="";
-            this.fields.alias.push({Alias: ""}); 
+            this.fields.alias.push({Alias: "", isNew: true}); 
             this.editTableAlias = this.fields.alias.length-1;
         },
     },
