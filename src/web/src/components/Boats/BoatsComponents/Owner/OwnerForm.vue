@@ -4,7 +4,8 @@
         <Breadcrumbs/>
         <v-row>
             <v-col cols="12" class="d-flex">
-                <h1 v-if="mode != 'new'">{{fields.OwnerName}}</h1>
+                <h1 v-if="mode == 'view'">{{fields.OwnerName}}</h1>
+                <h1 v-else-if="mode == 'edit'"></h1>
                 <h1 v-else>New Owner</h1>
                 <v-spacer></v-spacer>
 <!-- buttons for the view state -->
@@ -20,7 +21,7 @@
                 </v-btn>
                 <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'edit'" @click="saveChanges()" >
                     <v-icon class="mr-1">mdi-check</v-icon>
-                    Save Changes
+                    Done
                 </v-btn>
 <!-- buttons for the new state -->
                 <v-btn class="black--text mx-1" @click="cancelNew" v-if="mode == 'new'">
@@ -29,7 +30,7 @@
                 </v-btn>
                 <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'new'" @click="saveChanges()" >
                     <v-icon class="mr-1">mdi-check</v-icon>
-                    Save Changes
+                    Create owner
                 </v-btn>
             </v-col>
         </v-row>
@@ -37,7 +38,8 @@
             <v-col cols="6">
                 <v-row>
                     <v-col cols="6">
-                        <v-text-field
+                        <v-text-field 
+                            v-if="mode != 'view'"
                             v-model="fields.OwnerName"
                             label="Owner Name"
                         ></v-text-field>
@@ -300,21 +302,22 @@ export default {
              let data = {
                     owner: {
                         OwnerName:  this.fields.OwnerName,
-                        alias: this.fields.alias,
-                        boats: [],
                     },
+                    ownerAlias: this.fields.alias,
                 };
                 console.log(data);
             let currentOwner= {};
             if(this.mode == 'new'){
                 let resp =  await owners.post(data);
-                currentOwner.id = resp.Id;
-                currentOwner.name = resp.Name;
+                //currentOwner.id = resp.Id;
+                //currentOwner.name = resp.Name;
+                console.log(resp);
             }
             else{
                 let resp = await owners.put(localStorage.currentOwnerID,data);
-                currentOwner.id = localStorage.currentOwnerID;
-                currentOwner.name = resp.owner.Name; 
+                //currentOwner.id = localStorage.currentOwnerID;
+                //currentOwner.name = resp.owner.Name; 
+                console.log(resp);
             }
             this.overlay = false;
             this.mode = 'view';
