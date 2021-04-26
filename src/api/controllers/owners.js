@@ -72,7 +72,7 @@ router.put('/:ownerId', authenticateToken, async (req, res) => {
   ownerAlias.forEach(alias => {
     // if statements or switch statement depending on how you want to split
     if (alias.id) editArray.push(alias);
-    else newArray.push(alias);
+    else newArray.push({ OwnerId: ownerId, ...alias });
   });
 
 
