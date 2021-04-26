@@ -108,7 +108,7 @@ router.post('/new', authenticateToken, async (req, res) => {
 
       return newBoat;
     });
-
+  
   res.status(200).send(response);
 });
 
