@@ -120,6 +120,7 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
   const { boat = {}, owners = [] } = req.body;
   const { boatId } = req.params;
   //make the update
+
   await db('boat.boat')
       .update(boat)
       .where('boat.boat.id', boatId);
