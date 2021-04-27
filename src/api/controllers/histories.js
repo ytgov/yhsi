@@ -27,7 +27,6 @@ router.post('/new', authenticateToken, async (req, res) => {
   if (!permissions.includes('create')) res.sendStatus(403);
 
   const { history = {} } = req.body;
-  const { boatId } = req.params;
 
   const response = await db.insert(history)
     .into('boat.History')
