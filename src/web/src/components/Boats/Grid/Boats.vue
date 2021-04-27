@@ -76,7 +76,6 @@ export default {
                 x.ServiceStart = this.formatDate(x.ServiceStart);
                 x.ServiceEnd = this.formatDate(x.ServiceEnd);
             });
-            console.log(this.boats);
             this.$store.commit("boats/setBoats", this.boats);
             this.loading = false;
         },

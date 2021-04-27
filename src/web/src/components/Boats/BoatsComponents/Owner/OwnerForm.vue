@@ -350,11 +350,12 @@ export default {
             this.helperAlias = item.Alias;
         },
         cancelEditTableAlias(){
-            if(this.validAlias && this.addingAlias){
+            if(this.addingAlias){
                 this.editTableAlias = -1;
+                this.addingAlias = false;
                 this.fields.alias.pop();
             }
-            else if(this.validAlias && this.addingAlias == false){
+            else{
                 this.editTableAlias = -1;
             }
                 
@@ -367,6 +368,7 @@ export default {
         },
         addAlias(){
             this.helperAlias="";
+            this.addingAlias = true;
             this.fields.alias.push({Alias: "", isNew: true}); 
             this.editTableAlias = this.fields.alias.length-1;
         },
