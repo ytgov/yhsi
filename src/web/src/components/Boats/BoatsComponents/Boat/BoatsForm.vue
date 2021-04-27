@@ -456,6 +456,7 @@ export default {
             }
             this.fields = await boats.getById(localStorage.currentBoatID);
             console.log(this.fields);
+            this.fields.owners = this.fields.owners.map(x =>({ ...x, isEdited:false}));
             this.fields.ConstructionDate = this.fields.ConstructionDate ? this.fields.ConstructionDate.substr(0, 10) : "";
             this.fields.ServiceStart = this.fields.ServiceStart ? this.fields.ServiceStart.substr(0, 10) : "";
             this.fields.ServiceEnd = this.fields.ServiceEnd ? this.fields.ServiceEnd.substr(0, 10) : "";
@@ -491,11 +492,17 @@ export default {
             this.resetListVariables();
         },
         async saveChanges(){
-            this.overlay = true;
+            this.overlay = true; 
+            console.log(this.fields.owners);
+            let editedOwners = this.fields.owners.filter(x => x.isEdited == true)
+                .map(x => ({ OwnerID: x.ownerid ? x.ownerid : x.id, CurrentOwner: x.currentowner }));
+            let newOwners = this.fields.owners.filter(x => x.isNew == true)
+                .map(x => ({ OwnerID: x.ownerid ? x.ownerid : x.id, CurrentOwner: x.currentowner }));
+            let newNames = this.fields.owners.filter(x => x.isNew == true);
+            let editedNames = this.fields.owners.filter(x => x.isEdited == true);
              let data = {
                     boat: {
                         Name: this.fields.Name,
-                        pastNames: this.fields.pastNames,
                         ConstructionDate: this.fields.ConstructionDate,
                         ServiceStart:this.fields.ServiceStart,
                         ServiceEnd: this.fields.ServiceEnd,
@@ -504,14 +511,13 @@ export default {
                         CurrentLocation: this.fields.CurrentLocation,
                         Notes: this.fields.Notes,
                     },
-                    owners: this.fields.owners.map( x => {
-                        return { OwnerID: x.ownerid ? x.ownerid : x.id, CurrentOwner: x.currentowner }
-                    }),
-                    histories: this.fields.histories.map( x => {
-                        return { HistoryText: x.HistoryText, Reference: x.Reference }
-                    }),
+                    ownerNewArray: editedOwners,
+                    ownerEditArray: newOwners,
+                    pastNamesNewArray: newNames,
+                    pastNamesEditArray: editedNames
                 };
                 console.log(data);
+                
             let currentBoat= {};
             if(this.mode == 'new'){
                 let resp =  await boats.post(data);
@@ -526,6 +532,7 @@ export default {
             this.overlay = false;
             this.mode = 'view';
             this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});
+            
         },
         editHistoricRecord(newVal){
             this.historiRecordHelper = newVal;
@@ -550,13 +557,16 @@ export default {
                 this.addingName = false;
                 this.editTableNames = -1;
             }
-            else if(this.validName && this.addingName == false){
+            else{
                 this.editTableNames = -1;
             }
                 
         },
         saveTableNames(index){
-            this.fields.pastNames[index] = {BoatName: this.helperName};
+            if(this.addingName)
+                this.fields.pastNames[index] = {BoatName: this.helperName, isNew: true};
+            else
+                this.fields.pastNames[index] = {BoatName: this.helperName, isEdited: true};
             this.addingName = false;  
             this.editTableNames = -1;     
         },
@@ -577,13 +587,17 @@ export default {
                 this.addingOwner = false;  
                 this.editTableOwners = -1;
             }
-            else if(this.validOwner && this.addingOwner == false){
+            else{
                 this.editTableOwners = -1;
             }
                 
         },
         saveTableOwners(index){
-            this.fields.owners[index] = this.helperOwner.name ? this.helperOwner.name : this.helperOwner;   
+            if(this.addingOwner)
+                this.fields.owners[index] = { ...this.helperOwner, isNew: true};
+            else
+                this.fields.owners[index] = { ...this.helperOwner, isEdited: true};
+                console.log(this.fields.owners[index]);
             this.addingOwner = false;  
             this.editTableOwners = -1;    
         },
@@ -596,6 +610,7 @@ export default {
         async getOwners(){
             this.isLoadingOwner = true;
             let data = await owners.get();
+            console.log(data);
             this.owners = data.body;
             this.isLoadingOwner = false;
         },

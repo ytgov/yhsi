@@ -131,6 +131,12 @@
                 </v-card>
             </v-col>
         </v-row>
+        <v-overlay :value="overlay">
+            <v-progress-circular
+                indeterminate
+                size="64"
+            ></v-progress-circular>
+        </v-overlay>
     </div>
 
     
@@ -153,6 +159,7 @@ export default {
     //helper vars for when v-model is not an option (inside the datatable)
         historicRecordHelper: "",
         referenceHelper: "",
+        overlay: false,
         addingItem: false,
     }),
     mounted(){
@@ -170,6 +177,7 @@ export default {
             //this.data.shift();
         },
         async saveTable(index){
+            this.overlay = true;
             let data = {
                 history: {
                     HistoryText: this.historicRecordHelper, 
@@ -177,9 +185,13 @@ export default {
                     UID: this.boatID 
                 }  
             };
-            await histories.put( this.data[index].id, data);
-            this.data[index].Reference = this.referenceHelper;
-            this.data[index].HistoryText = this.historicRecordHelper;
+            const resp = await histories.put(this.data[index].id, data);
+            if(resp.message == "success"){
+                this.data[index].Reference = this.referenceHelper;
+                this.data[index].HistoryText = this.historicRecordHelper;
+            }
+            this.overlay = false;
+            
             this.editTable = -1;
         },
         addRecord(){
@@ -190,6 +202,7 @@ export default {
         },
         //for adding a new item
         async saveItem(){
+            this.overlay = true;
             let data = {
                 history: {
                     HistoryText: this.historicRecordHelper, 
@@ -200,6 +213,7 @@ export default {
             let resp = await histories.post(data);
             if(resp[0].HistoryText);
                 this.data.push(resp[0]);
+            this.overlay = false;
             this.historicRecordHelper = null;
             this.referenceHelper = null;
             this.addingItem = false;
