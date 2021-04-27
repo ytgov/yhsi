@@ -29,14 +29,14 @@
                         <template v-slot:body.prepend="{}" v-if="addingItem">
                             <tr>
                                 <td>
-                                    <v-text-field
-                                    v-model="historicRecordHelper "
-                                    ></v-text-field>
+                                    <v-textarea
+                                    v-model="historicRecordHelper"
+                                    ></v-textarea>
                                 </td>
                                 <td>
-                                    <v-text-field 
+                                    <v-textarea
                                     v-model="referenceHelper"
-                                    ></v-text-field>
+                                    ></v-textarea>
                                 </td>
                                 <td>
                                     <v-tooltip bottom>
@@ -44,6 +44,7 @@
                                                 <v-btn
                                                 v-bind="attrs"
                                                 v-on="on" 
+                                                :disabled="!referenceHelper && !historicRecordHelper"
                                                 icon class="black--text" color="success"  @click="saveItem()">
                                                     <v-icon
                                                     small
@@ -103,6 +104,7 @@
                                         <v-btn
                                         v-bind="attrs"
                                         v-on="on" 
+                                        :disabled="referenceHelper === '' || historicRecordHelper === ''"
                                         icon class="black--text" color="success"  @click="saveTable(index)">
                                             <v-icon
                                             small
@@ -129,15 +131,22 @@
                 </v-card>
             </v-col>
         </v-row>
+        <v-overlay :value="overlay">
+            <v-progress-circular
+                indeterminate
+                size="64"
+            ></v-progress-circular>
+        </v-overlay>
     </div>
 
     
 </template>
 
 <script>
+import histories from "../../../controllers/histories";
 export default {
     name: "historicRecord",
-    props: ["historicRecords", "mode"],
+    props: ["historicRecords", "mode", "boatID"],
     data: ()=>({
         search: "",
         headers: [
@@ -150,6 +159,7 @@ export default {
     //helper vars for when v-model is not an option (inside the datatable)
         historicRecordHelper: "",
         referenceHelper: "",
+        overlay: false,
         addingItem: false,
     }),
     mounted(){
@@ -166,22 +176,46 @@ export default {
             this.editTable = -1;
             //this.data.shift();
         },
-        saveTable(index){
-            this.data[index].Reference = this.referenceHelper;
-            this.data[index].HistoryText = this.historicRecordHelper;
+        async saveTable(index){
+            this.overlay = true;
+            let data = {
+                history: {
+                    HistoryText: this.historicRecordHelper, 
+                    Reference: this.referenceHelper, 
+                    UID: this.boatID 
+                }  
+            };
+            const resp = await histories.put(this.data[index].id, data);
+            if(resp.message == "success"){
+                this.data[index].Reference = this.referenceHelper;
+                this.data[index].HistoryText = this.historicRecordHelper;
+            }
+            this.overlay = false;
+            
             this.editTable = -1;
         },
         addRecord(){
             //this.$emit('addRecord')
-            this.historicRecordHelper = "";
-            this.referenceHelper = "";
+            this.historicRecordHelper = null;
+            this.referenceHelper = null;
             this.addingItem = true;
         },
         //for adding a new item
-        saveItem(){
-            this.data.push({HistoryText: this.historicRecordHelper, Reference: this.referenceHelper });
-            this.historicRecordHelper = "";
-            this.referenceHelper = "";
+        async saveItem(){
+            this.overlay = true;
+            let data = {
+                history: {
+                    HistoryText: this.historicRecordHelper, 
+                    Reference: this.referenceHelper, 
+                    UID: this.boatID 
+                }  
+            };
+            let resp = await histories.post(data);
+            if(resp[0].HistoryText);
+                this.data.push(resp[0]);
+            this.overlay = false;
+            this.historicRecordHelper = null;
+            this.referenceHelper = null;
             this.addingItem = false;
         },
         cancelItem(){

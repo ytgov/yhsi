@@ -33,22 +33,31 @@ export default {
             this.toPrint.photos = this.data.photos;
 
             this.toPrint.historicRecords = [];
-            let hR = this.data.historicRecords;
-            for(let i = 0; i<hR.length; i++){
-              this.toPrint.historicRecords.push(Object.values(hR[i]));
-            }
+            let hR = this.data.histories;
+            
+            this.toPrint.historicRecords = hR.map( x => { return Object.values(x)});
 
-            let names = this.toPrint.general.names;
-            this.toPrint.general.names = [];
+            //let names = this.toPrint.general.names;
+            //this.toPrint.general.names = names.map(x =>{ return [x] });
+            //console.log(this.toPrint.names);
+            /*
             for(let i = 0; i<names.length; i++){
               this.toPrint.general.names.push([names[i]]);
             }
             
+            let hs = {
+              UID: 1,
+              HistoryText: "",
+              Reference: ""
+            }*/
+
             let owners = this.toPrint.general.owners;
-            this.toPrint.general.owners = [];
+            this.toPrint.general.owners =  owners.map(x =>{ return [x] });
+            console.log(this.toPrint.general.owners);
+            /*
             for(let i = 0; i<owners.length; i++){
               this.toPrint.general.owners.push([owners[i]]);
-            }
+            }*/
       },
       exportPDF() {
         this.mapData();

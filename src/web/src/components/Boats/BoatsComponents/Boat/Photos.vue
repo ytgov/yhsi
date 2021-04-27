@@ -38,6 +38,7 @@
                 v-model="dialog1"
                 max-width="600"
                 scrollable
+                @click:outside="reset()"
                 >
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
@@ -61,90 +62,109 @@
                             <v-tab-item>
                                 <v-divider></v-divider>
                                 <v-container>
-                                    <v-row >
-                                        <v-col cols="12">
-                                            <v-form method="post" enctype="multipart/form-data">
-                                                <v-row>
-                                                    <v-col cols="12" class="d-flex my-0 py-0">
-                                                    <v-spacer></v-spacer>
-                                                    <v-checkbox
-                                                        class="align-self-end"
-                                                        label="Private"
-                                                        v-model="fields.private"
-                                                    ></v-checkbox>
-                                                </v-col>
-                                                </v-row>       
-                                                
-                                                <v-text-field
-                                                    v-model="fields.featureName"
-                                                    label="Feature Name">
-                                                </v-text-field>
-                                                <v-combobox
-                                                    v-model="fields.owner"
-                                                    label="Owner">   
-                                                </v-combobox>
-                                                <v-combobox
-                                                    v-model="fields.community"
-                                                    label="Community">   
-                                                </v-combobox>
-                                                <v-combobox
-                                                    v-model="fields.copyright"
-                                                    label="Copyright">
-                                                </v-combobox>
-                                                <v-combobox
-                                                    v-model="fields.usageRights"
-                                                    label="Usage Rights">   
-                                                </v-combobox>   
-                                                <v-textarea
-                                                    v-model="fields.caption"
-                                                    dense
-                                                    label="Caption"
-                                                    rows="2">
-                                                </v-textarea>
-                                                <v-textarea
-                                                    v-model="fields.comments"
-                                                    dense
-                                                    label="Comments"
-                                                    rows="2">
-                                                </v-textarea>
-                                                <v-textarea
-                                                    v-model="fields.creditLine"
-                                                    dense
-                                                    label="Credit Line"
-                                                    rows="2">
-                                                </v-textarea>
+                                    <v-form 
+                                        ref="photoForm"
+                                        :lazy-validation="false"
+                                        v-model="valid">
+                                        <v-row >
+                                            <v-col cols="12">
+                                                    <v-row>
+                                                        <v-col cols="12" class="d-flex my-0 py-0">
+                                                        <v-spacer></v-spacer>
+                                                        <v-checkbox
+                                                            class="align-self-end"
+                                                            label="Private"
+                                                            v-model="fields.Private"
+                                                        ></v-checkbox>
+                                                    </v-col>
+                                                    </v-row>       
+                                                    
+                                                    <v-text-field
+                                                        v-model="fields.FeatureName"
+                                                        label="Feature Name"
+                                                        :rules="generalRules">
+                                                        
+                                                    </v-text-field>
 
-                                                <v-file-input
-                                                accept="image/*"
-                                                label="Choose photo for upload"
-                                                prepend-icon="mdi-camera"
-                                                @change="onFileSelected"
-                                                ></v-file-input>
-                                            </v-form>
-                                            
-                                        </v-col>
-                                    </v-row>
-                                    <v-divider></v-divider>
-                                    <v-row>
-                                        <v-col cols="12" class="d-flex">
-                                            <v-btn
-                                                text
-                                                class="ma-1"
-                                                @click="dialog1 = false"
-                                            >
-                                                Cancel
-                                            </v-btn>
-                                            <v-spacer></v-spacer>
-                                            <v-btn
-                                                color="primary darken-1"
-                                                text
-                                                class="ma-1"
-                                                @click="savePhoto"
-                                            >
-                                                Save 
-                                            </v-btn>    
-                                        </v-col>
-                                    </v-row>
+                                                    <v-autocomplete
+                                                        @click="getOwners"
+                                                        v-model="fields.OwnerId"
+                                                        :items="owners"
+                                                        :loading="isLoadingOwner"
+                                                        clearable
+                                                        label="Owner Name"
+                                                        :rules="ownerRules"
+                                                        item-text="OwnerName"
+                                                        item-value="ownerid"
+                                                    ></v-autocomplete>
+                                                    <v-combobox
+                                                        v-model="fields.CommunityId"
+                                                        label="Community"
+                                                        :rules="generalRules">   
+                                                    </v-combobox>
+                                                    <v-combobox
+                                                        v-model="fields.Copyright"
+                                                        label="Copyright"
+                                                        :rules="generalRules">
+                                                    </v-combobox>
+                                                    <v-combobox
+                                                        v-model="fields.UsageRights"
+                                                        label="Usage Rights"
+                                                        :rules="generalRules">   
+                                                    </v-combobox>   
+                                                    <v-textarea
+                                                        v-model="fields.Caption"
+                                                        dense
+                                                        label="Caption"
+                                                        rows="2"
+                                                        >
+                                                    </v-textarea>
+                                                    <v-textarea
+                                                        v-model="fields.Comments"
+                                                        dense
+                                                        label="Comments"
+                                                        rows="2">
+                                                    </v-textarea>
+                                                    <v-textarea
+                                                        v-model="fields.CreditLine"
+                                                        dense
+                                                        label="Credit Line"
+                                                        rows="2"
+                                                        :rules="generalRules">
+                                                    </v-textarea>
+
+                                                    <v-file-input
+                                                    accept="image/*"
+                                                    label="Choose photo for upload"
+                                                    prepend-icon="mdi-camera"
+                                                    @change="onFileSelected"
+                                                    :rules="generalRules"
+                                                    ></v-file-input>                                          
+                                            </v-col>
+                                        </v-row>
+                                        <v-divider></v-divider>
+                                        <v-row>
+                                            <v-col cols="12" class="d-flex">
+                                                <v-btn
+                                                    text
+                                                    class="ma-1"
+                                                    @click="reset()"
+                                                >
+                                                    Cancel
+                                                </v-btn>
+                                                <v-spacer></v-spacer>
+                                                <v-btn
+                                                    color="primary darken-1"
+                                                    text
+                                                    class="ma-1"
+                                                    @click="savePhoto"
+                                                    :disabled="!valid"
+                                                >
+                                                    Save 
+                                                </v-btn>    
+                                            </v-col>
+                                        </v-row>
+                                    </v-form>
                                 </v-container>
                             </v-tab-item>
                             <v-tab-item>
@@ -208,7 +228,7 @@
                                         <v-btn
                                             text
                                             class="ma-1"
-                                            @click="dialog1 = false"
+                                            @click="reset()"
                                         >
                                             Cancel
                                         </v-btn>
@@ -321,6 +341,7 @@
 
 <script>
 import photos from "../../../../controllers/photos";
+import owners from "../../../../controllers/owners";
 export default {
     name: "photos",
     props: ["boatID", "showDefault"],
@@ -328,7 +349,8 @@ export default {
         searchPhotos: null,
         dialog1: false,
         dialog2: false,
-        fileValue: null,
+        photos: [],
+//form variables
         fields: {
             BoatId: 1,
             Caption: "",
@@ -337,7 +359,7 @@ export default {
             UsageRights: 0,
             CommunityId: 46,
             Comments: "",
-            CreditLine: null,  
+            CreditLine: "",  
             PhotoProjectId:79,
             IsOtherRecord:false,
             OriginalMediaId:1,
@@ -347,8 +369,19 @@ export default {
             IsComplete:true,
             Rating:3,
         },
-        File: null,
-        photos: [],
+        file: false,
+        isLoadingOwner: false,
+        owners: [],   
+        helperOwner: "",
+        //helps to validate if the data in the form is correct and the post can be made
+        valid: false,
+    //input rules
+        ownerRules: [
+            v => !!v || 'Owner Name is required',
+        ],
+        generalRules: [
+        v => !!v || 'This field is required',],
+    
     }),
     mounted(){
         if(this.boatID && !this.showPhotosDefault)
@@ -366,6 +399,13 @@ export default {
             }
             this.photos = data;
         },
+        async getOwners(){
+            this.isLoadingOwner = true;
+            let data = await owners.get();
+            this.owners = data.body;
+            console.log(this.owners);
+            this.isLoadingOwner = false;
+        },
         selectImage(item){
             let index = this.photos.indexOf(item);
             if(index >-1){
@@ -379,7 +419,7 @@ export default {
             for(let i=0;i<prevFields.length; i++){
                 formData.append(prevFields[i][0],prevFields[i][1]);
             }
-            formData.append("file", this.File);
+            formData.append("file", this.file);
             await photos.post(formData);
         },
         async saveAndLink(){
@@ -393,15 +433,25 @@ export default {
             this.File = event;
         },
         getBase64(file) {//this function is not used currently
-        var reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = function () {
-            console.log(reader.result);
-        };
-        reader.onerror = function (error) {
-            console.log('Error: ', error);
-        };
-        }
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+                console.log(reader.result);
+            };
+            reader.onerror = function (error) {
+                console.log('Error: ', error);
+            };
+        },
+        validate () {
+            this.$refs.photoForm.validate();
+        },
+        reset() {
+            this.dialog1 = false;
+            this.$refs.photoForm.reset();
+        },
+        resetValidation () {
+            this.$refs.photoForm.resetValidation();
+        },
     },
     computed: {
         filteredPhotos(){

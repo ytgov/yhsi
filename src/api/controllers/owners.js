@@ -55,10 +55,11 @@ router.get('/:ownerId', authenticateToken, async (req, res) => {
   owner.histories = await db.select('*')
     .from('boat.history')
     .where('boat.history.uid', ownerId);
-  
+    
   owner.alias = await db.select('*')
     .from('boat.owneralias')
     .where('boat.owneralias.ownerid', ownerId);
+
 
   res.status(200).send(owner);
 });
@@ -77,7 +78,7 @@ router.put('/:ownerId', authenticateToken, async (req, res) => {
   //make the update
   await db('boat.owner')
       .update({ OwnerName })
-      .where('boat.boat.id', ownerId);
+      .where('boat.owner.id', ownerId);
 
   const newArray = [];
   const editArray = [];
@@ -87,6 +88,7 @@ router.put('/:ownerId', authenticateToken, async (req, res) => {
     if (alias.id) editArray.push(alias);
     else newArray.push({ OwnerId: ownerId, ...alias });
   });
+
 
   await db.insert(newArray)
     .into('boat.OwnerAlias')

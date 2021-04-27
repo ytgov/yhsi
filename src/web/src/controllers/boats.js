@@ -42,5 +42,6 @@ export default {
       // handle error
       console.log(error);
     });
-  }
+  },
 }
+
