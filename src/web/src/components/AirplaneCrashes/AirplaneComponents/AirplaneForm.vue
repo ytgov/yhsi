@@ -285,7 +285,7 @@
                 </v-checkbox>
             </v-col>
             <v-col cols="5">
-
+                <GoogleMapLoader/>
             </v-col>
         </v-row>
         <v-row>
@@ -366,9 +366,10 @@ import Photos from "./Photos";
 import PrintButton from "./PrintButton";
 import boats from "../../../controllers/boats";
 import owners from "../../../controllers/owners";
+import GoogleMapLoader from "./GoogleMapLoader";
 export default {
     name: "boatsForm",
-    components: { Photos, Breadcrumbs, PrintButton },
+    components: { Photos, Breadcrumbs, PrintButton, GoogleMapLoader },
     data: ()=> ({
         overlay: false,
     //helper vars used for the name list functions
