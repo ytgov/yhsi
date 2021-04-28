@@ -4,7 +4,8 @@
             <div v-for="(item,i) in items" :key="`rl-${i}`">
                 <router-link 
                 :to="item.to"
-                :event="item.disabled ? '' : 'click'" >
+                :event="item.disabled ? '' : 'click'" 
+                class="text-capitalize">
                     {{item.text}} 
                 </router-link>
                 <v-icon v-if="i+1 < items.length">mdi-chevron-right</v-icon>
