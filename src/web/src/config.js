@@ -45,6 +45,11 @@ export const sections = [
         icon: "mdi-home-group"
     },
     {
+        name: "Airplane Crash",
+        url: "/airplane/",
+        icon: "mdi-airplane-landing"
+    },
+    {
         name: "Boats",
         url: "/boats/",
         icon: "mdi-ferry"
