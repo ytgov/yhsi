@@ -82,34 +82,37 @@
     </v-row>
     <div class="mt-2">
         <v-card>
-            <v-row>
-              <v-col cols="12">
-                <h2 v-if="boats" class="ma-2">{{filteredData.length}} Results</h2>
-              </v-col>
-            </v-row>
-            <v-divider  class="mb-4"></v-divider>
-            <v-row>
-              <v-col>
-                  <v-data-table
-                    :items="filteredData"
-                    :headers="headers"
-                    :loading="loading"    
-                    :search="search"
-                    :options.sync="options"
-                    :server-items-length="totalLength"
-                    @click:row="handleClick"
-                    disable-sort
-                    :footer-props="{'items-per-page-options': [10, 30, 100]}"
-                  >
-                      <template v-slot:item.owners="{ item }">
-                          <div v-if="item.owners.length > 0">
-                              {{ getCurrentOwner(item.owners) }}
-                          </div>
-                      </template>            
-                  </v-data-table>
-                  
-              </v-col>
-            </v-row>
+          <v-container >
+              <v-row>
+                <v-col cols="12">
+                  <h2 v-if="boats" class="ma-2">{{filteredData.length}} Results</h2>
+                </v-col>
+              </v-row>
+              <v-divider  class="mb-4"></v-divider>
+              <v-row>
+                <v-col>
+                    <v-data-table
+                      :items="filteredData"
+                      :headers="headers"
+                      :loading="loading"    
+                      :search="search"
+                      :options.sync="options"
+                      :server-items-length="totalLength"
+                      @click:row="handleClick"
+                      disable-sort
+                      :footer-props="{'items-per-page-options': [10, 30, 100]}"
+                    >
+                        <template v-slot:item.owners="{ item }">
+                            <div v-if="item.owners.length > 0">
+                                {{ getCurrentOwner(item.owners) }}
+                            </div>
+                        </template>            
+                    </v-data-table>
+                    
+                </v-col>
+              </v-row>
+          </v-container>
+            
         </v-card>
     </div>  
   </div>
