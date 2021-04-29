@@ -102,10 +102,10 @@
                                 </v-menu>
                             </v-col>
                             <v-col cols="6">
-                                <v-text-field
-                                    v-model="constructionDate"
+                                <v-select
+                                    :items="dateDescriptorOptions"
                                     label="Date Descriptor"
-                                ></v-text-field>
+                                ></v-select>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -204,41 +204,44 @@
                     </div>
                     <v-row>
                         <v-col>
-                            <v-text-field
-                                v-model="constructionDate"
-                                label="First Name"
-                            ></v-text-field>
+                            <v-select
+                                :items="coordinateSystemOptions"
+                                return-object
+                                item-text="text"
+                                label="Coordinate System"
+                                v-model="selectedSystem"
+                            ></v-select>
                         </v-col>
                         <v-col>
-                            <v-text-field
-                                v-model="constructionDate"
-                                label="Last Name"
-                            ></v-text-field>
+                            <v-select
+                                :items="projectionOptions"
+                                label="Projection"
+                            ></v-select>
                         </v-col>
                     </v-row>
                     <v-row>
-                        <v-col>
+                        <v-col :cols="2.4">
                             <h4>Latitude</h4>
                         </v-col>
-                        <v-col>
+                        <v-col :cols="showLocationColumn ? '' : 9">
                             <h4>Degrees</h4>
                             <v-text-field
                                 v-model="constructionDate"
                             ></v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col v-if="showLocationColumn">
                             <h4>Minutes</h4>
                             <v-text-field
                                 v-model="constructionDate"
                             ></v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col v-if="showLocationColumn">
                             <h4>Seconds</h4>
                             <v-text-field
                                 v-model="constructionDate"
                             ></v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col v-if="showLocationColumn">
                             <h4>Direction</h4>
                             <v-text-field
                                 v-model="constructionDate"
@@ -246,29 +249,40 @@
                         </v-col>
                     </v-row>
                     <v-row>
-                        <v-col>
+                        <v-col cols="2.4">
                             <h4>Longitude</h4>
                         </v-col>
-                        <v-col>
+                        <v-col :cols="showLocationColumn ? '' : 9">
                             <v-text-field
                                 v-model="constructionDate"
                             ></v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col v-if="showLocationColumn">
                             <v-text-field
                                 v-model="constructionDate"
                             ></v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col v-if="showLocationColumn">
                             <v-text-field
                                 v-model="constructionDate"
                             ></v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col v-if="showLocationColumn">
                             <v-text-field
                                 v-model="constructionDate"
                             ></v-text-field>
                         </v-col>
+                    </v-row>
+                    <v-row v-if="showLocationAlert">
+                        <v-col>
+                            <v-alert
+                            dense
+                            outlined
+                            type="error"
+                            >
+                            The location you entered is not in the <strong>Yukon</strong>
+                            </v-alert>
+                        </v-col>    
                     </v-row>
                 </v-alert>
             </v-col>
@@ -279,6 +293,7 @@
                 ></v-textarea>
                 <v-select
                     label="Location Accuracy"
+                    :items="locationAccuracyOptions"
                 ></v-select>
                 <v-checkbox 
                 label="Creash site within Yukon">
@@ -291,16 +306,20 @@
         <v-row>
             <v-col col="6">
                 <v-row>
-                    <v-col>
+                    <v-col>        
                         <v-select
+                            :items="remainsOptions"
                             label="Remains on Site"
                         ></v-select>
                         <v-textarea
+                            rows="5"
+                            class="mt-0 pt-0"
                             label="Extent of Remains on Site"
                         ></v-textarea>
                     </v-col>
                     <v-col>
                         <v-textarea
+                            rows="7"
                             label="Other Location of Remains"
                         ></v-textarea>
                     </v-col>
@@ -325,6 +344,7 @@
                         </v-col>
                          <v-col cols="6">
                             <v-textarea
+                                rows="7"
                                 label="Description of Crash Event"
                             ></v-textarea>
                         </v-col>
@@ -341,7 +361,78 @@
         </v-row>
         <v-row>
             <v-col cols="5">
-
+            <!-- Information source list -->
+                <v-card>
+                    <v-list class="pa-0" >
+                        <v-subheader>Information Source</v-subheader>
+                        <v-divider></v-divider>
+                        <template v-for="(item, index) in fields.pastNames">
+                            <v-list-item :key="`nl-${index}`">
+                                <v-list-item-content>
+                                    <v-list-item-title v-if="index != editTableNames || mode == 'view'">{{item.BoatName}}</v-list-item-title>
+                                    <v-form v-model="validName" v-if="mode != 'view'" v-on:submit.prevent>
+                                        <v-text-field
+                                        v-if="editTableNames == index "
+                                        label="Name"
+                                        v-model="helperName"
+                                        :rules="nameRules"
+                                        ></v-text-field>
+                                    </v-form>
+                                    
+                                </v-list-item-content>
+                                <v-list-item-action class="d-flex flex-row">
+                                    <v-tooltip bottom v-if="mode != 'view' && editTableNames != index">
+                                        <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                v-bind="attrs"
+                                                v-on="on"
+                                                icon class="grey--text text--darken-2"   @click="changeEditTableNames(item,index)">
+                                                    <v-icon
+                                                        small
+                                                    > mdi-pencil</v-icon>
+                                                </v-btn>
+                                        </template>
+                                        <span>Edit</span>
+                                    </v-tooltip>
+                                    <v-tooltip bottom v-if="mode != 'view' && editTableNames == index">
+                                        <template v-slot:activator="{ on, attrs }">
+                                                <v-btn
+                                                v-bind="attrs"
+                                                v-on="on" 
+                                                :disabled="!validName"
+                                                icon class="grey--text text--darken-2" color="success"  @click="saveTableNames(index)">
+                                                    <v-icon
+                                                    small
+                                                    >mdi-check</v-icon>  
+                                                </v-btn>
+                                        </template>
+                                        <span>Save changes</span>
+                                    </v-tooltip>
+                                    <v-tooltip bottom v-if="mode != 'view' && editTableNames == index">
+                                        <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                v-bind="attrs"
+                                                v-on="on"
+                                                icon class="grey--text text--darken-2"  @click="cancelEditTableNames()">
+                                                    <v-icon
+                                                    small
+                                                    >mdi-close</v-icon>  
+                                                </v-btn>
+                                        </template>
+                                        <span>Cancel</span>
+                                    </v-tooltip> 
+                                </v-list-item-action>
+                            </v-list-item>
+                            <v-divider  :key="`ldiv-${index}`"></v-divider>
+                        </template>
+                    </v-list>
+                </v-card>
+                <v-row>
+                    <v-col cols="12" class="d-flex ">
+                        <v-spacer></v-spacer>
+                        <v-btn class="mx-1 black--text align" @click="addName" v-if="mode != 'view' && editTableNames == -1">Add Source</v-btn>
+                    </v-col>
+                </v-row>
             </v-col>
             <v-col cols="7">
                 <v-textarea
@@ -365,7 +456,6 @@ import Breadcrumbs from '../../Breadcrumbs.vue';
 import Photos from "./Photos";
 import PrintButton from "./PrintButton";
 import boats from "../../../controllers/boats";
-import owners from "../../../controllers/owners";
 import GoogleMapLoader from "./GoogleMapLoader";
 export default {
     name: "boatsForm",
@@ -379,15 +469,6 @@ export default {
         validName: false,
         nameRules: [
             v => !!v || 'Name is required',
-        ],
-    //helper vars used for the name list functions
-        isLoadingOwner: false,
-        editTableOwners: -1,// tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
-        addingOwner: false,// tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
-        helperOwner: null,
-        validOwner: false,
-        ownerRules: [
-            v => !!v || 'Owner Name is required',
         ],
     //helper vars, they are used to determine if the component is in an edit, view or add new state
         mode: "",
@@ -405,7 +486,16 @@ export default {
         vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
         dateFormatted: "",
     //show a deafult photos component for when the user is adding a new boat
-        showPhotosDefault: false
+        showPhotosDefault: false,
+    //showLocationAlert
+        showLocationAlert: false,
+    // Select vars
+        selectedSystem: null,
+        projectionOptions: ["NAD 83", "NAD 83 CSRS", "WSG 84"],
+        coordinateSystemOptions: [{id: 1, text: "Degrees, Minutes, Seconds"},{id: 2, text:  "UMT Zone 8"}, {id: 3, text: "Decimal Degrees"}],
+        remainsOptions: ["Yes, No"],
+        locationAccuracyOptions: ["Approximate"],
+        dateDescriptorOptions: ["Actual"]
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -582,48 +672,6 @@ export default {
             this.addingName = true;
             this.editTableNames = this.fields.pastNames.length-1;
         },
-    //functions for editing the table "Owners" values
-        changeEditTableOwners(item,index){
-            this.editTableOwners = index;
-            this.helperOwner = item;
-        },
-        cancelEditTableOwners(){
-            if(this.addingOwner){
-                this.fields.owners.pop();
-                this.addingOwner = false;  
-                this.editTableOwners = -1;
-            }
-            else{
-                this.editTableOwners = -1;
-            }
-                
-        },
-        saveTableOwners(index){
-            if(this.addingOwner)
-                this.fields.owners[index] = { ...this.helperOwner, isNew: true};
-            else
-                this.fields.owners[index] = { ...this.helperOwner, isEdited: true};
-                console.log(this.fields.owners[index]);
-            this.addingOwner = false;  
-            this.editTableOwners = -1;    
-        },
-        addOwner(){
-            this.helperOwner="";
-            this.fields.owners.push(""); 
-            this.addingOwner = true;  
-            this.editTableOwners = this.fields.owners.length-1;
-        },
-        async getOwners(){
-            this.isLoadingOwner = true;
-            let data = await owners.get();
-            console.log(data);
-            this.owners = data.body;
-            this.isLoadingOwner = false;
-        },
-        //handles the new values added to the historic records
-        historicRecordChange(val){
-            this.fields.histories = val;
-        },
         formatDate (date) {
         if (!date) return null
         //date = date.substr(0, 10);
@@ -631,16 +679,15 @@ export default {
         return `${month}/${day}/${year}`
       },
     },   
-    computed:{/* MIGHT NEED THIS LATER
-        availableOwners(){
-            let allowners = this.owners;
-            let boatOwners = this.fields.owners;
-
-            const index = array.indexOf(5);
-            if (index > -1) {
-            array.splice(index, 1);
-            }
-        }*/
+    computed:{
+        showLocationColumn(){
+            if(!this.selectedSystem)
+                return true;
+            if(this.selectedSystem.id == 1)
+                return true;
+            else    
+                return false;
+        },
         getBoatID(){
             if(this.$route.params.id){
                 return  this.$route.params.id;
