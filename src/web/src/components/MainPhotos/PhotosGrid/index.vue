@@ -65,7 +65,7 @@
         </div>
       </v-btn>
     </v-app-bar>
-  <v-container>
+  <v-container fluid>
     <v-row>
       <v-col cols="12">
          <h2>{{sortedData.length}} Results</h2>

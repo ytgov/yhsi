@@ -523,15 +523,20 @@ export default {
                 let resp =  await boats.post(data);
                 currentBoat.id = resp.Id;
                 currentBoat.name = resp.Name;
+                this.$router.push('/boats/');
+                this.overlay = false;
+                this.mode = 'view';
             }
             else{
                 let resp = await boats.put(localStorage.currentBoatID,data);
                 currentBoat.id = localStorage.currentBoatID;
                 currentBoat.name = resp.boat.Name; 
+                this.overlay = false;
+                this.mode = 'view';
+                this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});
             }
-            this.overlay = false;
-            this.mode = 'view';
-            this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});
+            
+            
             
         },
         editHistoricRecord(newVal){

@@ -82,13 +82,13 @@
     </v-row>
     <div class="mt-2">
         <v-card>
-          <v-container >
+          <v-container fluid>
               <v-row>
                 <v-col cols="12">
                   <h2 v-if="boats" class="ma-2">{{filteredData.length}} Results</h2>
                 </v-col>
               </v-row>
-              <v-divider  class="mb-4"></v-divider>
+              <v-divider inset class="mb-4"></v-divider>
               <v-row>
                 <v-col>
                     <v-data-table
