@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-    node:
+    node_historic:
         build: 
             context: "./"
             dockerfile: Dockerfile
@@ -10,4 +10,3 @@ services:
             - "./.env:/.env"
         ports:
             - 8787:3000
-            - 1433:1433
