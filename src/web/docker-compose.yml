@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-    node_historic:
+    node_historic_web:
         build: 
             context: "./"
             dockerfile: Dockerfile
