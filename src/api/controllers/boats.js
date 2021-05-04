@@ -117,13 +117,33 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
   const permissions = req.decodedToken['yg-claims'].permissions;
   if (!permissions.includes('edit')) res.sendStatus(403);
 
-  const { boat = {}, owners = [] } = req.body;
+  const { boat = {}, ownerNewArray = [], ownerEditArray = [] } = req.body;
   const { boatId } = req.params;
   //make the update
 
   await db('boat.boat')
       .update(boat)
       .where('boat.boat.id', boatId);
+  
+  ownerNewArray.forEach(alias => {
+    // if statements or switch statement depending on how you want to split
+    if (alias.id) editArray.push(alias);
+    else newArray.push({ OwnerId: ownerId, ...alias });
+  });
+
+
+  await db.insert(ownerNewArray.map(owner => ({ BoatId: boatId, ...owner })))
+    .into('boat.OwnerAlias')
+    .returning('*')
+    .then(rows => {
+      return rows;
+    });
+
+  // for (const obj of ownerEditArray) {
+  //   await db('boat.OwnerAlias')
+  //   .update(obj.Alias)
+  //   .where('boat.OwnerAlias.id', alias.Id);
+  // }
 
   res.status(200).send({ message: 'success' });
 });
