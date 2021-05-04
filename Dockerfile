@@ -25,5 +25,5 @@ EXPOSE 3000
 WORKDIR /home/node/app
 
 ENV NODE_ENV=production
-RUN npm run build:api
+RUN npm run build:api src/web/
 CMD [ "node", "./dist/index.js" ]
