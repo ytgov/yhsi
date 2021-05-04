@@ -9,5 +9,5 @@ services:
             - "./:/usr/src/app"
             - "./.env:/.env"
         ports:
-            - 8888:3000
+            - 8787:3000
             - 1433:1433
