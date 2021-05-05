@@ -33,6 +33,7 @@
 
 <script>
 import boats from "../../../controllers/boats";
+import _ from 'lodash';
 export default {
     name: "boatsGrid",
     data: ()=> ({
@@ -69,8 +70,8 @@ export default {
             itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
             let textToMatch = this.search;
             let data = await boats.get(page,itemsPerPage,textToMatch);
-            this.boats = data.body;
-            this.totalLength = data.count;
+            this.boats = _.get(data, 'body', []);
+            this.totalLength = _.get(data, 'count', 0);
             this.boats.map(x => {
                 x.ConstructionDate = this.formatDate(x.ConstructionDate);
                 x.ServiceStart = this.formatDate(x.ServiceStart);
