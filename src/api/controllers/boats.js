@@ -117,33 +117,43 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
   const permissions = req.decodedToken['yg-claims'].permissions;
   if (!permissions.includes('edit')) res.sendStatus(403);
 
-  const { boat = {}, ownerNewArray = [], ownerEditArray = [] } = req.body;
+  const { boat = {}, ownerNewArray = [], ownerRemovedArray = [],
+          pastNamesNewArray = [], pastNamesEditArray = [] } = req.body;
   const { boatId } = req.params;
   //make the update
 
   await db('boat.boat')
       .update(boat)
       .where('boat.boat.id', boatId);
-  
-  ownerNewArray.forEach(alias => {
-    // if statements or switch statement depending on how you want to split
-    if (alias.id) editArray.push(alias);
-    else newArray.push({ OwnerId: ownerId, ...alias });
-  });
 
 
+  //Add the new owners (done)
   await db.insert(ownerNewArray.map(owner => ({ BoatId: boatId, ...owner })))
-    .into('boat.OwnerAlias')
-    .returning('*')
+    .into('boat.boatowner')
     .then(rows => {
       return rows;
     });
 
-  // for (const obj of ownerEditArray) {
-  //   await db('boat.OwnerAlias')
-  //   .update(obj.Alias)
-  //   .where('boat.OwnerAlias.id', alias.Id);
-  // }
+  //remove the previous owners (needs work)
+  for (const obj of ownerRemovedArray) {
+    await db('boat.boatowner')
+    .where('boat.boatowner.ownerid', obj.Id);
+  }
+
+  //update the past names (needs work)
+  for (const obj of pastNamesEditArray) {
+    await db('boat.pastnames')
+    .update({BoatName: obj.BoatName})
+    .where('boat.pastnames.Id', obj.Id)
+    .andWhere('boat.pastnames.BoatId', boatId);
+  }
+
+  //Add the new past names (done)
+  await db.insert(pastNamesNewArray.map(name => ({ BoatId: boatId, ...name })))
+  .into('boat.pastnames')
+  .then(rows => {
+    return rows;
+  });
 
   res.status(200).send({ message: 'success' });
 });

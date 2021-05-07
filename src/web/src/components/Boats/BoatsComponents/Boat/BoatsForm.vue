@@ -263,13 +263,13 @@
                                                         <v-btn 
                                                         v-bind="attrs"
                                                         v-on="on"
-                                                        icon class="grey--text text--darken-2"   @click="changeEditTableOwners(item,index)">
+                                                        icon class="grey--text text--darken-2"   @click="deleteOwner(item,index)">
                                                             <v-icon
                                                                 small
-                                                            > mdi-pencil</v-icon>
+                                                            > mdi-delete</v-icon>
                                                         </v-btn>
                                                 </template>
-                                                <span>Edit</span>
+                                                <span>Delete</span>
                                             </v-tooltip>
                                             <v-tooltip bottom v-if="mode != 'view' && editTableOwners == index">
                                                 <template v-slot:activator="{ on, attrs }">
@@ -460,6 +460,8 @@ export default {
             this.fields.ConstructionDate = this.fields.ConstructionDate ? this.fields.ConstructionDate.substr(0, 10) : "";
             this.fields.ServiceStart = this.fields.ServiceStart ? this.fields.ServiceStart.substr(0, 10) : "";
             this.fields.ServiceEnd = this.fields.ServiceEnd ? this.fields.ServiceEnd.substr(0, 10) : "";
+            this.fields.deletedOwners = [];
+            this.fields.ownerRemovedArray = [];
             this.overlay = false;
         },
         save (date) {
@@ -494,12 +496,11 @@ export default {
         async saveChanges(){
             this.overlay = true; 
             console.log(this.fields.owners);
-            let editedOwners = this.fields.owners.filter(x => x.isEdited == true)
-                .map(x => ({ OwnerID: x.ownerid ? x.ownerid : x.id, CurrentOwner: x.currentowner }));
+            let removedOwners = this.fields.ownerRemovedArray;
             let newOwners = this.fields.owners.filter(x => x.isNew == true)
                 .map(x => ({ OwnerID: x.ownerid ? x.ownerid : x.id, CurrentOwner: x.currentowner }));
-            let newNames = this.fields.owners.filter(x => x.isNew == true);
-            let editedNames = this.fields.owners.filter(x => x.isEdited == true);
+            let newNames = this.fields.pastNames.filter(x => x.isNew == true).map(x => ({BoatName: x.BoatName}));
+            let editedNames = this.fields.pastNames.filter(x => x.isEdited == true).map(x => ({BoatName: x.BoatName}));
              let data = {
                     boat: {
                         Name: this.fields.Name,
@@ -511,23 +512,24 @@ export default {
                         CurrentLocation: this.fields.CurrentLocation,
                         Notes: this.fields.Notes,
                     },
-                    ownerNewArray: editedOwners,
-                    ownerEditArray: newOwners,
+                    ownerNewArray: newOwners,
+                    ownerRemovedArray: removedOwners,
                     pastNamesNewArray: newNames,
                     pastNamesEditArray: editedNames
                 };
                 console.log(data);
                 
             let currentBoat= {};
+            console.log(this.fields);
             if(this.mode == 'new'){
                 let resp =  await boats.post(data);
                 currentBoat.id = resp.Id;
                 currentBoat.name = resp.Name;
             }
             else{
-                let resp = await boats.put(localStorage.currentBoatID,data);
+                await boats.put(localStorage.currentBoatID,data);
                 currentBoat.id = localStorage.currentBoatID;
-                currentBoat.name = resp.boat.Name; 
+                currentBoat.name = this.fields.Name; 
             }
             this.overlay = false;
             this.mode = 'view';
@@ -565,8 +567,10 @@ export default {
         saveTableNames(index){
             if(this.addingName)
                 this.fields.pastNames[index] = {BoatName: this.helperName, isNew: true};
-            else
+            else{
                 this.fields.pastNames[index] = {BoatName: this.helperName, isEdited: true};
+            }
+            this.showSave = this.showSave+1;
             this.addingName = false;  
             this.editTableNames = -1;     
         },
@@ -577,9 +581,11 @@ export default {
             this.editTableNames = this.fields.pastNames.length-1;
         },
     //functions for editing the table "Owners" values
-        changeEditTableOwners(item,index){
-            this.editTableOwners = index;
-            this.helperOwner = item;
+        deleteOwner(item,index){
+            if (index > -1) {
+                this.fields.owners.splice(index, 1);
+            }
+            this.fields.deletedOwners.push(item);
         },
         cancelEditTableOwners(){
             if(this.addingOwner){
@@ -595,9 +601,11 @@ export default {
         saveTableOwners(index){
             if(this.addingOwner)
                 this.fields.owners[index] = { ...this.helperOwner, isNew: true};
-            else
-                this.fields.owners[index] = { ...this.helperOwner, isEdited: true};
-                console.log(this.fields.owners[index]);
+            else{
+                this.fields.ownerRemovedArray.push(this.fields.pastNames[index]);
+                this.fields.owners[index] = { ...this.helperOwner, isNew: true};
+            }
+            this.showSave = this.showSave+1;
             this.addingOwner = false;  
             this.editTableOwners = -1;    
         },
