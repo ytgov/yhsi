@@ -137,10 +137,11 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
   //remove the previous owners (needs work)
   for (const obj of ownerRemovedArray) {
     await db('boat.boatowner')
-    .where('boat.boatowner.ownerid', obj.Id);
+    .where('boat.boatowner.ownerid', obj.id)
+    .del();
   }
 
-  //update the past names (needs work)
+  //update the past names (seems to work!)
   for (const obj of pastNamesEditArray) {
     await db('boat.pastnames')
     .update({BoatName: obj.BoatName})
