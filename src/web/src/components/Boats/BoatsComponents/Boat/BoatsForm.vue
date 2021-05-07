@@ -496,11 +496,11 @@ export default {
         async saveChanges(){
             this.overlay = true; 
             console.log(this.fields.owners);
-            let removedOwners = this.fields.ownerRemovedArray;
+            let removedOwners = this.fields.deletedOwners;
             let newOwners = this.fields.owners.filter(x => x.isNew == true)
                 .map(x => ({ OwnerID: x.ownerid ? x.ownerid : x.id, CurrentOwner: x.currentowner }));
             let newNames = this.fields.pastNames.filter(x => x.isNew == true).map(x => ({BoatName: x.BoatName}));
-            let editedNames = this.fields.pastNames.filter(x => x.isEdited == true).map(x => ({BoatName: x.BoatName}));
+            let editedNames = this.fields.pastNames.filter(x => x.isEdited == true);
              let data = {
                     boat: {
                         Name: this.fields.Name,
@@ -568,7 +568,8 @@ export default {
             if(this.addingName)
                 this.fields.pastNames[index] = {BoatName: this.helperName, isNew: true};
             else{
-                this.fields.pastNames[index] = {BoatName: this.helperName, isEdited: true};
+                this.fields.pastNames[index].BoatName = this.helperName;
+                this.fields.pastNames[index].isEdited = true;
             }
             this.showSave = this.showSave+1;
             this.addingName = false;  
@@ -586,6 +587,7 @@ export default {
                 this.fields.owners.splice(index, 1);
             }
             this.fields.deletedOwners.push(item);
+            console.log(this.fields.deletedOwners);
         },
         cancelEditTableOwners(){
             if(this.addingOwner){
