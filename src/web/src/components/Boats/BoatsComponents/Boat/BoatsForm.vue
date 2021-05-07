@@ -452,14 +452,16 @@ export default {
                 this.saveCurrentBoat();
             }
             this.fields = await boats.getById(localStorage.currentBoatID);
-            console.log(this.fields);
+            
             this.fields.owners = this.fields.owners.map(x =>({ ...x, isEdited:false}));
             this.fields.ConstructionDate = this.fields.ConstructionDate ? this.fields.ConstructionDate.substr(0, 10) : "";
             this.fields.ServiceStart = this.fields.ServiceStart ? this.fields.ServiceStart.substr(0, 10) : "";
             this.fields.ServiceEnd = this.fields.ServiceEnd ? this.fields.ServiceEnd.substr(0, 10) : "";
             this.fields.deletedOwners = [];
             this.fields.ownerRemovedArray = [];
+            this.fields.originalOwners = JSON.parse(JSON.stringify(this.fields.owners));
             this.overlay = false;
+            console.log(this.fields);
         },
         save (date) {
             this.$refs.menu.save(date);
@@ -492,8 +494,7 @@ export default {
         },
         async saveChanges(){
             this.overlay = true; 
-            console.log(this.fields.owners);
-            let removedOwners = this.fields.deletedOwners;
+            let removedOwners = _.intersectionBy(this.fields.originalOwners, this.fields.deletedOwners, 'id');
             let newOwners = this.fields.owners.filter(x => x.isNew == true)
                 .map(x => ({ OwnerID: x.ownerid ? x.ownerid : x.id, CurrentOwner: x.currentowner }));
             let newNames = this.fields.pastNames.filter(x => x.isNew == true).map(x => ({BoatName: x.BoatName}));
@@ -518,19 +519,20 @@ export default {
                 
             let currentBoat= {};
             console.log(this.fields);
+            
             if(this.mode == 'new'){
                 let resp =  await boats.post(data);
-                currentBoat.id = resp.Id;
-                currentBoat.name = resp.Name;
+                this.$router.push(`/boats/`);
             }
             else{
                 await boats.put(localStorage.currentBoatID,data);
                 currentBoat.id = localStorage.currentBoatID;
                 currentBoat.name = this.fields.Name; 
-            }
-            this.overlay = false;
-            this.mode = 'view';
-            this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});
+                this.mode = 'view';
+                this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});   
+                this.$router.go();   
+               
+            } 
             
         },
         editHistoricRecord(newVal){
@@ -580,9 +582,13 @@ export default {
         },
     //functions for editing the table "Owners" values
         deleteOwner(item,index){
+            console.log(this.fields.owners[index]);
             if (index > -1) {
                 this.fields.owners.splice(index, 1);
                 this.fields.deletedOwners.push(item);
+                
+                console.log(this.fields.deletedOwners);
+                console.log(this.fields.originalOwners);
             }
             
         },
@@ -601,7 +607,7 @@ export default {
             if(this.addingOwner)
                 this.fields.owners[index] = { ...this.helperOwner, isNew: true};
             else{
-                this.fields.ownerRemovedArray.push(this.fields.pastNames[index]);
+                this.fields.ownerRemovedArray.push(this.fields.owners[index]);
                 this.fields.owners[index] = { ...this.helperOwner, isNew: true};
             }
             this.showSave = this.showSave+1;
