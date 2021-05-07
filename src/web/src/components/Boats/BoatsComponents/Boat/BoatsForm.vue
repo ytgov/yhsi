@@ -238,10 +238,6 @@
                                                 item-text="OwnerName"
                                                 return-object
                                                 ></v-autocomplete>
-                                                <!--
-                                                    v-model="helperOwner"
-                                                :items="owners"
-                                                -->
                                             </v-form>
                                         </v-list-item-content>
                                         <v-list-item-action class="d-flex flex-row">
@@ -361,6 +357,7 @@ import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
 import boats from "../../../../controllers/boats";
 import owners from "../../../../controllers/owners";
+import _ from 'lodash';
 export default {
     name: "boatsForm",
     components: { Photos, Breadcrumbs, HistoricRecord, PrintButton },
@@ -585,9 +582,9 @@ export default {
         deleteOwner(item,index){
             if (index > -1) {
                 this.fields.owners.splice(index, 1);
+                this.fields.deletedOwners.push(item);
             }
-            this.fields.deletedOwners.push(item);
-            console.log(this.fields.deletedOwners);
+            
         },
         cancelEditTableOwners(){
             if(this.addingOwner){
@@ -620,8 +617,8 @@ export default {
         async getOwners(){
             this.isLoadingOwner = true;
             let data = await owners.get();
-            console.log(data);
-            this.owners = data.body;
+            let arr = data.body;
+            this.owners = _.differenceBy(arr, this.fields.owners, 'OwnerName');
             this.isLoadingOwner = false;
         },
         //handles the new values added to the historic records
@@ -634,17 +631,9 @@ export default {
         const [year, month, day] = date.split('-')
         return `${month}/${day}/${year}`
       },
+     
     },   
-    computed:{/* MIGHT NEED THIS LATER
-        availableOwners(){
-            let allowners = this.owners;
-            let boatOwners = this.fields.owners;
-
-            const index = array.indexOf(5);
-            if (index > -1) {
-            array.splice(index, 1);
-            }
-        }*/
+    computed:{
         getBoatID(){
             if(this.$route.params.id){
                 return  this.$route.params.id;

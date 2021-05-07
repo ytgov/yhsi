@@ -134,7 +134,7 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
       return rows;
     });
 
-  //remove the previous owners (needs work)
+  //remove the previous owners (done)
   for (const obj of ownerRemovedArray) {
     await db('boat.boatowner')
     .where('boat.boatowner.ownerid', obj.id)
