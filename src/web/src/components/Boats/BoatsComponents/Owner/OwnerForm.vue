@@ -316,18 +316,16 @@ export default {
                 console.log(data);
             let currentOwner= {};
             if(this.mode == 'new'){
-                let resp = await owners.post(data);
-                console.log(resp);
+                await owners.post(data);
                 this.$router.push(`/boats/owner`);
             }
             else{
-                let resp = await owners.put(localStorage.currentOwnerID,data);
-                console.log(resp);
+                await owners.put(localStorage.currentOwnerID,data);
                 currentOwner.id = localStorage.currentOwnerID;
                 currentOwner.name = this.fields.OwnerName; 
-                this.overlay = false;
                 this.mode = 'view';
                 this.$router.push({name: 'ownerView', params: { name: currentOwner.name, id: currentOwner.id}});
+                this.$router.go(); 
             }
             
         },
