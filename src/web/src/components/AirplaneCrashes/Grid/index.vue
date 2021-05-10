@@ -22,19 +22,6 @@
             >
                 <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                    v-if="$route.path.includes('owner')"
-                    color="transparent"
-                    class="black--text"
-                    v-bind="attrs"
-                    v-on="on"
-                    disabled
-                > <v-icon class="black--text mr-1">mdi-filter</v-icon>
-                    Filter
-
-                  <v-icon class="black--text">mdi-chevron-right</v-icon>
-                </v-btn>
-                <v-btn
-                    v-else
                     color="transparent"
                     class="black--text"
                     v-bind="attrs"
@@ -53,7 +40,6 @@
                     >   
                       <v-text-field
                         clearable
-                        @input="filterChange"
                         v-model="item.value"
                         :label="item.name"
                       ></v-text-field>
@@ -148,11 +134,15 @@ export default {
     totalLength: 0,
     options: {},
     filterOptions: [
-      {name: 'Owner', value: ""},
-      {name: 'Construction Date', value: ""},
-      {name: 'Service Start', value: ""},
-      {name: 'Service End', value: ""},
-      {name: 'Vessel Type', value: ""},
+      {name: 'Crash Date', value: ""},
+      {name: 'Maker', value: ""},
+      {name: 'Aircraft Registration', value: ""},
+      {name: 'Country of Registration', value: ""},
+      {name: 'Registration Type', value: ""},
+      {name: 'Pilot', value: ""},
+      {name: 'Souls Onboard', value: ""},
+      {name: 'Injuries', value: ""},
+      {name: 'Fatalities', value: ""},
     ],
     selectedItem: 1,
     items: [
@@ -171,9 +161,6 @@ export default {
     crashsiteSearchChange: _.debounce(function () {
         this.getDataFromApi();
       }, 400),
-    filterChange(){
-        this.$store.commit("boats/setSelectedFilters", this.filterOptions);
-    },
     handleClick(value){   //Redirects the user to the airplane form component
           this.$router.push({name: 'airplaneView', params: { name: "test", id: value}});
       },
@@ -216,15 +203,17 @@ export default {
       },
       filteredData(){// returns a filtered users array depending on the selected filters
           if(this.filterOptions){
-              //let sorters = JSON.parse(JSON.stringify(this.filterOptions));
+              let sorters = JSON.parse(JSON.stringify(this.filterOptions));
               let data = JSON.parse(JSON.stringify(this.crashsites));
-              /*
-              data = sorters[0].value == null || sorters[0].value == "" ? data : data.filter( x => x.owners[0] ? x.owners[0].OwnerName.toLowerCase().includes(sorters[0].value.toLowerCase()) : false);  
-              data = sorters[1].value === null || sorters[1].value === "" ? data : data.filter( x => x.ConstructionDate ? x.ConstructionDate.includes(sorters[1].value.toLowerCase()) : false);  
-              data = sorters[2].value === null || sorters[2].value === "" ? data : data.filter( x => x.ServiceStart ? x.ServiceStart.toLowerCase().includes(sorters[2].value.toLowerCase()) : false);  
-              data = sorters[3].value === null || sorters[3].value === "" ? data : data.filter( x => x.ServiceEnd ? x.ServiceEnd.toLowerCase().includes(sorters[3].value.toLowerCase()) : false);  
-              data = sorters[4].value === null || sorters[4].value === "" ? data : data.filter( x => x.VesselType ? x.VesselType.toLowerCase().includes(sorters[4].value.toLowerCase()) : false); 
-              */
+              data = sorters[0].value == null || sorters[0].value == "" ? data : data.filter( x => x.crashdate ? x.crashdate.toLowerCase().includes(sorters[0].value.toLowerCase()) : false);  
+              //data = sorters[1].value === null || sorters[1].value === "" ? data : data.filter( x => x.ConstructionDate ? x.ConstructionDate.includes(sorters[1].value.toLowerCase()) : false);  
+              data = sorters[2].value === null || sorters[2].value === "" ? data : data.filter( x => x.aircraftregistration ? x.aircraftregistration.toLowerCase().includes(sorters[2].value.toLowerCase()) : false);  
+              data = sorters[3].value === null || sorters[3].value === "" ? data : data.filter( x => x.nation ? x.nation.toLowerCase().includes(sorters[3].value.toLowerCase()) : false);  
+              data = sorters[4].value === null || sorters[4].value === "" ? data : data.filter( x => x.militarycivilian ? x.militarycivilian.toLowerCase().includes(sorters[4].value.toLowerCase()) : false); 
+              data = sorters[5].value === null || sorters[5].value === "" ? data : data.filter( x => x.pilot ? x.pilot.toLowerCase().includes(sorters[5].value.toLowerCase()) : false);  
+              data = sorters[6].value === null || sorters[6].value === "" ? data : data.filter( x => x.soulsonboard ? x.soulsonboard == sorters[6].value : false);  
+              data = sorters[7].value === null || sorters[7].value === "" ? data : data.filter( x => x.injuries ? x.injuries == sorters[7].value : false); 
+              data = sorters[8].value === null || sorters[8].value === "" ? data : data.filter( x => x.fatalities ? x.fatalities == sorters[8].value : false);  
               return data;
           }
           else{
@@ -238,12 +227,7 @@ export default {
                 this.getDataFromApi()
             },
             deep: true,
-        },
-        selectedFilters(newv){
-            console.log(newv);
-            this.filterOptions = newv;
-        },
-        
+        }, 
   }
 };
 </script>
