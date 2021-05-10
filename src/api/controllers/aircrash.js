@@ -31,8 +31,6 @@ router.get('/', authenticateToken, async (req, res) => {
   res.status(200).send({ count: counter[0].count, body: aircrashes });
 });
 
-<<<<<<< HEAD
-=======
 router.get('/:aircrashId', authenticateToken, async (req, res) => {
   const db = req.app.get('db');
   const { aircrashId } = req.params;
@@ -70,6 +68,5 @@ router.put('/:aircrashId', authenticateToken, async (req, res) => {
   res.status(200).send({ message: 'success' });
 });
 
->>>>>>> 526194b8a5b789fdf1dd1a7f9c629a39268e0715
 
 module.exports = router;
