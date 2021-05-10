@@ -521,7 +521,7 @@ export default {
             console.log(this.fields);
             
             if(this.mode == 'new'){
-                let resp =  await boats.post(data);
+                await boats.post(data);
                 this.$router.push(`/boats/`);
             }
             else{
