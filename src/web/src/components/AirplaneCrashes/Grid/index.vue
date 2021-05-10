@@ -68,8 +68,8 @@
               Add Crash Site
             </v-btn>
 
-            <JsonCSV :data="boats" >
-              <v-btn  class="black--text mx-1" :disabled="boats.length == 0">
+            <JsonCSV :data="crashsites" >
+              <v-btn  class="black--text mx-1" :disabled="crashsites.length == 0">
                 <v-icon class="mr-1">
                   mdi-export
                 </v-icon>
@@ -77,7 +77,7 @@
               </v-btn>
             </JsonCSV>
 
-            <PrintButton key="prt-2" :data="{boats}" :disabled="boats.length == 0"/>
+            <PrintButton key="prt-2" :data="{crashsites}" :disabled="crashsites.length == 0"/>
         </v-col>
     </v-row>
     <div class="mt-2">
@@ -85,7 +85,7 @@
           <v-container fluid>
               <v-row>
                 <v-col cols="12">
-                  <h2 v-if="boats" class="ma-2">{{filteredData.length}} Results</h2>
+                  <h2 v-if="crashsites" class="ma-2">{{filteredData.length}} Results</h2>
                 </v-col>
               </v-row>
               <v-divider inset class="mb-4"></v-divider>
@@ -101,12 +101,7 @@
                       @click:row="handleClick"
                       disable-sort
                       :footer-props="{'items-per-page-options': [10, 30, 100]}"
-                    >
-                        <template v-slot:item.owners="{ item }">
-                            <div v-if="item.owners.length > 0">
-                                {{ getCurrentOwner(item.owners) }}
-                            </div>
-                        </template>            
+                    >           
                     </v-data-table>
                     
                 </v-col>
@@ -123,14 +118,14 @@ import JsonCSV from 'vue-json-csv'
 import Breadcrumbs from "../../Breadcrumbs";
 import PrintButton from "./PrintButton";
 import _ from 'lodash';
-import boats from "../../../controllers/boats";
+import aircrash from "../../../controllers/aircrash";
 export default {
   name: "boatsgrid-index",
   components: { Breadcrumbs, JsonCSV, PrintButton },
   data: () => ({
     route: "",
     loading: false,
-    boats: [],
+    crashsites: [],
     headers: [
     { text: "Yacsinumber", value: "yacsinumber"},
     { text: "Crash Date", value: "crashdate" },
@@ -186,15 +181,15 @@ export default {
           page = page > 0 ? page-1 : 0;
           itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
           let textToMatch = this.search;
-          let data = await boats.get(page,itemsPerPage,textToMatch);
-          this.boats = data.body;
+          let data = await aircrash.get(page,itemsPerPage,textToMatch);
+          this.crashsites = data.body;
           this.totalLength = data.count;
+          /*
           this.boats.map(x => {
               x.ConstructionDate = this.formatDate(x.ConstructionDate);
               x.ServiceStart = this.formatDate(x.ServiceStart);
               x.ServiceEnd = this.formatDate(x.ServiceEnd);
-          });
-          this.$store.commit("boats/setBoats", this.boats);
+          });*/
           this.loading = false;
       },
       formatDate (date) {
@@ -202,12 +197,6 @@ export default {
           date = date.substr(0, 10);
           const [year, month, day] = date.split('-')
           return `${month}/${day}/${year}`
-      },
-      getCurrentOwner(owners){
-          if(!owners) return null;
-          //let owner = owners.filter( x => x.currentowner === true);  
-          //console.log(owner);
-          return owners[0].OwnerName;
       },
   },
   computed:{
@@ -219,17 +208,19 @@ export default {
       },
       filteredData(){// returns a filtered users array depending on the selected filters
           if(this.filterOptions){
-              let sorters = JSON.parse(JSON.stringify(this.filterOptions));
-              let data = JSON.parse(JSON.stringify(this.boats));
+              //let sorters = JSON.parse(JSON.stringify(this.filterOptions));
+              let data = JSON.parse(JSON.stringify(this.crashsites));
+              /*
               data = sorters[0].value == null || sorters[0].value == "" ? data : data.filter( x => x.owners[0] ? x.owners[0].OwnerName.toLowerCase().includes(sorters[0].value.toLowerCase()) : false);  
               data = sorters[1].value === null || sorters[1].value === "" ? data : data.filter( x => x.ConstructionDate ? x.ConstructionDate.includes(sorters[1].value.toLowerCase()) : false);  
               data = sorters[2].value === null || sorters[2].value === "" ? data : data.filter( x => x.ServiceStart ? x.ServiceStart.toLowerCase().includes(sorters[2].value.toLowerCase()) : false);  
               data = sorters[3].value === null || sorters[3].value === "" ? data : data.filter( x => x.ServiceEnd ? x.ServiceEnd.toLowerCase().includes(sorters[3].value.toLowerCase()) : false);  
               data = sorters[4].value === null || sorters[4].value === "" ? data : data.filter( x => x.VesselType ? x.VesselType.toLowerCase().includes(sorters[4].value.toLowerCase()) : false); 
+              */
               return data;
           }
           else{
-              return this.boats;
+              return this.crashsites;
           }
       },        
   },
