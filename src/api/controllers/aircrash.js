@@ -31,4 +31,23 @@ router.get('/', authenticateToken, async (req, res) => {
   res.status(200).send({ count: counter[0].count, body: aircrashes });
 });
 
+  
+router.get('/:crashId', authenticateToken, async (req, res) => {
+  const db = req.app.get('db');
+  const { crashId } = req.params;
+
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('view')) res.sendStatus(403);
+
+  const crash = db.select('*')
+  .from('dbo.vAircrash');
+
+  if (!crash) {
+      res.status(403).send('Crash site id not found');
+      return
+  };
+
+  res.status(200).send(crash);
+});
+
 module.exports = router;
