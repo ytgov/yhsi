@@ -11,7 +11,7 @@
             hide-details
             label="Search"
             v-model="search"
-            v-on:input="boatSearchChange()"
+            v-on:input="crashsiteSearchChange()"
             ></v-text-field>
 
             <v-menu
@@ -101,7 +101,8 @@
                       @click:row="handleClick"
                       disable-sort
                       :footer-props="{'items-per-page-options': [10, 30, 100]}"
-                    >           
+                    >    
+       
                     </v-data-table>
                     
                 </v-col>
@@ -126,6 +127,7 @@ export default {
     route: "",
     loading: false,
     crashsites: [],
+    search: "",
     headers: [
     { text: "Yacsinumber", value: "yacsinumber"},
     { text: "Crash Date", value: "crashdate" },
@@ -134,8 +136,8 @@ export default {
     { text: "Country of Registration", value: "nation"},
     { text: "Registration Type", value: "militarycivilian"},
     { text: "Location Description", value: "crashlocation"},
-    { text: "Pilot First Name", value: "pilot"},
-    { text: "Pilot Last Name", value: "pilot"},
+    { text: "Pilot First Name", value: "pilotFirstName"},
+    { text: "Pilot Last Name", value: "pilotLastName"},
     { text: "Souls Onboard", value: "soulsonboard"},
     { text: "Injuries", value: "injuries"},
     { text: "Fatalities", value: "fatalities"},
@@ -166,14 +168,14 @@ export default {
     addNewBoat(){
         this.$router.push(`/boats/new`);
     },
-    boatSearchChange: _.debounce(function () {
-        this.$store.commit("boats/setBoatSearch", this.search);
+    crashsiteSearchChange: _.debounce(function () {
+        this.getDataFromApi();
       }, 400),
     filterChange(){
         this.$store.commit("boats/setSelectedFilters", this.filterOptions);
     },
-    handleClick(){   //Redirects the user to the airplane form component
-          this.$router.push({name: 'airplaneView', params: { name: "test", id: 1}});
+    handleClick(value){   //Redirects the user to the airplane form component
+          this.$router.push({name: 'airplaneView', params: { name: "test", id: value}});
       },
       async getDataFromApi() {
           this.loading = true;
@@ -184,12 +186,11 @@ export default {
           let data = await aircrash.get(page,itemsPerPage,textToMatch);
           this.crashsites = data.body;
           this.totalLength = data.count;
-          /*
-          this.boats.map(x => {
-              x.ConstructionDate = this.formatDate(x.ConstructionDate);
-              x.ServiceStart = this.formatDate(x.ServiceStart);
-              x.ServiceEnd = this.formatDate(x.ServiceEnd);
-          });*/
+          this.crashsites.map(x => {
+              x.pilotFirstName = this.pilotFirstName(x.pilot);
+              x.pilotLastName = this.pilotLastName(x.pilot);
+              x.crashdate = this.formatDate(x.crashdate);
+          });
           this.loading = false;
       },
       formatDate (date) {
@@ -198,13 +199,20 @@ export default {
           const [year, month, day] = date.split('-')
           return `${month}/${day}/${year}`
       },
+      pilotFirstName(val){
+        if(!val)
+          return "";
+        return val.split(',')[1];
+      },
+      pilotLastName(val){
+        if(!val)
+          return "";
+        return val.split(',')[0];
+      },
   },
   computed:{
       selectedFilters(){
             return this.$store.getters['boats/selectedFilters'];
-      },
-      search () {
-          return this.$store.getters['boats/boatSearch'];
       },
       filteredData(){// returns a filtered users array depending on the selected filters
           if(this.filterOptions){
@@ -235,9 +243,6 @@ export default {
             console.log(newv);
             this.filterOptions = newv;
         },
-        search (newv, oldv) {
-            this.getDataFromApi();
-        }/* eslint-enable */
         
   }
 };

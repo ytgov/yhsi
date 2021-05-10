@@ -5,10 +5,10 @@
         <v-row>
             <v-col cols="12" class="d-flex">
                 <h1>1927-01</h1>
-                <h1 v-if="mode == 'view'">{{fields.Name}}</h1>
+                <h1 v-if="mode == 'view'">{{fields.yacsinumber}}</h1>
                 <v-text-field v-else-if="mode == 'edit'"
                     label="Boat name"
-                    v-model="fields.Name"
+                    v-model="fields.yacsinumber"
                 ></v-text-field>
                 <h1 v-else>New Boat</h1>
                 <v-spacer></v-spacer>
@@ -47,7 +47,7 @@
                     <!-- YASCI number -->
                         <v-text-field
                             label="YASCI number"
-                            v-model="fields.RegistrationNumber"
+                            v-model="fields.yacsinumber"
                             :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
@@ -55,7 +55,7 @@
                     <!-- Aircraft Maker -->
                         <v-text-field
                             label="Aircraft Maker"
-                            v-model="fields.RegistrationNumber"
+                            v-model="fields.aircrafttype"
                             :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
@@ -63,7 +63,7 @@
                     <!-- Aircraft Registration -->
                         <v-text-field
                             label="Aircraft Registration"
-                            v-model="fields.RegistrationNumber"
+                            v-model="fields.aircraftregistration"
                             :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
@@ -94,7 +94,7 @@
                                     </template>
                                     <v-date-picker
                                     ref="picker"
-                                    v-model="fields.ConstructionDate"
+                                    v-model="fields.crashdate"
                                     :max="new Date().toISOString().substr(0, 10)"
                                     min="1750-01-01"
                                     @change="save"
@@ -164,13 +164,13 @@
                             <v-row>
                                 <v-col>
                                     <v-text-field
-                                        v-model="constructionDate"
+                                        v-model="fields.pilot"
                                         label="First Name"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col>
                                     <v-text-field
-                                        v-model="constructionDate"
+                                        v-model="fields.pilot"
                                         label="Last Name"
                                     ></v-text-field>
                                 </v-col>
