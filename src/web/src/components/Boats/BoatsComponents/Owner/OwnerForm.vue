@@ -4,7 +4,8 @@
         <Breadcrumbs/>
         <v-row>
             <v-col cols="12" class="d-flex">
-                <h1 v-if="mode != 'new'">{{name}}</h1>
+                <h1 v-if="mode == 'view'">{{fields.OwnerName}}</h1>
+                <h1 v-else-if="mode == 'edit'"></h1>
                 <h1 v-else>New Owner</h1>
                 <v-spacer></v-spacer>
 <!-- buttons for the view state -->
@@ -12,7 +13,7 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  v-if="mode == 'view'" :name="name" :data="fields"/>
+                <PrintButton  v-if="mode == 'view'" :name="fields.OwnerName" :data="fields"/>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
                     <v-icon>mdi-close</v-icon>
@@ -20,7 +21,7 @@
                 </v-btn>
                 <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'edit'" @click="saveChanges()" >
                     <v-icon class="mr-1">mdi-check</v-icon>
-                    Save Changes
+                    Done
                 </v-btn>
 <!-- buttons for the new state -->
                 <v-btn class="black--text mx-1" @click="cancelNew" v-if="mode == 'new'">
@@ -29,7 +30,7 @@
                 </v-btn>
                 <v-btn color="success" :disabled="showSave < 2" v-if="mode == 'new'" @click="saveChanges()" >
                     <v-icon class="mr-1">mdi-check</v-icon>
-                    Save Changes
+                    Create owner
                 </v-btn>
             </v-col>
         </v-row>
@@ -37,8 +38,9 @@
             <v-col cols="6">
                 <v-row>
                     <v-col cols="6">
-                        <v-text-field
-                            v-model="fields.ownerName"
+                        <v-text-field 
+                            v-if="mode != 'view'"
+                            v-model="fields.OwnerName"
                             label="Owner Name"
                         ></v-text-field>
                     </v-col>
@@ -53,7 +55,7 @@
                                     <template v-for="(item, index) in fields.alias">
                                         <v-list-item :key="`nl-${index}`">
                                             <v-list-item-content>
-                                                <v-list-item-title v-if="index != editTableAlias || mode == 'view'">{{item}}</v-list-item-title>
+                                                <v-list-item-title v-if="index != editTableAlias || mode == 'view'">{{item.Alias}}</v-list-item-title>
                                                 <v-form v-model="validAlias" v-if="mode != 'view'" v-on:submit.prevent>
                                                     <v-text-field
                                                     v-if="editTableAlias == index"
@@ -130,10 +132,10 @@
                                 <v-subheader>Boats Owned:</v-subheader>
                                 <v-divider></v-divider>
                                 <div class="scrollBoats">
-                                    <template v-for="(item, i) in fields.boatsOwned" >
+                                    <template v-for="(item, i) in fields.boats" >
                                         <v-list-item :key="`nl-${i}`">
                                             <v-list-item-content>
-                                                <v-list-item-title>{{item}}</v-list-item-title>
+                                                <v-list-item-title>{{item.Name}}</v-list-item-title>
                                             </v-list-item-content>
                                             <v-list-item-action>
                                             <v-tooltip bottom v-if="mode == 'view'">
@@ -160,21 +162,30 @@
                 </v-row>     
             </v-col>
         </v-row>
+        <!--
         <v-divider class="my-5"></v-divider>
-        <HistoricRecord :historicRecords="fields.historicRecords" :mode="mode"/>
+        
+        <HistoricRecord :historicRecords="fields.histories" :mode="'view'"/>
+        -->
+        <v-overlay :value="overlay">
+            <v-progress-circular
+                indeterminate
+                size="64"
+            ></v-progress-circular>
+        </v-overlay>
     </div>
 </template>
 
 <script>
 import Breadcrumbs from "../../../Breadcrumbs";
-import HistoricRecord from "../HistoricRecord";
+//import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
-import boats from "../../../../controllers/boats";
+import owners from "../../../../controllers/owners";
 export default {
     name: "ownerForm",
-    components: { Breadcrumbs, HistoricRecord, PrintButton },
+    components: { Breadcrumbs, PrintButton, },// HistoricRecord,  },
     data: ()=> ({
-        name: "British Yukon Navigation Company",
+        overlay: false,
     //helper vars, they are used to determine if the component is in an edit, view or add new state
         mode: "",
         showSave: 0,
@@ -186,6 +197,7 @@ export default {
         aliasRules: [
             v => !!v || 'Alias is required',
         ],
+        aliasArray: [],
     //helper vars for when v-model is not an option (inside the datatable)
         historiRecordHelper: "",
         recordHelper: "",
@@ -194,46 +206,57 @@ export default {
         menu2: "",
         menu3: "",
         search: "",
-        fields: null,
+        fields: {},
         fieldsHistory: null,
 
     }),
-    created(){
-        if(this.$route.path.includes("edit")){
+    mounted(){
+        if(this.checkPath("edit")){
             this.mode= "edit";
             //after this, the fields get filled with the info obtained from the api
             this.getDataFromAPI();
         }
-        else if(this.$route.path.includes("new")){
+        else if(this.checkPath("new")){
             this.mode="new";
             //inputs remain empty
             this.noData();
         }
-        else if(this.$route.path.includes("view")){
+        else if(this.checkPath("view")){
             this.mode="view";
             this.getDataFromAPI();
         }
     },
     methods:{
+        /*this function checks if the current path contains a specific word, this can be done with a simple includes but 
+        //it causes confusion when a boat or owner has 'new' in its name, leading the component to think it should use the 'new' mode,
+        this problem is solved by using this funtion.*/
+        checkPath(word){
+            let path = this.$route.path.split("/");
+            if(path[3] == word){
+                return true;
+            }
+            return false;
+        },
         noData(){
             this.fields =  {
-            ownerName: "",
+            OwnerName: "",
             alias: [],
-            boatsOwned: [],
-            historicRecords: [],
+            boats: [],
+            histories: [],
           };
         },
+        saveCurrentOwner(){
+            localStorage.currentOwnerID = this.$route.params.id;
+        },
         async getDataFromAPI(){
-            this.fields = {
-            ownerName: "",
-            alias: [ "Alias 1", "Alias 2", "Alias 3"],
-            boatsOwned: ["Boat 1","Boat 2","Boat 3","Boat 4","Boat 4","Boat 4","Boat 4"],
-            historicRecords: [
-                {historicRecord: "some text", reference: "wdadwdawdad"},
-                {historicRecord: "historic record 2", reference: "adawddad"}
-            ],
-            };
-            await boats.get();
+            this.overlay = true;
+            if(this.$route.params.id){
+                this.saveCurrentOwner();
+            }
+            this.fields = await owners.getById(localStorage.currentOwnerID);
+            this.fields.alias = this.fields.alias.map(x =>({ ...x, isEdited:false}));
+            console.log(this.fields);
+            this.overlay = false;
         },
         save (date) {//this function saves the state of the date picker
             this.$refs.menu.save(date)
@@ -250,8 +273,8 @@ export default {
             }
             this.edit=!this.edit;
         },
-        goToBoat(item){
-            this.$router.push(`/boats/view/${item}`);
+        goToBoat(value){
+            this.$router.push({name: 'boatView', params: { name: value.Name, id: value.Id}});
         },
     //Functions dedicated to handle the edit, add, view modes
         cancelEdit(){
@@ -276,17 +299,35 @@ export default {
             this.$router.push(`/boats/owner/edit/${this.name}`);
             this.showSave = 0;
         },
-        saveChanges(){
-            if(this.mode == 'add'){
-                //makes an axios post request
-                //boats.post(somedata);
+        async saveChanges(){
+            this.overlay = true;
+            let alias = this.fields.alias.filter(x => x.isNew == true || x.isEdited == true);
+            alias.map(x => {
+                delete x.isNew;
+                delete x.isEdited;
+            })
+            
+             let data = {
+                    owner: {
+                        OwnerName:  this.fields.OwnerName,
+                    },
+                    ownerAlias: alias,
+                };
+                console.log(data);
+            let currentOwner= {};
+            if(this.mode == 'new'){
+                await owners.post(data);
+                this.$router.push(`/boats/owner`);
             }
             else{
-                //makes an axios put request
-                //boats.put(somedata);
+                await owners.put(localStorage.currentOwnerID,data);
+                currentOwner.id = localStorage.currentOwnerID;
+                currentOwner.name = this.fields.OwnerName; 
+                this.mode = 'view';
+                this.$router.push({name: 'ownerView', params: { name: currentOwner.name, id: currentOwner.id}});
+                this.$router.go(); 
             }
-            this.mode = 'view';
-            this.$router.push(`/boats/owner/view/${this.name}`);
+            
         },
         editHistoricRecord(newVal){
             this.historiRecordHelper = newVal;
@@ -303,27 +344,30 @@ export default {
     //functions for editing the table "Owners" values
         changeEditTableAlias(item,index){
             this.editTableAlias = index;
-            this.helperAlias = item;
+            this.fields.alias[index].isEdited = true;
+            this.helperAlias = item.Alias;
         },
         cancelEditTableAlias(){
-            if(this.validAlias && this.addingAlias){
+            if(this.addingAlias){
                 this.editTableAlias = -1;
+                this.addingAlias = false;
                 this.fields.alias.pop();
             }
-            else if(this.validAlias && this.addingAlias == false){
+            else{
                 this.editTableAlias = -1;
             }
                 
         },
         saveTableAlias(index){
             if(this.validAlias){
-                this.fields.alias[index] = this.helperAlias;
+                this.fields.alias[index].Alias = this.helperAlias;
                 this.editTableAlias = -1;
             }           
         },
         addAlias(){
             this.helperAlias="";
-            this.fields.alias.push(""); 
+            this.addingAlias = true;
+            this.fields.alias.push({Alias: "", isNew: true}); 
             this.editTableAlias = this.fields.alias.length-1;
         },
     },

@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var authenticateToken = require('../utils');
-
+var authenticateToken = require('../middlewares');
+var _ = require('lodash');//added for testing
 router.use(express.json()) // for parsing application/json
 router.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
 
@@ -11,13 +11,22 @@ router.get('/', authenticateToken, async (req, res) => {
 
   const db = req.app.get('db');
 
-  const { page = 0, limit = 10 } = req.query;
+  const { page = 0, limit = 10, textToMatch = '' } = req.query;
   const offset = (page*limit) || 0;
+  const counter = await db.from('boat.boat').count('Id', {as: 'count'});
+  let boats = [];
 
-  const boats = await db.select('*')
+  if (textToMatch) {
+    boats = await db.select('*')
     .from('boat.boat')
-    .orderBy('boat.boat.id', 'asc')
-    .limit(limit).offset(offset);
+    .where('name', 'like', `%${textToMatch}%`);
+    
+  } else {
+    boats = await db.select('*')
+      .from('boat.boat')
+      .orderBy('boat.boat.id', 'asc')
+      .limit(limit).offset(offset);
+  }
     
   for (const boat of boats) {    
     boat.owners = await db.select('boat.boatowner.currentowner', 'boat.Owner.OwnerName')
@@ -26,7 +35,7 @@ router.get('/', authenticateToken, async (req, res) => {
       .where('boat.boatowner.boatid', boat.Id);
   }
 
-  res.status(200).send(boats);
+  res.status(200).send({ count: counter[0].count, body: boats });
 });
   
 router.get('/:boatId', authenticateToken, async (req, res) => {
@@ -46,7 +55,11 @@ router.get('/:boatId', authenticateToken, async (req, res) => {
       return
   };
 
-  boat.owners = await db.select('boat.boatowner.currentowner', 'boat.Owner.OwnerName')
+  boat.pastNames = await db.select('*')
+  .from('boat.pastnames')
+  .where('boat.pastnames.boatid', boatId);
+
+  boat.owners = await db.select('boat.boatowner.currentowner', 'boat.Owner.OwnerName', 'boat.owner.id' )//added boat.owner.id to the query (I need this for the details button)
     .from('boat.boatowner')
     .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
     .where('boat.boatowner.boatid', boatId);
@@ -95,8 +108,55 @@ router.post('/new', authenticateToken, async (req, res) => {
 
       return newBoat;
     });
-
+  
   res.status(200).send(response);
 });
 
-module.exports = router
+router.put('/:boatId', authenticateToken, async (req, res) => {
+  const db = req.app.get('db');
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('edit')) res.sendStatus(403);
+
+  const { boat = {}, ownerNewArray = [], ownerRemovedArray = [],
+          pastNamesNewArray = [], pastNamesEditArray = [] } = req.body;
+  const { boatId } = req.params;
+  //make the update
+
+  await db('boat.boat')
+      .update(boat)
+      .where('boat.boat.id', boatId);
+
+
+  //Add the new owners (done)
+  await db.insert(ownerNewArray.map(owner => ({ BoatId: boatId, ...owner })))
+    .into('boat.boatowner')
+    .then(rows => {
+      return rows;
+    });
+
+  //remove the previous owners (done)
+  for (const obj of ownerRemovedArray) {
+    await db('boat.boatowner')
+    .where('boat.boatowner.ownerid', obj.id)
+    .del();
+  }
+
+  //update the past names (seems to work!)
+  for (const obj of pastNamesEditArray) {
+    await db('boat.pastnames')
+    .update({BoatName: obj.BoatName})
+    .where('boat.pastnames.Id', obj.Id)
+    .andWhere('boat.pastnames.BoatId', boatId);
+  }
+
+  //Add the new past names (done)
+  await db.insert(pastNamesNewArray.map(name => ({ BoatId: boatId, ...name })))
+  .into('boat.pastnames')
+  .then(rows => {
+    return rows;
+  });
+
+  res.status(200).send({ message: 'success' });
+});
+
+module.exports = router;

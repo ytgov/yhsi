@@ -13,7 +13,11 @@
               :headers="headers"
               :loading="loading"    
               :search="search"
+              :options.sync="options"
+              :server-items-length="totalLength"
               @click:row="handleClick"
+              disable-sort
+              :footer-props="{'items-per-page-options': [10, 30, 100]}"
             >
             </v-data-table>
         </v-col>
@@ -22,19 +26,15 @@
 </template>
 
 <script>
-import boats from "../../../controllers/boats";
+import owners from "../../../controllers/owners";
 export default {
     name: "boatsGrid",
     data: ()=> ({
         loading: false,
         owners: [],
-        totalLength: 0,
         headers: [
-        { text: "Owner", value: "owner" },
+        { text: "Owner", value: "OwnerName" },
         ],
-        page: 1,
-        pageCount: 0,
-        iteamsPerPage: 10,
         filterOptions: [
             {name: 'Boat Name'},
             {name: 'Owner'},
@@ -44,43 +44,56 @@ export default {
             {name: 'Service End'},
             {name: 'Vessel Type'},
         ],
+         //table options
+        page: 0,
+        pageCount: 6,
+        options: {},
+        totalLength: 100,
     }),
-    created(){
+    mounted(){
         this.getDataFromApi();
     },
     methods: {
         handleClick(value){   //Redirects the user to the edit user form
-            this.$router.push(`/boats/owner/view/${value.owner}`);
+            this.$router.push({name: 'ownerView', params: { name: value.OwnerName, id: value.id}});
         },
         async getDataFromApi() {
             this.loading = true;
-            await boats.get();
-            this.owners = [
-                {id: 1, owner: 'Ownername 1'},
-                {id: 2, owner: 'Ownername 2'},
-                {id: 3, owner: 'Ownername 3'},
-            ]
-            this.totalLength = this.owners.length;
+            let { page, itemsPerPage } = this.options;
+            page = page > 0 ? page-1 : 0;
+            itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
+            let textToMatch = this.search;
+            let data = await owners.get(page,itemsPerPage,textToMatch);
+            this.owners = data.body;
+            this.totalLength = data.count;
+            this.$store.commit('boats/setOwners', this.owners);
             this.loading = false;
         },
 
     },
     computed: {
         search () {
-            return this.$store.getters['boats/search'];
+            return this.$store.getters['boats/ownerSearch'];
         },
         filteredData(){// returns a filtered users array depending on the selected filters
            return this.owners;  
         },
     },
     watch: {
+        options: {
+            handler () {
+                this.getDataFromApi()
+            },
+            deep: true,
+        },
+        /* eslint-disable */
         selectedFilters(newv, oldv){
-            console.log(oldv,newv);
+            //console.log(oldv,newv);
         },
         search (newv, oldv) {
             //this.search = newv;
-            console.log(oldv,newv);
-        }
+            this.getDataFromApi();
+        }/* eslint-enable */
     }
 }
 </script>
