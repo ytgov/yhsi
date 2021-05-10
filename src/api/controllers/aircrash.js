@@ -31,4 +31,42 @@ router.get('/', authenticateToken, async (req, res) => {
   res.status(200).send({ count: counter[0].count, body: aircrashes });
 });
 
+router.get('/:aircrashId', authenticateToken, async (req, res) => {
+  const db = req.app.get('db');
+  const { aircrashId } = req.params;
+
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('view')) res.sendStatus(403);
+
+  const aircrash = await db.select('*')
+      .from('dbo.vAircrash')
+      .where('dbo.vAircrash.yacsinumber', aircrashId)
+      .first();
+
+  if (!aircrash) {
+      res.status(403).send('Airplane crash id not found');
+      return
+  };
+
+  res.status(200).send(aircrash);
+});
+
+router.put('/:aircrashId', authenticateToken, async (req, res) => {
+  const db = req.app.get('db');
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('edit')) res.sendStatus(403);
+
+  const { aircrashId } = req.params;
+
+  const { aircrash = {} } = req.body;
+
+  //make the update
+  await db('AirCrash.AirCrash')
+      .update(aircrash)
+      .where('AirCrash.AirCrash.yacsinumber', aircrashId);
+
+  res.status(200).send({ message: 'success' });
+});
+
+
 module.exports = router;
