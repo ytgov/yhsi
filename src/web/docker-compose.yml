@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-    node_historic:
+    node_historic_web:
         build: 
             context: "./"
             dockerfile: Dockerfile
@@ -9,4 +9,4 @@ services:
             - "./:/usr/src/app"
             - "./.env:/.env"
         ports:
-            - 4125:3000
+            - 4126:8080

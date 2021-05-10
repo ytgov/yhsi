@@ -10,8 +10,8 @@
             class="mx-4"
             hide-details
             label="Search by Owner Name"
-            v-model="search"
-            v-on:input="searchChange()"
+            v-model="searchOwner"
+            v-on:input="ownerSearchChange()"
             ></v-text-field>
 
             <v-text-field v-else
@@ -20,8 +20,8 @@
             class="mx-4"
             hide-details
             label="Search by Boat Name"
-            v-model="search"
-            v-on:input="searchChange()"
+            v-model="searchBoat"
+            v-on:input="boatSearchChange()"
             ></v-text-field>
 
             <v-menu
@@ -63,7 +63,7 @@
                     >   
                       <v-text-field
                         clearable
-                        @change="filterChange"
+                        @input="filterChange"
                         v-model="item.value"
                         :label="item.name"
                       ></v-text-field>
@@ -78,8 +78,8 @@
               Add Owner
             </v-btn>
 
-            <JsonCSV :data="owners">
-              <v-btn  class="black--text mx-1">
+            <JsonCSV :data="owners" >
+              <v-btn  class="black--text mx-1" :disabled="owners.length == 0">
                 <v-icon class="mr-1">
                   mdi-export
                 </v-icon>
@@ -87,7 +87,7 @@
               </v-btn>
             </JsonCSV>
 
-            <PrintButton key="prt-1" :data="{owners}"/>
+            <PrintButton key="prt-1" :data="{owners}" :disabled="owners.length == 0"/>
         </v-col>
         <v-col cols="auto" v-else class="d-flex" >
             <v-btn  class="black--text mx-1" @click="addNewBoat">
@@ -95,8 +95,8 @@
               Add Boat
             </v-btn>
 
-            <JsonCSV :data="boats">
-              <v-btn  class="black--text mx-1">
+            <JsonCSV :data="boats" >
+              <v-btn  class="black--text mx-1" :disabled="boats.length == 0">
                 <v-icon class="mr-1">
                   mdi-export
                 </v-icon>
@@ -104,7 +104,7 @@
               </v-btn>
             </JsonCSV>
 
-            <PrintButton key="prt-2" :data="{boats}"/>
+            <PrintButton key="prt-2" :data="{boats}" :disabled="boats.length == 0"/>
         </v-col>
     </v-row>
     <div class="mt-2">
@@ -130,15 +130,15 @@
 import JsonCSV from 'vue-json-csv'
 import Breadcrumbs from "../../Breadcrumbs";
 import PrintButton from "./PrintButton";
+import _ from 'lodash';
 export default {
   name: "boatsgrid-index",
   components: { Breadcrumbs, JsonCSV, PrintButton },
   data: () => ({
     route: "",
     active_tab: "",
-    boats: [],
-    owners: [],
-    search: "",
+    searchOwner: "",
+    searchBoat: "",
     filterOptions: [
       {name: 'Owner', value: ""},
       {name: 'Construction Date', value: ""},
@@ -153,15 +153,14 @@ export default {
       { text: 'Conversions', icon: 'mdi-flag' },
     ],
   }),
-  created() {
+  mounted() {
     if(this.$route.path.includes("owner")){//shows the buttons for owner
       this.route = "owner";
     }
     else{//shows the buttons for boats
       this.route = "boats";
-      
     }
-    this.getDataFromApi();
+
   },
   methods: {
     addNewBoat(){
@@ -170,30 +169,26 @@ export default {
     addNewOwner(){
         this.$router.push(`/boats/owner/new`);
     },
-    searchChange(){
-        this.$store.commit("boats/setSearch", this.search);
-    },
+    ownerSearchChange: _.debounce(function () {
+        this.$store.commit("boats/setOwnerSearch", this.searchOwner);
+      }, 400),
+    boatSearchChange: _.debounce(function () {
+        this.$store.commit("boats/setBoatSearch", this.searchBoat);
+      }, 400),
     filterChange(){
         this.$store.commit("boats/setSelectedFilters", this.filterOptions);
-    },
-    async getDataFromApi() {
-        this.boats = [
-            {name: 'Evelyn', owner: 'Ownername 2', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
-            serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
-            {name: 'Name 2', owner: 'Ownername 4', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
-            serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
-            {name: 'Name 3', owner: 'Ownername 1', vesselType: 'Sternwheeler', constructionDate: '01/02/2020', serviceStartDate: '01/02/2020',
-            serviceEndDate: "01/02/2020", currentLocationDescription: "", reqNumber: ""},
-        ]
-        this.owners = [
-              { owner: 'Ownername 1'},
-              { owner: 'Ownername 2'},
-              { owner: 'Ownername 3'},
-          ];
     },
     isActive(route){//this function helps to show certain classes depending on the route
         return (route.includes('owner')) ? 'notActive' :  '';
     }
+  },
+  computed:{
+      boats(){
+        return this.$store.getters['boats/boats'];
+      },
+      owners(){
+        return this.$store.getters['boats/owners'];
+      }
   }
 };
 </script>

@@ -1,39 +1,49 @@
-import axios from 'axios';
+import { api } from './config';
 
-const api = axios.create({
-    baseURL: 'https://jsonplaceholder.typicode.com/',//this url is going to be replaced
-    timeout: 5000,
-    headers: {}
-  });
-
-  export default {
-    async get(){
-        await api.get(`users`)
-        .then(res => {
-          //handle data response
-          console.log("data from jsonpaceholder using an external file");
-          console.log(res.data);
-        }).catch(error =>{
-          // handle error
-          console.log(error);
-        });
-    },
-    async post(data){
-      api.post('users', data)
-      .then( res => {
+export default {
+  async get(page, limit, textToMatch){
+      return await api.get(`boats`, {
+        crossdomain: true,
+        params: {
+          page,
+          limit,
+          textToMatch
+        }
+      })
+      .then(res => {
         console.log(res);
-      }).catch(error =>{
-          // handle error
-          console.log(error);
-        });
-    },
-    async put(id,data){
-      api.put(`users/${id}`, data)
-      .then( res => {
-        console.log(res);
+        return res.data;
       }).catch(error =>{
         // handle error
         console.log(error);
       });
-    }
-  }
+  },
+  async getById(id){
+    return await api.get(`boats/${id}`)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      // handle error
+      console.log(error);
+    });
+  },
+  async put(id, data){
+    return await api.put(`boats/${id}`,data)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      // handle error
+      console.log(error);
+    });
+  },
+  async post(data){
+    return await api.post(`boats/new`,data)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      // handle error
+      console.log(error);
+    });
+  },
+}
+
