@@ -34,7 +34,7 @@
                 </v-btn>
                 <v-btn color="success" :disabled="showSave < 1" v-if="mode == 'new'" @click="saveChanges">
                     <v-icon class="mr-1">mdi-check</v-icon>
-                    Create Boat
+                    Create Crash Site
                 </v-btn>
             </v-col>
         </v-row>
@@ -84,7 +84,7 @@
                                 >
                                     <template v-slot:activator="{ on, attrs }">
                                     <v-text-field
-                                        v-model="constructionDate"
+                                        v-model="fields.crashdate"
                                         label="Crash Date"
                                         append-icon="mdi-calendar"
                                         readonly
@@ -193,24 +193,33 @@
                     </v-col>
             </v-col>
         </v-row>
-        <GoogleMapLoader/>
+        <GoogleMapLoader 
+            :fields="{    accuracy: fields.accuracy,
+                        inyukon: fields.inyukon,
+                        crashlocation: fields.crashlocation,
+                        lat: fields.lat,
+                        long: fields.long,
+                        Location: fields.Location } "/>
         <v-row>
             <v-col col="6">
                 <v-row>
                     <v-col>        
                         <v-select
                             :items="remainsOptions"
+                            v-model="fields.remainsonsite"
                             label="Remains on Site"
                         ></v-select>
                         <v-textarea
                             rows="5"
                             class="mt-0 pt-0"
+                            v-model="fields.extentofremainsonsite"
                             label="Extent of Remains on Site"
                         ></v-textarea>
                     </v-col>
                     <v-col>
                         <v-textarea
                             rows="7"
+                            v-model="fields.otherlocationsofremains"
                             label="Other Location of Remains"
                         ></v-textarea>
                     </v-col>
@@ -219,23 +228,23 @@
              <v-col col="6">
                  <v-row>
                       <v-col cols="6">
-                                <h4>Country of Registration</h4>
                                 <v-text-field
-                                    v-model="constructionDate"
+                                    v-model="fields.soulsonboard"
                                     label="Souls on Board"
                                 ></v-text-field>
                                 <v-text-field
-                                    v-model="constructionDate"
+                                    v-model="fields.injuries"
                                     label="Injuries"
                                 ></v-text-field>
                                 <v-text-field
-                                    v-model="constructionDate"
+                                    v-model="fields.fatalities"
                                     label="Fatalities"
                                 ></v-text-field>
                         </v-col>
                          <v-col cols="6">
                             <v-textarea
                                 rows="7"
+                                v-model="fields.descriptionofcrashevent"
                                 label="Description of Crash Event"
                             ></v-textarea>
                         </v-col>
@@ -328,6 +337,7 @@
             <v-col cols="7">
                 <v-textarea
                     label="Significance of Aircraft"
+                    v-model="fields.significanceofaircraft"
                 ></v-textarea>
             </v-col>
         </v-row>
