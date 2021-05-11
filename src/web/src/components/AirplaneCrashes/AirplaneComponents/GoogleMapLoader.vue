@@ -1,5 +1,5 @@
 <template>
-    <v-row>
+    <v-row v-if="modifiableFields">
         <v-col cols="5">
             <v-alert
             outlined
@@ -32,25 +32,25 @@
                     <v-col :cols="showLocationColumn ? '' : 9">
                         <h4>Degrees</h4>
                         <v-text-field
-                            v-model="constructionDate"
+                            v-model="modifiableFields.lat"
                         ></v-text-field>
                     </v-col>
                     <v-col v-if="showLocationColumn">
                         <h4>Minutes</h4>
                         <v-text-field
-                            v-model="constructionDate"
+                            v-model="modifiableFields.lat"
                         ></v-text-field>
                     </v-col>
                     <v-col v-if="showLocationColumn">
                         <h4>Seconds</h4>
                         <v-text-field
-                            v-model="constructionDate"
+                            v-model="modifiableFields.lat"
                         ></v-text-field>
                     </v-col>
                     <v-col v-if="showLocationColumn">
                         <h4>Direction</h4>
                         <v-text-field
-                            v-model="constructionDate"
+                            v-model="modifiableFields.lat"
                         ></v-text-field>
                     </v-col>
                 </v-row>
@@ -60,22 +60,22 @@
                     </v-col>
                     <v-col :cols="showLocationColumn ? '' : 9">
                         <v-text-field
-                            v-model="constructionDate"
+                            v-model="modifiableFields.long"
                         ></v-text-field>
                     </v-col>
                     <v-col v-if="showLocationColumn">
                         <v-text-field
-                            v-model="constructionDate"
+                            v-model="modifiableFields.long"
                         ></v-text-field>
                     </v-col>
                     <v-col v-if="showLocationColumn">
                         <v-text-field
-                            v-model="constructionDate"
+                            v-model="modifiableFields.long"
                         ></v-text-field>
                     </v-col>
                     <v-col v-if="showLocationColumn">
                         <v-text-field
-                            v-model="constructionDate"
+                            v-model="modifiableFields.long"
                         ></v-text-field>
                     </v-col>
                 </v-row>
@@ -95,14 +95,16 @@
         <v-col cols="2">
             <v-textarea
                 label="Crash Location Description"
-                v-model="constructionDate"
+                v-model="modifiableFields.crashlocation"
             ></v-textarea>
             <v-select
                 label="Location Accuracy"
+                v-model="modifiableFields.accuracy"
                 :items="locationAccuracyOptions"
             ></v-select>
             <v-checkbox 
-            label="Creash site within Yukon">
+            v-model="modifiableFields.inyukon"
+            label="Crash site within Yukon">
             </v-checkbox>
         </v-col>
         <v-col cols="5">
@@ -120,17 +122,25 @@
 */
 import { Loader } from '@googlemaps/js-api-loader';
 export default {
-    props: [ "coordinateSystem", "projection",  ],
+    props: [ "fields"],
     data: () =>({
         loader: null,
         apiKey:  "AIzaSyB-GL1_TJLlEiiJ0JaaMBXgqMJWx76bWQ8",
         mapConfig: {},
         map: null,
+        modifiableFields: {   
+            accuracy: "",
+            inyukon: "",
+            crashlocation: "",
+            lat: "",
+            long: "",
+            Location: "" 
+        },
     //showLocationAlert
         showLocationAlert: false,
     //Selection vars
         selectedSystem: null,
-        locationAccuracyOptions: ["Approximate"],
+        locationAccuracyOptions: ["Approx."],
         projectionOptions: ["NAD 83", "NAD 83 CSRS", "WSG 84"],
         coordinateSystemOptions: [{id: 1, text: "Degrees, Minutes, Seconds"},{id: 2, text:  "UMT Zone 8"}, {id: 3, text: "Decimal Degrees"}],
     }),
@@ -142,11 +152,11 @@ export default {
             });
         this.loader.load().then(() => {
             this.map = new window.google.maps.Map(this.$refs.googleMap, {
-                center: { lat: -34.397, lng: 150.644 },
+                center: { lat: 63.6333308, lng: -135.7666636},
                 zoom: 8,
-            });
+            }); 
         });
-
+        
     }, 
     methods:{
         showLocationColumn(){
@@ -157,6 +167,30 @@ export default {
             else    
                 return false;
         },
+
+    },
+    watch:{
+        /*
+            We use a watcher because the component is rendered before the data is available (the mounted() hook is ran before the parent component
+            has fetched the data), because of that we cant use mounted or created to map the fields prop to the modifiedFields obj on the state, also 'prop' values 
+            are not supposed to be modified, hence why we have the modifiable fields obj. If we dont use a watcher we would have to have a flag on the parent component
+            to indicate when the data is available to render the component, this would make the component less independent and less reusable.
+        */
+        fields(){
+            this.modifiableFields = this.fields ? this.fields : this.modifiableFields;
+            this.loader.load().then(() => {
+                this.map = new window.google.maps.Map(this.$refs.googleMap, {
+                    center: { lat: this.fields.lat, lng: this.fields.long},
+                    zoom: 8,
+                }); 
+                new window.google.maps.Marker({
+                    position: {lat: this.fields.lat, lng: this.fields.long},
+                    map: this.map,
+                    title: "Location",
+                });
+            });
+            
+        }
     }
 }
 </script>
