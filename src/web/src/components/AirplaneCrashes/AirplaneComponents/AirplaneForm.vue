@@ -346,10 +346,10 @@
 import Breadcrumbs from '../../Breadcrumbs.vue';
 import Photos from "./Photos";
 import PrintButton from "./PrintButton";
-import boats from "../../../controllers/boats";
+import aircrash from "../../../controllers/aircrash";
 import GoogleMapLoader from "./GoogleMapLoader";
 export default {
-    name: "boatsForm",
+    name: "crashForm",
     components: { Photos, Breadcrumbs, PrintButton, GoogleMapLoader },
     data: ()=> ({
         overlay: false,
@@ -386,7 +386,7 @@ export default {
         if(this.checkPath("edit")){
             this.mode= "edit";
             //after this, the fields get filled with the info obtained from the api
-            //this.getDataFromApi();
+            this.getDataFromApi();
         }
         else if(this.checkPath("new")){
             this.mode="new";
@@ -397,7 +397,7 @@ export default {
         else if(this.checkPath("view")){
             this.mode="view";
             //after this, the fields get filled with the info obtained from the api
-            //this.getDataFromApi();
+            this.getDataFromApi();
         }
     },
     methods:{
@@ -427,20 +427,16 @@ export default {
                 histories: []
             };
         },
-        saveCurrentBoat(){
-            localStorage.currentBoatID = this.$route.params.id;
+        saveCurrentCrash(){
+            localStorage.currentCrashNumber = this.$route.params.yacsinumber;
         },
         async getDataFromApi(){
             this.overlay = true;
-            if(this.$route.params.id){
-                this.saveCurrentBoat();
+            if(this.$route.params.yacsinumber){
+                this.saveCurrentCrash();
             }
-            this.fields = await boats.getById(localStorage.currentBoatID);
+            this.fields = await aircrash.getById(localStorage.currentCrashNumber);
             console.log(this.fields);
-            this.fields.owners = this.fields.owners.map(x =>({ ...x, isEdited:false}));
-            this.fields.ConstructionDate = this.fields.ConstructionDate ? this.fields.ConstructionDate.substr(0, 10) : "";
-            this.fields.ServiceStart = this.fields.ServiceStart ? this.fields.ServiceStart.substr(0, 10) : "";
-            this.fields.ServiceEnd = this.fields.ServiceEnd ? this.fields.ServiceEnd.substr(0, 10) : "";
             this.overlay = false;
         },
         save (date) {
@@ -501,12 +497,12 @@ export default {
                 
             let currentBoat= {};
             if(this.mode == 'new'){
-                let resp =  await boats.post(data);
+                let resp =  await aircrash.post(data);
                 currentBoat.id = resp.Id;
                 currentBoat.name = resp.Name;
             }
             else{
-                let resp = await boats.put(localStorage.currentBoatID,data);
+                let resp = await aircrash.put(localStorage.currentBoatID,data);
                 currentBoat.id = localStorage.currentBoatID;
                 currentBoat.name = resp.boat.Name; 
             }

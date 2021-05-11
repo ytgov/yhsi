@@ -162,7 +162,7 @@ export default {
         this.getDataFromApi();
       }, 400),
     handleClick(value){   //Redirects the user to the airplane form component
-          this.$router.push({name: 'airplaneView', params: { name: "test", id: value}});
+          this.$router.push({name: 'airplaneView', params: { name: value.yacsinumber, yacsinumber: value.yacsinumber}});
       },
       async getDataFromApi() {
           this.loading = true;
