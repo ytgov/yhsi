@@ -145,18 +145,13 @@ export default {
         coordinateSystemOptions: [{id: 1, text: "Degrees, Minutes, Seconds"},{id: 2, text:  "UMT Zone 8"}, {id: 3, text: "Decimal Degrees"}],
     }),
     async mounted() {
+
         this.loader = new Loader({
             apiKey: this.apiKey,
             version: "weekly",
             libraries: ["places"]
             });
-        this.loader.load().then(() => {
-            this.map = new window.google.maps.Map(this.$refs.googleMap, {
-                center: { lat: 63.6333308, lng: -135.7666636},
-                zoom: 8,
-            }); 
-        });
-        
+        this.loadMap({lat: 63.6333308, lng: -135.7666636}, false);
     }, 
     methods:{
         showLocationColumn(){
@@ -167,7 +162,22 @@ export default {
             else    
                 return false;
         },
-
+        loadMap(latLong, marker){
+            let coord = latLong ? latLong : { lat: this.fields.lat, lng: this.fields.long };
+            this.loader.load().then(() => {
+                this.map = new window.google.maps.Map(this.$refs.googleMap, {
+                    center: coord,
+                    zoom: 8,
+                }); 
+                if(marker){
+                    new window.google.maps.Marker({
+                        position: coord,
+                        map: this.map,
+                        title: "Location",
+                    });
+                }    
+            });  
+        }
     },
     watch:{
         /*
@@ -178,18 +188,10 @@ export default {
         */
         fields(){
             this.modifiableFields = this.fields ? this.fields : this.modifiableFields;
-            this.loader.load().then(() => {
-                this.map = new window.google.maps.Map(this.$refs.googleMap, {
-                    center: { lat: this.fields.lat, lng: this.fields.long},
-                    zoom: 8,
-                }); 
-                new window.google.maps.Marker({
-                    position: {lat: this.fields.lat, lng: this.fields.long},
-                    map: this.map,
-                    title: "Location",
-                });
-            });
             
+        },
+        modifiableFields(){
+           this.loadMap(null,true);
         }
     }
 }
