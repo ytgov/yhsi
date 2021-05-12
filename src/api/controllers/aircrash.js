@@ -15,11 +15,21 @@ router.get('/', authenticateToken, async (req, res) => {
   const offset = (page*limit) || 0;
   const counter = await db.from('dbo.vAircrash').count('yacsinumber', {as: 'count'});
   let aircrashes = [];
-
+  console.log(textToMatch);
   if (textToMatch) {
     aircrashes = await db.select('*')
     .from('dbo.vAircrash')
-    .where('name', 'like', `%${textToMatch}%`);
+    .where('yacsinumber', 'like', `%${textToMatch}%`)
+    .orWhere('crashdate', 'like', `%${textToMatch}%`)
+    .orWhere('aircrafttype', 'like', `%${textToMatch}%`)
+    .orWhere('aircraftregistration', 'like', `%${textToMatch}%`)
+    .orWhere('nation', 'like', `%${textToMatch}%`)
+    .orWhere('militarycivilian', 'like', `%${textToMatch}%`)
+    .orWhere('crashlocation', 'like', `%${textToMatch}%`)
+    .orWhere('pilot', 'like', `%${textToMatch}%`)
+    .orWhere('soulsonboard', 'like', `%${textToMatch}%`)
+    .orWhere('injuries', 'like', `%${textToMatch}%`)
+    .orWhere('fatalities', 'like', `%${textToMatch}%`);
     
   } else {
     aircrashes = await db.select('*')
