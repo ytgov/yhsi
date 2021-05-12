@@ -17,12 +17,14 @@
                             label="Coordinate System"
                             @change="changedSystem"
                             v-model="selectedSystem"
+                            :readonly="mode == 'view'"
                         ></v-select>
                     </v-col>
                     <v-col>
                         <v-select
                             :items="projectionOptions"
                             label="Projection"
+                            :readonly="mode == 'view'"
                         ></v-select>
                     </v-col>
                 </v-row>
@@ -36,6 +38,7 @@
                         <v-text-field
                             @change="changedLocation"
                             v-model="modifiableFields.lat"
+                            :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
                 </v-row>
@@ -47,6 +50,7 @@
                         <v-text-field
                             @change="changedLocation"
                             v-model="modifiableFields.long"
+                            :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
                 </v-row>
@@ -60,6 +64,7 @@
                         <v-text-field
                             @change="changedLocation"
                             v-model="modifiableFields.lat"
+                            :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
                 </v-row>
@@ -71,6 +76,7 @@
                         <v-text-field
                             @change="changedLocation"
                             v-model="modifiableFields.long"
+                            :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
                 </v-row>
@@ -84,6 +90,7 @@
                         <v-text-field
                             @change="changedLocation"
                             v-model="modifiableFields.lat"
+                            :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
                     <v-col >
@@ -91,6 +98,7 @@
                         <v-text-field
                             @change="changedLocation"
                             v-model="modifiableFields.lat"
+                            :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
                     <v-col >
@@ -98,6 +106,7 @@
                         <v-text-field
                             @change="changedLocation"
                             v-model="modifiableFields.lat"
+                            :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
                     <v-col>
@@ -105,6 +114,7 @@
                         <v-text-field
                             @change="changedLocation"
                             v-model="modifiableFields.lat"
+                            :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
                 </v-row>
@@ -116,24 +126,28 @@
                         <v-text-field
                             @change="changedLocation"
                             v-model="modifiableFields.long"
+                            :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
                     <v-col >
                         <v-text-field
                             @change="changedLocation"
                             v-model="modifiableFields.long"
+                            :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
                     <v-col >
                         <v-text-field
                             @change="changedLocation"
                             v-model="modifiableFields.long"
+                            :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
                     <v-col >
                         <v-text-field
                             @change="changedLocation"
                             v-model="modifiableFields.long"
+                            :readonly="mode == 'view'"
                         ></v-text-field>
                     </v-col>
                 </v-row>
@@ -154,14 +168,17 @@
             <v-textarea
                 label="Crash Location Description"
                 v-model="modifiableFields.crashlocation"
+                :readonly="mode == 'view'"
             ></v-textarea>
             <v-select
                 label="Location Accuracy"
                 v-model="modifiableFields.accuracy"
                 :items="locationAccuracyOptions"
+                :readonly="mode == 'view'"
             ></v-select>
             <v-checkbox 
             v-model="modifiableFields.inyukon"
+            :readonly="mode == 'view'"
             label="Crash site within Yukon">
             </v-checkbox>
         </v-col>
@@ -181,7 +198,7 @@
 import { Loader } from '@googlemaps/js-api-loader';
 import { sexagesimalToDecimal } from 'geolib';//decimalToSexagesimal
 export default {
-    props: [ "fields"],
+    props: [ "fields", "mode"],
     data: () =>({
         loader: null,
         apiKey:  "AIzaSyB-GL1_TJLlEiiJ0JaaMBXgqMJWx76bWQ8",

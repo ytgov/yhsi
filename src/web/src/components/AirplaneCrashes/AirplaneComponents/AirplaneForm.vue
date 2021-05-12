@@ -84,7 +84,7 @@
                                 >
                                     <template v-slot:activator="{ on, attrs }">
                                     <v-text-field
-                                        v-model="fields.crashdate"
+                                        v-model="crashdate"
                                         label="Crash Date"
                                         append-icon="mdi-calendar"
                                         readonly
@@ -111,8 +111,9 @@
                         <v-row>
                             <v-col cols="12">
                                 <v-text-field
-                                    v-model="constructionDate"
+                                    v-model="fields.pilotLastName"
                                     label="Date Note"
+                                    :readonly="mode == 'view'"
                                 ></v-text-field>
                             </v-col>
                         </v-row>
@@ -123,30 +124,42 @@
                                 <h4>Country of Registration</h4>
                                 <v-checkbox
                                     label="Canadian"
-                                    v-model="fields.Private"
+                                    value="Canadian"
+                                    v-model="fields.nation"
+                                    :readonly="mode == 'view'"
                                 ></v-checkbox>
                                 <v-checkbox
                                     label="American"
-                                    v-model="fields.Private"
+                                    value="American"
+                                    v-model="fields.nation"
+                                    :readonly="mode == 'view'"
                                 ></v-checkbox>
                                 <v-checkbox
                                     label="Other"
-                                    v-model="fields.Private"
+                                    value="Other"
+                                    v-model="fields.nation"
+                                    :readonly="mode == 'view'"
                                 ></v-checkbox>
                                 <v-text-field
-                                    v-model="constructionDate"
+                                    v-if="fields.nation == 'Other'"
+                                    v-model="fields.nation"
                                     label="Other"
+                                    :readonly="mode == 'view'"
                                 ></v-text-field>
                             </v-col>
                             <v-col cols="6">
                                 <h4>Registration Type</h4>
                                 <v-checkbox
                                     label="Civilian"
-                                    v-model="fields.Private"
+                                    value="Civilian"
+                                    v-model="fields.militarycivilian"
+                                    :readonly="mode == 'view'"
                                 ></v-checkbox>
                                 <v-checkbox
                                     label="Military"
-                                    v-model="fields.Private"
+                                    value="Military"
+                                    v-model="fields.militarycivilian"
+                                    :readonly="mode == 'view'"
                                 ></v-checkbox>
                             </v-col>
                         </v-row> 
@@ -164,20 +177,23 @@
                             <v-row>
                                 <v-col>
                                     <v-text-field
-                                        v-model="fields.pilot"
+                                        v-model="fields.pilotFirstName"
                                         label="First Name"
+                                        :readonly="mode == 'view'"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col>
                                     <v-text-field
-                                        v-model="fields.pilot"
+                                        v-model="fields.pilotLastName"
                                         label="Last Name"
+                                        :readonly="mode == 'view'"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col>
                                     <v-text-field
-                                        v-model="constructionDate"
+                                        v-model="fields.pilotLastName"
                                         label="Rank"
+                                        :readonly="mode == 'view'"
                                     ></v-text-field>
                                 </v-col>
                             </v-row>
@@ -194,6 +210,7 @@
             </v-col>
         </v-row>
         <GoogleMapLoader 
+            :mode="mode"
             :fields="{  accuracy: fields.accuracy,
                         inyukon: fields.inyukon,
                         crashlocation: fields.crashlocation,
@@ -208,12 +225,14 @@
                             :items="remainsOptions"
                             v-model="fields.remainsonsite"
                             label="Remains on Site"
+                            :readonly="mode == 'view'"
                         ></v-select>
                         <v-textarea
                             rows="5"
                             class="mt-0 pt-0"
                             v-model="fields.extentofremainsonsite"
                             label="Extent of Remains on Site"
+                            :readonly="mode == 'view'"
                         ></v-textarea>
                     </v-col>
                     <v-col>
@@ -221,6 +240,7 @@
                             rows="7"
                             v-model="fields.otherlocationsofremains"
                             label="Other Location of Remains"
+                            :readonly="mode == 'view'"
                         ></v-textarea>
                     </v-col>
                 </v-row>
@@ -231,14 +251,17 @@
                                 <v-text-field
                                     v-model="fields.soulsonboard"
                                     label="Souls on Board"
+                                    :readonly="mode == 'view'"
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="fields.injuries"
                                     label="Injuries"
+                                    :readonly="mode == 'view'"
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="fields.fatalities"
                                     label="Fatalities"
+                                    :readonly="mode == 'view'"
                                 ></v-text-field>
                         </v-col>
                          <v-col cols="6">
@@ -246,6 +269,7 @@
                                 rows="7"
                                 v-model="fields.descriptionofcrashevent"
                                 label="Description of Crash Event"
+                                :readonly="mode == 'view'"
                             ></v-textarea>
                         </v-col>
                  </v-row>
@@ -255,7 +279,9 @@
         <v-row>
             <v-col cols="12">
                 <v-textarea
+                    v-model="fields.comments"
                     label="Additional Information"
+                    :readonly="mode == 'view'"
                 ></v-textarea>
             </v-col>
         </v-row>
@@ -266,22 +292,22 @@
                     <v-list class="pa-0" >
                         <v-subheader>Information Source</v-subheader>
                         <v-divider></v-divider>
-                        <template v-for="(item, index) in fields.pastNames">
+                        <template v-for="(item, index) in fields.infoSources">
                             <v-list-item :key="`nl-${index}`">
                                 <v-list-item-content>
-                                    <v-list-item-title v-if="index != editTableNames || mode == 'view'">{{item.BoatName}}</v-list-item-title>
-                                    <v-form v-model="validName" v-if="mode != 'view'" v-on:submit.prevent>
+                                    <v-list-item-title v-if="index != editTableSources || mode == 'view'">{{item}}</v-list-item-title>
+                                    <v-form v-model="validSource" v-if="mode != 'view'" v-on:submit.prevent>
                                         <v-text-field
-                                        v-if="editTableNames == index "
-                                        label="Name"
-                                        v-model="helperName"
-                                        :rules="nameRules"
+                                        v-if="editTableSources == index "
+                                        label="Source"
+                                        v-model="helperSource"
+                                        :rules="sourceRules"
                                         ></v-text-field>
                                     </v-form>
                                     
                                 </v-list-item-content>
                                 <v-list-item-action class="d-flex flex-row">
-                                    <v-tooltip bottom v-if="mode != 'view' && editTableNames != index">
+                                    <v-tooltip bottom v-if="mode != 'view' && editTableSources != index">
                                         <template v-slot:activator="{ on, attrs }">
                                                 <v-btn 
                                                 v-bind="attrs"
@@ -294,7 +320,7 @@
                                         </template>
                                         <span>Edit</span>
                                     </v-tooltip>
-                                    <v-tooltip bottom v-if="mode != 'view' && editTableNames == index">
+                                    <v-tooltip bottom v-if="mode != 'view' && editTableSources == index">
                                         <template v-slot:activator="{ on, attrs }">
                                                 <v-btn
                                                 v-bind="attrs"
@@ -308,7 +334,7 @@
                                         </template>
                                         <span>Save changes</span>
                                     </v-tooltip>
-                                    <v-tooltip bottom v-if="mode != 'view' && editTableNames == index">
+                                    <v-tooltip bottom v-if="mode != 'view' && editTableSources == index">
                                         <template v-slot:activator="{ on, attrs }">
                                                 <v-btn 
                                                 v-bind="attrs"
@@ -330,7 +356,7 @@
                 <v-row>
                     <v-col cols="12" class="d-flex ">
                         <v-spacer></v-spacer>
-                        <v-btn class="mx-1 black--text align" @click="addName" v-if="mode != 'view' && editTableNames == -1">Add Source</v-btn>
+                        <v-btn class="mx-1 black--text align" @click="addName" v-if="mode != 'view' && editTableSources == -1">Add Source</v-btn>
                     </v-col>
                 </v-row>
             </v-col>
@@ -338,6 +364,7 @@
                 <v-textarea
                     label="Significance of Aircraft"
                     v-model="fields.significanceofaircraft"
+                    :readonly="mode == 'view'"
                 ></v-textarea>
             </v-col>
         </v-row>
@@ -364,11 +391,11 @@ export default {
     data: ()=> ({
         overlay: false,
     //helper vars used for the name list functions
-        editTableNames: -1,// tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
-        addingName: false,// tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
-        helperName: null,
-        validName: false,
-        nameRules: [
+        editTableSources: -1,// tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
+        addingSource: false,// tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
+        helperSource: null,
+        validSource: false,
+        sourceRules: [
             v => !!v || 'Name is required',
         ],
     //helper vars, they are used to determine if the component is in an edit, view or add new state
@@ -383,13 +410,16 @@ export default {
         fields: {},
         fieldsHistory: null,
         owners: [],
+    //Pilot helper fields
+        pilotFirstName: "",
+        PilotLastName: "",
     // vessel typle select options
         vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
         dateFormatted: "",
     //show a deafult photos component for when the user is adding a new crash site
         showPhotosDefault: false,
     // Select vars
-        remainsOptions: ["Yes, No"],
+        remainsOptions: ["Yes","No", "  ??"],
         dateDescriptorOptions: ["Actual"]
     }),
     mounted(){
@@ -423,18 +453,32 @@ export default {
         },
         noData(){
             this.fields = {
-                Name: "",
-                pastNames: [],
-                ConstructionDate: "",
-                ServiceStart: "",
-                ServiceEnd: "",
-                RegistrationNumber: "",
-                VesselType: "",
-                CurrentLocation: "",
-                Notes: "",
-                photos: [],
-                owners: [],
-                histories: []
+                Location: "",
+                accuracy: "",
+                aircraftaftercrashcaption: "",
+                aircraftcaption: "",
+                aircraftregistration: "",
+                aircrafttype:"" ,
+                comments: "",
+                crashdate: "",
+                crashlocation: "",
+                descriptionofcrashevent: "",
+                extentofremainsonsite: "",
+                fatalities: "",
+                injuries: "",
+                inyukon: "",
+                lat: "",
+                long: "",
+                militarycivilian: "",
+                nation: "",
+                otherlocationsofremains: "",
+                photographs: "",
+                pilot: "",
+                remainsonsite: "",
+                significanceofaircraft:"",
+                soulsonboard: "",
+                sources: "",
+                yacsinumber: "",
             };
         },
         saveCurrentCrash(){
@@ -446,14 +490,16 @@ export default {
                 this.saveCurrentCrash();
             }
             this.fields = await aircrash.getById(localStorage.currentCrashNumber);
+            this.fields.crashdate = this.formatDate(this.fields.crashdate);
+            let pilotname = this.fields.pilot.split(',');
+            this.fields.pilotFirstName = pilotname[1];
+            this.fields.pilotLastName = pilotname[0];
+            this.fields.infoSources = this.fields.sources.split(";");
             console.log(this.fields);
             this.overlay = false;
         },
         save (date) {
             this.$refs.menu.save(date);
-        },
-        goToOwner(value){
-            this.$router.push({name: 'ownerView', params: { name: value.OwnerName, id: value.id}});
         },
     //Functions dedicated to handle the edit, add, view modes
         cancelEdit(){
@@ -462,113 +508,89 @@ export default {
             }
             this.mode="view";
             this.resetListVariables();
-            this.$router.push(`/boats/view/${this.fields.Name}`);
+            this.$router.push(`/airplane/view/${this.fields.Name}`);
         },
         cancelNew(){
-            this.$router.push(`/boats/`);
+            this.$router.push(`/airplane/`);
         },
         viewMode(){
             this.mode="view";
-            this.$router.push(`/boats/view/${this.fields.Name}`);
+            this.$router.push(`/airplane/view/${this.fields.Name}`);
         },
         editMode(){
             this.fieldsHistory = {...this.fields};
             this.mode="edit";
-            this.$router.push(`/boats/edit/${this.fields.Name}`);
+            this.$router.push(`/airplane/edit/${this.fields.Name}`);
             this.showSave = 0;
             this.resetListVariables();
         },
         async saveChanges(){
             this.overlay = true; 
-            console.log(this.fields.owners);
-            let editedOwners = this.fields.owners.filter(x => x.isEdited == true)
-                .map(x => ({ OwnerID: x.ownerid ? x.ownerid : x.id, CurrentOwner: x.currentowner }));
-            let newOwners = this.fields.owners.filter(x => x.isNew == true)
-                .map(x => ({ OwnerID: x.ownerid ? x.ownerid : x.id, CurrentOwner: x.currentowner }));
-            let newNames = this.fields.owners.filter(x => x.isNew == true);
-            let editedNames = this.fields.owners.filter(x => x.isEdited == true);
+            console.log(this.fields);
+            let aircrash = { ...this.fields }
+            aircrash.pilot = this.getPilotName();
+            delete aircrash.pilotFirstName;
+            delete aircrash.pilotLastName;
              let data = {
-                    boat: {
-                        Name: this.fields.Name,
-                        ConstructionDate: this.fields.ConstructionDate,
-                        ServiceStart:this.fields.ServiceStart,
-                        ServiceEnd: this.fields.ServiceEnd,
-                        RegistrationNumber: this.fields.RegistrationNumber,
-                        VesselType: this.fields.VesselType,
-                        CurrentLocation: this.fields.CurrentLocation,
-                        Notes: this.fields.Notes,
-                    },
-                    ownerNewArray: editedOwners,
-                    ownerEditArray: newOwners,
-                    pastNamesNewArray: newNames,
-                    pastNamesEditArray: editedNames
+                    aircrash: {
+                        ...this.fields
+                    }
                 };
                 console.log(data);
                 
-            let currentBoat= {};
+            let currentCrash= {};
             if(this.mode == 'new'){
-                let resp =  await aircrash.post(data);
-                currentBoat.id = resp.Id;
-                currentBoat.name = resp.Name;
+                await aircrash.post(data);
+                this.overlay = false;
+                this.$router.push(`/airplane/`);
             }
             else{
-                let resp = await aircrash.put(localStorage.currentBoatID,data);
-                currentBoat.id = localStorage.currentBoatID;
-                currentBoat.name = resp.boat.Name; 
-            }
-            this.overlay = false;
-            this.mode = 'view';
-            this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});
-            
-        },
-        editHistoricRecord(newVal){
-            this.historiRecordHelper = newVal;
-        },
-        editReference(newVal){
-            this.referenceHelper = newVal;
-        },
-        resetListVariables(){
-            this.addingOwner = false;  
-            this.editTableOwners = -1;
-            this.addingName = false;
-            this.editTableNames = -1;
+                let resp = await aircrash.put(localStorage.currentCrashNumber,data);
+                currentCrash.id = localStorage.currentCrashNumber;
+                currentCrash.name = resp.boat.Name; 
+                this.overlay = false;
+                this.mode = 'view';
+                this.$router.push({name: 'airplaneView', params: { name: currentCrash.currentCrashNumber, yacsinumber: currentCrash.currentCrashNumber}});
+            }  
         },
     //functions for editing the table "Names" values
         changeEditTableNames(item,index){
-            this.editTableNames = index;
-            this.helperName = item.BoatName;
+            this.editTableSources = index;
+            this.helperSource = item;
         },
         cancelEditTableNames(){
             if(this.addingName){
-                this.fields.pastNames.pop();
-                this.addingName = false;
-                this.editTableNames = -1;
+                this.fields.infoSources.pop();
+                this.addingSource = false;
+                this.editTableSources = -1;
             }
             else{
                 this.editTableNames = -1;
-            }
-                
+            }      
         },
         saveTableNames(index){
             if(this.addingName)
-                this.fields.pastNames[index] = {BoatName: this.helperName, isNew: true};
+                this.fields.infoSources[index] = this.helperSource;
             else
-                this.fields.pastNames[index] = {BoatName: this.helperName, isEdited: true};
-            this.addingName = false;  
-            this.editTableNames = -1;     
+                this.fields.infoSources[index] =  this.helperSource;
+            this.addingSource = false;  
+            this.editTableSources = -1;     
         },
         addName(){
-            this.helperName="";
-            this.fields.pastNames.push(""); 
-            this.addingName = true;
-            this.editTableNames = this.fields.pastNames.length-1;
+            this.helperSource="";
+            this.fields.infoSources.push(""); 
+            this.addingSource = true;
+            this.editTableSources = this.fields.infoSources.length-1;
         },
         formatDate (date) {
-        if (!date) return null
-        //date = date.substr(0, 10);
-        const [year, month, day] = date.split('-')
-        return `${month}/${day}/${year}`
-      },
+          if (!date) return null
+          date = date.substr(0, 10);
+          const [year, month, day] = date.split('-')
+          return `${month}/${day}/${year}`
+        },
+        getPilotName(){
+            return `${this.pilotLastName},${this.pilotFirstName}`
+        }
     },   
     computed:{
         getBoatID(){
@@ -577,14 +599,8 @@ export default {
             }
             else return localStorage.currentBoatID;
         },
-        constructionDate () {
-            return this.formatDate(this.fields.ConstructionDate);
-        },
-        serviceStart(){
-            return this.formatDate(this.fields.ServiceStart);
-        },
-        serviceEnd(){
-            return this.formatDate(this.fields.ServiceEnd);
+        crashdate(){
+            return this.formatDate(this.fields.crashdate);
         }
     },
     watch: {
@@ -603,7 +619,7 @@ export default {
         menu3 (val) {
             val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
         },/* eslint-disable */
-        'fields.ConstructionDate': function  (val) {
+        'fields.crashdate': function  (val) {
         this.dateFormatted = this.formatDate(this.date)
         },/* eslint-enable */
     },
