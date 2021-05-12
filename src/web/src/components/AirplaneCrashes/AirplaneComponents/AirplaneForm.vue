@@ -194,7 +194,7 @@
             </v-col>
         </v-row>
         <GoogleMapLoader 
-            :fields="{    accuracy: fields.accuracy,
+            :fields="{  accuracy: fields.accuracy,
                         inyukon: fields.inyukon,
                         crashlocation: fields.crashlocation,
                         lat: fields.lat,

@@ -15,6 +15,7 @@
                             return-object
                             item-text="text"
                             label="Coordinate System"
+                            @change="changedSystem"
                             v-model="selectedSystem"
                         ></v-select>
                     </v-col>
@@ -25,56 +26,113 @@
                         ></v-select>
                     </v-col>
                 </v-row>
-                <v-row>
-                    <v-col :cols="2.4"><!-- Decides how many 'cols' its going to have -->
+<!-- SELECTED SYSTEM  == DD -->
+                <v-row v-if="selectedSystem.id == 1">
+                    <v-col cols="2.4">
                         <h4>Latitude</h4>
                     </v-col>
-                    <v-col :cols="showLocationColumn ? '' : 9">
+                    <v-col cols="9">
                         <h4>Degrees</h4>
                         <v-text-field
-                            v-model="modifiableFields.lat"
-                        ></v-text-field>
-                    </v-col>
-                    <v-col v-if="showLocationColumn">
-                        <h4>Minutes</h4>
-                        <v-text-field
-                            v-model="modifiableFields.lat"
-                        ></v-text-field>
-                    </v-col>
-                    <v-col v-if="showLocationColumn">
-                        <h4>Seconds</h4>
-                        <v-text-field
-                            v-model="modifiableFields.lat"
-                        ></v-text-field>
-                    </v-col>
-                    <v-col v-if="showLocationColumn">
-                        <h4>Direction</h4>
-                        <v-text-field
+                            @change="changedLocation"
                             v-model="modifiableFields.lat"
                         ></v-text-field>
                     </v-col>
                 </v-row>
-                <v-row>
+                <v-row v-if="selectedSystem.id == 1">
                     <v-col cols="2.4">
                         <h4>Longitude</h4>
                     </v-col>
-                    <v-col :cols="showLocationColumn ? '' : 9">
+                    <v-col cols="9">
                         <v-text-field
+                            @change="changedLocation"
                             v-model="modifiableFields.long"
                         ></v-text-field>
                     </v-col>
-                    <v-col v-if="showLocationColumn">
+                </v-row>
+<!-- SELECTED SYSTEM  == UMT -->
+                <v-row v-if="selectedSystem.id == 2">
+                    <v-col cols="2.4"><!-- Decides how many 'cols' its going to have -->
+                        <h4>Latitude</h4>
+                    </v-col>
+                    <v-col>
+                        <h4>Degrees</h4>
                         <v-text-field
+                            @change="changedLocation"
+                            v-model="modifiableFields.lat"
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row v-if="selectedSystem.id == 2">
+                    <v-col cols="2.4">
+                        <h4>Longitude</h4>
+                    </v-col>
+                    <v-col >
+                        <v-text-field
+                            @change="changedLocation"
                             v-model="modifiableFields.long"
                         ></v-text-field>
                     </v-col>
-                    <v-col v-if="showLocationColumn">
+                </v-row>
+<!-- SELECTED SYSTEM  == DMS -->
+                <v-row v-if="selectedSystem.id == 3">
+                    <v-col cols="2.4"><!-- Decides how many 'cols' its going to have -->
+                        <h4>Latitude</h4>
+                    </v-col>
+                    <v-col >
+                        <h4>Degrees</h4>
                         <v-text-field
+                            @change="changedLocation"
+                            v-model="modifiableFields.lat"
+                        ></v-text-field>
+                    </v-col>
+                    <v-col >
+                        <h4>Minutes</h4>
+                        <v-text-field
+                            @change="changedLocation"
+                            v-model="modifiableFields.lat"
+                        ></v-text-field>
+                    </v-col>
+                    <v-col >
+                        <h4>Seconds</h4>
+                        <v-text-field
+                            @change="changedLocation"
+                            v-model="modifiableFields.lat"
+                        ></v-text-field>
+                    </v-col>
+                    <v-col>
+                        <h4>Direction</h4>
+                        <v-text-field
+                            @change="changedLocation"
+                            v-model="modifiableFields.lat"
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row v-if="selectedSystem.id == 3">
+                    <v-col cols="2.4">
+                        <h4>Longitude</h4>
+                    </v-col>
+                    <v-col >
+                        <v-text-field
+                            @change="changedLocation"
                             v-model="modifiableFields.long"
                         ></v-text-field>
                     </v-col>
-                    <v-col v-if="showLocationColumn">
+                    <v-col >
                         <v-text-field
+                            @change="changedLocation"
+                            v-model="modifiableFields.long"
+                        ></v-text-field>
+                    </v-col>
+                    <v-col >
+                        <v-text-field
+                            @change="changedLocation"
+                            v-model="modifiableFields.long"
+                        ></v-text-field>
+                    </v-col>
+                    <v-col >
+                        <v-text-field
+                            @change="changedLocation"
                             v-model="modifiableFields.long"
                         ></v-text-field>
                     </v-col>
@@ -121,6 +179,7 @@
     the changes will be updated on the map to show the desired pin/marker.
 */
 import { Loader } from '@googlemaps/js-api-loader';
+import { sexagesimalToDecimal } from 'geolib';//decimalToSexagesimal
 export default {
     props: [ "fields"],
     data: () =>({
@@ -128,13 +187,18 @@ export default {
         apiKey:  "AIzaSyB-GL1_TJLlEiiJ0JaaMBXgqMJWx76bWQ8",
         mapConfig: {},
         map: null,
+        marker: null,
         modifiableFields: {   
             accuracy: "",
             inyukon: "",
             crashlocation: "",
-            lat: "",
-            long: "",
-            Location: "" 
+            lat: 0.0,
+            long: 0.0,
+            Location: "",
+            //fields for the types of coordinate systems 
+            dd: null,
+            dms: null,
+            umt: null
         },
     //showLocationAlert
         showLocationAlert: false,
@@ -142,41 +206,95 @@ export default {
         selectedSystem: null,
         locationAccuracyOptions: ["Approx."],
         projectionOptions: ["NAD 83", "NAD 83 CSRS", "WSG 84"],
-        coordinateSystemOptions: [{id: 1, text: "Degrees, Minutes, Seconds"},{id: 2, text:  "UMT Zone 8"}, {id: 3, text: "Decimal Degrees"}],
+        coordinateSystemOptions: [{id: 1, text: "Decimal Degrees"},{id: 2, text:  "UMT Zone 8"}, {id: 3, text: "Degrees, Minutes, Seconds"}],
     }),
     async mounted() {
-
+        this.selectedSystem = this.coordinateSystemOptions[2];
         this.loader = new Loader({
             apiKey: this.apiKey,
             version: "weekly",
             libraries: ["places"]
             });
-        this.loadMap({lat: 63.6333308, lng: -135.7666636}, false);
+        this.loadMap(63.6333308,-135.7666636);
     }, 
     methods:{
-        showLocationColumn(){
-            if(!this.selectedSystem)
-                return true;
-            if(this.selectedSystem.id == 1)
-                return true;
-            else    
-                return false;
-        },
-        loadMap(latLong, marker){
-            let coord = latLong ? latLong : { lat: this.fields.lat, lng: this.fields.long };
+        loadMap(lat, lng){
             this.loader.load().then(() => {
+                let coord = { lat, lng};
                 this.map = new window.google.maps.Map(this.$refs.googleMap, {
                     center: coord,
                     zoom: 8,
-                }); 
-                if(marker){
-                    new window.google.maps.Marker({
-                        position: coord,
-                        map: this.map,
-                        title: "Location",
-                    });
-                }    
+                });   
             });  
+        },
+        setCenter(lat, lng){
+            this.loader.load().then(() => {
+                this.map.setCenter({lat,lng});
+            }); 
+            
+        },
+        removeMarker(){
+            this.marker.setMap(null);
+        },
+        addMarker(lat,lng){
+            this.loader.load().then(() => {
+                this.marker = new window.google.maps.Marker({
+                    position: {lat, lng},
+                    map: this.map,
+                });
+            }); 
+        },
+        changedLocation(){sexagesimalToDecimal
+            let lat;
+            let long;
+            switch(this.selectedSystem.id){
+                case 1:   
+                    lat = parseFloat(this.modifiableFields.dd.lat);
+                    long = parseFloat(this.modifiableFields.dd.lng);
+                    break;
+                case 2:
+                    console.log("for umt");
+                    break;
+                case 3:
+                    console.log("for dms");
+                    break;
+            }
+
+            if(!isNaN(lat)){
+                this.loadMap(lat,long)
+                this.addMarker(lat,long);
+                this.setCenter(lat,long);
+            }
+        },
+        changedSystem(){//prepares values for display
+            let lat,lng;
+            switch(this.selectedSystem.id){
+                case 1:   
+                    this.modifiableFields.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
+                    this.modifiableFields.dms = null;
+                    this.modifiableFields.umt = null;
+                    break;
+                case 2:
+                    console.log("for umt");
+                    break;
+                case 3:
+                    lat = sexagesimalToDecimal(this.modifiableFields.lat);
+                    lng = sexagesimalToDecimal(this.modifiableFields.long);
+                    this.modifiableFields.dms = { lat, lng };
+                    this.modifiableFields.dd = null;
+                    this.modifiableFields.umt = null;
+                    break;
+            }
+        },
+        convertDDToDMS(D, lng){
+            const M=0|(D%1)*60e7;
+
+            return {
+                dir : D<0?lng?'W':'S':lng?'E':'N',
+                deg : 0|(D<0?D=-D:D),
+                min : 0|M/1e7,
+                sec : (0|M/1e6%1*6e4)/100
+            };
         }
     },
     watch:{
@@ -188,11 +306,14 @@ export default {
         */
         fields(){
             this.modifiableFields = this.fields ? this.fields : this.modifiableFields;
-            
+            let lat = parseFloat(this.modifiableFields.lat);
+            let long = parseFloat(this.modifiableFields.long);
+             if(!isNaN(lat)){
+                this.loadMap(lat,long)
+                this.addMarker(lat,long);
+                this.setCenter(lat,long);
+            }
         },
-        modifiableFields(){
-           this.loadMap(null,true);
-        }
     }
 }
 </script>
