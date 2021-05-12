@@ -385,6 +385,7 @@ import Photos from "./Photos";
 import PrintButton from "./PrintButton";
 import aircrash from "../../../controllers/aircrash";
 import GoogleMapLoader from "./GoogleMapLoader";
+import _ from 'lodash';
 export default {
     name: "crashForm",
     components: { Photos, Breadcrumbs, PrintButton, GoogleMapLoader },
@@ -529,12 +530,12 @@ export default {
             console.log(this.fields);
             let aircrash = { ...this.fields }
             aircrash.pilot = this.getPilotName();
+            aircrash.sources = this.getSources();
             delete aircrash.pilotFirstName;
             delete aircrash.pilotLastName;
+            delete aircrash.infoSources;
              let data = {
-                    aircrash: {
-                        ...this.fields
-                    }
+                    aircrash
                 };
                 console.log(data);
                 
@@ -590,7 +591,11 @@ export default {
         },
         getPilotName(){
             return `${this.pilotLastName},${this.pilotFirstName}`
+        },
+        getSources(){
+            return _.join(this.fields.infoSources, ';');
         }
+        
     },   
     computed:{
         getBoatID(){
