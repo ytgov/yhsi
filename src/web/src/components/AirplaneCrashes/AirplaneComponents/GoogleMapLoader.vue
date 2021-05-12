@@ -261,7 +261,7 @@ export default {
                 });
             }); 
         },
-        changedLocation(){sexagesimalToDecimal
+        changedLocation(){//sexagesimalToDecimal
             let lat;
             let long;
             switch(this.selectedSystem.id){
