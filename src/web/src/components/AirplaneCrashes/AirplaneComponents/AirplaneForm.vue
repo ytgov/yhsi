@@ -4,13 +4,9 @@
         <Breadcrumbs/>
         <v-row>
             <v-col cols="12" class="d-flex">
-                <h1>1927-01</h1>
                 <h1 v-if="mode == 'view'">{{fields.yacsinumber}}</h1>
-                <v-text-field v-else-if="mode == 'edit'"
-                    label="Boat name"
-                    v-model="fields.yacsinumber"
-                ></v-text-field>
-                <h1 v-else>New Boat</h1>
+                <h1 v-else-if="mode == 'edit'">Edit: {{fields.yacsinumber}}</h1>
+                <h1 v-else>New Crash Site</h1>
                 <v-spacer></v-spacer>
 <!-- buttons for the view state -->
                 <v-btn class="black--text mx-1" @click="editMode" v-if="mode == 'view'">
@@ -325,7 +321,7 @@
                                                 <v-btn
                                                 v-bind="attrs"
                                                 v-on="on" 
-                                                :disabled="!validName"
+                                                :disabled="!validSource"
                                                 icon class="grey--text text--darken-2" color="success"  @click="saveTableNames(index)">
                                                     <v-icon
                                                     small
@@ -397,7 +393,7 @@ export default {
         helperSource: null,
         validSource: false,
         sourceRules: [
-            v => !!v || 'Name is required',
+            v => !!v || 'Source is required',
         ],
     //helper vars, they are used to determine if the component is in an edit, view or add new state
         mode: "",
@@ -405,12 +401,8 @@ export default {
         showSave: 0,
     //input fields, datatable, etc
         menu1: "",
-        menu2: "",
-        menu3: "",
-        search: "",
         fields: {},
         fieldsHistory: null,
-        owners: [],
     //Pilot helper fields
         pilotFirstName: "",
         PilotLastName: "",
@@ -491,7 +483,7 @@ export default {
                 this.saveCurrentCrash();
             }
             this.fields = await aircrash.getById(localStorage.currentCrashNumber);
-            this.fields.crashdate = this.formatDate(this.fields.crashdate);
+            this.fields.crashdate =  this.fields.crashdate ? this.fields.crashdate.substr(0, 10) : "";
             let pilotname = this.fields.pilot.split(',');
             this.fields.pilotFirstName = pilotname[1];
             this.fields.pilotLastName = pilotname[0];
@@ -509,50 +501,55 @@ export default {
             }
             this.mode="view";
             this.resetListVariables();
-            this.$router.push(`/airplane/view/${this.fields.Name}`);
+            this.$router.push(`/airplane/view/${this.fields.yacsinumber}`);
         },
         cancelNew(){
             this.$router.push(`/airplane/`);
         },
         viewMode(){
             this.mode="view";
-            this.$router.push(`/airplane/view/${this.fields.Name}`);
+            this.$router.push(`/airplane/view/${this.fields.yacsinumber}`);
         },
         editMode(){
             this.fieldsHistory = {...this.fields};
             this.mode="edit";
-            this.$router.push(`/airplane/edit/${this.fields.Name}`);
+            this.$router.push(`/airplane/edit/${this.fields.yacsinumber}`);
             this.showSave = 0;
             this.resetListVariables();
+        },
+        resetListVariables(){
+            this.addingSource = false;  
+            this.editTableSources = -1;
         },
         async saveChanges(){
             this.overlay = true; 
             console.log(this.fields);
-            let aircrash = { ...this.fields }
-            aircrash.pilot = this.getPilotName();
-            aircrash.sources = this.getSources();
-            delete aircrash.pilotFirstName;
-            delete aircrash.pilotLastName;
-            delete aircrash.infoSources;
+            let crash = { ...this.fields }
+            crash.pilot = this.getPilotName();
+            crash.sources = this.getSources();
+            delete crash.pilotFirstName;
+            delete crash.pilotLastName;
+            delete crash.infoSources;
+            delete crash.lat;
+            delete crash.long;
+            console.log(crash);
              let data = {
-                    aircrash
+                    aircrash: crash
                 };
                 console.log(data);
-                
-            let currentCrash= {};
+            let currentCrashNumber;
             if(this.mode == 'new'){
                 await aircrash.post(data);
                 this.overlay = false;
                 this.$router.push(`/airplane/`);
             }
             else{
-                let resp = await aircrash.put(localStorage.currentCrashNumber,data);
-                currentCrash.id = localStorage.currentCrashNumber;
-                currentCrash.name = resp.boat.Name; 
+                await aircrash.put(localStorage.currentCrashNumber,data);
+                currentCrashNumber = localStorage.currentCrashNumber;
                 this.overlay = false;
                 this.mode = 'view';
-                this.$router.push({name: 'airplaneView', params: { name: currentCrash.currentCrashNumber, yacsinumber: currentCrash.currentCrashNumber}});
-            }  
+                this.$router.push({name: 'airplaneView', params: { name: currentCrashNumber, yacsinumber: currentCrashNumber}});
+            } 
         },
     //functions for editing the table "Names" values
         changeEditTableNames(item,index){
@@ -585,12 +582,12 @@ export default {
         },
         formatDate (date) {
           if (!date) return null
-          date = date.substr(0, 10);
+          //date = date.substr(0, 10);
           const [year, month, day] = date.split('-')
           return `${month}/${day}/${year}`
         },
         getPilotName(){
-            return `${this.pilotLastName},${this.pilotFirstName}`
+            return `${this.fields.pilotLastName},${this.fields.pilotFirstName}`
         },
         getSources(){
             return _.join(this.fields.infoSources, ';');
@@ -617,15 +614,9 @@ export default {
         },
         menu1 (val) {
             val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
-        },
-        menu2 (val) {
-            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
-        },
-        menu3 (val) {
-            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
         },/* eslint-disable */
         'fields.crashdate': function  (val) {
-        this.dateFormatted = this.formatDate(this.date)
+        this.dateFormatted = this.formatDate(this.fields.crashdate)
         },/* eslint-enable */
     },
 }
