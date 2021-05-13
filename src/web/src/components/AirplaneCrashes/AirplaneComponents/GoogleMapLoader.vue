@@ -261,6 +261,7 @@ export default {
                 });
             }); 
         },
+        //WORK IN PROGRESS
         changedLocation(){//sexagesimalToDecimal
             let lat;
             let long;
@@ -283,6 +284,7 @@ export default {
                 this.setCenter(lat,long);
             }
         },
+        //WORK IN PROGRESS
         changedSystem(){//prepares values for display
             let lat,lng;
             switch(this.selectedSystem.id){
@@ -326,7 +328,7 @@ export default {
             let lat = parseFloat(this.modifiableFields.lat);
             let long = parseFloat(this.modifiableFields.long);
              if(!isNaN(lat)){
-                this.loadMap(lat,long)
+                //this.loadMap(lat,long)
                 this.addMarker(lat,long);
                 this.setCenter(lat,long);
             }
