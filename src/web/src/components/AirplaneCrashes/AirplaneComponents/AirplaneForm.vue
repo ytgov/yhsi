@@ -488,6 +488,8 @@ export default {
             this.fields.pilotFirstName = pilotname[1];
             this.fields.pilotLastName = pilotname[0];
             this.fields.infoSources = this.fields.sources.split(";");
+            this.fields.lat = 24.7529112149758;
+            this.fields.long =  -107.46921268993607;
             console.log(this.fields);
             this.overlay = false;
         },
