@@ -31,7 +31,7 @@
         </v-btn>
     </v-app-bar>
 
-    <v-container>
+    <v-container fluid>
       <v-row>
         <v-col cols="12">
           <h2>{{owners.length}} Results</h2><!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->

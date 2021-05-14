@@ -1,16 +1,15 @@
 <template>
     <v-card>
-        <div v-if="showDefault || photos.length == 0"
+        <div v-if="showDefault || photos.length == 0" 
             class="center-children"
             style="height: 400px;"
             
         >
-
             <v-img 
             height="200"
             width="200"
-            :src="require('../../../../assets/add_photo.png')"
-            :lazy-src="require('../../../../assets/add_photo.png')"
+            :src="require('../../../assets/add_photo.png')"
+            :lazy-src="require('../../../assets/add_photo.png')"
             ></v-img>
         </div>
         <v-carousel v-else
@@ -18,6 +17,7 @@
             cycle
             height="400"
             hide-delimiter-background
+            
         >
             <v-carousel-item 
             v-for="(item,i) in photos"
@@ -340,8 +340,8 @@
 </template>
 
 <script>
-import photos from "../../../../controllers/photos";
-import owners from "../../../../controllers/owners";
+import photos from "../../../controllers/photos";
+import owners from "../../../controllers/owners";
 export default {
     name: "photos",
     props: ["boatID", "showDefault"],

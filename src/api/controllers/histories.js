@@ -51,4 +51,4 @@ router.put('/:historyId', authenticateToken, async (req, res) => {
   res.status(200).send({ message: 'success' });
 });
 
-module.exports = router
+module.exports = router;
