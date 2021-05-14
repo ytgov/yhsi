@@ -16,11 +16,11 @@ var app = express();
 var port = process.env.PORT || 3000;
 var _ = require('lodash');
 app.use(cors({
-  origin: 'https://yg-historic-sites.web.app/',
+  origin: '*',
   optionsSuccessStatus: 200,
   credentials: true
 }));
-app.options('*', cors());
+// app.options('*', cors());
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
