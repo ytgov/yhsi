@@ -238,6 +238,10 @@
                                                 item-text="OwnerName"
                                                 return-object
                                                 ></v-autocomplete>
+                                                <!--
+                                                    v-model="helperOwner"
+                                                :items="owners"
+                                                -->
                                             </v-form>
                                         </v-list-item-content>
                                         <v-list-item-action class="d-flex flex-row">
@@ -259,13 +263,13 @@
                                                         <v-btn 
                                                         v-bind="attrs"
                                                         v-on="on"
-                                                        icon class="grey--text text--darken-2"   @click="deleteOwner(item,index)">
+                                                        icon class="grey--text text--darken-2"   @click="changeEditTableOwners(item,index)">
                                                             <v-icon
                                                                 small
-                                                            > mdi-delete</v-icon>
+                                                            > mdi-pencil</v-icon>
                                                         </v-btn>
                                                 </template>
-                                                <span>Delete</span>
+                                                <span>Edit</span>
                                             </v-tooltip>
                                             <v-tooltip bottom v-if="mode != 'view' && editTableOwners == index">
                                                 <template v-slot:activator="{ on, attrs }">
@@ -357,7 +361,6 @@ import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
 import boats from "../../../../controllers/boats";
 import owners from "../../../../controllers/owners";
-import _ from 'lodash';
 export default {
     name: "boatsForm",
     components: { Photos, Breadcrumbs, HistoricRecord, PrintButton },
@@ -452,16 +455,12 @@ export default {
                 this.saveCurrentBoat();
             }
             this.fields = await boats.getById(localStorage.currentBoatID);
-            
+            console.log(this.fields);
             this.fields.owners = this.fields.owners.map(x =>({ ...x, isEdited:false}));
             this.fields.ConstructionDate = this.fields.ConstructionDate ? this.fields.ConstructionDate.substr(0, 10) : "";
             this.fields.ServiceStart = this.fields.ServiceStart ? this.fields.ServiceStart.substr(0, 10) : "";
             this.fields.ServiceEnd = this.fields.ServiceEnd ? this.fields.ServiceEnd.substr(0, 10) : "";
-            this.fields.deletedOwners = [];
-            this.fields.ownerRemovedArray = [];
-            this.fields.originalOwners = JSON.parse(JSON.stringify(this.fields.owners));
             this.overlay = false;
-            console.log(this.fields);
         },
         save (date) {
             this.$refs.menu.save(date);
@@ -494,11 +493,13 @@ export default {
         },
         async saveChanges(){
             this.overlay = true; 
-            let removedOwners = _.intersectionBy(this.fields.originalOwners, this.fields.deletedOwners, 'id');
+            console.log(this.fields.owners);
+            let editedOwners = this.fields.owners.filter(x => x.isEdited == true)
+                .map(x => ({ OwnerID: x.ownerid ? x.ownerid : x.id, CurrentOwner: x.currentowner }));
             let newOwners = this.fields.owners.filter(x => x.isNew == true)
                 .map(x => ({ OwnerID: x.ownerid ? x.ownerid : x.id, CurrentOwner: x.currentowner }));
-            let newNames = this.fields.pastNames.filter(x => x.isNew == true).map(x => ({BoatName: x.BoatName}));
-            let editedNames = this.fields.pastNames.filter(x => x.isEdited == true);
+            let newNames = this.fields.owners.filter(x => x.isNew == true);
+            let editedNames = this.fields.owners.filter(x => x.isEdited == true);
              let data = {
                     boat: {
                         Name: this.fields.Name,
@@ -510,29 +511,27 @@ export default {
                         CurrentLocation: this.fields.CurrentLocation,
                         Notes: this.fields.Notes,
                     },
-                    ownerNewArray: newOwners,
-                    ownerRemovedArray: removedOwners,
+                    ownerNewArray: editedOwners,
+                    ownerEditArray: newOwners,
                     pastNamesNewArray: newNames,
                     pastNamesEditArray: editedNames
                 };
                 console.log(data);
                 
             let currentBoat= {};
-            console.log(this.fields);
-            
             if(this.mode == 'new'){
-                await boats.post(data);
-                this.$router.push(`/boats/`);
+                let resp =  await boats.post(data);
+                currentBoat.id = resp.Id;
+                currentBoat.name = resp.Name;
             }
             else{
-                await boats.put(localStorage.currentBoatID,data);
+                let resp = await boats.put(localStorage.currentBoatID,data);
                 currentBoat.id = localStorage.currentBoatID;
-                currentBoat.name = this.fields.Name; 
-                this.mode = 'view';
-                this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});   
-                this.$router.go();   
-               
-            } 
+                currentBoat.name = resp.boat.Name; 
+            }
+            this.overlay = false;
+            this.mode = 'view';
+            this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});
             
         },
         editHistoricRecord(newVal){
@@ -566,11 +565,8 @@ export default {
         saveTableNames(index){
             if(this.addingName)
                 this.fields.pastNames[index] = {BoatName: this.helperName, isNew: true};
-            else{
-                this.fields.pastNames[index].BoatName = this.helperName;
-                this.fields.pastNames[index].isEdited = true;
-            }
-            this.showSave = this.showSave+1;
+            else
+                this.fields.pastNames[index] = {BoatName: this.helperName, isEdited: true};
             this.addingName = false;  
             this.editTableNames = -1;     
         },
@@ -581,16 +577,9 @@ export default {
             this.editTableNames = this.fields.pastNames.length-1;
         },
     //functions for editing the table "Owners" values
-        deleteOwner(item,index){
-            console.log(this.fields.owners[index]);
-            if (index > -1) {
-                this.fields.owners.splice(index, 1);
-                this.fields.deletedOwners.push(item);
-                
-                console.log(this.fields.deletedOwners);
-                console.log(this.fields.originalOwners);
-            }
-            
+        changeEditTableOwners(item,index){
+            this.editTableOwners = index;
+            this.helperOwner = item;
         },
         cancelEditTableOwners(){
             if(this.addingOwner){
@@ -606,11 +595,9 @@ export default {
         saveTableOwners(index){
             if(this.addingOwner)
                 this.fields.owners[index] = { ...this.helperOwner, isNew: true};
-            else{
-                this.fields.ownerRemovedArray.push(this.fields.owners[index]);
-                this.fields.owners[index] = { ...this.helperOwner, isNew: true};
-            }
-            this.showSave = this.showSave+1;
+            else
+                this.fields.owners[index] = { ...this.helperOwner, isEdited: true};
+                console.log(this.fields.owners[index]);
             this.addingOwner = false;  
             this.editTableOwners = -1;    
         },
@@ -623,8 +610,8 @@ export default {
         async getOwners(){
             this.isLoadingOwner = true;
             let data = await owners.get();
-            let arr = data.body;
-            this.owners = _.differenceBy(arr, this.fields.owners, 'OwnerName');
+            console.log(data);
+            this.owners = data.body;
             this.isLoadingOwner = false;
         },
         //handles the new values added to the historic records
@@ -637,9 +624,17 @@ export default {
         const [year, month, day] = date.split('-')
         return `${month}/${day}/${year}`
       },
-     
     },   
-    computed:{
+    computed:{/* MIGHT NEED THIS LATER
+        availableOwners(){
+            let allowners = this.owners;
+            let boatOwners = this.fields.owners;
+
+            const index = array.indexOf(5);
+            if (index > -1) {
+            array.splice(index, 1);
+            }
+        }*/
         getBoatID(){
             if(this.$route.params.id){
                 return  this.$route.params.id;

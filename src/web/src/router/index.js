@@ -38,6 +38,9 @@ import BoatsGrid from "../components/Boats/Grid/Boats";
 import OwnerGrid from "../components/Boats/Grid/Owner";
 import BoatsForm from "../components/Boats/BoatsComponents/Boat/BoatsForm";
 import BoatsOwnerForm from "../components/Boats/BoatsComponents/Owner/OwnerForm";
+import AirplaneGrid from "../components/AirplaneCrashes/Grid";
+import AirplaneViewForm from "../components/AirplaneCrashes/AirplaneComponents/AirplaneForm";
+import AirplaneEditForm from "../components/AirplaneCrashes/AirplaneComponents/AirplaneForm";
 
 Vue.use(VueRouter);
 
@@ -311,6 +314,23 @@ const routes = [
     path: "/boats/owner/new",
     name: "ownerAddView",
     component: BoatsOwnerForm
+  },
+  {
+    path: "/airplane/",
+    name: "airplane",
+    component: AirplaneGrid
+  },
+  {
+    path: "/airplane/view/:name",
+    name: "airplaneView",
+    component: AirplaneViewForm,
+    props: true
+  },
+  {
+    path: "/airplane/edit/:name",
+    name: "airplaneEditView",
+    component: AirplaneEditForm,
+    props: true
   },
   {
     path: "*",

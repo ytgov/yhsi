@@ -1,14 +1,15 @@
 <template>
-    <v-container>
+    <v-container fluid>
       <v-row>
         <v-col cols="12">
           <h2 v-if="boats">{{filteredData.length}} Results</h2><!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
         </v-col>
       </v-row>
-      <v-divider  class="mb-4"></v-divider>
-      <v-row>
-        <v-col>
+      <v-divider inset class="mb-4"></v-divider>
+      <v-row class="full-width-table">
+        <v-col cols="12">
             <v-data-table
+                class="full-width-table"
               :items="filteredData"
               :headers="headers"
               :loading="loading"    
@@ -134,3 +135,14 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.full-width-table{
+    width: 99%;
+}
+table.table {
+    margin:0 auto;
+    width: 98%;
+    max-width: 98%;
+}
+</style>

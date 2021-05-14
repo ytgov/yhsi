@@ -6,6 +6,8 @@ var boatsRouter = require('./controllers/boats');
 var ownersRouter = require('./controllers/owners');
 var historiesRouter = require('./controllers/histories');
 var photosRouter = require('./controllers/photos');
+var aircrashRouter = require('./controllers/aircrash');
+
 
 var knex = require('knex');
 var express = require('express');
@@ -17,6 +19,8 @@ var _ = require('lodash');
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
 app.use(cors()); //only for dev ** remove if its not needed for prod
+app.options('*', cors())
+
 var conn = knex({
   client: 'mssql',
   connection: {
@@ -55,6 +59,7 @@ app.use('/api/boats', boatsRouter);
 app.use('/api/owners', ownersRouter);
 app.use('/api/histories', historiesRouter);
 app.use('/api/photos', photosRouter);
+app.use('/api/aircrash', aircrashRouter);
 
-console.log(`Database Info: ${process.env.DB_HOST} ${process.env.DB_NAME}`);
+console.log(`Database Info: ${process.env.DB_HOST} ${process.env.DB_NAME}, `,port);
 app.listen(port);
