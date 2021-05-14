@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var authenticateToken = require('../middlewares');
+const cors = require('cors')// 
+router.use(cors());
+router.options('*', cors());
 
 router.get('/', authenticateToken, async (req, res) => {
   const permissions = req.decodedToken['yg-claims'].permissions;
