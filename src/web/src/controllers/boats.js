@@ -1,9 +1,15 @@
 import { api } from './config';
 
 export default {
-  // async get(page, limit, textToMatch){
-    async get() {
-      return await api.get(`boats`)
+  async get(page, limit, textToMatch){
+      return await api.get(`boats`, {
+        // crossdomain: true,
+        params: {
+          page,
+          limit,
+          textToMatch
+        }
+      })
       .then(res => {
         console.log(res);
         return res.data;
