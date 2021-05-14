@@ -10,7 +10,7 @@ var _ = require('lodash');//added for testing
 router.use(express.json()) // for parsing application/json
 router.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
 
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', [cors(), authenticateToken], async (req, res) => {
   const permissions = req.decodedToken['yg-claims'].permissions;
   if (!permissions.includes('view')) res.sendStatus(403);
 
