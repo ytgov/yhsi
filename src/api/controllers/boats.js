@@ -1,7 +1,12 @@
 var express = require('express');
 var router = express.Router();
+const cors = require('cors')// 
+router.use(cors());
+router.options('*', cors());
 var authenticateToken = require('../middlewares');
 var _ = require('lodash');//added for testing
+
+
 router.use(express.json()) // for parsing application/json
 router.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
 

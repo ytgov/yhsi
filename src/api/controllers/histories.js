@@ -1,5 +1,8 @@
 var express = require('express');
 var router = express.Router();
+const cors = require('cors')// 
+router.use(cors());
+router.options('*', cors());
 var authenticateToken = require('../middlewares');
 
 router.get('/', authenticateToken, async (req, res) => {
