@@ -12,10 +12,10 @@ axios.defaults.headers.common['Ocp-Apim-Subscription-Key'] = '5d23d587d6674b88b2
 const api =  axios.create({
   baseURL: BASE_URL,//this url is going to be replaced 
   timeout: 24000,
-  // headers : {
-  //   // 'Access-Control-Allow-Origin': '*',
-  //   'Content-Type': 'application/x-www-form-urlencoded',
-  // }
+  headers : {
+    // 'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/x-www-form-urlencoded',
+  }
 });
 
 const apiP  =  axios.create({

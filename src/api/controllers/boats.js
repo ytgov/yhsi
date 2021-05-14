@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const cors = require('cors')// 
 router.use(cors());
-// router.options('*', cors());
+router.all('*', cors());
 var authenticateToken = require('../middlewares');
 var _ = require('lodash');//added for testing
 
@@ -10,11 +10,7 @@ var _ = require('lodash');//added for testing
 router.use(express.json()) // for parsing application/json
 router.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
 
-router.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Ocp-Apim-Subscription-Key");
-  next();
-});
+
 
 router.get('/', [cors(), authenticateToken], async (req, res) => {
   const permissions = req.decodedToken['yg-claims'].permissions;
