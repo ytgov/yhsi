@@ -10,6 +10,12 @@ var _ = require('lodash');//added for testing
 router.use(express.json()) // for parsing application/json
 router.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
 
+router.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Ocp-Apim-Subscription-Key");
+  next();
+});
+
 router.get('/', [cors(), authenticateToken], async (req, res) => {
   const permissions = req.decodedToken['yg-claims'].permissions;
   if (!permissions.includes('view')) res.sendStatus(403);

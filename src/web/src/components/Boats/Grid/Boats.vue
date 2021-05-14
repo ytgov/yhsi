@@ -66,11 +66,12 @@ export default {
         },
         async getDataFromApi() {
             this.loading = true;
-            let { page, itemsPerPage } = this.options;
-            page = page > 0 ? page-1 : 0;
-            itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
-            let textToMatch = this.search;
-            let data = await boats.get(page,itemsPerPage,textToMatch);
+            // let { page, itemsPerPage } = this.options;
+            // page = page > 0 ? page-1 : 0;
+            // itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
+            // let textToMatch = this.search;
+            // let data = await boats.get(page,itemsPerPage,textToMatch);
+            let data = await boats.get();
             this.boats = _.get(data, 'body', []);
             this.totalLength = _.get(data, 'count', 0);
             this.boats.map(x => {
