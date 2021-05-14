@@ -4,7 +4,7 @@ var authenticateToken = require('../middlewares');
 var multer = require('multer');
 const cors = require('cors')// 
 router.use(cors());
-router.options('*', cors());
+router.all('*', cors());
 const upload = multer();
 
 router.get('/:boatId', authenticateToken, async (req, res) => {
