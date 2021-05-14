@@ -15,7 +15,11 @@ var express = require('express');
 var app = express();
 var port = process.env.PORT || 3000;
 var _ = require('lodash');
-app.use(cors()); //only for dev ** remove if its not needed for prod
+app.use(cors({
+  origin: 'https://yg-historic-sites.web.app/',
+  optionsSuccessStatus: 200,
+  credentials: true
+}));
 app.options('*', cors());
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
