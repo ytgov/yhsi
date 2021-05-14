@@ -20,13 +20,12 @@ app.use(cors({
   optionsSuccessStatus: 200,
   credentials: true
 }));
-// app.options('*', cors());
-
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Ocp-Apim-Subscription-Key");
-  next();
-});
+app.all('*', cors());
+// app.use(function(req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Ocp-Apim-Subscription-Key");
+//   next();
+// });
 
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
