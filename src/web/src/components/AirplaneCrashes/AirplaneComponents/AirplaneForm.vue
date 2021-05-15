@@ -205,7 +205,7 @@
                     </v-col>
             </v-col>
         </v-row>
-        <GoogleMapLoader 
+        <MapLoader v-if="false"
             :mode="mode"
             :fields="{  accuracy: fields.accuracy,
                         inyukon: fields.inyukon,
@@ -213,6 +213,7 @@
                         lat: fields.lat,
                         long: fields.long,
                         Location: fields.Location } "/>
+        <Test />
         <v-row>
             <v-col col="6">
                 <v-row>
@@ -376,15 +377,16 @@
 </template>
 
 <script>
+import Test from "./test"
 import Breadcrumbs from '../../Breadcrumbs.vue';
 import Photos from "./Photos";
 import PrintButton from "./PrintButton";
 import aircrash from "../../../controllers/aircrash";
-import GoogleMapLoader from "./GoogleMapLoader";
+import MapLoader from "./MapLoader";
 import _ from 'lodash';
 export default {
     name: "crashForm",
-    components: { Photos, Breadcrumbs, PrintButton, GoogleMapLoader },
+    components: { Photos, Breadcrumbs, PrintButton, MapLoader, Test },
     data: ()=> ({
         overlay: false,
     //helper vars used for the name list functions
@@ -488,8 +490,8 @@ export default {
             this.fields.pilotFirstName = pilotname[1];
             this.fields.pilotLastName = pilotname[0];
             this.fields.infoSources = this.fields.sources.split(";");
-            this.fields.lat = 24.7529112149758;
-            this.fields.long =  -107.46921268993607;
+            //this.fields.lat = 24.7529112149758;
+            //this.fields.long =  -107.46921268993607;
             console.log(this.fields);
             this.overlay = false;
         },
