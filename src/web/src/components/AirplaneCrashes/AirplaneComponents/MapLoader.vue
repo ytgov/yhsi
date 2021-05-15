@@ -22,6 +22,10 @@
                     </v-col>
                     <v-col>
                         <v-select
+                            item-value="id"
+                            item-text="name"
+                            @change="changedDatum"
+                            v-model="selectedProjection"
                             :items="projectionOptions"
                             label="Projection"
                             :readonly="mode == 'view'"
@@ -152,7 +156,7 @@
                         ></v-text-field>
                     </v-col>
                 </v-row>
-                <v-row v-if="showLocationAlert">
+                <v-row v-if="isOutsideYukon">
                     <v-col>
                         <v-alert
                         dense
@@ -184,41 +188,42 @@
             </v-checkbox>
         </v-col>
         <v-col cols="5">
-            <!-- <div id="map" style="height: 400px;" ref="googleMap"></div> -->
+
             <div >
-                <l-map
-                :zoom="zoom"
-                :center="center"
+                <l-map 
+                :zoom="map.zoom"
+                :crs="getCRS"
+                :center="map.center"
                 style="height: 350px; width: 100%"
                 >
-                <l-tile-layer
-                    :url="url"
-                    :attribution="attribution"
-                />
-                <l-polygon
-                    :lat-lngs="yukonArea.latlngs"
-                    :color="yukonArea.color"
-                    :fillOpacity="0.09"
-                />
-                <l-marker :lat-lng="[63.6333308, -135.7666636]" ></l-marker>
-                <!--
-                <l-marker
-                    :visible="true"
-                    :draggable="false"
-                    :lat-lng="[63.6333308, -135.7666636]"
-                    :icon="marker.icon"
-                    @click="alert(marker)"
-                >
-                    <l-popup :content="marker.tooltip" />
-                    <l-tooltip :content="marker.tooltip" />
-                </l-marker>
-                -->
-                <l-control
-                    :position="'bottomleft'"
-                    class="custom-control-watermark"
-                >Crash Site
-                </l-control>
+                    <l-tile-layer
+                        :url="map.url"
+                        :attribution="map.attribution"
+                    />
+                    <l-polygon
+                        :lat-lngs="yukonArea.latlngs"
+                        :color="yukonArea.color"
+                        :fillOpacity="0.09"
+                    >
+                        <l-tooltip content="Yukon" />
+                    </l-polygon>
+                    <l-marker :lat-lng="[63.6333308, -135.7666636]" :visible="!marker.visible"></l-marker>
+
+                    <l-marker
+                        :visible="marker.visible"
+                        :draggable="false"
+                        :lat-lng="marker.latLng"
+                    >
+                        <l-popup :content="marker.tooltip" />
+                        <l-tooltip :content="marker.tooltip" />
+                    </l-marker>
+                    <l-control
+                        :position="'bottomleft'"
+                        class="custom-control-watermark"
+                    >Crash Site
+                    </l-control>
                 </l-map>
+
             </div> 
         </v-col> 
     </v-row>  
@@ -231,15 +236,17 @@
     Bind the location object or empty data AND also bind or expect an event to the container component, this event will be emmited when the user has added data, also
     the changes will be updated on the map to show the desired pin/marker.
 */
-import { latLng } from "leaflet";
-//import { Icon } from 'leaflet';
+/* eslint-disable */
+import { latLng, Icon, CRS } from "leaflet";
+import L from 'leaflet';
+const pointInPolygon = require('point-in-polygon');
+import "proj4leaflet";
+import proj4 from "proj4";
 
 import 'leaflet/dist/leaflet.css';
-import { 
-    LMap, LTileLayer, LControl, LPolygon, LMarker, 
-    //LTooltip,
-    // LPopup 
-    } from "vue2-leaflet";
+import { LMap, LTileLayer, LControl, LPolygon, LMarker, LTooltip, LPopup } from "vue2-leaflet";
+
+  /* eslint-enable */
 export default {
     props: [ "fields", "mode"],
     components: {
@@ -248,15 +255,10 @@ export default {
     LControl,
     LPolygon,
     LMarker,
-   // LPopup,
-//LTooltip
+    LPopup,
+    LTooltip
   },
     data: () =>({
-        loader: null,
-        apiKey:  "AIzaSyB-GL1_TJLlEiiJ0JaaMBXgqMJWx76bWQ8",
-        mapConfig: {},
-        map: null,
-        marker: null,
         modifiableFields: {   
             accuracy: "",
             inyukon: "",
@@ -276,84 +278,131 @@ export default {
         umt: {
             lat: 0, lng: 0
         },
-    //showLocationAlert
-        showLocationAlert: false,
     //Selection vars
         selectedSystem: {id: 1, text: "Decimal Degrees"},
+        selectedProjection: null,
         locationAccuracyOptions: ["Approx."],
-        projectionOptions: ["NAD 83", "NAD 83 CSRS", "WSG 84"],
+        projectionOptions: [//datums
+                {
+                    id: 1,
+                    name: "WSG 84", 
+                    crs:  new L.Proj.CRS("EPSG:4326","+proj=longlat +datum=WGS84 +no_defs",
+                {
+                    resolutions: [8192, 4096, 2048] ,
+                    origin: [0.0,0.0]
+                }),
+
+                },
+                {
+                    id: 2,
+                    name: "NAD 83", 
+                    crs: new L.Proj.CRS("EPSG:3978",
+                "+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs", 
+                {
+                    resolutions: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5],
+                    origin: [-938105.72,787721.55]
+                })},
+                {
+                    id: 3,
+                    name: "NAD 83 CSRS", 
+                    crs: new L.Proj.CRS("EPSG:3979",
+                "+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+                {
+                    resolutions: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5],
+                    origin: [30444.36,1555957.96]
+                })
+                }       
+            ],
         coordinateSystemOptions: [{id: 1, text: "Decimal Degrees"},{id: 2, text:  "UMT Zone 8"}, {id: 3, text: "Degrees, Minutes, Seconds"}],
-    //test vars
-        zoom: 8,
-        center: latLng(64.000000, -135.000000),
-        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    //Crash site marker
+        marker:{
+            visible: false,
+            latLng: [0,0],
+            tooltip: "Selected crash site"
+        },
+    //predefined map & marker
+        map: {
+            zoom: 8,
+            center: latLng(47.56, 7.59), //latLng(64.000000, -135.000000),
+            url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            attribution: '&copy; <a href="https://www.geo.admin.ch/">geo.admin.ch</a>',
+        },
         yukonArea: {
-        latlngs: [
-            [59.956838, -123.787082],
-            [60.042293, -140.951599],
-            [69.956674, -140.635986],
-            [69.664723, -138.339844],
-         
-        ],
-        color: "#ff00ff"
+            latlngs: [
+                [59.956838, -123.787082],
+                [60.042293, -140.951599],
+                [69.956674, -140.635986],
+                [69.664723, -138.339844],
+            
+            ],
+            color: "#ff00ff"
       },
-        zoomOffset: -1
+        zoomOffset: -1,
     }),
-    async mounted() {
-        /*
-        this.loader = new Loader({
-            apiKey: this.apiKey,
-            version: "weekly",
-            libraries: ["places"]
-            });
-        this.loadMap(63.6333308, -135.7666636);
-        */
+    created() {
+        this.fixMarkers();
     }, 
+    mounted(){
+        this.createDatums();
+    },
     methods:{
+        createDatums(){
+            /*
+            this.projectionOptions[0].crs = new L.Proj.CRS("EPSG:4326","+proj=longlat +datum=WGS84 +no_defs",
+                {
+                    resolutions: [8192, 4096, 2048] ,
+                    origin: [0.0,0.0]
+                });
+            this.projectionOptions[1].crs = new L.Proj.CRS("EPSG:3978",
+                "+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs", 
+                {
+                    resolutions: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5],
+                    origin: [-938105.72,787721.55]
+                });
+            this.projectionOptions[2].crs = new L.Proj.CRS("EPSG:3979",
+                "+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+                {
+                    resolutions: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5],
+                    origin: [30444.36,1555957.96]
+                });
+            */
+            this.selectedProjection = 0;
+        },
+        changedDatum(){
+
+        },
+        fixMarkers(){
+            //This code snippet fixes an issue where the marker icons dont appear
+            delete Icon.Default.prototype._getIconUrl;
+            Icon.Default.mergeOptions({
+                iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+                iconUrl: require('leaflet/dist/images/marker-icon.png'),
+                shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+            });
+        },
         loadMap(lat, lng){//this method expects a numeric value (float) to load the map
             if(isNaN(lat) || isNaN(lng))
                 return;
 
-            this.loader.load().then(() => {
-                let coord = { lat, lng};
-                this.map = new window.google.maps.Map(this.$refs.googleMap, {
-                    center: coord,
-                    zoom: 8,
-                });   
-            });  
         },
         setCenter(lat, lng){//This method sets the center focus of the map
             if(isNaN(lat) || isNaN(lng))
                 return;
-            this.loader.load().then(() => {
-                this.map.setCenter({lat,lng});
-            }); 
             
-        },
-        removeMarker(){
-            this.marker.setMap(null);
+            this.map.center = latLng(lat, lng); 
         },
         addMarker(lat, lng){
             if(isNaN(lat) || isNaN(lng))
                 return;
-
-            this.loader.load().then(() => {
-                this.marker = new window.google.maps.Marker({
-                    position: {lat, lng},
-                    map: this.map,
-                });
-            }); 
+            this.marker.latLng = [lat, lng];
+            this.marker.visible = true;
         },
         //WORK IN PROGRESS
-        changedLocation(){//sexagesimalToDecimal This method handles the user input, when the data has changed, it reloads the map with the new values
-        console.log("1");
+        changedLocation(){//This method handles the user input, when the data has changed, it reloads the map with the new values
             this.updateStateCoordinates();
-            console.log("2");
-            let { lat, long } = this.modifiableFields;
-            console.log("3");
+            let lat = parseFloat(this.modifiableFields.lat);
+            let long = parseFloat(this.modifiableFields.long);
             this.loadMap(lat,long);
-            console.log("4");
             this.addMarker(lat,long);
             this.setCenter(lat,long);  
         },
@@ -362,6 +411,7 @@ export default {
             if(!system)
                     return;
             //let lat,lng;
+            let { lat, lng } = this.dms;
             switch(system){
                 case 1://DD   
                     console.log(".1");
@@ -373,12 +423,13 @@ export default {
                     break;
                 case 3: //DMS
                     console.log(".3");
+                    
+                    console.log(lat,lng);
                     this.modifiableFields.lat = parseFloat(this.convertDMSToDD(this.dms.lat));
                     this.modifiableFields.long = parseFloat(this.convertDMSToDD(this.dms.lng));
                     break;
             }
         },
-        //WORK IN PROGRESS
         changedSystem(){// TESTING
             if(!this.selectedSystem.id)
                 return;
@@ -417,6 +468,7 @@ export default {
             };
         },
         convertDMSToDD(val) {
+            console.log(val);
             let { deg, min, sec, dir } = val;
             let dd = deg + min/60 + sec/(60*60);
 
@@ -434,9 +486,19 @@ export default {
                 return true;
             }
         },
-showAlert() {
-      alert("Click!");
-    }
+    },
+    computed:{
+        isOutsideYukon(){
+            return !pointInPolygon(this.marker.latLng, this.yukonArea.latlngs);
+        },
+        getCRS(){
+            return new L.Proj.CRS("EPSG:3978",
+                "+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs", 
+                {
+                    resolutions: [ 512, 256, 128, 64, 32, ],
+                    origin: [-938105.72,787721.55]
+                })
+        }
     },
     watch:{
         /*
@@ -444,33 +506,19 @@ showAlert() {
             has fetched the data), because of that we cant use mounted or created to map the fields prop to the modifiedFields obj on the state, also 'prop' values 
             are not supposed to be modified, hence why we have the modifiable fields obj. If we dont use a watcher we would have to have a flag on the parent component
             to indicate when the data is available to render the component, this would make the component less independent and less reusable.
-        
+        */
         fields(){
             this.modifiableFields = this.fields ? this.fields : this.modifiableFields;
+            this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
             let lat = parseFloat(this.modifiableFields.lat);
             let long = parseFloat(this.modifiableFields.long);
-            if(!isNaN(lat)){
-                this.loadMap(lat,long)
-                this.addMarker(lat,long);
-                this.setCenter(lat,long);
+            if(!isNaN(lat) || ! isNaN(long)){
                 
+                this.addMarker(lat,long);
+                this.setCenter(lat,long); 
             }
-        },*/
+             
+        },
     }
 }
 </script>
-
-<style scoped>
-.example-custom-control {
-  background: #fff;
-  padding: 0 0.5em;
-  border: 1px solid #aaa;
-  border-radius: 0.1em;
-}
-.custom-control-watermark {
-  font-size: 200%;
-  font-weight: bolder;
-  color: #aaa;
-  text-shadow: #555;
-}
-</style>
