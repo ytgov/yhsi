@@ -205,7 +205,7 @@
                     </v-col>
             </v-col>
         </v-row>
-        <MapLoader v-if="false"
+        <MapLoader
             :mode="mode"
             :fields="{  accuracy: fields.accuracy,
                         inyukon: fields.inyukon,
@@ -213,7 +213,7 @@
                         lat: fields.lat,
                         long: fields.long,
                         Location: fields.Location } "/>
-        <Test />
+        <Test  v-if="false"/>
         <v-row>
             <v-col col="6">
                 <v-row>

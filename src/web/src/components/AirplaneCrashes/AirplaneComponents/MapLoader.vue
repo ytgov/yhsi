@@ -22,7 +22,7 @@
                     </v-col>
                     <v-col>
                         <v-select
-                            item-value="id"
+                            return-object
                             item-text="name"
                             @change="changedDatum"
                             v-model="selectedProjection"
@@ -190,7 +190,7 @@
         <v-col cols="5">
 
             <div >
-                <l-map 
+                <l-map :key="mapkey"
                 :zoom="map.zoom"
                 :crs="getCRS"
                 :center="map.center"
@@ -201,8 +201,8 @@
                         :attribution="map.attribution"
                     />
                     <l-polygon
-                        :lat-lngs="yukonArea.latlngs"
-                        :color="yukonArea.color"
+                        :lat-lngs="yukonPolygon.latlngs"
+                        :color="yukonPolygon.color"
                         :fillOpacity="0.09"
                     >
                         <l-tooltip content="Yukon" />
@@ -242,10 +242,9 @@ import L from 'leaflet';
 const pointInPolygon = require('point-in-polygon');
 import "proj4leaflet";
 import proj4 from "proj4";
-
 import 'leaflet/dist/leaflet.css';
 import { LMap, LTileLayer, LControl, LPolygon, LMarker, LTooltip, LPopup } from "vue2-leaflet";
-
+import { yukonPolygon } from '../../../misc/yukon_territory_polygon'
   /* eslint-enable */
 export default {
     props: [ "fields", "mode"],
@@ -259,6 +258,7 @@ export default {
     LTooltip
   },
     data: () =>({
+        mapkey: "startkey",
         modifiableFields: {   
             accuracy: "",
             inyukon: "",
@@ -324,7 +324,8 @@ export default {
         map: {
             zoom: 8,
             center: latLng(47.56, 7.59), //latLng(64.000000, -135.000000),
-            url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            url: //'https://api.maptiler.com/maps/streets/256/{x}/{y}/{7}.png?key=qrAJy6x3Ck8n4XFFH4PS',//
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
             attribution: '&copy; <a href="https://www.geo.admin.ch/">geo.admin.ch</a>',
         },
         yukonArea: {
@@ -337,39 +338,17 @@ export default {
             ],
             color: "#ff00ff"
       },
+        yukonPolygon,
         zoomOffset: -1,
     }),
     created() {
         this.fixMarkers();
+        this.selectedProjection = this.projectionOptions[0].crs;
     }, 
-    mounted(){
-        this.createDatums();
-    },
-    methods:{
-        createDatums(){
-            /*
-            this.projectionOptions[0].crs = new L.Proj.CRS("EPSG:4326","+proj=longlat +datum=WGS84 +no_defs",
-                {
-                    resolutions: [8192, 4096, 2048] ,
-                    origin: [0.0,0.0]
-                });
-            this.projectionOptions[1].crs = new L.Proj.CRS("EPSG:3978",
-                "+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs", 
-                {
-                    resolutions: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5],
-                    origin: [-938105.72,787721.55]
-                });
-            this.projectionOptions[2].crs = new L.Proj.CRS("EPSG:3979",
-                "+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
-                {
-                    resolutions: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5],
-                    origin: [30444.36,1555957.96]
-                });
-            */
-            this.selectedProjection = 0;
-        },
-        changedDatum(){
 
+    methods:{
+        changedDatum(){//modify the key of the map to make it reload     
+            this.mapkey = this.selectedProjection.name;
         },
         fixMarkers(){
             //This code snippet fixes an issue where the marker icons dont appear
@@ -492,12 +471,7 @@ export default {
             return !pointInPolygon(this.marker.latLng, this.yukonArea.latlngs);
         },
         getCRS(){
-            return new L.Proj.CRS("EPSG:3978",
-                "+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs", 
-                {
-                    resolutions: [ 512, 256, 128, 64, 32, ],
-                    origin: [-938105.72,787721.55]
-                })
+            return this.selectedProjection.crs;
         }
     },
     watch:{
