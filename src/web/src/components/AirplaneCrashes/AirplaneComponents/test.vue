@@ -39,7 +39,7 @@ export default {
           },
           {
             //url: 'http://api.geosition.com/tile/osm-bright-3006/{z}/{x}/{y}.png',
-            url: 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYW5nZWxtYXJ0aW4xMSIsImEiOiJja29wMWIxNm4wMG5lMnhwZDZucWR1cTYzIn0.39ivlO7PopcfJsBdJb4Mbg',
+            url: 'https://api.maptiler.com/maps/streets/256/{x}/{y}/{z}.png?key=qrAJy6x3Ck8n4XFFH4PS',//'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYW5nZWxtYXJ0aW4xMSIsImEiOiJja29wMWIxNm4wMG5lMnhwZDZucWR1cTYzIn0.39ivlO7PopcfJsBdJb4Mbg',
             subdomains: '1,2,3,4',
             attribution: '&copy; <a href="http://yandex.ru/copyright">Yandex</a>',
             crs: new L.Proj.CRS("EPSG:3978",
