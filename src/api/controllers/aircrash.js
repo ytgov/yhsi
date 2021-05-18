@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+
 var authenticateToken = require('../middlewares');
 var _ = require('lodash');//added for testing
 router.use(express.json()) // for parsing application/json

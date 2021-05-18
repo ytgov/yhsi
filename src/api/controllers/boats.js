@@ -1,9 +1,16 @@
 var express = require('express');
 var router = express.Router();
+// const cors = require('cors')// 
+// router.use(cors());
+// router.all('*', cors());
 var authenticateToken = require('../middlewares');
 var _ = require('lodash');//added for testing
+
+
 router.use(express.json()) // for parsing application/json
 router.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
+
+
 
 router.get('/', authenticateToken, async (req, res) => {
   const permissions = req.decodedToken['yg-claims'].permissions;
@@ -109,7 +116,7 @@ router.post('/new', authenticateToken, async (req, res) => {
       return newBoat;
     });
   
-  res.status(200).send(response);
+  res.send(response);
 });
 
 router.put('/:boatId', authenticateToken, async (req, res) => {
