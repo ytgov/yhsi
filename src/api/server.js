@@ -19,6 +19,8 @@ var _ = require('lodash');
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
 app.use(cors()); //only for dev ** remove if its not needed for prod
+app.options('*', cors())
+
 var conn = knex({
   client: 'mssql',
   connection: {
