@@ -69,33 +69,48 @@
                         <v-row>
                             <v-col cols="6" >   
                             <!-- Crash Date -->
-                                <v-menu
-                                    ref="menu"
-                                    v-model="menu1"
-                                    :close-on-content-click="false"
-                                    transition="scale-transition"
-                                    offset-y
-                                    min-width="auto"
-                                    :disabled="mode == 'view'"
-                                >
-                                    <template v-slot:activator="{ on, attrs }">
-                                    <v-text-field
-                                        v-model="crashdate"
-                                        label="Crash Date"
-                                        append-icon="mdi-calendar"
-                                        readonly
-                                        v-bind="attrs"
-                                        v-on="on"
-                                    ></v-text-field>
-                                    </template>
-                                    <v-date-picker
-                                    ref="picker"
-                                    v-model="fields.crashdate"
-                                    :max="new Date().toISOString().substr(0, 10)"
-                                    min="1750-01-01"
-                                    @change="save"
-                                    ></v-date-picker>
-                                </v-menu>
+                                    <v-menu
+                                        ref="menu"
+                                        v-model="menu"
+                                        :close-on-content-click="false"
+                                        :return-value.sync="fields.crashdate"
+                                        transition="scale-transition"
+                                        offset-y
+                                        min-width="auto"
+                                    >
+                                        <template v-slot:activator="{ on, attrs }">
+                                        <v-text-field
+                                            v-model="crashdate"
+                                            label="Crash Date"
+                                            prepend-icon="mdi-calendar"
+                                            readonly
+                                            v-bind="attrs"
+                                            v-on="on"
+                                        ></v-text-field>
+                                        </template>
+                                        <v-date-picker
+                                        v-model="fields.crashdate"
+                                        no-title
+                                        scrollable
+                                        >
+                                        <v-spacer></v-spacer>
+                                        <v-btn
+                                            text
+                                            color="primary"
+                                            @click="menu = false"
+                                        >
+                                            Cancel
+                                        </v-btn>
+                                        <v-btn
+                                            text
+                                            color="primary"
+                                            @click="$refs.menu.save(fields.crashdate)"
+                                        >
+                                            OK
+                                        </v-btn>
+                                        </v-date-picker>
+                                    </v-menu>
+                                
                             </v-col>
                             <v-col cols="6">
                                 <v-select
@@ -207,8 +222,7 @@
         </v-row>
         <MapLoader
             :mode="mode"
-            @getCoordinates="getCoordinates"
-            :getData="dataTrigger"
+            @modifiedDataCoordinates="modifiedDataCoordinates"
             :fields="{  accuracy: fields.accuracy,
                         inyukon: fields.inyukon,
                         crashlocation: fields.crashlocation,
@@ -402,7 +416,8 @@ export default {
         edit: false,
         showSave: 0,
     //input fields, datatable, etc
-        menu1: "",
+        menu: "",
+        activePicker: null,
         fields: {},
         fieldsHistory: null,
     //Pilot helper fields
@@ -416,8 +431,8 @@ export default {
     // Select vars
         remainsOptions: ["Yes","No", "  ??"],
         dateDescriptorOptions: ["Actual"],
-    //get coordinates from the map loader component
-        dataTrigger: false //tells the child component when to emit the data
+    //modified coordinate fields
+        modifiedMapFields: null
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -492,14 +507,12 @@ export default {
             let pilotname = this.fields.pilot.split(',');
             this.fields.pilotFirstName = pilotname[1];
             this.fields.pilotLastName = pilotname[0];
-            this.fields.infoSources = this.fields.sources.split(";");
-            //this.fields.lat = 24.7529112149758;
-            //this.fields.long =  -107.46921268993607;
+            this.fields.infoSources = this.fields.sources.includes(";") ? this.fields.sources.split(";") : [];
             console.log(this.fields);
             this.overlay = false;
         },
-        save (date) {
-            this.$refs.menu.save(date);
+        saveDate (date) {
+            this.$refs.menu1.save(date);
         },
     //Functions dedicated to handle the edit, add, view modes
         cancelEdit(){
@@ -530,11 +543,17 @@ export default {
         },
         async saveChanges(){
             this.overlay = true;
-            this.dataTrigger = true; // retrieves the coordinate data
             console.log(this.fields);
+            let { lat, long, inyukon, crashlocation, accuracy } = this.modifiedMapFields;
+            this.fields.lat = lat;
+            this.fields.long = long;
+            this.fields.inyukon = inyukon;
+            this.fields.crashlocation = crashlocation;
+            this.fields.accuracy = accuracy;
             let crash = { ...this.fields }
             crash.pilot = this.getPilotName();
             crash.sources = this.getSources();
+            crash.Location = `POINT(${crash.long} ${crash.lat})`
             delete crash.pilotFirstName;
             delete crash.pilotLastName;
             delete crash.infoSources;
@@ -552,6 +571,8 @@ export default {
                 this.$router.push(`/airplane/`);
             }
             else{
+
+                console.log(localStorage.currentCrashNumber);
                 await aircrash.put(localStorage.currentCrashNumber,data);
                 currentCrashNumber = localStorage.currentCrashNumber;
                 this.overlay = false;
@@ -600,11 +621,9 @@ export default {
         getSources(){
             return _.join(this.fields.infoSources, ';');
         },
-        getCoordinates(val){
-            let { lat, long } = val;
-            this.fields.lat = lat;
-            this.fields.long = long;
-            this.dataTrigger = false;
+        modifiedDataCoordinates(val){
+            this.modifiedMapFields = val;
+            this.showSave = this.showSave+1;
         }
         
     },   
@@ -627,7 +646,7 @@ export default {
             deep: true
         },
         menu1 (val) {
-            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
+            val && setTimeout(() => (this.activePicker  = 'YEAR'))
         },/* eslint-disable */
         'fields.crashdate': function  (val) {
         this.dateFormatted = this.formatDate(this.fields.crashdate)
