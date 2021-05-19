@@ -223,7 +223,7 @@
         </v-col>
         <v-col cols="5">
             <div >
-                <l-map 
+                <l-map class="map"
                 :center="map.center"
                 :zoom="map.zoom"
                 style="height: 350px; width: 100%"
@@ -343,7 +343,7 @@ export default {
         },
     //predefined map & marker
         map: {
-            zoom: 5,
+            zoom: 4,
             center: latLng(64.000000, -135.000000), //latLng(64.000000, -135.000000),
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -561,3 +561,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.map{
+    z-index: 1;
+}
+</style>
