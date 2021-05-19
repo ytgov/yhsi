@@ -207,6 +207,8 @@
         </v-row>
         <MapLoader
             :mode="mode"
+            @getCoordinates="getCoordinates"
+            :getData="dataTrigger"
             :fields="{  accuracy: fields.accuracy,
                         inyukon: fields.inyukon,
                         crashlocation: fields.crashlocation,
@@ -413,7 +415,9 @@ export default {
         showPhotosDefault: false,
     // Select vars
         remainsOptions: ["Yes","No", "  ??"],
-        dateDescriptorOptions: ["Actual"]
+        dateDescriptorOptions: ["Actual"],
+    //get coordinates from the map loader component
+        dataTrigger: false //tells the child component when to emit the data
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -471,6 +475,7 @@ export default {
                 significanceofaircraft:"",
                 soulsonboard: "",
                 sources: "",
+                infoSources:[],
                 yacsinumber: "",
             };
         },
@@ -524,7 +529,8 @@ export default {
             this.editTableSources = -1;
         },
         async saveChanges(){
-            this.overlay = true; 
+            this.overlay = true;
+            this.dataTrigger = true; // retrieves the coordinate data
             console.log(this.fields);
             let crash = { ...this.fields }
             crash.pilot = this.getPilotName();
@@ -593,6 +599,12 @@ export default {
         },
         getSources(){
             return _.join(this.fields.infoSources, ';');
+        },
+        getCoordinates(val){
+            let { lat, long } = val;
+            this.fields.lat = lat;
+            this.fields.long = long;
+            this.dataTrigger = false;
         }
         
     },   

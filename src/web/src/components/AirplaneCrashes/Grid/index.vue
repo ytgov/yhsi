@@ -156,7 +156,7 @@ export default {
   },
   methods: {
     addNewBoat(){
-        this.$router.push(`/boats/new`);
+        this.$router.push(`/airplane/new`);
     },
     crashsiteSearchChange: _.debounce(function () {
         this.getDataFromApi();

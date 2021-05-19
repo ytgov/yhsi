@@ -333,6 +333,12 @@ const routes = [
     props: true
   },
   {
+    path: "/airplane/New",
+    name: "airplaneAddView",
+    component: AirplaneEditForm,
+    props: true
+  },
+  {
     path: "*",
     name: "Not Found",
     component: NotFound

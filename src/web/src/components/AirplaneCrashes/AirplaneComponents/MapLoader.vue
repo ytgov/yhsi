@@ -223,7 +223,7 @@
         </v-col>
         <v-col cols="5">
             <div >
-                <l-map :key="mapkey"
+                <l-map 
                 :center="map.center"
                 :zoom="map.zoom"
                 style="height: 350px; width: 100%"
@@ -280,7 +280,7 @@ import proj4 from 'proj4'
 
   /* eslint-enable */
 export default {
-    props: [ "fields", "mode"],
+    props: [ "fields", "mode", "getData"],
     components: {
     LMap,
     LTileLayer,
@@ -291,7 +291,6 @@ export default {
     LTooltip
   },
     data: () =>({
-        mapkey: "startkey",
         modifiableFields: {   
             accuracy: "",
             inyukon: "",
@@ -348,40 +347,31 @@ export default {
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
         },
-        yukonArea: {
-            latlngs: [
-                [59.956838, -123.787082],
-                [60.042293, -140.951599],
-                [69.956674, -140.635986],
-                [69.664723, -138.339844],
-            
-            ],
-            color: "#ff00ff"
-      },
         yukonPolygon,
     }),
     created() {
         this.fixMarkers();
         //console.log(proj4);
         proj4.defs([
-    [
-        'EPSG:4326',
-        '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees +no_defs'
-    ],
-    [
-        'EPSG:3978',
-        '+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=degrees +no_defs'
-    ],
-    [
-        'EPSG:3979',
-        '+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=degrees +no_defs'
-    ]
-]);
+            [
+                'EPSG:4326',
+                '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees +no_defs'
+            ],
+            [
+                'EPSG:3978',
+                '+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=degrees +no_defs'
+            ],
+            [
+                'EPSG:3979',
+                '+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=degrees +no_defs'
+            ]
+        ]);
     }, 
 
     methods:{
         //This method is responsible for transforming the inputed lat & long values depending on the cordinate system and the selected projeciton 
-        changedDatum(){    
+        changedDatum(){  
+            this.updateDisplayCoordinates();  
             this.applyCoordinateProjection();
         },
         fixMarkers(){
@@ -407,7 +397,11 @@ export default {
         },
         //WORK IN PROGRESS
         changedLocation(){//This method handles the user input, when the data has changed, it reloads the map with the new values
-            this.updateStateCoordinates();
+            if(this.selectedProjection.id == 1)
+                this.updateStateCoordinates();
+            else
+                this.transformProjectedCoordinates();
+            
             let lat = parseFloat(this.modifiableFields.lat);
             let long = parseFloat(this.modifiableFields.long);
             this.addMarker(lat,long);
@@ -420,7 +414,9 @@ export default {
             let { id } = this.selectedProjection;
             let transformed_coordinates;
             switch(id){
-                //DO NOTHING FOR WSG 84 
+                case 1:
+                    this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
+                    break;
                 case 2://NAD83 
                     transformed_coordinates = proj4(proj4('EPSG:3978'), [long,lat]);
                     this.nad83 = { x: transformed_coordinates[0], y: transformed_coordinates[1] };
@@ -431,12 +427,34 @@ export default {
                     break;
             }
         },
+        //this transform the projected coordinats
+        transformProjectedCoordinates(){
+            let { x, y } = this.nad83;
+            let transformed_coordinates;
+            switch(this.selectedProjection.id){
+                case 1:
+                    this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
+                    this.modifiableFields.lat = this.dd.lat;
+                    this.modifiableFields.long = this.dd.lng;
+                    break;
+                case 2://NAD83 
+                    transformed_coordinates = proj4(proj4('EPSG:3978'),proj4('EPSG:4326'), [parseFloat(x),parseFloat(y)]);
+                    console.log("TRANSFORMED COORDINATES",transformed_coordinates);
+                    this.modifiableFields.lat = transformed_coordinates[1];
+                    this.modifiableFields.long = transformed_coordinates[0];
+                    break;
+                case 3://NAD83 CRS
+                    transformed_coordinates = proj4(proj4('EPSG:3978'),proj4('EPSG:4326'), [parseFloat(x),parseFloat(y)]);
+                    this.modifiableFields.lat = transformed_coordinates[1];
+                    this.modifiableFields.long = transformed_coordinates[0];
+                    break;
+            }
+        },
         updateStateCoordinates(){
             let system = this.selectedSystem.id;
             if(!system)
                     return;
-            //let lat,lng;
-            let { lat, lng } = this.dms;
+
             switch(system){
                 case 1://DD   
                     console.log(".1");
@@ -450,8 +468,6 @@ export default {
                     break;
                 case 3: //DMS
                     console.log(".3");
-                    
-                    console.log(lat,lng);
                     this.modifiableFields.lat = parseFloat(this.convertDMSToDD(this.dms.lat));
                     this.modifiableFields.long = parseFloat(this.convertDMSToDD(this.dms.lng));
                     break;
@@ -534,6 +550,13 @@ export default {
             }
              
         },
+        getData(val){
+            if(val){
+                let { lat, long } = this.modifiableFields;
+                this.$emit("getCoordinates", {lat,long});
+            }
+        }
+        
     }
 }
 </script>
