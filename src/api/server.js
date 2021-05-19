@@ -15,11 +15,21 @@ var express = require('express');
 var app = express();
 var port = process.env.PORT || 3000;
 var _ = require('lodash');
+// app.use(cors({
+//   origin: '*',
+//   optionsSuccessStatus: 200,
+//   credentials: true
+// }));
+// app.all('*', cors());
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Ocp-Apim-Subscription-Key");
+  next();
+});
 
-app.use(express.json()) // for parsing application/json
+app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
-app.use(cors()); //only for dev ** remove if its not needed for prod
-app.options('*', cors())
+
 
 var conn = knex({
   client: 'mssql',
