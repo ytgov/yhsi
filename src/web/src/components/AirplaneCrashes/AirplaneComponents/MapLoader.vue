@@ -280,7 +280,7 @@ import proj4 from 'proj4'
 
   /* eslint-enable */
 export default {
-    props: [ "fields", "mode", "getData"],
+    props: [ "fields", "mode"],
     components: {
     LMap,
     LTileLayer,
@@ -291,6 +291,7 @@ export default {
     LTooltip
   },
     data: () =>({
+        flag: 1,// tells the component if it should accept new prop data
         modifiableFields: {   
             accuracy: "",
             inyukon: "",
@@ -406,7 +407,6 @@ export default {
             let long = parseFloat(this.modifiableFields.long);
             this.addMarker(lat,long);
             this.setCenter(lat,long);  
-            
         },
         // this method  applies cordinate projection to the 'display cordinates' according to the selected projection
         applyCoordinateProjection(){
@@ -476,7 +476,8 @@ export default {
         changedSystem(){
             this.updateDisplayCoordinates();
             this.applyCoordinateProjection();
-        },  
+            this.modifiedDataCoordinates();
+        }, 
         updateDisplayCoordinates(){// TESTING
             let { id } = this.selectedSystem;
 
@@ -541,20 +542,20 @@ export default {
             to indicate when the data is available to render the component, this would make the component less independent and less reusable.
         */
         fields(){
-            this.modifiableFields = this.fields ? this.fields : this.modifiableFields;
-            this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
-            let lat = parseFloat(this.modifiableFields.lat);
-            let long = parseFloat(this.modifiableFields.long);
-            if(!isNaN(lat) || ! isNaN(long)){
-                this.changedLocation();
+            if(this.fields && this.flag < 3){
+                this.modifiableFields = this.fields;
+                this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
+                let lat = parseFloat(this.modifiableFields.lat);
+                let long = parseFloat(this.modifiableFields.long);
+                if(!isNaN(lat) || ! isNaN(long)){
+                    this.changedLocation();
+                }
+                this.flag++
             }
-             
         },
-        getData(val){
-            if(val){
-                let { lat, long } = this.modifiableFields;
-                this.$emit("getCoordinates", {lat,long});
-            }
+        modifiableFields(){
+            this.modifiableFields.inyukon = !this.isOutsideYukon;
+            this.$emit("modifiedDataCoordinates", this.modifiableFields);
         }
         
     }

@@ -29,7 +29,7 @@
         <v-divider></v-divider>
         <v-row v-if="showDefault">
             <v-col cols="12">
-                <p class="text-center font-weight-bold pt-3">Once you upload your new boat data, you will be able to attach photos</p>
+                <p class="text-center font-weight-bold pt-3">Once you upload your new crash site data, you will be able to attach photos</p>
             </v-col>
         </v-row>
         <v-row v-else>
