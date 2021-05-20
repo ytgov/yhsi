@@ -223,7 +223,7 @@
         </v-col>
         <v-col cols="5">
             <div >
-                <l-map 
+                <l-map class="map"
                 :center="map.center"
                 :zoom="map.zoom"
                 style="height: 350px; width: 100%"
@@ -343,7 +343,7 @@ export default {
         },
     //predefined map & marker
         map: {
-            zoom: 5,
+            zoom: 4,
             center: latLng(64.000000, -135.000000), //latLng(64.000000, -135.000000),
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -396,7 +396,6 @@ export default {
             this.marker.latLng = latLng(lat, lng); 
             this.marker.visible = true;
         },
-        //WORK IN PROGRESS
         changedLocation(){//This method handles the user input, when the data has changed, it reloads the map with the new values
             if(this.selectedProjection.id == 1)
                 this.updateStateCoordinates();
@@ -505,9 +504,6 @@ export default {
                     break;
             }
         },
-        getSexagesimalValue(val){//Expects an object with the following structure { deg, min, sec } 24.75303300355115, -107.46916977459131
-            return `${val.deg}° ${val.min}' ${val.sec}`+"`"
-        },
         convertDDToDMS(D, lng){
             const M=0|(D%1)*60e7;
             return {
@@ -561,3 +557,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.map{
+    z-index: 1;
+}
+</style>
