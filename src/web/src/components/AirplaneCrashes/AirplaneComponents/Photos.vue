@@ -1,3 +1,34 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@AngelGomez-Bizont 
+Bizont
+/
+yg-historic-sites
+Private
+0
+00
+Code
+Issues
+Pull requests
+Actions
+Projects
+Security
+Insights
+yg-historic-sites/src/web/src/components/AirplaneCrashes/AirplaneComponents/Photos.vue
+@AngelGomez-Bizont
+AngelGomez-Bizont Front: finished the post and put api calls on the airplane form compo…
+…
+Latest commit 75eb90d 4 hours ago
+ History
+ 1 contributor
+479 lines (463 sloc)  21.5 KB
+  
 <template>
     <v-card>
         <div v-if="showDefault || photos.length == 0" 
@@ -384,8 +415,8 @@ export default {
     
     }),
     mounted(){
-        if(this.boatID && !this.showPhotosDefault)
-            this.getDataFromAPI();
+        //if(this.boatID && !this.showPhotosDefault)
+        //    this.getDataFromAPI();
     },
     methods: {
         async getDataFromAPI(){

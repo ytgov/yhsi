@@ -1,7 +1,7 @@
 import { api, apiP } from './config';
 
   export default {
-    async getByBoatId(id){//doesnt work rn
+    async getByBoatId(id){
       return await api.get(`photos/${id}`)
       .then(res => {
         return res.data;
@@ -18,5 +18,23 @@ import { api, apiP } from './config';
       // handle error
       console.log(error);
     });
-  }
-  }
+  },
+  async getCommunities(){
+    return await api.get(`photos/options/community`)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      // handle error
+      console.log(error);
+    });
+  },
+  async getOriginalMedia(){
+    return await api.get(`photos/options/originalmedia`)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      // handle error
+      console.log(error);
+    });
+  },
+}
