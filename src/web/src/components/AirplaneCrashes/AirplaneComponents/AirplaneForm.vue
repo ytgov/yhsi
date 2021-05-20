@@ -147,12 +147,12 @@
                                 ></v-checkbox>
                                 <v-checkbox
                                     label="Other"
-                                    value="Other"
-                                    v-model="fields.nation"
+                                    v-model="otherNation"
+                                    @click="changeNation"
                                     :readonly="mode == 'view'"
                                 ></v-checkbox>
                                 <v-text-field
-                                    v-if="fields.nation == 'Other'"
+                                    v-if="otherNation"
                                     v-model="fields.nation"
                                     label="Other"
                                     :readonly="mode == 'view'"
@@ -432,7 +432,9 @@ export default {
         remainsOptions: ["Yes","No", "  ??"],
         dateDescriptorOptions: ["Actual"],
     //modified coordinate fields
-        modifiedMapFields: null
+        modifiedMapFields: null,
+    //helper var for the nations checkboxes
+        otherNation: false
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -462,6 +464,9 @@ export default {
                 return true;
             }
             return false;
+        },
+        changeNation(){
+            this.fields.nation = "";
         },
         noData(){
             this.fields = {
@@ -508,6 +513,8 @@ export default {
             this.fields.pilotFirstName = pilotname[1];
             this.fields.pilotLastName = pilotname[0];
             this.fields.infoSources = this.fields.sources.includes(";") ? this.fields.sources.split(";") : [];
+            if(this.fields.nation != 'Canadian' && this.fields.nation != 'American')    
+                this.otherNation = true;
             console.log(this.fields);
             this.overlay = false;
         },
