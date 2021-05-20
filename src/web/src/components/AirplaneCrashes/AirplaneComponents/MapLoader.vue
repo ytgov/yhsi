@@ -396,7 +396,6 @@ export default {
             this.marker.latLng = latLng(lat, lng); 
             this.marker.visible = true;
         },
-        //WORK IN PROGRESS
         changedLocation(){//This method handles the user input, when the data has changed, it reloads the map with the new values
             if(this.selectedProjection.id == 1)
                 this.updateStateCoordinates();
@@ -504,9 +503,6 @@ export default {
                     this.umt = null;
                     break;
             }
-        },
-        getSexagesimalValue(val){//Expects an object with the following structure { deg, min, sec } 24.75303300355115, -107.46916977459131
-            return `${val.deg}° ${val.min}' ${val.sec}`+"`"
         },
         convertDDToDMS(D, lng){
             const M=0|(D%1)*60e7;
