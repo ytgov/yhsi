@@ -188,6 +188,26 @@ export default {
           const [year, month, day] = date.split('-')
           return `${month}/${day}/${year}`
       },
+      //if its needed 
+      getPilot(name,lastname){
+        if(!name || !lastname)
+          return '';
+
+        return `${name}, ${lastname}`
+      },
+      filterPilot(data, filter){
+        let { pilotfirstname, pilotlastname } = data;
+        if(!pilotfirstname && !pilotlastname)
+          return false;
+        
+        if(pilotfirstname.toLowerCase().includes(filter.toLowerCase()))
+          return true;
+        
+        if(pilotlastname.toLowerCase().includes(filter.toLowerCase()))
+          return true;
+
+        return false;
+      } 
   },
   computed:{
       selectedFilters(){
@@ -202,7 +222,7 @@ export default {
               data = sorters[2].value === null || sorters[2].value === "" ? data : data.filter( x => x.aircraftregistration ? x.aircraftregistration.toLowerCase().includes(sorters[2].value.toLowerCase()) : false);  
               data = sorters[3].value === null || sorters[3].value === "" ? data : data.filter( x => x.nation ? x.nation.toLowerCase().includes(sorters[3].value.toLowerCase()) : false);  
               data = sorters[4].value === null || sorters[4].value === "" ? data : data.filter( x => x.militarycivilian ? x.militarycivilian.toLowerCase().includes(sorters[4].value.toLowerCase()) : false); 
-              data = sorters[5].value === null || sorters[5].value === "" ? data : data.filter( x => x.pilot ? x.pilot.toLowerCase().includes(sorters[5].value.toLowerCase()) : false);  
+              data = sorters[5].value === null || sorters[5].value === "" ? data : data.filter( x => this.filterPilot(x,sorters[5].value)); 
               data = sorters[6].value === null || sorters[6].value === "" ? data : data.filter( x => x.soulsonboard ? x.soulsonboard == sorters[6].value : false);  
               data = sorters[7].value === null || sorters[7].value === "" ? data : data.filter( x => x.injuries ? x.injuries == sorters[7].value : false); 
               data = sorters[8].value === null || sorters[8].value === "" ? data : data.filter( x => x.fatalities ? x.fatalities == sorters[8].value : false);  
