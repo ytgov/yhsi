@@ -13,7 +13,7 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  v-if="mode == 'view'" :data="fields" :name="fields.Name"/>
+                <PrintButton  v-if="mode == 'view'" :data="fields" :yacsinumber="fields.yacsinumber"/>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
                     <v-icon>mdi-close</v-icon>
