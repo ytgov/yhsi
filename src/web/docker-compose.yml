@@ -9,4 +9,4 @@ services:
             - "./:/usr/src/app"
             - "./.env:/.env"
         ports:
-            - 4126:8080
+            - 27639:8080
