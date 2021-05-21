@@ -116,6 +116,7 @@
                                 <v-select
                                     v-model="fields.datedescriptor"
                                     :items="dateDescriptorOptions"
+                                    :readonly="mode == 'view'"
                                     label="Date Descriptor"
                                 ></v-select>
                             </v-col>
