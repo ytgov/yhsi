@@ -32,7 +32,7 @@ export default {
               for(let i = 0; i<owners.length; i++){
                 this.toPrint.owners.push(
                   [
-                    owners[i].OwnerName,
+                    owners[i].OwnerName ? owners[i].OwnerName : "",
                   ] 
                 );
               }

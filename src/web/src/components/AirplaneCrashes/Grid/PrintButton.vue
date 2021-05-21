@@ -8,7 +8,6 @@
 <script>
 import jsPDF  from "jspdf";
 import 'jspdf-autotable';
-//import html2canvas from "html2canvas"
 export default {
     name: "printButton",
     props: ["name","data","disabled" ],
@@ -53,8 +52,8 @@ export default {
 
         this.doc = new jsPDF('l', 'mm', [297, 210]); //new jsPDF('p', 'pt');
         if(this.data.crashsites){
-          this.doc.text(`Crash Sites`, 15, 20);
-          this.textpos = 30; 
+          this.doc.text(`Crash Sites`, 15, 15);
+          this.textpos = 20; 
           this.printTable();
           this.doc.save('Aircrashes.pdf');
         }
