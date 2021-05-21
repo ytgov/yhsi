@@ -316,7 +316,7 @@ const routes = [
     component: BoatsOwnerForm
   },
   {
-    path: "/airplane/",
+    path: "/airplane",
     name: "airplane",
     component: AirplaneGrid
   },

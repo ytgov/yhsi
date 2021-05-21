@@ -31,33 +31,18 @@ export default {
             props = _.filter(props, x=> x != 'photos' && x != 'historicRecords');
             this.toPrint.general = _.pickBy(this.data, (value,key) => _.includes(props, key));
             this.toPrint.photos = this.data.photos;
-
+            
             this.toPrint.historicRecords = [];
             let hR = this.data.histories;
             
-            this.toPrint.historicRecords = hR.map( x => { return Object.values(x)});
+            this.toPrint.historicRecords = hR.map( x => { return [x.HistoryText,x.Reference]});
 
-            //let names = this.toPrint.general.names;
-            //this.toPrint.general.names = names.map(x =>{ return [x] });
-            //console.log(this.toPrint.names);
-            /*
-            for(let i = 0; i<names.length; i++){
-              this.toPrint.general.names.push([names[i]]);
-            }
-            
-            let hs = {
-              UID: 1,
-              HistoryText: "",
-              Reference: ""
-            }*/
-
+            this.toPrint.general.pastNames = this.toPrint.general.pastNames.map(x => {return [x.BoatName]});
+            console.log(this.toPrint.historicRecords);
             let owners = this.toPrint.general.owners;
-            this.toPrint.general.owners =  owners.map(x =>{ return [x] });
-            console.log(this.toPrint.general.owners);
-            /*
-            for(let i = 0; i<owners.length; i++){
-              this.toPrint.general.owners.push([owners[i]]);
-            }*/
+            this.toPrint.general.owners =  owners.map(x =>{ return [x.OwnerName] });
+            //console.log(this.toPrint.general.owners);
+
       },
       exportPDF() {
         this.mapData();
@@ -74,30 +59,30 @@ export default {
         this.doc.save('Boat_1.pdf');
       },
       printGeneral(){
-        this.printNames();
-        this.printOwners();
-
         this.addTitle("Registration Number:");
-        this.addText(this.toPrint.general.registrationNumber);
+        console.log(this.toPrint.general.RegistrationNumber);
+        this.addText(this.toPrint.general.RegistrationNumber);
 
         this.addTitle("Construction Date:");
-        this.addText(this.toPrint.general.constructionDate);
+        this.addText(this.toPrint.general.ConstructionDate);
 
         this.addTitle("Service Start Date:");
-        this.addText(this.toPrint.general.serviceStartDate);
+        this.addText(this.toPrint.general.ServiceStart);
 
         this.addTitle("Service End Date:");
-        this.addText(this.toPrint.general.serviceEndDate);
+        this.addText(this.toPrint.general.ServiceEnd);
 
         this.addTitle("Vessel Type:");
-        this.addText(this.toPrint.general.vesselType);
+        this.addText(this.toPrint.general.VesselType);
 
         this.addTitle("Current Location Description:");
-        this.addText(this.toPrint.general.currentLocationDescription);
+        this.addText(this.toPrint.general.CurrentLocation);
 
         this.addTitle("Notes:");
-        this.addText(this.toPrint.general.notes);
+        this.addText(this.toPrint.general.Notes);
 
+        this.printNames();
+        this.printOwners();
       },
       addText(text){
         this.doc.setFontSize(9);
@@ -124,7 +109,7 @@ export default {
         this.doc.autoTable({
         startY: this.textpos,
         head: [['Name/s:']],
-        body: this.toPrint.general.names});
+        body: this.toPrint.general.pastNames});
 
         this.textpos = this.doc.lastAutoTable.finalY+20;
       },
