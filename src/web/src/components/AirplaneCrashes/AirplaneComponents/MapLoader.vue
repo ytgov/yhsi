@@ -17,33 +17,35 @@
                             label="Coordinate System"
                             @change="changedSystem"
                             v-model="selectedSystem"
-                            :readonly="mode == 'view'"
                         ></v-select>
                     </v-col>
                     <v-col>
                         <v-select
                             :items="projectionOptions"
+                            return-object
+                            item-text="name"
                             label="Projection"
-                            :readonly="mode == 'view'"
+                            @change="changedDatum"
+                            v-model="selectedProjection"  
                         ></v-select>
                     </v-col>
                 </v-row>
 <!-- SELECTED SYSTEM  == DD -->
-                <v-row v-if="selectedSystem.id == 1">
+                <v-row v-if="selectedSystem.id == 1 && selectedProjection.id == 1">
                     <v-col cols="2.4">
                         <h4>Latitude</h4>
                     </v-col>
                     <v-col cols="9">
                         <h4>Degrees</h4>
                         <v-text-field
-                            @keypress="isNumber"
                             @change="changedLocation"
                             v-model="dd.lat"
                             :readonly="mode == 'view'"
+                            type="number"
                         ></v-text-field>
                     </v-col>
                 </v-row>
-                <v-row v-if="selectedSystem.id == 1">
+                <v-row v-if="selectedSystem.id == 1 && selectedProjection.id == 1">
                     <v-col cols="2.4">
                         <h4>Longitude</h4>
                     </v-col>
@@ -52,11 +54,12 @@
                             @change="changedLocation"
                             v-model="dd.lng"
                             :readonly="mode == 'view'"
+                            type="number"
                         ></v-text-field>
                     </v-col>
                 </v-row>
 <!-- SELECTED SYSTEM  == UMT -->
-                <v-row v-if="selectedSystem.id == 2">
+                <v-row v-if="selectedSystem.id == 2 && selectedProjection.id == 1">
                     <v-col cols="2.4"><!-- Decides how many 'cols' its going to have -->
                         <h4>Latitude</h4>
                     </v-col>
@@ -66,10 +69,11 @@
                             @change="changedLocation"
                             v-model="dd.lat"
                             :readonly="mode == 'view'"
+                            type="number"
                         ></v-text-field>
                     </v-col>
                 </v-row>
-                <v-row v-if="selectedSystem.id == 2">
+                <v-row v-if="selectedSystem.id == 2 && selectedProjection.id == 1">
                     <v-col cols="2.4">
                         <h4>Longitude</h4>
                     </v-col>
@@ -78,11 +82,12 @@
                             @change="changedLocation"
                             v-model="dd.lng"
                             :readonly="mode == 'view'"
+                            type="number"
                         ></v-text-field>
                     </v-col>
                 </v-row>
 <!-- SELECTED SYSTEM  == DMS -->
-                <v-row v-if="selectedSystem.id == 3">
+                <v-row v-if="selectedSystem.id == 3 && selectedProjection.id == 1">
                     <v-col cols="2.4"><!-- Decides how many 'cols' its going to have -->
                         <h4>Latitude</h4>
                     </v-col>
@@ -92,6 +97,7 @@
                             @change="changedLocation"
                             v-model="dms.lat.deg"
                             :readonly="mode == 'view'"
+                            type="number"
                         ></v-text-field>
                     </v-col>
                     <v-col >
@@ -100,6 +106,7 @@
                             @change="changedLocation"
                             v-model="dms.lat.min"
                             :readonly="mode == 'view'"
+                            type="number"
                         ></v-text-field>
                     </v-col>
                     <v-col >
@@ -108,6 +115,7 @@
                             @change="changedLocation"
                             v-model="dms.lat.sec"
                             :readonly="mode == 'view'"
+                            type="number"
                         ></v-text-field>
                     </v-col>
                     <v-col>
@@ -119,7 +127,7 @@
                         ></v-text-field>
                     </v-col>
                 </v-row>
-                <v-row v-if="selectedSystem.id == 3">
+                <v-row v-if="selectedSystem.id == 3 && selectedProjection.id == 1">
                     <v-col cols="2.4">
                         <h4>Longitude</h4>
                     </v-col>
@@ -128,6 +136,7 @@
                             @change="changedLocation"
                             v-model="dms.lng.deg"
                             :readonly="mode == 'view'"
+                            type="number"
                         ></v-text-field>
                     </v-col>
                     <v-col >
@@ -135,6 +144,7 @@
                             @change="changedLocation"
                             v-model="dms.lng.min"
                             :readonly="mode == 'view'"
+                            type="number"
                         ></v-text-field>
                     </v-col>
                     <v-col >
@@ -142,6 +152,7 @@
                             @change="changedLocation"
                             v-model="dms.lng.sec"
                             :readonly="mode == 'view'"
+                            type="number"
                         ></v-text-field>
                     </v-col>
                     <v-col >
@@ -152,7 +163,34 @@
                         ></v-text-field>
                     </v-col>
                 </v-row>
-                <v-row v-if="showLocationAlert">
+    <!-- SELECTED PROJECITON IS NOT WSG -->
+                <v-row v-if="selectedProjection.id != 1">
+                    <v-col cols="2.4">
+                        <h4>X</h4>
+                    </v-col>
+                    <v-col cols="9">
+                        <v-text-field
+                            @change="changedLocation"
+                            v-model="nad83.x"
+                            :readonly="mode == 'view'"
+                            type="number"
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row v-if="selectedProjection.id != 1">
+                    <v-col cols="2.4">
+                        <h4>Y</h4>
+                    </v-col>
+                    <v-col cols="9">
+                        <v-text-field
+                            @change="changedLocation"
+                            v-model="nad83.y"
+                            :readonly="mode == 'view'"
+                            type="number"
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row v-if="isOutsideYukon">
                     <v-col>
                         <v-alert
                         dense
@@ -178,47 +216,46 @@
                 :readonly="mode == 'view'"
             ></v-select>
             <v-checkbox 
-            v-model="modifiableFields.inyukon"
+            :value="!isOutsideYukon"
             :readonly="mode == 'view'"
             label="Crash site within Yukon">
             </v-checkbox>
         </v-col>
         <v-col cols="5">
-            <!-- <div id="map" style="height: 400px;" ref="googleMap"></div> -->
             <div >
-                <l-map
-                :zoom="zoom"
-                :center="center"
+                <l-map class="map"
+                :center="map.center"
+                :zoom="map.zoom"
                 style="height: 350px; width: 100%"
                 >
-                <l-tile-layer
-                    :url="url"
-                    :attribution="attribution"
-                />
-                <l-polygon
-                    :lat-lngs="yukonArea.latlngs"
-                    :color="yukonArea.color"
-                    :fillOpacity="0.09"
-                />
-                <l-marker :lat-lng="[63.6333308, -135.7666636]" ></l-marker>
-                <!--
-                <l-marker
-                    :visible="true"
-                    :draggable="false"
-                    :lat-lng="[63.6333308, -135.7666636]"
-                    :icon="marker.icon"
-                    @click="alert(marker)"
-                >
-                    <l-popup :content="marker.tooltip" />
-                    <l-tooltip :content="marker.tooltip" />
-                </l-marker>
-                -->
-                <l-control
-                    :position="'bottomleft'"
-                    class="custom-control-watermark"
-                >Crash Site
-                </l-control>
+                    <l-tile-layer
+                        :url="map.url"
+                        :attribution="map.attribution"
+                    />
+                    <l-polygon
+                        :lat-lngs="yukonPolygon.latlngs"
+                        :color="yukonPolygon.color"
+                        :fillOpacity="0.09"
+                    >
+                        <l-tooltip content="Yukon" />
+                    </l-polygon>
+                    <l-marker :lat-lng="[63.6333308, -135.7666636]" :visible="!marker.visible"></l-marker>
+
+                    <l-marker
+                        :visible="marker.visible"
+                        :draggable="false"
+                        :lat-lng="marker.latLng"
+                    >
+                        <l-popup :content="marker.tooltip" />
+                        <l-tooltip :content="marker.tooltip" />
+                    </l-marker>
+                    <l-control
+                        :position="'bottomleft'"
+                        class="custom-control-watermark"
+                    >Crash Site
+                    </l-control>
                 </l-map>
+
             </div> 
         </v-col> 
     </v-row>  
@@ -231,15 +268,17 @@
     Bind the location object or empty data AND also bind or expect an event to the container component, this event will be emmited when the user has added data, also
     the changes will be updated on the map to show the desired pin/marker.
 */
-import { latLng } from "leaflet";
-//import { Icon } from 'leaflet';
+/* eslint-disable */
+import { latLng, Icon } from "leaflet";
+const pointInPolygon = require('point-in-polygon');
 
 import 'leaflet/dist/leaflet.css';
-import { 
-    LMap, LTileLayer, LControl, LPolygon, LMarker, 
-    //LTooltip,
-    // LPopup 
-    } from "vue2-leaflet";
+import { LMap, LTileLayer, LControl, LPolygon, LMarker, LTooltip, LPopup } from "vue2-leaflet";
+import { yukonPolygon } from '../../../misc/yukon_territory_polygon'
+
+import proj4 from 'proj4'
+
+  /* eslint-enable */
 export default {
     props: [ "fields", "mode"],
     components: {
@@ -248,15 +287,11 @@ export default {
     LControl,
     LPolygon,
     LMarker,
-   // LPopup,
-//LTooltip
+    LPopup,
+    LTooltip
   },
     data: () =>({
-        loader: null,
-        apiKey:  "AIzaSyB-GL1_TJLlEiiJ0JaaMBXgqMJWx76bWQ8",
-        mapConfig: {},
-        map: null,
-        marker: null,
+        flag: 1,// tells the component if it should accept new prop data
         modifiableFields: {   
             accuracy: "",
             inyukon: "",
@@ -265,7 +300,7 @@ export default {
             long: 0.0,
             Location: "",
         },
-        //fields for the types of coordinate systems 
+    //fields for the types of coordinate systems 
         dd: {
             lat: 0, lng: 0
         },
@@ -276,92 +311,149 @@ export default {
         umt: {
             lat: 0, lng: 0
         },
-    //showLocationAlert
-        showLocationAlert: false,
+        nad83: {
+            x: 0,
+            y: 0
+        },
     //Selection vars
-        selectedSystem: {id: 1, text: "Decimal Degrees"},
+        selectedSystem: { id: 1, text: "Decimal Degrees" },
+        selectedProjection: { id: 1, name: "WSG 84" },
         locationAccuracyOptions: ["Approx."],
-        projectionOptions: ["NAD 83", "NAD 83 CSRS", "WSG 84"],
-        coordinateSystemOptions: [{id: 1, text: "Decimal Degrees"},{id: 2, text:  "UMT Zone 8"}, {id: 3, text: "Degrees, Minutes, Seconds"}],
-    //test vars
-        zoom: 8,
-        center: latLng(64.000000, -135.000000),
-        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-        yukonArea: {
-        latlngs: [
-            [59.956838, -123.787082],
-            [60.042293, -140.951599],
-            [69.956674, -140.635986],
-            [69.664723, -138.339844],
-         
-        ],
-        color: "#ff00ff"
-      },
-        zoomOffset: -1
+        projectionOptions: [//datums
+                {
+                    id: 1,
+                    name: "WSG 84", 
+                },
+                {
+                    id: 2,
+                    name: "NAD 83", 
+                },
+                {
+                    id: 3,
+                    name: "NAD 83 CSRS", 
+                }       
+            ],
+            
+        coordinateSystemOptions: [{id: 1, text: "Decimal Degrees"},{id: 2, text:  "UTM Zone 8"}, {id: 3, text: "Degrees, Minutes, Seconds"}],
+    //Crash site marker
+        marker:{
+            visible: false,
+            latLng: [0,0],
+            tooltip: "Selected crash site"
+        },
+    //predefined map & marker
+        map: {
+            zoom: 4,
+            center: latLng(64.000000, -135.000000), //latLng(64.000000, -135.000000),
+            url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        },
+        yukonPolygon,
     }),
-    async mounted() {
-        /*
-        this.loader = new Loader({
-            apiKey: this.apiKey,
-            version: "weekly",
-            libraries: ["places"]
-            });
-        this.loadMap(63.6333308, -135.7666636);
-        */
+    created() {
+        this.fixMarkers();
+        //console.log(proj4);
+        proj4.defs([
+            [
+                'EPSG:4326',
+                '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees +no_defs'
+            ],
+            [
+                'EPSG:3978',
+                '+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=degrees +no_defs'
+            ],
+            [
+                'EPSG:3979',
+                '+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=degrees +no_defs'
+            ]
+        ]);
     }, 
-    methods:{
-        loadMap(lat, lng){//this method expects a numeric value (float) to load the map
-            if(isNaN(lat) || isNaN(lng))
-                return;
 
-            this.loader.load().then(() => {
-                let coord = { lat, lng};
-                this.map = new window.google.maps.Map(this.$refs.googleMap, {
-                    center: coord,
-                    zoom: 8,
-                });   
-            });  
+    methods:{
+        //This method is responsible for transforming the inputed lat & long values depending on the cordinate system and the selected projeciton 
+        changedDatum(){  
+            this.updateDisplayCoordinates();  
+            this.applyCoordinateProjection();
+        },
+        fixMarkers(){
+            //This code snippet fixes an issue where the marker icons dont appear (according to the vueleaflet docs)
+            delete Icon.Default.prototype._getIconUrl;
+            Icon.Default.mergeOptions({
+                iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+                iconUrl: require('leaflet/dist/images/marker-icon.png'),
+                shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+            });
         },
         setCenter(lat, lng){//This method sets the center focus of the map
             if(isNaN(lat) || isNaN(lng))
                 return;
-            this.loader.load().then(() => {
-                this.map.setCenter({lat,lng});
-            }); 
             
-        },
-        removeMarker(){
-            this.marker.setMap(null);
+            this.map.center = latLng(lat, lng); 
         },
         addMarker(lat, lng){
             if(isNaN(lat) || isNaN(lng))
                 return;
-
-            this.loader.load().then(() => {
-                this.marker = new window.google.maps.Marker({
-                    position: {lat, lng},
-                    map: this.map,
-                });
-            }); 
+            this.marker.latLng = latLng(lat, lng); 
+            this.marker.visible = true;
         },
-        //WORK IN PROGRESS
-        changedLocation(){//sexagesimalToDecimal This method handles the user input, when the data has changed, it reloads the map with the new values
-        console.log("1");
-            this.updateStateCoordinates();
-            console.log("2");
-            let { lat, long } = this.modifiableFields;
-            console.log("3");
-            this.loadMap(lat,long);
-            console.log("4");
+        changedLocation(){//This method handles the user input, when the data has changed, it reloads the map with the new values
+            if(this.selectedProjection.id == 1)
+                this.updateStateCoordinates();
+            else
+                this.transformProjectedCoordinates();
+            
+            let lat = parseFloat(this.modifiableFields.lat);
+            let long = parseFloat(this.modifiableFields.long);
             this.addMarker(lat,long);
             this.setCenter(lat,long);  
+        },
+        // this method  applies cordinate projection to the 'display cordinates' according to the selected projection
+        applyCoordinateProjection(){
+            let { lat, long } = this.modifiableFields;
+            let { id } = this.selectedProjection;
+            let transformed_coordinates;
+            switch(id){
+                case 1:
+                    this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
+                    break;
+                case 2://NAD83 
+                    transformed_coordinates = proj4(proj4('EPSG:3978'), [long,lat]);
+                    this.nad83 = { x: transformed_coordinates[0], y: transformed_coordinates[1] };
+                    break;
+                case 3://NAD83 CRS
+                    transformed_coordinates = proj4(proj4('EPSG:3979'), [long,lat]);
+                    this.nad83 = { x: transformed_coordinates[0], y: transformed_coordinates[1] };
+                    break;
+            }
+        },
+        //this transform the projected coordinats
+        transformProjectedCoordinates(){
+            let { x, y } = this.nad83;
+            let transformed_coordinates;
+            switch(this.selectedProjection.id){
+                case 1:
+                    this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
+                    this.modifiableFields.lat = this.dd.lat;
+                    this.modifiableFields.long = this.dd.lng;
+                    break;
+                case 2://NAD83 
+                    transformed_coordinates = proj4(proj4('EPSG:3978'),proj4('EPSG:4326'), [parseFloat(x),parseFloat(y)]);
+                    console.log("TRANSFORMED COORDINATES",transformed_coordinates);
+                    this.modifiableFields.lat = transformed_coordinates[1];
+                    this.modifiableFields.long = transformed_coordinates[0];
+                    break;
+                case 3://NAD83 CRS
+                    transformed_coordinates = proj4(proj4('EPSG:3978'),proj4('EPSG:4326'), [parseFloat(x),parseFloat(y)]);
+                    this.modifiableFields.lat = transformed_coordinates[1];
+                    this.modifiableFields.long = transformed_coordinates[0];
+                    break;
+            }
         },
         updateStateCoordinates(){
             let system = this.selectedSystem.id;
             if(!system)
                     return;
-            //let lat,lng;
+
             switch(system){
                 case 1://DD   
                     console.log(".1");
@@ -370,6 +462,8 @@ export default {
                     break;
                 case 2://UMT
                     console.log("for umt");
+                    this.modifiableFields.lat = parseFloat(this.umt.lat);
+                    this.modifiableFields.long = parseFloat(this.umt.lng);
                     break;
                 case 3: //DMS
                     console.log(".3");
@@ -378,13 +472,18 @@ export default {
                     break;
             }
         },
-        //WORK IN PROGRESS
-        changedSystem(){// TESTING
-            if(!this.selectedSystem.id)
+        changedSystem(){
+            this.updateDisplayCoordinates();
+            this.applyCoordinateProjection();
+        }, 
+        updateDisplayCoordinates(){// TESTING
+            let { id } = this.selectedSystem;
+
+            if(!id)
                 return;
 
             let lat,lng;
-            switch(this.selectedSystem.id){
+            switch(id){
                 case 1: //DD
                     this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
                     this.dms = null;
@@ -404,9 +503,6 @@ export default {
                     break;
             }
         },
-        getSexagesimalValue(val){//Expects an object with the following structure { deg, min, sec } 24.75303300355115, -107.46916977459131
-            return `${val.deg}° ${val.min}' ${val.sec}`+"`"
-        },
         convertDDToDMS(D, lng){
             const M=0|(D%1)*60e7;
             return {
@@ -417,26 +513,21 @@ export default {
             };
         },
         convertDMSToDD(val) {
+            console.log(val);
             let { deg, min, sec, dir } = val;
-            let dd = deg + min/60 + sec/(60*60);
-
+            let dd = deg + (min/60) + sec/(60*60);
+            dd = parseFloat(dd);
             if (dir == "S" || dir == "W") {
                 dd = dd * -1;
             } // Don't do anything for N or E
             return dd;
         },
-        isNumber(evt) {
-            evt = (evt) ? evt : window.event;
-            var charCode = (evt.which) ? evt.which : evt.keyCode;
-            if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
-                evt.preventDefault();
-            } else {
-                return true;
-            }
+    },
+    computed:{
+        isOutsideYukon(){
+            let { lat, long } = this.modifiableFields;
+            return !pointInPolygon([ lat,long], yukonPolygon.latlngs);
         },
-showAlert() {
-      alert("Click!");
-    }
     },
     watch:{
         /*
@@ -444,33 +535,30 @@ showAlert() {
             has fetched the data), because of that we cant use mounted or created to map the fields prop to the modifiedFields obj on the state, also 'prop' values 
             are not supposed to be modified, hence why we have the modifiable fields obj. If we dont use a watcher we would have to have a flag on the parent component
             to indicate when the data is available to render the component, this would make the component less independent and less reusable.
-        
+        */
         fields(){
-            this.modifiableFields = this.fields ? this.fields : this.modifiableFields;
-            let lat = parseFloat(this.modifiableFields.lat);
-            let long = parseFloat(this.modifiableFields.long);
-            if(!isNaN(lat)){
-                this.loadMap(lat,long)
-                this.addMarker(lat,long);
-                this.setCenter(lat,long);
-                
+            if(this.fields && this.flag < 3){
+                this.modifiableFields = this.fields;
+                this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
+                let lat = parseFloat(this.modifiableFields.lat);
+                let long = parseFloat(this.modifiableFields.long);
+                if(!isNaN(lat) || ! isNaN(long)){
+                    this.changedLocation();
+                }
+                this.flag++
             }
-        },*/
+        },
+        modifiableFields(){
+            this.modifiableFields.inyukon = !this.isOutsideYukon;
+            this.$emit("modifiedDataCoordinates", this.modifiableFields);
+        }
+        
     }
 }
 </script>
 
 <style scoped>
-.example-custom-control {
-  background: #fff;
-  padding: 0 0.5em;
-  border: 1px solid #aaa;
-  border-radius: 0.1em;
-}
-.custom-control-watermark {
-  font-size: 200%;
-  font-weight: bolder;
-  color: #aaa;
-  text-shadow: #555;
+.map{
+    z-index: 1;
 }
 </style>

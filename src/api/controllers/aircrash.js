@@ -79,5 +79,19 @@ router.put('/:aircrashId', authenticateToken, async (req, res) => {
   res.status(200).send({ message: 'success' });
 });
 
+router.post('/new', authenticateToken, async (req, res) => {
+  const db = req.app.get('db');
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('create')) res.sendStatus(403);
+
+  const { aircrash = {} } = req.body;
+
+  const response = await db.insert(aircrash)
+    .into('AirCrash.AirCrash')
+    .returning('*');
+  
+  res.status(200).send(response);
+
+});
 
 module.exports = router;
