@@ -20,40 +20,28 @@ export default {
     }),
     methods: {
         mapData(){
-            this.toPrint.historicRecords = this.data.historicRecords;
+            // we are no longer handling historic records on the owners view
             this.toPrint.ownerName = this.data.ownerName;
-
-            let hR = this.toPrint.historicRecords;
-            this.toPrint.historicRecords = [];
-            for(let i = 0; i<hR.length; i++){
-              this.toPrint.historicRecords.push(Object.values(hR[i]));
-            }
+            
+            //this.toPrint.historicRecords = this.data.historicRecords;
+            //let hR = this.toPrint.historicRecords;
+            //this.toPrint.historicRecords = hR.map( x => { return [x.HistoryText,x.Reference]});
 
             let alias = this.data.alias;
-            this.toPrint.alias = [];
-            for(let i = 0; i<alias.length; i++){
-              this.toPrint.alias.push([alias[i]]);
-            }
-
-            let boatsOwned = this.data.boatsOwned;
-            this.toPrint.boatsOwned = [];
-            for(let i = 0; i<boatsOwned.length; i++){
-              this.toPrint.boatsOwned.push([boatsOwned[i]]);
-            }
+            this.toPrint.alias = alias.map( x => { return [x.Alias]});
+            
+            let boats = this.data.boats;
+            this.toPrint.boats = boats.map( x => { return [x.RegistrationNumber,x.Name,x.VesselType,x.CurrentLocation]});
       },
       exportPDF() {
         this.mapData();
         this.doc = new jsPDF('p', 'pt');
         this.doc.text(`Owner: ${this.name}`, 40, 40);
         this.textpos = 70; 
-        //let sections = Object.keys(this.toPrint);
-        /* redundant
-        this.addTitle("Owner Name:");
-        this.addText(this.toPrint.ownerName);
-        */
+
         this.printAlias();
         this.printBoatsOwned();
-        this.printHistoricalRecord();
+        //this.printHistoricalRecord();
         
         this.doc.save('Owner_1.pdf');
       },
@@ -78,8 +66,8 @@ export default {
       printBoatsOwned(){
         this.doc.autoTable({
         startY: this.textpos,
-        head: [['Boats Owned:']],
-        body: this.toPrint.boatsOwned});
+        head: [['Registration Number','Boats Name','Vessel Type', 'CurrentLocation']],
+        body: this.toPrint.boats});
 
         this.textpos = this.doc.lastAutoTable.finalY+20;
       },

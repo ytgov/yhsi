@@ -178,7 +178,7 @@
                     </v-col>
                 </v-row>
                 <v-row v-if="selectedProjection.id != 1">
-                    <v-col cols="2.4"><!-- Decides how many 'cols' its going to have -->
+                    <v-col cols="2.4">
                         <h4>Y</h4>
                     </v-col>
                     <v-col cols="9">
@@ -475,7 +475,6 @@ export default {
         changedSystem(){
             this.updateDisplayCoordinates();
             this.applyCoordinateProjection();
-            this.modifiedDataCoordinates();
         }, 
         updateDisplayCoordinates(){// TESTING
             let { id } = this.selectedSystem;
