@@ -88,7 +88,11 @@
                       disable-sort
                       :footer-props="{'items-per-page-options': [10, 30, 100]}"
                     >    
-       
+                      <template v-slot:item.crashlocation="{ item }" >
+                        <div style="width:200px;">
+                            {{ item.crashlocation }}
+                        </div>
+                      </template>
                     </v-data-table>
                     
                 </v-col>
@@ -115,15 +119,15 @@ export default {
     crashsites: [],
     search: "",
     headers: [
-    { text: "Yacsinumber", value: "yacsinumber"},
+    { text: "YACSI Number", value: "yacsinumber"},
     { text: "Crash Date", value: "crashdate" },
     { text: "Aircraft Type", value: "aircrafttype"},
     { text: "Aircraft Registration", value: "aircraftregistration"},
     { text: "Country of Registration", value: "nation"},
     { text: "Registration Type", value: "militarycivilian"},
     { text: "Location Description", value: "crashlocation"},
-    { text: "Pilot First Name", value: "pilotFirstName"},
-    { text: "Pilot Last Name", value: "pilotLastName"},
+    { text: "Pilot First Name", value: "pilotfirstname"},
+    { text: "Pilot Last Name", value: "pilotlastname"},
     { text: "Souls Onboard", value: "soulsonboard"},
     { text: "Injuries", value: "injuries"},
     { text: "Fatalities", value: "fatalities"},
@@ -174,8 +178,6 @@ export default {
           this.crashsites = data.body;
           this.totalLength = data.count;
           this.crashsites.map(x => {
-              x.pilotFirstName = this.pilotFirstName(x.pilot);
-              x.pilotLastName = this.pilotLastName(x.pilot);
               x.crashdate = this.formatDate(x.crashdate);
           });
           this.loading = false;
@@ -185,16 +187,6 @@ export default {
           date = date.substr(0, 10);
           const [year, month, day] = date.split('-')
           return `${month}/${day}/${year}`
-      },
-      pilotFirstName(val){
-        if(!val)
-          return "";
-        return val.split(',')[1];
-      },
-      pilotLastName(val){
-        if(!val)
-          return "";
-        return val.split(',')[0];
       },
   },
   computed:{

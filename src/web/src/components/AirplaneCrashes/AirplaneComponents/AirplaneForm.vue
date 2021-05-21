@@ -114,6 +114,7 @@
                             </v-col>
                             <v-col cols="6">
                                 <v-select
+                                    v-model="fields.datedescriptor"
                                     :items="dateDescriptorOptions"
                                     label="Date Descriptor"
                                 ></v-select>
@@ -122,7 +123,7 @@
                         <v-row>
                             <v-col cols="12">
                                 <v-text-field
-                                    v-model="fields.pilotLastName"
+                                    v-model="fields.datenote"
                                     label="Date Note"
                                     :readonly="mode == 'view'"
                                 ></v-text-field>
@@ -188,21 +189,21 @@
                             <v-row>
                                 <v-col>
                                     <v-text-field
-                                        v-model="fields.pilotFirstName"
+                                        v-model="fields.pilotfirstname"
                                         label="First Name"
                                         :readonly="mode == 'view'"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col>
                                     <v-text-field
-                                        v-model="fields.pilotLastName"
+                                        v-model="fields.pilotlastname"
                                         label="Last Name"
                                         :readonly="mode == 'view'"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col>
                                     <v-text-field
-                                        v-model="fields.pilotLastName"
+                                        v-model="fields.pilotrank"
                                         label="Rank"
                                         :readonly="mode == 'view'"
                                     ></v-text-field>
@@ -232,13 +233,13 @@
         <v-row>
             <v-col col="6">
                 <v-row>
-                    <v-col>        
-                        <v-select
-                            :items="remainsOptions"
+                    <v-col>
+                         <v-text-field
                             v-model="fields.remainsonsite"
                             label="Remains on Site"
                             :readonly="mode == 'view'"
-                        ></v-select>
+                            type="number"
+                        ></v-text-field>    
                         <v-textarea
                             rows="5"
                             class="mt-0 pt-0"
@@ -264,16 +265,19 @@
                                     v-model="fields.soulsonboard"
                                     label="Souls on Board"
                                     :readonly="mode == 'view'"
+                                    type="number"
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="fields.injuries"
                                     label="Injuries"
                                     :readonly="mode == 'view'"
+                                    type="number"
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="fields.fatalities"
                                     label="Fatalities"
                                     :readonly="mode == 'view'"
+                                    type="number"
                                 ></v-text-field>
                         </v-col>
                          <v-col cols="6">
@@ -420,9 +424,6 @@ export default {
         activePicker: null,
         fields: {},
         fieldsHistory: null,
-    //Pilot helper fields
-        pilotFirstName: "",
-        PilotLastName: "",
     // vessel typle select options
         vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
         dateFormatted: "",
@@ -430,7 +431,7 @@ export default {
         showPhotosDefault: false,
     // Select vars
         remainsOptions: ["Yes","No", "  ??"],
-        dateDescriptorOptions: ["Actual"],
+        dateDescriptorOptions: ["Estimate","Actual"],
     //modified coordinate fields
         modifiedMapFields: null,
     //helper var for the nations checkboxes
@@ -497,6 +498,11 @@ export default {
                 sources: "",
                 infoSources:[],
                 yacsinumber: "",
+                pilotfirstname: "",
+                pilotlastname: "",
+                pilotrank: "",
+                datenote: "",
+                datedescriptor: ""
             };
         },
         saveCurrentCrash(){
@@ -509,9 +515,6 @@ export default {
             }
             this.fields = await aircrash.getById(localStorage.currentCrashNumber);
             this.fields.crashdate =  this.fields.crashdate ? this.fields.crashdate.substr(0, 10) : "";
-            let pilotname = this.fields.pilot.split(',');
-            this.fields.pilotFirstName = pilotname[1];
-            this.fields.pilotLastName = pilotname[0];
             this.fields.infoSources = this.fields.sources.includes(";") ? this.fields.sources.split(";") : [];
             if(this.fields.nation != 'Canadian' && this.fields.nation != 'American')    
                 this.otherNation = true;
