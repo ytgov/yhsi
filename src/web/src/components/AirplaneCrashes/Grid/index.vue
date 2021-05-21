@@ -198,7 +198,7 @@ export default {
               let sorters = JSON.parse(JSON.stringify(this.filterOptions));
               let data = JSON.parse(JSON.stringify(this.crashsites));
               data = sorters[0].value == null || sorters[0].value == "" ? data : data.filter( x => x.crashdate ? x.crashdate.toLowerCase().includes(sorters[0].value.toLowerCase()) : false);  
-              //data = sorters[1].value === null || sorters[1].value === "" ? data : data.filter( x => x.ConstructionDate ? x.ConstructionDate.includes(sorters[1].value.toLowerCase()) : false);  
+              data = sorters[1].value === null || sorters[1].value === "" ? data : data.filter( x => x.aircrafttype ? x.aircrafttype.toLowerCase().includes(sorters[1].value.toLowerCase()) : false);  
               data = sorters[2].value === null || sorters[2].value === "" ? data : data.filter( x => x.aircraftregistration ? x.aircraftregistration.toLowerCase().includes(sorters[2].value.toLowerCase()) : false);  
               data = sorters[3].value === null || sorters[3].value === "" ? data : data.filter( x => x.nation ? x.nation.toLowerCase().includes(sorters[3].value.toLowerCase()) : false);  
               data = sorters[4].value === null || sorters[4].value === "" ? data : data.filter( x => x.militarycivilian ? x.militarycivilian.toLowerCase().includes(sorters[4].value.toLowerCase()) : false); 
