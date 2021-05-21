@@ -88,7 +88,11 @@
                       disable-sort
                       :footer-props="{'items-per-page-options': [10, 30, 100]}"
                     >    
-       
+                      <template v-slot:item.crashlocation="{ item }" >
+                        <div style="width:200px;">
+                            {{ item.crashlocation }}
+                        </div>
+                      </template>
                     </v-data-table>
                     
                 </v-col>
@@ -115,15 +119,15 @@ export default {
     crashsites: [],
     search: "",
     headers: [
-    { text: "Yacsinumber", value: "yacsinumber"},
+    { text: "YACSI Number", value: "yacsinumber"},
     { text: "Crash Date", value: "crashdate" },
     { text: "Aircraft Type", value: "aircrafttype"},
     { text: "Aircraft Registration", value: "aircraftregistration"},
     { text: "Country of Registration", value: "nation"},
     { text: "Registration Type", value: "militarycivilian"},
     { text: "Location Description", value: "crashlocation"},
-    { text: "Pilot First Name", value: "pilotFirstName"},
-    { text: "Pilot Last Name", value: "pilotLastName"},
+    { text: "Pilot First Name", value: "pilotfirstname"},
+    { text: "Pilot Last Name", value: "pilotlastname"},
     { text: "Souls Onboard", value: "soulsonboard"},
     { text: "Injuries", value: "injuries"},
     { text: "Fatalities", value: "fatalities"},
@@ -156,7 +160,7 @@ export default {
   },
   methods: {
     addNewBoat(){
-        this.$router.push(`/boats/new`);
+        this.$router.push(`/airplane/new`);
     },
     crashsiteSearchChange: _.debounce(function () {
         this.getDataFromApi();
@@ -174,8 +178,6 @@ export default {
           this.crashsites = data.body;
           this.totalLength = data.count;
           this.crashsites.map(x => {
-              x.pilotFirstName = this.pilotFirstName(x.pilot);
-              x.pilotLastName = this.pilotLastName(x.pilot);
               x.crashdate = this.formatDate(x.crashdate);
           });
           this.loading = false;
@@ -186,16 +188,26 @@ export default {
           const [year, month, day] = date.split('-')
           return `${month}/${day}/${year}`
       },
-      pilotFirstName(val){
-        if(!val)
-          return "";
-        return val.split(',')[1];
+      //if its needed 
+      getPilot(name,lastname){
+        if(!name || !lastname)
+          return '';
+
+        return `${name}, ${lastname}`
       },
-      pilotLastName(val){
-        if(!val)
-          return "";
-        return val.split(',')[0];
-      },
+      filterPilot(data, filter){
+        let { pilotfirstname, pilotlastname } = data;
+        if(!pilotfirstname && !pilotlastname)
+          return false;
+        
+        if(pilotfirstname.toLowerCase().includes(filter.toLowerCase()))
+          return true;
+        
+        if(pilotlastname.toLowerCase().includes(filter.toLowerCase()))
+          return true;
+
+        return false;
+      } 
   },
   computed:{
       selectedFilters(){
@@ -206,11 +218,11 @@ export default {
               let sorters = JSON.parse(JSON.stringify(this.filterOptions));
               let data = JSON.parse(JSON.stringify(this.crashsites));
               data = sorters[0].value == null || sorters[0].value == "" ? data : data.filter( x => x.crashdate ? x.crashdate.toLowerCase().includes(sorters[0].value.toLowerCase()) : false);  
-              //data = sorters[1].value === null || sorters[1].value === "" ? data : data.filter( x => x.ConstructionDate ? x.ConstructionDate.includes(sorters[1].value.toLowerCase()) : false);  
+              data = sorters[1].value === null || sorters[1].value === "" ? data : data.filter( x => x.aircrafttype ? x.aircrafttype.toLowerCase().includes(sorters[1].value.toLowerCase()) : false);  
               data = sorters[2].value === null || sorters[2].value === "" ? data : data.filter( x => x.aircraftregistration ? x.aircraftregistration.toLowerCase().includes(sorters[2].value.toLowerCase()) : false);  
               data = sorters[3].value === null || sorters[3].value === "" ? data : data.filter( x => x.nation ? x.nation.toLowerCase().includes(sorters[3].value.toLowerCase()) : false);  
               data = sorters[4].value === null || sorters[4].value === "" ? data : data.filter( x => x.militarycivilian ? x.militarycivilian.toLowerCase().includes(sorters[4].value.toLowerCase()) : false); 
-              data = sorters[5].value === null || sorters[5].value === "" ? data : data.filter( x => x.pilot ? x.pilot.toLowerCase().includes(sorters[5].value.toLowerCase()) : false);  
+              data = sorters[5].value === null || sorters[5].value === "" ? data : data.filter( x => this.filterPilot(x,sorters[5].value)); 
               data = sorters[6].value === null || sorters[6].value === "" ? data : data.filter( x => x.soulsonboard ? x.soulsonboard == sorters[6].value : false);  
               data = sorters[7].value === null || sorters[7].value === "" ? data : data.filter( x => x.injuries ? x.injuries == sorters[7].value : false); 
               data = sorters[8].value === null || sorters[8].value === "" ? data : data.filter( x => x.fatalities ? x.fatalities == sorters[8].value : false);  

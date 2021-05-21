@@ -13,7 +13,7 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  v-if="mode == 'view'" :data="fields" :name="fields.Name"/>
+                <PrintButton  v-if="mode == 'view'" :data="fields" :yacsinumber="fields.yacsinumber"/>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
                     <v-icon>mdi-close</v-icon>
@@ -69,37 +69,54 @@
                         <v-row>
                             <v-col cols="6" >   
                             <!-- Crash Date -->
-                                <v-menu
-                                    ref="menu"
-                                    v-model="menu1"
-                                    :close-on-content-click="false"
-                                    transition="scale-transition"
-                                    offset-y
-                                    min-width="auto"
-                                    :disabled="mode == 'view'"
-                                >
-                                    <template v-slot:activator="{ on, attrs }">
-                                    <v-text-field
-                                        v-model="crashdate"
-                                        label="Crash Date"
-                                        append-icon="mdi-calendar"
-                                        readonly
-                                        v-bind="attrs"
-                                        v-on="on"
-                                    ></v-text-field>
-                                    </template>
-                                    <v-date-picker
-                                    ref="picker"
-                                    v-model="fields.crashdate"
-                                    :max="new Date().toISOString().substr(0, 10)"
-                                    min="1750-01-01"
-                                    @change="save"
-                                    ></v-date-picker>
-                                </v-menu>
+                                    <v-menu
+                                        ref="menu"
+                                        v-model="menu"
+                                        :close-on-content-click="false"
+                                        :return-value.sync="fields.crashdate"
+                                        transition="scale-transition"
+                                        offset-y
+                                        min-width="auto"
+                                    >
+                                        <template v-slot:activator="{ on, attrs }">
+                                        <v-text-field
+                                            v-model="crashdate"
+                                            label="Crash Date"
+                                            prepend-icon="mdi-calendar"
+                                            readonly
+                                            v-bind="attrs"
+                                            v-on="on"
+                                        ></v-text-field>
+                                        </template>
+                                        <v-date-picker
+                                        v-model="fields.crashdate"
+                                        no-title
+                                        scrollable
+                                        >
+                                        <v-spacer></v-spacer>
+                                        <v-btn
+                                            text
+                                            color="primary"
+                                            @click="menu = false"
+                                        >
+                                            Cancel
+                                        </v-btn>
+                                        <v-btn
+                                            text
+                                            color="primary"
+                                            @click="$refs.menu.save(fields.crashdate)"
+                                        >
+                                            OK
+                                        </v-btn>
+                                        </v-date-picker>
+                                    </v-menu>
+                                
                             </v-col>
                             <v-col cols="6">
                                 <v-select
+                                    v-model="fields.datedescriptor"
                                     :items="dateDescriptorOptions"
+                                    :readonly="mode == 'view'"
                                     label="Date Descriptor"
                                 ></v-select>
                             </v-col>
@@ -107,7 +124,7 @@
                         <v-row>
                             <v-col cols="12">
                                 <v-text-field
-                                    v-model="fields.pilotLastName"
+                                    v-model="fields.datenote"
                                     label="Date Note"
                                     :readonly="mode == 'view'"
                                 ></v-text-field>
@@ -132,12 +149,12 @@
                                 ></v-checkbox>
                                 <v-checkbox
                                     label="Other"
-                                    value="Other"
-                                    v-model="fields.nation"
+                                    v-model="otherNation"
+                                    @click="changeNation"
                                     :readonly="mode == 'view'"
                                 ></v-checkbox>
                                 <v-text-field
-                                    v-if="fields.nation == 'Other'"
+                                    v-if="otherNation"
                                     v-model="fields.nation"
                                     label="Other"
                                     :readonly="mode == 'view'"
@@ -173,21 +190,21 @@
                             <v-row>
                                 <v-col>
                                     <v-text-field
-                                        v-model="fields.pilotFirstName"
+                                        v-model="fields.pilotfirstname"
                                         label="First Name"
                                         :readonly="mode == 'view'"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col>
                                     <v-text-field
-                                        v-model="fields.pilotLastName"
+                                        v-model="fields.pilotlastname"
                                         label="Last Name"
                                         :readonly="mode == 'view'"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col>
                                     <v-text-field
-                                        v-model="fields.pilotLastName"
+                                        v-model="fields.pilotrank"
                                         label="Rank"
                                         :readonly="mode == 'view'"
                                     ></v-text-field>
@@ -205,8 +222,9 @@
                     </v-col>
             </v-col>
         </v-row>
-        <GoogleMapLoader 
+        <MapLoader
             :mode="mode"
+            @modifiedDataCoordinates="modifiedDataCoordinates"
             :fields="{  accuracy: fields.accuracy,
                         inyukon: fields.inyukon,
                         crashlocation: fields.crashlocation,
@@ -216,13 +234,13 @@
         <v-row>
             <v-col col="6">
                 <v-row>
-                    <v-col>        
-                        <v-select
-                            :items="remainsOptions"
+                    <v-col>
+                         <v-text-field
                             v-model="fields.remainsonsite"
                             label="Remains on Site"
                             :readonly="mode == 'view'"
-                        ></v-select>
+                            type="number"
+                        ></v-text-field>    
                         <v-textarea
                             rows="5"
                             class="mt-0 pt-0"
@@ -248,16 +266,19 @@
                                     v-model="fields.soulsonboard"
                                     label="Souls on Board"
                                     :readonly="mode == 'view'"
+                                    type="number"
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="fields.injuries"
                                     label="Injuries"
                                     :readonly="mode == 'view'"
+                                    type="number"
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="fields.fatalities"
                                     label="Fatalities"
                                     :readonly="mode == 'view'"
+                                    type="number"
                                 ></v-text-field>
                         </v-col>
                          <v-col cols="6">
@@ -380,11 +401,11 @@ import Breadcrumbs from '../../Breadcrumbs.vue';
 import Photos from "./Photos";
 import PrintButton from "./PrintButton";
 import aircrash from "../../../controllers/aircrash";
-import GoogleMapLoader from "./GoogleMapLoader";
+import MapLoader from "./MapLoader";
 import _ from 'lodash';
 export default {
     name: "crashForm",
-    components: { Photos, Breadcrumbs, PrintButton, GoogleMapLoader },
+    components: { Photos, Breadcrumbs, PrintButton, MapLoader },
     data: ()=> ({
         overlay: false,
     //helper vars used for the name list functions
@@ -400,12 +421,10 @@ export default {
         edit: false,
         showSave: 0,
     //input fields, datatable, etc
-        menu1: "",
+        menu: "",
+        activePicker: null,
         fields: {},
         fieldsHistory: null,
-    //Pilot helper fields
-        pilotFirstName: "",
-        PilotLastName: "",
     // vessel typle select options
         vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
         dateFormatted: "",
@@ -413,7 +432,11 @@ export default {
         showPhotosDefault: false,
     // Select vars
         remainsOptions: ["Yes","No", "  ??"],
-        dateDescriptorOptions: ["Actual"]
+        dateDescriptorOptions: ["Estimate","Actual"],
+    //modified coordinate fields
+        modifiedMapFields: null,
+    //helper var for the nations checkboxes
+        otherNation: false
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -444,6 +467,9 @@ export default {
             }
             return false;
         },
+        changeNation(){
+            this.fields.nation = "";
+        },
         noData(){
             this.fields = {
                 Location: "",
@@ -471,7 +497,13 @@ export default {
                 significanceofaircraft:"",
                 soulsonboard: "",
                 sources: "",
+                infoSources:[],
                 yacsinumber: "",
+                pilotfirstname: "",
+                pilotlastname: "",
+                pilotrank: "",
+                datenote: "",
+                datedescriptor: ""
             };
         },
         saveCurrentCrash(){
@@ -484,17 +516,14 @@ export default {
             }
             this.fields = await aircrash.getById(localStorage.currentCrashNumber);
             this.fields.crashdate =  this.fields.crashdate ? this.fields.crashdate.substr(0, 10) : "";
-            let pilotname = this.fields.pilot.split(',');
-            this.fields.pilotFirstName = pilotname[1];
-            this.fields.pilotLastName = pilotname[0];
-            this.fields.infoSources = this.fields.sources.split(";");
-            this.fields.lat = 24.7529112149758;
-            this.fields.long =  -107.46921268993607;
+            this.fields.infoSources = this.fields.sources.includes(";") ? this.fields.sources.split(";") : [];
+            if(this.fields.nation != 'Canadian' && this.fields.nation != 'American')    
+                this.otherNation = true;
             console.log(this.fields);
             this.overlay = false;
         },
-        save (date) {
-            this.$refs.menu.save(date);
+        saveDate (date) {
+            this.$refs.menu1.save(date);
         },
     //Functions dedicated to handle the edit, add, view modes
         cancelEdit(){
@@ -524,11 +553,18 @@ export default {
             this.editTableSources = -1;
         },
         async saveChanges(){
-            this.overlay = true; 
+            this.overlay = true;
             console.log(this.fields);
+            let { lat, long, inyukon, crashlocation, accuracy } = this.modifiedMapFields;
+            this.fields.lat = lat;
+            this.fields.long = long;
+            this.fields.inyukon = inyukon;
+            this.fields.crashlocation = crashlocation;
+            this.fields.accuracy = accuracy;
             let crash = { ...this.fields }
             crash.pilot = this.getPilotName();
             crash.sources = this.getSources();
+            crash.Location = `POINT(${crash.long} ${crash.lat})`
             delete crash.pilotFirstName;
             delete crash.pilotLastName;
             delete crash.infoSources;
@@ -546,6 +582,8 @@ export default {
                 this.$router.push(`/airplane/`);
             }
             else{
+
+                console.log(localStorage.currentCrashNumber);
                 await aircrash.put(localStorage.currentCrashNumber,data);
                 currentCrashNumber = localStorage.currentCrashNumber;
                 this.overlay = false;
@@ -593,6 +631,10 @@ export default {
         },
         getSources(){
             return _.join(this.fields.infoSources, ';');
+        },
+        modifiedDataCoordinates(val){
+            this.modifiedMapFields = val;
+            this.showSave = this.showSave+1;
         }
         
     },   
@@ -615,7 +657,7 @@ export default {
             deep: true
         },
         menu1 (val) {
-            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
+            val && setTimeout(() => (this.activePicker  = 'YEAR'))
         },/* eslint-disable */
         'fields.crashdate': function  (val) {
         this.dateFormatted = this.formatDate(this.fields.crashdate)

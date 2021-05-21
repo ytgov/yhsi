@@ -18,8 +18,8 @@ export default {
         console.log(error);
       });
   },
-  async getById(id){
-    return await api.get(`aircrash/${id}`)
+  async getById(aircrashId){
+    return await api.get(`aircrash/${aircrashId}`)
     .then(res => {
       return res.data;
     }).catch(error =>{
@@ -27,8 +27,8 @@ export default {
       console.log(error);
     });
   },
-  async put(id, data){
-    return await api.put(`aircrash/${id}`,data)
+  async put(aircrashId, data){
+    return await api.put(`aircrash/${aircrashId}`,data)
     .then(res => {
       return res.data;
     }).catch(error =>{

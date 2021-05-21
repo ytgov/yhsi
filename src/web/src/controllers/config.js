@@ -27,7 +27,7 @@ const apiP  =  axios.create({
   }
 });
 
-export {api, apiP}; 
+export { api, apiP }; 
 
 // curl --request GET \
 //   --url https://api.gov.yk.ca/heritage/api/boats \

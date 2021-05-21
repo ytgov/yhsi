@@ -12,7 +12,7 @@ import 'jspdf-autotable';
 import _ from 'lodash';
 export default {
     name: "printButton",
-    props: ["name","data" ],
+    props: ["yacsinumber","data" ],
     components: {  },
     data: ()=> ({
         doc: null,
@@ -23,81 +23,81 @@ export default {
         ],
         toPrint: {},
         textpos: 0,
+        fields: [
+          { title: "YACSI Number", key: "yacsinumber"},
+          { title: "crashdate", key: "crashdate"},
+          { title: "aircrafttype", key: "aircrafttype"},
+          { title: "aircraftregistration", key: "aircraftregistration"},
+          { title: "nation", key: "nation"},
+          { title: "militarycivilian", key: "militarycivilian"},
+          { title: "crashlocation", key: "crashlocation"},
+          { title: "remainsonsite", key: "remainsonsite"},
+          { title: "extentofremainsonsite", key: "extentofremainsonsite"},
+          { title: "otherlocationsofremains", key: "otherlocationsofremains"},
+          { title: "pilot", key: "pilot"},
+          { title: "fatalities", key: "fatalities"}, 
+          { title: "descriptionofcrashevent", key: "descriptionofcrashevent"},
+          { title: "comments", key: "comments"},
+          { title: "significanceofaircraft", key: "significanceofaircraft"}, 
+          { title: "", key: "sources"},
+          { title: "inyukon", key: "inyukon"},
+          { title: "soulsonboard", key: "soulsonboard"},
+          { title: "Injuries", key: "injuries"},
+          { title: "Date Descriptor", key: "datedescriptor"},
+          { title: "Date Note", key: "datenote"},
+          { title: "Pilotlastname", key: "pilotlastname"},
+          { title: "Pilotfirstname", key: "pilotfirstname"},
+          { title: "Pilotrank", key: "pilotrank"},
+          { title: "Accuracy", key: "accuracy"},
+          { title: "Aircraftcaption", key: "aircraftcaption"},
+          { title: "Aircraftaftercrashcaption", key: "aircraftaftercrashcaption"},
+          { title: "Location Description", key: "Location"},
+        //  { title: "infoSources", key: "infoSources"},
+        ]
     }),
 
     methods: {
         mapData(){
             let props = Object.getOwnPropertyNames(this.data);
-            props = _.filter(props, x=> x != 'photos' && x != 'historicRecords');
+            props = _.filter(props, x=> x != 'photographs' && x != 'sources '&& x != 'lat' && x != 'long');
             this.toPrint.general = _.pickBy(this.data, (value,key) => _.includes(props, key));
-            this.toPrint.photos = this.data.photos;
-
-            this.toPrint.historicRecords = [];
-            let hR = this.data.histories;
-            
-            this.toPrint.historicRecords = hR.map( x => { return Object.values(x)});
-
-            //let names = this.toPrint.general.names;
-            //this.toPrint.general.names = names.map(x =>{ return [x] });
-            //console.log(this.toPrint.names);
+            //this.toPrint.photos = this.data.photos;
+            console.log(this.toPrint);
             /*
-            for(let i = 0; i<names.length; i++){
-              this.toPrint.general.names.push([names[i]]);
-            }
-            
-            let hs = {
-              UID: 1,
-              HistoryText: "",
-              Reference: ""
-            }*/
+            this.toPrint.general.pastNames = this.toPrint.general.pastNames.map(x => {return [x.BoatName]});
 
             let owners = this.toPrint.general.owners;
-            this.toPrint.general.owners =  owners.map(x =>{ return [x] });
-            console.log(this.toPrint.general.owners);
-            /*
-            for(let i = 0; i<owners.length; i++){
-              this.toPrint.general.owners.push([owners[i]]);
-            }*/
+            this.toPrint.general.owners =  owners.map(x =>{ return [x.OwnerName] });
+            //console.log(this.toPrint.general.owners);
+*/
       },
       exportPDF() {
         this.mapData();
 
         this.doc = new jsPDF('p', 'pt');
-        this.doc.text(`Boat: ${this.name}`, 40, 40);
+        this.doc.text(`Crash site: ${this.yacsinumber}`, 40, 40);
         this.textpos = 70; 
         //let sections = Object.keys(this.toPrint);
         
-        this.printGeneral();
-        this.printPhotos();//not done yet...
-        this.printHistoricalRecord()
+        //this.printGeneral();
+        //this.printPhotos();//not done yet...
+        //this.printHistoricalRecord()
   
         this.doc.save('Boat_1.pdf');
       },
       printGeneral(){
-        this.printNames();
-        this.printOwners();
 
-        this.addTitle("Registration Number:");
-        this.addText(this.toPrint.general.registrationNumber);
+        let keys = Object.keys(this.toPrint.general);
+        for(let i = 0; i<keys.length; i++){
+          this.addTitle("Registration Number:");
+          //this.addText();
+          console.log(`{ title: "", key: "${keys[i]}"},`);
+        }
+        
 
-        this.addTitle("Construction Date:");
-        this.addText(this.toPrint.general.constructionDate);
 
-        this.addTitle("Service Start Date:");
-        this.addText(this.toPrint.general.serviceStartDate);
-
-        this.addTitle("Service End Date:");
-        this.addText(this.toPrint.general.serviceEndDate);
-
-        this.addTitle("Vessel Type:");
-        this.addText(this.toPrint.general.vesselType);
-
-        this.addTitle("Current Location Description:");
-        this.addText(this.toPrint.general.currentLocationDescription);
-
-        this.addTitle("Notes:");
-        this.addText(this.toPrint.general.notes);
-
+        //this.printNames();
+        //this.printOwners();
       },
       addText(text){
         this.doc.setFontSize(9);
@@ -124,7 +124,7 @@ export default {
         this.doc.autoTable({
         startY: this.textpos,
         head: [['Name/s:']],
-        body: this.toPrint.general.names});
+        body: this.toPrint.general.pastNames});
 
         this.textpos = this.doc.lastAutoTable.finalY+20;
       },

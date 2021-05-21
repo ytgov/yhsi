@@ -316,7 +316,7 @@ const routes = [
     component: BoatsOwnerForm
   },
   {
-    path: "/airplane/",
+    path: "/airplane",
     name: "airplane",
     component: AirplaneGrid
   },
@@ -329,6 +329,12 @@ const routes = [
   {
     path: "/airplane/edit/:name",
     name: "airplaneEditView",
+    component: AirplaneEditForm,
+    props: true
+  },
+  {
+    path: "/airplane/New",
+    name: "airplaneAddView",
     component: AirplaneEditForm,
     props: true
   },
