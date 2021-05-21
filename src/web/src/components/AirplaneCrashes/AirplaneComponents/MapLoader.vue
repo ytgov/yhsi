@@ -475,7 +475,6 @@ export default {
         changedSystem(){
             this.updateDisplayCoordinates();
             this.applyCoordinateProjection();
-            this.modifiedDataCoordinates();
         }, 
         updateDisplayCoordinates(){// TESTING
             let { id } = this.selectedSystem;
