@@ -312,7 +312,7 @@
                         <template v-for="(item, index) in fields.infoSources">
                             <v-list-item :key="`nl-${index}`">
                                 <v-list-item-content>
-                                    <v-list-item-title v-if="index != editTableSources || mode == 'view'">{{item}}</v-list-item-title>
+                                    <v-list-item-title v-if="index != editTableSources || mode == 'view'">{{item.Source}}</v-list-item-title>
                                     <v-form v-model="validSource" v-if="mode != 'view'" v-on:submit.prevent>
                                         <v-text-field
                                         v-if="editTableSources == index "
@@ -329,7 +329,20 @@
                                                 <v-btn 
                                                 v-bind="attrs"
                                                 v-on="on"
-                                                icon class="grey--text text--darken-2"   @click="changeEditTableNames(item,index)">
+                                                icon class="grey--text text--darken-2"   @click="deleteSource(item,index)">
+                                                    <v-icon
+                                                        small
+                                                    > mdi-delete</v-icon>
+                                                </v-btn>
+                                        </template>
+                                        <span>Delete</span>
+                                    </v-tooltip>
+                                    <v-tooltip bottom v-if="mode != 'view' && editTableSources != index">
+                                        <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                v-bind="attrs"
+                                                v-on="on"
+                                                icon class="grey--text text--darken-2"   @click="changeEditTableSources(item,index)">
                                                     <v-icon
                                                         small
                                                     > mdi-pencil</v-icon>
@@ -343,7 +356,7 @@
                                                 v-bind="attrs"
                                                 v-on="on" 
                                                 :disabled="!validSource"
-                                                icon class="grey--text text--darken-2" color="success"  @click="saveTableNames(index)">
+                                                icon class="grey--text text--darken-2" color="success"  @click="saveTableSources(index)">
                                                     <v-icon
                                                     small
                                                     >mdi-check</v-icon>  
@@ -356,7 +369,7 @@
                                                 <v-btn 
                                                 v-bind="attrs"
                                                 v-on="on"
-                                                icon class="grey--text text--darken-2"  @click="cancelEditTableNames()">
+                                                icon class="grey--text text--darken-2"  @click="cancelEditTableSources()">
                                                     <v-icon
                                                     small
                                                     >mdi-close</v-icon>  
@@ -373,7 +386,7 @@
                 <v-row>
                     <v-col cols="12" class="d-flex ">
                         <v-spacer></v-spacer>
-                        <v-btn class="mx-1 black--text align" @click="addName" v-if="mode != 'view' && editTableSources == -1">Add Source</v-btn>
+                        <v-btn class="mx-1 black--text align" @click="addSource" v-if="mode != 'view' && editTableSources == -1">Add Source</v-btn>
                     </v-col>
                 </v-row>
             </v-col>
@@ -413,6 +426,7 @@ export default {
         addingSource: false,// tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
         helperSource: null,
         validSource: false,
+        deletedSources: [],
         sourceRules: [
             v => !!v || 'Source is required',
         ],
@@ -516,7 +530,7 @@ export default {
             }
             this.fields = await aircrash.getById(localStorage.currentCrashNumber);
             this.fields.crashdate =  this.fields.crashdate ? this.fields.crashdate.substr(0, 10) : "";
-            this.fields.infoSources = this.fields.sources.includes(";") ? this.fields.sources.split(";") : [];
+            //this.fields.infoSources = this.fields.sources.includes(";") ? this.fields.sources.split(";") : [];
             if(this.fields.nation != 'Canadian' && this.fields.nation != 'American')    
                 this.otherNation = true;
             console.log(this.fields);
@@ -555,27 +569,40 @@ export default {
         async saveChanges(){
             this.overlay = true;
             console.log(this.fields);
+        //Mapping coordinate data
             let { lat, long, inyukon, crashlocation, accuracy } = this.modifiedMapFields;
             this.fields.lat = lat;
             this.fields.long = long;
             this.fields.inyukon = inyukon;
             this.fields.crashlocation = crashlocation;
             this.fields.accuracy = accuracy;
+        //Mapping general fields
             let crash = { ...this.fields }
             crash.pilot = this.getPilotName();
             crash.sources = this.getSources();
             crash.Location = `POINT(${crash.long} ${crash.lat})`
+        //Removing useless values
             delete crash.pilotFirstName;
             delete crash.pilotLastName;
             delete crash.infoSources;
             delete crash.lat;
             delete crash.long;
+        //Mapping infosources
+            let editedInfoSources = this.fields.infoSources.filter(x => x.isEdited == true);
+            let removedInfoSources = this.deletedSources;
+            let newInfoSources = this.fields.infoSources.filter(x => x.isNew == true);
+
             console.log(crash);
+        //Final data obj
              let data = {
-                    aircrash: crash
+                    aircrash: crash,
+                    removedInfoSources,
+                    newInfoSources,
+                    editedInfoSources
                 };
                 console.log(data);
-            let currentCrashNumber;
+            //let currentCrashNumber;
+            /*
             if(this.mode == 'new'){
                 await aircrash.post(data);
                 this.overlay = false;
@@ -589,15 +616,22 @@ export default {
                 this.overlay = false;
                 this.mode = 'view';
                 this.$router.push({name: 'airplaneView', params: { name: currentCrashNumber, yacsinumber: currentCrashNumber}});
-            } 
+            } */
         },
-    //functions for editing the table "Names" values
-        changeEditTableNames(item,index){
+    //functions for editing the table "Sources" values
+        changeEditTableSources(item,index){
             this.editTableSources = index;
-            this.helperSource = item;
+            this.helperSource = item.Source;
         },
-        cancelEditTableNames(){
-            if(this.addingName){
+        deleteSource(item,index){            
+            if (index > -1) {
+                this.fields.infoSources.splice(index, 1);
+                if(!item.isNew)
+                    this.deletedSources.push(item);
+            }
+        },
+        cancelEditTableSources(){
+            if(this.addingSource){
                 this.fields.infoSources.pop();
                 this.addingSource = false;
                 this.editTableSources = -1;
@@ -606,15 +640,19 @@ export default {
                 this.editTableNames = -1;
             }      
         },
-        saveTableNames(index){
-            if(this.addingName)
-                this.fields.infoSources[index] = this.helperSource;
-            else
-                this.fields.infoSources[index] =  this.helperSource;
+        saveTableSources(index){
+            if(this.addingSource)
+                this.fields.infoSources[index] = { Source: this.helperSource, Type: 'Reference', YACSINumber: this.fields.yacsinumber, isNew: true };
+            else{
+                this.fields.infoSources[index].Source = this.helperSource;
+                if(!this.fields.infoSources[index].isNew)
+                    this.fields.infoSources[index].isEdited = true;
+            }
+                
             this.addingSource = false;  
             this.editTableSources = -1;     
         },
-        addName(){
+        addSource(){
             this.helperSource="";
             this.fields.infoSources.push(""); 
             this.addingSource = true;
