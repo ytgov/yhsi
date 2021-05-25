@@ -91,7 +91,7 @@ router.put('/:aircrashId', authenticateToken, async (req, res) => {
     return rows;
   });
 
-  //remove the previous owners (in progress)
+  //remove the previous owners (DONE)
   for (const obj of removedInfoSources) {
     await db('AirCrash.InfoSource')
     .where('AirCrash.InfoSource.Id', obj.Id)
