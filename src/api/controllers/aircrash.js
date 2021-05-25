@@ -53,6 +53,10 @@ router.get('/:aircrashId', authenticateToken, async (req, res) => {
       .from('dbo.vAircrash')
       .where('dbo.vAircrash.yacsinumber', aircrashId)
       .first();
+  
+  aircrash.infoSources = await db.select('*')
+  .from('AirCrash.InfoSource')
+  .where('AirCrash.InfoSource.YACSINumber', aircrashId);
 
   if (!aircrash) {
       res.status(403).send('Airplane crash id not found');
