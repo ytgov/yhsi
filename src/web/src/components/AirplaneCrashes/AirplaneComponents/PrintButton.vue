@@ -25,33 +25,33 @@ export default {
         textpos: 0,
         fields: [
           { title: "YACSI Number", key: "yacsinumber"},
-          { title: "crashdate", key: "crashdate"},
-          { title: "aircrafttype", key: "aircrafttype"},
-          { title: "aircraftregistration", key: "aircraftregistration"},
-          { title: "nation", key: "nation"},
-          { title: "militarycivilian", key: "militarycivilian"},
-          { title: "crashlocation", key: "crashlocation"},
-          { title: "remainsonsite", key: "remainsonsite"},
-          { title: "extentofremainsonsite", key: "extentofremainsonsite"},
-          { title: "otherlocationsofremains", key: "otherlocationsofremains"},
-          { title: "pilot", key: "pilot"},
-          { title: "fatalities", key: "fatalities"}, 
-          { title: "descriptionofcrashevent", key: "descriptionofcrashevent"},
-          { title: "comments", key: "comments"},
-          { title: "significanceofaircraft", key: "significanceofaircraft"}, 
-          { title: "", key: "sources"},
-          { title: "inyukon", key: "inyukon"},
-          { title: "soulsonboard", key: "soulsonboard"},
+          { title: "Crash Date", key: "crashdate"},
+          { title: "Aircraft Type", key: "aircrafttype"},
+          { title: "Aircraft Registration", key: "aircraftregistration"},
+          { title: "Nation", key: "nation"},
+          { title: "Militarycivilian", key: "militarycivilian"},
+          { title: "Crash Location", key: "crashlocation"},
+          { title: "Remains on Site", key: "remainsonsite"},
+          { title: "Extent of Remains on Site", key: "extentofremainsonsite"},
+          { title: "Other Locations of Remains", key: "otherlocationsofremains"},
+        //  { title: "pilot", key: "pilot"},
+          { title: "Fatalities", key: "fatalities"}, 
+          { title: "Description of Crashevent", key: "descriptionofcrashevent"},
+          { title: "Comments", key: "comments"},
+          { title: "Significance of Aircraft", key: "significanceofaircraft"}, 
+        //  { title: "", key: "sources"},
+          { title: "Is In Yukon?", key: "inyukon"},
+          { title: "Souls on Board", key: "soulsonboard"},
           { title: "Injuries", key: "injuries"},
           { title: "Date Descriptor", key: "datedescriptor"},
           { title: "Date Note", key: "datenote"},
-          { title: "Pilotlastname", key: "pilotlastname"},
-          { title: "Pilotfirstname", key: "pilotfirstname"},
-          { title: "Pilotrank", key: "pilotrank"},
+          { title: "Pilot Last Name", key: "pilotlastname"},
+          { title: "Pilot First Name", key: "pilotfirstname"},
+          { title: "Pilot Rank", key: "pilotrank"},
           { title: "Accuracy", key: "accuracy"},
-          { title: "Aircraftcaption", key: "aircraftcaption"},
-          { title: "Aircraftaftercrashcaption", key: "aircraftaftercrashcaption"},
-          { title: "Location Description", key: "Location"},
+        //  { title: "Aircraft Caption", key: "aircraftcaption"},
+        //  { title: "Aircraftaftercrashcaption", key: "aircraftaftercrashcaption"},
+          { title: "Location", key: "Location"},
         //  { title: "infoSources", key: "infoSources"},
         ]
     }),
@@ -61,8 +61,12 @@ export default {
             let props = Object.getOwnPropertyNames(this.data);
             props = _.filter(props, x=> x != 'photographs' && x != 'sources '&& x != 'lat' && x != 'long');
             this.toPrint.general = _.pickBy(this.data, (value,key) => _.includes(props, key));
-            //this.toPrint.photos = this.data.photos;
-            console.log(this.toPrint);
+
+            //Prepares the missing data for display
+            this.toPrint.general.inyukon = this.toPrint.general.inyukon == true ? 'Yes' : 'No';
+            Object.keys(this.toPrint.general).map((key) => {
+              this.toPrint.general[key] = this.toPrint.general[key] != null ? this.toPrint.general[key] : '';
+            });
             /*
             this.toPrint.general.pastNames = this.toPrint.general.pastNames.map(x => {return [x.BoatName]});
 
@@ -79,35 +83,33 @@ export default {
         this.textpos = 70; 
         //let sections = Object.keys(this.toPrint);
         
-        //this.printGeneral();
+        this.printGeneral();
         //this.printPhotos();//not done yet...
         //this.printHistoricalRecord()
   
-        this.doc.save('Boat_1.pdf');
+        this.doc.save(`Aircrash_${this.yacsinumber}.pdf`);
       },
       printGeneral(){
-
-        let keys = Object.keys(this.toPrint.general);
-        for(let i = 0; i<keys.length; i++){
-          this.addTitle("Registration Number:");
-          //this.addText();
-          console.log(`{ title: "", key: "${keys[i]}"},`);
+        for(let i = 0; i<this.fields.length; i++){
+          this.addTitle(this.fields[i].title);
+          this.addText(`${this.toPrint.general[this.fields[i].key]}`);
+          //console.log(`{ title: "", key: "${keys[i]}"},`);
         }
-        
-
-
-        //this.printNames();
-        //this.printOwners();
       },
       addText(text){
+        let strArr = this.doc.splitTextToSize(text, 550)
         this.doc.setFontSize(9);
-        this.doc.text(text, 50, this.textpos);
-        this.textpos+=20;
+        
+        for(let i=0;i<strArr.length;i++){
+          this.doc.text(strArr[i], 50, this.textpos);
+          this.changePos(12);
+        }
+        this.changePos(8);
       },
       addTitle(title){
         this.doc.setFontSize(10);
         this.doc.text(title, 40, this.textpos);
-        this.textpos+=20;
+        this.changePos(20);
       },
       printPhotos(){
 
@@ -135,14 +137,20 @@ export default {
         body: this.toPrint.general.owners});
 
         this.textpos = this.doc.lastAutoTable.finalY+20;
+      },
+      changePos(val){
+            if (this.textpos + val >= 790){
+                this.doc.addPage();
+                this.textpos = 50;
+            }
+            else{
+              this.textpos+= val;
+            }
+                
       }
-      
     },
     watch: {
-        textpos(newVal){
-            if (newVal >= 800)
-                this.doc.addPage();
-        }
+        
     }
 }
 </script>
