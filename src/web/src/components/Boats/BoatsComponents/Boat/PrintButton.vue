@@ -56,7 +56,7 @@ export default {
         this.printPhotos();//not done yet...
         this.printHistoricalRecord()
   
-        this.doc.save('Boat_1.pdf');
+        this.doc.save(`Boat_${this.name}.pdf`);
       },
       printGeneral(){
         this.addTitle("Registration Number:");

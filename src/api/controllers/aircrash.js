@@ -69,12 +69,26 @@ router.put('/:aircrashId', authenticateToken, async (req, res) => {
 
   const { aircrashId } = req.params;
 
-  const { aircrash = {} } = req.body;
+  const { aircrash = {}, removedInfoSources, newInfoSources } = req.body;
 
   //make the update
   await db('AirCrash.AirCrash')
       .update(aircrash)
       .where('AirCrash.AirCrash.yacsinumber', aircrashId);
+
+  //Add the new info sources (in progress)
+  await db.insert(newInfoSources.map(source => ({ YACSINumber: aircrashId, ...source })))
+  .into('AirCrash.InfoSource')
+  .then(rows => {
+    return rows;
+  });
+
+  //remove the previous owners (in progress)
+  for (const obj of removedInfoSources) {
+    await db('AirCrash.InfoSource')
+    .where('AirCrash.InfoSource.Id', obj.Id)
+    .del();
+  }
 
   res.status(200).send({ message: 'success' });
 });
