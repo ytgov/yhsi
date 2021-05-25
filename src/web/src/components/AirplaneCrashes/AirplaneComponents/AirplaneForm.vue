@@ -585,12 +585,13 @@ export default {
             delete crash.pilotFirstName;
             delete crash.pilotLastName;
             delete crash.infoSources;
+            delete crash.sources;
             delete crash.lat;
             delete crash.long;
         //Mapping infosources
             let editedInfoSources = this.fields.infoSources.filter(x => x.isEdited == true);
             let removedInfoSources = this.deletedSources;
-            let newInfoSources = this.fields.infoSources.filter(x => x.isNew == true);
+            let newInfoSources = this.fields.infoSources.filter(x => x.isNew == true).map(x => ({Type: x.Type, Source: x.Source}));
 
             console.log(crash);
         //Final data obj
@@ -601,22 +602,18 @@ export default {
                     editedInfoSources
                 };
                 console.log(data);
-            //let currentCrashNumber;
-            /*
+            
             if(this.mode == 'new'){
                 await aircrash.post(data);
                 this.overlay = false;
                 this.$router.push(`/airplane/`);
             }
             else{
-
-                console.log(localStorage.currentCrashNumber);
                 await aircrash.put(localStorage.currentCrashNumber,data);
-                currentCrashNumber = localStorage.currentCrashNumber;
                 this.overlay = false;
                 this.mode = 'view';
-                this.$router.push({name: 'airplaneView', params: { name: currentCrashNumber, yacsinumber: currentCrashNumber}});
-            } */
+                this.$router.push({name: 'airplaneView', params: { name: localStorage.currentCrashNumber, yacsinumber: localStorage.currentCrashNumber}});
+            } 
         },
     //functions for editing the table "Sources" values
         changeEditTableSources(item,index){
@@ -642,7 +639,7 @@ export default {
         },
         saveTableSources(index){
             if(this.addingSource)
-                this.fields.infoSources[index] = { Source: this.helperSource, Type: 'Reference', YACSINumber: this.fields.yacsinumber, isNew: true };
+                this.fields.infoSources[index] = { Source: this.helperSource, Type: 'Reference', isNew: true };
             else{
                 this.fields.infoSources[index].Source = this.helperSource;
                 if(!this.fields.infoSources[index].isNew)
