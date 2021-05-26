@@ -218,7 +218,7 @@
             <v-col cols="5">
                     <v-col cols="12">
 <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-                        <Photos :showDefault="showPhotosDefault" :boatID="getBoatID"/>
+                        <Photos :showDefault="showPhotosDefault" :yacsiNumber="getYACSINumber"/>
                     </v-col>
             </v-col>
         </v-row>
@@ -674,11 +674,11 @@ export default {
         
     },   
     computed:{
-        getBoatID(){
-            if(this.$route.params.id){
-                return  this.$route.params.id;
+        getYACSINumber(){
+            if(this.$route.params.yacsinumber){
+                return  this.$route.params.yacsinumber;
             }
-            else return localStorage.currentBoatID;
+            else return localStorage.currentCrashNumber;
         },
         crashdate(){
             return this.formatDate(this.fields.crashdate);
