@@ -85,6 +85,7 @@ router.put('/:aircrashId', authenticateToken, async (req, res) => {
 
 
   //Add the new info sources (in progress)
+  console.log(newInfoSources);
   await db.insert(newInfoSources.map(source => ({ YACSINumber: aircrashId, ...source })))
   .into('AirCrash.InfoSource')
   .then(rows => {
@@ -113,12 +114,32 @@ router.post('/new', authenticateToken, async (req, res) => {
   const permissions = req.decodedToken['yg-claims'].permissions;
   if (!permissions.includes('create')) res.sendStatus(403);
 
-  const { aircrash = {} } = req.body;
-
+  const { aircrash = {}, newInfoSources } = req.body;
+/*
   const response = await db.insert(aircrash)
     .into('AirCrash.AirCrash')
     .returning('*');
-  
+*/
+  const response = await db.insert(aircrash)
+    .into('AirCrash.AirCrash')
+    .returning('*')
+    .then(async rows => {
+      const newAirCrash = rows[0];
+
+      if (newInfoSources.length) {
+        const finalInfoSources = newInfoSources.map(source => ({ YACSINumber: newAirCrash.YACSINumber, ...source }))
+
+        await db.insert(finalInfoSources)
+        .into('AirCrash.InfoSource')
+        .returning('*')
+        .then(rows => {
+          return rows;
+        });
+      }
+
+      return newAirCrash;
+    });
+
   res.status(200).send(response);
 
 });

@@ -370,6 +370,7 @@
 <script>
 import photos from "../../../../controllers/photos";
 import owners from "../../../../controllers/owners";
+import catalogs from "../../../../controllers/catalogs";
 export default {
     name: "photos",
     props: ["boatID", "showDefault"],
@@ -535,13 +536,13 @@ export default {
         },
         async getCommunities(){
             this.isLoadingCommunities = true;
-            let data = await photos.getCommunities();
+            let data = await catalogs.getCommunities();
             this.availableCommunities = data;
             this.isLoadingCommunities = false;
         },
         async getOriginalMedia(){
             this.isLoadingMedias = true;
-            let data = await photos.getOriginalMedia();
+            let data = await catalogs.getOriginalMedia();
             this.availableOriginalMedia = data;
             this.isLoadingMedias = false;
         },
