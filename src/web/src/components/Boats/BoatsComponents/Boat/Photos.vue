@@ -499,7 +499,7 @@ export default {
             }
             formData.append("file", this.file);
             console.log(formData);
-            let resp = await photos.post(formData);
+            let resp = await photos.postBoatPhoto(formData);
             console.log(resp);
             this.reset();
             this.overlay = false;

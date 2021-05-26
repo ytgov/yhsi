@@ -1,41 +1,11 @@
-Skip to content
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@AngelGomez-Bizont 
-Bizont
-/
-yg-historic-sites
-Private
-0
-00
-Code
-Issues
-Pull requests
-Actions
-Projects
-Security
-Insights
-yg-historic-sites/src/web/src/components/AirplaneCrashes/AirplaneComponents/Photos.vue
-@AngelGomez-Bizont
-AngelGomez-Bizont Front: finished the post and put api calls on the airplane form compo…
-…
-Latest commit 75eb90d 4 hours ago
- History
- 1 contributor
-479 lines (463 sloc)  21.5 KB
-  
 <template>
     <v-card>
-        <div v-if="showDefault || photos.length == 0" 
+        <div v-if="showDefault || photos.length == 0"
             class="center-children"
             style="height: 400px;"
             
         >
+
             <v-img 
             height="200"
             width="200"
@@ -43,12 +13,11 @@ Latest commit 75eb90d 4 hours ago
             :lazy-src="require('../../../assets/add_photo.png')"
             ></v-img>
         </div>
-        <v-carousel v-else
+        <v-carousel v-if="!showDefault"
             id="carousell"
             cycle
-            height="400"
+            height="auto"
             hide-delimiter-background
-            
         >
             <v-carousel-item 
             v-for="(item,i) in photos"
@@ -60,7 +29,7 @@ Latest commit 75eb90d 4 hours ago
         <v-divider></v-divider>
         <v-row v-if="showDefault">
             <v-col cols="12">
-                <p class="text-center font-weight-bold pt-3">Once you upload your new crash site data, you will be able to attach photos</p>
+                <p class="text-center font-weight-bold pt-3">Once you upload your new Crash Site data, you will be able to attach photos</p>
             </v-col>
         </v-row>
         <v-row v-else>
@@ -130,16 +99,38 @@ Latest commit 75eb90d 4 hours ago
                                                     ></v-autocomplete>
                                                     <v-combobox
                                                         v-model="fields.CommunityId"
+                                                        @click="getCommunities"
+                                                        :items="availableCommunities"
+                                                        clearable
+                                                        :loading="isLoadingCommunities"
+                                                        item-text="Name"
+                                                        item-value="Id"
                                                         label="Community"
                                                         :rules="generalRules">   
                                                     </v-combobox>
                                                     <v-combobox
+                                                        v-model="fields.OriginalMediaId"
+                                                        @click="getOriginalMedia"
+                                                        :items="availableOriginalMedia"
+                                                        clearable
+                                                        :loading="isLoadingMedias"
+                                                        item-text="Type"
+                                                        item-value="Id"
+                                                        label="Original Media"
+                                                        :rules="generalRules">   
+                                                    </v-combobox>
+                                                    <v-combobox
                                                         v-model="fields.Copyright"
+                                                        :items="copyrightOptions"
+                                                        item-value="id"
+                                                        item-text="text"
                                                         label="Copyright"
                                                         :rules="generalRules">
                                                     </v-combobox>
                                                     <v-combobox
                                                         v-model="fields.UsageRights"
+                                                        :items="usageRightOptions"
+                                                        ritem-value="id"
                                                         label="Usage Rights"
                                                         :rules="generalRules">   
                                                     </v-combobox>   
@@ -172,6 +163,12 @@ Latest commit 75eb90d 4 hours ago
                                                     :rules="generalRules"
                                                     ></v-file-input>                                          
                                             </v-col>
+                                            <v-overlay :value="overlay">
+                                                <v-progress-circular
+                                                    indeterminate
+                                                    size="64"
+                                                ></v-progress-circular>
+                                            </v-overlay>
                                         </v-row>
                                         <v-divider></v-divider>
                                         <v-row>
@@ -373,10 +370,12 @@ Latest commit 75eb90d 4 hours ago
 <script>
 import photos from "../../../controllers/photos";
 import owners from "../../../controllers/owners";
+import catalogs from "../../../controllers/catalogs";
 export default {
     name: "photos",
-    props: ["boatID", "showDefault"],
+    props: ["yacsiNumber", "showDefault"],
     data: ()=>({
+        overlay: false,
         searchPhotos: null,
         dialog1: false,
         dialog2: false,
@@ -387,20 +386,61 @@ export default {
             Caption: "",
             FeatureName: "",
             OwnerId: 328,
-            UsageRights: 0,
-            CommunityId: 46,
+            UsageRights: null,
+            CommunityId: null,
             Comments: "",
             CreditLine: "",  
-            PhotoProjectId:79,
+            PhotoProjectId:0,
             IsOtherRecord:false,
-            OriginalMediaId:1,
+            OriginalMediaId: null,
             MediaStorage:2,
-            Copyright:1,
+            Copyright: null,
             Program:4,
             IsComplete:true,
             Rating:3,
         },
+    //selection options
+        usageRightOptions: [
+                {
+                    id: 0,
+                    text: "Non reuse permitted"
+                },
+                {
+                    id: 1,
+                    text: "Non-commercial reuse permitted"
+                }
+            ],
+        copyrightOptions: [
+            {
+                id:1,
+                text: "Use Credit Line"
+            },
+            {
+                id:2,
+                text: "No reproduction without permission from Archives"
+            },
+            {
+                id:3,
+                text: "No reproduction without permission from donor"
+            },
+            {
+                id:4,
+                text: "No reproduction for commercial purposes"
+            },
+            {
+                id:5,
+                text: "Incomplete Image Information - check ownership"
+            },
+            {
+                id:6,
+                text: "Use Owner"
+            }
+        ],
+        availableCommunities: [],
+        availableOriginalMedia: [],
         file: false,
+        isLoadingCommunities: false,
+        isLoadingMedias: false,
         isLoadingOwner: false,
         owners: [],   
         helperOwner: "",
@@ -415,13 +455,13 @@ export default {
     
     }),
     mounted(){
-        //if(this.boatID && !this.showPhotosDefault)
-        //    this.getDataFromAPI();
+        if(this.yacsiNumber && !this.showPhotosDefault)
+            this.getDataFromAPI();
     },
     methods: {
         async getDataFromAPI(){
-            let data = await photos.getByBoatId(this.boatID);
-            console.log(data);
+            let data = await photos.getByYACSINumber(this.yacsiNumber);
+            console.log("DATA",data);
             for(let i=0;i<data.length; i++){
                 if(data[i].File.data.length > 0){
                     data[i].File.base64 = `data:image/png;base64,${this.toBase64(data[i].File.data)}`;
@@ -444,14 +484,25 @@ export default {
             }
         },
         async savePhoto(){
-            this.fields.bBatId = this.boatID;
+            this.overlay = true;
+            this.fields.BoatId = Number(this.boatID);
+            console.log(this.fields);
+            this.fields.CommunityId = this.fields.CommunityId.Id;
+            this.fields.Copyright = this.fields.Copyright.id;
+            this.fields.OriginalMediaId = this.fields.OriginalMediaId.Id;
+            this.fields.UsageRights = this.fields.UsageRights.id
             const formData = new FormData();
             let prevFields = Object.entries(this.fields);
+            console.log(prevFields);
             for(let i=0;i<prevFields.length; i++){
                 formData.append(prevFields[i][0],prevFields[i][1]);
             }
             formData.append("file", this.file);
-            await photos.post(formData);
+            console.log(formData);
+            let resp = await photos.postAirCrashPhoto(formData);
+            console.log(resp);
+            this.reset();
+            this.overlay = false;
         },
         async saveAndLink(){
             //makes axios request to save the data
@@ -461,7 +512,7 @@ export default {
             return btoa(arr.reduce((data, byte) => data + String.fromCharCode(byte), ''));
         },
         async onFileSelected(event){
-            this.File = event;
+            this.file = event;
         },
         getBase64(file) {//this function is not used currently
             var reader = new FileReader();
@@ -482,6 +533,18 @@ export default {
         },
         resetValidation () {
             this.$refs.photoForm.resetValidation();
+        },
+        async getCommunities(){
+            this.isLoadingCommunities = true;
+            let data = await catalogs.getCommunities();
+            this.availableCommunities = data;
+            this.isLoadingCommunities = false;
+        },
+        async getOriginalMedia(){
+            this.isLoadingMedias = true;
+            let data = await catalogs.getOriginalMedia();
+            this.availableOriginalMedia = data;
+            this.isLoadingMedias = false;
         },
     },
     computed: {
