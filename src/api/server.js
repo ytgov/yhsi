@@ -7,6 +7,7 @@ var ownersRouter = require('./controllers/owners');
 var historiesRouter = require('./controllers/histories');
 var photosRouter = require('./controllers/photos');
 var aircrashRouter = require('./controllers/aircrash');
+var catalogsRouter = require('./controllers/catalogs');
 
 
 var knex = require('knex');
@@ -72,6 +73,7 @@ app.use('/api/owners', ownersRouter);
 app.use('/api/histories', historiesRouter);
 app.use('/api/photos', photosRouter);
 app.use('/api/aircrash', aircrashRouter);
+app.use('/api/catalogs', catalogsRouter);
 
 console.log(`Database Info: ${process.env.DB_HOST} ${process.env.DB_NAME}, `,port);
 app.listen(port);
