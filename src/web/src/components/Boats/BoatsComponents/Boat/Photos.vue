@@ -70,13 +70,13 @@
                                             <v-col cols="12">
                                                     <v-row>
                                                         <v-col cols="12" class="d-flex my-0 py-0">
-                                                        <v-spacer></v-spacer>
-                                                        <v-checkbox
-                                                            class="align-self-end"
-                                                            label="Private"
-                                                            v-model="fields.Private"
-                                                        ></v-checkbox>
-                                                    </v-col>
+                                                            <v-spacer></v-spacer>
+                                                            <v-checkbox
+                                                                class="align-self-end"
+                                                                label="Private"
+                                                                v-model="fields.Private"
+                                                            ></v-checkbox>
+                                                        </v-col>
                                                     </v-row>       
                                                     
                                                     <v-text-field
@@ -130,7 +130,7 @@
                                                     <v-combobox
                                                         v-model="fields.UsageRights"
                                                         :items="usageRightOptions"
-                                                        ritem-value="id"
+                                                        item-value="id"
                                                         label="Usage Rights"
                                                         :rules="generalRules">   
                                                     </v-combobox>   
@@ -154,7 +154,40 @@
                                                         rows="2"
                                                         :rules="generalRules">
                                                     </v-textarea>
+                                                    
 
+                                                    <v-combobox
+                                                        v-model="fields.Program"
+                                                        :items="programOptions"
+                                                        item-value="value"
+                                                        item-text="text"
+                                                        label="Program Type"
+                                                        :rules="generalRules">   
+                                                    </v-combobox> 
+
+                                                    <div class="d-flex">
+                                                        <p class="mt-auto mb-auto grey--text text--darken-2">Rating</p>
+                                                        <v-spacer></v-spacer>
+                                                        <v-rating
+                                                        v-model="fields.Rating"
+                                                        background-color="orange lighten-3"
+                                                        color="orange"
+                                                        length="5"
+                                                        large
+                                                        ></v-rating>
+                                                    </div>
+                                                    <!--
+                                                    <v-row>
+                                                        <v-col cols="12" class="d-flex my-0 py-0">
+                                                            <v-spacer></v-spacer>
+                                                            <v-checkbox
+                                                                class="align-self-end"
+                                                                label="Is Complete?"
+                                                                v-model="fields.IsComplete"
+                                                            ></v-checkbox>
+                                                        </v-col>
+                                                    </v-row>  
+-->
                                                     <v-file-input
                                                     accept="image/*"
                                                     label="Choose photo for upload"
@@ -385,19 +418,19 @@ export default {
             BoatId: 1,
             Caption: "",
             FeatureName: "",
-            OwnerId: 328,
+            OwnerId: null,
             UsageRights: null,
             CommunityId: null,
             Comments: "",
             CreditLine: "",  
             PhotoProjectId:0,
-            IsOtherRecord:false,
+            IsOtherRecord:0,
             OriginalMediaId: null,
-            MediaStorage:2,
+            MediaStorage:4,
             Copyright: null,
-            Program:4,
-            IsComplete:true,
-            Rating:3,
+            Program: null,
+            IsComplete:false,
+            Rating:1,
         },
     //selection options
         usageRightOptions: [
@@ -435,6 +468,20 @@ export default {
                 id:6,
                 text: "Use Owner"
             }
+        ],
+        programOptions: [
+            {   
+                text: "General", value: 1
+            },
+            {   
+                text: "HPAC", value: 2
+            },
+            {   
+                text: "Interpretation", value: 3
+            },
+            {   
+                text: "YHSI", value: 4
+            },
         ],
         availableCommunities: [],
         availableOriginalMedia: [],
@@ -485,12 +532,15 @@ export default {
         },
         async savePhoto(){
             this.overlay = true;
+            let { IsComplete, Program, CommunityId, Copyright, OriginalMediaId, UsageRights } = this.fields;
             this.fields.BoatId = Number(this.boatID);
+            this.fields.IsComplete  = IsComplete ? 1 : 0;
+            this.fields.Program = Program.value;
+            this.fields.CommunityId = CommunityId.Id;
+            this.fields.Copyright = Copyright.id;
+            this.fields.OriginalMediaId = OriginalMediaId.Id;
+            this.fields.UsageRights = UsageRights.id
             console.log(this.fields);
-            this.fields.CommunityId = this.fields.CommunityId.Id;
-            this.fields.Copyright = this.fields.Copyright.id;
-            this.fields.OriginalMediaId = this.fields.OriginalMediaId.Id;
-            this.fields.UsageRights = this.fields.UsageRights.id
             const formData = new FormData();
             let prevFields = Object.entries(this.fields);
             console.log(prevFields);
