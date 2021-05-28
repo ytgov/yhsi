@@ -2,10 +2,8 @@
     <v-card>
         <div v-if="showDefault || photos.length == 0"
             class="center-children"
-            style="height: 400px;"
-            
+            style="height: 450px;"
         >
-
             <v-img 
             height="200"
             width="200"
@@ -16,7 +14,7 @@
         <v-carousel v-if="!showDefault"
             id="carousell"
             cycle
-            height="auto"
+            height="450"
             hide-delimiter-background
         >
             <v-carousel-item 
@@ -29,7 +27,7 @@
         <v-divider></v-divider>
         <v-row v-if="showDefault">
             <v-col cols="12">
-                <p class="text-center font-weight-bold pt-3">Once you upload your new boat data, you will be able to attach photos</p>
+                <p class="text-center font-weight-bold pt-3">Once you upload your new Crash Site data, you will be able to attach photos</p>
             </v-col>
         </v-row>
         <v-row v-else>
@@ -70,13 +68,13 @@
                                             <v-col cols="12">
                                                     <v-row>
                                                         <v-col cols="12" class="d-flex my-0 py-0">
-                                                            <v-spacer></v-spacer>
-                                                            <v-checkbox
-                                                                class="align-self-end"
-                                                                label="Private"
-                                                                v-model="fields.Private"
-                                                            ></v-checkbox>
-                                                        </v-col>
+                                                        <v-spacer></v-spacer>
+                                                        <v-checkbox
+                                                            class="align-self-end"
+                                                            label="Private"
+                                                            v-model="fields.Private"
+                                                        ></v-checkbox>
+                                                    </v-col>
                                                     </v-row>       
                                                     
                                                     <v-text-field
@@ -130,7 +128,7 @@
                                                     <v-combobox
                                                         v-model="fields.UsageRights"
                                                         :items="usageRightOptions"
-                                                        item-value="id"
+                                                        ritem-value="id"
                                                         label="Usage Rights"
                                                         :rules="generalRules">   
                                                     </v-combobox>   
@@ -154,40 +152,7 @@
                                                         rows="2"
                                                         :rules="generalRules">
                                                     </v-textarea>
-                                                    
 
-                                                    <v-combobox
-                                                        v-model="fields.Program"
-                                                        :items="programOptions"
-                                                        item-value="value"
-                                                        item-text="text"
-                                                        label="Program Type"
-                                                        :rules="generalRules">   
-                                                    </v-combobox> 
-
-                                                    <div class="d-flex">
-                                                        <p class="mt-auto mb-auto grey--text text--darken-2">Rating</p>
-                                                        <v-spacer></v-spacer>
-                                                        <v-rating
-                                                        v-model="fields.Rating"
-                                                        background-color="orange lighten-3"
-                                                        color="orange"
-                                                        length="5"
-                                                        large
-                                                        ></v-rating>
-                                                    </div>
-                                                    <!--
-                                                    <v-row>
-                                                        <v-col cols="12" class="d-flex my-0 py-0">
-                                                            <v-spacer></v-spacer>
-                                                            <v-checkbox
-                                                                class="align-self-end"
-                                                                label="Is Complete?"
-                                                                v-model="fields.IsComplete"
-                                                            ></v-checkbox>
-                                                        </v-col>
-                                                    </v-row>  
--->
                                                     <v-file-input
                                                     accept="image/*"
                                                     label="Choose photo for upload"
@@ -232,19 +197,46 @@
                                 <v-divider></v-divider>       
                                 <v-container class="scroll">
                                     <v-row>
-                                        <v-col>
+                                        <v-col class=" d-flex">
                                             <v-text-field
                                             v-model="searchPhotos"
+                                            @keyup.enter="getAll"
                                             label="Search">
                                             </v-text-field>
+                                            <v-btn 
+                                                @click="getAll"
+                                                icon 
+                                                class="mt-auto mb-auto">
+                                                <v-icon>mdi-magnify</v-icon>
+                                            </v-btn>
+
                                         </v-col>
                                     </v-row>
-                                    <v-row class="pr-0">
-                                        <v-col
-                                        v-for="(item,i) in filteredPhotos"
+                                    <v-row class="pr-0" v-if="showSkeletons">
+                                        <v-col 
+                                        v-for="(i) in skeletons"
                                         :key="`ph-${i}`"
                                         class="d-flex child-flex"
                                         cols="4"
+                                        >
+                                            <v-sheet
+                                                :color="`grey lighten-4 `"
+                                                class=""
+                                            >
+                                                <v-skeleton-loader
+                                                class="mx-auto"
+                                                max-width="300"
+                                                type="card"
+                                                ></v-skeleton-loader>
+                                            </v-sheet>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row class="pr-0" v-if="!showSkeletons">
+                                        <v-col
+                                        v-for="(item,i) in availablePhotos"
+                                        :key="`ph-${i}`"
+                                        class="d-flex child-flex"
+                                        cols="6"
                                         >
                                         <v-card
                                         outlined
@@ -272,9 +264,12 @@
                                             </v-img>
                                             <v-row>
                                                 <v-col cols="12" class="d-flex">
-                                                    <v-card-text>{{item.FeatureName}}</v-card-text>
+                                                    <v-card-text>
+                                                        Feature name: {{item.FeatureName}} 
+                                                        Community: {{item.CommunityName}}
+                                                        Place: {{item.PlaceName}}
+                                                    </v-card-text>
                                                     <v-checkbox
-                                                    readonly
                                                     v-model="item.selected"
                                                     ></v-checkbox>
                                                 </v-col>
@@ -410,6 +405,9 @@ export default {
     data: ()=>({
         overlay: false,
         searchPhotos: null,
+        availablePhotos: null,
+        showSkeletons: false,
+        skeletons: [1,2,3,4,5],
         dialog1: false,
         dialog2: false,
         photos: [],
@@ -506,16 +504,23 @@ export default {
             this.getDataFromAPI();
     },
     methods: {
+        async getAll(){
+            this.showSkeletons = true;
+            let data = await photos.getAll(this.searchPhotos);
+            this.availablePhotos = data.map((x) => {
+                x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`
+                x.selected = false;
+                return x;
+            })
+            this.showSkeletons = false;
+        },
         async getDataFromAPI(){
             let data = await photos.getByBoatId(Number(this.boatID));
-            console.log(data);
-            for(let i=0;i<data.length; i++){
-                if(data[i].File.data.length > 0){
-                    data[i].File.base64 = `data:image/png;base64,${this.toBase64(data[i].File.data)}`;
-                }
-                data[i].selected = false;
-            }
-            this.photos = data;
+            this.photos = data.map((x) => {
+                x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`
+                x.selected = false;
+                return x;
+            })
         },
         async getOwners(){
             this.isLoadingOwner = true;
@@ -555,8 +560,9 @@ export default {
             this.overlay = false;
         },
         async saveAndLink(){
-            //makes axios request to save the data
-            
+            let photosToLink = this.availablePhotos.filter(x => x.selected == true).map(x => { return x.RowId});
+            let resp = await photos.linkBoatPhotos(Number(this.boatID),{linkPhotos: photosToLink});
+            console.log(resp);
         },
         toBase64(arr) {
             return btoa(arr.reduce((data, byte) => data + String.fromCharCode(byte), ''));
