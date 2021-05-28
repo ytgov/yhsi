@@ -2,10 +2,8 @@
     <v-card>
         <div v-if="showDefault || photos.length == 0"
             class="center-children"
-            style="height: 400px;"
-            
+            style="height: 450px;"
         >
-
             <v-img 
             height="200"
             width="200"
@@ -16,7 +14,7 @@
         <v-carousel v-if="!showDefault"
             id="carousell"
             cycle
-            height="auto"
+            height="450"
             hide-delimiter-background
         >
             <v-carousel-item 
@@ -199,19 +197,46 @@
                                 <v-divider></v-divider>       
                                 <v-container class="scroll">
                                     <v-row>
-                                        <v-col>
+                                        <v-col class=" d-flex">
                                             <v-text-field
                                             v-model="searchPhotos"
+                                            @keyup.enter="getAll"
                                             label="Search">
                                             </v-text-field>
+                                            <v-btn 
+                                                @click="getAll"
+                                                icon 
+                                                class="mt-auto mb-auto">
+                                                <v-icon>mdi-magnify</v-icon>
+                                            </v-btn>
+
                                         </v-col>
                                     </v-row>
-                                    <v-row class="pr-0">
-                                        <v-col
-                                        v-for="(item,i) in filteredPhotos"
+                                    <v-row class="pr-0" v-if="showSkeletons">
+                                        <v-col 
+                                        v-for="(i) in skeletons"
                                         :key="`ph-${i}`"
                                         class="d-flex child-flex"
                                         cols="4"
+                                        >
+                                            <v-sheet
+                                                :color="`grey lighten-4 `"
+                                                class=""
+                                            >
+                                                <v-skeleton-loader
+                                                class="mx-auto"
+                                                max-width="300"
+                                                type="card"
+                                                ></v-skeleton-loader>
+                                            </v-sheet>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row class="pr-0" v-if="!showSkeletons">
+                                        <v-col
+                                        v-for="(item,i) in availablePhotos"
+                                        :key="`ph-${i}`"
+                                        class="d-flex child-flex"
+                                        cols="6"
                                         >
                                         <v-card
                                         outlined
@@ -239,9 +264,12 @@
                                             </v-img>
                                             <v-row>
                                                 <v-col cols="12" class="d-flex">
-                                                    <v-card-text>{{item.FeatureName}}</v-card-text>
+                                                    <v-card-text>
+                                                        Feature name: {{item.FeatureName}} 
+                                                        Community: {{item.CommunityName}}
+                                                        Place: {{item.PlaceName}}
+                                                    </v-card-text>
                                                     <v-checkbox
-                                                    readonly
                                                     v-model="item.selected"
                                                     ></v-checkbox>
                                                 </v-col>
@@ -377,6 +405,9 @@ export default {
     data: ()=>({
         overlay: false,
         searchPhotos: null,
+        availablePhotos: null,
+        showSkeletons: false,
+        skeletons: [1,2,3,4,5],
         dialog1: false,
         dialog2: false,
         photos: [],
@@ -457,24 +488,31 @@ export default {
     mounted(){
         if(this.yacsiNumber && !this.showPhotosDefault)
             this.getDataFromAPI();
+        //this.getAll();
     },
     methods: {
+        async getAll(){
+            this.showSkeletons = true;
+            let data = await photos.getAll(this.searchPhotos);
+            this.availablePhotos = data.map((x) => {
+                x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`
+                x.selected = false;
+                return x;
+            })
+            this.showSkeletons = false;
+        },
         async getDataFromAPI(){
             let data = await photos.getByYACSINumber(this.yacsiNumber);
-            console.log("DATA",data);
-            for(let i=0;i<data.length; i++){
-                if(data[i].File.data.length > 0){
-                    data[i].File.base64 = `data:image/png;base64,${this.toBase64(data[i].File.data)}`;
-                }
-                data[i].selected = false;
-            }
-            this.photos = data;
+            this.photos = data.map((x) => {
+                x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`
+                x.selected = false;
+                return x;
+            })
         },
         async getOwners(){
             this.isLoadingOwner = true;
             let data = await owners.get();
             this.owners = data.body;
-            console.log(this.owners);
             this.isLoadingOwner = false;
         },
         selectImage(item){
@@ -498,15 +536,15 @@ export default {
                 formData.append(prevFields[i][0],prevFields[i][1]);
             }
             formData.append("file", this.file);
-            console.log(formData);
             let resp = await photos.postAirCrashPhoto(formData);
             console.log(resp);
             this.reset();
             this.overlay = false;
         },
         async saveAndLink(){
-            //makes axios request to save the data
-            
+            let photosToLink = this.availablePhotos.filter(x => x.selected == true).map(x => { return x.RowId});
+            let resp = await photos.linkAirCrashPhotos(this.yacsiNumber,{linkPhotos: photosToLink});
+            console.log(resp);
         },
         toBase64(arr) {
             return btoa(arr.reduce((data, byte) => data + String.fromCharCode(byte), ''));
@@ -548,6 +586,9 @@ export default {
         },
     },
     computed: {
+        showCarousel(){
+            return this.photos.length > 0;
+        },
         filteredPhotos(){
             if(this.photos.length > 0 && this.searchPhotos ){
                 return this.photos.filter(a => a.FeatureName ? a.FeatureName.toLowerCase().includes(this.searchPhotos.toLowerCase()) : false);
