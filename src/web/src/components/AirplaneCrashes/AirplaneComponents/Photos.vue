@@ -72,7 +72,7 @@
                                                         <v-checkbox
                                                             class="align-self-end"
                                                             label="Private"
-                                                            v-model="fields.Private"
+                                                            v-model="fields.isPirvate"
                                                         ></v-checkbox>
                                                     </v-col>
                                                     </v-row>       
@@ -233,6 +233,19 @@
 
                                         </v-col>
                                     </v-row>
+                                    <v-row v-if="!availablePhotos && !showSkeletons">
+                                        <v-col cols="12">
+                                            <v-alert
+                                            dense
+                                            prominent
+                                            border="top"
+                                            type="info"
+                                            text
+                                            >
+                                            Search the photo library by <strong>Community, Address, Place, Feature or File Name</strong>, then press enter to start the search.
+                                            </v-alert>
+                                        </v-col>
+                                    </v-row>
                                     <v-row class="pr-0" v-if="showSkeletons">
                                         <v-col 
                                         v-for="(i) in skeletons"
@@ -257,8 +270,49 @@
                                         v-for="(item,i) in availablePhotos"
                                         :key="`ph-${i}`"
                                         class="d-flex child-flex"
-                                        cols="6"
+                                        cols="4"
                                         >
+
+                                        <v-hover>
+                                            <template v-slot:default="{ hover }">
+                                            <v-card
+                                                outlined
+                                                hover
+                                            >
+                                                <v-img 
+                                                :src="item.File.base64"
+                                                :lazy-src="item.File.base64"
+                                                aspect-ratio="1"
+                                                class="grey lighten-2"
+                                                ></v-img>
+
+                                                <v-row>
+                                                    <v-col cols="12" class="d-flex">
+                                                        <v-card-text v-if="item.Caption" class="text-truncate text-caption">
+                                                            {{item.Caption}} 
+                                                        </v-card-text>
+                                                        <v-card-text v-else class="text-caption">
+                                                            No caption 
+                                                        </v-card-text>
+                                                        
+                                                    </v-col>
+                                                </v-row>  
+                                                <v-fade-transition>
+                                                <v-overlay
+                                                    v-if="hover"
+                                                    absolute
+                                                    color="#036358"
+                                                    @click="selectImage(item)"
+                                                >
+                                                    <v-checkbox 
+                                                        v-model="item.selected"
+                                                    ></v-checkbox>
+                                                </v-overlay>
+                                                </v-fade-transition>
+                                            </v-card>
+                                            </template>
+                                        </v-hover>
+                            <!--
                                         <v-card
                                         outlined
                                         @click="selectImage(item)"
@@ -270,6 +324,13 @@
                                                 aspect-ratio="1"
                                                 class="grey lighten-2"
                                             >
+                                            <v-row>
+                                                <v-spacer></v-spacer>
+                                                <v-checkbox class="white"
+                                                    v-model="item.selected"
+                                                ></v-checkbox>
+                                            </v-row>
+                                                
                                                 <template v-slot:placeholder>
                                                 <v-row
                                                     class="fill-height ma-0"
@@ -285,19 +346,19 @@
                                             </v-img>
                                             <v-row>
                                                 <v-col cols="12" class="d-flex">
-                                                    <v-card-text>
-                                                        Feature name: {{item.FeatureName}} 
-                                                        Community: {{item.CommunityName}}
-                                                        Place: {{item.PlaceName}}
+                                                    <v-card-text v-if="item.Caption" class="text-truncate text-caption">
+                                                        {{item.Caption}} 
                                                     </v-card-text>
-                                                    <v-checkbox
-                                                    v-model="item.selected"
-                                                    ></v-checkbox>
+                                                    <v-card-text v-else class="text-caption">
+                                                        No caption 
+                                                    </v-card-text>
                                                 </v-col>
                                             </v-row>     
                                         </v-card>
+                                        --> 
                                         </v-col>
-                                    </v-row>                   
+                                    </v-row>    
+                                      
                                 </v-container>
                                 <v-divider  class=""></v-divider>
                                 <v-row class="">
@@ -450,6 +511,7 @@ export default {
             Program: null,
             IsComplete:false,
             Rating:1,
+            isPirvate: 0,
         },
     //selection options
         usageRightOptions: [
@@ -538,6 +600,7 @@ export default {
                 return x;
             })
             this.showSkeletons = false;
+            console.log(data);
         },
         async getDataFromAPI(){
             let data = await photos.getByYACSINumber(this.yacsiNumber);
@@ -546,6 +609,7 @@ export default {
                 x.selected = false;
                 return x;
             })
+            console.log(data);
         },
         async getOwners(){
             this.isLoadingOwner = true;
@@ -554,9 +618,9 @@ export default {
             this.isLoadingOwner = false;
         },
         selectImage(item){
-            let index = this.photos.indexOf(item);
+            let index = this.availablePhotos.indexOf(item);
             if(index >-1){
-                this.photos[index].selected =  !this.photos[index].selected;
+                this.availablePhotos[index].selected =  !this.availablePhotos[index].selected;
             }
         },
         async savePhoto(){
@@ -580,9 +644,14 @@ export default {
             this.overlay = false;
         },
         async saveAndLink(){
+            console.log("DATA HERE");
+            console.log(this.availablePhotos);
             let photosToLink = this.availablePhotos.filter(x => x.selected == true).map(x => { return x.RowId});
+            console.log(photosToLink);
             let resp = await photos.linkAirCrashPhotos(this.yacsiNumber,{linkPhotos: photosToLink});
             console.log(resp);
+            this.reset();
+            this.$router.go();
         },
         toBase64(arr) {
             return btoa(arr.reduce((data, byte) => data + String.fromCharCode(byte), ''));
@@ -648,5 +717,18 @@ export default {
 .center-children{
     display: grid;
     place-items: center;
+}
+.top-checkbox{
+    position: absolute; 
+    top: 0; 
+    right: 0; 
+    width: 34px; 
+    height: 34px;
+}
+.top-checkbox > .v-input__control > .v-input__slot > .v-input--selection-controls__input{
+    width: 34px; 
+    height: 34px;
+    margin: 0px;
+    padding: 0px;
 }
 </style>
