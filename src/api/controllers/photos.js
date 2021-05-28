@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var authenticateToken = require('../middlewares');
 var multer = require('multer');
+var _ = require('lodash');
 // const cors = require('cors')// 
 // router.use(cors());
 // router.all('*', cors());
@@ -59,14 +60,16 @@ router.post('/boat/link/:BoatId', [authenticateToken, upload.single('file')], as
   const { BoatId } = req.params;
   const { linkPhotos } = req.body;
 
-  for(const rowId of linkPhotos)
+  let currentPhotos = await db.select('Photo_RowID').from('boat.Photo').where('BoatId', BoatId)
+  let filteredLinkPhotos = _.difference(linkPhotos, currentPhotos.map(x => {return x.Photo_RowID}))
+
+  for(const rowId of filteredLinkPhotos)
     await db.insert({ BoatId, Photo_RowID: rowId })
       .into('boat.photo')
       .returning('*')
     .then(rows => {
       return rows;
     });
-
   res.status(200).send({ message: 'Successfully linked the photos' });
 });
 
@@ -79,8 +82,10 @@ router.post('/aircrash/link/:AirCrashId',  authenticateToken, async (req, res) =
 
   const { AirCrashId } = req.params;
   const { linkPhotos } = req.body;
+  let currentPhotos = await db.select('Photo_RowID').from('AirCrash.Photo').where('YACSINumber', AirCrashId)
+  let filteredLinkPhotos = _.difference(linkPhotos, currentPhotos.map(x => {return x.Photo_RowID}))
 
-  for(const rowId of linkPhotos)
+  for(const rowId of filteredLinkPhotos)
     await db.insert({ YACSINumber: AirCrashId, Photo_RowID: rowId })
       .into('AirCrash.Photo')
       .returning('*')

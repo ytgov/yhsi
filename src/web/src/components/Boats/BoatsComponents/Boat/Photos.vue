@@ -72,7 +72,7 @@
                                                         <v-checkbox
                                                             class="align-self-end"
                                                             label="Private"
-                                                            v-model="fields.Private"
+                                                            v-model="fields.isPirvate"
                                                         ></v-checkbox>
                                                     </v-col>
                                                     </v-row>       
@@ -257,6 +257,54 @@
                                         v-for="(item,i) in availablePhotos"
                                         :key="`ph-${i}`"
                                         class="d-flex child-flex"
+                                        cols="4"
+                                        >
+
+                                        <v-hover>
+                                            <template v-slot:default="{ hover }">
+                                            <v-card
+                                                outlined
+                                                hover
+                                            >
+                                                <v-img 
+                                                :src="item.File.base64"
+                                                :lazy-src="item.File.base64"
+                                                aspect-ratio="1"
+                                                class="grey lighten-2"
+                                                ></v-img>
+
+                                                <v-row>
+                                                    <v-col cols="12" class="d-flex">
+                                                        <v-card-text v-if="item.Caption" class="text-truncate text-caption">
+                                                            {{item.Caption}} 
+                                                        </v-card-text>
+                                                        <v-card-text v-else class="text-caption">
+                                                            No caption 
+                                                        </v-card-text>
+                                                        
+                                                    </v-col>
+                                                </v-row>  
+                                                <v-fade-transition>
+                                                <v-overlay
+                                                    v-if="hover"
+                                                    absolute
+                                                    color="#036358"
+                                                    @click="selectImage(item)"
+                                                >
+                                                    <v-checkbox 
+                                                        v-model="item.selected"
+                                                    ></v-checkbox>
+                                                </v-overlay>
+                                                </v-fade-transition>
+                                            </v-card>
+                                            </template>
+                                        </v-hover>
+                                       </v-col>
+                                       <!--
+                                        <v-col
+                                        v-for="(item,i) in availablePhotos"
+                                        :key="`ph-${i}`"
+                                        class="d-flex child-flex"
                                         cols="6"
                                         >
                                         <v-card
@@ -296,7 +344,8 @@
                                                 </v-col>
                                             </v-row>     
                                         </v-card>
-                                        </v-col>
+                                        
+                                        </v-col>-->
                                     </v-row>                   
                                 </v-container>
                                 <v-divider  class=""></v-divider>
@@ -357,7 +406,21 @@
                                             </v-text-field>
                                         </v-col>
                                     </v-row>
-                                    <v-row class="pr-0">
+                                    <v-row v-if="!availablePhotos && !showSkeletons">
+                                        <v-col cols="12">
+                                            <v-alert
+                                            dense
+                                            prominent
+                                            border="top"
+                                            type="info"
+                                            text
+                                            >
+                                            Search the photo library by <strong>Community, Address, Place, Feature or File Name</strong>, then press enter to start the search.
+                                            </v-alert>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row class="pr-0"  v-if="showSkeletons">
+
                                         <v-col
                                         v-for="(item,i) in filteredPhotos"
                                         :key="`ph-${i}`"
@@ -389,11 +452,12 @@
                                             </v-img>
                                             <v-row>
                                                 <v-col cols="12" class="d-flex">
-                                                    <v-card-text v-if="item.FeatureName">{{item.FeatureName}}</v-card-text>
+                                                    <v-card-text v-if="item.FeatureName">{{item.Caption}}</v-card-text>
                                                 </v-col>
                                             </v-row>     
                                         </v-card>
                                         </v-col>
+
                                     </v-row>                   
                                 </v-container>
                         
@@ -450,6 +514,7 @@ export default {
             Program: null,
             IsComplete:false,
             Rating:1,
+            isPirvate:0,
         },
     //selection options
         usageRightOptions: [
@@ -554,12 +619,6 @@ export default {
             console.log(this.owners);
             this.isLoadingOwner = false;
         },
-        selectImage(item){
-            let index = this.photos.indexOf(item);
-            if(index >-1){
-                this.photos[index].selected =  !this.photos[index].selected;
-            }
-        },
         async savePhoto(){
             this.overlay = true;
             let { IsComplete, Program, CommunityId, Copyright, OriginalMediaId, UsageRights } = this.fields;
@@ -588,6 +647,8 @@ export default {
             let photosToLink = this.availablePhotos.filter(x => x.selected == true).map(x => { return x.RowId});
             let resp = await photos.linkBoatPhotos(Number(this.boatID),{linkPhotos: photosToLink});
             console.log(resp);
+            this.reset();
+            this.$router.go();
         },
         toBase64(arr) {
             return btoa(arr.reduce((data, byte) => data + String.fromCharCode(byte), ''));
@@ -626,6 +687,12 @@ export default {
             let data = await catalogs.getOriginalMedia();
             this.availableOriginalMedia = data;
             this.isLoadingMedias = false;
+        },
+        selectImage(item){
+            let index = this.availablePhotos.indexOf(item);
+            if(index >-1){
+                this.availablePhotos[index].selected =  !this.availablePhotos[index].selected;
+            }
         },
     },
     computed: {
