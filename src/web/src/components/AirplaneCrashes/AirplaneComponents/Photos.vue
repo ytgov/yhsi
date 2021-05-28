@@ -153,6 +153,27 @@
                                                         :rules="generalRules">
                                                     </v-textarea>
 
+                                                    <v-combobox
+                                                        v-model="fields.Program"
+                                                        :items="programOptions"
+                                                        item-value="value"
+                                                        item-text="text"
+                                                        label="Program Type"
+                                                        :rules="generalRules">   
+                                                    </v-combobox> 
+
+                                                    <div class="d-flex">
+                                                        <p class="mt-auto mb-auto grey--text text--darken-2">Rating</p>
+                                                        <v-spacer></v-spacer>
+                                                        <v-rating
+                                                        v-model="fields.Rating"
+                                                        background-color="orange lighten-3"
+                                                        color="orange"
+                                                        length="5"
+                                                        large
+                                                        ></v-rating>
+                                                    </div>
+
                                                     <v-file-input
                                                     accept="image/*"
                                                     label="Choose photo for upload"
@@ -416,19 +437,19 @@ export default {
             BoatId: 1,
             Caption: "",
             FeatureName: "",
-            OwnerId: 328,
+            OwnerId: null,
             UsageRights: null,
             CommunityId: null,
             Comments: "",
             CreditLine: "",  
             PhotoProjectId:0,
-            IsOtherRecord:false,
+            IsOtherRecord:0,
             OriginalMediaId: null,
-            MediaStorage:2,
+            MediaStorage:4,
             Copyright: null,
-            Program:4,
-            IsComplete:true,
-            Rating:3,
+            Program: null,
+            IsComplete:false,
+            Rating:1,
         },
     //selection options
         usageRightOptions: [
@@ -466,6 +487,23 @@ export default {
                 id:6,
                 text: "Use Owner"
             }
+        ],
+        programOptions: [
+            {   
+                text: "General", value: 1
+            },
+            {   
+                text: "HPAC", value: 2
+            },
+            {   
+                text: "Interpretation", value: 3
+            },
+            {   
+                text: "YHSI", value: 4
+            },
+            {   
+                text: "Airplane Crash", value: 6
+            },
         ],
         availableCommunities: [],
         availableOriginalMedia: [],
