@@ -336,7 +336,18 @@
                                         </v-col>-->
                                     </v-row>                   
                                 </v-container>
-                                <v-divider  class=""></v-divider>
+                                <v-row class="mb-2" v-if="availablePhotos">
+                                        <v-col>
+                                            <div class="text-center">
+                                                <v-pagination
+                                                v-model="page"
+                                                :length="numberOfPages"
+                                                :total-visible="5"
+                                                ></v-pagination>
+                                            </div>
+                                        </v-col>
+                                    </v-row>
+                                <v-divider ></v-divider>
                                 <v-row class="">
                                     <v-col cols="12" class="d-flex">
                                         <v-btn
@@ -383,8 +394,11 @@ export default {
     props: ["boatID", "showDefault"],
     data: ()=>({
         overlay: false,
+//search variables
         searchPhotos: null,
         availablePhotos: null,
+        numberOfPages: 10,
+        page:1,
         showSkeletons: false,
         skeletons: [1,2,3,4,5],
         dialog1: false,
