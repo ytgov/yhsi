@@ -411,7 +411,7 @@
 
 <script>
 import Breadcrumbs from '../../Breadcrumbs.vue';
-import Photos from "./Photos";
+import Photos from "./Photos/Photos";
 import PrintButton from "./PrintButton";
 import aircrash from "../../../controllers/aircrash";
 import MapLoader from "./MapLoader";
