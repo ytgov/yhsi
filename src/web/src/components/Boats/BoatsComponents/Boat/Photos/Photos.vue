@@ -7,27 +7,15 @@
             <v-img 
             height="200"
             width="200"
-            :src="require('../../../assets/add_photo.png')"
-            :lazy-src="require('../../../assets/add_photo.png')"
+            :src="require('../../../../../assets/add_photo.png')"
+            :lazy-src="require('../../../../../assets/add_photo.png')"
             ></v-img>
         </div>
-        <v-carousel v-if="!showDefault"
-            id="carousell"
-            cycle
-            height="450"
-            hide-delimiter-background
-        >
-            <v-carousel-item 
-            v-for="(item,i) in photos"
-            :key="i"
-            :src="item.File.base64"
-            :lazy-src="item.File.base64"
-            ></v-carousel-item>
-        </v-carousel>
+        <Carousell v-if="photos.length > 0" :photos="photos" :showDefault="showDefault" />
         <v-divider></v-divider>
         <v-row v-if="showDefault">
             <v-col cols="12">
-                <p class="text-center font-weight-bold pt-3">Once you upload your new Crash Site data, you will be able to attach photos</p>
+                <p class="text-center font-weight-bold pt-3">Once you upload your new Boat data, you will be able to attach photos</p>
             </v-col>
         </v-row>
         <v-row v-else>
@@ -233,19 +221,6 @@
 
                                         </v-col>
                                     </v-row>
-                                    <v-row v-if="!availablePhotos && !showSkeletons">
-                                        <v-col cols="12">
-                                            <v-alert
-                                            dense
-                                            prominent
-                                            border="top"
-                                            type="info"
-                                            text
-                                            >
-                                            Search the photo library by <strong>Community, Address, Place, Feature or File Name</strong>, then press enter to start the search.
-                                            </v-alert>
-                                        </v-col>
-                                    </v-row>
                                     <v-row class="pr-0" v-if="showSkeletons">
                                         <v-col 
                                         v-for="(i) in skeletons"
@@ -312,7 +287,14 @@
                                             </v-card>
                                             </template>
                                         </v-hover>
-                            <!--
+                                       </v-col>
+                                       <!--
+                                        <v-col
+                                        v-for="(item,i) in availablePhotos"
+                                        :key="`ph-${i}`"
+                                        class="d-flex child-flex"
+                                        cols="6"
+                                        >
                                         <v-card
                                         outlined
                                         @click="selectImage(item)"
@@ -324,13 +306,6 @@
                                                 aspect-ratio="1"
                                                 class="grey lighten-2"
                                             >
-                                            <v-row>
-                                                <v-spacer></v-spacer>
-                                                <v-checkbox class="white"
-                                                    v-model="item.selected"
-                                                ></v-checkbox>
-                                            </v-row>
-                                                
                                                 <template v-slot:placeholder>
                                                 <v-row
                                                     class="fill-height ma-0"
@@ -346,19 +321,20 @@
                                             </v-img>
                                             <v-row>
                                                 <v-col cols="12" class="d-flex">
-                                                    <v-card-text v-if="item.Caption" class="text-truncate text-caption">
-                                                        {{item.Caption}} 
+                                                    <v-card-text>
+                                                        Feature name: {{item.FeatureName}} 
+                                                        Community: {{item.CommunityName}}
+                                                        Place: {{item.PlaceName}}
                                                     </v-card-text>
-                                                    <v-card-text v-else class="text-caption">
-                                                        No caption 
-                                                    </v-card-text>
+                                                    <v-checkbox
+                                                    v-model="item.selected"
+                                                    ></v-checkbox>
                                                 </v-col>
                                             </v-row>     
                                         </v-card>
-                                        --> 
-                                        </v-col>
-                                    </v-row>    
-                                      
+                                        
+                                        </v-col>-->
+                                    </v-row>                   
                                 </v-container>
                                 <v-divider  class=""></v-divider>
                                 <v-row class="">
@@ -388,102 +364,23 @@
 
                 <v-spacer></v-spacer>
                 
-                <v-dialog
-                v-model="dialog2"
-                width="500"
-                >
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                    color="success"
-                    dark
-                    v-bind="attrs"
-                    v-on="on"
-                    class="mr-3"
-                    >
-                    <v-icon class="mr-1">mdi-view-grid</v-icon>
-                    View all Photos
-                    </v-btn>
-                </template>
-                    <v-card>
-                        <v-card-title class=" ">
-                            All Photos
-                        </v-card-title>
-                        <v-divider></v-divider>
-                        <v-container class="scroll">
-                                    <v-row>
-                                        <v-col>
-                                            <v-text-field
-                                            v-model="searchPhotos"
-                                            label="Search">
-                                            </v-text-field>
-                                        </v-col>
-                                    </v-row>
-                                    <v-row class="pr-0">
-                                        <v-col
-                                        v-for="(item,i) in filteredPhotos"
-                                        :key="`ph-${i}`"
-                                        class="d-flex child-flex"
-                                        cols="4"
-                                        >
-                                        <v-card
-                                        outlined
-                                        hover
-                                        >
-                                            <v-img
-                                                :src="item.File.base64"
-                                                :lazy-src="item.File.base64"
-                                                aspect-ratio="1"
-                                                class="grey lighten-2"
-                                            >
-                                                <template v-slot:placeholder>
-                                                <v-row
-                                                    class="fill-height ma-0"
-                                                    align="center"
-                                                    justify="center"
-                                                >
-                                                    <v-progress-circular
-                                                    indeterminate
-                                                    color="grey lighten-5"
-                                                    ></v-progress-circular>
-                                                </v-row>
-                                                </template>
-                                            </v-img>
-                                            <v-row>
-                                                <v-col cols="12" class="d-flex">
-                                                    <v-card-text v-if="item.FeatureName">{{item.FeatureName}}</v-card-text>
-                                                </v-col>
-                                            </v-row>     
-                                        </v-card>
-                                        </v-col>
-                                    </v-row>                   
-                                </v-container>
-                        
-                        <v-divider></v-divider>
-
-                        <v-card-actions>
-                        <v-btn
-                            color="primary"
-                            text
-                            @click="dialog2 = false"
-                        >
-                            Close
-                        </v-btn>
-                        <v-spacer></v-spacer>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
+                <PhotoList :photos="photos"/>
+                
             </v-col>
         </v-row>
     </v-card>
 </template>
 
 <script>
-import photos from "../../../controllers/photos";
-import owners from "../../../controllers/owners";
-import catalogs from "../../../controllers/catalogs";
+import photos from "../../../../../controllers/photos";
+import owners from "../../../../../controllers/owners";
+import catalogs from "../../../../../controllers/catalogs";
+import Carousell from  "./Carousell";
+import PhotoList from "./PhotoList";
 export default {
     name: "photos",
-    props: ["yacsiNumber", "showDefault"],
+    components: { Carousell, PhotoList },
+    props: ["boatID", "showDefault"],
     data: ()=>({
         overlay: false,
         searchPhotos: null,
@@ -491,7 +388,6 @@ export default {
         showSkeletons: false,
         skeletons: [1,2,3,4,5],
         dialog1: false,
-        dialog2: false,
         photos: [],
 //form variables
         fields: {
@@ -511,7 +407,7 @@ export default {
             Program: null,
             IsComplete:false,
             Rating:1,
-            isPirvate: 0,
+            isPirvate:0,
         },
     //selection options
         usageRightOptions: [
@@ -564,8 +460,9 @@ export default {
                 text: "YHSI", value: 4
             },
             {   
-                text: "Airplane Crash", value: 6
+                text: "Boat", value: 5
             },
+
         ],
         availableCommunities: [],
         availableOriginalMedia: [],
@@ -586,9 +483,8 @@ export default {
     
     }),
     mounted(){
-        if(this.yacsiNumber && !this.showPhotosDefault)
+        if(this.boatID && !this.showPhotosDefault)
             this.getDataFromAPI();
-        //this.getAll();
     },
     methods: {
         async getAll(){
@@ -600,37 +496,33 @@ export default {
                 return x;
             })
             this.showSkeletons = false;
-            console.log(data);
         },
         async getDataFromAPI(){
-            let data = await photos.getByYACSINumber(this.yacsiNumber);
+            let data = await photos.getByBoatId(Number(this.boatID));
             this.photos = data.map((x) => {
                 x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`
                 x.selected = false;
                 return x;
             })
-            console.log(data);
         },
         async getOwners(){
             this.isLoadingOwner = true;
             let data = await owners.get();
             this.owners = data.body;
+            console.log(this.owners);
             this.isLoadingOwner = false;
-        },
-        selectImage(item){
-            let index = this.availablePhotos.indexOf(item);
-            if(index >-1){
-                this.availablePhotos[index].selected =  !this.availablePhotos[index].selected;
-            }
         },
         async savePhoto(){
             this.overlay = true;
+            let { IsComplete, Program, CommunityId, Copyright, OriginalMediaId, UsageRights } = this.fields;
             this.fields.BoatId = Number(this.boatID);
+            this.fields.IsComplete  = IsComplete ? 1 : 0;
+            this.fields.Program = Program.value;
+            this.fields.CommunityId = CommunityId.Id;
+            this.fields.Copyright = Copyright.id;
+            this.fields.OriginalMediaId = OriginalMediaId.Id;
+            this.fields.UsageRights = UsageRights.id
             console.log(this.fields);
-            this.fields.CommunityId = this.fields.CommunityId.Id;
-            this.fields.Copyright = this.fields.Copyright.id;
-            this.fields.OriginalMediaId = this.fields.OriginalMediaId.Id;
-            this.fields.UsageRights = this.fields.UsageRights.id
             const formData = new FormData();
             let prevFields = Object.entries(this.fields);
             console.log(prevFields);
@@ -638,17 +530,15 @@ export default {
                 formData.append(prevFields[i][0],prevFields[i][1]);
             }
             formData.append("file", this.file);
-            let resp = await photos.postAirCrashPhoto(formData);
+            console.log(formData);
+            let resp = await photos.postBoatPhoto(formData);
             console.log(resp);
             this.reset();
             this.overlay = false;
         },
         async saveAndLink(){
-            console.log("DATA HERE");
-            console.log(this.availablePhotos);
             let photosToLink = this.availablePhotos.filter(x => x.selected == true).map(x => { return x.RowId});
-            console.log(photosToLink);
-            let resp = await photos.linkAirCrashPhotos(this.yacsiNumber,{linkPhotos: photosToLink});
+            let resp = await photos.linkBoatPhotos(Number(this.boatID),{linkPhotos: photosToLink});
             console.log(resp);
             this.reset();
             this.$router.go();
@@ -691,20 +581,13 @@ export default {
             this.availableOriginalMedia = data;
             this.isLoadingMedias = false;
         },
-    },
-    computed: {
-        showCarousel(){
-            return this.photos.length > 0;
+        selectImage(item){
+            let index = this.availablePhotos.indexOf(item);
+            if(index >-1){
+                this.availablePhotos[index].selected =  !this.availablePhotos[index].selected;
+            }
         },
-        filteredPhotos(){
-            if(this.photos.length > 0 && this.searchPhotos ){
-                return this.photos.filter(a => a.FeatureName ? a.FeatureName.toLowerCase().includes(this.searchPhotos.toLowerCase()) : false);
-            }
-            else{
-                return this.photos;
-            }
-        }
-    }
+    },
 }
 </script>
 
@@ -717,18 +600,5 @@ export default {
 .center-children{
     display: grid;
     place-items: center;
-}
-.top-checkbox{
-    position: absolute; 
-    top: 0; 
-    right: 0; 
-    width: 34px; 
-    height: 34px;
-}
-.top-checkbox > .v-input__control > .v-input__slot > .v-input--selection-controls__input{
-    width: 34px; 
-    height: 34px;
-    margin: 0px;
-    padding: 0px;
 }
 </style>
