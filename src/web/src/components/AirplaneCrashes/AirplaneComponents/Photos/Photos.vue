@@ -513,14 +513,15 @@ export default {
     methods: {
         async getAll(){
             this.showSkeletons = true;
-            let data = await photos.getAll(this.searchPhotos);
-            this.availablePhotos = data.map((x) => {
+            let data = await photos.getAll(this.page-1,this.searchPhotos);
+            this.availablePhotos = data.body.map((x) => {
                 x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`
                 x.selected = false;
                 return x;
             })
+            console.log(data.count);
+            this.numberOfPages = Math.round(data.count / 6);
             this.showSkeletons = false;
-            console.log(data);
         },
         async getDataFromAPI(){
             let data = await photos.getByYACSINumber(this.yacsiNumber);
