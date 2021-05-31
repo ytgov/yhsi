@@ -613,17 +613,9 @@ export default {
             this.isLoadingMedias = false;
         },
     },
-    computed: {
-        showCarousel(){
-            return this.photos.length > 0;
-        },
-        filteredPhotos(){
-            if(this.photos.length > 0 && this.searchPhotos ){
-                return this.photos.filter(a => a.FeatureName ? a.FeatureName.toLowerCase().includes(this.searchPhotos.toLowerCase()) : false);
-            }
-            else{
-                return this.photos;
-            }
+    watch: {
+        page(){
+            this.getAll();
         }
     }
 }
