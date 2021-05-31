@@ -1,11 +1,11 @@
 import { api, apiP } from './config';
 
   export default {
-    async getAll(textToMatch){
+    async getAll(page,textToMatch){
       return await api.get(`photos`, {
         crossdomain: true,
         params: {
-          page: 0,
+          page: page,
           limit: 6,
           textToMatch
         }

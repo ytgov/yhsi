@@ -221,6 +221,19 @@
 
                                         </v-col>
                                     </v-row>
+                                    <v-row v-if="!availablePhotos && !showSkeletons">
+                                        <v-col cols="12">
+                                            <v-alert
+                                            dense
+                                            prominent
+                                            border="top"
+                                            type="info"
+                                            text
+                                            >
+                                            Search the photo library by <strong>Community, Address, Place, Feature or File Name</strong>, then press enter to start the search.
+                                            </v-alert>
+                                        </v-col>
+                                    </v-row>
                                     <v-row class="pr-0" v-if="showSkeletons">
                                         <v-col 
                                         v-for="(i) in skeletons"
@@ -343,6 +356,7 @@
                                                 v-model="page"
                                                 :length="numberOfPages"
                                                 :total-visible="5"
+
                                                 ></v-pagination>
                                             </div>
                                         </v-col>
@@ -503,12 +517,14 @@ export default {
     methods: {
         async getAll(){
             this.showSkeletons = true;
-            let data = await photos.getAll(this.searchPhotos);
-            this.availablePhotos = data.map((x) => {
+            let data = await photos.getAll(this.page-1,this.searchPhotos);
+            this.availablePhotos = data.body.map((x) => {
                 x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`
                 x.selected = false;
                 return x;
             })
+            console.log(data.count);
+            this.numberOfPages = Math.round(data.count / 6);
             this.showSkeletons = false;
         },
         async getDataFromAPI(){
@@ -602,6 +618,11 @@ export default {
             }
         },
     },
+    watch: {
+        page(){
+            this.getAll();
+        }
+    }
 }
 </script>
 

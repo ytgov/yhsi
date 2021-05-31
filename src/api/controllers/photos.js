@@ -18,8 +18,21 @@ router.get('/', authenticateToken, async (req, res) => {
   const { page = 0, limit = 5, textToMatch } = req.query;
   const offset = (page*limit) || 0;
   let photos = [];
+  let counter = 0;
 
   if(textToMatch){
+
+    counter = await db.from('dbo.photo as PH')
+    .join('dbo.Community as CO', 'PH.CommunityId',  '=', 'CO.Id')
+    .join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
+    .where('PH.FeatureName', 'like', `%${textToMatch}%`)
+    .orWhere('PH.OriginalFileName', 'like', `%${textToMatch}%`)
+    .orWhere('PH.Address', 'like', `%${textToMatch}%`)
+    .orWhere('PH.Caption', 'like', `%${textToMatch}%`)
+    .orWhere('CO.Name', 'like', `%${textToMatch}%`)
+    .orWhere('PL.PrimaryName', 'like', `%${textToMatch}%`)
+    .count('RowId', {as: 'count'});
+
     photos = await db.column('PH.*',{ CommunityName: 'CO.Name'}, { PlaceName: 'PL.PrimaryName'})
     .select() 
     .from('dbo.photo as PH')
@@ -31,22 +44,22 @@ router.get('/', authenticateToken, async (req, res) => {
     .orWhere('Caption', 'like', `%${textToMatch}%`)
     .orWhere('CO.Name', 'like', `%${textToMatch}%`)
     .orWhere('PL.PrimaryName', 'like', `%${textToMatch}%`)
+    .orderBy('PH.RowId', 'asc')
     .limit(limit).offset(offset);
   }
   else{
+    counter = await db.from('dbo.photo').count('RowId', {as: 'count'});
+
     photos = await db.column('PH.*',{ CommunityName: 'CO.Name'}, { PlaceName: 'PL.PrimaryName'})
     .select() 
     .from('dbo.photo as PH')
     .join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
     .join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
-    .limit(5).offset(0);
+    .orderBy('PH.RowId', 'asc')
+    .limit(limit).offset(offset);
   }
-   // Feature Name, OriginalFileName, Address, Caption, Community Name, PlaceID
-  /* SELECT PH.*, COM.NAME FROM DBO.PHOTO AS PH 
-    INNER JOIN DBO.COMMUNITY AS COM ON COM.ID = PH.COMMUNITYID
-    INNER JOIN DBO.PLACE AS PL ON PL.ID = PH.PLACEID;
-  */
-  res.status(200).send(photos);
+
+  res.status(200).send({ count: counter[0].count, body: photos });
 });
 
 
