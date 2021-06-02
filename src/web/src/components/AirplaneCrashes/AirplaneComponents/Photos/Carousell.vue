@@ -16,6 +16,6 @@
 
 <script>
 export default {
-    props: ["photos", "showDefault"]
+    props: ["photos"]
 }
 </script>
