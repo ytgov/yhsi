@@ -98,6 +98,8 @@ export default {
 
       },
       printHistoricalRecord(){
+        if(this.toPrint.general.historicRecords.length == 0)
+          return;
         this.doc.autoTable({
         startY: this.textpos,
         head: [['Historic Record', 'Reference']],
@@ -106,6 +108,8 @@ export default {
         this.textpos = this.doc.lastAutoTable.finalY+20;
       },
       printNames(){
+        if(this.toPrint.general.pastNames.length == 0)
+          return;
         this.doc.autoTable({
         startY: this.textpos,
         head: [['Name/s:']],
@@ -114,6 +118,8 @@ export default {
         this.textpos = this.doc.lastAutoTable.finalY+20;
       },
       printOwners(){
+        if(this.toPrint.general.owners.length == 0)
+          return;
         this.doc.autoTable({
         startY: this.textpos,
         head: [['Owner/s:']],
