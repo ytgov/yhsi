@@ -201,7 +201,18 @@
                         ></v-text-field>
                     </v-col>
                 </v-row>
-                <v-row v-if="isOutsideYukon">
+                 <v-row v-if="isEmpty">
+                    <v-col>
+                        <v-alert
+                        dense
+                        outlined
+                        type="error"
+                        >
+                        Please enter a location in the <strong>Yukon</strong>
+                        </v-alert>
+                    </v-col>    
+                </v-row>
+                <v-row v-else-if="isOutsideYukon">
                     <v-col>
                         <v-alert
                         dense
@@ -228,7 +239,7 @@
             ></v-select>
             <v-checkbox 
             :value="!isOutsideYukon"
-            :readonly="mode == 'view'"
+            :readonly="true"
             label="Crash site within Yukon">
             </v-checkbox>
         </v-col>
@@ -383,6 +394,9 @@ export default {
 
     methods:{
         getFields(){
+            if(!this.fields){
+                return;
+            }
             this.modifiableFields = this.fields;
             this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
             let lat = parseFloat(this.modifiableFields.lat);
@@ -549,6 +563,10 @@ export default {
             let { lat, long } = this.modifiableFields;
             return !pointInPolygon([ lat,long], yukonPolygon.latlngs);
         },
+        isEmpty(){
+            let { lat, long } = this.modifiableFields;
+            return lat == 0.0 && long == 0.0;
+        }
     },
     watch:{
         /*
