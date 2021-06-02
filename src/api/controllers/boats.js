@@ -20,15 +20,23 @@ router.get('/', authenticateToken, async (req, res) => {
 
   const { page = 0, limit = 10, textToMatch = '' } = req.query;
   const offset = (page*limit) || 0;
-  const counter = await db.from('boat.boat').count('Id', {as: 'count'});
+  let counter = 0;
   let boats = [];
 
   if (textToMatch) {
+    counter = await db.from('boat.boat')
+    .where('name', 'like', `%${textToMatch}%`)
+    .count('Id', {as: 'count'});
+
     boats = await db.select('*')
     .from('boat.boat')
-    .where('name', 'like', `%${textToMatch}%`);
-    
+    .where('name', 'like', `%${textToMatch}%`)
+    .orderBy('boat.boat.id', 'asc')
+    .limit(limit).offset(offset);
+
   } else {
+    counter = await db.from('boat.boat').count('Id', {as: 'count'});
+
     boats = await db.select('*')
       .from('boat.boat')
       .orderBy('boat.boat.id', 'asc')
