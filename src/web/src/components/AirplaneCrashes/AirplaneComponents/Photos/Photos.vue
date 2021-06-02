@@ -11,7 +11,7 @@
             :lazy-src="require('../../../../assets/add_photo.png')"
             ></v-img>
         </div>
-        <Carousell v-if="photos.length > 0" :photos="photos" :showDefault="showDefault" />
+        <Carousell v-if="photos.length > 0" :photos="photos"/>
         <v-divider></v-divider>
         <v-row v-if="showDefault">
             <v-col cols="12">
@@ -506,7 +506,12 @@ export default {
     
     }),
     mounted(){
-        if(this.yacsiNumber && !this.showPhotosDefault)
+        console.log("DATA",this.showDefault);
+        if(this.showDefault)
+            return;
+
+        console.log("yacsi", this.yacsiNumber);
+        if(this.yacsiNumber)
             this.getDataFromAPI();
         //this.getAll();
     },
@@ -519,7 +524,6 @@ export default {
                 x.selected = false;
                 return x;
             })
-            console.log(data.count);
             this.numberOfPages = Math.round(data.count / 6);
             this.showSkeletons = false;
         },
@@ -530,7 +534,6 @@ export default {
                 x.selected = false;
                 return x;
             })
-            console.log(data);
         },
         async getOwners(){
             this.isLoadingOwner = true;
@@ -616,6 +619,9 @@ export default {
     watch: {
         page(){
             this.getAll();
+        },
+        showDefault(){
+            console.log("show default",this.showDefault);
         }
     }
 }
