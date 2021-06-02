@@ -512,7 +512,10 @@ export default {
     
     }),
     mounted(){
-        if(this.boatID && !this.showPhotosDefault)
+        if(this.showDefault)
+            return;
+
+        if(this.boatID)
             this.getDataFromAPI();
     },
     methods: {

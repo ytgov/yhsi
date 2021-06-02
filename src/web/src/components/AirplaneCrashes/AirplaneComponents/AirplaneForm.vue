@@ -219,7 +219,7 @@
             <v-col cols="5">
                     <v-col cols="12">
 <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-                        <Photos :showDefault="isNewCrash" :yacsiNumber="getYACSINumber"/>
+                        <Photos v-if="infoLoaded" :showDefault="isNewCrash" :yacsiNumber="getYACSINumber"/>
                     </v-col>
             </v-col>
         </v-row>

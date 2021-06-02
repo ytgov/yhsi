@@ -589,7 +589,6 @@ export default {
         },*/
         modifiableFields: {
             handler(){
-                console.log("inside");
                 this.modifiableFields.inyukon = !this.isOutsideYukon;
                 this.$emit("modifiedDataCoordinates", this.modifiableFields);
   

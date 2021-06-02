@@ -141,7 +141,7 @@
                         >
                             <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                v-model="serviceStart"
+                                v-model="constructionDate"
                                 label="Construction Date"
                                 append-icon="mdi-calendar"
                                 readonly
@@ -158,7 +158,7 @@
                             <v-btn
                                 text
                                 color="primary"
-                                @click="menu = false"
+                                @click="menu1 = false"
                             >
                                 Cancel
                             </v-btn>
@@ -200,7 +200,7 @@
                             <v-btn
                                 text
                                 color="primary"
-                                @click="menu = false"
+                                @click="menu2 = false"
                             >
                                 Cancel
                             </v-btn>
@@ -242,7 +242,7 @@
                             <v-btn
                                 text
                                 color="primary"
-                                @click="menu = false"
+                                @click="menu3 = false"
                             >
                                 Cancel
                             </v-btn>
@@ -376,7 +376,7 @@
                     </v-col>
                     <v-col cols="8">
 <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-                            <Photos :showDefault="showPhotosDefault" :boatID="getBoatID"/>
+                            <Photos v-if="infoLoaded" :showDefault="mode == 'new'" :boatID="getBoatID"/>
                     </v-col>
                 </v-row>
             </v-col>
@@ -406,6 +406,7 @@ export default {
     components: { Photos, Breadcrumbs, HistoricRecord, PrintButton },
     data: ()=> ({
         overlay: false,
+        infoLoaded: false,
     //helper vars used for the name list functions
         editTableNames: -1,// tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
         addingName: false,// tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
@@ -439,12 +440,6 @@ export default {
     // vessel typle select options
         vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
         dateFormatted: "",
-    //show a deafult photos component for when the user is adding a new boat
-        showPhotosDefault: false,
-        date: new Date().toISOString().substr(0, 10),
-      menu: false,
-      modal: false,
-      //menu2: false,
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -456,7 +451,6 @@ export default {
             this.mode="new";
             //inputs remain empty
             this.noData();
-            this.showPhotosDefault = true;
         }
         else if(this.checkPath("view")){
             this.mode="view";
@@ -490,6 +484,7 @@ export default {
                 owners: [],
                 histories: []
             };
+            this.infoLoaded = true;
         },
         saveCurrentBoat(){
             localStorage.currentBoatID = this.$route.params.id;
@@ -508,6 +503,7 @@ export default {
             this.fields.deletedOwners = [];
             this.fields.ownerRemovedArray = [];
             this.fields.originalOwners = JSON.parse(JSON.stringify(this.fields.owners));
+            this.infoLoaded = true;
             this.overlay = false;
             console.log(this.fields);
         },
