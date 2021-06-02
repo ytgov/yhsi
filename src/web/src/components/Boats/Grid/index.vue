@@ -11,6 +11,7 @@
             hide-details
             label="Search"
             v-model="searchOwner"
+            @keyup.enter="ownerSearchChange()"
             v-on:input="ownerSearchChange()"
             ></v-text-field>
 
@@ -21,6 +22,7 @@
             hide-details
             label="Search"
             v-model="searchBoat"
+            @keyup.enter="boatSearchChange()"
             v-on:input="boatSearchChange()"
             ></v-text-field>
 
