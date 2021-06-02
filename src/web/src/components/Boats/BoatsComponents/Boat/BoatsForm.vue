@@ -130,9 +130,10 @@
                     </v-col>
                     <v-col cols="6">
                         <v-menu
-                            ref="menu"
+                            ref="menu1"
                             v-model="menu1"
                             :close-on-content-click="false"
+                            :return-value.sync="fields.constructionDate"
                             transition="scale-transition"
                             offset-y
                             min-width="auto"
@@ -140,7 +141,7 @@
                         >
                             <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                v-model="constructionDate"
+                                v-model="serviceStart"
                                 label="Construction Date"
                                 append-icon="mdi-calendar"
                                 readonly
@@ -149,18 +150,32 @@
                             ></v-text-field>
                             </template>
                             <v-date-picker
-                            ref="picker"
                             v-model="fields.ConstructionDate"
-                            :max="new Date().toISOString().substr(0, 10)"
-                            min="1750-01-01"
-                            @change="save"
-                            ></v-date-picker>
+                            no-title
+                            scrollable
+                            >
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                text
+                                color="primary"
+                                @click="menu = false"
+                            >
+                                Cancel
+                            </v-btn>
+                            <v-btn
+                                text
+                                color="primary"
+                                @click="$refs.menu1.save(fields.ConstructionDate)"
+                            >
+                                OK
+                            </v-btn>
+                            </v-date-picker>
                         </v-menu>
-
                         <v-menu
-                            ref="menu"
+                            ref="menu2"
                             v-model="menu2"
                             :close-on-content-click="false"
+                            :return-value.sync="fields.ServiceStart"
                             transition="scale-transition"
                             offset-y
                             min-width="auto"
@@ -177,18 +192,32 @@
                             ></v-text-field>
                             </template>
                             <v-date-picker
-                            ref="picker"
                             v-model="fields.ServiceStart"
-                            :max="new Date().toISOString().substr(0, 10)"
-                            min="1750-01-01"
-                            @change="save"
-                            ></v-date-picker>
+                            no-title
+                            scrollable
+                            >
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                text
+                                color="primary"
+                                @click="menu = false"
+                            >
+                                Cancel
+                            </v-btn>
+                            <v-btn
+                                text
+                                color="primary"
+                                @click="$refs.menu2.save(fields.ServiceStart)"
+                            >
+                                OK
+                            </v-btn>
+                            </v-date-picker>
                         </v-menu>
-
                         <v-menu
-                            ref="menu"
+                            ref="menu3"
                             v-model="menu3"
                             :close-on-content-click="false"
+                            :return-value.sync="fields.ServiceEnd"
                             transition="scale-transition"
                             offset-y
                             min-width="auto"
@@ -205,12 +234,26 @@
                             ></v-text-field>
                             </template>
                             <v-date-picker
-                            ref="picker"
                             v-model="fields.ServiceEnd"
-                            :max="new Date().toISOString().substr(0, 10)"
-                            min="1750-01-01"
-                            @change="save"
-                            ></v-date-picker>
+                            no-title
+                            scrollable
+                            >
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                text
+                                color="primary"
+                                @click="menu = false"
+                            >
+                                Cancel
+                            </v-btn>
+                            <v-btn
+                                text
+                                color="primary"
+                                @click="$refs.menu3.save(fields.ServiceEnd)"
+                            >
+                                OK
+                            </v-btn>
+                            </v-date-picker>
                         </v-menu>
                     </v-col>
                 </v-row>
@@ -388,6 +431,7 @@ export default {
         menu1: "",
         menu2: "",
         menu3: "",
+        activePicker: null,
         search: "",
         fields: {},
         fieldsHistory: null,
@@ -396,7 +440,11 @@ export default {
         vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
         dateFormatted: "",
     //show a deafult photos component for when the user is adding a new boat
-        showPhotosDefault: false
+        showPhotosDefault: false,
+        date: new Date().toISOString().substr(0, 10),
+      menu: false,
+      modal: false,
+      //menu2: false,
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -462,9 +510,6 @@ export default {
             this.fields.originalOwners = JSON.parse(JSON.stringify(this.fields.owners));
             this.overlay = false;
             console.log(this.fields);
-        },
-        save (date) {
-            this.$refs.menu.save(date);
         },
         goToOwner(value){
             this.$router.push({name: 'ownerView', params: { name: value.OwnerName, id: value.id}});
@@ -663,14 +708,15 @@ export default {
             deep: true
         },
         menu1 (val) {
-            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
+            val && setTimeout(() => (this.activePicker  = 'YEAR'))
         },
         menu2 (val) {
-            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
+            val && setTimeout(() => (this.activePicker  = 'YEAR'))
         },
         menu3 (val) {
-            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
-        },/* eslint-disable */
+            val && setTimeout(() => (this.activePicker  = 'YEAR'))
+        },
+        /* eslint-disable */
         'fields.ConstructionDate': function  (val) {
         this.dateFormatted = this.formatDate(this.date)
         },/* eslint-enable */

@@ -77,6 +77,7 @@
                                         transition="scale-transition"
                                         offset-y
                                         min-width="auto"
+                                        :disabled="mode == 'view'"
                                     >
                                         <template v-slot:activator="{ on, attrs }">
                                         <v-text-field
@@ -535,9 +536,6 @@ export default {
                 this.otherNation = true;
             console.log(this.fields);
             this.overlay = false;
-        },
-        saveDate (date) {
-            this.$refs.menu1.save(date);
         },
     //Functions dedicated to handle the edit, add, view modes
         cancelEdit(){

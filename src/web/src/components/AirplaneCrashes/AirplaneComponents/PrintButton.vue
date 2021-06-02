@@ -75,7 +75,6 @@ export default {
             this.generalTable = this.tableFields.map(x =>{ return [x.title,this.toPrint.general[x.key]]});
             
             this.toPrint.infoSources = this.data.infoSources.map(x => {return [x.Source]})
-            console.log(this.toPrint.infoSources);
             /*
             this.toPrint.general.pastNames = this.toPrint.general.pastNames.map(x => {return [x.BoatName]});
 
@@ -133,6 +132,8 @@ export default {
 
       },
       printInfoSources(){
+        if(this.toPrint.infoSources.length == 0)
+          return;
         this.doc.autoTable({
         startY: this.textpos,
         head: [['Sources']],
