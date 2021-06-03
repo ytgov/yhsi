@@ -12,11 +12,11 @@ router.get('/', authenticateToken, async (req, res) => {
 
   const db = req.app.get('db');
 
-  const { page = 0, limit = 10, textToMatch = '' } = req.query;
+  const { page = 0, limit = 10, textToMatch = '', sortBy = 'yacsinumber', sort = 'asc' } = req.query;
   const offset = (page*limit) || 0;
   let counter = 0;
   let aircrashes = [];
-  
+
   if (textToMatch) {
     counter = await db.from('dbo.vAircrash')
     .where('yacsinumber', 'like', `%${textToMatch}%`)
@@ -45,14 +45,16 @@ router.get('/', authenticateToken, async (req, res) => {
     .orWhere('soulsonboard', 'like', `%${textToMatch}%`)
     .orWhere('injuries', 'like', `%${textToMatch}%`)
     .orWhere('fatalities', 'like', `%${textToMatch}%`)
-    .orderBy('yacsinumber', 'asc')
+    //.orderBy('yacsinumber', 'asc')
+    .orderBy(`${sortBy}`,`${sort}`)
     .limit(limit).offset(offset);
 
   } else {
     counter = await db.from('dbo.vAircrash').count('yacsinumber', {as: 'count'});
     aircrashes = await db.select('*')
       .from('dbo.vAircrash')
-      .orderBy('dbo.vAircrash.yacsinumber', 'asc')
+      //.orderBy('dbo.vAircrash.yacsinumber', 'asc')
+      .orderBy(`${sortBy}`,`${sort}`)
       .limit(limit).offset(offset);
   }
     
