@@ -167,6 +167,7 @@
         
         <HistoricRecord :historicRecords="fields.histories" :mode="'view'"/>
         -->
+        <HistoricRecord v-if="fields.histories != undefined && mode !='new'" :historicRecords="fields.histories" :mode="'edit'" :ownerID="getOwnerID" />
         <v-overlay :value="overlay">
             <v-progress-circular
                 indeterminate
@@ -178,12 +179,12 @@
 
 <script>
 import Breadcrumbs from "../../../Breadcrumbs";
-//import HistoricRecord from "../HistoricRecord";
+import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
 import owners from "../../../../controllers/owners";
 export default {
     name: "ownerForm",
-    components: { Breadcrumbs, PrintButton, },// HistoricRecord,  },
+    components: { Breadcrumbs, PrintButton,HistoricRecord  },
     data: ()=> ({
         overlay: false,
     //helper vars, they are used to determine if the component is in an edit, view or add new state
@@ -371,10 +372,17 @@ export default {
             this.editTableAlias = this.fields.alias.length-1;
         },
     },
+    computed:{
+        getOwnerID(){
+            if(this.$route.params.id){
+                return  this.$route.params.id;
+            }
+            else return localStorage.currentOwnerID;
+        },
+    },
     watch: {
         fields: {
-            handler(newval){
-                console.log("Value changed",newval);
+            handler(){
                 this.showSave = this.showSave+1;
             },
             deep: true
