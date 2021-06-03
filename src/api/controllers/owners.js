@@ -84,22 +84,18 @@ router.put('/:ownerId', authenticateToken, async (req, res) => {
   const { ownerId } = req.params;
 
 
-  const { owner = {}, ownerAlias = [] } = req.body;
+  const { owner = {}, newOwnerAlias = [], editOwnerAlias = []} = req.body;
   const { OwnerName } = owner;
 
-  //make the update
   await db('boat.owner')
       .update({ OwnerName })
       .where('boat.owner.id', ownerId);
 
-  const newArray = [];
-  const editArray = [];
+  let newArray = [];
+ // const editArray = [];
 
-  ownerAlias.forEach(alias => {
-    // if statements or switch statement depending on how you want to split
-    if (alias.id) editArray.push(alias);
-    else newArray.push({ OwnerId: ownerId, ...alias });
-  });
+  newArray = newOwnerAlias.map(alias => { return {OwnerId: ownerId, ...alias} });
+  
 
 
   await db.insert(newArray)
@@ -109,10 +105,10 @@ router.put('/:ownerId', authenticateToken, async (req, res) => {
       return rows;
     });
   
-  for (const obj of editArray) {
+  for (const obj of editOwnerAlias) {
     await db('boat.OwnerAlias')
-    .update(obj.Alias)
-    .where('boat.OwnerAlias.id', alias.Id);
+    .update({Alias: obj.Alias})
+    .where('boat.OwnerAlias.id', obj.Id);
   }
 
   res.status(200).send({ message: 'success' });
