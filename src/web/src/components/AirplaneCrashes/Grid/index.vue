@@ -170,7 +170,6 @@ export default {
       async getDataFromApi() {
           this.loading = true;
           let { page, itemsPerPage, sortBy, sortDesc } = this.options;
-          console.log(this.options);
           page = page > 0 ? page-1 : 0;
           itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
           let textToMatch = this.search;

@@ -18,7 +18,7 @@ router.get('/', authenticateToken, async (req, res) => {
 
   const db = req.app.get('db');
 
-  const { page = 0, limit = 10, textToMatch = '' } = req.query;
+  const { page = 0, limit = 10, textToMatch = '', sortBy = 'Id', sort = 'asc' } = req.query;
   const offset = (page*limit) || 0;
   let counter = 0;
   let boats = [];
@@ -31,7 +31,8 @@ router.get('/', authenticateToken, async (req, res) => {
     boats = await db.select('*')
     .from('boat.boat')
     .where('name', 'like', `%${textToMatch}%`)
-    .orderBy('boat.boat.id', 'asc')
+    //.orderBy('boat.boat.id', 'asc')
+    .orderBy(`${sortBy}`,`${sort}`)
     .limit(limit).offset(offset);
 
   } else {
@@ -39,7 +40,8 @@ router.get('/', authenticateToken, async (req, res) => {
 
     boats = await db.select('*')
       .from('boat.boat')
-      .orderBy('boat.boat.id', 'asc')
+      //.orderBy('boat.boat.id', 'asc')
+      .orderBy(`${sortBy}`,`${sort}`)
       .limit(limit).offset(offset);
   }
     
