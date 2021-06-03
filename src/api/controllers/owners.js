@@ -9,7 +9,7 @@ router.get('/', authenticateToken, async (req, res) => {
   if (!permissions.includes('view')) res.sendStatus(403);
 
   const db = req.app.get('db');
-  const { page = 0, limit = 10, textToMatch = '' } = req.query;
+  const { page = 0, limit = 10, textToMatch = '', sortBy = 'ownerid', sort = 'asc' } = req.query;
   const offset = (page*limit) || 0;
   let counter = 0;
   let owners = [];
@@ -19,20 +19,13 @@ router.get('/', authenticateToken, async (req, res) => {
     .join('boat.boatowner AS CO', 'CO.ownerid', '=', 'BO.Id')
     .where('BO.OwnerName', 'like', `%${textToMatch}%`)
     .countDistinct('BO.id', {as: 'count'});
-    /*
-    counter =  await db.from('boat.boatowner')
-    .distinct('boat.boatowner.ownerid')
-    .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-    .where('boat.Owner.OwnerName', 'like', `%${textToMatch}%`)
-    .groupBy('boat.boatowner.ownerid')
-    .orderBy('boat.boatowner.ownerid', 'asc')
-    .count('ownerid', {as: 'count'});
-*/
+
     owners = await db.select('boat.boatowner.currentowner', 'boat.Owner.OwnerName', 'boat.owner.id')
       .distinct('boat.boatowner.ownerid')
       .from('boat.boatowner')
       .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-      .orderBy('boat.boatowner.ownerid', 'asc')
+      //.orderBy('boat.boatowner.ownerid', 'asc')
+      .orderBy(`${sortBy}`,`${sort}`)
       .where('boat.Owner.OwnerName', 'like', `%${textToMatch}%`)
       .limit(limit).offset(offset);
       
@@ -45,7 +38,8 @@ router.get('/', authenticateToken, async (req, res) => {
       .distinct('boat.boatowner.ownerid')
       .from('boat.boatowner')
       .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-      .orderBy('boat.boatowner.ownerid', 'asc')
+      //.orderBy('boat.boatowner.ownerid', 'asc')
+      .orderBy(`${sortBy}`,`${sort}`)
       .limit(limit).offset(offset);
   }
 

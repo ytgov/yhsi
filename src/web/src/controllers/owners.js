@@ -1,12 +1,14 @@
 import { api } from './config';
 
   export default {
-    async get(page, limit, textToMatch){
+    async get(page, limit, textToMatch,sortBy, sort){
       return await api.get(`owners`,{
         params: {
           page,
           limit,
-          textToMatch
+          textToMatch,
+          sortBy, 
+          sort
         }
       })
       .then(res => {
