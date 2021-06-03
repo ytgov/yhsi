@@ -65,8 +65,8 @@ router.get('/:ownerId', authenticateToken, async (req, res) => {
     .where('boat.boatowner.ownerid', ownerId);
 
   owner.histories = await db.select('*')
-    .from('boat.history')
-    .where('boat.history.uid', ownerId);
+    .from('boat.OwnerHistory')
+    .where('boat.OwnerHistory.OwnerId', ownerId);
     
   owner.alias = await db.select('*')
     .from('boat.owneralias')

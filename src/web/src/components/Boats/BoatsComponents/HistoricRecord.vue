@@ -41,11 +41,20 @@
                                 <td>
                                     <v-tooltip bottom>
                                         <template v-slot:activator="{ on, attrs }">
-                                                <v-btn
+                                                <v-btn v-if="boatID"
                                                 v-bind="attrs"
                                                 v-on="on" 
                                                 :disabled="!referenceHelper && !historicRecordHelper"
-                                                icon class="black--text" color="success"  @click="saveItem()">
+                                                icon class="black--text" color="success"  @click="newBoatItem()">
+                                                    <v-icon
+                                                    small
+                                                    >mdi-check</v-icon>  
+                                                </v-btn>
+                                                <v-btn v-else
+                                                v-bind="attrs"
+                                                v-on="on" 
+                                                :disabled="!referenceHelper && !historicRecordHelper"
+                                                icon class="black--text" color="success"  @click="newOwnerItem()">
                                                     <v-icon
                                                     small
                                                     >mdi-check</v-icon>  
@@ -101,11 +110,20 @@
                             </v-tooltip>
                             <v-tooltip bottom v-if="editTable == index">
                                 <template v-slot:activator="{ on, attrs }">
-                                        <v-btn
+                                        <v-btn v-if="boatID"
                                         v-bind="attrs"
                                         v-on="on" 
                                         :disabled="referenceHelper === '' || historicRecordHelper === ''"
-                                        icon class="black--text" color="success"  @click="saveTable(index)">
+                                        icon class="black--text" color="success"  @click="saveTableToBoat(index)">
+                                            <v-icon
+                                            small
+                                            >mdi-check</v-icon>  
+                                        </v-btn>
+                                        <v-btn v-else
+                                        v-bind="attrs"
+                                        v-on="on" 
+                                        :disabled="referenceHelper === '' || historicRecordHelper === ''"
+                                        icon class="black--text" color="success"  @click="saveTableToOwner(index)">
                                             <v-icon
                                             small
                                             >mdi-check</v-icon>  
@@ -146,7 +164,7 @@
 import histories from "../../../controllers/histories";
 export default {
     name: "historicRecord",
-    props: ["historicRecords", "mode", "boatID"],
+    props: ["historicRecords", "mode", "boatID", "ownerID"],
     data: ()=>({
         search: "",
         headers: [
@@ -176,7 +194,7 @@ export default {
             this.editTable = -1;
             //this.data.shift();
         },
-        async saveTable(index){
+        async saveTableToBoat(index){
             this.overlay = true;
             let data = {
                 history: {
@@ -185,7 +203,26 @@ export default {
                     UID: this.boatID 
                 }  
             };
-            const resp = await histories.put(this.data[index].id, data);
+            let resp = await histories.put(this.data[index].id, data);
+            if(resp.message == "success"){
+                this.data[index].Reference = this.referenceHelper;
+                this.data[index].HistoryText = this.historicRecordHelper;
+            }
+            this.overlay = false;
+            
+            this.editTable = -1;
+        },
+        async saveTableToOwner(index){
+            this.overlay = true;
+            let data = {
+                history: {
+                    HistoryText: this.historicRecordHelper, 
+                    Reference: this.referenceHelper, 
+                    OwnerId: this.ownerID 
+                }  
+            };
+            console.log(this.data[index].id);
+            let resp = await histories.putOwner(this.data[index].Id, data);
             if(resp.message == "success"){
                 this.data[index].Reference = this.referenceHelper;
                 this.data[index].HistoryText = this.historicRecordHelper;
@@ -201,7 +238,7 @@ export default {
             this.addingItem = true;
         },
         //for adding a new item
-        async saveItem(){
+        async newBoatItem(){
             this.overlay = true;
             let data = {
                 history: {
@@ -211,6 +248,25 @@ export default {
                 }  
             };
             let resp = await histories.post(data);
+
+            if(resp[0].HistoryText);
+                this.data.push(resp[0]);
+            this.overlay = false;
+            this.historicRecordHelper = null;
+            this.referenceHelper = null;
+            this.addingItem = false;
+        },
+         async newOwnerItem(){
+            this.overlay = true;
+            let data = {
+                history: {
+                    HistoryText: this.historicRecordHelper, 
+                    Reference: this.referenceHelper, 
+                    OwnerId: this.ownerID 
+                }  
+            };
+            let resp = await histories.postOwner(data);
+            console.log(resp);
             if(resp[0].HistoryText);
                 this.data.push(resp[0]);
             this.overlay = false;
