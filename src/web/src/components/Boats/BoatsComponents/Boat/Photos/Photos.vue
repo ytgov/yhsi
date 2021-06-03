@@ -538,6 +538,7 @@ export default {
                 x.selected = false;
                 return x;
             })
+            console.log(this.photos);
         },
         async getOwners(){
             this.isLoadingOwner = true;
