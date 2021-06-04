@@ -13,7 +13,7 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  v-if="isViewingCrash" :data="fields" :yacsinumber="fields.yacsinumber"/>
+                <PrintButton  v-if="isViewingCrash" :data="fields" :yacsinumber="fields.yacsinumber" :selectedImage="selectedImage"/>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="isEditingCrash">
                     <v-icon>mdi-close</v-icon>
@@ -219,7 +219,11 @@
             <v-col cols="5">
                     <v-col cols="12">
 <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-                        <Photos v-if="infoLoaded" :showDefault="isNewCrash" :yacsiNumber="getYACSINumber"/>
+                        <Photos 
+                        v-if="infoLoaded" 
+                        :showDefault="isNewCrash" 
+                        :yacsiNumber="getYACSINumber"
+                        @updateSelectedImage="selectedImageChanged"/>
                     </v-col>
             </v-col>
         </v-row>
@@ -446,11 +450,13 @@ export default {
     // Select vars
         remainsOptions: ["Yes","No", "  ??"],
         dateDescriptorOptions: ["Estimate","Actual"],
+        selectedImage: null,
     //modified coordinate fields
         modifiedMapFields: null,
         infoLoaded: false,
     //helper var for the nations checkboxes
-        otherNation: false
+        otherNation: false,
+
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -668,6 +674,10 @@ export default {
         modifiedDataCoordinates(val){
             this.modifiedMapFields = val;
             this.showSave = this.showSave+1;
+        },
+        selectedImageChanged(val){
+            this.selectedImage = val;
+            console.log(val);
         }
         
     },   
