@@ -20,7 +20,7 @@
                         </v-toolbar>
                         <v-list class="pb-0 pt-0">
                             <v-list-item-group v-model="usermodel">
-                                <v-list-item>
+                                <v-list-item @click="goTo('/admin/users')">
                                 <v-list-item-icon>
                                     <v-icon v-text="'mdi-account-group'"></v-icon>
                                 </v-list-item-icon>
@@ -103,7 +103,7 @@ export default {
     }),
     methods:{
         goTo(url){
-            console.log(url);
+            this.$router.push(url);
         }
     }
 }

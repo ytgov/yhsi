@@ -42,7 +42,8 @@ import AirplaneGrid from "../components/AirplaneCrashes/Grid";
 import AirplaneViewForm from "../components/AirplaneCrashes/AirplaneComponents/AirplaneForm";
 import AirplaneEditForm from "../components/AirplaneCrashes/AirplaneComponents/AirplaneForm";
 import AdminDashboard from "../components/Administration/AdminDashboard";
-
+import AdminUserGrid from "../components/Administration/UserManagement/Grid";
+import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form";
 Vue.use(VueRouter);
 
 const routes = [
@@ -343,6 +344,21 @@ const routes = [
     path: "/admin",
     name: "AdminDashboard",
     component: AdminDashboard,
+  },
+  {
+    path: "/admin/users",
+    name: "AdminUserGrid",
+    component: AdminUserGrid
+  },
+  {
+    path: "/admin/users/:id/view",
+    name: "AdminUserView",
+    component: AdminUserForm
+  },
+  {
+    path: "/admin/users/:id/edit",
+    name: "AdminUserEdit",
+    component: AdminUserForm
   },
   {
     path: "*",
