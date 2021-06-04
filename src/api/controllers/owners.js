@@ -9,27 +9,37 @@ router.get('/', authenticateToken, async (req, res) => {
   if (!permissions.includes('view')) res.sendStatus(403);
 
   const db = req.app.get('db');
-  const { page = 0, limit = 10, textToMatch = '' } = req.query;
+  const { page = 0, limit = 10, textToMatch = '', sortBy = 'ownerid', sort = 'asc' } = req.query;
   const offset = (page*limit) || 0;
-  const counter = await db.from('boat.boatowner').count('ownerid', {as: 'count'});
+  let counter = 0;
   let owners = [];
 
   if (textToMatch) {
-    console.log(textToMatch);
+    counter = await db.from('boat.Owner AS BO')
+    .join('boat.boatowner AS CO', 'CO.ownerid', '=', 'BO.Id')
+    .where('BO.OwnerName', 'like', `%${textToMatch}%`)
+    .countDistinct('BO.id', {as: 'count'});
+
     owners = await db.select('boat.boatowner.currentowner', 'boat.Owner.OwnerName', 'boat.owner.id')
       .distinct('boat.boatowner.ownerid')
       .from('boat.boatowner')
       .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-      .orderBy('boat.boatowner.ownerid', 'asc')
+      //.orderBy('boat.boatowner.ownerid', 'asc')
+      .orderBy(`${sortBy}`,`${sort}`)
       .where('boat.Owner.OwnerName', 'like', `%${textToMatch}%`)
       .limit(limit).offset(offset);
       
   } else {
+    counter = await db.from('boat.Owner AS BO')
+    .join('boat.boatowner AS CO', 'CO.ownerid', '=', 'BO.Id')
+    .countDistinct('BO.id', {as: 'count'});
+
     owners = await db.select('boat.boatowner.currentowner', 'boat.Owner.OwnerName', 'boat.owner.id')
       .distinct('boat.boatowner.ownerid')
       .from('boat.boatowner')
       .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-      .orderBy('boat.boatowner.ownerid', 'asc')
+      //.orderBy('boat.boatowner.ownerid', 'asc')
+      .orderBy(`${sortBy}`,`${sort}`)
       .limit(limit).offset(offset);
   }
 
@@ -55,8 +65,8 @@ router.get('/:ownerId', authenticateToken, async (req, res) => {
     .where('boat.boatowner.ownerid', ownerId);
 
   owner.histories = await db.select('*')
-    .from('boat.history')
-    .where('boat.history.uid', ownerId);
+    .from('boat.OwnerHistory')
+    .where('boat.OwnerHistory.OwnerId', ownerId);
     
   owner.alias = await db.select('*')
     .from('boat.owneralias')
@@ -74,22 +84,18 @@ router.put('/:ownerId', authenticateToken, async (req, res) => {
   const { ownerId } = req.params;
 
 
-  const { owner = {}, ownerAlias = [] } = req.body;
+  const { owner = {}, newOwnerAlias = [], editOwnerAlias = []} = req.body;
   const { OwnerName } = owner;
 
-  //make the update
   await db('boat.owner')
       .update({ OwnerName })
       .where('boat.owner.id', ownerId);
 
-  const newArray = [];
-  const editArray = [];
+  let newArray = [];
+ // const editArray = [];
 
-  ownerAlias.forEach(alias => {
-    // if statements or switch statement depending on how you want to split
-    if (alias.id) editArray.push(alias);
-    else newArray.push({ OwnerId: ownerId, ...alias });
-  });
+  newArray = newOwnerAlias.map(alias => { return {OwnerId: ownerId, ...alias} });
+  
 
 
   await db.insert(newArray)
@@ -99,10 +105,10 @@ router.put('/:ownerId', authenticateToken, async (req, res) => {
       return rows;
     });
   
-  for (const obj of editArray) {
+  for (const obj of editOwnerAlias) {
     await db('boat.OwnerAlias')
-    .update(obj.Alias)
-    .where('boat.OwnerAlias.id', alias.Id);
+    .update({Alias: obj.Alias})
+    .where('boat.OwnerAlias.id', obj.Id);
   }
 
   res.status(200).send({ message: 'success' });

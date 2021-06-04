@@ -1,7 +1,7 @@
 <template>
         <v-carousel
             id="carousell"
-            cycle
+            v-model="selectedCarousellImage"
             height="450"
             hide-delimiter-background
         >
@@ -16,6 +16,14 @@
 
 <script>
 export default {
-    props: ["photos", "showDefault"]
+    props: ["photos"],
+    data: ()=>({
+        selectedCarousellImage: 0
+    }),
+    watch:{
+        selectedCarousellImage(val){
+            this.$emit('changedSelectedImage', val)
+        }
+    }
 }
 </script>

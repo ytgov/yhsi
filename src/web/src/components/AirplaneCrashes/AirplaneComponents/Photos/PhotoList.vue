@@ -16,9 +16,53 @@
         </v-btn>
     </template>
         <v-card>
-            <v-card-title class=" ">
-                All Photos
-            </v-card-title>
+            <div  class="d-flex">
+                <v-card-title>
+                    All Photos
+                </v-card-title>
+                <v-spacer></v-spacer>
+
+                <v-menu 
+                    right
+                    bottom 
+                >
+                    <template v-slot:activator="{ on: onMenu, attrs: menuAttrs }">
+
+                      <v-tooltip left>
+                        <template v-slot:activator="{ on: onTooltip, attrs: toolAttrs }">
+                            <v-btn class="mt-auto mb-auto mr-4"
+                                icon
+                                elevation="0"
+                                v-bind="{...menuAttrs, ...toolAttrs }"
+                                v-on="{ ...onMenu, ...onTooltip }"
+                            >
+                                
+                                <v-icon >mdi-dots-vertical</v-icon> 
+                            </v-btn>
+                        </template>
+                    <span>Show image text as:</span>
+                    </v-tooltip>  
+                    
+                    </template>
+
+                    <v-list>
+                    <v-list-item-group
+                        v-model="selectedItem"
+                        color="primary"
+                    >
+                        <v-list-item
+                        v-for="(item, i) in items"
+                        :key="i"
+                        >
+                        <v-list-item-content>
+                            <v-list-item-title v-text="item.text"></v-list-item-title>
+                        </v-list-item-content>
+                        </v-list-item>
+                    </v-list-item-group>
+                    </v-list>
+                </v-menu>
+            </div>
+            
             <v-divider></v-divider>
             <v-container class="scroll">
                         <v-row>
@@ -38,7 +82,7 @@
                                 type="info"
                                 text
                                 >
-                                Search the photo library by <strong>Community, Address, Place, Feature or File Name</strong>, then press enter to start the search.
+                                You can view all the <strong>linked</strong> boat photos here.
                                 </v-alert>
                             </v-col>
                         </v-row>
@@ -75,13 +119,13 @@
                                 </v-img>
                                 <v-row>
                                     <v-col cols="12" class="d-flex">
-                                        <v-card-text v-if="item.Caption" class="text-truncate text-caption">
-                                            {{item.Caption}} 
+                                        <v-card-text v-if="item[items[selectedItem].value]" class="text-truncate text-caption">
+                                            {{item[items[selectedItem].value]}} 
                                         </v-card-text>
                                         <v-card-text v-else class="text-caption">
-                                            No caption 
+                                            No {{items[selectedItem].text}} Available 
                                         </v-card-text>
-                                        
+                        
                                     </v-col>
                                 </v-row>     
                             </v-card>
@@ -111,7 +155,16 @@ export default {
     props: ["photos"],
     data: ()=>({
         dialog2: false,
-        searchPhotos: null
+        searchPhotos: null,
+        selectedItem: 1,
+        items: [
+        { text: 'Address', value: 'Address'},
+        { text: 'Caption', value: 'Caption' },
+        { text: 'Community', value: 'CommunityName' },
+        { text: 'File Name', value: 'OriginalFileName' },
+        { text: 'Place', value: 'PrimaryName' },
+        { text: 'Feature Name', value: 'FeatureName'}
+      ],
     }),
     methods:{
 
@@ -121,13 +174,29 @@ export default {
             if(!this.photos)
                 return [];
 
-            if(this.photos.length > 0 && this.searchPhotos )
-                return this.photos.filter(a => a.FeatureName ? a.FeatureName.toLowerCase().includes(this.searchPhotos.toLowerCase()) : false);
+            if(this.photos.length > 0 && this.searchPhotos){
+                let items = this.items.slice(0);
+                let data = this.photos.slice(0);
+                data = data.filter(a => a[items[this.selectedItem].value] ? a[items[this.selectedItem].value].toLowerCase().includes(this.searchPhotos.toLowerCase()) : false);
+
+                return data;
+            }  
             else    
                 return this.photos;
                 
             
         }
-    }
+    },
 }
 </script>
+
+<style scoped>
+.scroll{
+    height: 720px;
+    overflow: auto;
+}
+.center-children{
+    display: grid;
+    place-items: center;
+}
+</style>

@@ -1,13 +1,15 @@
 import { api } from './config';
 
 export default {
-  async get(page, limit, textToMatch){
+  async get(page, limit, textToMatch,sortBy, sort){
       return await api.get(`aircrash`, {
         crossdomain: true,
         params: {
           page,
           limit,
-          textToMatch
+          textToMatch,
+          sortBy,
+          sort
         }
       })
       .then(res => {
