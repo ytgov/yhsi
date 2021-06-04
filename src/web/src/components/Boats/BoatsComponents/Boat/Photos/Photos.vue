@@ -11,7 +11,7 @@
             :lazy-src="require('../../../../../assets/add_photo.png')"
             ></v-img>
         </div>
-        <Carousell v-if="photos.length > 0" :photos="photos" :showDefault="showDefault" />
+        <Carousell v-if="photos.length > 0" :photos="photos" :showDefault="showDefault"  @changedSelectedImage="updateSelectedImage" />
         <v-divider></v-divider>
         <v-row v-if="showDefault">
             <v-col cols="12">
@@ -538,7 +538,7 @@ export default {
                 x.selected = false;
                 return x;
             })
-            console.log(this.photos);
+            this.updateSelectedImage(0);
         },
         async getOwners(){
             this.isLoadingOwner = true;
@@ -619,6 +619,9 @@ export default {
                 this.availablePhotos[index].selected =  !this.availablePhotos[index].selected;
             }
         },
+        updateSelectedImage(val){//updates the carousell selected image
+            this.$emit("updateSelectedImage",this.photos[val]);
+        }
     },
     watch: {
         page(){

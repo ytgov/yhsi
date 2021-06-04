@@ -16,7 +16,7 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  v-if="mode == 'view'" :data="fields" :name="fields.Name"/>
+                <PrintButton  v-if="mode == 'view'" :data="fields" :name="fields.Name" :selectedImage="selectedImage"/>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
                     <v-icon>mdi-close</v-icon>
@@ -376,7 +376,11 @@
                     </v-col>
                     <v-col cols="8">
 <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-                            <Photos v-if="infoLoaded" :showDefault="mode == 'new'" :boatID="getBoatID"/>
+                            <Photos 
+                            v-if="infoLoaded" 
+                            :showDefault="mode == 'new'" 
+                            :boatID="getBoatID"
+                            @updateSelectedImage="selectedImageChanged" :selectedImage="selectedImage"/>
                     </v-col>
                 </v-row>
             </v-col>
@@ -437,6 +441,8 @@ export default {
         fields: {},
         fieldsHistory: null,
         owners: [],
+    // select vars
+        selectedImage: null,
     // vessel typle select options
         vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
         dateFormatted: "",
@@ -673,11 +679,14 @@ export default {
             this.fields.histories = val;
         },
         formatDate (date) {
-        if (!date) return null
-        //date = date.substr(0, 10);
-        const [year, month, day] = date.split('-')
-        return `${month}/${day}/${year}`
-      },
+            if (!date) return null
+            //date = date.substr(0, 10);
+            const [year, month, day] = date.split('-')
+            return `${month}/${day}/${year}`
+        },
+        selectedImageChanged(val){
+            this.selectedImage = val;
+        }
     },   
     computed:{
         getBoatID(){
