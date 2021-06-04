@@ -41,6 +41,7 @@ import BoatsOwnerForm from "../components/Boats/BoatsComponents/Owner/OwnerForm"
 import AirplaneGrid from "../components/AirplaneCrashes/Grid";
 import AirplaneViewForm from "../components/AirplaneCrashes/AirplaneComponents/AirplaneForm";
 import AirplaneEditForm from "../components/AirplaneCrashes/AirplaneComponents/AirplaneForm";
+import AdminDashboard from "../components/Administration/AdminDashboard";
 
 Vue.use(VueRouter);
 
@@ -337,6 +338,11 @@ const routes = [
     name: "airplaneAddView",
     component: AirplaneEditForm,
     props: true
+  },
+  {
+    path: "/admin",
+    name: "AdminDashboard",
+    component: AdminDashboard,
   },
   {
     path: "*",
