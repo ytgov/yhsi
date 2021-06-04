@@ -17,9 +17,8 @@
               :options.sync="options"
               :server-items-length="totalLength"
               @click:row="handleClick"
-              disable-sort
               :footer-props="{'items-per-page-options': [10, 30, 100]}"
-            >
+            >  
                 <template v-slot:item.owners="{ item }">
                     <div v-if="item.owners.length > 0">
                         {{ getCurrentOwner(item.owners) }}
@@ -42,7 +41,7 @@ export default {
         boats: [],
         headers: [
         { text: "Name", value: "Name"},
-        { text: "Owner", value: "owners" },
+        { text: "Owner", value: "owners",sortable: false },
         { text: "Vessel Type", value: "VesselType"},
         { text: "Construction Date", value: "ConstructionDate"},
         { text: "Service Start Date", value: "ServiceStart"},
@@ -66,11 +65,12 @@ export default {
         },
         async getDataFromApi() {
             this.loading = true;
-            let { page, itemsPerPage } = this.options;
+            let { page, itemsPerPage, sortBy, sortDesc } = this.options;
             page = page > 0 ? page-1 : 0;
+            console.log(this.options);
             itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
             let textToMatch = this.search;
-            let data = await boats.get(page,itemsPerPage,textToMatch);
+            let data = await boats.get(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
             this.boats = _.get(data, 'body', []);
             this.totalLength = _.get(data, 'count', 0);
             this.boats.map(x => {

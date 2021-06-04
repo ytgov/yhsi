@@ -2,34 +2,20 @@
     <v-card>
         <div v-if="showDefault || photos.length == 0"
             class="center-children"
-            style="height: 400px;"
-            
+            style="height: 450px;"
         >
-
             <v-img 
             height="200"
             width="200"
-            :src="require('../../../../assets/add_photo.png')"
-            :lazy-src="require('../../../../assets/add_photo.png')"
+            :src="require('../../../../../assets/add_photo.png')"
+            :lazy-src="require('../../../../../assets/add_photo.png')"
             ></v-img>
         </div>
-        <v-carousel v-if="!showDefault"
-            id="carousell"
-            cycle
-            height="auto"
-            hide-delimiter-background
-        >
-            <v-carousel-item 
-            v-for="(item,i) in photos"
-            :key="i"
-            :src="item.File.base64"
-            :lazy-src="item.File.base64"
-            ></v-carousel-item>
-        </v-carousel>
+        <Carousell v-if="photos.length > 0" :photos="photos" :showDefault="showDefault"  @changedSelectedImage="updateSelectedImage" />
         <v-divider></v-divider>
         <v-row v-if="showDefault">
             <v-col cols="12">
-                <p class="text-center font-weight-bold pt-3">Once you upload your new boat data, you will be able to attach photos</p>
+                <p class="text-center font-weight-bold pt-3">Once you upload your new Boat data, you will be able to attach photos</p>
             </v-col>
         </v-row>
         <v-row v-else>
@@ -74,7 +60,7 @@
                                                         <v-checkbox
                                                             class="align-self-end"
                                                             label="Private"
-                                                            v-model="fields.Private"
+                                                            v-model="fields.isPirvate"
                                                         ></v-checkbox>
                                                     </v-col>
                                                     </v-row>       
@@ -155,6 +141,27 @@
                                                         :rules="generalRules">
                                                     </v-textarea>
 
+                                                    <v-combobox
+                                                        v-model="fields.Program"
+                                                        :items="programOptions"
+                                                        item-value="value"
+                                                        item-text="text"
+                                                        label="Program Type"
+                                                        :rules="generalRules">   
+                                                    </v-combobox> 
+
+                                                    <div class="d-flex">
+                                                        <p class="mt-auto mb-auto grey--text text--darken-2">Rating</p>
+                                                        <v-spacer></v-spacer>
+                                                        <v-rating
+                                                        v-model="fields.Rating"
+                                                        background-color="orange lighten-3"
+                                                        color="orange"
+                                                        length="5"
+                                                        large
+                                                        ></v-rating>
+                                                    </div>
+
                                                     <v-file-input
                                                     accept="image/*"
                                                     label="Choose photo for upload"
@@ -199,19 +206,107 @@
                                 <v-divider></v-divider>       
                                 <v-container class="scroll">
                                     <v-row>
-                                        <v-col>
+                                        <v-col class=" d-flex">
                                             <v-text-field
                                             v-model="searchPhotos"
+                                            @keyup.enter="getAll"
                                             label="Search">
                                             </v-text-field>
+                                            <v-btn 
+                                                @click="getAll"
+                                                icon 
+                                                class="mt-auto mb-auto">
+                                                <v-icon>mdi-magnify</v-icon>
+                                            </v-btn>
+
                                         </v-col>
                                     </v-row>
-                                    <v-row class="pr-0">
-                                        <v-col
-                                        v-for="(item,i) in filteredPhotos"
+                                    <v-row v-if="!availablePhotos && !showSkeletons">
+                                        <v-col cols="12">
+                                            <v-alert
+                                            dense
+                                            prominent
+                                            border="top"
+                                            type="info"
+                                            text
+                                            >
+                                            Search the photo library by <strong>Community, Address, Place, Feature or File Name</strong>, then press enter to start the search.
+                                            </v-alert>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row class="pr-0" v-if="showSkeletons">
+                                        <v-col 
+                                        v-for="(i) in skeletons"
                                         :key="`ph-${i}`"
                                         class="d-flex child-flex"
                                         cols="4"
+                                        >
+                                            <v-sheet
+                                                :color="`grey lighten-4 `"
+                                                class=""
+                                            >
+                                                <v-skeleton-loader
+                                                class="mx-auto"
+                                                max-width="300"
+                                                type="card"
+                                                ></v-skeleton-loader>
+                                            </v-sheet>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row class="pr-0" v-if="!showSkeletons">
+                                        <v-col
+                                        v-for="(item,i) in availablePhotos"
+                                        :key="`ph-${i}`"
+                                        class="d-flex child-flex"
+                                        cols="4"
+                                        >
+
+                                        <v-hover>
+                                            <template v-slot:default="{ hover }">
+                                            <v-card
+                                                outlined
+                                                hover
+                                            >
+                                                <v-img 
+                                                :src="item.File.base64"
+                                                :lazy-src="item.File.base64"
+                                                aspect-ratio="1"
+                                                class="grey lighten-2"
+                                                ></v-img>
+
+                                                <v-row>
+                                                    <v-col cols="12" class="d-flex">
+                                                        <v-card-text v-if="item.Caption" class="text-truncate text-caption">
+                                                            {{item.Caption}} 
+                                                        </v-card-text>
+                                                        <v-card-text v-else class="text-caption">
+                                                            No caption 
+                                                        </v-card-text>
+                                                        
+                                                    </v-col>
+                                                </v-row>  
+                                                <v-fade-transition>
+                                                <v-overlay
+                                                    v-if="hover"
+                                                    absolute
+                                                    color="#036358"
+                                                    @click="selectImage(item)"
+                                                >
+                                                    <v-checkbox 
+                                                        v-model="item.selected"
+                                                    ></v-checkbox>
+                                                </v-overlay>
+                                                </v-fade-transition>
+                                            </v-card>
+                                            </template>
+                                        </v-hover>
+                                       </v-col>
+                                       <!--
+                                        <v-col
+                                        v-for="(item,i) in availablePhotos"
+                                        :key="`ph-${i}`"
+                                        class="d-flex child-flex"
+                                        cols="6"
                                         >
                                         <v-card
                                         outlined
@@ -239,18 +334,34 @@
                                             </v-img>
                                             <v-row>
                                                 <v-col cols="12" class="d-flex">
-                                                    <v-card-text>{{item.FeatureName}}</v-card-text>
+                                                    <v-card-text>
+                                                        Feature name: {{item.FeatureName}} 
+                                                        Community: {{item.CommunityName}}
+                                                        Place: {{item.PlaceName}}
+                                                    </v-card-text>
                                                     <v-checkbox
-                                                    readonly
                                                     v-model="item.selected"
                                                     ></v-checkbox>
                                                 </v-col>
                                             </v-row>     
                                         </v-card>
-                                        </v-col>
+                                        
+                                        </v-col>-->
                                     </v-row>                   
                                 </v-container>
-                                <v-divider  class=""></v-divider>
+                                <v-row class="mb-2" v-if="availablePhotos">
+                                        <v-col>
+                                            <div class="text-center">
+                                                <v-pagination
+                                                v-model="page"
+                                                :length="numberOfPages"
+                                                :total-visible="5"
+
+                                                ></v-pagination>
+                                            </div>
+                                        </v-col>
+                                    </v-row>
+                                <v-divider ></v-divider>
                                 <v-row class="">
                                     <v-col cols="12" class="d-flex">
                                         <v-btn
@@ -278,126 +389,55 @@
 
                 <v-spacer></v-spacer>
                 
-                <v-dialog
-                v-model="dialog2"
-                width="500"
-                >
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                    color="success"
-                    dark
-                    v-bind="attrs"
-                    v-on="on"
-                    class="mr-3"
-                    >
-                    <v-icon class="mr-1">mdi-view-grid</v-icon>
-                    View all Photos
-                    </v-btn>
-                </template>
-                    <v-card>
-                        <v-card-title class=" ">
-                            All Photos
-                        </v-card-title>
-                        <v-divider></v-divider>
-                        <v-container class="scroll">
-                                    <v-row>
-                                        <v-col>
-                                            <v-text-field
-                                            v-model="searchPhotos"
-                                            label="Search">
-                                            </v-text-field>
-                                        </v-col>
-                                    </v-row>
-                                    <v-row class="pr-0">
-                                        <v-col
-                                        v-for="(item,i) in filteredPhotos"
-                                        :key="`ph-${i}`"
-                                        class="d-flex child-flex"
-                                        cols="4"
-                                        >
-                                        <v-card
-                                        outlined
-                                        hover
-                                        >
-                                            <v-img
-                                                :src="item.File.base64"
-                                                :lazy-src="item.File.base64"
-                                                aspect-ratio="1"
-                                                class="grey lighten-2"
-                                            >
-                                                <template v-slot:placeholder>
-                                                <v-row
-                                                    class="fill-height ma-0"
-                                                    align="center"
-                                                    justify="center"
-                                                >
-                                                    <v-progress-circular
-                                                    indeterminate
-                                                    color="grey lighten-5"
-                                                    ></v-progress-circular>
-                                                </v-row>
-                                                </template>
-                                            </v-img>
-                                            <v-row>
-                                                <v-col cols="12" class="d-flex">
-                                                    <v-card-text v-if="item.FeatureName">{{item.FeatureName}}</v-card-text>
-                                                </v-col>
-                                            </v-row>     
-                                        </v-card>
-                                        </v-col>
-                                    </v-row>                   
-                                </v-container>
-                        
-                        <v-divider></v-divider>
-
-                        <v-card-actions>
-                        <v-btn
-                            color="primary"
-                            text
-                            @click="dialog2 = false"
-                        >
-                            Close
-                        </v-btn>
-                        <v-spacer></v-spacer>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
+                <PhotoList :photos="photos"/>
+                
             </v-col>
         </v-row>
     </v-card>
 </template>
 
 <script>
-import photos from "../../../../controllers/photos";
-import owners from "../../../../controllers/owners";
+import photos from "../../../../../controllers/photos";
+import owners from "../../../../../controllers/owners";
+import catalogs from "../../../../../controllers/catalogs";
+import Carousell from  "./Carousell";
+import PhotoList from "./PhotoList";
 export default {
     name: "photos",
+    components: { Carousell, PhotoList },
     props: ["boatID", "showDefault"],
     data: ()=>({
         overlay: false,
+//search variables
         searchPhotos: null,
+        availablePhotos: null,
+        numberOfPages: 10,
+        page:1,
+        showSkeletons: false,
+        skeletons: [1,2,3,4,5,6],
         dialog1: false,
-        dialog2: false,
         photos: [],
 //form variables
         fields: {
             BoatId: 1,
             Caption: "",
             FeatureName: "",
-            OwnerId: 328,
+            OwnerId: null,
             UsageRights: null,
             CommunityId: null,
             Comments: "",
             CreditLine: "",  
             PhotoProjectId:0,
-            IsOtherRecord:false,
+            IsOtherRecord:0,
             OriginalMediaId: null,
-            MediaStorage:2,
+            MediaStorage:4,
             Copyright: null,
-            Program:4,
-            IsComplete:true,
-            Rating:3,
+            Program: null,
+            IsComplete:false,
+            Rating:1,
+            isPirvate:0,
         },
+        sendObj: null,
     //selection options
         usageRightOptions: [
                 {
@@ -435,6 +475,24 @@ export default {
                 text: "Use Owner"
             }
         ],
+        programOptions: [
+            {   
+                text: "General", value: 1
+            },
+            {   
+                text: "HPAC", value: 2
+            },
+            {   
+                text: "Interpretation", value: 3
+            },
+            {   
+                text: "YHSI", value: 4
+            },
+            {   
+                text: "Boat", value: 5
+            },
+
+        ],
         availableCommunities: [],
         availableOriginalMedia: [],
         file: false,
@@ -454,20 +512,33 @@ export default {
     
     }),
     mounted(){
-        if(this.boatID && !this.showPhotosDefault)
+        if(this.showDefault)
+            return;
+
+        if(this.boatID)
             this.getDataFromAPI();
     },
     methods: {
+        async getAll(){
+            this.showSkeletons = true;
+            let data = await photos.getAll(this.page-1,this.searchPhotos);
+            this.availablePhotos = data.body.map((x) => {
+                x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`
+                x.selected = false;
+                return x;
+            })
+            console.log(data.count);
+            this.numberOfPages = Math.round(data.count / 6);
+            this.showSkeletons = false;
+        },
         async getDataFromAPI(){
             let data = await photos.getByBoatId(Number(this.boatID));
-            console.log(data);
-            for(let i=0;i<data.length; i++){
-                if(data[i].File.data.length > 0){
-                    data[i].File.base64 = `data:image/png;base64,${this.toBase64(data[i].File.data)}`;
-                }
-                data[i].selected = false;
-            }
-            this.photos = data;
+            this.photos = data.map((x) => {
+                x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`
+                x.selected = false;
+                return x;
+            })
+            this.updateSelectedImage(0);
         },
         async getOwners(){
             this.isLoadingOwner = true;
@@ -476,36 +547,33 @@ export default {
             console.log(this.owners);
             this.isLoadingOwner = false;
         },
-        selectImage(item){
-            let index = this.photos.indexOf(item);
-            if(index >-1){
-                this.photos[index].selected =  !this.photos[index].selected;
-            }
-        },
         async savePhoto(){
             this.overlay = true;
-            this.fields.BoatId = Number(this.boatID);
-            console.log(this.fields);
-            this.fields.CommunityId = this.fields.CommunityId.Id;
-            this.fields.Copyright = this.fields.Copyright.id;
-            this.fields.OriginalMediaId = this.fields.OriginalMediaId.Id;
-            this.fields.UsageRights = this.fields.UsageRights.id
+            this.sendObj = this.fields;
+            let { IsComplete, Program, CommunityId, Copyright, OriginalMediaId, UsageRights } = this.sendObj;
+            this.sendObj.BoatId = Number(this.boatID);
+            this.sendObj.IsComplete  = IsComplete ? 1 : 0;
+            this.sendObj.Program = Program.value;
+            this.sendObj.CommunityId = CommunityId.Id;
+            this.sendObj.Copyright = Copyright.id;
+            this.sendObj.OriginalMediaId = OriginalMediaId.Id;
+            this.sendObj.UsageRights = UsageRights.id;
             const formData = new FormData();
-            let prevFields = Object.entries(this.fields);
-            console.log(prevFields);
+            let prevFields = Object.entries(this.sendObj);
             for(let i=0;i<prevFields.length; i++){
                 formData.append(prevFields[i][0],prevFields[i][1]);
             }
             formData.append("file", this.file);
-            console.log(formData);
-            let resp = await photos.post(formData);
-            console.log(resp);
+            await photos.postBoatPhoto(formData);
             this.reset();
+            this.$router.go();
             this.overlay = false;
         },
         async saveAndLink(){
-            //makes axios request to save the data
-            
+            let photosToLink = this.availablePhotos.filter(x => x.selected == true).map(x => { return x.RowId});
+            await photos.linkBoatPhotos(Number(this.boatID),{linkPhotos: photosToLink});
+            this.reset();
+            this.$router.go();
         },
         toBase64(arr) {
             return btoa(arr.reduce((data, byte) => data + String.fromCharCode(byte), ''));
@@ -535,25 +603,29 @@ export default {
         },
         async getCommunities(){
             this.isLoadingCommunities = true;
-            let data = await photos.getCommunities();
+            let data = await catalogs.getCommunities();
             this.availableCommunities = data;
             this.isLoadingCommunities = false;
         },
         async getOriginalMedia(){
             this.isLoadingMedias = true;
-            let data = await photos.getOriginalMedia();
+            let data = await catalogs.getOriginalMedia();
             this.availableOriginalMedia = data;
             this.isLoadingMedias = false;
         },
+        selectImage(item){
+            let index = this.availablePhotos.indexOf(item);
+            if(index >-1){
+                this.availablePhotos[index].selected =  !this.availablePhotos[index].selected;
+            }
+        },
+        updateSelectedImage(val){//updates the carousell selected image
+            this.$emit("updateSelectedImage",this.photos[val]);
+        }
     },
-    computed: {
-        filteredPhotos(){
-            if(this.photos.length > 0 && this.searchPhotos ){
-                return this.photos.filter(a => a.FeatureName ? a.FeatureName.toLowerCase().includes(this.searchPhotos.toLowerCase()) : false);
-            }
-            else{
-                return this.photos;
-            }
+    watch: {
+        page(){
+            this.getAll();
         }
     }
 }

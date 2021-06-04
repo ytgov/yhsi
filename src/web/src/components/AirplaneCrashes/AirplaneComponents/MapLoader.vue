@@ -58,29 +58,40 @@
                         ></v-text-field>
                     </v-col>
                 </v-row>
-<!-- SELECTED SYSTEM  == UMT -->
+<!-- SELECTED SYSTEM  == UTM -->
                 <v-row v-if="selectedSystem.id == 2 && selectedProjection.id == 1">
-                    <v-col cols="2.4"><!-- Decides how many 'cols' its going to have -->
-                        <h4>Latitude</h4>
-                    </v-col>
-                    <v-col cols="9">
-                        <h4>Degrees</h4>
+                    <v-col cols="3">
+                        <h4>Easting</h4>
                         <v-text-field
                             @change="changedLocation"
-                            v-model="dd.lat"
+                            v-model="utm.Easting"
                             :readonly="mode == 'view'"
                             type="number"
                         ></v-text-field>
                     </v-col>
-                </v-row>
-                <v-row v-if="selectedSystem.id == 2 && selectedProjection.id == 1">
-                    <v-col cols="2.4">
-                        <h4>Longitude</h4>
-                    </v-col>
-                    <v-col cols="9">
+                    <v-col cols="3">
+                        <h4>Northing</h4>
                         <v-text-field
                             @change="changedLocation"
-                            v-model="dd.lng"
+                            v-model="utm.Northing"
+                            :readonly="mode == 'view'"
+                            type="number"
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="3">
+                        <h4>Hemisphere</h4>
+                        <v-select
+                        @change="changedLocation"
+                        v-model="utm.ZoneLetter"
+                        :readonly="mode == 'view'"
+                        :items="hemispheres"
+                        ></v-select>
+                    </v-col>
+                     <v-col cols="3">
+                        <h4>Zone</h4>
+                        <v-text-field
+                            @change="changedLocation"
+                            v-model="utm.ZoneNumber"
                             :readonly="mode == 'view'"
                             type="number"
                         ></v-text-field>
@@ -190,7 +201,18 @@
                         ></v-text-field>
                     </v-col>
                 </v-row>
-                <v-row v-if="isOutsideYukon">
+                 <v-row v-if="isEmpty">
+                    <v-col>
+                        <v-alert
+                        dense
+                        outlined
+                        type="error"
+                        >
+                        Please enter a location in the <strong>Yukon</strong>
+                        </v-alert>
+                    </v-col>    
+                </v-row>
+                <v-row v-else-if="isOutsideYukon">
                     <v-col>
                         <v-alert
                         dense
@@ -217,7 +239,7 @@
             ></v-select>
             <v-checkbox 
             :value="!isOutsideYukon"
-            :readonly="mode == 'view'"
+            :readonly="true"
             label="Crash site within Yukon">
             </v-checkbox>
         </v-col>
@@ -270,14 +292,14 @@
 */
 /* eslint-disable */
 import { latLng, Icon } from "leaflet";
-const pointInPolygon = require('point-in-polygon');
-
 import 'leaflet/dist/leaflet.css';
 import { LMap, LTileLayer, LControl, LPolygon, LMarker, LTooltip, LPopup } from "vue2-leaflet";
 import { yukonPolygon } from '../../../misc/yukon_territory_polygon'
-
 import proj4 from 'proj4'
 
+const pointInPolygon = require('point-in-polygon');
+const utmObj = require('utm-latlng');
+const utmVar = new utmObj(); 
   /* eslint-enable */
 export default {
     props: [ "fields", "mode"],
@@ -308,8 +330,8 @@ export default {
             lat: { deg: 0, min: 0, sec: 0, dir: 0 },
             lng: { deg: 0, min: 0, sec: 0, dir: 0 }
         },
-        umt: {
-            lat: 0, lng: 0
+        utm: {
+           Easting: 0,Northing: 0, ZoneLetter: null, ZoneNumber: 0,
         },
         nad83: {
             x: 0,
@@ -333,7 +355,7 @@ export default {
                     name: "NAD 83 CSRS", 
                 }       
             ],
-            
+        hemispheres: ["C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","V","W","X"],   
         coordinateSystemOptions: [{id: 1, text: "Decimal Degrees"},{id: 2, text:  "UTM Zone 8"}, {id: 3, text: "Degrees, Minutes, Seconds"}],
     //Crash site marker
         marker:{
@@ -350,7 +372,8 @@ export default {
         },
         yukonPolygon,
     }),
-    created() {
+    mounted() {
+        this.getFields();
         this.fixMarkers();
         //console.log(proj4);
         proj4.defs([
@@ -370,6 +393,19 @@ export default {
     }, 
 
     methods:{
+        getFields(){
+            if(!this.fields){
+                return;
+            }
+            this.modifiableFields = this.fields;
+            this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
+            let lat = parseFloat(this.modifiableFields.lat);
+            let long = parseFloat(this.modifiableFields.long);
+            if(!isNaN(lat) || ! isNaN(long)){
+                this.changedLocation();
+            }
+            this.flag++
+        },
         //This method is responsible for transforming the inputed lat & long values depending on the cordinate system and the selected projeciton 
         changedDatum(){  
             this.updateDisplayCoordinates();  
@@ -438,7 +474,6 @@ export default {
                     break;
                 case 2://NAD83 
                     transformed_coordinates = proj4(proj4('EPSG:3978'),proj4('EPSG:4326'), [parseFloat(x),parseFloat(y)]);
-                    console.log("TRANSFORMED COORDINATES",transformed_coordinates);
                     this.modifiableFields.lat = transformed_coordinates[1];
                     this.modifiableFields.long = transformed_coordinates[0];
                     break;
@@ -453,20 +488,19 @@ export default {
             let system = this.selectedSystem.id;
             if(!system)
                     return;
-
+            
+            let data;
             switch(system){
                 case 1://DD   
-                    console.log(".1");
                     this.modifiableFields.lat = parseFloat(this.dd.lat);
                     this.modifiableFields.long = parseFloat(this.dd.lng);
                     break;
-                case 2://UMT
-                    console.log("for umt");
-                    this.modifiableFields.lat = parseFloat(this.umt.lat);
-                    this.modifiableFields.long = parseFloat(this.umt.lng);
+                case 2://UTM
+                    data = utmVar.convertUtmToLatLng( this.utm.Easting,  this.utm.Northing,  this.utm.ZoneNumber,  this.utm.ZoneLetter);
+                    this.modifiableFields.lat = parseFloat(data.lat);
+                    this.modifiableFields.long = parseFloat(data.lng);
                     break;
                 case 3: //DMS
-                    console.log(".3");
                     this.modifiableFields.lat = parseFloat(this.convertDMSToDD(this.dms.lat));
                     this.modifiableFields.long = parseFloat(this.convertDMSToDD(this.dms.lng));
                     break;
@@ -487,19 +521,20 @@ export default {
                 case 1: //DD
                     this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
                     this.dms = null;
-                    this.umt = null;
+                    this.utm = null;
                     break;
-                case 2: //UMT
-                    this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
+                case 2: //utm
+                    this.utm = utmVar.convertLatLngToUtm(this.modifiableFields.lat,this.modifiableFields.long,1);
+                    console.log(this.utm);
                     this.dms = null;
-                    this.umt = null;
+                    this.dd = null;
                     break;
                 case 3: //DMS
                     lat = this.convertDDToDMS(this.modifiableFields.lat, false);
                     lng = this.convertDDToDMS(this.modifiableFields.long, true);
                     this.dms = { lat, lng };
                     this.dd = null;
-                    this.umt = null;
+                    this.utm = null;
                     break;
             }
         },
@@ -528,6 +563,10 @@ export default {
             let { lat, long } = this.modifiableFields;
             return !pointInPolygon([ lat,long], yukonPolygon.latlngs);
         },
+        isEmpty(){
+            let { lat, long } = this.modifiableFields;
+            return lat == 0.0 && long == 0.0;
+        }
     },
     watch:{
         /*
@@ -535,7 +574,7 @@ export default {
             has fetched the data), because of that we cant use mounted or created to map the fields prop to the modifiedFields obj on the state, also 'prop' values 
             are not supposed to be modified, hence why we have the modifiable fields obj. If we dont use a watcher we would have to have a flag on the parent component
             to indicate when the data is available to render the component, this would make the component less independent and less reusable.
-        */
+        
         fields(){
             if(this.fields && this.flag < 3){
                 this.modifiableFields = this.fields;
@@ -547,11 +586,15 @@ export default {
                 }
                 this.flag++
             }
+        },*/
+        modifiableFields: {
+            handler(){
+                this.modifiableFields.inyukon = !this.isOutsideYukon;
+                this.$emit("modifiedDataCoordinates", this.modifiableFields);
+  
+            },
+            deep: true
         },
-        modifiableFields(){
-            this.modifiableFields.inyukon = !this.isOutsideYukon;
-            this.$emit("modifiedDataCoordinates", this.modifiableFields);
-        }
         
     }
 }

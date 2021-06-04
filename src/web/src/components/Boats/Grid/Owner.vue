@@ -16,7 +16,6 @@
               :options.sync="options"
               :server-items-length="totalLength"
               @click:row="handleClick"
-              disable-sort
               :footer-props="{'items-per-page-options': [10, 30, 100]}"
             >
             </v-data-table>
@@ -59,11 +58,11 @@ export default {
         },
         async getDataFromApi() {
             this.loading = true;
-            let { page, itemsPerPage } = this.options;
+            let { page, itemsPerPage, sortBy, sortDesc } = this.options;
             page = page > 0 ? page-1 : 0;
             itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
             let textToMatch = this.search;
-            let data = await owners.get(page,itemsPerPage,textToMatch);
+            let data = await owners.get(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
             this.owners = data.body;
             this.totalLength = data.count;
             this.$store.commit('boats/setOwners', this.owners);

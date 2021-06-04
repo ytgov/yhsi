@@ -12,7 +12,7 @@ import 'jspdf-autotable';
 import _ from 'lodash';
 export default {
     name: "printButton",
-    props: ["yacsinumber","data" ],
+    props: ["yacsinumber","data", "selectedImage" ],
     components: {  },
     data: ()=> ({
         doc: null,
@@ -23,37 +23,50 @@ export default {
         ],
         toPrint: {},
         textpos: 0,
-        fields: [
+        tableFields: [
           { title: "YACSI Number", key: "yacsinumber"},
-          { title: "crashdate", key: "crashdate"},
-          { title: "aircrafttype", key: "aircrafttype"},
-          { title: "aircraftregistration", key: "aircraftregistration"},
-          { title: "nation", key: "nation"},
-          { title: "militarycivilian", key: "militarycivilian"},
-          { title: "crashlocation", key: "crashlocation"},
-          { title: "remainsonsite", key: "remainsonsite"},
-          { title: "extentofremainsonsite", key: "extentofremainsonsite"},
-          { title: "otherlocationsofremains", key: "otherlocationsofremains"},
-          { title: "pilot", key: "pilot"},
-          { title: "fatalities", key: "fatalities"}, 
-          { title: "descriptionofcrashevent", key: "descriptionofcrashevent"},
-          { title: "comments", key: "comments"},
-          { title: "significanceofaircraft", key: "significanceofaircraft"}, 
-          { title: "", key: "sources"},
-          { title: "inyukon", key: "inyukon"},
-          { title: "soulsonboard", key: "soulsonboard"},
-          { title: "Injuries", key: "injuries"},
+          { title: "Crash Date", key: "crashdate"},
           { title: "Date Descriptor", key: "datedescriptor"},
           { title: "Date Note", key: "datenote"},
-          { title: "Pilotlastname", key: "pilotlastname"},
-          { title: "Pilotfirstname", key: "pilotfirstname"},
-          { title: "Pilotrank", key: "pilotrank"},
+          { title: "Aircraft Type", key: "aircrafttype"},
+          { title: "Aircraft Registration", key: "aircraftregistration"},
+          { title: "Nation", key: "nation"},
+          { title: "Militarycivilian", key: "militarycivilian"},
+          { title: "Pilot Last Name", key: "pilotlastname"},
+          { title: "Pilot First Name", key: "pilotfirstname"},
+          { title: "Pilot Rank", key: "pilotrank"},
+          { title: "Souls on Board", key: "soulsonboard"},
+          { title: "Injuries", key: "injuries"},
+          { title: "Fatalities", key: "fatalities"}, 
+          { title: "Location Coordinates", key: "Location"},
           { title: "Accuracy", key: "accuracy"},
-          { title: "Aircraftcaption", key: "aircraftcaption"},
-          { title: "Aircraftaftercrashcaption", key: "aircraftaftercrashcaption"},
-          { title: "Location Description", key: "Location"},
+          { title: "Is In Yukon?", key: "inyukon"},
+          
+        //  { title: "Aircraft Caption", key: "aircraftcaption"},
+        //  { title: "Aircraftaftercrashcaption", key: "aircraftaftercrashcaption"},
+          
         //  { title: "infoSources", key: "infoSources"},
-        ]
+        ],
+        textFields:[
+          { title: "Crash Location", key: "crashlocation"},
+          { title: "Remains on Site", key: "remainsonsite"},
+          { title: "Extent of Remains on Site", key: "extentofremainsonsite"},
+          { title: "Other Locations of Remains", key: "otherlocationsofremains"},
+          { title: "Description of Crashevent", key: "descriptionofcrashevent"},
+          { title: "Comments", key: "comments"},
+          { title: "Significance of Aircraft", key: "significanceofaircraft"}, 
+         // { title: "pilot", key: "pilot"},
+        ],
+        photoFields:[
+          { title: "Creator", key: "Creator"},
+          { title: "Feature Name", key: "FeatureName"},
+          { title: "Address", key: "Address"},
+          { title: "Community Name", key: "CommunityName"},
+          { title: "Caption", key: "Caption"},  
+          { title: "Comments", key: "Comments"},
+        ],
+        generalTable: null,
+
     }),
 
     methods: {
@@ -61,8 +74,15 @@ export default {
             let props = Object.getOwnPropertyNames(this.data);
             props = _.filter(props, x=> x != 'photographs' && x != 'sources '&& x != 'lat' && x != 'long');
             this.toPrint.general = _.pickBy(this.data, (value,key) => _.includes(props, key));
-            //this.toPrint.photos = this.data.photos;
-            console.log(this.toPrint);
+
+            //Prepares the missing data for display
+            this.toPrint.general.inyukon = this.toPrint.general.inyukon == true ? 'Yes' : 'No';
+            Object.keys(this.toPrint.general).map((key) => {
+              this.toPrint.general[key] = this.toPrint.general[key] != null ? this.toPrint.general[key] : '';
+            });
+            this.generalTable = this.tableFields.map(x =>{ return [x.title,this.toPrint.general[x.key]]});
+            
+            this.toPrint.infoSources = this.data.infoSources.map(x => {return [x.Source]})
             /*
             this.toPrint.general.pastNames = this.toPrint.general.pastNames.map(x => {return [x.BoatName]});
 
@@ -79,70 +99,85 @@ export default {
         this.textpos = 70; 
         //let sections = Object.keys(this.toPrint);
         
-        //this.printGeneral();
-        //this.printPhotos();//not done yet...
-        //this.printHistoricalRecord()
-  
-        this.doc.save('Boat_1.pdf');
+        this.printGeneral();
+        this.printTextData();
+        this.printInfoSources();
+        if(this.selectedImage)
+          this.printPhoto();
+
+        this.doc.save(`Aircrash_${this.yacsinumber}.pdf`);
       },
       printGeneral(){
+        this.doc.autoTable({
+        startY: this.textpos,
+        head: [['Field','Data']],
+        body: this.generalTable});
 
-        let keys = Object.keys(this.toPrint.general);
-        for(let i = 0; i<keys.length; i++){
-          this.addTitle("Registration Number:");
-          //this.addText();
-          console.log(`{ title: "", key: "${keys[i]}"},`);
+        this.textpos = this.doc.lastAutoTable.finalY+20;
+      },
+      printTextData(){
+        for(let i = 0; i<this.textFields.length; i++){
+          this.addTitle(this.textFields[i].title);
+          this.addText(`${this.toPrint.general[this.textFields[i].key]}`);
+          //console.log(`{ title: "", key: "${keys[i]}"},`);
         }
-        
-
-
-        //this.printNames();
-        //this.printOwners();
       },
       addText(text){
+        let rText= "Empty";
+        if(!text.includes('null')){
+          console.log("null");
+          rText = text;
+        }
+        let strArr = this.doc.splitTextToSize(rText, 550)
         this.doc.setFontSize(9);
-        this.doc.text(text, 50, this.textpos);
-        this.textpos+=20;
+        
+        for(let i=0;i<strArr.length;i++){
+          this.doc.text(strArr[i], 50, this.textpos);
+          this.changePos(12);
+        }
+        this.changePos(8);
       },
       addTitle(title){
         this.doc.setFontSize(10);
         this.doc.text(title, 40, this.textpos);
-        this.textpos+=20;
+        this.changePos(20);
       },
-      printPhotos(){
+      async printPhoto(){
+        let  { base64 }  = this.selectedImage.File;
 
-      },
-      printHistoricalRecord(){
-        this.doc.autoTable({
-        startY: this.textpos,
-        head: [['Historic Record', 'Reference']],
-        body: this.toPrint.historicRecords});
+        this.doc.addPage();
+        this.textpos = 50;
+        this.addTitle('Photo')
 
-        this.textpos = this.doc.lastAutoTable.finalY+20;
-      },
-      printNames(){
-        this.doc.autoTable({
-        startY: this.textpos,
-        head: [['Name/s:']],
-        body: this.toPrint.general.pastNames});
+        this.doc.addImage(base64, 'JPEG', 40, this.textpos, 515, 300);
+        this.changePos(320);
 
-        this.textpos = this.doc.lastAutoTable.finalY+20;
-      },
-      printOwners(){
-        this.doc.autoTable({
-        startY: this.textpos,
-        head: [['Owner/s:']],
-        body: this.toPrint.general.owners});
-
-        this.textpos = this.doc.lastAutoTable.finalY+20;
-      }
-      
-    },
-    watch: {
-        textpos(newVal){
-            if (newVal >= 800)
-                this.doc.addPage();
+        for(let i = 0; i<this.photoFields.length; i++){
+          this.addTitle(this.photoFields[i].title);
+          this.addText(`${this.selectedImage[this.photoFields[i].key]}`);
+          //console.log(`{ title: "", key: "${keys[i]}"},`);
         }
-    }
+      },
+      printInfoSources(){
+        if(this.toPrint.infoSources.length == 0)
+          return;
+        this.doc.autoTable({
+        startY: this.textpos,
+        head: [['Sources']],
+        body: this.toPrint.infoSources});
+
+        this.textpos = this.doc.lastAutoTable.finalY+20;
+      },
+      changePos(val){
+            if (this.textpos + val >= 790){
+                this.doc.addPage();
+                this.textpos = 50;
+            }
+            else{
+              this.textpos+= val;
+            }
+                
+      }
+    },
 }
 </script>

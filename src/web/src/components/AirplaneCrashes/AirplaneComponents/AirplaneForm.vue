@@ -4,22 +4,22 @@
         <Breadcrumbs/>
         <v-row>
             <v-col cols="12" class="d-flex">
-                <h1 v-if="mode == 'view'">{{fields.yacsinumber}}</h1>
-                <h1 v-else-if="mode == 'edit'">Edit: {{fields.yacsinumber}}</h1>
+                <h1 v-if="isViewingCrash">{{fields.yacsinumber}}</h1>
+                <h1 v-else-if="isEditingCrash">Edit: {{fields.yacsinumber}}</h1>
                 <h1 v-else>New Crash Site</h1>
                 <v-spacer></v-spacer>
 <!-- buttons for the view state -->
-                <v-btn class="black--text mx-1" @click="editMode" v-if="mode == 'view'">
+                <v-btn class="black--text mx-1" @click="editMode" v-if="isViewingCrash">
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  v-if="mode == 'view'" :data="fields" :yacsinumber="fields.yacsinumber"/>
+                <PrintButton  v-if="isViewingCrash" :data="fields" :yacsinumber="fields.yacsinumber" :selectedImage="selectedImage"/>
 <!-- buttons for the edit state -->
-                <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
+                <v-btn class="black--text mx-1" @click="cancelEdit" v-if="isEditingCrash">
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 1" v-if="mode == 'edit'" @click="saveChanges" >
+                <v-btn color="success" :disabled="showSave < 1" v-if="isEditingCrash" @click="saveChanges" >
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Done
                 </v-btn>
@@ -44,7 +44,7 @@
                         <v-text-field
                             label="YASCI number"
                             v-model="fields.yacsinumber"
-                            :readonly="mode == 'view'"
+                            :readonly="isViewingCrash"
                         ></v-text-field>
                     </v-col>
                     <v-col>
@@ -52,7 +52,7 @@
                         <v-text-field
                             label="Aircraft Maker"
                             v-model="fields.aircrafttype"
-                            :readonly="mode == 'view'"
+                            :readonly="isViewingCrash"
                         ></v-text-field>
                     </v-col>
                     <v-col>
@@ -60,7 +60,7 @@
                         <v-text-field
                             label="Aircraft Registration"
                             v-model="fields.aircraftregistration"
-                            :readonly="mode == 'view'"
+                            :readonly="isViewingCrash"
                         ></v-text-field>
                     </v-col>
                 </v-row>
@@ -77,6 +77,7 @@
                                         transition="scale-transition"
                                         offset-y
                                         min-width="auto"
+                                        :disabled="isViewingCrash"
                                     >
                                         <template v-slot:activator="{ on, attrs }">
                                         <v-text-field
@@ -116,7 +117,7 @@
                                 <v-select
                                     v-model="fields.datedescriptor"
                                     :items="dateDescriptorOptions"
-                                    :readonly="mode == 'view'"
+                                    :readonly="isViewingCrash"
                                     label="Date Descriptor"
                                 ></v-select>
                             </v-col>
@@ -126,7 +127,7 @@
                                 <v-text-field
                                     v-model="fields.datenote"
                                     label="Date Note"
-                                    :readonly="mode == 'view'"
+                                    :readonly="isViewingCrash"
                                 ></v-text-field>
                             </v-col>
                         </v-row>
@@ -139,25 +140,25 @@
                                     label="Canadian"
                                     value="Canadian"
                                     v-model="fields.nation"
-                                    :readonly="mode == 'view'"
+                                    :readonly="isViewingCrash"
                                 ></v-checkbox>
                                 <v-checkbox
                                     label="American"
                                     value="American"
                                     v-model="fields.nation"
-                                    :readonly="mode == 'view'"
+                                    :readonly="isViewingCrash"
                                 ></v-checkbox>
                                 <v-checkbox
                                     label="Other"
                                     v-model="otherNation"
                                     @click="changeNation"
-                                    :readonly="mode == 'view'"
+                                    :readonly="isViewingCrash"
                                 ></v-checkbox>
                                 <v-text-field
                                     v-if="otherNation"
                                     v-model="fields.nation"
                                     label="Other"
-                                    :readonly="mode == 'view'"
+                                    :readonly="isViewingCrash"
                                 ></v-text-field>
                             </v-col>
                             <v-col cols="6">
@@ -166,13 +167,13 @@
                                     label="Civilian"
                                     value="Civilian"
                                     v-model="fields.militarycivilian"
-                                    :readonly="mode == 'view'"
+                                    :readonly="isViewingCrash"
                                 ></v-checkbox>
                                 <v-checkbox
                                     label="Military"
                                     value="Military"
                                     v-model="fields.militarycivilian"
-                                    :readonly="mode == 'view'"
+                                    :readonly="isViewingCrash"
                                 ></v-checkbox>
                             </v-col>
                         </v-row> 
@@ -192,21 +193,21 @@
                                     <v-text-field
                                         v-model="fields.pilotfirstname"
                                         label="First Name"
-                                        :readonly="mode == 'view'"
+                                        :readonly="isViewingCrash"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col>
                                     <v-text-field
                                         v-model="fields.pilotlastname"
                                         label="Last Name"
-                                        :readonly="mode == 'view'"
+                                        :readonly="isViewingCrash"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col>
                                     <v-text-field
                                         v-model="fields.pilotrank"
                                         label="Rank"
-                                        :readonly="mode == 'view'"
+                                        :readonly="isViewingCrash"
                                     ></v-text-field>
                                 </v-col>
                             </v-row>
@@ -218,11 +219,15 @@
             <v-col cols="5">
                     <v-col cols="12">
 <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-                        <Photos :showDefault="showPhotosDefault" :boatID="getBoatID"/>
+                        <Photos 
+                        v-if="infoLoaded" 
+                        :showDefault="isNewCrash" 
+                        :yacsiNumber="getYACSINumber"
+                        @updateSelectedImage="selectedImageChanged"/>
                     </v-col>
             </v-col>
         </v-row>
-        <MapLoader
+        <MapLoader v-if="infoLoaded"
             :mode="mode"
             @modifiedDataCoordinates="modifiedDataCoordinates"
             :fields="{  accuracy: fields.accuracy,
@@ -238,7 +243,7 @@
                          <v-text-field
                             v-model="fields.remainsonsite"
                             label="Remains on Site"
-                            :readonly="mode == 'view'"
+                            :readonly="isViewingCrash"
                             type="number"
                         ></v-text-field>    
                         <v-textarea
@@ -246,7 +251,7 @@
                             class="mt-0 pt-0"
                             v-model="fields.extentofremainsonsite"
                             label="Extent of Remains on Site"
-                            :readonly="mode == 'view'"
+                            :readonly="isViewingCrash"
                         ></v-textarea>
                     </v-col>
                     <v-col>
@@ -254,7 +259,7 @@
                             rows="7"
                             v-model="fields.otherlocationsofremains"
                             label="Other Location of Remains"
-                            :readonly="mode == 'view'"
+                            :readonly="isViewingCrash"
                         ></v-textarea>
                     </v-col>
                 </v-row>
@@ -265,19 +270,19 @@
                                 <v-text-field
                                     v-model="fields.soulsonboard"
                                     label="Souls on Board"
-                                    :readonly="mode == 'view'"
+                                    :readonly="isViewingCrash"
                                     type="number"
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="fields.injuries"
                                     label="Injuries"
-                                    :readonly="mode == 'view'"
+                                    :readonly="isViewingCrash"
                                     type="number"
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="fields.fatalities"
                                     label="Fatalities"
-                                    :readonly="mode == 'view'"
+                                    :readonly="isViewingCrash"
                                     type="number"
                                 ></v-text-field>
                         </v-col>
@@ -286,7 +291,7 @@
                                 rows="7"
                                 v-model="fields.descriptionofcrashevent"
                                 label="Description of Crash Event"
-                                :readonly="mode == 'view'"
+                                :readonly="isViewingCrash"
                             ></v-textarea>
                         </v-col>
                  </v-row>
@@ -298,7 +303,7 @@
                 <v-textarea
                     v-model="fields.comments"
                     label="Additional Information"
-                    :readonly="mode == 'view'"
+                    :readonly="isViewingCrash"
                 ></v-textarea>
             </v-col>
         </v-row>
@@ -312,8 +317,8 @@
                         <template v-for="(item, index) in fields.infoSources">
                             <v-list-item :key="`nl-${index}`">
                                 <v-list-item-content>
-                                    <v-list-item-title v-if="index != editTableSources || mode == 'view'">{{item}}</v-list-item-title>
-                                    <v-form v-model="validSource" v-if="mode != 'view'" v-on:submit.prevent>
+                                    <v-list-item-title v-if="index != editTableSources || isViewingCrash">{{item.Source}}</v-list-item-title>
+                                    <v-form v-model="validSource" v-if="!isViewingCrash" v-on:submit.prevent>
                                         <v-text-field
                                         v-if="editTableSources == index "
                                         label="Source"
@@ -324,12 +329,25 @@
                                     
                                 </v-list-item-content>
                                 <v-list-item-action class="d-flex flex-row">
-                                    <v-tooltip bottom v-if="mode != 'view' && editTableSources != index">
+                                    <v-tooltip bottom v-if="!isViewingCrash && editTableSources != index">
                                         <template v-slot:activator="{ on, attrs }">
                                                 <v-btn 
                                                 v-bind="attrs"
                                                 v-on="on"
-                                                icon class="grey--text text--darken-2"   @click="changeEditTableNames(item,index)">
+                                                icon class="grey--text text--darken-2"   @click="deleteSource(item,index)">
+                                                    <v-icon
+                                                        small
+                                                    > mdi-delete</v-icon>
+                                                </v-btn>
+                                        </template>
+                                        <span>Delete</span>
+                                    </v-tooltip>
+                                    <v-tooltip bottom v-if="!isViewingCrash && editTableSources != index">
+                                        <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                v-bind="attrs"
+                                                v-on="on"
+                                                icon class="grey--text text--darken-2"   @click="changeEditTableSources(item,index)">
                                                     <v-icon
                                                         small
                                                     > mdi-pencil</v-icon>
@@ -337,13 +355,13 @@
                                         </template>
                                         <span>Edit</span>
                                     </v-tooltip>
-                                    <v-tooltip bottom v-if="mode != 'view' && editTableSources == index">
+                                    <v-tooltip bottom v-if="!isViewingCrash && editTableSources == index">
                                         <template v-slot:activator="{ on, attrs }">
                                                 <v-btn
                                                 v-bind="attrs"
                                                 v-on="on" 
                                                 :disabled="!validSource"
-                                                icon class="grey--text text--darken-2" color="success"  @click="saveTableNames(index)">
+                                                icon class="grey--text text--darken-2" color="success"  @click="saveTableSources(index)">
                                                     <v-icon
                                                     small
                                                     >mdi-check</v-icon>  
@@ -351,12 +369,12 @@
                                         </template>
                                         <span>Save changes</span>
                                     </v-tooltip>
-                                    <v-tooltip bottom v-if="mode != 'view' && editTableSources == index">
+                                    <v-tooltip bottom v-if="!isViewingCrash && editTableSources == index">
                                         <template v-slot:activator="{ on, attrs }">
                                                 <v-btn 
                                                 v-bind="attrs"
                                                 v-on="on"
-                                                icon class="grey--text text--darken-2"  @click="cancelEditTableNames()">
+                                                icon class="grey--text text--darken-2"  @click="cancelEditTableSources()">
                                                     <v-icon
                                                     small
                                                     >mdi-close</v-icon>  
@@ -373,7 +391,7 @@
                 <v-row>
                     <v-col cols="12" class="d-flex ">
                         <v-spacer></v-spacer>
-                        <v-btn class="mx-1 black--text align" @click="addName" v-if="mode != 'view' && editTableSources == -1">Add Source</v-btn>
+                        <v-btn class="mx-1 black--text align" @click="addSource" v-if="!isViewingCrash && editTableSources == -1">Add Source</v-btn>
                     </v-col>
                 </v-row>
             </v-col>
@@ -381,7 +399,7 @@
                 <v-textarea
                     label="Significance of Aircraft"
                     v-model="fields.significanceofaircraft"
-                    :readonly="mode == 'view'"
+                    :readonly="isViewingCrash"
                 ></v-textarea>
             </v-col>
         </v-row>
@@ -398,7 +416,7 @@
 
 <script>
 import Breadcrumbs from '../../Breadcrumbs.vue';
-import Photos from "./Photos";
+import Photos from "./Photos/Photos";
 import PrintButton from "./PrintButton";
 import aircrash from "../../../controllers/aircrash";
 import MapLoader from "./MapLoader";
@@ -413,6 +431,7 @@ export default {
         addingSource: false,// tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
         helperSource: null,
         validSource: false,
+        deletedSources: [],
         sourceRules: [
             v => !!v || 'Source is required',
         ],
@@ -428,15 +447,16 @@ export default {
     // vessel typle select options
         vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
         dateFormatted: "",
-    //show a deafult photos component for when the user is adding a new crash site
-        showPhotosDefault: false,
     // Select vars
         remainsOptions: ["Yes","No", "  ??"],
         dateDescriptorOptions: ["Estimate","Actual"],
+        selectedImage: null,
     //modified coordinate fields
         modifiedMapFields: null,
+        infoLoaded: false,
     //helper var for the nations checkboxes
-        otherNation: false
+        otherNation: false,
+
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -448,7 +468,6 @@ export default {
             this.mode="new";
             //inputs remain empty
             this.noData();
-            this.showPhotosDefault = true;
         }
         else if(this.checkPath("view")){
             this.mode="view";
@@ -505,6 +524,7 @@ export default {
                 datenote: "",
                 datedescriptor: ""
             };
+            this.infoLoaded = true;
         },
         saveCurrentCrash(){
             localStorage.currentCrashNumber = this.$route.params.yacsinumber;
@@ -516,14 +536,12 @@ export default {
             }
             this.fields = await aircrash.getById(localStorage.currentCrashNumber);
             this.fields.crashdate =  this.fields.crashdate ? this.fields.crashdate.substr(0, 10) : "";
-            this.fields.infoSources = this.fields.sources.includes(";") ? this.fields.sources.split(";") : [];
+            //this.fields.infoSources = this.fields.sources.includes(";") ? this.fields.sources.split(";") : [];
             if(this.fields.nation != 'Canadian' && this.fields.nation != 'American')    
                 this.otherNation = true;
             console.log(this.fields);
+            this.infoLoaded = true;
             this.overlay = false;
-        },
-        saveDate (date) {
-            this.$refs.menu1.save(date);
         },
     //Functions dedicated to handle the edit, add, view modes
         cancelEdit(){
@@ -555,49 +573,66 @@ export default {
         async saveChanges(){
             this.overlay = true;
             console.log(this.fields);
+        //Mapping coordinate data
             let { lat, long, inyukon, crashlocation, accuracy } = this.modifiedMapFields;
             this.fields.lat = lat;
             this.fields.long = long;
             this.fields.inyukon = inyukon;
             this.fields.crashlocation = crashlocation;
             this.fields.accuracy = accuracy;
+        //Mapping general fields
             let crash = { ...this.fields }
             crash.pilot = this.getPilotName();
             crash.sources = this.getSources();
             crash.Location = `POINT(${crash.long} ${crash.lat})`
+        //Removing useless values
             delete crash.pilotFirstName;
             delete crash.pilotLastName;
             delete crash.infoSources;
+            delete crash.sources;
             delete crash.lat;
             delete crash.long;
+        //Mapping infosources
+            let editedInfoSources = this.fields.infoSources.filter(x => x.isEdited == true);
+            let removedInfoSources = this.deletedSources;
+            let newInfoSources = this.fields.infoSources.filter(x => x.isNew == true).map(x => ({Type: x.Type, Source: x.Source}));
+
             console.log(crash);
+        //Final data obj
              let data = {
-                    aircrash: crash
+                    aircrash: crash,
+                    removedInfoSources,
+                    newInfoSources,
+                    editedInfoSources
                 };
                 console.log(data);
-            let currentCrashNumber;
+            
             if(this.mode == 'new'){
                 await aircrash.post(data);
                 this.overlay = false;
                 this.$router.push(`/airplane/`);
             }
             else{
-
-                console.log(localStorage.currentCrashNumber);
                 await aircrash.put(localStorage.currentCrashNumber,data);
-                currentCrashNumber = localStorage.currentCrashNumber;
                 this.overlay = false;
                 this.mode = 'view';
-                this.$router.push({name: 'airplaneView', params: { name: currentCrashNumber, yacsinumber: currentCrashNumber}});
+                this.$router.push({name: 'airplaneView', params: { name: localStorage.currentCrashNumber, yacsinumber: localStorage.currentCrashNumber}});
             } 
         },
-    //functions for editing the table "Names" values
-        changeEditTableNames(item,index){
+    //functions for editing the table "Sources" values
+        changeEditTableSources(item,index){
             this.editTableSources = index;
-            this.helperSource = item;
+            this.helperSource = item.Source;
         },
-        cancelEditTableNames(){
-            if(this.addingName){
+        deleteSource(item,index){            
+            if (index > -1) {
+                this.fields.infoSources.splice(index, 1);
+                if(!item.isNew)
+                    this.deletedSources.push(item);
+            }
+        },
+        cancelEditTableSources(){
+            if(this.addingSource){
                 this.fields.infoSources.pop();
                 this.addingSource = false;
                 this.editTableSources = -1;
@@ -606,15 +641,19 @@ export default {
                 this.editTableNames = -1;
             }      
         },
-        saveTableNames(index){
-            if(this.addingName)
-                this.fields.infoSources[index] = this.helperSource;
-            else
-                this.fields.infoSources[index] =  this.helperSource;
+        saveTableSources(index){
+            if(this.addingSource)
+                this.fields.infoSources[index] = { Source: this.helperSource, Type: 'Reference', isNew: true };
+            else{
+                this.fields.infoSources[index].Source = this.helperSource;
+                if(!this.fields.infoSources[index].isNew)
+                    this.fields.infoSources[index].isEdited = true;
+            }
+                
             this.addingSource = false;  
             this.editTableSources = -1;     
         },
-        addName(){
+        addSource(){
             this.helperSource="";
             this.fields.infoSources.push(""); 
             this.addingSource = true;
@@ -635,18 +674,31 @@ export default {
         modifiedDataCoordinates(val){
             this.modifiedMapFields = val;
             this.showSave = this.showSave+1;
+        },
+        selectedImageChanged(val){
+            this.selectedImage = val;
+            console.log(val);
         }
         
     },   
     computed:{
-        getBoatID(){
-            if(this.$route.params.id){
-                return  this.$route.params.id;
+        getYACSINumber(){
+            if(this.$route.params.yacsinumber){
+                return  this.$route.params.yacsinumber;
             }
-            else return localStorage.currentBoatID;
+            else return localStorage.currentCrashNumber;
         },
         crashdate(){
             return this.formatDate(this.fields.crashdate);
+        },
+        isNewCrash(){
+            return this.mode == "new";
+        },
+        isEditingCrash(){
+            return this.mode == "edit";
+        },
+        isViewingCrash(){
+            return this.mode == "view";
         }
     },
     watch: {
