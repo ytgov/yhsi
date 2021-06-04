@@ -123,7 +123,7 @@ export default {
         }
       },
       addText(text){
-        let rText= "No Data";
+        let rText= "Empty";
         if(!text.includes('null')){
           console.log("null");
           rText = text;

@@ -51,8 +51,8 @@ export default {
             
             this.toPrint.historicRecords = [];
             let hR = this.data.histories;
-            
             this.toPrint.historicRecords = hR.map( x => { return [x.HistoryText,x.Reference]});
+            
             this.toPrint.general.pastNames = this.toPrint.general.pastNames.map(x => {return [x.BoatName]});
             let owners = this.toPrint.general.owners;
             this.toPrint.general.owners =  owners.map(x =>{ return [x.OwnerName] });
@@ -83,7 +83,7 @@ export default {
         this.printOwners();
       },
       addText(text){
-        let rText= "No Data";
+        let rText= "Empty";
         if(!text.includes('null')){
           rText = text;
         }
