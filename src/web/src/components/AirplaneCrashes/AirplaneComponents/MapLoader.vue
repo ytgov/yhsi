@@ -201,7 +201,18 @@
                         ></v-text-field>
                     </v-col>
                 </v-row>
-                <v-row v-if="isOutsideYukon">
+                 <v-row v-if="isEmpty">
+                    <v-col>
+                        <v-alert
+                        dense
+                        outlined
+                        type="error"
+                        >
+                        Please enter a location in the <strong>Yukon</strong>
+                        </v-alert>
+                    </v-col>    
+                </v-row>
+                <v-row v-else-if="isOutsideYukon">
                     <v-col>
                         <v-alert
                         dense
@@ -228,7 +239,7 @@
             ></v-select>
             <v-checkbox 
             :value="!isOutsideYukon"
-            :readonly="mode == 'view'"
+            :readonly="true"
             label="Crash site within Yukon">
             </v-checkbox>
         </v-col>
@@ -345,7 +356,7 @@ export default {
                 }       
             ],
         hemispheres: ["C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","V","W","X"],   
-        coordinateSystemOptions: [{id: 1, text: "Decimal Degrees"},{id: 2, text:  "UTM"}, {id: 3, text: "Degrees, Minutes, Seconds"}],
+        coordinateSystemOptions: [{id: 1, text: "Decimal Degrees"},{id: 2, text:  "UTM Zone 8"}, {id: 3, text: "Degrees, Minutes, Seconds"}],
     //Crash site marker
         marker:{
             visible: false,
@@ -361,7 +372,8 @@ export default {
         },
         yukonPolygon,
     }),
-    created() {
+    mounted() {
+        this.getFields();
         this.fixMarkers();
         //console.log(proj4);
         proj4.defs([
@@ -381,6 +393,19 @@ export default {
     }, 
 
     methods:{
+        getFields(){
+            if(!this.fields){
+                return;
+            }
+            this.modifiableFields = this.fields;
+            this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
+            let lat = parseFloat(this.modifiableFields.lat);
+            let long = parseFloat(this.modifiableFields.long);
+            if(!isNaN(lat) || ! isNaN(long)){
+                this.changedLocation();
+            }
+            this.flag++
+        },
         //This method is responsible for transforming the inputed lat & long values depending on the cordinate system and the selected projeciton 
         changedDatum(){  
             this.updateDisplayCoordinates();  
@@ -538,6 +563,10 @@ export default {
             let { lat, long } = this.modifiableFields;
             return !pointInPolygon([ lat,long], yukonPolygon.latlngs);
         },
+        isEmpty(){
+            let { lat, long } = this.modifiableFields;
+            return lat == 0.0 && long == 0.0;
+        }
     },
     watch:{
         /*
@@ -545,7 +574,7 @@ export default {
             has fetched the data), because of that we cant use mounted or created to map the fields prop to the modifiedFields obj on the state, also 'prop' values 
             are not supposed to be modified, hence why we have the modifiable fields obj. If we dont use a watcher we would have to have a flag on the parent component
             to indicate when the data is available to render the component, this would make the component less independent and less reusable.
-        */
+        
         fields(){
             if(this.fields && this.flag < 3){
                 this.modifiableFields = this.fields;
@@ -557,14 +586,15 @@ export default {
                 }
                 this.flag++
             }
-        },
-        modifiableFields(){
-            if(this.flag > 3){
+        },*/
+        modifiableFields: {
+            handler(){
                 this.modifiableFields.inyukon = !this.isOutsideYukon;
                 this.$emit("modifiedDataCoordinates", this.modifiableFields);
-            }
-            
-        }
+  
+            },
+            deep: true
+        },
         
     }
 }

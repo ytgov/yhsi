@@ -12,7 +12,7 @@ import 'jspdf-autotable';
 import _ from 'lodash';
 export default {
     name: "printButton",
-    props: ["yacsinumber","data" ],
+    props: ["yacsinumber","data", "selectedImage" ],
     components: {  },
     data: ()=> ({
         doc: null,
@@ -57,6 +57,14 @@ export default {
           { title: "Significance of Aircraft", key: "significanceofaircraft"}, 
          // { title: "pilot", key: "pilot"},
         ],
+        photoFields:[
+          { title: "Creator", key: "Creator"},
+          { title: "Feature Name", key: "FeatureName"},
+          { title: "Address", key: "Address"},
+          { title: "Community Name", key: "CommunityName"},
+          { title: "Caption", key: "Caption"},  
+          { title: "Comments", key: "Comments"},
+        ],
         generalTable: null,
 
     }),
@@ -75,7 +83,6 @@ export default {
             this.generalTable = this.tableFields.map(x =>{ return [x.title,this.toPrint.general[x.key]]});
             
             this.toPrint.infoSources = this.data.infoSources.map(x => {return [x.Source]})
-            console.log(this.toPrint.infoSources);
             /*
             this.toPrint.general.pastNames = this.toPrint.general.pastNames.map(x => {return [x.BoatName]});
 
@@ -93,9 +100,10 @@ export default {
         //let sections = Object.keys(this.toPrint);
         
         this.printGeneral();
-        //this.printPhotos();//not done yet...
         this.printTextData();
         this.printInfoSources();
+        if(this.selectedImage)
+          this.printPhoto();
 
         this.doc.save(`Aircrash_${this.yacsinumber}.pdf`);
       },
@@ -115,7 +123,12 @@ export default {
         }
       },
       addText(text){
-        let strArr = this.doc.splitTextToSize(text, 550)
+        let rText= "Empty";
+        if(!text.includes('null')){
+          console.log("null");
+          rText = text;
+        }
+        let strArr = this.doc.splitTextToSize(rText, 550)
         this.doc.setFontSize(9);
         
         for(let i=0;i<strArr.length;i++){
@@ -129,10 +142,25 @@ export default {
         this.doc.text(title, 40, this.textpos);
         this.changePos(20);
       },
-      printPhotos(){
+      async printPhoto(){
+        let  { base64 }  = this.selectedImage.File;
 
+        this.doc.addPage();
+        this.textpos = 50;
+        this.addTitle('Photo')
+
+        this.doc.addImage(base64, 'JPEG', 40, this.textpos, 515, 300);
+        this.changePos(320);
+
+        for(let i = 0; i<this.photoFields.length; i++){
+          this.addTitle(this.photoFields[i].title);
+          this.addText(`${this.selectedImage[this.photoFields[i].key]}`);
+          //console.log(`{ title: "", key: "${keys[i]}"},`);
+        }
       },
       printInfoSources(){
+        if(this.toPrint.infoSources.length == 0)
+          return;
         this.doc.autoTable({
         startY: this.textpos,
         head: [['Sources']],

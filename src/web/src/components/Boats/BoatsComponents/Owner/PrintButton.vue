@@ -23,15 +23,15 @@ export default {
             // we are no longer handling historic records on the owners view
             this.toPrint.ownerName = this.data.ownerName;
             
-            //this.toPrint.historicRecords = this.data.historicRecords;
-            //let hR = this.toPrint.historicRecords;
-            //this.toPrint.historicRecords = hR.map( x => { return [x.HistoryText,x.Reference]});
+            this.toPrint.historicRecords = [];
+            let hR = this.data.histories;
+            this.toPrint.historicRecords = hR.map( x => { return [x.HistoryText,x.Reference]});
 
             let alias = this.data.alias;
             this.toPrint.alias = alias.map( x => { return [x.Alias]});
             
             let boats = this.data.boats;
-            this.toPrint.boats = boats.map( x => { return [x.RegistrationNumber,x.Name,x.VesselType,x.CurrentLocation]});
+            this.toPrint.boats = boats.map( x => { return [x.Name,this.checkEmpty(x.RegistrationNumber),this.checkEmpty(x.VesselType),this.checkEmpty(x.CurrentLocation)]});
       },
       exportPDF() {
         this.mapData();
@@ -41,9 +41,9 @@ export default {
 
         this.printAlias();
         this.printBoatsOwned();
-        //this.printHistoricalRecord();
+        this.printHistoricalRecord();
         
-        this.doc.save('Owner_1.pdf');
+        this.doc.save(`Owner_${this.name}.pdf`);
       },
       addText(text){
         this.doc.setFontSize(9);
@@ -56,6 +56,11 @@ export default {
         this.textpos+=20;
       },
       printHistoricalRecord(){
+        this.doc.addPage();
+        this.textpos = 50;
+        if(this.toPrint.historicRecords.length == 0)
+          return;
+
         this.doc.autoTable({
         startY: this.textpos,
         head: [['Historic Record', 'Reference']],
@@ -66,7 +71,7 @@ export default {
       printBoatsOwned(){
         this.doc.autoTable({
         startY: this.textpos,
-        head: [['Registration Number','Boats Name','Vessel Type', 'CurrentLocation']],
+        head: [['Boat Name','Registration Number','Vessel Type', 'CurrentLocation']],
         body: this.toPrint.boats});
 
         this.textpos = this.doc.lastAutoTable.finalY+20;
@@ -78,8 +83,14 @@ export default {
         body: this.toPrint.alias});
 
         this.textpos = this.doc.lastAutoTable.finalY+20;
+      },
+      checkEmpty(val){
+        let text = "Empty";
+        if(!val)
+          return text;
+        else
+          return val;
       }
-      
     },
     watch: {
         textpos(newVal){

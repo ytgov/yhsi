@@ -11,7 +11,7 @@
             :lazy-src="require('../../../../../assets/add_photo.png')"
             ></v-img>
         </div>
-        <Carousell v-if="photos.length > 0" :photos="photos" :showDefault="showDefault" />
+        <Carousell v-if="photos.length > 0" :photos="photos" :showDefault="showDefault"  @changedSelectedImage="updateSelectedImage" />
         <v-divider></v-divider>
         <v-row v-if="showDefault">
             <v-col cols="12">
@@ -414,7 +414,7 @@ export default {
         numberOfPages: 10,
         page:1,
         showSkeletons: false,
-        skeletons: [1,2,3,4,5],
+        skeletons: [1,2,3,4,5,6],
         dialog1: false,
         photos: [],
 //form variables
@@ -437,6 +437,7 @@ export default {
             Rating:1,
             isPirvate:0,
         },
+        sendObj: null,
     //selection options
         usageRightOptions: [
                 {
@@ -511,7 +512,10 @@ export default {
     
     }),
     mounted(){
-        if(this.boatID && !this.showPhotosDefault)
+        if(this.showDefault)
+            return;
+
+        if(this.boatID)
             this.getDataFromAPI();
     },
     methods: {
@@ -534,6 +538,7 @@ export default {
                 x.selected = false;
                 return x;
             })
+            this.updateSelectedImage(0);
         },
         async getOwners(){
             this.isLoadingOwner = true;
@@ -544,32 +549,29 @@ export default {
         },
         async savePhoto(){
             this.overlay = true;
-            let { IsComplete, Program, CommunityId, Copyright, OriginalMediaId, UsageRights } = this.fields;
-            this.fields.BoatId = Number(this.boatID);
-            this.fields.IsComplete  = IsComplete ? 1 : 0;
-            this.fields.Program = Program.value;
-            this.fields.CommunityId = CommunityId.Id;
-            this.fields.Copyright = Copyright.id;
-            this.fields.OriginalMediaId = OriginalMediaId.Id;
-            this.fields.UsageRights = UsageRights.id
-            console.log(this.fields);
+            this.sendObj = this.fields;
+            let { IsComplete, Program, CommunityId, Copyright, OriginalMediaId, UsageRights } = this.sendObj;
+            this.sendObj.BoatId = Number(this.boatID);
+            this.sendObj.IsComplete  = IsComplete ? 1 : 0;
+            this.sendObj.Program = Program.value;
+            this.sendObj.CommunityId = CommunityId.Id;
+            this.sendObj.Copyright = Copyright.id;
+            this.sendObj.OriginalMediaId = OriginalMediaId.Id;
+            this.sendObj.UsageRights = UsageRights.id;
             const formData = new FormData();
-            let prevFields = Object.entries(this.fields);
-            console.log(prevFields);
+            let prevFields = Object.entries(this.sendObj);
             for(let i=0;i<prevFields.length; i++){
                 formData.append(prevFields[i][0],prevFields[i][1]);
             }
             formData.append("file", this.file);
-            console.log(formData);
-            let resp = await photos.postBoatPhoto(formData);
-            console.log(resp);
+            await photos.postBoatPhoto(formData);
             this.reset();
+            this.$router.go();
             this.overlay = false;
         },
         async saveAndLink(){
             let photosToLink = this.availablePhotos.filter(x => x.selected == true).map(x => { return x.RowId});
-            let resp = await photos.linkBoatPhotos(Number(this.boatID),{linkPhotos: photosToLink});
-            console.log(resp);
+            await photos.linkBoatPhotos(Number(this.boatID),{linkPhotos: photosToLink});
             this.reset();
             this.$router.go();
         },
@@ -617,6 +619,9 @@ export default {
                 this.availablePhotos[index].selected =  !this.availablePhotos[index].selected;
             }
         },
+        updateSelectedImage(val){//updates the carousell selected image
+            this.$emit("updateSelectedImage",this.photos[val]);
+        }
     },
     watch: {
         page(){

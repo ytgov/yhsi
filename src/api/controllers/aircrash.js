@@ -12,12 +12,26 @@ router.get('/', authenticateToken, async (req, res) => {
 
   const db = req.app.get('db');
 
-  const { page = 0, limit = 10, textToMatch = '' } = req.query;
+  const { page = 0, limit = 10, textToMatch = '', sortBy = 'yacsinumber', sort = 'asc' } = req.query;
   const offset = (page*limit) || 0;
-  const counter = await db.from('dbo.vAircrash').count('yacsinumber', {as: 'count'});
+  let counter = 0;
   let aircrashes = [];
-  console.log(textToMatch);
+
   if (textToMatch) {
+    counter = await db.from('dbo.vAircrash')
+    .where('yacsinumber', 'like', `%${textToMatch}%`)
+    .orWhere('crashdate', 'like', `%${textToMatch}%`)
+    .orWhere('aircrafttype', 'like', `%${textToMatch}%`)
+    .orWhere('aircraftregistration', 'like', `%${textToMatch}%`)
+    .orWhere('nation', 'like', `%${textToMatch}%`)
+    .orWhere('militarycivilian', 'like', `%${textToMatch}%`)
+    .orWhere('crashlocation', 'like', `%${textToMatch}%`)
+    .orWhere('pilot', 'like', `%${textToMatch}%`)
+    .orWhere('soulsonboard', 'like', `%${textToMatch}%`)
+    .orWhere('injuries', 'like', `%${textToMatch}%`)
+    .orWhere('fatalities', 'like', `%${textToMatch}%`)
+    .count('yacsinumber', {as: 'count'});
+
     aircrashes = await db.select('*')
     .from('dbo.vAircrash')
     .where('yacsinumber', 'like', `%${textToMatch}%`)
@@ -30,12 +44,17 @@ router.get('/', authenticateToken, async (req, res) => {
     .orWhere('pilot', 'like', `%${textToMatch}%`)
     .orWhere('soulsonboard', 'like', `%${textToMatch}%`)
     .orWhere('injuries', 'like', `%${textToMatch}%`)
-    .orWhere('fatalities', 'like', `%${textToMatch}%`);
-    
+    .orWhere('fatalities', 'like', `%${textToMatch}%`)
+    //.orderBy('yacsinumber', 'asc')
+    .orderBy(`${sortBy}`,`${sort}`)
+    .limit(limit).offset(offset);
+
   } else {
+    counter = await db.from('dbo.vAircrash').count('yacsinumber', {as: 'count'});
     aircrashes = await db.select('*')
       .from('dbo.vAircrash')
-      .orderBy('dbo.vAircrash.yacsinumber', 'asc')
+      //.orderBy('dbo.vAircrash.yacsinumber', 'asc')
+      .orderBy(`${sortBy}`,`${sort}`)
       .limit(limit).offset(offset);
   }
     

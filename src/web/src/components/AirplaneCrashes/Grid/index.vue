@@ -85,7 +85,6 @@
                       :options.sync="options"
                       :server-items-length="totalLength"
                       @click:row="handleClick"
-                      disable-sort
                       :footer-props="{'items-per-page-options': [10, 30, 100]}"
                     >    
                       <template v-slot:item.crashlocation="{ item }" >
@@ -170,11 +169,11 @@ export default {
       },
       async getDataFromApi() {
           this.loading = true;
-          let { page, itemsPerPage } = this.options;
+          let { page, itemsPerPage, sortBy, sortDesc } = this.options;
           page = page > 0 ? page-1 : 0;
           itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
           let textToMatch = this.search;
-          let data = await aircrash.get(page,itemsPerPage,textToMatch);
+          let data = await aircrash.get(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
           this.crashsites = data.body;
           this.totalLength = data.count;
           this.crashsites.map(x => {
@@ -215,6 +214,7 @@ export default {
       },
       filteredData(){// returns a filtered users array depending on the selected filters
           if(this.filterOptions){
+            //the name should actually be 'filters'
               let sorters = JSON.parse(JSON.stringify(this.filterOptions));
               let data = JSON.parse(JSON.stringify(this.crashsites));
               data = sorters[0].value == null || sorters[0].value == "" ? data : data.filter( x => x.crashdate ? x.crashdate.toLowerCase().includes(sorters[0].value.toLowerCase()) : false);  

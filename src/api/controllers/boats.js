@@ -18,20 +18,30 @@ router.get('/', authenticateToken, async (req, res) => {
 
   const db = req.app.get('db');
 
-  const { page = 0, limit = 10, textToMatch = '' } = req.query;
+  const { page = 0, limit = 10, textToMatch = '', sortBy = 'Id', sort = 'asc' } = req.query;
   const offset = (page*limit) || 0;
-  const counter = await db.from('boat.boat').count('Id', {as: 'count'});
+  let counter = 0;
   let boats = [];
 
   if (textToMatch) {
+    counter = await db.from('boat.boat')
+    .where('name', 'like', `%${textToMatch}%`)
+    .count('Id', {as: 'count'});
+
     boats = await db.select('*')
     .from('boat.boat')
-    .where('name', 'like', `%${textToMatch}%`);
-    
+    .where('name', 'like', `%${textToMatch}%`)
+    //.orderBy('boat.boat.id', 'asc')
+    .orderBy(`${sortBy}`,`${sort}`)
+    .limit(limit).offset(offset);
+
   } else {
+    counter = await db.from('boat.boat').count('Id', {as: 'count'});
+
     boats = await db.select('*')
       .from('boat.boat')
-      .orderBy('boat.boat.id', 'asc')
+      //.orderBy('boat.boat.id', 'asc')
+      .orderBy(`${sortBy}`,`${sort}`)
       .limit(limit).offset(offset);
   }
     
@@ -84,7 +94,7 @@ router.post('/new', authenticateToken, async (req, res) => {
   const permissions = req.decodedToken['yg-claims'].permissions;
   if (!permissions.includes('create')) res.sendStatus(403);
 
-  const { boat = {}, owners = [], histories = [] } = req.body;
+  const { boat = {}, ownerNewArray = [], histories = [], pastNamesNewArray = [] } = req.body;
   
   const response = await db.insert(boat)
     .into('boat.boat')
@@ -92,8 +102,8 @@ router.post('/new', authenticateToken, async (req, res) => {
     .then(async rows => {
       const newBoat = rows[0];
 
-      if (owners.length) {
-        const newOwners = owners.map(owner => ({ ...owner, BoatId: newBoat.Id }))
+      if (ownerNewArray.length) {
+        const newOwners = ownerNewArray.map(owner => ({ ...owner, BoatId: newBoat.Id }))
 
         await db.insert(newOwners)
         .into('boat.boatowner')
@@ -102,6 +112,13 @@ router.post('/new', authenticateToken, async (req, res) => {
           return rows;
         });
       }
+
+      //Add the new past names (done)
+      await db.insert(pastNamesNewArray.map(name => ({ BoatId: newBoat.Id, ...name })))
+      .into('boat.pastnames')
+      .then(rows => {
+        return rows;
+      });
 
       if (histories.length) {
         const newHistories = histories.map(history => ({ ...history, UID: newBoat.Id }))
