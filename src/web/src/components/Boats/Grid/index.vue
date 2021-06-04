@@ -9,8 +9,9 @@
             prepend-icon="mdi-magnify"
             class="mx-4"
             hide-details
-            label="Search by Owner Name"
+            label="Search"
             v-model="searchOwner"
+            @keyup.enter="ownerSearchChange()"
             v-on:input="ownerSearchChange()"
             ></v-text-field>
 
@@ -19,8 +20,9 @@
             prepend-icon="mdi-magnify"
             class="mx-4"
             hide-details
-            label="Search by Boat Name"
+            label="Search"
             v-model="searchBoat"
+            @keyup.enter="boatSearchChange()"
             v-on:input="boatSearchChange()"
             ></v-text-field>
 

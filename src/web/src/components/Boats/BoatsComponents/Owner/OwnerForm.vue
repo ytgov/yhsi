@@ -167,6 +167,7 @@
         
         <HistoricRecord :historicRecords="fields.histories" :mode="'view'"/>
         -->
+        <HistoricRecord v-if="fields.histories != undefined && mode !='new'" :historicRecords="fields.histories" :mode="'edit'" :ownerID="getOwnerID" />
         <v-overlay :value="overlay">
             <v-progress-circular
                 indeterminate
@@ -178,12 +179,12 @@
 
 <script>
 import Breadcrumbs from "../../../Breadcrumbs";
-//import HistoricRecord from "../HistoricRecord";
+import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
 import owners from "../../../../controllers/owners";
 export default {
     name: "ownerForm",
-    components: { Breadcrumbs, PrintButton, },// HistoricRecord,  },
+    components: { Breadcrumbs, PrintButton,HistoricRecord  },
     data: ()=> ({
         overlay: false,
     //helper vars, they are used to determine if the component is in an edit, view or add new state
@@ -258,18 +259,15 @@ export default {
             console.log(this.fields);
             this.overlay = false;
         },
-        save (date) {//this function saves the state of the date picker
-            this.$refs.menu.save(date)
-        },
         changeEdit(){//this method handles the logic behind the top edit, cancel & save changes buttons
             this.fieldsHistory = this.edit == false ? {...this.fields} : {...this.fieldsHistory};
             this.fields = this.edit == true ? {...this.fieldsHistory} : {...this.fields};
             this.showSave = 0;
             if(this.edit == true){
-                this.$router.push(`/boats/owner/view/${this.name}`);
+                this.$router.push(`/boats/owner/view/${this.fields.OwnerName}`);
             }
             else{
-                this.$router.push(`/boats/owner/edit/${this.name}`);
+                this.$router.push(`/boats/owner/edit/${this.fields.OwnerName}`);
             }
             this.edit=!this.edit;
         },
@@ -283,27 +281,31 @@ export default {
             }
             this.mode="view";
             this.resetListVariables();
-            this.$router.push(`/boats/owner/view/${this.name}`);
+            this.$router.push(`/boats/owner/view/${this.fields.OwnerName}`);
         },
         cancelNew(){
             this.$router.push(`/boats/owner/`);
         },
         viewMode(){
             this.mode="view";
-            this.$router.push(`/boats/owner/view/${this.name}`);
+            this.$router.push(`/boats/owner/view/${this.fields.OwnerName}`);
         },
         editMode(){
             this.fieldsHistory = {...this.fields};
-            this.mode="edit";
-            this.resetListVariables();
-            this.$router.push(`/boats/owner/edit/${this.name}`);
+            this.mode="edit"; 
+            this.$router.push(`/boats/owner/edit/${this.fields.OwnerName}`);
             this.showSave = 0;
+            this.resetListVariables();
         },
         async saveChanges(){
             this.overlay = true;
-            let alias = this.fields.alias.filter(x => x.isNew == true || x.isEdited == true);
-            alias.map(x => {
+            console.log(this.fields);
+            let newOwnerAlias = this.fields.alias.filter(x => x.isNew == true);
+            newOwnerAlias.map(x => {
                 delete x.isNew;
+            })
+            let editOwnerAlias = this.fields.alias.filter(x => x.isEdited == true);
+            editOwnerAlias.map(x => {
                 delete x.isEdited;
             })
             
@@ -311,10 +313,12 @@ export default {
                     owner: {
                         OwnerName:  this.fields.OwnerName,
                     },
-                    ownerAlias: alias,
+                    newOwnerAlias,
+                    editOwnerAlias
                 };
                 console.log(data);
             let currentOwner= {};
+            
             if(this.mode == 'new'){
                 await owners.post(data);
                 this.$router.push(`/boats/owner`);
@@ -344,7 +348,7 @@ export default {
     //functions for editing the table "Owners" values
         changeEditTableAlias(item,index){
             this.editTableAlias = index;
-            this.fields.alias[index].isEdited = true;
+            //this.fields.alias[index].isEdited = true;
             this.helperAlias = item.Alias;
         },
         cancelEditTableAlias(){
@@ -359,10 +363,16 @@ export default {
                 
         },
         saveTableAlias(index){
-            if(this.validAlias){
+            if(this.addingAlias)
+                this.fields.alias[index] = {Alias:this.helperAlias, isNew: true};
+            else{
                 this.fields.alias[index].Alias = this.helperAlias;
-                this.editTableAlias = -1;
-            }           
+                this.fields.alias[index].isEdited = true;
+            }
+            this.addingAlias = false;
+            this.showSave = this.showSave+1;
+            this.editTableAlias = -1;
+         
         },
         addAlias(){
             this.helperAlias="";
@@ -371,10 +381,17 @@ export default {
             this.editTableAlias = this.fields.alias.length-1;
         },
     },
+    computed:{
+        getOwnerID(){
+            if(this.$route.params.id){
+                return  this.$route.params.id;
+            }
+            else return localStorage.currentOwnerID;
+        },
+    },
     watch: {
         fields: {
-            handler(newval){
-                console.log("Value changed",newval);
+            handler(){
                 this.showSave = this.showSave+1;
             },
             deep: true
