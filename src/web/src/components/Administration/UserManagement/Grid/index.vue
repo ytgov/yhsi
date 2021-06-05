@@ -137,7 +137,7 @@ export default {
   },
   methods: {
     handleClick(value){   //Redirects the user to the edit user form
-        this.$router.push(`/admin/users/${value.id}/view`);
+        this.$router.push(`/admin/users/view/${value.id}`);
     },
     removeItem(item){ //removes one element from the users array
       const index = this.users.findIndex(a=> a.id == item.id);

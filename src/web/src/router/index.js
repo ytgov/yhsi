@@ -351,12 +351,12 @@ const routes = [
     component: AdminUserGrid
   },
   {
-    path: "/admin/users/:id/view",
+    path: "/admin/users/view/:id",
     name: "AdminUserView",
     component: AdminUserForm
   },
   {
-    path: "/admin/users/:id/edit",
+    path: "/admin/users/edit/:id",
     name: "AdminUserEdit",
     component: AdminUserForm
   },
