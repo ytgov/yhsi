@@ -22,10 +22,20 @@
               <h2 class="mt-auto mb-auto ml-3">Edit User {{username}}</h2>
             </div>
             <v-spacer></v-spacer>
-            <v-btn color="success" :disabled="true "><!--showSave < 1" v-if="mode == 'edit'" @click="saveChanges" > -->
-                <v-icon class="mr-1">mdi-check</v-icon>
-                Save Changes
-            </v-btn>
+            <!-- buttons for the view state -->
+                <v-btn class="black--text mx-1" @click="editMode" v-if="mode == 'view'">
+                    <v-icon class="mr-1">mdi-pencil</v-icon>
+                    Edit
+                </v-btn>
+<!-- buttons for the edit state -->
+                <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
+                    <v-icon>mdi-close</v-icon>
+                    Cancel
+                </v-btn>
+                <v-btn color="success" :disabled="showSave < 1" v-if="mode == 'edit'" @click="saveChanges" >
+                    <v-icon class="mr-1">mdi-check</v-icon>
+                    Done
+                </v-btn>
           </v-col>
         </v-row>
         <v-divider inset class="mb-4"></v-divider>
@@ -129,9 +139,20 @@
             <v-card
               elevation="2"
             >
-              <v-card-title>
-                <v-icon class="mr-1">mdi-{{sec.icon}}</v-icon> {{sec.title}}
-              </v-card-title>
+            <v-toolbar
+                :color="getColor(sec.access)"
+                dark
+                flat
+                >
+
+                <v-card-title class="card-text">
+                  <v-icon class="mr-1" color="rgb(0, 0, 0, 0.5)">mdi-{{sec.icon}}</v-icon> {{sec.title}}
+                </v-card-title>
+
+                <v-spacer></v-spacer>
+
+            </v-toolbar>
+              
               <v-container fluid>
                  <v-form
                     ref="form"
@@ -180,6 +201,7 @@ export default {
     username: 'username',
     items: null,
     selectedItem: null,
+    mode: null,
     dialog: false, //tells the print dialog when to show itself
     fields:{
       name: "",
@@ -188,6 +210,7 @@ export default {
       roles: "",
       date: null
     },
+    fieldsHistory: null,
     sections: [
       { id: 1, access: null, title: "Photos", icon:"camera" },
       { id: 2, access: null, title: "Airplane Crash", icon:"airplane-landing" },
@@ -203,18 +226,59 @@ export default {
           "City of Whitehorse", "Dawson City","105D","105E","117i"],
     roles: ["Site Admin", "Editor", "Viewer", "Viewer Limited"],
     menu: false,
+    showSave: 0
   }),
-  created(){
+  mounted(){
+      if(this.checkPath("edit")){
+          this.mode= "edit";
+          //after this, the fields get filled with the info obtained from the api
+          //this.getDataFromApi();
+      }
+      else if(this.checkPath("view")){
+          this.mode="view";
+          //after this, the fields get filled with the info obtained from the api
+          //this.getDataFromApi();
+      }
   },
   methods: {
+    /*this function checks if the current path contains a specific word, this can be done with a simple includes but 
+    //it causes confusion when a boat or owner has 'new' in its name, leading the component to think it should use the 'new' mode,
+    this problem is solved by using this funtion.*/
+    checkPath(word){
+        let path = this.$route.path.split("/");
+        if(path[3] == word){
+            return true;
+        }
+        return false;
+    },
     goBack(){
-      this.$router.push('/users');
+      this.$router.push('/admin/users');
+    },
+    getColor(access){
+      if(!access || access == 'No Access')
+        return 'grey lighten-2';
+
+      if(access == 'Edit')
+        return 'lime lighten-3';
+
+      if(access == 'View')
+        return 'amber lighten-3';
     },
     showDialog(){
       this.dialog =  true;
     },
     closeDialog(){
       this.dialog = false;
+    },
+    viewMode(){
+        this.mode="view";
+        this.$router.push(`/admin/users/view/${this.fields.Name}`);
+    },
+    editMode(){
+        this.fieldsHistory = {...this.fields};
+        this.mode="edit";
+        this.$router.push(`/admin/users/edit/${this.fields.Name}`);
+        this.showSave = 0;
     },
     save (date) {
       this.$refs.menu.save(date);
@@ -233,5 +297,8 @@ export default {
 .list-menu{
   padding: 0px 8px 0px 0px;
 }
-
+.card-text{
+    color: #000; /* Fallback for older browsers */
+    color: rgba(0, 0, 0, 0.5);
+}
 </style>
