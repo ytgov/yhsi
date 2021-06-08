@@ -49,7 +49,7 @@
                             <v-spacer></v-spacer>
 
                         </v-toolbar>
-                        <v-list class="pb-0">
+                        <v-list class="pb-0 pt-0">
                         <v-list-item-group v-model="tablemodel" >
                             <v-list-item
                             v-for="(item, i) in items"
@@ -84,22 +84,22 @@ export default {
         tablemodel: null,
         items: [
         {
-          icon: 'mdi-inbox',
+          icon: 'mdi-camera-outline',
           text: 'Photo Owner',
           url: ""
         },
         {
-          icon: 'mdi-star',
+          icon: 'mdi-map-marker-multiple-outline',
           text: 'Community',
           url: ""
         },
         {
-          icon: 'mdi-send',
+          icon: 'mdi-run',
           text: 'Contributing Resources',
           url: ""
         },
         {
-          icon: 'mdi-email-open',
+          icon: 'mdi-ferry',
           text: 'Vessel Type',
           url: "/admin/vessel_type"
         },
@@ -108,6 +108,8 @@ export default {
     }),
     methods:{
         goTo(url){
+            if(url == "")
+                return;
             this.$router.push(url);
         }
     }
