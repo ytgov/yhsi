@@ -1,9 +1,9 @@
 <template>
   <div class="">
     <v-container fluid>
-      <h1>User Management</h1>
+      <h1>Vessel Type</h1>
       <Breadcrumbs/>
-      <v-row>
+      <v-row class="mb-2">
         <v-col cols="6" class="d-flex">
           <v-text-field
             flat
@@ -15,56 +15,13 @@
             @keyup.enter="searchChange()"
             v-on:input="searchChange()"
             ></v-text-field>
-
-          <v-menu
-            transition="slide-y-transition"
-            bottom
-            :close-on-content-click="false"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                color="transparent"
-                class="black--text"
-                v-bind="attrs"
-                v-on="on"
-              > <v-icon>mdi-filter</v-icon>
-                Filter
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item-group
-                v-model="selectedFilter"
-                color="primary"
-                multiple
-              >
-                <v-list-item
-                  v-for="(item, i) in filterOptions"
-                  :key="i"
-                  link
-                >   
-                  <template v-slot:default="{ active }">
-                      <v-list-item-action>
-                        <v-icon
-                          v-if="!active"
-                        >
-                          mdi-checkbox-blank-outline
-                        </v-icon>
-                        <v-icon
-                          v-else
-                        >
-                          mdi-checkbox-marked-outline
-                        </v-icon>
-                      </v-list-item-action>
-                      <v-list-item-title>{{ item.name }}</v-list-item-title>
-                    </template>
-                </v-list-item>
-              </v-list-item-group>
-            </v-list>
-          </v-menu>
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="auto">
-        
+            <v-btn  class="black--text mx-1" >
+              <v-icon class="mr-1">mdi-plus-circle-outline</v-icon> 
+              Add Vessel Type
+            </v-btn>
         </v-col>
         
       </v-row>
@@ -113,35 +70,25 @@
 </template>
 
 <script>
-import users from "../../../../controllers/user";
-import Breadcrumbs from "../../../Breadcrumbs";
+import catalogs from "../../../controllers/catalogs";
+import Breadcrumbs from "../../Breadcrumbs";
 import _ from 'lodash';
 export default {
   name: "usersgrid",
   components: { Breadcrumbs },
   data: () => ({
     loading: false,
-    users: [],
+    vesseltypes: [],
     search: "",
     options: {},
-    totalLength: 0,
+    totalLength: 10,
     headers: [
-      { text: "Email", value: "Email" },
-      { text: "First Name", value: "FirstName"},
-      { text: "Last Name", value: "LastName"},
-      { text: "Status", value: "Status"},
-      { text: "Last Login", value: "LastLogin"},
+      { text: "Type", value: "Type" },
 //      { text: "Actions", value: "actions"}
     ],
     page: 1,
     pageCount: 0,
     iteamsPerPage: 10,
-    selectedFilter: [],
-    filterOptions: [
-      {name: 'Expired Users'},
-      {name: 'Active Users'},
-      {name: 'Pending Users'},
-    ],
   }),
   mounted() {
     this.getDataFromApi();
@@ -154,27 +101,22 @@ export default {
         this.$router.push(`/admin/users/view/${value.UserId}`);
     },
     removeItem(item){ //removes one element from the users array
-      const index = this.users.findIndex(a=> a.id == item.id);
+      const index = this.vesseltypes.findIndex(a=> a.id == item.id);
       console.log(index);
       if (index > -1) {
-        this.users.splice(index, 1);
+        this.vesseltypes.splice(index, 1);
       }
     },
     async getDataFromApi() {
-      this.loading = true;
-      let { page, itemsPerPage, sortBy, sortDesc } = this.options;
-      page = page > 0 ? page-1 : 0;
-      itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
-      let textToMatch = this.search;
-      let data = await users.get(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
-
-      this.users = _.get(data, 'body', []);
-      this.users.map(x => {
-          x.LastLogin = this.formatDate(x.LastLogin);
-      });
-      console.log(this.users);
-      this.totalLength = _.get(data, 'count', 0);
-      this.loading = false;
+        this.loading = true;
+        let { page, itemsPerPage, sortBy, sortDesc } = this.options;
+        page = page > 0 ? page-1 : 0;
+        itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
+        let textToMatch = this.search;
+        let data = await catalogs.getVesselTypes(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
+        this.vesseltypes = _.get(data, 'body', []);
+        this.totalLength = _.get(data, 'count', 0);
+        this.loading = false;
     },
     formatDate (date) {
         if (!date) return null
@@ -186,21 +128,7 @@ export default {
   },
   computed: {
     filteredData(){// returns a filtered users array depending on the selected filters
-      let sorters = JSON.parse(JSON.stringify(this.selectedFilter));
-      let data = JSON.parse(JSON.stringify(this.users));
-      for(let i=0; i<sorters.length; i++){
-        switch(sorters[i]){
-          case 0: // expired
-            data = data.filter(x => x.Status == 0);
-            break;
-          case 1: // active
-            data = data.filter(x => x.Status == 1);
-            break;
-          case 2: // pending
-            data = data.filter(x => x.Status == 2);
-            break;
-        }
-      }
+      let data = JSON.parse(JSON.stringify(this.vesseltypes));
       return data;
     },
   },

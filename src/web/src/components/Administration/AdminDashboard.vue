@@ -1,6 +1,7 @@
 <template>
     <v-container>
         <h1>Administration</h1>
+        <Breadcrumbs/>
         <v-row>
             <v-col
                 cols="6"
@@ -72,7 +73,11 @@
 </template>
 
 <script>
+import Breadcrumbs from "../Breadcrumbs";
 export default {
+    components: {
+        Breadcrumbs
+    },
     data: () =>({
         icon: null,
         usermodel: null,
@@ -96,7 +101,7 @@ export default {
         {
           icon: 'mdi-email-open',
           text: 'Vessel Type',
-          url: ""
+          url: "/admin/vessel_type"
         },
       ],
       model: 1,
