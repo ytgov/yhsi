@@ -44,7 +44,7 @@ import AirplaneEditForm from "../components/AirplaneCrashes/AirplaneComponents/A
 import AdminDashboard from "../components/Administration/AdminDashboard";
 import AdminUserGrid from "../components/Administration/UserManagement/Grid";
 import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form";
-import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType";
+import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
 Vue.use(VueRouter);
 
 const routes = [

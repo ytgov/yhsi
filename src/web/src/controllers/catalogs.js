@@ -36,4 +36,22 @@ import { api } from './config';
       console.log(error);
     });
   },
+  async postVesselType(data){
+    return await api.post(`catalogs/vesseltype/new`,data)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      // handle error
+      console.log(error);
+    });
+  },
+  async putVesselType(id,data){
+    return await api.put(`catalogs/vesseltype/${id}`,data)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      // handle error
+      console.log(error);
+    });
+  },
 } 

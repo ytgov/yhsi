@@ -18,10 +18,7 @@
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="auto">
-            <v-btn  class="black--text mx-1" >
-              <v-icon class="mr-1">mdi-plus-circle-outline</v-icon> 
-              Add Vessel Type
-            </v-btn>
+            <AddDialog/>
         </v-col>
         
       </v-row>
@@ -64,18 +61,20 @@
             </v-row>
         </v-card>
     </div>  
-      
+      <EditDialog :dialog="editDialog" :data="displayVesselType" @closeEditDialog="closeDialog"/>
     </v-container>
   </div>
 </template>
 
 <script>
-import catalogs from "../../../controllers/catalogs";
-import Breadcrumbs from "../../Breadcrumbs";
+import catalogs from "../../../../controllers/catalogs";
+import Breadcrumbs from "../../../Breadcrumbs";
+import EditDialog from "./EditDialog";
+import AddDialog from "./AddDialog";
 import _ from 'lodash';
 export default {
   name: "usersgrid",
-  components: { Breadcrumbs },
+  components: { Breadcrumbs, EditDialog, AddDialog },
   data: () => ({
     loading: false,
     vesseltypes: [],
@@ -89,6 +88,8 @@ export default {
     page: 1,
     pageCount: 0,
     iteamsPerPage: 10,
+    displayVesselType: {},
+    editDialog: false,
   }),
   mounted() {
     this.getDataFromApi();
@@ -98,7 +99,8 @@ export default {
       this.getDataFromApi();
     }, 400),
     handleClick(value){   //Redirects the user to the edit user form
-        this.$router.push(`/admin/users/view/${value.UserId}`);
+        this.displayVesselType = value;
+        this.editDialog = true;
     },
     removeItem(item){ //removes one element from the users array
       const index = this.vesseltypes.findIndex(a=> a.id == item.id);
@@ -115,6 +117,7 @@ export default {
         let textToMatch = this.search;
         let data = await catalogs.getVesselTypes(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
         this.vesseltypes = _.get(data, 'body', []);
+        console.log(this.vesseltypes);
         this.totalLength = _.get(data, 'count', 0);
         this.loading = false;
     },
@@ -124,6 +127,9 @@ export default {
         const [year, month, day] = date.split('-')
         return `${month}/${day}/${year}`
     },
+    closeDialog(){
+      this.editDialog = false;
+    }
 
   },
   computed: {

@@ -62,4 +62,40 @@ router.get('/community', authenticateToken, async (req, res) => {
   });
   
 
+  router.put('/vesseltype/:vesselId', authenticateToken, async (req, res) => {
+    const db = req.app.get('db');
+    const permissions = req.decodedToken['yg-claims'].permissions;
+    if (!permissions.includes('edit')) res.sendStatus(403);
+  
+    const { vesselId } = req.params;
+  
+  
+    const { vesselType = {} } = req.body;
+
+  
+    await db('boat.Type')
+        .update(vesselType)
+        .where('boat.Type.Id', vesselId);
+
+  
+    res.status(200).send({ message: 'success' });
+  });
+
+
+  router.post('/vesseltype/new', authenticateToken, async (req, res) => {
+    const db = req.app.get('db');
+  
+    const permissions = req.decodedToken['yg-claims'].permissions;
+    if (!permissions.includes('create')) res.sendStatus(403);
+  
+    const { vesselType = {} } = req.body;
+    
+    const response = await db.insert(vesselType)
+      .into('boat.Type')
+      .returning('*');
+  
+    res.status(200).send(response);
+  });
+  
+
   module.exports = router
