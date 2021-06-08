@@ -1,25 +1,11 @@
 <template>
- <div>
-   <v-app-bar
-      color="primary"
-      dark
-      flat    
-    >
-      <v-btn color="primary" @click="goBack()">
-        <v-icon>mdi-arrow-left-drop-circle</v-icon>
-        <div class="ml-2">
-           Back to Users
-        </div>
-      </v-btn>
-      <v-spacer></v-spacer>
-    </v-app-bar>
-    <div>
       <v-container fluid>
+        <h3>User Management</h3>
+        <Breadcrumbs/>
         <v-row>
           <v-col cols="12" class="d-flex">
             <div class="d-flex mb-2">
-              <v-icon>mdi-account</v-icon>
-              <h2 class="mt-auto mb-auto ml-3">Edit User {{username}}</h2>
+              <h1 class="mt-auto mb-auto ">{{fields.FirstName}} {{fields.LastName}}</h1>
             </div>
             <v-spacer></v-spacer>
             <!-- buttons for the view state -->
@@ -38,7 +24,6 @@
                 </v-btn>
           </v-col>
         </v-row>
-        <v-divider inset class="mb-4"></v-divider>
         
         <v-row>
           <v-col cols="6">
@@ -48,17 +33,17 @@
               </v-card-title>
               <v-container fluid>
                 <v-text-field
-                          v-model="fields.name"
+                          v-model="fields.FirstName"
                           label="First Name"
                           required
                 ></v-text-field>
                 <v-text-field
-                          v-model="fields.lastname"
+                          v-model="fields.LastName"
                           label="Last Name"
                           required
                 ></v-text-field>
                 <v-text-field
-                          v-model="fields.email"
+                          v-model="fields.Email"
                           label="Email"
                           required
                 ></v-text-field>
@@ -73,7 +58,7 @@
                 >
                     <template v-slot:activator="{ on, attrs }">
                     <v-text-field
-                        v-model="fields.date"
+                        v-model="fields.ExpirationDate"
                         label="Expiration Date"
                         append-icon="mdi-calendar"
                         readonly
@@ -83,7 +68,7 @@
                     </template>
                     <v-date-picker
                     ref="picker"
-                    v-model="fields.date"
+                    v-model="fields.ExpirationDate"
                     :max="new Date().toISOString().substr(0, 10)"
                     min="1950-01-01"
                     @change="save"
@@ -186,29 +171,37 @@
             </v-card>
           </v-col>
         </v-row>
+        <v-overlay :value="overlay">
+            <v-progress-circular
+                indeterminate
+                size="64"
+            ></v-progress-circular>
+        </v-overlay>
       </v-container>
-    </div>
-  </div>
 </template>
 
 <script>
+import Breadcrumbs from "../../../Breadcrumbs";
+import users from "../../../../controllers/user";
+
 export default {
   name: "edituser",
   components: {
-    
+    Breadcrumbs
   },
   data: () => ({
     username: 'username',
+    overlay: false,
     items: null,
     selectedItem: null,
     mode: null,
     dialog: false, //tells the print dialog when to show itself
     fields:{
-      name: "",
-      lastname: "",
-      email: "",
-      roles: "",
-      date: null
+      FirstName: "",
+      LastName: "",
+      Email: "",
+      access: "",
+      ExpirationDate: null
     },
     fieldsHistory: null,
     sections: [
@@ -232,12 +225,12 @@ export default {
       if(this.checkPath("edit")){
           this.mode= "edit";
           //after this, the fields get filled with the info obtained from the api
-          //this.getDataFromApi();
+          this.getDataFromApi();
       }
       else if(this.checkPath("view")){
           this.mode="view";
           //after this, the fields get filled with the info obtained from the api
-          //this.getDataFromApi();
+          this.getDataFromApi();
       }
   },
   methods: {
@@ -251,8 +244,18 @@ export default {
         }
         return false;
     },
-    goBack(){
-      this.$router.push('/admin/users');
+    saveCurrentUser(){
+        localStorage.currentUserID = this.$route.params.id;
+    },
+    async getDataFromApi(){
+        this.overlay = true;
+        if(this.$route.params.id){
+            this.saveCurrentUser();
+        }
+        this.fields = await users.getById(localStorage.currentUserID);
+        this.fields.ExpirationDate = this.fields.ExpirationDate ? this.fields.ExpirationDate.substr(0, 10): ""; 
+        console.log(this.fields);
+        this.overlay = false;
     },
     getColor(access){
       if(!access || access == 'No Access')
@@ -272,23 +275,65 @@ export default {
     },
     viewMode(){
         this.mode="view";
-        this.$router.push(`/admin/users/view/${this.fields.Name}`);
+        this.$router.push(`/admin/users/view/${this.$route.params.id}`);
     },
     editMode(){
         this.fieldsHistory = {...this.fields};
         this.mode="edit";
-        this.$router.push(`/admin/users/edit/${this.fields.Name}`);
+        this.$router.push(`/admin/users/edit/${this.$route.params.id}`);
         this.showSave = 0;
     },
+    cancelEdit(){
+        if(this.fieldsHistory){
+            this.fields = {...this.fieldsHistory};
+        }
+        this.mode="view";
+        //this.resetListVariables();
+        this.$router.push(`/admin/users/view/${this.$route.params.id}`);
+    },
+    async saveChanges(){
+            this.overlay = true; 
+             let data = {
+                };
+                console.log(data);
+                
+            let currentBoat= {};
+            console.log(this.fields);
+
+            await users.put(localStorage.currentUserID,data);
+            currentBoat.id = localStorage.currentUserID;
+            currentBoat.name = this.fields.Name; 
+            this.mode = 'view';
+            this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});   
+            this.$router.go();   
+            
+        },
     save (date) {
       this.$refs.menu.save(date);
+    },
+    formatDate (date) {
+        if (!date) return null
+        //date = date.substr(0, 10);
+        const [year, month, day] = date.split('-')
+        return `${month}/${day}/${year}`
     },
   },
   computed: {
     param() {
         return this.$route.params.id;
+    },
+    serviceEnd(){
+        return this.formatDate(this.fields.ServiceEnd);
     }
   },
+  watch: {
+    fields: {
+        handler(){
+            this.showSave = this.showSave+1;
+        },
+        deep: true
+    },
+  }
 }
 </script>
 

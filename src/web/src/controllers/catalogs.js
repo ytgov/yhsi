@@ -19,4 +19,21 @@ import { api } from './config';
       console.log(error);
     });
   },
-}
+  async getVesselTypes(page, limit, textToMatch,sortBy, sort){
+    return await api.get(`catalogs/vesseltype`,{
+      crossdomain: true,
+      params: {
+        page,
+        limit,
+        textToMatch,
+        sortBy,
+        sort
+      }})
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      // handle error
+      console.log(error);
+    });
+  },
+} 
