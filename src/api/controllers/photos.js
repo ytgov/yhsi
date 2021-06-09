@@ -3,7 +3,7 @@ var router = express.Router();
 var authenticateToken = require('../middlewares');
 var multer = require('multer');
 var _ = require('lodash');
-// const cors = require('cors')// 
+const imageThumbnail = require('image-thumbnail');
 // router.use(cors());
 // router.all('*', cors());
 const upload = multer();
@@ -83,6 +83,7 @@ router.post('/boat/link/:BoatId', [authenticateToken, upload.single('file')], as
     .then(rows => {
       return rows;
     });
+
   res.status(200).send({ message: 'Successfully linked the photos' });
 });
 
@@ -156,7 +157,11 @@ router.post('/boat/new', [authenticateToken, upload.single('file')], async (req,
   if (!permissions.includes('create')) res.sendStatus(403);
 
   const { BoatId, ...restBody } = req.body;
-  const body = { File: req.file.buffer, ...restBody }
+
+  let options = { percentage: 66, jpegOptions: { force: true, quality: 33 } };
+  const ThumbFile = await imageThumbnail(req.file.buffer, options);
+
+  const body = { File: req.file.buffer, ThumbFile, ...restBody }
 
   const response = await db.insert(body)
     .into('dbo.photo')
@@ -173,7 +178,6 @@ router.post('/boat/new', [authenticateToken, upload.single('file')], async (req,
 
       return newBoatPhoto;
     });
-  
   res.status(200).send({ message: 'Upload Success' });
 });
 
@@ -186,7 +190,11 @@ router.post('/aircrash/new', [authenticateToken, upload.single('file')], async (
   if (!permissions.includes('create')) res.sendStatus(403);
 
   const { YACSINumber, ...restBody } = req.body;
-  const body = { File: req.file.buffer, ...restBody }
+
+  let options = { percentage: 30 }
+  const ThumbFile = await imageThumbnail(req.file.buffer, options);
+
+  const body = { File: req.file.buffer, ThumbFile, ...restBody }
 
   const response = await db.insert(body)
     .into('dbo.photo')
