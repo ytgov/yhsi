@@ -41,7 +41,10 @@ import BoatsOwnerForm from "../components/Boats/BoatsComponents/Owner/OwnerForm"
 import AirplaneGrid from "../components/AirplaneCrashes/Grid";
 import AirplaneViewForm from "../components/AirplaneCrashes/AirplaneComponents/AirplaneForm";
 import AirplaneEditForm from "../components/AirplaneCrashes/AirplaneComponents/AirplaneForm";
-
+import AdminDashboard from "../components/Administration/AdminDashboard";
+import AdminUserGrid from "../components/Administration/UserManagement/Grid";
+import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form";
+import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
 Vue.use(VueRouter);
 
 const routes = [
@@ -337,6 +340,31 @@ const routes = [
     name: "airplaneAddView",
     component: AirplaneEditForm,
     props: true
+  },
+  {
+    path: "/admin",
+    name: "AdminDashboard",
+    component: AdminDashboard,
+  },
+  {
+    path: "/admin/users",
+    name: "AdminUserGrid",
+    component: AdminUserGrid
+  },
+  {
+    path: "/admin/users/view/:id",
+    name: "AdminUserView",
+    component: AdminUserForm
+  },
+  {
+    path: "/admin/users/edit/:id",
+    name: "AdminUserEdit",
+    component: AdminUserForm
+  },
+  {
+    path: "/admin/vessel_type",
+    name: "VesselTypeGrid",
+    component: VesselTypeGrid
   },
   {
     path: "*",

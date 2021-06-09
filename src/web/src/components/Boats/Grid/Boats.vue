@@ -6,10 +6,9 @@
         </v-col>
       </v-row>
       <v-divider inset class="mb-4"></v-divider>
-      <v-row class="full-width-table">
+      <v-row >
         <v-col cols="12">
             <v-data-table
-                class="full-width-table"
               :items="filteredData"
               :headers="headers"
               :loading="loading"    
@@ -128,21 +127,10 @@ export default {
             console.log(newv);
             this.filterOptions = newv;
         },
-        search (newv, oldv) {
+        search () {
             this.getDataFromApi();
         }/* eslint-enable */
         
     }
 }
 </script>
-
-<style scoped>
-.full-width-table{
-    width: 99%;
-}
-table.table {
-    margin:0 auto;
-    width: 98%;
-    max-width: 98%;
-}
-</style>

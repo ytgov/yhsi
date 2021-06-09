@@ -356,9 +356,12 @@
                 <v-row>
                     <v-col cols="4">
                         <v-select
+                        @click="getVesselTypes"
+                        :loading="isLoadingOwner"
                         v-model="fields.VesselType"
                         label="Vessel Type"
                         :items="vesselTypeOptions"
+                        item-text="Type"
                         :readonly="mode == 'view'"
                         ></v-select>
 
@@ -404,6 +407,7 @@ import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
 import boats from "../../../../controllers/boats";
 import owners from "../../../../controllers/owners";
+import catalogs from "../../../../controllers/catalogs"
 import _ from 'lodash';
 export default {
     name: "boatsForm",
@@ -428,6 +432,7 @@ export default {
         ownerRules: [
             v => !!v || 'Owner Name is required',
         ],
+
     //helper vars, they are used to determine if the component is in an edit, view or add new state
         mode: "",
         edit: false,
@@ -446,6 +451,7 @@ export default {
     // vessel typle select options
         vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
         dateFormatted: "",
+        isLoadingVessels: false,
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -674,6 +680,13 @@ export default {
             this.owners = _.differenceBy(arr, this.fields.owners, 'OwnerName');
             this.isLoadingOwner = false;
         },
+        async getVesselTypes(){
+            this.isLoadingVessels = true;
+            let data = await catalogs.getVesselTypes();
+            let arr = data.body;
+            this.vesselTypeOptions = arr;
+            this.isLoadingVessels = false;
+        },
         //handles the new values added to the historic records
         historicRecordChange(val){
             this.fields.histories = val;
@@ -709,6 +722,7 @@ export default {
         fields: {/* eslint-disable */
             handler(newval){
                 this.showSave = this.showSave+1;
+                console.log(this.fields);
             },/* eslint-enable */
             deep: true
         },
