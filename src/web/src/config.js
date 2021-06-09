@@ -53,6 +53,11 @@ export const sections = [
         name: "Boats",
         url: "/boats/",
         icon: "mdi-ferry"
+    },
+    {
+        name: "Administration",
+        url: "/admin",
+        icon: "mdi-cube"
     }
     // {
     //     name: "Basic Form",

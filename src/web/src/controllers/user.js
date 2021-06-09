@@ -2,7 +2,7 @@ import { api } from './config';
 
 export default {
   async get(page, limit, textToMatch,sortBy, sort){
-      return await api.get(`aircrash`, {
+      return await api.get(`users`, {
         crossdomain: true,
         params: {
           page,
@@ -20,7 +20,7 @@ export default {
       });
   },
   async getById(aircrashId){
-    return await api.get(`aircrash/${aircrashId}`)
+    return await api.get(`users/${aircrashId}`)
     .then(res => {
       return res.data;
     }).catch(error =>{
@@ -29,16 +29,7 @@ export default {
     });
   },
   async put(aircrashId, data){
-    return await api.put(`aircrash/${aircrashId}`,data)
-    .then(res => {
-      return res.data;
-    }).catch(error =>{
-      // handle error
-      console.log(error);
-    });
-  },
-  async post(data){
-    return await api.post(`aircrash/new`,data)
+    return await api.put(`users/${aircrashId}`,data)
     .then(res => {
       return res.data;
     }).catch(error =>{
