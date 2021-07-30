@@ -26,7 +26,8 @@ a {
     text-decoration: none;
 }
 
-.v-main .v-btn {
+.v-main .v-btn,
+.v-dialog__content .v-btn {
     text-transform: none;
     color: #ffffff;
     /* border: 1px #000 solid !important; */
@@ -42,7 +43,9 @@ a {
     border: 1px #000 solid !important;
 }
  */
-.v-main .v-btn.secondary {
+
+.v-main .v-btn.secondary,
+.v-dialog__content .v-btn.secondary {
     color: #0097a9;
     border: 1px #0097a9 solid !important;
 }
@@ -89,16 +92,28 @@ a {
     color: #9b1b27 !important;
 }
 
-/* BIZONT CSS CLASSES */
-.top-right-button{
-    position:absolute;
-    top:0;
-    right: 0;
-    margin: 0px;
+.v-card.default {
+    background-color: #fff2d5;
 }
-.sitesnp{
-    padding: 0px;
-  }
-.siteslp{
-    padding: 12px 12px;
-  }
+
+.v-card.default .v-data-table {
+    border: 1px #e0d5bb solid
+}
+
+ul.v-breadcrumbs {
+    padding-left: 0;
+}
+
+.v-card.info-card .v-card__subtitle {
+    margin: 0;
+    padding-bottom: 0;
+    font-size: .80rem;
+    line-height: .80rem;
+}
+
+.v-card.info-card .v-card__title {
+    margin-top: 5px;
+    padding: 0 16px;
+    font-size: 1.0rem;
+    line-height: 1.4rem;
+}

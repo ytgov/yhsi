@@ -29,16 +29,6 @@ export const sections = [
         url: "/maps",
         icon: "mdi-map"
     },
-    // {
-    //     name: "Basic Form",
-    //     url: "/form",
-    //     icon: "mdi-newspaper-variant-multiple"
-    // },
-    // {
-    //     name: "Data grid",
-    //     url: "/grid",
-    //     icon: "mdi-table-large"
-    // }
 ];
 export const environment = process.env.NODE_ENV;
 export const apiBaseUrl = process.env.NODE_ENV == "production" ? "" : "http://localhost:3000";
