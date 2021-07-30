@@ -1,10 +1,9 @@
 import express, { Request, Response } from "express";
-import { ensureLoggedIn } from "./auth"
 import { AppUser, Team } from "../models/user";
 
 export const userRouter = express.Router();
 
-userRouter.get("/", ensureLoggedIn, async (req: Request, res: Response) => {
+userRouter.get("/",  async (req: Request, res: Response) => {
     var appUser: AppUser;
     appUser = req.user;
 
