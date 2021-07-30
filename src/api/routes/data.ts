@@ -1,10 +1,8 @@
 import express, { Request, Response } from "express";
-import { ensureLoggedIn } from "./auth"
-import { AppUser, Team } from "../models/user";
 
 export const dataRouter = express.Router();
 
-dataRouter.post("/", ensureLoggedIn, async (req: Request, res: Response) => {
+dataRouter.post("/",  async (req: Request, res: Response) => {
 
     // I have added a delay to this to show how the interface can wait for the response
     setTimeout(() => {
