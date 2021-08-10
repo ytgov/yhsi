@@ -1,8 +1,14 @@
 import { Response } from "express";
-/* import { isCacheConnected } from "./cache";
-import { isDatabaseConnected } from "../database" */
+import { DB_CONFIG, DB_HOST, DB_NAME } from "../config";
+import { UserService } from "../services";
+
+const userService = new UserService(DB_CONFIG);
 
 export async function doHealthCheck(res: Response) {
+    let dbConnected = await userService.isConnected()
 
-    return res.status(200).send("HEALTHY");
+    if (!dbConnected)
+        return res.status(500).send(`Not able to connect to <strong>${DB_NAME}</strong> database on <strong>${DB_HOST}</strong>.`);
+
+    res.send(`Connection to database on '<strong>${DB_HOST}</strong>' is connected and functioning.`);
 }
