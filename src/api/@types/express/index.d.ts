@@ -3,6 +3,7 @@ namespace Express {
         user?: any;
         //isAuthenticated?: boolean;
         sessionId?: string;
+        file: any;
 
         isAuthenticated(): boolean;
     }
