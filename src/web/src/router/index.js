@@ -5,9 +5,9 @@ import Dashboard from "../components/Dashboard.vue";
 import NotFound from "../views/NotFound.vue";
 import Form from "../components/Form";
 import Grid from "../components/Grid";
-import Login from "../components/Login";
-import LoginComplete from "../components/LoginComplete";
-import Profile from "../components/Profile";
+import Login from "../views/Login";
+import LoginComplete from "../views/LoginComplete";
+import Profile from "../views/Profile";
 import store from "../store";
 import SitesForm  from "../components/Sites";
 

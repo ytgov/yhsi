@@ -59,6 +59,15 @@
         hide-details
       ></v-select> -->
 
+      <v-btn
+        v-if="isAuthenticated"
+        color="primary"
+        text
+        class="mr-1"
+        to="/administration"
+        >Administration</v-btn
+      >
+
       <div v-if="isAuthenticated">
         <span>{{ username }}</span>
         <v-menu bottom left class="ml-0">
@@ -94,9 +103,9 @@
 
     <v-main v-bind:style="{ 'padding-left: 33px !important': !hasSidebar }">
       <!-- Provides the application the proper gutter -->
-      <v-container fluid :class=" `${isSites($route.path,true)}`">
+      <v-container fluid :class="`${isSites($route.path, true)}`">
         <v-row>
-          <v-col :class=" `${isSites($route.path,false)}`">
+          <v-col :class="`${isSites($route.path, false)}`">
             <router-view></router-view>
           </v-col>
         </v-row>
@@ -107,23 +116,26 @@
 
 <script>
 import router from "./router";
-//import { mapState } from "vuex";
 import store from "./store";
 import * as config from "./config";
 import { mapState } from "vuex";
+import { LOGOUT_URL } from "./urls";
 
 export default {
   name: "App",
   components: {},
   computed: {
-    ...mapState("isAuthenticated"),
+    ...mapState(["isAuthenticated", "user"]),
     username() {
       return store.getters.fullName;
     },
     isAuthenticated() {
-      return true; // until we get auth process to show sidebar
-      // return store.getters.isAuthenticated;
-    }
+      //return true; // until we get auth process to show sidebar
+      return store.getters.isAuthenticated;
+    },
+    user() {
+      return store.getters.user;
+    },
   },
   data: () => ({
     dialog: false,
@@ -136,9 +148,9 @@ export default {
     applicationIcon: config.applicationIcon,
     sections: config.sections,
     hasSidebar: true, //config.hasSidebar,
-    hasSidebarClosable: false,//config.hasSidebarClosable
+    hasSidebarClosable: false, //config.hasSidebarClosable
   }),
-  created: async function() {
+  created: async function () {
     await store.dispatch("checkAuthentication");
     //this.username = store.getters.fullName
     console.log(this.isAuthenticated);
@@ -147,32 +159,36 @@ export default {
     else this.hasSidebar = config.hasSidebar;
   },
   watch: {
-    isAuthenticated: function(val) {
+    isAuthenticated: function (val) {
       if (!val) this.hasSidebar = false;
       else this.hasSidebar = config.hasSidebar;
-    }
+    },
   },
   methods: {
-    nav: function(location) {
+    nav: function (location) {
       router.push(location);
       console.log(location);
     },
-    toggleHeader: function() {
+    toggleHeader: function () {
       this.headerShow = !this.headerShow;
     },
-    toggleMenu: function() {
+    toggleMenu: function () {
       this.menuShow = !this.menuShow;
     },
-    signOut: function() {
-      store.dispatch("signOut");
-      router.push("/");
+    signOut: function () {
+      window.location = LOGOUT_URL;
     },
-    isSites(route, chooser){//this function helps to show certain classes depending on the route
-      if(chooser)
-        return (route.includes('sites/') || route.includes('photos')) ? 'siteslp' :  '';
+    isSites(route, chooser) {
+      //this function helps to show certain classes depending on the route
+      if (chooser)
+        return route.includes("sites/") || route.includes("photos")
+          ? "siteslp"
+          : "";
       else
-        return (route.includes('sites/') || route.includes('photos')) ? 'sitesnp' :  '';
-    }
-  }
+        return route.includes("sites/") || route.includes("photos")
+          ? "sitesnp"
+          : "";
+    },
+  },
 };
 </script>

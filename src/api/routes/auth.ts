@@ -1,9 +1,9 @@
 import { Express, NextFunction, Request, Response } from "express"
 import * as ExpressSession from "express-session";
-//import { AuthUser } from "../data";
 import { AUTH_REDIRECT, FRONTEND_URL } from "../config";
 
 import { auth } from "express-openid-connect";
+import { AuthUser } from "../models";
 
 //const db = new UserService();
 
@@ -32,9 +32,9 @@ export function configureAuthentication(app: Express) {
 
     app.use("/", async (req: Request, res: Response, next: NextFunction) => {
         if (req.oidc.isAuthenticated()) {
-            //let oidcUser = AuthUser.fromOpenId(req.oidc.user);
-            //(req.session as any).user = oidcUser;
-            req.user = req.oidc.user;
+            let oidcUser = AuthUser.fromOpenId(req.oidc.user);
+            (req.session as any).user = oidcUser;
+            req.user = oidcUser;
 
             //let dbUser = await db.getByEmail(oidcUser.email);
             //req.user = await db.makeDTO(Object.assign(oidcUser, dbUser));
@@ -45,8 +45,8 @@ export function configureAuthentication(app: Express) {
 
     app.get("/", async (req: Request, res: Response) => {
         if (req.oidc.isAuthenticated()) {
-            //let user = AuthUser.fromOpenId(req.oidc.user) as AuthUser;
-            //req.user = user;
+            let user = AuthUser.fromOpenId(req.oidc.user) as AuthUser;
+            req.user = user;
 
             //console.log("GET/", user)
             /* let dbUser = await db.getByEmail(req.user.email);
@@ -66,9 +66,6 @@ export function configureAuthentication(app: Express) {
 
     app.get("/api/auth/isAuthenticated", async (req: Request, res: Response) => {
         if (req.oidc.isAuthenticated()) {
-
-            console.log(req.user)
-
             let person = req.user;
             //let me = await db.getByEmail(person.email);
             return res.json({ data: person });
