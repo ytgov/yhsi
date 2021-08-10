@@ -1,19 +1,21 @@
 import axios from "axios";
-import { AUTH_CHECK_URL, LOGOUT_URL } from "../urls";
+import { LOGOUT_URL, PROFILE_URL } from "../urls";
 
 const state = {
     user: null,
-    fullName: ""
+    fullName: "",
+    roles: [],
 };
 const getters = {
     isAuthenticated: state => !!state.user,
     fullName: state => { return state.fullName },
+    user: state => { return state.user },
 };
 const actions = {
     async checkAuthentication({ commit }) {
-        await axios.get(AUTH_CHECK_URL)
+        await axios.get(PROFILE_URL)
             .then(resp => {
-                commit("setUser", resp.data);
+                commit("setUser", resp.data.data);
             }).catch(() => {
                 commit("clearUser");
             });
@@ -30,11 +32,13 @@ const actions = {
 const mutations = {
     setUser(state, user) {
         state.user = user;
-        state.fullName = user.displayName;
+        state.fullName = user.display_name;
+        state.roles = user.roles;
     },
     clearUser(state) {
         state.user = null;
         state.fullName = null;
+        state.roles = [];
     }
 };
 

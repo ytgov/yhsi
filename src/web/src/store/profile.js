@@ -7,34 +7,37 @@ const state = {
     email: "",
     id: "",
     username: "",
-    teams: [],
+    roles: [],
+    access: []
 };
 const getters = {
-    firstName: state => state.firstName,
+    firstName: state => state.first_name,
     lastName: state => state.lastName,
     email: state => state.email,
     id: state => state.id,
     username: state => state.username,
-    teams: state => state.teams,
+    roles: state => state.roles,
+    access: state => state.access
 };
 const actions = {
     async loadProfile({ commit }) {
         await axios.get(PROFILE_URL)
             .then(resp => {
-                commit("setProfile", resp.data);
+                commit("setProfile", resp.data.data);
             }).catch(() => {
-                commit("clearUser");
+                commit("auth/clearUser");
             });
     },
 };
 const mutations = {
     setProfile(state, profile) {
-        state.firstName = profile.givenName;
-        state.lastName = profile.familyName;
+        state.firstName = profile.first_name;
+        state.lastName = profile.last_name;
         state.email = profile.email;
         state.id = profile.id;
         state.username = profile.username;
-        state.teams = profile.teams;
+        state.roles = profile.roles;
+        state.access = profile.access;
     },
 };
 
