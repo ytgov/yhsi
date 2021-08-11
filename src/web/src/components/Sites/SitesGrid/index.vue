@@ -10,14 +10,16 @@
       :headers="headers"
       :options.sync="options"
       :loading="loading"
-      :server-items-length="totalLength"      
+      :server-items-length="totalLength"
       :search="search"
-       @click:row="handleClick"
+      @click:row="handleClick"
     ></v-data-table>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+import { PLACE_URL } from "../../../urls";
 
 export default {
   name: "Grid",
@@ -28,11 +30,11 @@ export default {
     options: {},
     totalLength: 0,
     headers: [
-      // { text: "id", value: "id" },
-      { text: "Name", value: "name" },
+       { text: "id", value: "id" },
+      { text: "Name", value: "primaryName" },
       { text: "Community", value: "community" },
       { text: "Category", value: "category" },
-      { text: "YHSI id", value: "yhsiid" },
+      { text: "YHSI id", value: "yHSIId" },
       { text: "Status", value: "status" },
     ],
     page: 1,
@@ -57,17 +59,15 @@ export default {
     this.getDataFromApi();
   },
   methods: {
-    handleClick(value){   //Redirects the user to the site form
-        this.$router.push(`/sites/${value.id}/summary`);
+    handleClick(value) {
+      //Redirects the user to the site form
+      this.$router.push(`/sites/${value.id}/summary`);
     },
     getDataFromApi() {
       this.loading = true;
-/*
+
       axios
-        .post(
-          "http://localhost:3000/api/data?search=" + this.search,
-          this.options
-        )
+        .post(`${PLACE_URL}/search?term=${this.search}`, this.options)
         .then((resp) => {
           console.log(resp.data);
           this.items = resp.data.data;
@@ -81,13 +81,41 @@ export default {
         .catch((err) => console.error(err))
         .finally(() => {
           this.loading = false;
-        });*/
+        });
       this.items = [
-          {id: 1, name: 'SITE 1', community: 'None', category: 'Industrial', yhsiid: '115O/15/004', status: ''},
-          {id: 2, name: 'SITE 2', community: 'None', category: 'Architecture', yhsiid: '115O/15/005', status: ''},
-          {id: 3, name: 'SITE 3', community: 'None', category: 'Industrial', yhsiid: '115O/15/006', status: ''},
-          {id: 4, name: 'SITE 4', community: 'None', category: 'Architecture', yhsiid: '105D/01/001', status: ''},
-      ]
+        {
+          id: 1,
+          name: "SITE 1",
+          community: "None",
+          category: "Industrial",
+          yhsiid: "115O/15/004",
+          status: "",
+        },
+        {
+          id: 2,
+          name: "SITE 2",
+          community: "None",
+          category: "Architecture",
+          yhsiid: "115O/15/005",
+          status: "",
+        },
+        {
+          id: 3,
+          name: "SITE 3",
+          community: "None",
+          category: "Industrial",
+          yhsiid: "115O/15/006",
+          status: "",
+        },
+        {
+          id: 4,
+          name: "SITE 4",
+          community: "None",
+          category: "Architecture",
+          yhsiid: "105D/01/001",
+          status: "",
+        },
+      ];
       this.totalLength = this.items.length;
       this.loading = false;
     },

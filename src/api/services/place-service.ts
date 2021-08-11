@@ -231,6 +231,9 @@ export class PlaceService {
 
     async doSearch(query: Array<QueryStatement>, sort: Array<SortStatement>, page: number, page_size: number, skip: number, take: number): Promise<any> {
 
+        console.log("QUERY", query)
+
+
         return new Promise(async (resolve, reject) => {
 
             let selectStmt = this.knex("place")
