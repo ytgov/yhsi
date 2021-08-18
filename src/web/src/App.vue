@@ -98,8 +98,10 @@
         <v-row>
           <v-col :class=" `${isSites($route.path,false)}`">
             <router-view></router-view>
+            <RequestAlert/>
           </v-col>
         </v-row>
+        
       </v-container>
     </v-main>
   </v-app>
@@ -111,10 +113,10 @@ import router from "./router";
 import store from "./store";
 import * as config from "./config";
 import { mapState } from "vuex";
-
+import RequestAlert from "./components/RequestAlert.vue";
 export default {
   name: "App",
-  components: {},
+  components: { RequestAlert },
   computed: {
     ...mapState("isAuthenticated"),
     username() {

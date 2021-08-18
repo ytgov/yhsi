@@ -139,6 +139,16 @@ router.post('/new', authenticateToken, async (req, res) => {
     .into('AirCrash.AirCrash')
     .returning('*');
 */
+  const exists = await db.select('*')
+  .from('dbo.vAircrash')
+  .where('dbo.vAircrash.yacsinumber', aircrash.yacsinumber)
+  .first();
+
+  if(exists){
+    //this is a 409 conflict, i might change the status to 409 after some tests
+    res.status(409).send('The YACSI Number already exists');
+  }
+
   const response = await db.insert(aircrash)
     .into('AirCrash.AirCrash')
     .returning('*')
@@ -160,6 +170,7 @@ router.post('/new', authenticateToken, async (req, res) => {
     });
 
   res.status(200).send(response);
+
 
 });
 
