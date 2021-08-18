@@ -411,6 +411,27 @@
                 size="64"
             ></v-progress-circular>
         </v-overlay>
+
+        <v-dialog
+        v-model="dataDialog"
+        max-width="490"
+        >
+            <v-card>
+                <v-card-title class="text-h5">
+                Double check your field data
+                </v-card-title>
+                <v-card-text>Make sure your YACSI number has not been entered previously, The YACSI number must be unique.</v-card-text>
+                <v-card-actions>
+                <v-btn
+                    color="green darken-1"
+                    text
+                    @click="dataDialog = false"
+                >
+                    Ok
+                </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -456,7 +477,8 @@ export default {
         infoLoaded: false,
     //helper var for the nations checkboxes
         otherNation: false,
-
+    // dialog to inform the user if a field has the wrong data
+        dataDialog: false
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -608,9 +630,17 @@ export default {
                 console.log(data);
             
             if(this.mode == 'new'){
-                await aircrash.post(data);
-                this.overlay = false;
-                this.$router.push(`/airplane/`);
+                let { response } = await aircrash.post(data);
+                if(response.status == 409){
+                    //open a dialog
+                    this.overlay = false;
+                    //this.dataDialog = true;
+                }
+                else{
+                    this.overlay = false;
+                    this.$router.push(`/airplane/`);
+                }
+                
             }
             else{
                 await aircrash.put(localStorage.currentCrashNumber,data);
