@@ -5,13 +5,13 @@
         <v-icon>mdi-arrow-left-drop-circle</v-icon>
         <div class="ml-2">Back to Sites</div>
       </v-btn>
-      <v-spacer></v-spacer>
+     <!--  <v-spacer></v-spacer>
       <v-btn color="primary" @click="goToSummary()">
         <v-icon>mdi-book-open-variant</v-icon>
         <div class="ml-2">
           <v-toolbar-title> View site: {{ site }} </v-toolbar-title>
         </div>
-      </v-btn>
+      </v-btn> -->
       <v-spacer></v-spacer>
       <v-btn color="primary" @click="showDialog()">
         <v-icon class="mr-2">mdi-printer</v-icon>
@@ -28,7 +28,7 @@
         <v-col>
           <router-view id="sites-router" />
         </v-col>
-        <v-col cols="2">
+        <v-col cols="3">
           <v-list shaped class="list-menu">
             <v-list-item-group v-model="selectedItem" color="primary">
               <v-list-item v-for="(item, i) in items" :key="i" :to="item.route">
