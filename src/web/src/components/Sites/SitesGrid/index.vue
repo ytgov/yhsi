@@ -2,7 +2,16 @@
   <div class="books">
     <h1>Sites</h1>
 
-    <v-text-field v-model="search" label="Search"></v-text-field>
+    <v-text-field
+      v-model="search"
+      label="Search"
+      dense
+      outlined
+      append-icon="mdi-magnify"
+      @click:append="doSearch"
+      hint="Enter criteria and press enter"
+      @keyup="keyUp"
+    ></v-text-field>
 
     <v-data-table
       dense
@@ -11,7 +20,6 @@
       :options.sync="options"
       :loading="loading"
       :server-items-length="totalLength"
-      :search="search"
       @click:row="handleClick"
     ></v-data-table>
   </div>
@@ -19,7 +27,9 @@
 
 <script>
 import axios from "axios";
+import store from "../../../store";
 import { PLACE_URL } from "../../../urls";
+import _ from "lodash";
 
 export default {
   name: "Grid",
@@ -30,94 +40,71 @@ export default {
     options: {},
     totalLength: 0,
     headers: [
-       { text: "id", value: "id" },
-      { text: "Name", value: "primaryName" },
-      { text: "Community", value: "community" },
-      { text: "Category", value: "category" },
-      { text: "YHSI id", value: "yHSIId" },
-      { text: "Status", value: "status" },
+      { text: "YHSI ID", value: "yHSIId" },
+      { text: "Primary name", value: "primaryName" },
+      { text: "Community", value: "community.name" },
+      { text: "Category", value: "category.text" },
+      { text: "Status", value: "status.text" },
     ],
     page: 1,
     pageCount: 0,
     iteamsPerPage: 10,
   }),
+  created() {
+    this.search = store.getters.search;
+  },
   watch: {
     options: {
       handler() {
-        this.getDataFromApi();
+        this.doSearch();
       },
       deep: true,
     },
-    search: {
+    search: function (val) {
+      store.dispatch("setSearch", val);
+    },
+    /*  search: {
       handler() {
         this.getDataFromApi();
       },
       deep: true,
-    },
-  },
-  mounted() {
-    this.getDataFromApi();
+    }, */
   },
   methods: {
     handleClick(value) {
       //Redirects the user to the site form
+      store.dispatch("addSiteHistory", value);
       this.$router.push(`/sites/${value.id}/summary`);
     },
+
+    keyUp(event) {
+      if (event.key == "Enter") this.doSearch();
+    },
+
+    doSearch() {
+      this.getDataFromApi();
+    },
+
     getDataFromApi() {
       this.loading = true;
 
+      let body = _.clone(this.options);
+      body.query = [
+        { field: "primaryName", operator: "contains", value: this.search },
+        { field: "yhsiid", operator: "contains", value: this.search },
+      ];
+
       axios
-        .post(`${PLACE_URL}/search?term=${this.search}`, this.options)
+        .post(`${PLACE_URL}/search`, body)
         .then((resp) => {
-          console.log(resp.data);
           this.items = resp.data.data;
-          //this.pagination.totalLength = resp.data.meta.count;
-          this.totalLength = resp.data.meta.count;
-
-          console.log(this.totalLength);
-
+          this.totalLength = resp.data.meta.item_count;
           this.loading = false;
         })
         .catch((err) => console.error(err))
         .finally(() => {
           this.loading = false;
         });
-      this.items = [
-        {
-          id: 1,
-          name: "SITE 1",
-          community: "None",
-          category: "Industrial",
-          yhsiid: "115O/15/004",
-          status: "",
-        },
-        {
-          id: 2,
-          name: "SITE 2",
-          community: "None",
-          category: "Architecture",
-          yhsiid: "115O/15/005",
-          status: "",
-        },
-        {
-          id: 3,
-          name: "SITE 3",
-          community: "None",
-          category: "Industrial",
-          yhsiid: "115O/15/006",
-          status: "",
-        },
-        {
-          id: 4,
-          name: "SITE 4",
-          community: "None",
-          category: "Architecture",
-          yhsiid: "105D/01/001",
-          status: "",
-        },
-      ];
-      this.totalLength = this.items.length;
-      this.loading = false;
     },
   },
 };

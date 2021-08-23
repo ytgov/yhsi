@@ -1,25 +1,20 @@
 import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { body, check, query, validationResult } from "express-validator";
-import { PlaceService, StaticService } from "../services";
-import { Place } from "../data";
+import { PlaceService, SortDirection, SortStatement, StaticService } from "../services";
+import { Place, PLACE_FIELDS } from "../data";
+import { ReturnValidationErrors } from "../middleware";
 
 const placeService = new PlaceService(DB_CONFIG);
 const staticService = new StaticService(DB_CONFIG);
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 export const placeRouter = express.Router();
 
 placeRouter.get("/",
-    [
-        query("page").default(1).isInt({ gt: 0 })
-    ],
+    [query("page").default(1).isInt({ gt: 0 })], ReturnValidationErrors,
     async (req: Request, res: Response) => {
-        const errors = validationResult(req);
 
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
 
         let page = parseInt(req.query.page as string);
         let skip = (page - 1) * PAGE_SIZE;
@@ -44,20 +39,28 @@ placeRouter.get("/",
 
 placeRouter.post("/search", [body("page").isInt().default(1)],
     async (req: Request, res: Response) => {
-        let { query, sort, page } = req.body
+        let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
+        let sort = new Array<SortStatement>();
 
+        sortBy.forEach((s: string, i: number) => {
+            sort.push({ field: s, direction: sortDesc[i] ? SortDirection.ASCENDING : SortDirection.DESCENDING })
+        })
 
-        //console.log(req.body)
+        let skip = (page - 1) * itemsPerPage;
+        let take = itemsPerPage;
+        let results = await placeService.doSearch(query, sort, page, itemsPerPage, skip, take);
 
-        let skip = (page - 1) * PAGE_SIZE;
-        let take = PAGE_SIZE;
-        placeService.doSearch(query, sort, page, PAGE_SIZE, skip, take)
-            .then(results => {
-                res.json(results);
-            })
-            .catch(err => {
-                res.status(500).json({ errors: [err] });
-            })
+        let communities = await staticService.getCommunities();
+        let categories = await staticService.getCategories();
+        let statuses = await staticService.getSiteStatuses();
+
+        for (let place of results.data) {
+            place.community = communities.filter(c => c.id == place.communityId)[0];
+            place.category = categories.filter(c => c.value == place.category)[0];
+            place.status = statuses.filter(c => c.value == place.siteStatus)[0];
+        }
+
+        res.json(results);
     });
 
 placeRouter.post("/generate-id",
