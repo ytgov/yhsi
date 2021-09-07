@@ -259,7 +259,7 @@ export default {
             textpos = this.checkRemainingSize(textpos);
             let data = Object.values(this.toPrint[sections[k]]);
             let cols = Object.keys(this.toPrint[sections[k]]);
-            console.log(textpos);
+            //console.log(textpos);
             for(let i = 0; i<data.length; i++){
               this.doc.setFontSize(10);
               this.doc.text(`${cols[i].toUpperCase()}`, 40, textpos);

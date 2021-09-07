@@ -147,31 +147,53 @@ router.post('/new', authenticateToken, async (req, res) => {
   if(exists){
     //this is a 409 conflict, i might change the status to 409 after some tests
     res.status(409).send('The YACSI Number already exists');
+    return;
   }
 
   const response = await db.insert(aircrash)
-    .into('AirCrash.AirCrash')
-    .returning('*')
-    .then(async rows => {
-      const newAirCrash = rows[0];
+  .into('AirCrash.AirCrash')
+  .returning('*')
+  .then(async rows => {
+    const newAirCrash = rows[0];
 
-      if (newInfoSources.length) {
-        const finalInfoSources = newInfoSources.map(source => ({ YACSINumber: newAirCrash.YACSINumber, ...source }))
+    if (newInfoSources.length) {
+      const finalInfoSources = newInfoSources.map(source => ({ YACSINumber: newAirCrash.YACSINumber, ...source }))
 
-        await db.insert(finalInfoSources)
-        .into('AirCrash.InfoSource')
-        .returning('*')
-        .then(rows => {
-          return rows;
-        });
-      }
+      await db.insert(finalInfoSources)
+      .into('AirCrash.InfoSource')
+      .returning('*')
+      .then(rows => {
+        return rows;
+      });
+    }
 
-      return newAirCrash;
-    });
+    return newAirCrash;
+  });
 
   res.status(200).send(response);
 
+});
 
+
+router.get('/available_yacsi/:YACSINumber', authenticateToken, async (req, res) => {
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('view')) res.sendStatus(403);
+
+  const db = req.app.get('db');
+
+  const { YACSINumber } = req.params;
+  let available = true;
+
+  const exists = await db.select('*')
+  .from('dbo.vAircrash')
+  .where('dbo.vAircrash.yacsinumber', YACSINumber)
+  .first();
+
+  if(exists){
+    available = false;
+  }
+
+  res.status(200).send({ available });
 });
 
 module.exports = router;

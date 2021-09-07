@@ -38,10 +38,15 @@ function createInterceptor(instance) {
       }
       return response;
   }, (error) => {
-      store.commit('alerts/setText', "A problem has ocurred, please check your internet connection!");
-      store.commit('alerts/setType', "warning");
-      store.commit('alerts/setTimeout', 5000);
-      store.commit('alerts/setAlert', true);
+      let { response } = error;
+      if(response.status != 409){
+        console.log("test",error);
+        store.commit('alerts/setText', "A problem has ocurred, please check your internet connection!");
+        store.commit('alerts/setType', "warning");
+        store.commit('alerts/setTimeout', 5000);
+        store.commit('alerts/setAlert', true);
+      }
+
       return Promise.reject(error);
   });
 }
