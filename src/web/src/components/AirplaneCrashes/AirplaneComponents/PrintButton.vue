@@ -125,7 +125,7 @@ export default {
       addText(text){
         let rText= "Empty";
         if(!text.includes('null')){
-          console.log("null");
+          //console.log("null");
           rText = text;
         }
         let strArr = this.doc.splitTextToSize(rText, 550)
