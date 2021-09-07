@@ -506,11 +506,11 @@ export default {
     
     }),
     mounted(){
-        console.log("DATA",this.showDefault);
+        //console.log("DATA",this.showDefault);
         if(this.showDefault)
             return;
 
-        console.log("yacsi", this.yacsiNumber);
+        //console.log("yacsi", this.yacsiNumber);
         if(this.yacsiNumber)
             this.getDataFromAPI();
         //this.getAll();
@@ -551,14 +551,14 @@ export default {
         async savePhoto(){
             this.overlay = true;
             this.fields.BoatId = Number(this.boatID);
-            console.log(this.fields);
+            //console.log(this.fields);
             this.fields.CommunityId = this.fields.CommunityId.Id;
             this.fields.Copyright = this.fields.Copyright.id;
             this.fields.OriginalMediaId = this.fields.OriginalMediaId.Id;
             this.fields.UsageRights = this.fields.UsageRights.id
             const formData = new FormData();
             let prevFields = Object.entries(this.fields);
-            console.log(prevFields);
+            //console.log(prevFields);
             for(let i=0;i<prevFields.length; i++){
                 formData.append(prevFields[i][0],prevFields[i][1]);
             }
@@ -569,10 +569,10 @@ export default {
             this.overlay = false;
         },
         async saveAndLink(){
-            console.log("DATA HERE");
-            console.log(this.availablePhotos);
+            //console.log("DATA HERE");
+            //console.log(this.availablePhotos);
             let photosToLink = this.availablePhotos.filter(x => x.selected == true).map(x => { return x.RowId});
-            console.log(photosToLink);
+            //console.log(photosToLink);
             let resp = await photos.linkAirCrashPhotos(this.yacsiNumber,{linkPhotos: photosToLink});
             console.log(resp);
             this.reset();
@@ -588,7 +588,7 @@ export default {
             var reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function () {
-                console.log(reader.result);
+                //console.log(reader.result);
             };
             reader.onerror = function (error) {
                 console.log('Error: ', error);
@@ -625,7 +625,7 @@ export default {
             this.getAll();
         },
         showDefault(){
-            console.log("show default",this.showDefault);
+            //console.log("show default",this.showDefault);
         }
     }
 }

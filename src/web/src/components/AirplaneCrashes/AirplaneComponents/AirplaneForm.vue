@@ -19,7 +19,7 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 1" v-if="isEditingCrash" @click="saveChanges" >
+                <v-btn color="success" :disabled="showSave < 1 || yacsiWarning.length == 1" v-if="isEditingCrash" @click="saveChanges" >
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Done
                 </v-btn>
@@ -28,7 +28,7 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 1" v-if="mode == 'new'" @click="saveChanges">
+                <v-btn color="success" :disabled="showSave < 1 || yacsiWarning.length == 1" v-if="mode == 'new'" @click="saveChanges">
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Create Crash Site
                 </v-btn>
@@ -45,6 +45,8 @@
                             label="YASCI number"
                             v-model="fields.yacsinumber"
                             :readonly="isViewingCrash"
+                            :error-messages="yacsiWarning"
+                            @blur="validateYACSI()"
                         ></v-text-field>
                     </v-col>
                     <v-col>
@@ -411,6 +413,27 @@
                 size="64"
             ></v-progress-circular>
         </v-overlay>
+
+        <v-dialog
+        v-model="dataDialog"
+        max-width="490"
+        >
+            <v-card>
+                <v-card-title class="text-h5">
+                Double check your field data
+                </v-card-title>
+                <v-card-text>Make sure your YACSI number has not been entered previously, The YACSI number must be unique.</v-card-text>
+                <v-card-actions>
+                <v-btn
+                    color="green darken-1"
+                    text
+                    @click="dataDialog = false"
+                >
+                    Ok
+                </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -456,13 +479,17 @@ export default {
         infoLoaded: false,
     //helper var for the nations checkboxes
         otherNation: false,
-
+    // dialog to inform the user if a field has the wrong data
+        dataDialog: false,
+    //YACSINUMBER VALIDATION
+        yacsiWarning: []
     }),
-    mounted(){
+    async mounted(){
         if(this.checkPath("edit")){
             this.mode= "edit";
             //after this, the fields get filled with the info obtained from the api
-            this.getDataFromApi();
+            await this.getDataFromApi();
+            this.fieldsHistory = JSON.parse(JSON.stringify(this.fields));
         }
         else if(this.checkPath("new")){
             this.mode="new";
@@ -488,6 +515,22 @@ export default {
         },
         changeNation(){
             this.fields.nation = "";
+        },
+        async validateYACSI(){
+            //console.log("original ", this.fieldsHistory.yacsinumber, "new",this.fields.yacsinumber);
+            if(this.fieldsHistory.yacsinumber == this.fields.yacsinumber){
+                this.yacsiWarning = [];
+                return;
+            }
+
+            let resp = await aircrash.getAvailableYACSI(this.fields.yacsinumber);
+            if(resp.available){
+                this.yacsiWarning = [];
+            }
+            else{
+                this.yacsiWarning = ["The YACSI Number must be unique."]
+            }
+            
         },
         noData(){
             this.fields = {
@@ -539,7 +582,7 @@ export default {
             //this.fields.infoSources = this.fields.sources.includes(";") ? this.fields.sources.split(";") : [];
             if(this.fields.nation != 'Canadian' && this.fields.nation != 'American')    
                 this.otherNation = true;
-            console.log(this.fields);
+            //console.log(this.fields);
             this.infoLoaded = true;
             this.overlay = false;
         },
@@ -549,6 +592,7 @@ export default {
                 this.fields = {...this.fieldsHistory};
             }
             this.mode="view";
+            this.yacsiWarning = [];
             this.resetListVariables();
             this.$router.push(`/airplane/view/${this.fields.yacsinumber}`);
         },
@@ -572,7 +616,7 @@ export default {
         },
         async saveChanges(){
             this.overlay = true;
-            console.log(this.fields);
+            //console.log(this.fields);
         //Mapping coordinate data
             let { lat, long, inyukon, crashlocation, accuracy } = this.modifiedMapFields;
             this.fields.lat = lat;
@@ -597,7 +641,7 @@ export default {
             let removedInfoSources = this.deletedSources;
             let newInfoSources = this.fields.infoSources.filter(x => x.isNew == true).map(x => ({Type: x.Type, Source: x.Source}));
 
-            console.log(crash);
+            //console.log(crash);
         //Final data obj
              let data = {
                     aircrash: crash,
@@ -605,12 +649,20 @@ export default {
                     newInfoSources,
                     editedInfoSources
                 };
-                console.log(data);
+                //console.log(data);
             
             if(this.mode == 'new'){
-                await aircrash.post(data);
-                this.overlay = false;
-                this.$router.push(`/airplane/`);
+                let { response } = await aircrash.post(data);
+                if(response.status == 409){
+                    //open a dialog
+                    this.overlay = false;
+                    //this.dataDialog = true;
+                }
+                else{
+                    this.overlay = false;
+                    this.$router.push(`/airplane/`);
+                }
+                
             }
             else{
                 await aircrash.put(localStorage.currentCrashNumber,data);
@@ -677,7 +729,7 @@ export default {
         },
         selectedImageChanged(val){
             this.selectedImage = val;
-            console.log(val);
+            //console.log(val);
         }
         
     },   

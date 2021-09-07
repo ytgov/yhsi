@@ -256,7 +256,7 @@ export default {
             }
             this.fields = await owners.getById(localStorage.currentOwnerID);
             this.fields.alias = this.fields.alias.map(x =>({ ...x, isEdited:false}));
-            console.log(this.fields);
+            //console.log(this.fields);
             this.overlay = false;
         },
         changeEdit(){//this method handles the logic behind the top edit, cancel & save changes buttons
@@ -299,7 +299,7 @@ export default {
         },
         async saveChanges(){
             this.overlay = true;
-            console.log(this.fields);
+            //console.log(this.fields);
             let newOwnerAlias = this.fields.alias.filter(x => x.isNew == true);
             newOwnerAlias.map(x => {
                 delete x.isNew;
@@ -316,7 +316,7 @@ export default {
                     newOwnerAlias,
                     editOwnerAlias
                 };
-                console.log(data);
+                //console.log(data);
             let currentOwner= {};
             
             if(this.mode == 'new'){

@@ -141,7 +141,7 @@ export default {
     },
     removeItem(item){ //removes one element from the users array
       const index = this.users.findIndex(a=> a.id == item.id);
-      console.log(index);
+      //console.log(index);
       if (index > -1) {
         this.users.splice(index, 1);
       }

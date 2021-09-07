@@ -98,8 +98,10 @@
         <v-row>
           <v-col :class=" `${isSites($route.path,false)}`">
             <router-view></router-view>
+            <RequestAlert/>
           </v-col>
         </v-row>
+        
       </v-container>
     </v-main>
   </v-app>
@@ -111,10 +113,10 @@ import router from "./router";
 import store from "./store";
 import * as config from "./config";
 import { mapState } from "vuex";
-
+import RequestAlert from "./components/RequestAlert.vue";
 export default {
   name: "App",
-  components: {},
+  components: { RequestAlert },
   computed: {
     ...mapState("isAuthenticated"),
     username() {
@@ -141,7 +143,7 @@ export default {
   created: async function() {
     await store.dispatch("checkAuthentication");
     //this.username = store.getters.fullName
-    console.log(this.isAuthenticated);
+    //console.log(this.isAuthenticated);
 
     if (!this.isAuthenticated) this.hasSidebar = false;
     else this.hasSidebar = config.hasSidebar;
