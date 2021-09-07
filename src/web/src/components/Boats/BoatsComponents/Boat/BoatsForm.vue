@@ -517,7 +517,7 @@ export default {
             this.fields.originalOwners = JSON.parse(JSON.stringify(this.fields.owners));
             this.infoLoaded = true;
             this.overlay = false;
-            console.log(this.fields);
+            //console.log(this.fields);
         },
         goToOwner(value){
             this.$router.push({name: 'ownerView', params: { name: value.OwnerName, id: value.id}});
@@ -568,10 +568,10 @@ export default {
                     pastNamesNewArray: newNames,
                     pastNamesEditArray: editedNames
                 };
-                console.log(data);
+                //console.log(data);
                 
             let currentBoat= {};
-            console.log(this.fields);
+            //console.log(this.fields);
             
             if(this.mode == 'new'){
                 await boats.post(data);
@@ -635,13 +635,13 @@ export default {
         },
     //functions for editing the table "Owners" values
         deleteOwner(item,index){
-            console.log(this.fields.owners[index]);
+            //console.log(this.fields.owners[index]);
             if (index > -1) {
                 this.fields.owners.splice(index, 1);
                 this.fields.deletedOwners.push(item);
                 
-                console.log(this.fields.deletedOwners);
-                console.log(this.fields.originalOwners);
+                //console.log(this.fields.deletedOwners);
+                //console.log(this.fields.originalOwners);
             }
             
         },
@@ -722,7 +722,7 @@ export default {
         fields: {/* eslint-disable */
             handler(newval){
                 this.showSave = this.showSave+1;
-                console.log(this.fields);
+                //console.log(this.fields);
             },/* eslint-enable */
             deep: true
         },

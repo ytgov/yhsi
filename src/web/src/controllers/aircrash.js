@@ -43,8 +43,18 @@ export default {
       return res.data;
     }).catch(error =>{
       // handle error
-      console.log(error);
+      console.log(error.response);
+      return error;
     });
   },
+  async getAvailableYACSI(data){
+    return await api.get(`aircrash/available_yacsi/${data}`)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      // handle error
+      console.log(error);
+    });
+  }
 }
 
