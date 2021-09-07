@@ -90,12 +90,12 @@ export default {
           this.options
         )
         .then((resp) => {
-          console.log(resp.data);
+          //console.log(resp.data);
           this.items = resp.data.data;
           //this.pagination.totalLength = resp.data.meta.count;
           this.totalLength = resp.data.meta.count;
 
-          console.log(this.totalLength);
+          //console.log(this.totalLength);
 
           this.loading = false;
         })

@@ -66,7 +66,7 @@ export default {
             this.loading = true;
             let { page, itemsPerPage, sortBy, sortDesc } = this.options;
             page = page > 0 ? page-1 : 0;
-            console.log(this.options);
+            //console.log(this.options);
             itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
             let textToMatch = this.search;
             let data = await boats.get(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
@@ -124,7 +124,7 @@ export default {
             deep: true,
         },
         selectedFilters(newv){
-            console.log(newv);
+            //console.log(newv);
             this.filterOptions = newv;
         },
         search () {

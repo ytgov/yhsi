@@ -143,7 +143,7 @@ export default {
   created: async function() {
     await store.dispatch("checkAuthentication");
     //this.username = store.getters.fullName
-    console.log(this.isAuthenticated);
+    //console.log(this.isAuthenticated);
 
     if (!this.isAuthenticated) this.hasSidebar = false;
     else this.hasSidebar = config.hasSidebar;

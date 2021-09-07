@@ -2,8 +2,8 @@
     <v-snackbar
       v-model="alert"
       :multi-line="true"
-      :timeout="timeout"
-      :color="type"
+      :timeout="timeout == 0 ? -1 : timeout"
+      :color="type "
       outline
       text
     >

@@ -148,7 +148,7 @@ export default {
         this.doc.text('Photo_1', 40, 40);
         let textpos = 70; 
         let sections = Object.keys(this.toPrint);
-        console.log(sections);
+        //console.log(sections);
         for(let k = 0; k<sections.length; k++){
             if(this.sections[k].print == true){
             textpos = this.checkRemainingSize(textpos);
@@ -157,7 +157,7 @@ export default {
             textpos = this.checkRemainingSize(textpos);
             let data = Object.values(this.toPrint[sections[k]]);
             let cols = Object.keys(this.toPrint[sections[k]]);
-            console.log(textpos);
+            //console.log(textpos);
             for(let i = 0; i<data.length; i++){
               this.doc.setFontSize(10);
               this.doc.text(`${cols[i].toUpperCase()}`, 40, textpos);

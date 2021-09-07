@@ -221,7 +221,7 @@ export default {
                     OwnerId: this.ownerID 
                 }  
             };
-            console.log(this.data[index].id);
+            //console.log(this.data[index].id);
             let resp = await histories.putOwner(this.data[index].Id, data);
             if(resp.message == "success"){
                 this.data[index].Reference = this.referenceHelper;
@@ -266,7 +266,7 @@ export default {
                 }  
             };
             let resp = await histories.postOwner(data);
-            console.log(resp);
+            //console.log(resp);
             if(resp[0].HistoryText);
                 this.data.push(resp[0]);
             this.overlay = false;
