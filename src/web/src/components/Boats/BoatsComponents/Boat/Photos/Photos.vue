@@ -527,7 +527,7 @@ export default {
                 x.selected = false;
                 return x;
             })
-            console.log(data.count);
+            //console.log(data.count);
             this.numberOfPages = Math.round(data.count / 6);
             this.showSkeletons = false;
         },
@@ -544,7 +544,7 @@ export default {
             this.isLoadingOwner = true;
             let data = await owners.get();
             this.owners = data.body;
-            console.log(this.owners);
+            //console.log(this.owners);
             this.isLoadingOwner = false;
         },
         async savePhoto(){
@@ -585,7 +585,7 @@ export default {
             var reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function () {
-                console.log(reader.result);
+                //console.log(reader.result);
             };
             reader.onerror = function (error) {
                 console.log('Error: ', error);
