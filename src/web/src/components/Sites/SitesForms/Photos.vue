@@ -1,6 +1,11 @@
 <template>
   <div>
-    <v-card-title primary-title> Photos </v-card-title>
+    <v-card-title style="width: 100%; display: block">
+      Photos
+      <div class="float-right">
+        <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
+      </div>
+    </v-card-title>
     <v-divider inset></v-divider>
     <v-form v-model="valid">
       <v-container>

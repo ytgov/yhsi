@@ -5,7 +5,7 @@
         <v-icon>mdi-arrow-left-drop-circle</v-icon>
         <div class="ml-2">Back to Sites</div>
       </v-btn>
-     <!--  <v-spacer></v-spacer>
+      <!--  <v-spacer></v-spacer>
       <v-btn color="primary" @click="goToSummary()">
         <v-icon>mdi-book-open-variant</v-icon>
         <div class="ml-2">
@@ -24,25 +24,7 @@
       @closeDialog="closeDialog"
     />
     <div>
-      <v-row>
-        <v-col>
-          <router-view id="sites-router" />
-        </v-col>
-        <v-col cols="3">
-          <v-list shaped class="list-menu">
-            <v-list-item-group v-model="selectedItem" color="primary">
-              <v-list-item v-for="(item, i) in items" :key="i" :to="item.route">
-                <v-list-item-icon>
-                  <v-icon v-text="item.icon"></v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title v-text="item.name"></v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-        </v-col>
-      </v-row>
+      <router-view id="sites-router" />
     </div>
   </div>
 </template>

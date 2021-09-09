@@ -1,6 +1,11 @@
 <template>
   <div>
-    <v-card-title primary-title> Summary </v-card-title>
+    <v-card-title style="width: 100%; display: block">
+      Summary
+      <div class="float-right">
+        <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
+      </div>
+    </v-card-title>
     <v-divider class="mb-5"></v-divider>
     <v-form v-model="valid">
       <div class="row mx-1">
@@ -29,7 +34,10 @@
             outlined
             v-model="fields.category"
             clearable
-            label="CRHP Category"
+            label="CRHP category"
+            :items="categoryOptions"
+            item-text="text"
+            item-value="id"
           ></v-select>
 
           <v-select
@@ -37,8 +45,11 @@
             outlined
             v-model="fields.siteCategories"
             :items="siteCategoryOptions"
+            item-text="text"
+            item-value="text"
+            multiple
             clearable
-            label="Site Categories"
+            label="Site categories"
           ></v-select>
 
           <v-select
@@ -63,81 +74,99 @@
             dense
             outlined
             v-model="fields.primaryName"
-            label="Primary Name"
+            label="Primary name"
             required
           ></v-text-field>
 
-          <div class="mb-2">Secondary Names</div>
-          <v-alert
-            v-for="(item, i) of fields.secondaryNames"
-            :key="i"
-            outlined
-            color="primary"
-          >
-            <div class="sub-title">Secondary name {{ i + 1 }}</div>
-            <v-btn
-              icon
-              color="primary"
-              class="top-right-button"
-              @click="removeItem('secondaryNames', i)"
-            >
-              <v-icon dark>mdi-minus-circle</v-icon>
-            </v-btn>
-            <v-text-field
-              v-model="item.name"
-              label="Name"
-              required
-            ></v-text-field>
-          </v-alert>
-          <v-btn outlined color="primary" @click="addItem('secondaryNames')">
-            Add New
-          </v-btn>
+          <v-card class="default mb-5">
+            <v-card-text>
+              <h3>Secondary Names</h3>
+              <div class="row" v-for="(item, i) of names" :key="i">
+                <div class="col-md-10">
+                  <v-text-field
+                    dense
+                    outlined
+                    background-color="white"
+                    v-model="item.description"
+                    label="Secondary name"
+                    hide-details
+                  >
+                  </v-text-field>
+                </div>
+
+                <div class="col-md-2">
+                  <v-btn
+                    color="warning"
+                    x-small
+                    fab
+                    title="Remove"
+                    class="my-0 float-right"
+                    @click="removeName(i)"
+                    ><v-icon>mdi-close</v-icon></v-btn
+                  >
+                </div>
+              </div>
+              <v-btn class="mt-5" color="info" @click="addName()">
+                Add Secondary Name
+              </v-btn>
+            </v-card-text>
+          </v-card>
 
           <v-text-field
             dense
             outlined
             v-model="fields.contributingResources"
-            label="Contribuiting Resources"
+            label="Contribuiting resources"
             required
           ></v-text-field>
 
-          <div class="mb-2">Historical Patterns</div>
-          <v-alert
-            v-for="(item, i) of historicalPatterns"
-            :key="i"
-            outlined
-            color="primary"
-          >
-            <div class="sub-title">Historical Pattern {{ i + 1 }}</div>
-            <v-btn
-              icon
-              color="primary"
-              class="top-right-button"
-              @click="removeItem('historicalPatterns', i)"
-            >
-              <v-icon dark>mdi-minus-circle</v-icon>
-            </v-btn>
-            <v-combobox
-              dense
-              outlined
-              v-model="item.pattern"
-              label="Historical Pattern"
-            ></v-combobox>
-            <v-text-field
-              dense
-              outlined
-              v-model="item.comment"
-              label="Comments"
-              required
-            ></v-text-field>
-          </v-alert>
-          <v-btn
-            outlined
-            color="primary"
-            @click="addItem('historicalPatterns')"
-          >
-            Add New
-          </v-btn>
+          <v-card class="default mb-5">
+            <v-card-text>
+              <h3>Historical Patterns</h3>
+              <div class="row" v-for="(item, i) of historicalPatterns" :key="i">
+                <div class="col-md-10">
+                  <v-select
+                    dense
+                    outlined
+                    :items="historicalPatternOptions"
+                    v-model="item.historicalPatternType"
+                    item-text="text"
+                    item-value="value"
+                    background-color="white"
+                    label="Historical pattern"
+                  ></v-select>
+                  <v-text-field
+                    dense
+                    outlined
+                    v-model="item.comments"
+                    background-color="white"
+                    label="Comments"
+                    required
+                    hide-details
+                  ></v-text-field>
+                </div>
+
+                <div class="col-md-2">
+                  <v-btn
+                    color="warning"
+                    x-small
+                    fab
+                    title="Remove"
+                    class="my-0 float-right"
+                    @click="removePattern(i)"
+                    ><v-icon>mdi-close</v-icon>
+                  </v-btn>
+                </div>
+
+                <div v-if="i < historicalPatterns.length - 1" class="col-md-12">
+                  <hr />
+                </div>
+              </div>
+              <v-btn class="mt-5" color="info" @click="addPattern()">
+                Add Historical Pattern
+              </v-btn>
+            </v-card-text>
+          </v-card>
         </div>
       </div>
     </v-form>
@@ -158,11 +187,21 @@ export default {
     crhpCategoryOptions: [],
     siteCategoryOptions: [],
     recordOptions: [],
+    categoryOptions: [
+      { text: "None Selected", id: 0 },
+      { text: "Building", id: 1 },
+      { text: "District", id: 2 },
+      { text: "Place", id: 3 },
+      { text: "Structure", id: 4 },
+    ],
+    historicalPatternOptions: [],
 
     generalRules: [
       (v) => !!v || "This input is required",
-      (v) => v.length <= 20 || "This input must be less than 20 characters",
+      (v) =>
+        (v && v.length <= 20) || "This input must be less than 20 characters",
     ],
+    names: [],
     historicalPatterns: [],
     fields: {
       primaryName: "", //
@@ -194,6 +233,9 @@ export default {
     axios.get(`${STATIC_URL}/record-type`).then((resp) => {
       this.recordOptions = resp.data.data;
     });
+    axios.get(`${STATIC_URL}/historical-pattern`).then((resp) => {
+      this.historicalPatternOptions = resp.data.data;
+    });
   },
   watch: {
     "$route.params.id": {
@@ -210,37 +252,31 @@ export default {
       if (id == this.loadedId) return;
 
       this.loadedId = id;
+
       axios
         .get(`${PLACE_URL}/${id}`)
         .then((resp) => {
           this.fields = resp.data.data;
-          console.log("PLACE", this.fields);
-
-          if (!this.fields.historicalPatterns)
-            this.fields.historicalPatterns = [];
-
-          if (!this.fields.secondaryNames) this.fields.secondaryNames = [];
+          this.names = resp.data.relationships.names.data;
+          this.historicalPatterns = resp.data.relationships.historicalPatterns.data;
         })
         .catch((error) => console.error(error));
     },
 
-    removeItem(objName, position) {
-      if (position > -1) {
-        this.fields[objName].splice(position, 1);
-      }
+    addName() {
+      this.names.push({ description: "", placeId: this.entity_id });
     },
-    addItem(objName) {
-      console.log(objName);
-      switch (
-        objName // Selects which structure to add to the new element of the array
-      ) {
-        case "historicalPatterns":
-          this.historicalPatterns.push({ pattern: "", comments: "" });
-          break;
-        case "secondaryNames":
-          this.fields[objName].push({ name: "" });
-          break;
-      }
+    removeName(index) {
+      this.names.splice(index, 1);
+    },
+    addPattern() {
+      this.historicalPatterns.push({ pattern: "", comments: "" });
+    },
+    removePattern(index) {
+      this.historicalPatterns.splice(index, 1);
+    },
+    saveChanges() {
+      console.log("SAVING", this.fields);
     },
   },
 };

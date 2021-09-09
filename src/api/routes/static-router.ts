@@ -2,9 +2,10 @@ import express, { Request, Response } from "express";
 import { body, check, validationResult } from "express-validator";
 import { nullIfEmpty } from "../utils/validation";
 import { DB_CONFIG } from "../config";
-import { StaticService } from "../services";
+import { PlaceService, StaticService } from "../services";
 
 const staticService = new StaticService(DB_CONFIG);
+const placeService = new PlaceService(DB_CONFIG);
 export const staticRouter = express.Router();
 
 staticRouter.get("/community", async (req: Request, res: Response) => {
@@ -59,6 +60,11 @@ staticRouter.get("/designation-type", async (req: Request, res: Response) => {
 
 staticRouter.get("/condition", async (req: Request, res: Response) => {
     let list = staticService.getConditions();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/historical-pattern", async (req: Request, res: Response) => {
+    let list = placeService.getHistoricalPatterns();
     return res.json({ data: list });
 });
 
