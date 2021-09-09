@@ -12,10 +12,10 @@
         <v-list-item
           link
           nav
-          v-bind:title="section.name"
-          v-bind:to="section.url"
           v-for="section in sections"
-          v-bind:key="section.name"
+          :title="section.name"
+          :to="section.makeUrl(currentId)"
+          :key="section.name"
         >
           <v-list-item-icon>
             <v-icon>{{ section.icon }}</v-icon>
@@ -149,7 +149,7 @@ export default {
   name: "App",
   components: {},
   computed: {
-    ...mapState(["isAuthenticated", "user"]),
+    ...mapState(["isAuthenticated", "user", "showAppSidebar"]),
     username() {
       return store.getters.fullName;
     },
@@ -159,6 +159,9 @@ export default {
     },
     user() {
       return store.getters.user;
+    },
+    showAppSidebar() {
+      return store.getters.showAppSidebar;
     },
   },
   data: () => ({
@@ -173,20 +176,26 @@ export default {
     sections: config.sections,
     hasSidebar: false, //config.hasSidebar,
     hasSidebarClosable: false, //config.hasSidebarClosable
+    currentId: 0,
   }),
   created: async function () {
-    await store.dispatch("checkAuthentication");
-    //this.username = store.getters.fullName
+    store.dispatch("setAppSidebar", this.$route.path.startsWith("/sites/"));
+    this.hasSidebar = this.$route.path.startsWith("/sites/");
 
-    //if (!this.isAuthenticated) this.hasSidebar = false;
-    //else this.hasSidebar = config.hasSidebar;
-  
+    await store.dispatch("checkAuthentication");
   },
   watch: {
-    //isAuthenticated: function (val) {
-      //if (!val) this.hasSidebar = false;
-      //else this.hasSidebar = config.hasSidebar;
-    //},
+    isAuthenticated: function (val) {
+      if (!val) this.hasSidebar = false;
+      else this.hasSidebar = store.getters.showAppSidebar;
+    },
+    showAppSidebar: function (val) {
+      if (val) {
+        this.currentId = this.$route.params.id;
+      }
+
+      this.hasSidebar = val; // && this.isAuthenticated;
+    },
   },
   methods: {
     nav: function (location) {

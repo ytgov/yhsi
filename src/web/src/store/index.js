@@ -10,7 +10,8 @@ export default new Vuex.Store({
   state: {
     loadingClass: "d-none",
     siteHistory: [],
-    search: ""
+    search: "",
+    showAppSidebar: false
   },
   mutations: {
     SET_LOADING(state, value) {
@@ -34,11 +35,15 @@ export default new Vuex.Store({
     },
     setSearch({ commit }, value) {
       commit("SET_SEARCH", value)
+    },
+    setAppSidebar(state, value) {
+      state.state.showAppSidebar = value;
     }
   },
   getters: {
     siteHistory: state => state.siteHistory,
     search: state => state.search,
+    showAppSidebar: state => state.showAppSidebar,
   },
   modules: { auth, profile }
 });

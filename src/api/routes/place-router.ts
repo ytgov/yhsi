@@ -100,7 +100,6 @@ placeRouter.get("/:id",
         await placeService.getById(id)
             .then(async (place) => {
                 if (place) {
-
                     let associations = combine(await placeService.getAssociationsFor(place.id), placeService.getAssociationTypes(), 'value', 'type', 'text');
                     let fnAssociations = combine(await placeService.getFNAssociationsFor(place.id), placeService.getFNAssociationTypes(), 'value', 'firstNationAssociationType', "text");
                     fnAssociations = combine(fnAssociations, fnList, "id", "firstNationId", "description");
