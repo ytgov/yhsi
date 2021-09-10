@@ -13,6 +13,16 @@ staticRouter.get("/community", async (req: Request, res: Response) => {
     return res.json({ data: list });
 });
 
+staticRouter.get("/construction-period", async (req: Request, res: Response) => {
+    let list = await placeService.getConstructionPeriodTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/date-type", async (req: Request, res: Response) => {
+    let list = await placeService.getDateTypes();
+    return res.json({ data: list });
+});
+
 staticRouter.get("/first-nation", async (req: Request, res: Response) => {
     let list = await staticService.getFirstNations();
     return res.json({ data: list });
