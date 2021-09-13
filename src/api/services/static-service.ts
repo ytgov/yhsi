@@ -18,7 +18,7 @@ export class StaticService {
     }
 
     async getFunctionalTypes(): Promise<Array<FunctionalType>> {
-        return this.knex<FunctionalType>("FunctionalType").select("id", "description")
+        return this.knex<FunctionalType>("FunctionalType").select("id", "description").orderBy("description")
     }
 
     async getOriginalMedias(): Promise<Array<OriginalMedia>> {
