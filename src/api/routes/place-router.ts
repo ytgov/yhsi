@@ -4,6 +4,7 @@ import { body, check, query, validationResult } from "express-validator";
 import { PlaceService, SortDirection, SortStatement, StaticService } from "../services";
 import { Place, PLACE_FIELDS } from "../data";
 import { ReturnValidationErrors } from "../middleware";
+import moment from "moment";
 
 const placeService = new PlaceService(DB_CONFIG);
 const staticService = new StaticService(DB_CONFIG);
@@ -135,6 +136,8 @@ placeRouter.get("/:id",
                         webLinks: { data: webLinks },
                         descriptions: { data: descriptions },
                     };
+
+                    (place as any).recognitionDateDisplay = moment(place.recognitionDate).add(7, 'hours').format("YYYY-MM-DD");
 
                     return res.send({
                         data: place,

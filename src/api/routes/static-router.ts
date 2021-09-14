@@ -53,6 +53,31 @@ staticRouter.get("/ownership-types", async (req: Request, res: Response) => {
     return res.json({ data: list });
 });
 
+staticRouter.get("/contact-type", async (req: Request, res: Response) => {
+    let list = await placeService.getContactTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/link-type", async (req: Request, res: Response) => {
+    let list = await placeService.getWebLinkTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/jurisdiction", async (req: Request, res: Response) => {
+    let list = await staticService.getJurisdictions();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/revision-log-type", async (req: Request, res: Response) => {
+    let list = await placeService.getRevisionLogTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/owner-consent", async (req: Request, res: Response) => {
+    let list = await staticService.getOwnerConsents();
+    return res.json({ data: list });
+});
+
 staticRouter.get("/original-media", async (req: Request, res: Response) => {
     let list = await staticService.getOriginalMedias();
     return res.json({ data: list });
@@ -66,6 +91,17 @@ staticRouter.get("/place-theme", async (req: Request, res: Response) => {
 
 staticRouter.get("/statute", async (req: Request, res: Response) => {
     let list = await staticService.getStatutes();
+
+    for (let item of list) {
+        (item as any).display = item.recognitionAuthority;
+
+        if (item.recognitionType && item.recognitionType.length > 0)
+            (item as any).display += ` / ${item.recognitionType}`;
+
+        if (item.allStatute && item.allStatute.length > 0)
+            (item as any).display += ` / ${item.allStatute}`;
+    }
+
     return res.json({ data: list });
 });
 

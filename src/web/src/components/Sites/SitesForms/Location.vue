@@ -28,7 +28,7 @@
             dense
             outlined
             v-model="fields.otherCommunity"
-            label="Other Community"
+            label="Other community"
             hide-details
           ></v-text-field>
         </div>
@@ -37,7 +37,7 @@
             dense
             outlined
             v-model="fields.otherLocality"
-            label="Other Locality"
+            label="Other locality"
             hide-details
           ></v-text-field>
         </div>
@@ -76,7 +76,7 @@
                     dense
                     outlined
                     v-model="fields.physicalPostalCode"
-                    label="Postal Code"
+                    label="Postal code"
                     background-color="white"
                     hide-details
                   ></v-text-field>
@@ -89,7 +89,7 @@
           <v-textarea
             dense
             outlined
-            label="Previous Address"
+            label="Previous address"
             v-model="fields.previousAddress"
           ></v-textarea>
           <v-textarea
@@ -118,7 +118,7 @@
             outlined
             :items="coordinateDeterminationOptions"
             v-model="fields.coordinateDetermination"
-            label="Coordinate Determination"
+            label="Coordinate determination"
           ></v-select>
         </div>
         <div class="col-md-6">
@@ -128,7 +128,7 @@
                 dense
                 outlined
                 v-model="fields.nTSMapSheet"
-                label="NTS Map Sheet"
+                label="NTS map sheet"
               ></v-text-field>
             </v-col>
             <v-col cols="6">
@@ -145,12 +145,12 @@
             dense
             outlined
             v-model="fields.bordenNumber"
-            label="Border Number"
+            label="Border number"
           ></v-text-field>
           <v-textarea
             dense
             outlined
-            label="Misc. Info"
+            label="Misc. info"
             v-model="fields.locationComment"
           ></v-textarea>
         </div>
@@ -201,7 +201,6 @@ export default {
       .get(`${PLACE_URL}/${id}`)
       .then((resp) => {
         this.fields = resp.data.data;
-        console.log("PLACE", this.fields);
       })
       .catch((error) => console.error(error));
 
