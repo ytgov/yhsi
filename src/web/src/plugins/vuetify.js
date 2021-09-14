@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuetify from "vuetify";
 import "vuetify/dist/vuetify.min.css";
 import "../assets/yk-style.css";
+import "../assets/yhsi.css";
 
 Vue.use(Vuetify);
 export default new Vuetify({

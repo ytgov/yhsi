@@ -5,11 +5,11 @@ import Dashboard from "../components/Dashboard.vue";
 import NotFound from "../views/NotFound.vue";
 import Form from "../components/Form";
 import Grid from "../components/Grid";
-import Login from "../components/Login";
-import LoginComplete from "../components/LoginComplete";
-import Profile from "../components/Profile";
+import Login from "../views/Login";
+import LoginComplete from "../views/LoginComplete";
+import Profile from "../views/Profile";
 import store from "../store";
-import SitesForm  from "../components/Sites";
+import SitesForm from "../components/Sites";
 
 import Summary from "../components/Sites/SitesForms/Summary";
 import Location from "../components/Sites/SitesForms/Location";
@@ -176,7 +176,7 @@ const routes = [
     },
     children: [
       {
-        path: "summary", 
+        path: "summary",
         component: Summary
       },
       {
@@ -184,31 +184,31 @@ const routes = [
         component: Location
       },
       {
-        path: "dates_&_condition", 
+        path: "dates_&_condition",
         component: Dates
       },
       {
-        path: "themes_&_function", 
+        path: "themes_&_function",
         component: Themes
       },
       {
-        path: "associations", 
+        path: "associations",
         component: Associations
       },
       {
-        path: "legal_&_zoning", 
+        path: "legal_&_zoning",
         component: LegalAndZoning
       },
       {
-        path: "photos", 
+        path: "photos",
         component: Photos
       },
       {
-        path: "management", 
+        path: "management",
         component: Management
       },
       {
-        path: "description", 
+        path: "description",
         component: Description
       }
     ]
@@ -222,7 +222,7 @@ const routes = [
     },
     children: [
       {
-        path: "feature", 
+        path: "feature",
         component: Feature
       },
       {
@@ -234,7 +234,7 @@ const routes = [
         component: HistoricSites
       },
       {
-        path: "photo", 
+        path: "photo",
         component: Photo
       }
     ]
@@ -382,12 +382,15 @@ const router = new VueRouter({
 router.beforeEach(async (to, from, next) => {
   var requiresAuth = to.meta.requiresAuth || false;
 
+  store.dispatch("setAppSidebar", to.path.startsWith("/sites/"))
+
   if (!requiresAuth) {
     return next();
   }
 
   await store.dispatch("checkAuthentication");
   var isAuthenticated = store.getters.isAuthenticated;
+
 
   if (requiresAuth && !isAuthenticated) {
     console.log("You aren't authenticatd, redirecting to sign-in");

@@ -17,14 +17,9 @@ Vue.prototype.$http = axios;
   }
 });
 
-Vue.directive("yk-primary", {
-  bind: function (el) {
-    el.style.backgroundColor = "#a000bb";
-    el.style.color = "#bbb";
-    el.style.fontWeight = "700";
-    el.style.textTransform = "lowercase";
-  }
-}); */
+import HistorySidebarComponent from "./components/HistorySidebar";
+
+Vue.component("history-sidebar", HistorySidebarComponent)
 
 axios.defaults.withCredentials = true
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
