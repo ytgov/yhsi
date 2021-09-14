@@ -48,6 +48,11 @@ staticRouter.get("/functional-use-type", async (req: Request, res: Response) => 
     return res.json({ data: list });
 });
 
+staticRouter.get("/ownership-types", async (req: Request, res: Response) => {
+    let list = await placeService.getOwnershipTypes();
+    return res.json({ data: list });
+});
+
 staticRouter.get("/original-media", async (req: Request, res: Response) => {
     let list = await staticService.getOriginalMedias();
     return res.json({ data: list });
