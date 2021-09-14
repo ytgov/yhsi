@@ -38,76 +38,69 @@ export default {
   },
   data: () => ({
     site: "site name",
-    items: null,
-    selectedItem: null,
     dialog: false, //tells the print dialog when to show itself
   }),
   created() {
-    this.items = [
+   /*  this.items = [
       {
         name: "Summary",
         icon: "mdi-note-text-outline",
-        route: `/sites/${this.param}/summary`,
+        route: `/sites/${this.selectedId}/summary`,
       },
       {
         name: "Location",
         icon: "mdi-map-check",
-        route: `/sites/${this.param}/location`,
+        route: `/sites/${this.selectedId}/location`,
       },
       {
         name: "Dates & Condition",
         icon: "mdi-calendar-range",
-        route: `/sites/${this.param}/dates_&_condition`,
+        route: `/sites/${this.selectedId}/dates_&_condition`,
       },
       {
         name: "Themes & Function",
         icon: "mdi-shape",
-        route: `/sites/${this.param}/themes_&_function`,
+        route: `/sites/${this.selectedId}/themes_&_function`,
       },
       {
         name: "Associations",
         icon: "mdi-account-group",
-        route: `/sites/${this.param}/associations`,
+        route: `/sites/${this.selectedId}/associations`,
       },
       {
         name: "Legal & Zoning",
         icon: "mdi-script-text-outline",
-        route: `/sites/${this.param}/legal_&_zoning`,
+        route: `/sites/${this.selectedId}/legal_&_zoning`,
       },
       {
         name: "Photos",
         icon: "mdi-image",
-        route: `/sites/${this.param}/photos`,
+        route: `/sites/${this.selectedId}/photos`,
       },
       {
         name: "Management",
         icon: "mdi-hammer-wrench",
-        route: `/sites/${this.param}/management`,
+        route: `/sites/${this.selectedId}/management`,
       },
       {
         name: "Description",
         icon: "mdi-alphabetical",
-        route: `/sites/${this.param}/description`,
+        route: `/sites/${this.selectedId}/description`,
       },
-    ];
+    ]; */
   },
   methods: {
     goBack() {
       this.$router.push("/sites");
     },
     goToSummary() {
-      this.$router.push(`/sites/${this.param}/summary`);
+      this.$router.push(`/sites/${this.selectedId}/summary`);
     },
     showDialog() {
       this.dialog = true;
     },
     closeDialog() {
       this.dialog = false;
-    },
-  },
-  computed: {
-    param() {
-      return this.$route.params.id;
     },
   },
 };

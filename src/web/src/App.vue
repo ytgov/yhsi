@@ -181,6 +181,7 @@ export default {
   created: async function () {
     store.dispatch("setAppSidebar", this.$route.path.startsWith("/sites/"));
     this.hasSidebar = this.$route.path.startsWith("/sites/");
+    this.currentId = this.$route.params.id;
 
     await store.dispatch("checkAuthentication");
   },
