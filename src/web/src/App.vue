@@ -12,10 +12,10 @@
         <v-list-item
           link
           nav
-          v-bind:title="section.name"
-          v-bind:to="section.url"
           v-for="section in sections"
-          v-bind:key="section.name"
+          :title="section.name"
+          :to="section.makeUrl(currentId)"
+          :key="section.name"
         >
           <v-list-item-icon>
             <v-icon>{{ section.icon }}</v-icon>
@@ -49,17 +49,41 @@
         ></v-progress-circular>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <!-- <v-label dark>License Year:</v-label>
-      <v-select
-        v-model="licenseYear"
-        smaller
-        :items="licenseYears"
-        dense
-        style="margin-left: 15px; max-width: 150px; margin-right: 20px"
-        hide-details
-      ></v-select> -->
 
       <div v-if="isAuthenticated">
+        <v-menu offset-y class="ml-0">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn text color="primary" v-bind="attrs" v-on="on">
+              Navigation <v-icon>mdi-menu-down</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list dense style="min-width: 200px">
+            <v-list-item to="/dashboard">
+              <v-list-item-title>Dashboard</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/sites">
+              <v-list-item-title>Sites</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/photos">
+              <v-list-item-title>Photos</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/maps">
+              <v-list-item-title>Maps</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
+        <v-btn
+          icon
+          color="primary"
+          class="mr-2"
+          title="Recently visited"
+          @click="showHistory()"
+        >
+          <v-icon>mdi-history</v-icon>
+        </v-btn>
+
         <span>{{ username }}</span>
         <v-menu bottom left class="ml-0">
           <template v-slot:activator="{ on, attrs }">
@@ -75,6 +99,13 @@
               </v-list-item-icon>
               <v-list-item-title>My profile</v-list-item-title>
             </v-list-item>
+            <v-list-item to="/administration">
+              <v-list-item-icon>
+                <v-icon>mdi-cogs</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Administration</v-list-item-title>
+            </v-list-item>
+
             <v-divider />
             <v-list-item @click="signOut">
               <v-list-item-icon>
@@ -94,9 +125,9 @@
 
     <v-main v-bind:style="{ 'padding-left: 33px !important': !hasSidebar }">
       <!-- Provides the application the proper gutter -->
-      <v-container fluid :class=" `${isSites($route.path,true)}`">
+      <v-container fluid :class="`${isSites($route.path, true)}`">
         <v-row>
-          <v-col :class=" `${isSites($route.path,false)}`">
+          <v-col :class="`${isSites($route.path, false)}`">
             <router-view></router-view>
             <RequestAlert/>
           </v-col>
@@ -104,28 +135,37 @@
         
       </v-container>
     </v-main>
+
+    <history-sidebar ref="historySidebar"></history-sidebar>
   </v-app>
 </template>
 
 <script>
 import router from "./router";
-//import { mapState } from "vuex";
 import store from "./store";
 import * as config from "./config";
 import { mapState } from "vuex";
 import RequestAlert from "./components/RequestAlert.vue";
+import { LOGOUT_URL } from "./urls";
+
 export default {
   name: "App",
   components: { RequestAlert },
   computed: {
-    ...mapState("isAuthenticated"),
+    ...mapState(["isAuthenticated", "user", "showAppSidebar"]),
     username() {
       return store.getters.fullName;
     },
     isAuthenticated() {
-      return true; // until we get auth process to show sidebar
-      // return store.getters.isAuthenticated;
-    }
+      //return true; // until we get auth process to show sidebar
+      return store.getters.isAuthenticated;
+    },
+    user() {
+      return store.getters.user;
+    },
+    showAppSidebar() {
+      return store.getters.showAppSidebar;
+    },
   },
   data: () => ({
     dialog: false,
@@ -137,46 +177,64 @@ export default {
     applicationName: config.applicationName,
     applicationIcon: config.applicationIcon,
     sections: config.sections,
-    hasSidebar: true, //config.hasSidebar,
-    hasSidebarClosable: false,//config.hasSidebarClosable
+    hasSidebar: false, //config.hasSidebar,
+    hasSidebarClosable: false, //config.hasSidebarClosable
+    currentId: 0,
   }),
-  created: async function() {
+  created: async function () {
     await store.dispatch("checkAuthentication");
-    //this.username = store.getters.fullName
-    //console.log(this.isAuthenticated);
+    store.dispatch("setAppSidebar", this.$route.path.startsWith("/sites/"));
+    this.hasSidebar = this.$route.path.startsWith("/sites/");
 
-    if (!this.isAuthenticated) this.hasSidebar = false;
-    else this.hasSidebar = config.hasSidebar;
+    await store.dispatch("checkAuthentication");
   },
   watch: {
-    isAuthenticated: function(val) {
+    isAuthenticated: function (val) {
       if (!val) this.hasSidebar = false;
-      else this.hasSidebar = config.hasSidebar;
-    }
+      else this.hasSidebar = store.getters.showAppSidebar;
+    },
+    showAppSidebar: function (val) {
+      if (val) {
+        this.currentId = this.$route.params.id;
+      }
+
+      this.hasSidebar = val; // && this.isAuthenticated;
+    },
   },
   methods: {
-    nav: function(location) {
+    nav: function (location) {
       router.push(location);
-      console.log(location);
     },
-    toggleHeader: function() {
+    toggleHeader: function () {
       this.headerShow = !this.headerShow;
     },
-    toggleMenu: function() {
+    toggleMenu: function () {
       this.menuShow = !this.menuShow;
     },
-    signOut: function() {
-      store.dispatch("signOut");
-      router.push("/");
+    signOut: function () {
+      window.location = LOGOUT_URL;
     },
-    isSites(route, chooser){//this function helps to show certain classes depending on the route
-      if(chooser)
-        return (route.includes('sites') || route.includes('photos') || route.includes('users') 
-              || route.includes('photo-owners') || route.includes('communities')) ? 'siteslp' :  '';
+    isSites(route, chooser) {
+      // ANGELS CODE AFTER merge combined
+      // if(chooser)
+      //   return (route.includes('sites') || route.includes('photos') || route.includes('users') 
+      //         || route.includes('photo-owners') || route.includes('communities')) ? 'siteslp' :  '';
+      // else
+      //   return (route.includes('sites') || route.includes('photos') || route.includes('users') 
+      //         || route.includes('photo-owners') || route.includes('communities')) ? 'sitesnp' :  '';
+      //this function helps to show certain classes depending on the route
+      if (chooser)
+        return route.includes("sites/") || route.includes("photos")
+          ? "siteslp"
+          : "";
       else
-        return (route.includes('sites') || route.includes('photos') || route.includes('users') 
-              || route.includes('photo-owners') || route.includes('communities')) ? 'sitesnp' :  '';
-    }
-  }
+        return route.includes("sites/") || route.includes("photos")
+          ? "sitesnp"
+          : "";
+    },
+    showHistory() {
+      this.$refs.historySidebar.show();
+    },
+  },
 };
 </script>
