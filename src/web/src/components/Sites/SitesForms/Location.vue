@@ -219,5 +219,10 @@ export default {
       this.coordinateDeterminationOptions = resp.data.data;
     });
   },
+  methods:{
+    saveChanges() {
+      console.log("SAVING", this.fields);
+    },
+  }
 };
 </script>
