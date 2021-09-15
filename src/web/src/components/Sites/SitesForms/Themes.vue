@@ -107,6 +107,7 @@
                 <v-btn color="success">Save Changes</v-btn>
               </v-container>
             </v-form>
+            <!--
         </div>
         <div class="col-md-6"> <v-textarea
             label="YHS Themes"
@@ -178,7 +179,7 @@
           ></v-textarea>
         </div>
       </div>
-    </v-form>
+    </v-form> -->
   </div>
 </template>
 

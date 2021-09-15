@@ -39,7 +39,8 @@ export const sections = [
     {
         name: "Photos",
         url: "/photos",
-        icon: "mdi-wallpaper"
+        icon: "mdi-wallpaper",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/photos` }
     },
     {
         name: "Photos (combined)",
@@ -59,37 +60,44 @@ export const sections = [
     {
         name: "Maps",
         url: "/maps",
-        icon: "mdi-map"
+        icon: "mdi-map",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/maps` }
     },
     {
         name: "Users",
         url: "/users",
-        icon: "mdi-account-group"
+        icon: "mdi-account-group",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/users` }
     },
     {
         name: "PhotoOwners",
         url: "/photo-owners",
-        icon: "mdi-image-album"
+        icon: "mdi-image-album",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/photo-owners` }
     },
     {
         name: "Communities",
         url: "/communities",
-        icon: "mdi-home-group"
+        icon: "mdi-home-group",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/communities` }
     },
     {
         name: "Airplane Crash",
         url: "/airplane/",
-        icon: "mdi-airplane-landing"
+        icon: "mdi-airplane-landing",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/airplane/` }
     },
     {
         name: "Boats",
         url: "/boats/",
-        icon: "mdi-ferry"
+        icon: "mdi-ferry",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/boats/` }
     },
     {
         name: "Administration",
         url: "/admin",
-        icon: "mdi-cube"
+        icon: "mdi-cube",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/admin` }
     }
     // {
     //     name: "Basic Form",
