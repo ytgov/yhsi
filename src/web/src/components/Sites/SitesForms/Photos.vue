@@ -163,10 +163,12 @@
                 </v-row>
                 <v-divider class="mt-2 mb-2"></v-divider>
                 <v-btn color="success">Save Changes</v-btn>
+                <!--
               </v-container>
-
             </v-form>
-        </div>
+        </div>-->
+          <v-row>
+                <v-col cols="12">
                   <v-text-field
                     v-model="item.location"
                     label="Location"
@@ -180,9 +182,10 @@
                     @change="onFileSelection($event, i)"
                   ></v-file-input>
                 </v-col>
-              </v-row>
+
+              <!--
             </v-alert>
-          </v-col>
+          </v-col>-->
           <v-col cols="12">
             <v-btn outlined color="primary" @click="addItem('photos')">
               Add New

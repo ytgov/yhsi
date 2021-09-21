@@ -164,7 +164,7 @@ import Search from "../PhotosComponents/Search";
 
 export default {
   name: "photosgrid",
-  components: {  },
+  components: { Search },
   data: () => ({
     search: "",
     selectedSorter: 0,

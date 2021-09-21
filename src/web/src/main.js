@@ -7,7 +7,7 @@ import axios from "axios";
 import vuetify from "./plugins/vuetify";
 Vue.config.productionTip = false;
 Vue.prototype.$http = axios;
-/* Vue.directive("yk-btn", {
+Vue.directive("yk-btn", {
   bind: function (el) {
     el.style.backgroundColor = "#a000bb";
     el.style.color = "#fff";
