@@ -1,8 +1,11 @@
 <template>
     <div>
-          <v-card-title primary-title>
+        <v-card-title style="width: 100%; display: block">
             Themes & Function
-          </v-card-title>
+            <div class="float-right">
+              <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
+            </div>
+        </v-card-title>
           <v-divider inset></v-divider>
           <v-form v-model="valid">
               <v-container>
@@ -107,6 +110,7 @@
                 <v-btn color="success">Save Changes</v-btn>
               </v-container>
             </v-form>
+            <!--
         </div>
         <div class="col-md-6"> <v-textarea
             label="YHS Themes"
@@ -178,7 +182,7 @@
           ></v-textarea>
         </div>
       </div>
-    </v-form>
+    </v-form> -->
   </div>
 </template>
 
@@ -235,6 +239,9 @@ export default {
           this.fields[objName].push({ useType: "", category: "" });
           break;
       }
+    },
+    saveChanges() {
+      console.log("SAVING", this.fields);
     },
   },
 };

@@ -177,7 +177,7 @@ export default {
     applicationName: config.applicationName,
     applicationIcon: config.applicationIcon,
     sections: config.sections,
-    hasSidebar: false, //config.hasSidebar,
+    hasSidebar: true, //config.hasSidebar,
     hasSidebarClosable: false, //config.hasSidebarClosable
     currentId: 0,
   }),
@@ -185,10 +185,11 @@ export default {
     await store.dispatch("checkAuthentication");
     store.dispatch("setAppSidebar", this.$route.path.startsWith("/sites/"));
     this.hasSidebar = this.$route.path.startsWith("/sites/");
-
+    this.hasSidebar = true;
     await store.dispatch("checkAuthentication");
   },
   watch: {
+    /*
     isAuthenticated: function (val) {
       if (!val) this.hasSidebar = false;
       else this.hasSidebar = store.getters.showAppSidebar;
@@ -199,7 +200,7 @@ export default {
       }
 
       this.hasSidebar = val; // && this.isAuthenticated;
-    },
+    },*/
   },
   methods: {
     nav: function (location) {
@@ -215,14 +216,14 @@ export default {
       window.location = LOGOUT_URL;
     },
     isSites(route, chooser) {
-      // ANGELS CODE AFTER merge combined
-      // if(chooser)
-      //   return (route.includes('sites') || route.includes('photos') || route.includes('users') 
-      //         || route.includes('photo-owners') || route.includes('communities')) ? 'siteslp' :  '';
-      // else
-      //   return (route.includes('sites') || route.includes('photos') || route.includes('users') 
-      //         || route.includes('photo-owners') || route.includes('communities')) ? 'sitesnp' :  '';
+       if(chooser)
+         return (route.includes('sites') || route.includes('photos') || route.includes('users') 
+               || route.includes('photo-owners') || route.includes('communities')) ? 'siteslp' :  '';
+       else
+         return (route.includes('sites') || route.includes('photos') || route.includes('users') 
+               || route.includes('photo-owners') || route.includes('communities')) ? 'sitesnp' :  '';
       //this function helps to show certain classes depending on the route
+      /*
       if (chooser)
         return route.includes("sites/") || route.includes("photos")
           ? "siteslp"
@@ -231,6 +232,7 @@ export default {
         return route.includes("sites/") || route.includes("photos")
           ? "sitesnp"
           : "";
+          */
     },
     showHistory() {
       this.$refs.historySidebar.show();
