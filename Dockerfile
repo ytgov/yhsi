@@ -25,5 +25,6 @@ EXPOSE 3000
 WORKDIR /home/node/app
 
 ENV NODE_ENV=production
-RUN npm run build:api
+#RUN npm install --platform=linux --arch=x64 sharp@0.29.1
+RUN npm run build
 CMD [ "node", "./dist/index.js" ]
