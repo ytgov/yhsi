@@ -6,7 +6,5 @@ services:
     restart: unless-stopped
     environment:
       - "NODE_ENV=test"
-    depends_on: 
-      - "db"
     ports:
       - 27639:3000
