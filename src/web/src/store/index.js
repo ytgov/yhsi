@@ -19,7 +19,9 @@ export default new Vuex.Store({
       state.loadingClass = value ? "block" : "d-none";
     },
     ADD_SITEHISTORY(state, value) {
-      state.siteHistory.unshift(value);
+      let exists = state.siteHistory.filter(h => h.id == value.id).length;
+
+      if (exists == 0) state.siteHistory.unshift(value);
     },
     SET_SEARCH(state, value) {
       state.search = value;
