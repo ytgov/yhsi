@@ -73,7 +73,7 @@ export default {
   methods: {
     handleClick(value) {
       //Redirects the user to the site form
-      store.dispatch("addSiteHistory", value);
+      //store.dispatch("addSiteHistory", value);
       this.$router.push(`/sites/${value.id}/summary`);
     },
 

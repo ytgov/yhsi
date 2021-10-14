@@ -1,13 +1,14 @@
 import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { body, check, query, validationResult } from "express-validator";
-import { PlaceService, SortDirection, SortStatement, StaticService } from "../services";
+import { PhotoService, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
 import { Place, PLACE_FIELDS } from "../data";
 import { ReturnValidationErrors } from "../middleware";
 import moment from "moment";
 
 const placeService = new PlaceService(DB_CONFIG);
 const staticService = new StaticService(DB_CONFIG);
+const photoService = new PhotoService(DB_CONFIG);
 const PAGE_SIZE = 10;
 
 export const placeRouter = express.Router();
@@ -119,6 +120,8 @@ placeRouter.get("/:id",
                     let webLinks = combine(await placeService.getWebLinksFor(place.id), placeService.getWebLinkTypes(), "value", "type", "text");
                     let descriptions = combine(await placeService.getDescriptionsFor(place.id), placeService.getDescriptionTypes(), "value", "type", "text");
 
+                    let photos = await photoService.getAllForPlace(id);
+
                     let relationships = {
                         associations: { data: associations },
                         firstNationAssociations: { data: fnAssociations },
@@ -130,7 +133,7 @@ placeRouter.get("/:id",
                         functionalUses: { data: functionalUses },
                         ownerships: { data: ownerships },
                         previousOwnerships: { data: previousOwnerships },
-                        photos: { data: [] },
+                        photos: { data: photos },
                         contacts: { data: contacts },
                         revisionLogs: { data: revisionLogs },
                         webLinks: { data: webLinks },

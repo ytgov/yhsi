@@ -31,6 +31,7 @@
 
 <script>
 import PrintDialog from "./SitesGrid/PrintDialog";
+
 export default {
   name: "sitesForm",
   components: {
@@ -41,7 +42,7 @@ export default {
     dialog: false, //tells the print dialog when to show itself
   }),
   created() {
-   /*  this.items = [
+    /*  this.items = [
       {
         name: "Summary",
         icon: "mdi-note-text-outline",

@@ -161,6 +161,7 @@
 
 <script>
 import axios from "axios";
+import store from "../../../store";
 import { COMMUNITY_URL, PLACE_URL, STATIC_URL } from "../../../urls";
 /* Important, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created */
 export default {
@@ -201,6 +202,7 @@ export default {
       .get(`${PLACE_URL}/${id}`)
       .then((resp) => {
         this.fields = resp.data.data;
+          store.dispatch("addSiteHistory", resp.data.data);
       })
       .catch((error) => console.error(error));
 

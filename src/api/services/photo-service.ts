@@ -19,6 +19,11 @@ export class PhotoService {
             .catch(err => { console.log("BOMBED", err); return undefined; })
     }
 
+    async getAllForPlace(id: number): Promise<Photo[]> {
+        return this.knex("photo").select<Photo[]>(PHOTO_FIELDS).where({ placeId: id })
+            .catch(err => { console.log("BOMBED", err); return new Array<Photo>(); })
+    }
+
     async getFileById(id: string): Promise<Photo | undefined> {
         return this.knex("photo").select<Photo>("file").where({ rowId: id }).first()
             .catch(err => { console.log("BOMBED", err); return undefined; })

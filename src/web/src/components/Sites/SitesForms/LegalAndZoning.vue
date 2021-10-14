@@ -6,7 +6,7 @@
         <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
       </div>
     </v-card-title>
-    <v-divider inset></v-divider>
+    <v-divider class="mb-5"></v-divider>
     <v-form v-model="valid">
       <div class="row mx-1">
         <div class="col-md-12">
@@ -201,6 +201,7 @@
 
 <script>
 import axios from "axios";
+import store from "../../../store";
 import { PLACE_URL, STATIC_URL } from "../../../urls";
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
@@ -231,6 +232,7 @@ export default {
         this.fields = resp.data.data;
         this.ownerships = resp.data.relationships.ownerships.data;
         this.prevOwnerships = resp.data.relationships.previousOwnerships.data;
+          store.dispatch("addSiteHistory", resp.data.data);
       })
       .catch((error) => console.error(error));
 
