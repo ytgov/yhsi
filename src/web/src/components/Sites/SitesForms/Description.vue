@@ -10,17 +10,13 @@
     <v-form v-model="valid">
       <div class="row mx-1">
         <div class="col-md-12">
-          <h3>Descriptions</h3>
-        </div>
-
-        <div class="col-md-12">
           <v-card
             v-for="(item, i) in descriptions"
             :key="`theme-${i + 1}`"
             class="default mb-5"
           >
-            <v-card-title>Description {{ i + 1 }}</v-card-title>
             <v-card-text>
+              <h3>Description {{ i + 1 }}</h3>
               <v-btn
                 icon
                 color="primary"
@@ -95,7 +91,8 @@ export default {
       .then((resp) => {
         this.fields = resp.data.data;
         this.descriptions = resp.data.relationships.descriptions.data;
-          store.dispatch("addSiteHistory", resp.data.data);
+        store.dispatch("addSiteHistory", resp.data.data);
+        this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
 

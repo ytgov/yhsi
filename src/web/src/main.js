@@ -9,8 +9,10 @@ import vuetify from "./plugins/vuetify";
 Vue.config.productionTip = false;
 
 import HistorySidebarComponent from "./components/HistorySidebar";
+import Notifications from "./components/Notifications";
 
 Vue.component("history-sidebar", HistorySidebarComponent)
+Vue.component("notifier", Notifications);
 
 axios.defaults.withCredentials = true
 

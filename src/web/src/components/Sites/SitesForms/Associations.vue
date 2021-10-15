@@ -171,7 +171,8 @@ export default {
         this.associations = resp.data.relationships.associations.data;
         this.firstNationAssociations =
           resp.data.relationships.firstNationAssociations.data;
-          store.dispatch("addSiteHistory", resp.data.data);
+        store.dispatch("addSiteHistory", resp.data.data);
+        this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
 

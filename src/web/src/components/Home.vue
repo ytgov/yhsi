@@ -1,30 +1,41 @@
 <template>
   <div class="home">
-    <h1>{{title}}</h1>
-    <p>This is a template that can be used for many different types of applications</p>
-    <p>It is probably best if you <router-link to="/sign-in">sign in</router-link> to see more things.</p>
+    <h1>{{ title }}</h1>
+    <h3>Please use your YNET credentials to sign in</h3>
+    <p>
+      The authentication for this application is managed by an authentication
+      partner. When you click the button below, you will be redirected to their
+      site and once authenticated, back here.
+    </p>
+    <p>
+      If you have already authenticated and your session is still active, it may
+      skip the sign in process and return you here immediately.
+    </p>
+    <a class="v-btn primary v-size--default" :href="loginLink"
+      >Click here to sign in</a
+    >
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import * as config from "../config";
-import router from '../router';
-import store from '../store';
+import router from "../router";
+import store from "../store";
 
 export default {
   name: "Home",
   data: () => ({
-    title: `Welcome to ${config.applicationName}`
+    loginLink: `${config.apiBaseUrl}/api/auth/login`,
+    title: `Welcome to ${config.applicationName}`,
   }),
   async created() {
     await store.dispatch("checkAuthentication");
-    var isAuth = store.getters.isAuthenticated;
+    var isAuthenticated = store.getters.isAuthenticated;
 
-    if (isAuth)
+    if (isAuthenticated) {
       router.push("/dashboard");
-  },
-  methods: {
+    }
   }
 };
 </script>

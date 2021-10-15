@@ -412,6 +412,7 @@ export default {
         this.contacts = resp.data.relationships.contacts.data;
         this.links = resp.data.relationships.webLinks.data;
         store.dispatch("addSiteHistory", resp.data.data);
+        this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
 
