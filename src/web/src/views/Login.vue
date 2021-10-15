@@ -1,16 +1,16 @@
 <template>
-  <div class="hello">
+  <div class="home">
     <h1>{{ title }}</h1>
+    <h3>Please use your YNET credentials to sign in</h3>
     <p>
-      The authentication for this application is managed by our authentication
-      partner Vivvo. When you click the button below, you will be redirected to
-      their site and once authenticated, back here.
+      The authentication for this application is managed by an authentication
+      partner. When you click the button below, you will be redirected to their
+      site and once authenticated, back here.
     </p>
     <p>
-      If you have already authenticated with Vivvo and your session is still
-      active, it may skip the sign in process and return you here immediately.
+      If you have already authenticated and your session is still active, it may
+      skip the sign in process and return you here immediately.
     </p>
-
     <a class="v-btn primary v-size--default" :href="loginLink"
       >Click here to sign in</a
     >
@@ -26,7 +26,7 @@ export default {
   name: "Login",
   data: () => ({
     loginLink: `${config.apiBaseUrl}/api/auth/login`,
-    title: `Sign in to ${config.applicationName}`
+    title: `Welcome to ${config.applicationName}`,
   }),
   async created() {
     await store.dispatch("checkAuthentication");
@@ -35,8 +35,6 @@ export default {
     if (isAuthenticated) {
       router.push("/");
     }
-
-    console.log(config.apiBaseUrl);
   }
 };
 </script>

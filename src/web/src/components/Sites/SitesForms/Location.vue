@@ -203,6 +203,7 @@ export default {
       .then((resp) => {
         this.fields = resp.data.data;
           store.dispatch("addSiteHistory", resp.data.data);
+          this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
 

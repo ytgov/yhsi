@@ -21,6 +21,7 @@
       :loading="loading"
       :server-items-length="totalLength"
       @click:row="handleClick"
+      :footer-props="{ 'items-per-page-options': items_per_page }"
     ></v-data-table>
   </div>
 </template>
@@ -34,6 +35,7 @@ import _ from "lodash";
 export default {
   name: "Grid",
   data: () => ({
+    items_per_page: [20, 50, 100],
     loading: false,
     items: [],
     search: "",

@@ -128,7 +128,12 @@
       <v-container fluid :class="`${isSites($route.path, true)}`">
         <v-row>
           <v-col :class="`${isSites($route.path, false)}`">
-            <router-view></router-view>
+            <router-view
+              v-on:showError="showError"
+              v-on:showSuccess="showSuccess"
+              v-on:showAPIMessages="showAPIMessages"
+            ></router-view>
+            <notifier ref="notifier"></notifier>
           </v-col>
         </v-row>
       </v-container>
@@ -224,6 +229,15 @@ export default {
     },
     showHistory() {
       this.$refs.historySidebar.show();
+    },
+    showError: function (msg) {
+      this.$refs.notifier.showError(msg);
+    },
+    showSuccess: function (msg) {
+      this.$refs.notifier.showSuccess(msg);
+    },
+    showAPIMessages: function (msg) {
+      this.$refs.notifier.showAPIMessages(msg);
     },
   },
 };

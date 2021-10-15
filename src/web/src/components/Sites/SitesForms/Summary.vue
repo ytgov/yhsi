@@ -263,6 +263,7 @@ export default {
           this.historicalPatterns =
             resp.data.relationships.historicalPatterns.data;
           store.dispatch("addSiteHistory", resp.data.data);
+          this.$parent.siteName = this.fields.primaryName;
         })
         .catch((error) => console.error(error));
     },
@@ -281,6 +282,7 @@ export default {
     },
     saveChanges() {
       console.log("SAVING", this.fields);
+      this.$emit("showSuccess", "Saving");
     },
   },
 };
