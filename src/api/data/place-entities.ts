@@ -68,7 +68,7 @@ export class Place {
     mailingCountry!: string;
     mailingPostalCode!: string;
     showInRegister!: boolean;
-    siteCategories!: string;
+    siteCategories!: string | string[];
     designations!: string;
     contributingResources!: string;
     records!: string;

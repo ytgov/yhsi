@@ -57,6 +57,8 @@
             outlined
             v-model="fields.records"
             :items="recordOptions"
+            item-text="text"
+            item-value="value"
             clearable
             label="Records"
           ></v-select>
@@ -214,9 +216,9 @@ export default {
       contributingResources: "", //
       category: "", //
       designations: "", //
-      records: "", //
+      records: [], //
       showInRegister: "", //
-      siteCategories: "", //
+      siteCategories: [], //
     },
   }),
   created: function () {
@@ -234,6 +236,7 @@ export default {
     });
     axios.get(`${STATIC_URL}/record-type`).then((resp) => {
       this.recordOptions = resp.data.data;
+      console.log(this.recordOptions);
     });
     axios.get(`${STATIC_URL}/historical-pattern`).then((resp) => {
       this.historicalPatternOptions = resp.data.data;
@@ -253,21 +256,24 @@ export default {
     loadItem(id) {
       if (id == this.loadedId) return;
 
-      this.loadedId = id;
-
       axios
         .get(`${PLACE_URL}/${id}`)
         .then((resp) => {
-          this.fields = resp.data.data;
-          this.names = resp.data.relationships.names.data;
-          this.historicalPatterns =
-            resp.data.relationships.historicalPatterns.data;
-          store.dispatch("addSiteHistory", resp.data.data);
-          this.$parent.siteName = this.fields.primaryName;
+          this.setPlace(resp.data);
         })
         .catch((error) => console.error(error));
     },
+    setPlace(place) {
+      this.loadedId = place.data.id;
+      this.fields = place.data;
+      this.names = place.relationships.names.data;
+      this.historicalPatterns = place.relationships.historicalPatterns.data;
+      this.fields.designations = parseInt(place.data.designations);
+      this.fields.records = parseInt(place.data.records);
 
+      store.dispatch("addSiteHistory", place.data);
+      this.$parent.siteName = this.fields.primaryName;
+    },
     addName() {
       this.names.push({ description: "", placeId: this.entity_id });
     },
@@ -275,14 +281,40 @@ export default {
       this.names.splice(index, 1);
     },
     addPattern() {
-      this.historicalPatterns.push({ pattern: "", comments: "" });
+      this.historicalPatterns.push({
+        historicalPatternType: 1,
+        comments: "",
+        placeId: this.entity_id,
+      });
     },
     removePattern(index) {
       this.historicalPatterns.splice(index, 1);
     },
     saveChanges() {
-      console.log("SAVING", this.fields);
-      this.$emit("showSuccess", "Saving");
+      let body = {
+        yHSIId: this.fields.yHSIId,
+        primaryName: this.fields.primaryName,
+        designations: this.fields.designations,
+        category: this.fields.category,
+        siteCategories: this.fields.siteCategories,
+        records: this.fields.records,
+        showInRegister: this.fields.showInRegister,
+        secondaryNames: this.names,
+        contributingResources: this.fields.contributingResources,
+        historicalPatterns: this.historicalPatterns,
+      };
+
+      console.log("BODY", body);
+
+      axios
+        .put(`${PLACE_URL}/${this.loadedId}/summary`, body)
+        .then((resp) => {
+          //this.setPlace(resp.data);
+          this.$emit("showAPIMessages", resp.data);
+        })
+        .catch((err) => {
+          this.$emit("showError", err);
+        });
     },
   },
 };
