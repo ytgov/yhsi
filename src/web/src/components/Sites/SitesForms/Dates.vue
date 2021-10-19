@@ -63,7 +63,7 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="item.from"
+                        v-model="item.fromDate"
                         label="From date"
                         append-icon="mdi-calendar"
                         readonly
@@ -75,7 +75,7 @@
                       ></v-text-field>
                     </template>
                     <v-date-picker
-                      v-model="item.from"
+                      v-model="item.fromDate"
                       @input="item.from_menu = false"
                     ></v-date-picker>
                   </v-menu>
@@ -92,7 +92,7 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="item.to"
+                        v-model="item.toDate"
                         label="To date"
                         append-icon="mdi-calendar"
                         readonly
@@ -104,7 +104,7 @@
                       ></v-text-field>
                     </template>
                     <v-date-picker
-                      v-model="item.to"
+                      v-model="item.toDate"
                       @input="item.to_menu = false"
                     ></v-date-picker>
                   </v-menu>
@@ -264,6 +264,7 @@ export default {
   name: "formDates",
   data: () => ({
     valid: false,
+    loadedId: -1,
 
     generalRules: [
       (v) => !!v || "This input is required",
@@ -297,6 +298,7 @@ export default {
       .get(`${PLACE_URL}/${id}`)
       .then((resp) => {
         this.fields = resp.data.data;
+        this.loadedId = this.fields.id;
         this.constructionPeriods =
           resp.data.relationships.constructionPeriods.data;
         this.dates = resp.data.relationships.dates.data;
@@ -323,16 +325,45 @@ export default {
   },
   methods: {
     addDate() {
-      this.dates.push({});
+      this.dates.push({
+        placeId: this.loadedId,
+        type: 1,
+        fromDate: "1900-01-01",
+        toDate: "1901-01-01",
+      });
     },
     removeDate(index) {
       this.dates.splice(index, 1);
     },
     addPeriod() {
-      this.constructionPeriods.push({});
+      this.constructionPeriods.push({ placeId: this.loadedId, type: 2 });
     },
     removePeriod(index) {
       this.constructionPeriods.splice(index, 1);
+    },
+
+    saveChanges() {
+      let body = {
+        buildingSize: this.fields.buildingSize,
+        conditionComment: this.fields.conditionComment,
+        doorCondition: this.fields.doorCondition,
+        floorCondition: this.fields.floorCondition,
+        resourceType: this.fields.resourceType,
+        roofCondition: this.fields.roofCondition,
+        siteStatus: this.fields.siteStatus,
+        wallCondition: this.fields.wallCondition,
+        dates: this.dates,
+        constructionPeriods: this.constructionPeriods,
+      };
+
+      axios
+        .put(`${PLACE_URL}/${this.loadedId}/dates`, body)
+        .then((resp) => {
+          this.$emit("showAPIMessages", resp.data);
+        })
+        .catch((err) => {
+          this.$emit("showError", err);
+        });
     },
   },
 };

@@ -106,7 +106,7 @@ export class Dates {
     type!: number;
     fromDate!: string;
     toDate!: string;
-    Details!: string;
+    details!: string;
 }
 
 export class Description {
