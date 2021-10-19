@@ -107,7 +107,7 @@ export class PlaceService {
         return this.knex("constructionperiod").where({ placeId: id }).select<ConstructionPeriod[]>(["id", "placeId", "type"]);
     }
 
-    async addConstructionPeriod(name: Dates) {
+    async addConstructionPeriod(name: ConstructionPeriod) {
         return this.knex("constructionperiod").insert(name);
     }
 
@@ -119,10 +119,25 @@ export class PlaceService {
         return this.knex("theme").where({ placeId: id }).select<Theme[]>(["id", "placeId", "placeThemeId"]);
     }
 
+    async addTheme(name: Theme) {
+        return this.knex("theme").insert(name);
+    }
+
+    async removeTheme(id: number) {
+        return this.knex("theme").where({ id }).delete();
+    }
+
     async getFunctionUsesFor(id: number): Promise<FunctionalUse[]> {
         return this.knex("FunctionalUse").where({ placeId: id }).select<FunctionalUse[]>(["id", "placeId", "functionalTypeId", "functionalUseType", "description"]);
     }
 
+    async addFunctionalUse(name: FunctionalUse) {
+        return this.knex("FunctionalUse").insert(name);
+    }
+
+    async removeFunctionalUse(id: number) {
+        return this.knex("FunctionalUse").where({ id }).delete();
+    }
     async getOwnershipsFor(id: number): Promise<Ownership[]> {
         return this.knex("Ownership").where({ placeId: id }).select<Ownership[]>(["id", "placeId", "ownershipType", "comments"]);
     }
