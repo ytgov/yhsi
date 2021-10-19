@@ -95,8 +95,24 @@ export class PlaceService {
         return this.knex("dates").where({ placeId: id }).select<Dates[]>(["id", "placeId", "type", "fromDate", "toDate", "details"]);
     }
 
+    async addDate(name: Dates) {
+        return this.knex("dates").insert(name);
+    }
+
+    async removeDate(id: number) {
+        return this.knex("dates").where({ id }).delete();
+    }
+
     async getConstructionPeriodsFor(id: number): Promise<ConstructionPeriod[]> {
         return this.knex("constructionperiod").where({ placeId: id }).select<ConstructionPeriod[]>(["id", "placeId", "type"]);
+    }
+
+    async addConstructionPeriod(name: Dates) {
+        return this.knex("constructionperiod").insert(name);
+    }
+
+    async removeConstructionPeriod(id: number) {
+        return this.knex("constructionperiod").where({ id }).delete();
     }
 
     async getThemesFor(id: number): Promise<Theme[]> {

@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { body, check, param, query, validationResult } from "express-validator";
 import { PhotoService, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
-import { HistoricalPattern, Name, Place, PLACE_FIELDS } from "../data";
+import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod } from "../data";
 import { ReturnValidationErrors } from "../middleware";
 import moment from "moment";
 
@@ -246,6 +246,75 @@ placeRouter.put("/:id/summary",
             }
         }
 
+        return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
+    });
+
+placeRouter.put("/:id/location",
+    [
+        param("id").isInt().notEmpty(),
+    ], ReturnValidationErrors,
+    async (req: Request, res: Response) => {
+        let { id } = req.params;
+        let updater = req.body;
+
+        await placeService.updatePlace(parseInt(id), updater);
+        return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
+    });
+
+placeRouter.put("/:id/dates",
+    [param("id").isInt().notEmpty(),], ReturnValidationErrors,
+    async (req: Request, res: Response) => {
+        let { id } = req.params;
+        let { dates, constructionPeriods } = req.body;
+        let updater = req.body;
+
+        delete updater.dates;
+        delete updater.constructionPeriods;
+
+        await placeService.updatePlace(parseInt(id), updater);
+
+        let oldDates = await placeService.getDatesFor(parseInt(id));
+        dates = dates.map((n: Dates) => Object.assign(n, { details: n.details.trim() }));
+
+        for (let on of oldDates) {
+            let match = dates.filter((n: Dates) => n.type == on.type && n.details == on.details && n.fromDate == on.fromDate && n.toDate == on.toDate);
+
+            if (match.length == 0) {
+                await placeService.removeDate(on.id);
+            }
+        }
+
+        for (let on of dates) {
+            let match = oldDates.filter((n: Dates) => n.type == on.type && n.details == on.details && n.fromDate == on.fromDate && n.toDate == on.toDate);
+
+            if (match.length == 0) {
+                delete on.id;
+                delete on.from_menu;
+                delete on.to_menu;
+                delete on.typeText;
+                await placeService.addDate(on);
+            }
+        }
+
+        let oldConst = await placeService.getConstructionPeriodsFor(parseInt(id));
+
+        for (let on of oldConst) {
+            let match = constructionPeriods.filter((n: ConstructionPeriod) => n.type == on.type);
+
+            if (match.length == 0) {
+                await placeService.removeConstructionPeriod(on.id);
+            }
+        }
+
+        for (let on of constructionPeriods) {
+            let match = oldConst.filter((n: ConstructionPeriod) => n.type == on.type);
+
+            if (match.length == 0) {
+                delete on.id;
+                delete on.typeText;
+                await placeService.addConstructionPeriod(on);
+            }
+        }
         return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
     });
 

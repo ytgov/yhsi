@@ -168,6 +168,7 @@ export default {
   name: "formLocation",
   data: () => ({
     valid: false,
+    loadedId: -1,
     generalRules: [
       (v) => !!v || "This input is required",
       (v) => v.length <= 20 || "This input must be less than 20 characters",
@@ -196,14 +197,14 @@ export default {
     },
   }),
   created: function () {
-    let id = this.$route.params.id;
+    this.loadedId = this.$route.params.id;
 
     axios
-      .get(`${PLACE_URL}/${id}`)
+      .get(`${PLACE_URL}/${this.loadedId}`)
       .then((resp) => {
         this.fields = resp.data.data;
-          store.dispatch("addSiteHistory", resp.data.data);
-          this.$parent.siteName = this.fields.primaryName;
+        store.dispatch("addSiteHistory", resp.data.data);
+        this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
 
@@ -214,6 +215,37 @@ export default {
     axios.get(`${STATIC_URL}/coordinate-determination`).then((resp) => {
       this.coordinateDeterminationOptions = resp.data.data;
     });
+  },
+  methods: {
+    saveChanges() {
+      let body = {
+        bordenNumber: this.fields.bordenNumber,
+        communityId: this.fields.communityId,
+        coordinateDetermination: this.fields.coordinateDetermination,
+        hectareArea: this.fields.hectareArea,
+        latitude: this.fields.latitude,
+        locationComment: this.fields.locationComment,
+        locationContext: this.fields.locationContext,
+        longitude: this.fields.longitude,
+        nTSMapSheet: this.fields.nTSMapSheet,
+        otherCommunity: this.fields.otherCommunity,
+        otherLocality: this.fields.otherLocality,
+        physicalAddress: this.fields.physicalAddress,
+        physicalCountry: this.fields.physicalCountry,
+        physicalPostalCode: this.fields.physicalPostalCode,
+        physicalProvince: this.fields.physicalProvince,
+        previousAddress: this.fields.previousAddress,
+      };
+
+      axios
+        .put(`${PLACE_URL}/${this.loadedId}/location`, body)
+        .then((resp) => {
+          this.$emit("showAPIMessages", resp.data);
+        })
+        .catch((err) => {
+          this.$emit("showError", err);
+        });
+    },
   },
 };
 </script>
