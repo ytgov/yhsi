@@ -1,8 +1,8 @@
 import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
-import { body, check, query, validationResult } from "express-validator";
+import { body, check, param, query, validationResult } from "express-validator";
 import { PhotoService, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
-import { Place, PLACE_FIELDS } from "../data";
+import { HistoricalPattern, Name, Place, PLACE_FIELDS } from "../data";
 import { ReturnValidationErrors } from "../middleware";
 import moment from "moment";
 
@@ -86,14 +86,8 @@ placeRouter.post("/generate-id",
 placeRouter.get("/:id",
     [
         check("id").notEmpty()
-    ],
+    ], ReturnValidationErrors,
     async (req: Request, res: Response) => {
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
         let id = parseInt(req.params.id);
         let fnList = await staticService.getFirstNations();
         let themeList = await staticService.getPlaceThemes();
@@ -102,6 +96,8 @@ placeRouter.get("/:id",
         await placeService.getById(id)
             .then(async (place) => {
                 if (place) {
+                    place.siteCategories = (place.siteCategories as string).split(',');
+
                     let associations = combine(await placeService.getAssociationsFor(place.id), placeService.getAssociationTypes(), 'value', 'type', 'text');
                     let fnAssociations = combine(await placeService.getFNAssociationsFor(place.id), placeService.getFNAssociationTypes(), 'value', 'firstNationAssociationType', "text");
                     fnAssociations = combine(fnAssociations, fnList, "id", "firstNationId", "description");
@@ -191,7 +187,70 @@ placeRouter.post("/",
         return res.json({ data: result });
     });
 
-placeRouter.put("/:id",
+placeRouter.put("/:id/summary",
+    [
+        param("id").isInt().notEmpty(),
+        body("primaryName").isString().bail().notEmpty().trim(),
+        body("showInRegister").isBoolean().notEmpty()
+    ], ReturnValidationErrors,
+    async (req: Request, res: Response) => {
+        let { id } = req.params;
+        let { secondaryNames, historicalPatterns } = req.body;
+        let updater = req.body;
+        delete updater.secondaryNames;
+        delete updater.historicalPatterns;
+        delete updater.yHSIId;
+
+        updater.siteCategories = (updater.siteCategories as string[]).join(',')
+
+        console.log(updater)
+
+        await placeService.updatePlace(parseInt(id), updater);
+        let oldNames = await placeService.getNamesFor(parseInt(id));
+        secondaryNames = secondaryNames.map((n: Name) => Object.assign(n, { description: n.description.trim() }));
+
+        for (let on of oldNames) {
+            let match = secondaryNames.filter((n: Name) => n.description == on.description);
+
+            if (match.length == 0) {
+                await placeService.removeSecondaryName(on.id);
+            }
+        }
+
+        for (let on of secondaryNames) {
+            let match = oldNames.filter((n: Name) => n.description == on.description);
+
+            if (match.length == 0) {
+                delete on.id;
+                await placeService.addSecondaryName(on);
+            }
+        }
+
+        let oldPatterns = await placeService.getHistoricalPatternsFor(parseInt(id))
+
+        for (let on of oldPatterns) {
+            let match = historicalPatterns.filter((n: HistoricalPattern) => n.comments == on.comments && n.historicalPatternType == on.historicalPatternType);
+
+            if (match.length == 0) {
+                await placeService.removeHistoricalPattern(on.id);
+            }
+        }
+
+        for (let on of historicalPatterns) {
+            let match = oldPatterns.filter((n: HistoricalPattern) => n.comments == on.comments && n.historicalPatternType == on.historicalPatternType);
+
+            if (match.length == 0) {
+                delete on.id;
+                delete on.typeText;
+                await placeService.addHistoricalPattern(on);
+            }
+        }
+
+        return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
+    });
+
+
+placeRouter.put("/:id/all",
     [
         check("id").isInt().bail().notEmpty(),
         body("primaryName").isString().bail().notEmpty().trim(),
@@ -226,6 +285,7 @@ placeRouter.put("/:id",
 
         return res.json({ data: result });
     });
+
 
 function combine(list1: Array<any>, list2: Array<any>, linker: any, linker2: any, value: any, typeText: any = "typeText"): any[] {
     list1.forEach(item => {

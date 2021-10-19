@@ -39,7 +39,7 @@ export class PlaceService {
     }
 
     async updatePlace(id: number, item: Place): Promise<Place | undefined> {
-        return this.knex("place").where({ id }).update(item).returning<Place>(PLACE_FIELDS);
+        return this.knex("place").where({ id }).update(item);
     }
 
     async generateIdFor(nTSMapSheet: string): Promise<string> {
@@ -68,11 +68,27 @@ export class PlaceService {
     }
 
     async getNamesFor(id: number) {
-        return this.knex("name").where({ placeId: id }).select<Name>(["id", "placeId", "description"]);
+        return this.knex("name").where({ placeId: id }).select<Name[]>(["id", "placeId", "description"]);
+    }
+
+    async addSecondaryName(name: Name) {
+        return this.knex("name").insert(name);
+    }
+
+    async removeSecondaryName(id: number) {
+        return this.knex("name").where({ id }).delete();
     }
 
     async getHistoricalPatternsFor(id: number): Promise<HistoricalPattern[]> {
         return this.knex("historicalpattern").where({ placeId: id }).select<HistoricalPattern[]>(["id", "placeId", "comments", "historicalPatternType"]);
+    }
+
+    async addHistoricalPattern(name: Name) {
+        return this.knex("historicalpattern").insert(name);
+    }
+
+    async removeHistoricalPattern(id: number) {
+        return this.knex("historicalpattern").where({ id }).delete();
     }
 
     async getDatesFor(id: number): Promise<Dates[]> {
