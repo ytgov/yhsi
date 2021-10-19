@@ -47,7 +47,7 @@
                     fab
                     title="Remove"
                     class="my-0 float-right"
-                    @click="removeName(i)"
+                    @click="removeTheme(i)"
                     ><v-icon>mdi-close</v-icon></v-btn
                   >
                 </div>
@@ -80,7 +80,7 @@
                       ></v-select>
                     </v-col>
                     <v-col cols="8">
-                      <v-select
+                      <v-autocomplete
                         v-model="item.functionalTypeId"
                         :items="functionalCategoryOptions"
                         item-text="description"
@@ -90,7 +90,7 @@
                         outlined
                         hide-details
                         background-color="white"
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
                   </v-row>
                 </div>
@@ -147,6 +147,7 @@ export default {
   name: "formThemes",
   data: () => ({
     valid: false,
+    loadedId: -1,
     generalRules: [
       (v) => !!v || "This input is required",
       (v) => v.length <= 20 || "This input must be less than 20 characters",
@@ -167,7 +168,8 @@ export default {
     },
   }),
   created: function () {
-    let id = this.$route.params.id;
+    let id = (this.loadedId = this.$route.params.id);
+    this.loadedId = id;
 
     axios
       .get(`${PLACE_URL}/${id}`)
@@ -194,16 +196,35 @@ export default {
   },
   methods: {
     addTheme() {
-      this.themes.push({});
+      this.themes.push({ placeId: this.loadedId, placeThemeId: 1 });
     },
     removeTheme(index) {
       this.themes.splice(index, 1);
     },
     addUse() {
-      this.functionalUses.push({});
+      this.functionalUses.push({ placeId: this.loadedId, functionalUseType: 2, functionalTypeId: 1 });
     },
     removeUse(index) {
       this.functionalUses.splice(index, 1);
+    },
+    saveChanges() {
+      let body = {
+        themes: this.themes,
+        functionalUses: this.functionalUses,
+        currentUseComment: this.fields.currentUseComment,
+        yHSPastUse: this.fields.yHSPastUse,
+        yHSThemes: this.fields.yHSThemes,
+      };
+
+      axios
+        .put(`${PLACE_URL}/${this.loadedId}/themes`, body)
+        .then((resp) => {
+          //this.setPlace(resp.data);
+          this.$emit("showAPIMessages", resp.data);
+        })
+        .catch((err) => {
+          this.$emit("showError", err);
+        });
     },
   },
 };
