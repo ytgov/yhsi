@@ -304,8 +304,6 @@ export default {
         historicalPatterns: this.historicalPatterns,
       };
 
-      console.log("BODY", body);
-
       axios
         .put(`${PLACE_URL}/${this.loadedId}/summary`, body)
         .then((resp) => {
