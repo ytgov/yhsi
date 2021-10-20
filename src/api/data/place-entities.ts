@@ -10,6 +10,9 @@ export const PLACE_FIELDS = ["place.id", "primaryName", "yHSIId", "jurisdiction"
     "physicalCountry", "physicalPostalCode", "mailingAddress", "mailingProvince", "mailingCountry",
     "mailingPostalCode", "showInRegister", "siteCategories", "designations", "contributingResources", "records"];
 
+export const REGISTER_FIELDS = ["place.id", "primaryName", "yHSIId", "latitude", "longitude",
+    "recognitionDate", "community.name as communityName", "designations"];
+
 export class Place {
     id!: number;
     primaryName!: string;
