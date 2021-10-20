@@ -1,6 +1,6 @@
 import { knex, Knex } from "knex";
 import { QueryStatement, SortStatement } from "./";
-import { Association, ConstructionPeriod, Contact, Dates, Description, FirstNationAssociation, FunctionalUse, HistoricalPattern, Name, Ownership, Place, PLACE_FIELDS, PreviousOwnership, RevisionLog, Theme, WebLink } from "../data";
+import { Association, ConstructionPeriod, Contact, Dates, Description, FirstNationAssociation, FunctionalUse, HistoricalPattern, Name, Ownership, Place, PLACE_FIELDS, PreviousOwnership, REGISTER_FIELDS, RevisionLog, Theme, WebLink } from "../data";
 import { GenericEnum } from "./static-service";
 import _ from "lodash";
 
@@ -16,8 +16,26 @@ export class PlaceService {
         return this.knex("place").select<Place[]>(PLACE_FIELDS).orderBy("id").offset(skip).limit(take);
     }
 
+    async getRegisterAll(): Promise<Array<any>> {
+        return this.knex("place")
+            .join("community", "community.id", "place.communityid")
+            .where({ showInRegister: true })
+            .select(REGISTER_FIELDS)
+            .select(this.knex.raw("'English teaser' as teaserEnglish"))
+            .select(this.knex.raw("'French teaser' as teaserFrench"));
+    }
+
     async getById(id: number): Promise<Place | undefined> {
         return this.knex("place").select<Place>(PLACE_FIELDS).where({ id: id }).first()
+            .catch(err => { console.log("BOMBED", err); return undefined; })
+    }
+
+    async getRegisterById(id: number): Promise<any | undefined> {
+        return this.knex("place")
+            .join("community", "community.id", "place.communityid")
+            .select(REGISTER_FIELDS)
+            .where({ "place.id": id })
+            .where({ showInRegister: true }).first()
             .catch(err => { console.log("BOMBED", err); return undefined; })
     }
 
