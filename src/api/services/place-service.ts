@@ -166,7 +166,7 @@ export class PlaceService {
     async removeOwnership(id: number) {
         return this.knex("Ownership").where({ id }).delete();
     }
-    
+
     async getPreviousOwnershipsFor(id: number): Promise<PreviousOwnership[]> {
         return this.knex("PreviousOwnership").where({ placeId: id }).select<PreviousOwnership[]>(["id", "placeId", "ownershipNumber", "ownershipName", "ownershipDate"]);
     }
@@ -183,12 +183,36 @@ export class PlaceService {
         return this.knex("Contact").where({ placeId: id }).select<Contact[]>(["id", "placeId", "firstName", "lastName", "phoneNumber", "email", "mailingAddress", "description", "contactType"]);
     }
 
+    async addContact(name: Contact) {
+        return this.knex("Contact").insert(name);
+    }
+
+    async removeContact(id: number) {
+        return this.knex("Contact").where({ id }).delete();
+    }
+
     async getRevisionLogFor(id: number): Promise<RevisionLog[]> {
         return this.knex("RevisionLog").where({ placeId: id }).select<RevisionLog[]>(["id", "placeId", "revisionLogType", "revisionDate", "revisedBy", "details"]).orderBy("revisionDate");
     }
 
+    async addRevisionLog(name: RevisionLog) {
+        return this.knex("RevisionLog").insert(name);
+    }
+
+    async removeRevisionLog(id: number) {
+        return this.knex("RevisionLog").where({ id }).delete();
+    }
+
     async getWebLinksFor(id: number): Promise<WebLink[]> {
         return this.knex("WebLink").where({ placeId: id }).select<WebLink[]>(["id", "placeId", "type", "address"]);
+    }
+
+    async addWebLink(name: WebLink) {
+        return this.knex("WebLink").insert(name);
+    }
+
+    async removeWebLink(id: number) {
+        return this.knex("WebLink").where({ id }).delete();
     }
 
     async getDescriptionsFor(id: number): Promise<WebLink[]> {
