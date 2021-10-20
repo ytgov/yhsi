@@ -340,7 +340,7 @@ export default {
     //Selection vars
         selectedSystem: { id: 1, text: "Decimal Degrees" },
         selectedProjection: { id: 1, name: "WSG 84" },
-        locationAccuracyOptions: ["Approx."],
+        locationAccuracyOptions: ["Approximate", "Accurate"],
         projectionOptions: [//datums
                 {
                     id: 1,
