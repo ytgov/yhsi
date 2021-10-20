@@ -23,7 +23,7 @@ app.use(
       'frame-ancestors': ["'self'"],
       'img-src': ["'self'", 'data:'],
       'object-src': ["'none'"],
-      //'script-src': ["'self'", 'https://js.arcgis.com'], // added https to accomodate esri components?
+      'script-src': ["'self'", "'https://js.arcgis.com'"], // added https to accomodate esri components?
       'script-src-attr': ["'none'"],
       'style-src': ["'self'", 'https:', "'unsafe-inline'"]
     },
