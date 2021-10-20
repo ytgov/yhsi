@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { PhotoService, PlaceService } from "../services";
 import moment from "moment";
+import { createThumbnail } from "../utils/image";
 
 const placeService = new PlaceService(DB_CONFIG);
 const photoService = new PhotoService(DB_CONFIG);
@@ -72,4 +73,27 @@ registerRouter.get("/:id/photos", async (req: Request, res: Response) => {
     let photos = await photoService.getAllForPlace(parseInt(id));
 
     res.json({ data: photos });
+});
+
+registerRouter.get("/:id/photos/:photoId", async (req: Request, res: Response) => {
+    let { id, photoId } = req.params;
+    let data = await placeService.getRegisterById(parseInt(id));
+
+    if (!data) {
+        return res.status(404).send();
+    }
+
+    await photoService.getFileById(photoId)
+        .then(async photo => {
+            if (photo && photo.file) {
+                let t = await createThumbnail(photo.file);
+                return res.contentType("image/jpg").send(t);
+            }
+
+            return res.status(404).send("Photo not found");
+        })
+        .catch(err => {
+            console.error(err)
+            return res.status(404).send("Photo not found");
+        })
 });
