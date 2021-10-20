@@ -154,12 +154,29 @@ export class PlaceService {
     async removeFunctionalUse(id: number) {
         return this.knex("FunctionalUse").where({ id }).delete();
     }
+
     async getOwnershipsFor(id: number): Promise<Ownership[]> {
         return this.knex("Ownership").where({ placeId: id }).select<Ownership[]>(["id", "placeId", "ownershipType", "comments"]);
     }
 
+    async addOwnership(name: Ownership) {
+        return this.knex("Ownership").insert(name);
+    }
+
+    async removeOwnership(id: number) {
+        return this.knex("Ownership").where({ id }).delete();
+    }
+    
     async getPreviousOwnershipsFor(id: number): Promise<PreviousOwnership[]> {
         return this.knex("PreviousOwnership").where({ placeId: id }).select<PreviousOwnership[]>(["id", "placeId", "ownershipNumber", "ownershipName", "ownershipDate"]);
+    }
+
+    async addPreviousOwnership(name: PreviousOwnership) {
+        return this.knex("PreviousOwnership").insert(name);
+    }
+
+    async removePreviousOwnership(id: number) {
+        return this.knex("PreviousOwnership").where({ id }).delete();
     }
 
     async getContactsFor(id: number): Promise<Contact[]> {

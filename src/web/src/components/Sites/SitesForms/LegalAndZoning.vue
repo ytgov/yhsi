@@ -208,6 +208,7 @@ export default {
   name: "formLegalAndZoning",
   data: () => ({
     valid: false,
+    loadedId: -1,
     ownerships: [],
     categoryOptions: [],
     prevOwnerships: [],
@@ -225,6 +226,7 @@ export default {
   }),
   created: function () {
     let id = this.$route.params.id;
+    this.loadedId = id;
 
     axios
       .get(`${PLACE_URL}/${id}`)
@@ -243,34 +245,47 @@ export default {
   },
   methods: {
     addOwner() {
-      this.ownerships.push({});
+      this.ownerships.push({
+        ownershipType: 1,
+        placeId: this.loadedId,
+      });
     },
     removeOwner(index) {
       this.ownerships.splice(index, 1);
     },
     addPrevOwner() {
-      this.prevOwnerships.push({});
+      this.prevOwnerships.push({
+        ownershipDate: "",
+        ownershipNumber: "",
+        ownershipName: "",
+        placeId: this.loadedId,
+      });
     },
     removePrevOwner(index) {
       this.prevOwnerships.splice(index, 1);
     },
+    saveChanges() {
+      let body = {
+        block: this.fields.block,
+        groupYHSI: this.fields.groupYHSI,
+        lAGroup: this.fields.lAGroup,
+        lot: this.fields.lot,
+        planNumber: this.fields.planNumber,
+        siteDistrictNumber: this.fields.siteDistrictNumber,
+        townSiteMapNumber: this.fields.townSiteMapNumber,
+        zoning: this.fields.zoning,
+        ownerships: this.ownerships,
+        prevOwnerships: this.prevOwnerships,
+      };
 
-    removeItem(objName, position) {
-      if (position > -1) {
-        this.fields[objName].splice(position, 1);
-      }
-    },
-    addItem(objName) {
-      switch (
-        objName // Selects which structure to add to the new element of the array
-      ) {
-        case "ownerships":
-          this.fields[objName].push({ category: "", comments: "" });
-          break;
-        case "previous_ownerships":
-          this.fields[objName].push({ dates: "", numbers: "", names: "" });
-          break;
-      }
+      axios
+        .put(`${PLACE_URL}/${this.loadedId}/legal`, body)
+        .then((resp) => {
+          this.$emit("showAPIMessages", resp.data);
+        })
+        .catch((err) => {
+          this.$emit("showError", err);
+        });
     },
   },
 };
