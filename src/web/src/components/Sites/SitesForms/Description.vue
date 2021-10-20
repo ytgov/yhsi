@@ -70,21 +70,13 @@ export default {
   name: "formDescription",
   data: () => ({
     valid: false,
-    generalRules: [
-      (v) => !!v || "This input is required",
-      (v) => v.length <= 20 || "This input must be less than 20 characters",
-    ],
-
+    loadedId: -1,
     descriptions: [],
     typeOptions: [],
-
-    /* Placeholder variables below this line **Read above** */
-    fields: {
-      descriptions: [{ type: "", description: "" }],
-    },
   }),
   created: function () {
     let id = this.$route.params.id;
+    this.loadedId = id;
 
     axios
       .get(`${PLACE_URL}/${id}`)
@@ -102,10 +94,24 @@ export default {
   },
   methods: {
     addDescription() {
-      this.descriptions.push({});
+      this.descriptions.push({placeId: this.loadedId, type: 1});
     },
     removeDescription(index) {
       this.descriptions.splice(index, 1);
+    },
+    saveChanges() {
+      let body = {
+        descriptions: this.descriptions,
+      };
+
+      axios
+        .put(`${PLACE_URL}/${this.loadedId}/description`, body)
+        .then((resp) => {
+          this.$emit("showAPIMessages", resp.data);
+        })
+        .catch((err) => {
+          this.$emit("showError", err);
+        });
     },
   },
 };
