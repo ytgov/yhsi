@@ -282,10 +282,10 @@
                 outlined
                 background-color="white"
               ></v-select>
-
+              
               <v-checkbox
                 class="my-0"
-                v-model="fields.showInRegister"
+                v-model="fields.isPubliclyAccessible"
                 label="Publicly accessible?"
                 dense
                 outlined
@@ -367,12 +367,14 @@ export default {
   name: "formManagement",
   data: () => ({
     valid: false,
+    loadedId: -1,
     generalRules: [
       (v) => !!v || "This input is required",
       (v) => v.length <= 20 || "This input must be less than 20 characters",
     ],
     date: null,
     menu: false,
+    currentUser: "asd",
 
     revisionLogs: [],
     contacts: [],
@@ -386,15 +388,13 @@ export default {
     statuteOptions: [],
 
     fields: {
-      webLinks: [{ type: "", webAddress: "" }],
-      /*Field data from the swaggerhub api docs below this line*/
       cIHBNumber: "", //
       doorCondition: "",
       fHBRONumber: "", //
       jurisdiction: "", //
       ownerConsent: "", //
       recognitionDate: "", //
-      showInRegister: "", //
+      isPubliclyAccessible: false, //
       statute2Id: "", //
       statuteId: "", //
       yGBuildingNumber: "", //
@@ -403,11 +403,14 @@ export default {
   }),
   created: function () {
     let id = this.$route.params.id;
+    this.loadedId = id;
+    this.currentUser = store.getters.fullName;
 
     axios
       .get(`${PLACE_URL}/${id}`)
       .then((resp) => {
         this.fields = resp.data.data;
+        this.fields.recognitionDate = this.fields.recognitionDate || ""
         this.revisionLogs = resp.data.relationships.revisionLogs.data;
         this.contacts = resp.data.relationships.contacts.data;
         this.links = resp.data.relationships.webLinks.data;
@@ -441,22 +444,58 @@ export default {
     },
 
     addLog() {
-      this.revisionLogs.push({});
+      let date = new Date();
+      let month = ("0" + (date.getMonth() + 1)).slice(-2);
+      let day = ("0" + date.getDate()).slice(-2);
+
+      this.revisionLogs.push({
+        placeId: this.loadedId,
+        revisionLogType: 5,
+        revisionDate: `${date.getFullYear()}-${month}-${day}`,
+        revisedBy: this.currentUser,
+      });
     },
     removeLog(index) {
       this.revisionLogs.splice(index, 1);
     },
     addContact() {
-      this.contacts.push({});
+      this.contacts.push({ placeId: this.loadedId, contactType: 1 });
     },
     removeContact(index) {
       this.contacts.splice(index, 1);
     },
     addLink() {
-      this.links.push({});
+      this.links.push({ type: 1, address: "https://", placeId: this.loadedId });
     },
     removeLink(index) {
       this.links.splice(index, 1);
+    },
+    saveChanges() {
+      let body = {
+        cIHBNumber: this.fields.cIHBNumber,
+        doorCondition: this.fields.doorCondition,
+        fHBRONumber: this.fields.fHBRONumber,
+        jurisdiction: this.fields.jurisdiction,
+        ownerConsent: this.fields.ownerConsent,
+        recognitionDate: this.fields.recognitionDateDisplay,
+        isPubliclyAccessible: this.fields.isPubliclyAccessible,
+        statute2Id: this.fields.statute2Id,
+        statuteId: this.fields.statuteId,
+        yGBuildingNumber: this.fields.yGBuildingNumber,
+        yGReserveNumber: this.fields.yGReserveNumber,
+        links: this.links,
+        contacts: this.contacts,
+        revisionLogs: this.revisionLogs,
+      };
+
+      axios
+        .put(`${PLACE_URL}/${this.loadedId}/management`, body)
+        .then((resp) => {
+          this.$emit("showAPIMessages", resp.data);
+        })
+        .catch((err) => {
+          this.$emit("showError", err);
+        });
     },
   },
   watch: {
