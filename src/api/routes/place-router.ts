@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { body, check, param, query, validationResult } from "express-validator";
 import { PhotoService, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
-import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation } from "../data";
+import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership } from "../data";
 import { ReturnValidationErrors } from "../middleware";
 import moment from "moment";
 
@@ -377,7 +377,7 @@ placeRouter.put("/:id/associations",
     async (req: Request, res: Response) => {
         let { id } = req.params;
         let { associations, firstNationAssociations } = req.body;
-        
+
         let oldAssoc = await placeService.getAssociationsFor(parseInt(id));
 
         for (let on of oldAssoc) {
@@ -397,7 +397,7 @@ placeRouter.put("/:id/associations",
                 await placeService.addAssociation(on);
             }
         }
- 
+
         let oldFunctions = await placeService.getFNAssociationsFor(parseInt(id));
         for (let on of oldFunctions) {
             let match = firstNationAssociations.filter((n: FirstNationAssociation) => n.firstNationAssociationType == on.firstNationAssociationType && n.firstNationId == on.firstNationId && n.comments == on.comments);
@@ -421,6 +421,57 @@ placeRouter.put("/:id/associations",
         return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
     });
 
+placeRouter.put("/:id/legal",
+    [param("id").isInt().notEmpty(),], ReturnValidationErrors,
+    async (req: Request, res: Response) => {
+        let { id } = req.params;
+        let { ownerships, prevOwnerships } = req.body;
+        let updater = req.body;
+
+        delete updater.ownerships;
+        delete updater.prevOwnerships;
+
+        await placeService.updatePlace(parseInt(id), updater);
+
+        let oldOwners = await placeService.getOwnershipsFor(parseInt(id));
+
+        for (let on of oldOwners) {
+            let match = ownerships.filter((n: Ownership) => n.ownershipType == on.ownershipType && n.comments == on.comments);
+
+            if (match.length == 0) {
+                await placeService.removeOwnership(on.id);
+            }
+        }
+
+        for (let on of ownerships) {
+            let match = oldOwners.filter((n: Ownership) => n.ownershipType == on.ownershipType && n.comments == on.comments);
+
+            if (match.length == 0) {
+                await placeService.addOwnership(on);
+            }
+        }
+
+        let oldFunctions = await placeService.getPreviousOwnershipsFor(parseInt(id));
+
+        for (let on of oldFunctions) {
+            let match = prevOwnerships.filter((n: PreviousOwnership) => n.ownershipDate == on.ownershipDate && n.ownershipNumber == on.ownershipNumber && n.ownershipName == on.ownershipName);
+
+            if (match.length == 0) {
+                await placeService.removePreviousOwnership(on.id);
+            }
+        }
+
+        for (let on of prevOwnerships) {
+            let match = oldFunctions.filter((n: PreviousOwnership) => n.ownershipDate == on.ownershipDate && n.ownershipNumber == on.ownershipNumber && n.ownershipName == on.ownershipName);
+
+            if (match.length == 0) {
+                delete on.typeName;
+                await placeService.addPreviousOwnership(on);
+            }
+        }
+
+        return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
+    });
 
 
 placeRouter.put("/:id/all",
