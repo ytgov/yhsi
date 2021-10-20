@@ -149,6 +149,7 @@ export default {
   data: () => ({
     /* input-fields */
     valid: false,
+    loadedId: -1,
     generalRules: [
       (v) => !!v || "This input is required",
       (v) => v.length <= 20 || "This input must be less than 20 characters",
@@ -163,16 +164,16 @@ export default {
 
   created: function () {
     let id = this.$route.params.id;
+    this.loadedId = id;
 
     axios
       .get(`${PLACE_URL}/${id}`)
       .then((resp) => {
-        this.fields = resp.data.data;
         this.associations = resp.data.relationships.associations.data;
         this.firstNationAssociations =
           resp.data.relationships.firstNationAssociations.data;
         store.dispatch("addSiteHistory", resp.data.data);
-        this.$parent.siteName = this.fields.primaryName;
+        this.$parent.siteName = resp.data.data.primaryName;
       })
       .catch((error) => console.error(error));
 
@@ -188,16 +189,31 @@ export default {
   },
   methods: {
     addAssociation() {
-      this.associations.push({});
+      this.associations.push({ placeId: this.loadedId, type: 1 });
     },
     removeAssociation(index) {
       this.associations.splice(index, 1);
     },
     addFNAssociation() {
-      this.firstNationAssociations.push({});
+      this.firstNationAssociations.push({ placeId: this.loadedId,firstNationAssociationType: 1, firstNationId: 1  });
     },
     removeFNAssociation(index) {
       this.firstNationAssociations.splice(index, 1);
+    },
+    saveChanges() {
+      let body = {
+        associations: this.associations,
+        firstNationAssociations: this.firstNationAssociations,
+      };
+
+      axios
+        .put(`${PLACE_URL}/${this.loadedId}/associations`, body)
+        .then((resp) => {
+          this.$emit("showAPIMessages", resp.data);
+        })
+        .catch((err) => {
+          this.$emit("showError", err);
+        });
     },
   },
 };

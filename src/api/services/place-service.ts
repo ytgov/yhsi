@@ -63,8 +63,24 @@ export class PlaceService {
         return this.knex("association").where({ placeId: id }).select<Association[]>(["id", "placeId", "type", "description"]);
     }
 
+    async addAssociation(name: Association) {
+        return this.knex("association").insert(name);
+    }
+
+    async removeAssociation(id: number) {
+        return this.knex("association").where({ id }).delete();
+    }
+
     async getFNAssociationsFor(id: number): Promise<FirstNationAssociation[]> {
         return this.knex("FirstNationAssociation").where({ placeId: id }).select<FirstNationAssociation[]>(["id", "placeId", "firstNationId", "firstNationAssociationType", "comments"]);
+    }
+
+    async addFNAssociation(name: FirstNationAssociation) {
+        return this.knex("FirstNationAssociation").insert(name);
+    }
+
+    async removeFNAssociation(id: number) {
+        return this.knex("FirstNationAssociation").where({ id }).delete();
     }
 
     async getNamesFor(id: number) {

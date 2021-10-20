@@ -120,7 +120,7 @@ export class FirstNationAssociation {
     id!: number;
     placeId!: number;
     firstNationId!: number;
-    fistNationAssociationType!: number;
+    firstNationAssociationType!: number;
     comments!: string;
 }
 

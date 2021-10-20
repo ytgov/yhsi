@@ -42,7 +42,7 @@ export default {
   },
   data: () => ({
     site: "site name",
-    siteName: "TESTING",
+    siteName: "",
     dialog: false, //tells the print dialog when to show itself
   }),
   created() {},

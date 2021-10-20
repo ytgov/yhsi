@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { body, check, param, query, validationResult } from "express-validator";
 import { PhotoService, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
-import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse } from "../data";
+import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation } from "../data";
 import { ReturnValidationErrors } from "../middleware";
 import moment from "moment";
 
@@ -368,6 +368,55 @@ placeRouter.put("/:id/themes",
             }
         }
 
+
+        return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
+    });
+
+placeRouter.put("/:id/associations",
+    [param("id").isInt().notEmpty(),], ReturnValidationErrors,
+    async (req: Request, res: Response) => {
+        let { id } = req.params;
+        let { associations, firstNationAssociations } = req.body;
+        
+        let oldAssoc = await placeService.getAssociationsFor(parseInt(id));
+
+        for (let on of oldAssoc) {
+            let match = associations.filter((n: Association) => n.type == on.type && n.description == on.description);
+
+            if (match.length == 0) {
+                await placeService.removeAssociation(on.id);
+            }
+        }
+
+        for (let on of associations) {
+            let match = oldAssoc.filter((n: Association) => n.type == on.type && n.description == on.description);
+
+            if (match.length == 0) {
+                delete on.typeText;
+                delete on.id;
+                await placeService.addAssociation(on);
+            }
+        }
+ 
+        let oldFunctions = await placeService.getFNAssociationsFor(parseInt(id));
+        for (let on of oldFunctions) {
+            let match = firstNationAssociations.filter((n: FirstNationAssociation) => n.firstNationAssociationType == on.firstNationAssociationType && n.firstNationId == on.firstNationId && n.comments == on.comments);
+
+            if (match.length == 0) {
+                await placeService.removeFNAssociation(on.id);
+            }
+        }
+
+        for (let on of firstNationAssociations) {
+            let match = oldFunctions.filter((n: FirstNationAssociation) => n.firstNationAssociationType == on.firstNationAssociationType && n.firstNationId == on.firstNationId && n.comments == on.comments);
+
+            if (match.length == 0) {
+                console.log(on)
+                delete on.id;
+                delete on.typeText;
+                await placeService.addFNAssociation(on);
+            }
+        }
 
         return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
     });
