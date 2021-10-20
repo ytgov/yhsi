@@ -119,7 +119,12 @@
             :items="coordinateDeterminationOptions"
             v-model="fields.coordinateDetermination"
             label="Coordinate determination"
+            hide-details
           ></v-select>
+
+          <v-btn color="secondary" @click="showMap()" :disabled="!showMapButton"
+            ><v-icon class="mr-2">mdi-map-marker</v-icon>Show on Map</v-btn
+          >
         </div>
         <div class="col-md-6">
           <v-row>
@@ -156,6 +161,8 @@
         </div>
       </div>
     </v-form>
+
+    <map-dialog ref="map"></map-dialog>
   </div>
 </template>
 
@@ -196,6 +203,14 @@ export default {
       previousAddress: "", //
     },
   }),
+  computed: {
+    showMapButton: function () {
+      if (this.fields.latitude && this.fields.longitude) {
+        return true;
+      }
+      return false;
+    },
+  },
   created: function () {
     this.loadedId = this.$route.params.id;
 
@@ -203,6 +218,7 @@ export default {
       .get(`${PLACE_URL}/${this.loadedId}`)
       .then((resp) => {
         this.fields = resp.data.data;
+
         store.dispatch("addSiteHistory", resp.data.data);
         this.$parent.siteName = this.fields.primaryName;
       })
@@ -245,6 +261,9 @@ export default {
         .catch((err) => {
           this.$emit("showError", err);
         });
+    },
+    showMap() {
+      this.$refs.map.show(this.fields.latitude, this.fields.longitude);
     },
   },
 };

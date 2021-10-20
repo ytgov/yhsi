@@ -10,9 +10,11 @@ Vue.config.productionTip = false;
 
 import HistorySidebarComponent from "./components/HistorySidebar";
 import Notifications from "./components/Notifications";
+import MapDialog from "./components/MapDialog";
 
 Vue.component("history-sidebar", HistorySidebarComponent)
 Vue.component("notifier", Notifications);
+Vue.component("map-dialog", MapDialog);
 
 axios.defaults.withCredentials = true
 
