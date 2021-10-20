@@ -1,6 +1,6 @@
 import { knex, Knex } from "knex";
 import { QueryStatement, SortStatement } from "./";
-import { Association, ConstructionPeriod, Contact, Dates, FirstNationAssociation, FunctionalUse, HistoricalPattern, Name, Ownership, Place, PLACE_FIELDS, PreviousOwnership, RevisionLog, Theme, WebLink } from "../data";
+import { Association, ConstructionPeriod, Contact, Dates, Description, FirstNationAssociation, FunctionalUse, HistoricalPattern, Name, Ownership, Place, PLACE_FIELDS, PreviousOwnership, RevisionLog, Theme, WebLink } from "../data";
 import { GenericEnum } from "./static-service";
 import _ from "lodash";
 
@@ -215,8 +215,16 @@ export class PlaceService {
         return this.knex("WebLink").where({ id }).delete();
     }
 
-    async getDescriptionsFor(id: number): Promise<WebLink[]> {
-        return this.knex("Description").where({ placeId: id }).select<WebLink[]>(["id", "placeId", "descriptionText", "type"]);
+    async getDescriptionsFor(id: number): Promise<Description[]> {
+        return this.knex("Description").where({ placeId: id }).select<Description[]>(["id", "placeId", "descriptionText", "type"]);
+    }
+
+    async addDescription(name: Description) {
+        return this.knex("Description").insert(name);
+    }
+
+    async removeDescription(id: number) {
+        return this.knex("Description").where({ id }).delete();
     }
 
     getAssociationTypes(): GenericEnum[] {

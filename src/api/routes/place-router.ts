@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { body, check, param, query, validationResult } from "express-validator";
 import { PhotoService, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
-import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership, WebLink, RevisionLog, Contact } from "../data";
+import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership, WebLink, RevisionLog, Contact, Description } from "../data";
 import { ReturnValidationErrors } from "../middleware";
 import moment from "moment";
 
@@ -546,6 +546,35 @@ placeRouter.put("/:id/management",
                 delete on.id;
                 delete on.contactTypeText;
                 await placeService.addContact(on);
+            }
+        }
+
+        return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
+    });
+
+placeRouter.put("/:id/description",
+    [param("id").isInt().notEmpty(),], ReturnValidationErrors,
+    async (req: Request, res: Response) => {
+        let { id } = req.params;
+        let { descriptions } = req.body;
+
+        let oldDescs = await placeService.getDescriptionsFor(parseInt(id));
+
+        for (let on of oldDescs) {
+            let match = descriptions.filter((n: Description) => n.type == on.type && n.descriptionText == on.descriptionText);
+
+            if (match.length == 0) {
+                await placeService.removeDescription(on.id);
+            }
+        }
+
+        for (let on of descriptions) {
+            let match = oldDescs.filter((n: Description) => n.type == on.type && n.descriptionText == on.descriptionText);
+
+            if (match.length == 0) {
+                delete on.typeText;
+                delete on.id;
+                await placeService.addDescription(on);
             }
         }
 
