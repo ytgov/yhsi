@@ -21,7 +21,7 @@ app.use(
       'block-all-mixed-content': [],
       'font-src': ["'self'", 'https:', 'data:'],
       'frame-ancestors': ["'self'"],
-      'img-src': ["'self'", 'data:'],
+      'img-src': ["'self'", 'data:', 'https:'],
       'object-src': ["'none'"],
       'script-src': ["'self'", 'https://js.arcgis.com',"'unsafe-eval'"], // added https to accomodate esri components?
       'script-src-attr': ["'none'"],
