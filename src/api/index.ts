@@ -27,7 +27,7 @@ app.use(
       'script-src-attr': ["'none'"],
       'style-src': ["'self'", 'https:', "'unsafe-inline'"],
       'worker-src': ["'self'", 'blob:'],
-      'connect-src': ["'self'", 'https://js.arcgis.com','https://services.arcgisonline.com']
+      'connect-src': ["'self'", 'https://*.arcgis.com','https://services.arcgisonline.com']
     },
   })
 );
