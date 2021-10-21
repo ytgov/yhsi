@@ -26,7 +26,8 @@ app.use(
       'script-src': ["'self'", 'https://js.arcgis.com',"'unsafe-eval'"], // added https to accomodate esri components?
       'script-src-attr': ["'none'"],
       'style-src': ["'self'", 'https:', "'unsafe-inline'"],
-      'worker-src': ["'self'", 'blob:']
+      'worker-src': ["'self'", 'blob:'],
+      'connect-src': ["'self'", 'https://js.arcgis.com']
     },
   })
 );
