@@ -14,24 +14,6 @@ services:
             - yhsi_sqlvolume:/var/opt/mssql
             - ./db/backups/:/backups
 
-    #web: 
-    #    build: ./web
-    #    restart: unless-stopped
-    #    environment: 
-    #        - "NODE_ENV=test"
-    #    depends_on: 
-    #        - api
-    #    ports:
-    #        - "8080:8080"
-    
-    #api:
-    #    build: ./api
-    #    restart: unless-stopped
-    #    depends_on: 
-    #        - sql
-    #    ports:
-    #        - "3000:3000"
-
 volumes: 
     yhsi_sqlvolume:
         external: true
