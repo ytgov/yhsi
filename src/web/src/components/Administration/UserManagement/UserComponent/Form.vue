@@ -94,22 +94,55 @@
                     ref="form"
                     lazy-validation
                   >
-
+                  
                     <v-select
                       :items="roles"
                       label="Role"
+                      v-model="siteRole"
                     ></v-select>
 
                     <v-select
                       :items="dataAccessOptions"
+                      v-model="siteDataAccess"
                       label="Data Access"
                     ></v-select>
 
                     <v-btn
                       color="primary"
+                      @click="addSitePermissions()"
                     >
                       Add Row
                     </v-btn>
+                    <v-row>
+                      <v-col>
+                        <v-alert
+                        outlined
+                        color="primary"
+                        v-for="site in sites"
+                        :key="`site-${site.id}`"
+                        >
+                          <div class="sub-title">
+                                {{site.dataAccess}}
+                          </div>
+                          <v-row>
+                                <v-col>
+                                    <v-text-field
+                                        v-model="site.dataAccess"
+                                        label="Data Access"
+                                        :readonly="true"
+                                    ></v-text-field>
+                                </v-col>
+                                <v-col>
+                                    <v-text-field
+                                        v-model="site.role"
+                                        label="Role"
+                                        :readonly="true"
+                                    ></v-text-field>
+                                </v-col>
+                            </v-row>
+                        </v-alert>
+                      </v-col>
+                    </v-row>
                   </v-form>
               </v-container>
              
@@ -196,12 +229,14 @@ export default {
     selectedItem: null,
     mode: null,
     dialog: false, //tells the print dialog when to show itself
+    siteDataAccess: "",
+    siteRole: "",
     fields:{
       FirstName: "",
       LastName: "",
       Email: "",
       access: "",
-      ExpirationDate: null
+      ExpirationDate: null,
     },
     fieldsHistory: null,
     sections: [
@@ -215,6 +250,13 @@ export default {
       { id: 8, access: null, title: "Map", icon:"buffer" },
       { id: 9, access: null, title: "Administration", icon:"cube" },
     ],
+    sites: [   
+        {
+          id: 1,
+        role: "test",
+        dataAccess: "test"
+        }  
+      ],
     dataAccessOptions: ["All Sites", "Kluane", "Nacho Nyak Dun", "Vuntut Gwitchin", "White River", 
           "City of Whitehorse", "Dawson City","105D","105E","117i"],
     roles: ["Site Admin", "Editor", "Viewer", "Viewer Limited"],
@@ -247,14 +289,24 @@ export default {
     saveCurrentUser(){
         localStorage.currentUserID = this.$route.params.id;
     },
+    addSitePermissions(){
+      console.log(this.sites);
+      this.sites.push({
+        id: this.sites.length +1,
+        role: this.siteRole,
+        dataAccess: this.siteDataAccess
+      });
+      this.siteDataAccess = null;
+      this.siteRole = null;
+    },
     async getDataFromApi(){
+      console.log(this.fields.sites);
         this.overlay = true;
         if(this.$route.params.id){
             this.saveCurrentUser();
         }
         this.fields = await users.getById(localStorage.currentUserID);
         this.fields.ExpirationDate = this.fields.ExpirationDate ? this.fields.ExpirationDate.substr(0, 10): ""; 
-        console.log(this.fields);
         this.overlay = false;
     },
     getColor(access){
