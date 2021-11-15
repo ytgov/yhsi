@@ -26,63 +26,84 @@
         </v-row>
         
         <v-row>
-          <v-col cols="6">
+          <v-col cols="12">
             <v-card  elevation="2">
+
               <v-card-title>
                 General
               </v-card-title>
               <v-container fluid>
-                <v-text-field
-                          v-model="fields.FirstName"
-                          label="First Name"
-                          required
-                ></v-text-field>
-                <v-text-field
-                          v-model="fields.LastName"
-                          label="Last Name"
-                          required
-                ></v-text-field>
-                <v-text-field
-                          v-model="fields.Email"
-                          label="Email"
-                          required
-                ></v-text-field>
+                <v-form>
+                  <v-row>
+                    <v-col cols="6">
+                      <v-text-field
+                                v-model="fields.FirstName"
+                                label="First Name"
+                                required
+                                :disabled="!isEditable"
+                      ></v-text-field>
+                      <v-text-field
+                                v-model="fields.LastName"
+                                label="Last Name"
+                                required
+                                :disabled="!isEditable"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="6">
+                      <v-text-field
+                                v-model="fields.Email"
+                                label="Email"
+                                required
+                                :disabled="!isEditable"
+                      ></v-text-field>
 
-                <v-menu
-                    ref="menu"
-                    v-model="menu"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                >
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                        v-model="fields.ExpirationDate"
-                        label="Expiration Date"
-                        append-icon="mdi-calendar"
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                    ></v-text-field>
-                    </template>
-                    <v-date-picker
-                    ref="picker"
-                    v-model="fields.ExpirationDate"
-                    :max="new Date().toISOString().substr(0, 10)"
-                    min="1950-01-01"
-                    @change="save"
-                    ></v-date-picker>
-                </v-menu>
+                      <v-menu
+                          ref="menu"
+                          v-model="menu"
+                          :close-on-content-click="false"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="auto"
+                          :disabled="!isEditable"
+                      >
+                          <template v-slot:activator="{ on, attrs }">
+                          <v-text-field
+                              v-model="fields.ExpirationDate"
+                              label="Expiration Date"
+                              append-icon="mdi-calendar"
+                              readonly
+                              v-bind="attrs"
+                              v-on="on"
+                              :disabled="!isEditable"
+                          ></v-text-field>
+                          </template>
+                          <v-date-picker
+                          ref="picker"
+                          v-model="fields.ExpirationDate"
+                          :max="new Date().toISOString().substr(0, 10)"
+                          min="1950-01-01"
+                          @change="save"
+                          ></v-date-picker>
+                      </v-menu>
 
-                <v-btn class="black--text" depressed elevation="1">
-                    Reset Password
-                </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-form>
+                <v-row>
+                  <v-col>
+                    <v-btn class="black--text" depressed elevation="0"
+                      v-if="isEditable">
+                        Reset Password
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                
+                
               </v-container>
             </v-card>
             
           </v-col>
-          <v-col cols="6">
+          <v-col cols="12">
             <v-card
               elevation="2"
             >
@@ -91,35 +112,52 @@
               </v-card-title>
               <v-container fluid>
                  <v-form
-                    ref="form"
-                    lazy-validation
+                    id="sitesAccess"
+                    ref="sForm"
+                    v-model="dataAccessValidation"
                   >
+                  <v-row v-if="isEditable">
+                    <v-col cols="6">
+                      <v-select
+                        :items="roles"
+                        label="Role"
+                        v-model="siteRole"
+                        :rules="rules"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="6">
+                      <v-select
+                        :items="availableDataAccess"
+                        v-model="siteDataAccess"
+                        :rules="rules"
+                        label="Data Access"
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <v-btn
+                        color="primary"
+                        v-if="isEditable"
+                        :disabled="!dataAccessValidation"
+                        @click="addSitePermissions()"
+                        
+                      >
+                        Add Row
+                      </v-btn>
+                    </v-col>
+                  </v-row>
                   
-                    <v-select
-                      :items="roles"
-                      label="Role"
-                      v-model="siteRole"
-                    ></v-select>
-
-                    <v-select
-                      :items="dataAccessOptions"
-                      v-model="siteDataAccess"
-                      label="Data Access"
-                    ></v-select>
-
-                    <v-btn
-                      color="primary"
-                      @click="addSitePermissions()"
-                    >
-                      Add Row
-                    </v-btn>
-                    <v-row>
-                      <v-col>
+                  </v-form>
+                  <v-row>
+                      <v-col cols="6"
+                        v-for="site in sites"
+                        :key="`site-${site.id}`"
+                        >
                         <v-alert
                         outlined
                         color="primary"
-                        v-for="site in sites"
-                        :key="`site-${site.id}`"
+                        
                         >
                           <div class="sub-title">
                                 {{site.dataAccess}}
@@ -139,14 +177,31 @@
                                         :readonly="true"
                                     ></v-text-field>
                                 </v-col>
+                                <v-btn
+                                  class="mx-2"
+                                  fab
+                                  dark
+                                  x-small
+                                  color="primary"
+                                  v-if="isEditable"
+                                  @click="deleteAccess(site)"
+                                >
+                                  <v-icon dark>
+                                    mdi-close
+                                  </v-icon>
+                                </v-btn>
                             </v-row>
                         </v-alert>
                       </v-col>
                     </v-row>
-                  </v-form>
               </v-container>
              
             </v-card>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <h3 class="mt-2">Section Acess</h3>
           </v-col>
         </v-row>
         <v-row>
@@ -173,7 +228,7 @@
               
               <v-container fluid>
                  <v-form
-                    ref="form"
+                    ref="siteForm"
                     lazy-validation
                   >
                     <v-row>
@@ -182,6 +237,7 @@
                           label="No Access"
                           value="No Access"
                           v-model="sec.access"
+                          :readonly="!isEditable"
                         ></v-checkbox>
                       </v-col>
                       <v-col cols="4">
@@ -189,6 +245,7 @@
                           label="View"
                           value="View"
                           v-model="sec.access"
+                          :readonly="!isEditable"
                         ></v-checkbox>
                       </v-col>
                       <v-col cols="4">
@@ -196,6 +253,7 @@
                           label="Edit"
                           value="Edit"
                           v-model="sec.access"
+                          :readonly="!isEditable"
                         ></v-checkbox>
                       </v-col>
                     </v-row>
@@ -231,6 +289,12 @@ export default {
     dialog: false, //tells the print dialog when to show itself
     siteDataAccess: "",
     siteRole: "",
+    /* VALIDATION*/
+    dataAccessValidation: false,
+    rules: [
+        value => !!value || 'Required.',
+      ],
+    /* FIELDS*/
     fields:{
       FirstName: "",
       LastName: "",
@@ -253,9 +317,9 @@ export default {
     sites: [   
         {
           id: 1,
-        role: "test",
-        dataAccess: "test"
-        }  
+          role: "test",
+          dataAccess: "Kluane"
+        }
       ],
     dataAccessOptions: ["All Sites", "Kluane", "Nacho Nyak Dun", "Vuntut Gwitchin", "White River", 
           "City of Whitehorse", "Dawson City","105D","105E","117i"],
@@ -286,18 +350,31 @@ export default {
         }
         return false;
     },
+    resetValidation() {
+        this.$refs.sForm.reset();
+      },
+    deleteAccess(site){
+      let index = this.sites.findIndex(x => x == site);
+      if (index > -1) {
+        this.sites.splice(index, 1);
+      }
+    },
     saveCurrentUser(){
         localStorage.currentUserID = this.$route.params.id;
     },
     addSitePermissions(){
-      console.log(this.sites);
+      if(this.siteDataAccess == "" || this.siteRole == ""){
+        return;
+      }
+
       this.sites.push({
         id: this.sites.length +1,
         role: this.siteRole,
         dataAccess: this.siteDataAccess
       });
-      this.siteDataAccess = null;
-      this.siteRole = null;
+      this.resetValidation();
+      console.log(this.availableDataAccess);
+      
     },
     async getDataFromApi(){
       console.log(this.fields.sites);
@@ -308,6 +385,7 @@ export default {
         this.fields = await users.getById(localStorage.currentUserID);
         this.fields.ExpirationDate = this.fields.ExpirationDate ? this.fields.ExpirationDate.substr(0, 10): ""; 
         this.overlay = false;
+        console.log(this.availableDataAccess);
     },
     getColor(access){
       if(!access || access == 'No Access')
@@ -371,11 +449,17 @@ export default {
     },
   },
   computed: {
+    isEditable(){
+      return this.mode == 'edit' ? true : false;
+    },
     param() {
         return this.$route.params.id;
     },
     serviceEnd(){
         return this.formatDate(this.fields.ServiceEnd);
+    },
+    availableDataAccess(){
+      return this.dataAccessOptions.filter(x => !this.sites.some(item => item.dataAccess === x));
     }
   },
   watch: {
