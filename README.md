@@ -26,7 +26,6 @@ This connects you to the running SQL Server container. Once in, run the followin
 
 ```
 cd /opt/mssql-tools/bin
-./sqlcmd -U sa -s localhost -P 1m5ecure! -Q "CREATE DATABASE YHSI"
 ./sqlcmd -U sa -s localhost -P 1m5ecure! -Q "RESTORE DATABASE YHSI FROM DISK = N'/backups/yhsi.bak' WITH FILE = 1"
 ```
 
