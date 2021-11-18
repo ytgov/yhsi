@@ -16,8 +16,6 @@ export const placeRouter = express.Router();
 placeRouter.get("/",
     [query("page").default(1).isInt({ gt: 0 })], ReturnValidationErrors,
     async (req: Request, res: Response) => {
-
-
         let page = parseInt(req.query.page as string);
         let skip = (page - 1) * PAGE_SIZE;
         let take = PAGE_SIZE;
