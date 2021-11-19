@@ -8,7 +8,7 @@ export const historiesRouter = express.Router();
 const db = knex(DB_CONFIG);
 
 historiesRouter.get('/',
-  [query("page").default(1).isInt({ gt: 0 }), query("limit").default(10).isInt({ gt: 0 })], ReturnValidationErrors,
+  [query("page").default(0).isInt(), query("limit").default(10).isInt({ gt: 0 })], ReturnValidationErrors,
   async (req: Request, res: Response) => {
     /* const permissions = req.decodedToken['yg-claims'].permissions;
     if (!permissions.includes('view')) res.sendStatus(403);

@@ -16,7 +16,7 @@ Vue.component("history-sidebar", HistorySidebarComponent)
 Vue.component("notifier", Notifications);
 Vue.component("map-dialog", MapDialog);
 
-axios.defaults.withCredentials = true
+axios.defaults.withCredentials = true;
 
 new Vue({
   router,

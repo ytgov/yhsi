@@ -3,14 +3,12 @@ import VueRouter from "vue-router";
 import Home from "../components/Home.vue";
 import Dashboard from "../components/Dashboard.vue";
 import NotFound from "../views/NotFound.vue";
-import Form from "../components/Form";
-import Grid from "../components/Grid";
 import Login from "../views/Login";
 import LoginComplete from "../views/LoginComplete";
 import Profile from "../views/Profile";
 import store from "../store";
-import SitesForm from "../components/Sites";
 
+import SitesForm from "../components/Sites";
 import Summary from "../components/Sites/SitesForms/Summary";
 import Location from "../components/Sites/SitesForms/Location";
 import Dates from "../components/Sites/SitesForms/Dates";
@@ -27,6 +25,29 @@ import Feature from "../components/MainPhotos/PhotosComponents/Feature";
 import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
 import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSites";
 import Photo from "../components/MainPhotos/PhotosComponents/Photo";
+
+
+
+import Users from "../components/Users/UsersGrid";
+import UserForm from "../components/Users/UsersComponents/Form";
+import OwnersGrid from "../components/PhotoOwners/OwnersGrid";
+import OwnerForm from "../components/PhotoOwners/OwnersComponents/Form";
+import Communities from "../components/Communities/CommunitiesGrid";
+import CommunitiesForm from "../components/Communities/CommunitiesComponents/Form";
+import Boats from "../components/Boats/Grid";
+import BoatsGrid from "../components/Boats/Grid/Boats";
+import OwnerGrid from "../components/Boats/Grid/Owner";
+import BoatsForm from "../components/Boats/BoatsComponents/Boat/BoatsForm";
+import BoatsOwnerForm from "../components/Boats/BoatsComponents/Owner/OwnerForm";
+import AirplaneGrid from "../components/AirplaneCrashes/Grid";
+import AirplaneViewForm from "../components/AirplaneCrashes/AirplaneComponents/AirplaneForm";
+import AirplaneEditForm from "../components/AirplaneCrashes/AirplaneComponents/AirplaneForm";
+import AdminDashboard from "../components/Administration/AdminDashboard";
+import AdminUserGrid from "../components/Administration/UserManagement/Grid";
+import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form";
+import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
+
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -39,22 +60,6 @@ const routes = [
     path: "/dashboard",
     name: "Dashboard",
     component: Dashboard
-  },
-  {
-    path: "/form",
-    name: "Basic Form",
-    component: Form,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: "/grid",
-    name: "Data grid",
-    component: Grid,
-    meta: {
-      requiresAuth: false
-    }
   },
   {
     path: "/sign-in",
@@ -162,6 +167,203 @@ const routes = [
       }
     ]
   },
+
+
+  {
+    path: "/photos/add",
+    name: "PhotosFormAdd",
+    component: MainPhotos,
+    meta: {
+      requiresAuth: false
+    },
+    children: [
+      {
+        path: "feature", 
+        component: Feature
+      },
+      {
+        path: "site_record",
+        component: SiteRecord
+      },
+      {
+        path: "historic_sites",
+        component: HistoricSites
+      },
+      {
+        path: "photo", 
+        component: Photo
+      }
+    ]
+  },
+  {
+    path: "/boats",
+    
+    component: Boats,
+    meta: {
+      requiresAuth: false
+    },
+    children: [
+      {
+        path: "",
+        name: "Boats",
+        component: BoatsGrid
+      },
+      {
+        path: "owner",
+        component: OwnerGrid
+      }
+    ]
+  },
+  {
+    path: "/boats/view/:name",
+    name: "boatView",
+    component: BoatsForm,
+    props: true
+  },
+  {
+    path: "/boats/edit/:name",
+    name: "boatEditView",
+    component: BoatsForm,
+    props: true
+  },
+  {
+    path: "/boats/new",
+    name: "boatAddView",
+    component: BoatsForm
+  },
+  {
+    path: "/boats/owner/view/:name",
+    name: "ownerView",
+    component: BoatsOwnerForm,
+    props: true
+  },
+  {
+    path: "/boats/owner/edit/:name",
+    name: "ownerEditView",
+    component: BoatsOwnerForm,
+    props: true
+  },
+  {
+    path: "/boats/owner/new",
+    name: "ownerAddView",
+    component: BoatsOwnerForm
+  },
+  {
+    path: "/airplane",
+    name: "airplane",
+    component: AirplaneGrid
+  },
+  {
+    path: "/airplane/view/:name",
+    name: "airplaneView",
+    component: AirplaneViewForm,
+    props: true
+  },
+  {
+    path: "/airplane/edit/:name",
+    name: "airplaneEditView",
+    component: AirplaneEditForm,
+    props: true
+  },
+  {
+    path: "/airplane/New",
+    name: "airplaneAddView",
+    component: AirplaneEditForm,
+    props: true
+  },
+  {
+    path: "/admin",
+    name: "AdminDashboard",
+    component: AdminDashboard,
+  },
+  {
+    path: "/admin/users",
+    name: "AdminUserGrid",
+    component: AdminUserGrid
+  },
+  {
+    path: "/admin/users/view/:id",
+    name: "AdminUserView",
+    component: AdminUserForm
+  },
+  {
+    path: "/admin/users/edit/:id",
+    name: "AdminUserEdit",
+    component: AdminUserForm
+  },
+  {
+    path: "/admin/vessel_type",
+    name: "VesselTypeGrid",
+    component: VesselTypeGrid
+  },
+
+
+  {
+    path: "/users",
+    name: "Users",
+    component: Users,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/photo-owners",
+    name: "PhotoOwners",
+    component: OwnersGrid,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities",
+    name: "Communities",
+    component: Communities,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+      path: "/users/edit/:id",
+      component: UserForm,
+      meta: {
+        requiresAuth: false
+      }
+  },
+  {
+    path: "/photo-owners/edit/:id",
+    component: OwnerForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/photo-owners/add",
+    component: OwnerForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities/edit/:id",
+    component: CommunitiesForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities/add",
+    component: CommunitiesForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+
+
+
+
+
+
+
   {
     path: "*",
     name: "Not Found",

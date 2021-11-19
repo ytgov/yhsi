@@ -8,7 +8,7 @@ export const boatsRouter = express.Router();
 const db = knex(DB_CONFIG);
 
 boatsRouter.get("/",
-  [query("page").default(1).isInt({ gt: 0 }), query("limit").default(10).isInt({ gt: 0 })], ReturnValidationErrors,
+  [query("page").default(0).isInt(), query("limit").default(10).isInt({ gt: 0 })], ReturnValidationErrors,
   async (req: Request, res: Response) => {
     const { textToMatch = '', sortBy = 'Id', sort = 'asc' } = req.query;
     const page = parseInt(req.query.page as string);

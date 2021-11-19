@@ -9,7 +9,7 @@ const db = knex(DB_CONFIG);
 
 
 aircrashRouter.get('/',
-  [query("page").default(1).isInt({ gt: 0 }), query("limit").default(10).isInt({ gt: 0 })], ReturnValidationErrors,
+  [query("page").default(0).isInt(), query("limit").default(10).isInt({ gt: 0 })], ReturnValidationErrors,
   async (req: Request, res: Response) => {
     /* const permissions = req.decodedToken['yg-claims'].permissions;
     if (!permissions.includes('view')) res.sendStatus(403);
@@ -56,7 +56,8 @@ aircrashRouter.get('/',
         .limit(limit).offset(offset);
 
     } else {
-      counter = await db.from('dbo.vAircrash').count('yacsinumber', { as: 'count' });
+      counter = await db.from('dbo.placess').count('yhsiid', { as: 'count' })
+
       aircrashes = await db.select('*')
         .from('dbo.vAircrash')
         //.orderBy('dbo.vAircrash.yacsinumber', 'asc')
