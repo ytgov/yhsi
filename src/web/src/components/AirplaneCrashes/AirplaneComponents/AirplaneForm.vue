@@ -243,10 +243,11 @@
                 <v-row>
                     <v-col>
                          <v-text-field
-                            v-model="fields.remainsonsite"
+                            v-model.number="fields.remainsonsite"
                             label="Remains on Site"
                             :readonly="isViewingCrash"
-                            type="number"
+                            :rules="numberRules"
+         
                         ></v-text-field>    
                         <v-textarea
                             rows="5"
@@ -273,19 +274,19 @@
                                     v-model="fields.soulsonboard"
                                     label="Souls on Board"
                                     :readonly="isViewingCrash"
-                                    type="number"
+                                    :rules="numberRules"
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="fields.injuries"
                                     label="Injuries"
                                     :readonly="isViewingCrash"
-                                    type="number"
+                                    :rules="numberRules"
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="fields.fatalities"
                                     label="Fatalities"
                                     :readonly="isViewingCrash"
-                                    type="number"
+                                    :rules="numberRules"
                                 ></v-text-field>
                         </v-col>
                          <v-col cols="6">
@@ -482,7 +483,11 @@ export default {
     // dialog to inform the user if a field has the wrong data
         dataDialog: false,
     //YACSINUMBER VALIDATION
-        yacsiWarning: []
+        yacsiWarning: [],
+    //number Rules
+        numberRules: [ v =>{
+            return /^[0-9]*$/.test(v) || 'A number is required';
+        }]
     }),
     async mounted(){
         if(this.checkPath("edit")){
@@ -501,6 +506,9 @@ export default {
             //after this, the fields get filled with the info obtained from the api
             this.getDataFromApi();
         }
+        /*
+        console.log('regex');
+        console.log(/^[0-9]*$/.test('12'));*/
     },
     methods:{
         /*this function checks if the current path contains a specific word, this can be done with a simple includes but 
@@ -518,10 +526,13 @@ export default {
         },
         async validateYACSI(){
             //console.log("original ", this.fieldsHistory.yacsinumber, "new",this.fields.yacsinumber);
-            if(this.fieldsHistory.yacsinumber == this.fields.yacsinumber){
-                this.yacsiWarning = [];
-                return;
+            if(this.fieldsHistory){
+                if(this.fieldsHistory.yacsinumber == this.fields.yacsinumber){
+                    this.yacsiWarning = [];
+                    return;
+                }
             }
+            
 
             let resp = await aircrash.getAvailableYACSI(this.fields.yacsinumber);
             if(resp.available){

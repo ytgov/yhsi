@@ -95,7 +95,18 @@ router.post('/new', authenticateToken, async (req, res) => {
   if (!permissions.includes('create')) res.sendStatus(403);
 
   const { boat = {}, ownerNewArray = [], histories = [], pastNamesNewArray = [] } = req.body;
+  // VALIDATION FOR THE REGISTRATION NUMBER
+  const exists = await db.select('*')
+  .from('boat.boat')
+  .where('boat.boat.RegistrationNumber', boat.RegistrationNumber)
+  .first();
   
+
+  if(exists){
+    res.status(409).send('The Registration Number already exists');
+    return;
+  }
+
   const response = await db.insert(boat)
     .into('boat.boat')
     .returning('*')
@@ -144,7 +155,6 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
   const { boat = {}, ownerNewArray = [], ownerRemovedArray = [],
           pastNamesNewArray = [], pastNamesEditArray = [] } = req.body;
   const { boatId } = req.params;
-  //make the update
 
   await db('boat.boat')
       .update(boat)
@@ -182,5 +192,30 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
 
   res.status(200).send({ message: 'success' });
 });
+
+
+
+router.get('/available_number/:RegistrationNumber', authenticateToken, async (req, res) => {
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('view')) res.sendStatus(403);
+
+  const db = req.app.get('db');
+
+  const { RegistrationNumber } = req.params;
+  let available = true;
+
+
+  const exists = await db.select('*')
+  .from('boat.boat')
+  .where('boat.boat.RegistrationNumber', RegistrationNumber)
+  .first();
+
+  if(exists){
+    available = false;
+  }
+
+  res.status(200).send({ available });
+});
+
 
 module.exports = router;

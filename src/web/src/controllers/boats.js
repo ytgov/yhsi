@@ -13,7 +13,6 @@ export default {
         }
       })
       .then(res => {
-        console.log(res);
         return res.data;
       }).catch(error =>{
         // handle error
@@ -34,8 +33,7 @@ export default {
     .then(res => {
       return res.data;
     }).catch(error =>{
-      // handle error
-      console.log(error);
+      return error;
     });
   },
   async post(data){
@@ -43,9 +41,16 @@ export default {
     .then(res => {
       return res.data;
     }).catch(error =>{
-      // handle error
-      console.log(error);
+      return error;
     });
   },
+  async getAvailableRegNumber(data){
+    return await api.get(`boats/available_number/${data}`)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      return error;
+    });
+  }
 }
 
