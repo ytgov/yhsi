@@ -42,8 +42,6 @@ export default {
     .then(res => {
       return res.data;
     }).catch(error =>{
-      // handle error
-      console.log(error.response);
       return error;
     });
   },
@@ -52,8 +50,7 @@ export default {
     .then(res => {
       return res.data;
     }).catch(error =>{
-      // handle error
-      console.log(error);
+      return error;
     });
   }
 }
