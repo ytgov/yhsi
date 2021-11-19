@@ -3,6 +3,8 @@ import Vuex from "vuex";
 
 import auth from "./auth";
 import profile from "./profile";
+import boats from "./boats";
+import alerts from "./alerts";
 
 Vue.use(Vuex);
 
@@ -47,5 +49,5 @@ export default new Vuex.Store({
     search: state => state.search,
     showAppSidebar: state => state.showAppSidebar,
   },
-  modules: { auth, profile }
+  modules: { auth, profile, boats, alerts }
 });

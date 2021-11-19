@@ -5,6 +5,7 @@ import { PhotoService } from "../services";
 import { Photo } from "../data";
 import multer from "multer";
 import { createThumbnail } from "../utils/image";
+import { ReturnValidationErrors } from "../middleware";
 
 const photoService = new PhotoService(DB_CONFIG);
 const PAGE_SIZE = 5;
@@ -12,9 +13,7 @@ const PAGE_SIZE = 5;
 export const photoRouter = express.Router();
 
 photoRouter.get("/",
-    [
-        query("page").default(1).isInt({ gt: 0 })
-    ],
+    [query("page").default(1).isInt({ gt: 0 })], ReturnValidationErrors,
     async (req: Request, res: Response) => {
         const errors = validationResult(req);
 

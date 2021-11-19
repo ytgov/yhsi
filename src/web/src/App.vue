@@ -71,6 +71,12 @@
             <v-list-item to="/maps">
               <v-list-item-title>Maps</v-list-item-title>
             </v-list-item>
+            <v-list-item to="/airplane">
+              <v-list-item-title>Airplane Crash Sites</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/boats">
+              <v-list-item-title>Boats & Owners</v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
 
@@ -99,7 +105,7 @@
               </v-list-item-icon>
               <v-list-item-title>My profile</v-list-item-title>
             </v-list-item>
-            <v-list-item to="/administration">
+            <v-list-item to="/admin">
               <v-list-item-icon>
                 <v-icon>mdi-cogs</v-icon>
               </v-list-item-icon>
