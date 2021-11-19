@@ -56,7 +56,7 @@ aircrashRouter.get('/',
         .limit(limit).offset(offset);
 
     } else {
-      counter = await db.from('dbo.placess').count('yhsiid', { as: 'count' })
+      counter = await db.from('dbo.vAircrash').count('yacsinumber', { as: 'count' })
 
       aircrashes = await db.select('*')
         .from('dbo.vAircrash')
