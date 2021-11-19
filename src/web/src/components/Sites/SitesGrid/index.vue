@@ -99,6 +99,10 @@ export default {
       axios
         .post(`${PLACE_URL}/search`, body)
         .then((resp) => {
+          // Djpratt testing
+          console.log(body);
+          console.log(`${PLACE_URL}/search`);
+          console.log(resp.data);
           this.items = resp.data.data;
           this.totalLength = resp.data.meta.item_count;
           this.loading = false;
