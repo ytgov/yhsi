@@ -77,6 +77,9 @@
             <v-list-item to="/boats">
               <v-list-item-title>Boats & Owners</v-list-item-title>
             </v-list-item>
+            <v-list-item to="/places">
+              <v-list-item-title>Places</v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
 

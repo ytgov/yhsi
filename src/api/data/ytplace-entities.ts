@@ -12,8 +12,13 @@ notes!: string;
 }
 
 export class PlaceType {
+    placeId!: number;
+    placeTypeLookupId!: string;
+}
+
+export class PlaceTypeLookup {
     id!: number;
-    type!: string;
+    placeType!: string;
 }
 
 export class FirstNationName {

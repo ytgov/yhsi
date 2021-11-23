@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { body, check, param, query, validationResult } from "express-validator";
 import { PhotoService, YtPlaceService, SortDirection, SortStatement, StaticService } from "../services";
-import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership, Photo, WebLink, RevisionLog, Contact, Description } from "../data";
+import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership, Photo, WebLink, RevisionLog, Contact, Description, YtPlace } from "../data";
 import { ReturnValidationErrors } from "../middleware";
 import moment from "moment";
 
@@ -52,48 +52,11 @@ ytPlaceRouter.post("/search", [body("page").isInt().default(1)],
         let take = itemsPerPage;
         let results = await ytPlaceService.doSearch(query, sort, page, itemsPerPage, skip, take);
 
-        /*let communities = await staticService.getCommunities();
-        let categories = await staticService.getCategories();
-        let statuses = await staticService.getSiteStatuses();
-
-        for (let place of results.data) {
-            place.community = communities.filter(c => c.id == place.communityId)[0];
-            place.category = categories.filter(c => c.value == place.category)[0];
-            place.status = statuses.filter(c => c.value == place.siteStatus)[0];
-        }*/
-
-        // Fetch place types as string with line breaks
-        // Djpratt TODO - br is a placeholder
         for (let place of results.data) {    
-            let placeTypes = await ytPlaceService.getPlaceTypesFor(place.id);
-            
-            let placeTypesString = '';
-            for (let placeType of placeTypes) {  
-                placeTypesString += placeType.type+'<br>';
-            }
-            place.placeTypes = placeTypesString;
-        }
-
-        for (let place of results.data) {    
-            let firstNationNames = await ytPlaceService.getFirstNationNamesFor(place.id);
-              
-            let fnNamesString = '';
-            for (let fnName of firstNationNames) {  
-                fnNamesString += fnName.fnName+'<br>';
-            } 
-            place.firstNationNames = fnNamesString;
-  
-        }
-
-        for (let place of results.data) {    
-            let alternateNames = await ytPlaceService.getAlternateNamesFor(place.id);
-              
-            let altNamesString = '';
-            for (let altName of alternateNames) {  
-                altNamesString += altName.alternateName+'<br>';
-            } 
-            place.alternateNames = altNamesString;
-  
+            place.placeTypes = await ytPlaceService.getPlaceTypesFor(place.id);          
+            place.placeTypes = combine(place.placeTypes, await ytPlaceService.getPlaceTypeNames(), 'id', 'placeTypeLookupId', "placeType", "placeType");   
+            place.firstNationNames = await ytPlaceService.getFirstNationNamesFor(place.id);
+            place.alternateNames = await ytPlaceService.getAlternateNamesFor(place.id);
         }
 
         res.json(results);
@@ -128,7 +91,8 @@ ytPlaceRouter.get("/:id",
         await ytPlaceService.getById(id)
             .then(async (place) => {
                 if (place) {
-                    let placeTypes = await ytPlaceService.getPlaceTypesFor(place.id);
+                    let placeTypes = await ytPlaceService.getPlaceTypesFor(place.id);          
+                    placeTypes = combine(placeTypes, await ytPlaceService.getPlaceTypeNames(), 'id', 'placeTypeLookupId', "placeType", "placeType");   
                     let fnNames = await ytPlaceService.getFirstNationNamesFor(place.id);
                     let altNames = await ytPlaceService.getAlternateNamesFor(place.id);
                     let histories = await ytPlaceService.getPlaceHistoriesFor(place.id);                 
@@ -139,7 +103,8 @@ ytPlaceRouter.get("/:id",
                     //let photos = combine(getPhotos, placePhotos, "rowId", "photoRowId", Photo);
  
                     let fnAssociations = await ytPlaceService.getFNAssociationsFor(place.id);
-                    fnAssociations = combine(fnAssociations, fnList, "firstNationId", "id", "description");               
+                    fnAssociations = combine(fnAssociations, fnList, "firstNationId", "id", "description", "firstNationDescription" );   
+                    fnAssociations = combine(fnAssociations, await ytPlaceService.getFNAssociationTypes(), 'value', 'fNAssociationType', "text", "fnAssocationDesc");
 
                     let relationships = {
                         placeTypes: { data: placeTypes },
@@ -147,7 +112,8 @@ ytPlaceRouter.get("/:id",
                         altNames: { data: altNames },
                         histories: { data: histories },
                         fnAssociations: { data: fnAssociations },
-                        //photos: { data: photos },
+                        // TODO 
+                        // photos: { data: photos },
                     };
 
                     return res.send({
@@ -191,7 +157,7 @@ ytPlaceRouter.post("/",
             return res.status(400).json({ errors: errors.array() });
         }
 
-        let result = await ytPlaceService.addPlace(req.body as Place).then(item => item)
+        let result = await ytPlaceService.addPlace(req.body as YtPlace).then(item => item)
             .catch(err => {
                 return res.json({ errors: [err.originalError.info.message] });
             });
@@ -261,129 +227,6 @@ ytPlaceRouter.put("/:id/summary",
         return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
     });
 
-ytPlaceRouter.put("/:id/location",
-    [
-        param("id").isInt().notEmpty(),
-    ], ReturnValidationErrors,
-    async (req: Request, res: Response) => {
-        let { id } = req.params;
-        let updater = req.body;
-
-        await ytPlaceService.updatePlace(parseInt(id), updater);
-        return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
-    });
-
-ytPlaceRouter.put("/:id/dates",
-    [param("id").isInt().notEmpty(),], ReturnValidationErrors,
-    async (req: Request, res: Response) => {
-        let { id } = req.params;
-        let { dates, constructionPeriods } = req.body;
-        let updater = req.body;
-
-        delete updater.dates;
-        delete updater.constructionPeriods;
-
-        await ytPlaceService.updatePlace(parseInt(id), updater);
-
-        let oldDates = await ytPlaceService.getDatesFor(parseInt(id));
-        dates = dates.map((n: Dates) => Object.assign(n, { details: n.details.trim() }));
-
-        for (let on of oldDates) {
-            let match = dates.filter((n: Dates) => n.type == on.type && n.details == on.details && n.fromDate == on.fromDate && n.toDate == on.toDate);
-
-            if (match.length == 0) {
-                await ytPlaceService.removeDate(on.id);
-            }
-        }
-
-        for (let on of dates) {
-            let match = oldDates.filter((n: Dates) => n.type == on.type && n.details == on.details && n.fromDate == on.fromDate && n.toDate == on.toDate);
-
-            if (match.length == 0) {
-                delete on.id;
-                delete on.from_menu;
-                delete on.to_menu;
-                delete on.typeText;
-                await ytPlaceService.addDate(on);
-            }
-        }
-
-        let oldConst = await ytPlaceService.getConstructionPeriodsFor(parseInt(id));
-
-        for (let on of oldConst) {
-            let match = constructionPeriods.filter((n: ConstructionPeriod) => n.type == on.type);
-
-            if (match.length == 0) {
-                await ytPlaceService.removeConstructionPeriod(on.id);
-            }
-        }
-
-        for (let on of constructionPeriods) {
-            let match = oldConst.filter((n: ConstructionPeriod) => n.type == on.type);
-
-            if (match.length == 0) {
-                delete on.id;
-                delete on.typeText;
-                await ytPlaceService.addConstructionPeriod(on);
-            }
-        }
-        return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
-    });
-
-ytPlaceRouter.put("/:id/themes",
-    [param("id").isInt().notEmpty(),], ReturnValidationErrors,
-    async (req: Request, res: Response) => {
-        let { id } = req.params;
-        let { themes, functionalUses } = req.body;
-        let updater = req.body;
-
-        delete updater.themes;
-        delete updater.functionalUses;
-
-        await ytPlaceService.updatePlace(parseInt(id), updater);
-
-        let oldThemes = await ytPlaceService.getThemesFor(parseInt(id));
-
-        for (let on of oldThemes) {
-            let match = themes.filter((n: Theme) => n.placeThemeId == on.placeThemeId);
-
-            if (match.length == 0) {
-                await ytPlaceService.removeTheme(on.id);
-            }
-        }
-
-        for (let on of themes) {
-            let match = oldThemes.filter((n: Theme) => n.placeThemeId == on.placeThemeId);
-
-            if (match.length == 0) {
-                delete on.typeName;
-                await ytPlaceService.addTheme(on);
-            }
-        }
-
-        let oldFunctions = await ytPlaceService.getFunctionUsesFor(parseInt(id));
-
-        for (let on of oldFunctions) {
-            let match = functionalUses.filter((n: FunctionalUse) => n.functionalTypeId == on.functionalTypeId && n.functionalUseType == on.functionalUseType);
-
-            if (match.length == 0) {
-                await ytPlaceService.removeFunctionalUse(on.id);
-            }
-        }
-
-        for (let on of functionalUses) {
-            let match = oldFunctions.filter((n: FunctionalUse) => n.functionalTypeId == on.functionalTypeId && n.functionalUseType == on.functionalUseType);
-
-            if (match.length == 0) {
-                delete on.typeName;
-                await ytPlaceService.addFunctionalUse(on);
-            }
-        }
-
-
-        return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
-    });
-
 ytPlaceRouter.put("/:id/all",
     [
         check("id").isInt().bail().notEmpty(),
@@ -412,7 +255,7 @@ ytPlaceRouter.put("/:id/all",
         }
 
         const id = req.params.id as string;
-        let result = await ytPlaceService.updatePlace(parseInt(id), req.body as Place).then(item => item)
+        let result = await ytPlaceService.updatePlace(parseInt(id), req.body as YtPlace).then(item => item)
             .catch(err => {
                 return res.json({ errors: [err.originalError.info.message] });
             });

@@ -1,6 +1,6 @@
 import { knex, Knex } from "knex";
 import { QueryStatement, SortStatement } from "./";
-import { AlternateName, Association, ConstructionPeriod, Contact, Dates, Description, FirstNationName, FnAssociation, FunctionalUse, HistoricalPattern, Name, Ownership, Place, PLACE_FIELDS, PlacePhoto, PlaceType, PlaceHistory, PreviousOwnership, REGISTER_FIELDS, RevisionLog, Theme, WebLink, YtPlace, YTPLACE_FIELDS } from "../data";
+import { AlternateName, Association, ConstructionPeriod, Contact, Dates, Description, FirstNationName, FnAssociation, FunctionalUse, HistoricalPattern, Name, Ownership, Place, PLACE_FIELDS, PlacePhoto, PlaceType, PlaceTypeLookup, PlaceHistory, PreviousOwnership, REGISTER_FIELDS, RevisionLog, Theme, WebLink, YtPlace, YTPLACE_FIELDS } from "../data";
 import { GenericEnum } from "./static-service";
 import _ from "lodash";
 
@@ -23,7 +23,7 @@ export class YtPlaceService {
 
     async getPlaceCount(): Promise<number> {
         return new Promise(async (resolve, reject) => {
-            let results = await this.knex<number>("place").count("*", { as: 'count' })
+            let results = await this.knex<number>("place.place").count("*", { as: 'count' })
 
             if (results) {
                 let val = results[0].count as number;
@@ -34,16 +34,16 @@ export class YtPlaceService {
         })
     }
 
-    async addPlace(item: Place): Promise<Place | undefined> {
-        return this.knex("place").insert(item).returning<Place>(PLACE_FIELDS);
+    async addPlace(item: YtPlace): Promise<YtPlace | undefined> {
+        return this.knex("place.place").insert(item).returning<YtPlace>(PLACE_FIELDS);
     }
 
-    async updatePlace(id: number, item: Place): Promise<Place | undefined> {
-        return this.knex("place").where({ id }).update(item);
+    async updatePlace(id: number, item: YtPlace): Promise<YtPlace | undefined> {
+        return this.knex("place.place").where({ id }).update(item);
     }
 
     async generateIdFor(nTSMapSheet: string): Promise<string> {
-        let maxPlace = await this.knex("place").where({ nTSMapSheet }).max("yhsiId", { as: "maxVal" });
+        let maxPlace = await this.knex("place.place").where({ nTSMapSheet }).max("yhsiId", { as: "maxVal" });
 
         if (maxPlace && maxPlace.length == 1 && maxPlace[0].maxVal) {
             let val = maxPlace[0].maxVal;
@@ -59,13 +59,17 @@ export class YtPlaceService {
         return `${nTSMapSheet}/001`;
     }
 
-    async getPlaceTypesFor(placeId: number): Promise<PlaceType[]> {
-        //return this.knex("place.placetype").where({ id: placeId }).select<PlaceType[]>("type");
-        return this.knex("place.placetype").where({ id: placeId }).select<PlaceType[]>(["id", "type"]);
+    async getPlaceTypesFor(id: number): Promise<PlaceType[]> {
+        return this.knex("place.placetype").where({ placeId: id }).select<PlaceType[]>(["placeId", "placeTypeLookupId"]);
     }
 
+    async getPlaceTypeNames(): Promise<Array<PlaceTypeLookup>> {
+        return this.knex<PlaceTypeLookup>("place.PlaceTypeLookup").select("id", "placeType")
+    }
+
+    // Note "fnDesription" is a typo in the table column
     async getFirstNationNamesFor(id: number): Promise<FirstNationName[]> {
-        return this.knex("place.FirstNationName").where({ placeId: id }).select<FirstNationName[]>(["id", "placeId","fnName"]);
+        return this.knex("place.FirstNationName").where({ placeId: id }).select<FirstNationName[]>(["id", "placeId", "fnName", "fnLanguage", "fnDesription"]);
     }   
 
     async getAlternateNamesFor(id: number): Promise<AlternateName[]> {
@@ -115,30 +119,6 @@ export class YtPlaceService {
 
     async removeHistoricalPattern(id: number) {
         return this.knex("historicalpattern").where({ id }).delete();
-    }
-
-    async getDatesFor(id: number): Promise<Dates[]> {
-        return this.knex("dates").where({ placeId: id }).select<Dates[]>(["id", "placeId", "type", "fromDate", "toDate", "details"]);
-    }
-
-    async addDate(name: Dates) {
-        return this.knex("dates").insert(name);
-    }
-
-    async removeDate(id: number) {
-        return this.knex("dates").where({ id }).delete();
-    }
-
-    async getConstructionPeriodsFor(id: number): Promise<ConstructionPeriod[]> {
-        return this.knex("constructionperiod").where({ placeId: id }).select<ConstructionPeriod[]>(["id", "placeId", "type"]);
-    }
-
-    async addConstructionPeriod(name: ConstructionPeriod) {
-        return this.knex("constructionperiod").insert(name);
-    }
-
-    async removeConstructionPeriod(id: number) {
-        return this.knex("constructionperiod").where({ id }).delete();
     }
 
     async getThemesFor(id: number): Promise<Theme[]> {
@@ -233,6 +213,12 @@ export class YtPlaceService {
         return this.knex("Description").where({ id }).delete();
     }
 
+    getFNAssociationTypes(): GenericEnum[] {
+        return [
+            { value: 1, text: "Settlement Lands" },
+            { value: 2, text: "Traditional Territory" }
+        ];
+    }
 
     async doSearch(query: Array<QueryStatement>, sort: Array<SortStatement>, page: number, page_size: number, skip: number, take: number): Promise<any> {
         return new Promise(async (resolve, reject) => {

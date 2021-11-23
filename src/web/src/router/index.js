@@ -45,6 +45,7 @@ import AdminUserGrid from "../components/Administration/UserManagement/Grid";
 import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form";
 import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
 import PlacesGrid from "../components/Places/PlacesGrid";
+import PlaceTypeGrid from "../components/Administration/LookupTableManagement/PlaceType/PlaceType";
 
 Vue.use(VueRouter);
 
@@ -294,6 +295,12 @@ const routes = [
     name: "VesselTypeGrid",
     component: VesselTypeGrid
   },
+  {
+    path: "/admin/placetype",
+    name: "PlaceTypeGrid",
+    component: PlaceTypeGrid
+  },
+
 
 
   {

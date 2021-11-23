@@ -6,7 +6,7 @@ export function RequiresAuthentication(req: Request, res: Response, next: NextFu
     // DJPRATT temporary hack to get around login issue
     return next();
     if (req.oidc.isAuthenticated()) {
-        //return next();
+        return next();
     }
 
     res.status(401).send("Not authenticated"); //;.redirect('/api/auth/login');

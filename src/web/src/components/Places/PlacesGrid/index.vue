@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <h1>Places</h1>
-    <!--<Breadcrumbs/>-->
+    <Breadcrumbs/>
     <v-row>
         <v-col cols="6" class="d-flex">
             <v-text-field 
@@ -63,7 +63,7 @@
               </v-btn>
             </JsonCSV>
 
-            <!--<PrintButton key="prt-2" :data="{places}" :disabled="places.length == 0"/>-->
+            <PrintButton key="prt-2" :data="{places}" :disabled="places.length == 0"/>
         </v-col>
     </v-row>
     <div class="mt-2">
@@ -87,11 +87,21 @@
                       @click:row="handleClick"
                       :footer-props="{'items-per-page-options': [10, 30, 100]}"
                     >    
-                      <!--<template v-slot:item.crashlocation="{ item }" >
-                        <div style="width:200px;">
-                            {{ item.crashlocation }}
+                      <template v-slot:item.alternateNames="{ item }">
+                        <div v-if="item.alternateNames.length > 0">
+                          {{ getAlternateNames(item.alternateNames) }}
                         </div>
-                      </template>-->
+                      </template>
+                      <template v-slot:item.firstNationNames="{ item }">
+                        <div v-if="item.firstNationNames.length > 0">
+                          {{ getFnNames(item.firstNationNames) }}
+                        </div>
+                      </template>
+                      <template v-slot:item.placeTypes="{ item }">
+                        <div v-if="item.placeTypes.length > 0">
+                          {{ getPlaceTypeNames(item.placeTypes) }}
+                        </div>
+                      </template>
                     </v-data-table>
                     
                 </v-col>
@@ -105,8 +115,8 @@
 
 <script>
 import JsonCSV from 'vue-json-csv'
-//import Breadcrumbs from "../../Breadcrumbs";
-//import PrintButton from "./PrintButton";
+import Breadcrumbs from "../../Breadcrumbs";
+import PrintButton from "./PrintButton";
 import _ from 'lodash';
 //import aircrash from "../../../controllers/aircrash";
 
@@ -116,8 +126,7 @@ import { YTPLACE_URL } from "../../../urls";
 
 export default {
   name: "placesgrid-index",
-  //components: { Breadcrumbs, JsonCSV, PrintButton },
-  components: { JsonCSV },
+  components: { Breadcrumbs, JsonCSV, PrintButton },
   data: () => ({
     route: "",
     loading: false,
@@ -126,9 +135,9 @@ export default {
     headers: [
     //{ text: "Id", value: "id"},
     { text: "Name", value: "name"},
-    { text: "Alternate Name", value: "alternateNames"},
-    { text: "First Nation Name", value: "firstNationNames"},
-    { text: "Place Type", value: "placeTypes"},
+    { text: "Alternate Name", value: "alternateNames", sortable: false},
+    { text: "First Nation Name", value: "firstNationNames", sortable: false},
+    { text: "Place Type", value: "placeTypes", sortable: false},
     { text: "Location Description", value: "locationDesc" },
     { text: "Latitude", value: "latitude"},
     { text: "Longitude", value: "longitude"},
@@ -213,26 +222,21 @@ export default {
           const [year, month, day] = date.split('-')
           return `${month}/${day}/${year}`
       },
-      //if its needed 
-      /*getPilot(name,lastname){
-        if(!name || !lastname)
-          return '';
-
-        return `${name}, ${lastname}`
-      },
-      filterPilot(data, filter){
-        let { pilotfirstname, pilotlastname } = data;
-        if(!pilotfirstname && !pilotlastname)
-          return false;
-        
-        if(pilotfirstname.toLowerCase().includes(filter.toLowerCase()))
-          return true;
-        
-        if(pilotlastname.toLowerCase().includes(filter.toLowerCase()))
-          return true;
-
-        return false;
-      } */
+    // Djpratt TODO actually show all values
+    getPlaceTypeNames(placeTypes) {
+      if (!placeTypes) return null;
+      //let owner = owners.filter( x => x.currentowner === true);
+      //console.log(owner);
+      return placeTypes[0].placeType;
+    },
+    getAlternateNames(alternateNames) {
+      if (!alternateNames) return null;
+      return alternateNames[0].alternateName;
+    },
+    getFnNames(fnNames) {
+      if (!fnNames) return null;
+      return fnNames[0].fnName;
+    },
   },
   computed:{
       /*selectedFilters(){
@@ -240,19 +244,41 @@ export default {
       },*/
       filteredData(){// returns a filtered places array depending on the selected filters
           if(this.filterOptions){
-            //the name should actually be 'filters'
-              //let sorters = JSON.parse(JSON.stringify(this.filterOptions));
+              let sorters = JSON.parse(JSON.stringify(this.filterOptions));
               let data = JSON.parse(JSON.stringify(this.places));
-              // TODO
-              /*data = sorters[0].value == null || sorters[0].value == "" ? data : data.filter( x => x.crashdate ? x.crashdate.toLowerCase().includes(sorters[0].value.toLowerCase()) : false);  
-              data = sorters[1].value === null || sorters[1].value === "" ? data : data.filter( x => x.aircrafttype ? x.aircrafttype.toLowerCase().includes(sorters[1].value.toLowerCase()) : false);  
-              data = sorters[2].value === null || sorters[2].value === "" ? data : data.filter( x => x.aircraftregistration ? x.aircraftregistration.toLowerCase().includes(sorters[2].value.toLowerCase()) : false);  
-              data = sorters[3].value === null || sorters[3].value === "" ? data : data.filter( x => x.nation ? x.nation.toLowerCase().includes(sorters[3].value.toLowerCase()) : false);  
-              data = sorters[4].value === null || sorters[4].value === "" ? data : data.filter( x => x.militarycivilian ? x.militarycivilian.toLowerCase().includes(sorters[4].value.toLowerCase()) : false); 
-              data = sorters[5].value === null || sorters[5].value === "" ? data : data.filter( x => this.filterPilot(x,sorters[5].value)); 
-              data = sorters[6].value === null || sorters[6].value === "" ? data : data.filter( x => x.soulsonboard ? x.soulsonboard == sorters[6].value : false);  
-              data = sorters[7].value === null || sorters[7].value === "" ? data : data.filter( x => x.injuries ? x.injuries == sorters[7].value : false); 
-              data = sorters[8].value === null || sorters[8].value === "" ? data : data.filter( x => x.fatalities ? x.fatalities == sorters[8].value : false); */ 
+              
+              data =
+                sorters[0].value == null || sorters[0].value == ""
+                  ? data
+                  : data.filter((x) =>
+                      x.name
+                        ? x.name.toLowerCase().includes(
+                            sorters[0].value.toLowerCase()
+                          )
+                        : false
+                    );       
+              // Djpratt TODO filter needs to look at all placetypes, not sure the first one
+              data =
+                sorters[1].value == null || sorters[1].value == ""
+                  ? data
+                  : data.filter((x) =>
+                      x.placeTypes[0]
+                        ? x.placeTypes[0].type.toLowerCase().includes(
+                            sorters[1].value.toLowerCase()
+                          )
+                        : false
+                    );    
+              data =
+                sorters[2].value == null || sorters[2].value == ""
+                  ? data
+                  : data.filter((x) =>
+                      x.mapSheet
+                        ? x.mapSheet.toLowerCase().includes(
+                            sorters[2].value.toLowerCase()
+                          )
+                        : false
+                    );  
+
               return data;
           }
           else{
