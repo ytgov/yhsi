@@ -50,7 +50,7 @@ placeRouter.post("/search", [body("page").isInt().default(1)],
         let take = itemsPerPage;
         let results = await placeService.doSearch(query, sort, page, itemsPerPage, skip, take);
 
-        let communities = await staticService.getCommunities();
+        /*let communities = await staticService.getCommunities();
         let categories = await staticService.getCategories();
         let statuses = await staticService.getSiteStatuses();
 
@@ -58,7 +58,7 @@ placeRouter.post("/search", [body("page").isInt().default(1)],
             place.community = communities.filter(c => c.id == place.communityId)[0];
             place.category = categories.filter(c => c.value == place.category)[0];
             place.status = statuses.filter(c => c.value == place.siteStatus)[0];
-        }
+        }*/
 
         res.json(results);
     });

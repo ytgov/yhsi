@@ -26,8 +26,6 @@ import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
 import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSites";
 import Photo from "../components/MainPhotos/PhotosComponents/Photo";
 
-
-
 import Users from "../components/Users/UsersGrid";
 import UserForm from "../components/Users/UsersComponents/Form";
 import OwnersGrid from "../components/PhotoOwners/OwnersGrid";
@@ -46,7 +44,8 @@ import AdminDashboard from "../components/Administration/AdminDashboard";
 import AdminUserGrid from "../components/Administration/UserManagement/Grid";
 import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form";
 import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
-
+import PlacesGrid from "../components/Places/PlacesGrid";
+import PlaceTypeGrid from "../components/Administration/LookupTableManagement/PlaceType/PlaceType";
 
 Vue.use(VueRouter);
 
@@ -296,6 +295,12 @@ const routes = [
     name: "VesselTypeGrid",
     component: VesselTypeGrid
   },
+  {
+    path: "/admin/placetype",
+    name: "PlaceTypeGrid",
+    component: PlaceTypeGrid
+  },
+
 
 
   {
@@ -364,6 +369,14 @@ const routes = [
 
 
 
+  {
+    path: "/places",
+    name: "PlacesGrid",
+    component: PlacesGrid,
+    meta: {
+      requiresAuth: false
+    },
+  },
   {
     path: "*",
     name: "Not Found",
