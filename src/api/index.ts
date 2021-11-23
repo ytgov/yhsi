@@ -2,8 +2,10 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import path from "path";
 import helmet from "helmet";
-import { userRouter, placeRouter, photoRouter, registerRouter, staticRouter } from "./routes";
+
+import { userRouter, placeRouter, photoRouter, registerRouter, staticRouter, ytPlaceRouter } from "./routes";
 import { boatsRouter, ownerRouter, aircrashRouter, historiesRouter, catalogsRouter, usersExtraRouter, photosExtraRouter } from "./routes";
+
 import * as config from './config';
 import { doHealthCheck } from "./utils/healthCheck";
 import { configureAuthentication } from "./routes/auth"
@@ -48,6 +50,7 @@ app.get("/api/healthCheck", (req: Request, res: Response) => {
 
 app.use("/api/user", RequiresAuthentication, userRouter);
 app.use("/api/place", RequiresAuthentication, placeRouter);
+app.use("/api/ytplace", RequiresAuthentication, ytPlaceRouter);
 app.use("/api/photo", RequiresAuthentication, photoRouter);
 app.use("/api/register", registerRouter);
 
@@ -73,5 +76,5 @@ app.use((req: Request, res: Response) => {
 })
 
 app.listen(config.API_PORT, () => {
-  console.log(`API listenting on port ${config.API_PORT}`);
+  console.log(`API listening on port ${config.API_PORT}`);
 });
