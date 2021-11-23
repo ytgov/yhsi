@@ -73,7 +73,7 @@ import EditDialog from "./EditDialog";
 import AddDialog from "./AddDialog";
 import _ from 'lodash';
 export default {
-  name: "usersgrid",
+  name: "placetypegrid",
   components: { Breadcrumbs, EditDialog, AddDialog },
   data: () => ({
     loading: false,
@@ -82,7 +82,7 @@ export default {
     options: {},
     totalLength: 10,
     headers: [
-      { text: "Type", value: "Type" },
+      { text: "Type", value: "PlaceType" },
     ],
     page: 1,
     pageCount: 0,

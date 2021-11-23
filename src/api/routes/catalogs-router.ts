@@ -81,3 +81,62 @@ catalogsRouter.post('/vesseltype',
 
     res.status(200).send(response);
   });
+
+  
+catalogsRouter.get('/placetype',
+async (req: Request, res: Response) => {
+  const { textToMatch = '', sortBy = 'Id', sort = 'asc' } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = (page * limit) || 0;
+  let counter = [{ count: 0 }];
+
+  let types = [];
+
+  if (textToMatch) {
+    counter = await db.from('Place.PlaceTypeLookup')
+      .where('PlaceTypeLookup.PlaceType', 'like', `%${textToMatch}%`)
+      .count('Id', { as: 'count' });
+
+    types = await db.from('Place.PlaceTypeLookup')
+      .where('Place.PlaceTypeLookup.PlaceType', 'like', `%${textToMatch}%`)
+      .orderBy(`${sortBy}`, `${sort}`)
+      .limit(limit).offset(offset);
+
+  } else {
+    counter = await db.from('Place.PlaceTypeLookup').count('Id', { as: 'count' });
+
+    types = await db.select('*')
+      .from('Place.PlaceTypeLookup').orderBy(`${sortBy}`, `${sort}`)
+      .limit(limit).offset(offset);;
+
+  }
+
+  res.status(200).send({ count: counter[0].count, body: types });
+});
+
+catalogsRouter.post('/placetype',
+  async (req: Request, res: Response) => {
+    const { placeType = {} } = req.body;
+
+    const response = await db.insert(placeType)
+      .into('Place.PlaceTypeLookup')
+      .returning('*');
+
+    res.status(200).send(response);
+  });
+
+catalogsRouter.put('/placetype/:placeTypeId',
+  [param("placeTypeId").notEmpty()], ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { placeTypeId } = req.params;
+    const { placeType = {} } = req.body;
+
+    await db('place.PlaceTypeLookup')
+      .update(placeType)
+      .where('place.PlaceTypeLookup.id', placeTypeId);
+
+
+    res.status(200).send({ message: 'success' });
+  });
+

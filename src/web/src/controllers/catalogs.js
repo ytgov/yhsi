@@ -38,7 +38,7 @@ export default {
       });
   },
   async postVesselType(data) {
-    return await api.post(`catalogs/vesseltype/new`, data)
+    return await api.post(`catalogs/vesseltype`, data)
       .then(res => {
         return res.data;
       }).catch(error => {
@@ -48,6 +48,42 @@ export default {
   },
   async putVesselType(id, data) {
     return await api.put(`catalogs/vesseltype/${id}`, data)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  async getPlaceTypes(page, limit, textToMatch, sortBy, sort) {
+    return await api.get(`catalogs/placetype`, {
+      crossdomain: true,
+      params: {
+        page,
+        limit,
+        textToMatch,
+        sortBy,
+        sort
+      }
+    })
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  async postPlaceType(data) {
+    return await api.post(`catalogs/placetype`, data)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  async putPlaceType(id, data) {
+    return await api.put(`catalogs/placetype/${id}`, data)
       .then(res => {
         return res.data;
       }).catch(error => {
