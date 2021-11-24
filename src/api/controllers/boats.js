@@ -160,22 +160,20 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
       .update(boat)
       .where('boat.boat.id', boatId);
 
-
-  //Add the new owners (done)
-  await db.insert(ownerNewArray.map(owner => ({ BoatId: boatId, ...owner })))
+  if(ownerNewArray.length > 0){
+    await db.insert(ownerNewArray.map(owner => ({ BoatId: boatId, ...owner })))
     .into('boat.boatowner')
     .then(rows => {
       return rows;
     });
+  }
 
-  //remove the previous owners (done)
   for (const obj of ownerRemovedArray) {
     await db('boat.boatowner')
     .where('boat.boatowner.ownerid', obj.id)
     .del();
   }
 
-  //update the past names (seems to work!)
   for (const obj of pastNamesEditArray) {
     await db('boat.pastnames')
     .update({BoatName: obj.BoatName})
@@ -183,12 +181,13 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
     .andWhere('boat.pastnames.BoatId', boatId);
   }
 
-  //Add the new past names (done)
-  await db.insert(pastNamesNewArray.map(name => ({ BoatId: boatId, ...name })))
-  .into('boat.pastnames')
-  .then(rows => {
-    return rows;
-  });
+  if(pastNamesNewArray.length > 0){
+    await db.insert(pastNamesNewArray.map(name => ({ BoatId: boatId, ...name })))
+    .into('boat.pastnames')
+    .then(rows => {
+      return rows;
+    });
+  }
 
   res.status(200).send({ message: 'success' });
 });

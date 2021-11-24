@@ -451,7 +451,7 @@ export default {
     // select vars
         selectedImage: null,
     // vessel typle select options
-        vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
+        vesselTypeOptions: [],
         dateFormatted: "",
         isLoadingVessels: false,
         regNumberWarning: []
@@ -593,7 +593,7 @@ export default {
                 //console.log(data);
                 
             let currentBoat= {};
-            //console.log(this.fields);
+            console.log(data);
             
             if(this.mode == 'new'){
                 let resp = await boats.post(data);
