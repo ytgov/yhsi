@@ -40,6 +40,7 @@ export default {
   async post(data){
     return await api.post(`aircrash/new`,data)
     .then(res => {
+      console.log(res,res.data);
       return res.data;
     }).catch(error =>{
       return error;
