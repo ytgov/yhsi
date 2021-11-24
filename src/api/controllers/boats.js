@@ -113,7 +113,7 @@ router.post('/new', authenticateToken, async (req, res) => {
     .then(async rows => {
       const newBoat = rows[0];
 
-      if (ownerNewArray.length) {
+      if (ownerNewArray.length > 0) {
         const newOwners = ownerNewArray.map(owner => ({ ...owner, BoatId: newBoat.Id }))
 
         await db.insert(newOwners)
@@ -125,13 +125,16 @@ router.post('/new', authenticateToken, async (req, res) => {
       }
 
       //Add the new past names (done)
-      await db.insert(pastNamesNewArray.map(name => ({ BoatId: newBoat.Id, ...name })))
-      .into('boat.pastnames')
-      .then(rows => {
-        return rows;
-      });
+      if(pastNamesNewArray.length > 0){
+        await db.insert(pastNamesNewArray.map(name => ({ BoatId: newBoat.Id, ...name })))
+        .into('boat.pastnames')
+        .then(rows => {
+          return rows;
+        });
+      }
 
-      if (histories.length) {
+
+      if (histories.length > 0) {
         const newHistories = histories.map(history => ({ ...history, UID: newBoat.Id }))
         await db.insert(newHistories)
         .into('boat.history')
