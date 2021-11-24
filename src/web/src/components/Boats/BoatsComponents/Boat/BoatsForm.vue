@@ -31,7 +31,7 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 1" v-if="mode == 'new'" @click="saveChanges">
+                <v-btn color="success" :disabled="showSave < 1 || regNumberWarning.length == 1"  v-if="mode == 'new'" @click="saveChanges">
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Create Boat
                 </v-btn>

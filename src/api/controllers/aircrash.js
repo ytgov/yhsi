@@ -104,7 +104,6 @@ router.put('/:aircrashId', authenticateToken, async (req, res) => {
 
 
   //Add the new info sources (in progress)
-  console.log(newInfoSources);
   await db.insert(newInfoSources.map(source => ({ YACSINumber: aircrashId, ...source })))
   .into('AirCrash.InfoSource')
   .then(rows => {
@@ -158,7 +157,6 @@ router.post('/new', authenticateToken, async (req, res) => {
 
     if (newInfoSources.length) {
       const finalInfoSources = newInfoSources.map(source => ({ YACSINumber: newAirCrash.YACSINumber, ...source }))
-
       await db.insert(finalInfoSources)
       .into('AirCrash.InfoSource')
       .returning('*')
@@ -169,7 +167,7 @@ router.post('/new', authenticateToken, async (req, res) => {
 
     return newAirCrash;
   });
-
+  console.log(response);
   res.status(200).send(response);
 
 });

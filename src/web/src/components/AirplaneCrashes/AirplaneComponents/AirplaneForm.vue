@@ -651,8 +651,6 @@ export default {
             let editedInfoSources = this.fields.infoSources.filter(x => x.isEdited == true);
             let removedInfoSources = this.deletedSources;
             let newInfoSources = this.fields.infoSources.filter(x => x.isNew == true).map(x => ({Type: x.Type, Source: x.Source}));
-
-            //console.log(crash);
         //Final data obj
              let data = {
                     aircrash: crash,
@@ -660,14 +658,18 @@ export default {
                     newInfoSources,
                     editedInfoSources
                 };
-                //console.log(data);
             
             if(this.mode == 'new'){
-                let { response } = await aircrash.post(data);
-                if(response.status == 409){
-                    //open a dialog
-                    this.overlay = false;
-                    //this.dataDialog = true;
+                console.log("api call");
+                let resp = await aircrash.post(data);
+                if(resp.response){
+                    if(resp.status == 409){
+                        this.$store.commit('alerts/setText', "The Yacsi number already exists.");
+                        this.$store.commit('alerts/setType', "warning");
+                        this.$store.commit('alerts/setTimeout', 5000);
+                        this.$store.commit('alerts/setAlert', true);
+                        this.overlay = false;
+                    }
                 }
                 else{
                     this.overlay = false;
