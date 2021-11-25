@@ -132,18 +132,13 @@ router.post('/new', authenticateToken, async (req, res) => {
   if (!permissions.includes('create')) res.sendStatus(403);
 
   const { aircrash = {}, newInfoSources } = req.body;
-/*
-  const response = await db.insert(aircrash)
-    .into('AirCrash.AirCrash')
-    .returning('*');
-*/
+
   const exists = await db.select('*')
   .from('dbo.vAircrash')
   .where('dbo.vAircrash.yacsinumber', aircrash.yacsinumber)
   .first();
 
   if(exists){
-    //this is a 409 conflict, i might change the status to 409 after some tests
     res.status(409).send('The YACSI Number already exists');
     return;
   }
