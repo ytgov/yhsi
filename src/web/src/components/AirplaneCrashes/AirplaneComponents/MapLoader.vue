@@ -340,7 +340,7 @@ export default {
     //Selection vars
         selectedSystem: { id: 1, text: "Decimal Degrees" },
         selectedProjection: { id: 1, name: "WSG 84" },
-        locationAccuracyOptions: ["Approx."],
+        locationAccuracyOptions: ["Approximate", "Accurate"],
         projectionOptions: [//datums
                 {
                     id: 1,
@@ -356,7 +356,7 @@ export default {
                 }       
             ],
         hemispheres: ["C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","V","W","X"],   
-        coordinateSystemOptions: [{id: 1, text: "Decimal Degrees"},{id: 2, text:  "UTM Zone 8"}, {id: 3, text: "Degrees, Minutes, Seconds"}],
+        coordinateSystemOptions: [{id: 1, text: "Decimal Degrees"},{id: 2, text:  "UTM"}, {id: 3, text: "Degrees, Minutes, Seconds"}],
     //Crash site marker
         marker:{
             visible: false,

@@ -40,10 +40,9 @@ export default {
   async post(data){
     return await api.post(`aircrash/new`,data)
     .then(res => {
+      console.log(res,res.data);
       return res.data;
     }).catch(error =>{
-      // handle error
-      console.log(error.response);
       return error;
     });
   },
@@ -52,8 +51,7 @@ export default {
     .then(res => {
       return res.data;
     }).catch(error =>{
-      // handle error
-      console.log(error);
+      return error;
     });
   }
 }

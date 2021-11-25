@@ -95,14 +95,25 @@ router.post('/new', authenticateToken, async (req, res) => {
   if (!permissions.includes('create')) res.sendStatus(403);
 
   const { boat = {}, ownerNewArray = [], histories = [], pastNamesNewArray = [] } = req.body;
+  // VALIDATION FOR THE REGISTRATION NUMBER
+  const exists = await db.select('*')
+  .from('boat.boat')
+  .where('boat.boat.RegistrationNumber', boat.RegistrationNumber)
+  .first();
   
+
+  if(exists){
+    res.status(409).send('The Registration Number already exists');
+    return;
+  }
+
   const response = await db.insert(boat)
     .into('boat.boat')
     .returning('*')
     .then(async rows => {
       const newBoat = rows[0];
 
-      if (ownerNewArray.length) {
+      if (ownerNewArray.length > 0) {
         const newOwners = ownerNewArray.map(owner => ({ ...owner, BoatId: newBoat.Id }))
 
         await db.insert(newOwners)
@@ -114,13 +125,16 @@ router.post('/new', authenticateToken, async (req, res) => {
       }
 
       //Add the new past names (done)
-      await db.insert(pastNamesNewArray.map(name => ({ BoatId: newBoat.Id, ...name })))
-      .into('boat.pastnames')
-      .then(rows => {
-        return rows;
-      });
+      if(pastNamesNewArray.length > 0){
+        await db.insert(pastNamesNewArray.map(name => ({ BoatId: newBoat.Id, ...name })))
+        .into('boat.pastnames')
+        .then(rows => {
+          return rows;
+        });
+      }
 
-      if (histories.length) {
+
+      if (histories.length > 0) {
         const newHistories = histories.map(history => ({ ...history, UID: newBoat.Id }))
         await db.insert(newHistories)
         .into('boat.history')
@@ -144,28 +158,25 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
   const { boat = {}, ownerNewArray = [], ownerRemovedArray = [],
           pastNamesNewArray = [], pastNamesEditArray = [] } = req.body;
   const { boatId } = req.params;
-  //make the update
 
   await db('boat.boat')
       .update(boat)
       .where('boat.boat.id', boatId);
 
-
-  //Add the new owners (done)
-  await db.insert(ownerNewArray.map(owner => ({ BoatId: boatId, ...owner })))
+  if(ownerNewArray.length > 0){
+    await db.insert(ownerNewArray.map(owner => ({ BoatId: boatId, ...owner })))
     .into('boat.boatowner')
     .then(rows => {
       return rows;
     });
+  }
 
-  //remove the previous owners (done)
   for (const obj of ownerRemovedArray) {
     await db('boat.boatowner')
     .where('boat.boatowner.ownerid', obj.id)
     .del();
   }
 
-  //update the past names (seems to work!)
   for (const obj of pastNamesEditArray) {
     await db('boat.pastnames')
     .update({BoatName: obj.BoatName})
@@ -173,14 +184,40 @@ router.put('/:boatId', authenticateToken, async (req, res) => {
     .andWhere('boat.pastnames.BoatId', boatId);
   }
 
-  //Add the new past names (done)
-  await db.insert(pastNamesNewArray.map(name => ({ BoatId: boatId, ...name })))
-  .into('boat.pastnames')
-  .then(rows => {
-    return rows;
-  });
+  if(pastNamesNewArray.length > 0){
+    await db.insert(pastNamesNewArray.map(name => ({ BoatId: boatId, ...name })))
+    .into('boat.pastnames')
+    .then(rows => {
+      return rows;
+    });
+  }
 
   res.status(200).send({ message: 'success' });
 });
+
+
+
+router.get('/available_number/:RegistrationNumber', authenticateToken, async (req, res) => {
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('view')) res.sendStatus(403);
+
+  const db = req.app.get('db');
+
+  const { RegistrationNumber } = req.params;
+  let available = true;
+
+
+  const exists = await db.select('*')
+  .from('boat.boat')
+  .where('boat.boat.RegistrationNumber', RegistrationNumber)
+  .first();
+
+  if(exists){
+    available = false;
+  }
+
+  res.status(200).send({ available });
+});
+
 
 module.exports = router;
