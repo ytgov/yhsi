@@ -102,16 +102,14 @@ router.put('/:aircrashId', authenticateToken, async (req, res) => {
       .update(aircrash)
       .where('AirCrash.AirCrash.yacsinumber', aircrashId);
 
+  if(newInfoSources.length > 0){
+    await db.insert(newInfoSources.map(source => ({ YACSINumber: aircrashId, ...source })))
+    .into('AirCrash.InfoSource')
+    .then(rows => {
+      return rows;
+    });
+  }
 
-  //Add the new info sources (in progress)
-  console.log(newInfoSources);
-  await db.insert(newInfoSources.map(source => ({ YACSINumber: aircrashId, ...source })))
-  .into('AirCrash.InfoSource')
-  .then(rows => {
-    return rows;
-  });
-
-  //remove the previous owners (DONE)
   for (const obj of removedInfoSources) {
     await db('AirCrash.InfoSource')
     .where('AirCrash.InfoSource.Id', obj.Id)
@@ -134,18 +132,13 @@ router.post('/new', authenticateToken, async (req, res) => {
   if (!permissions.includes('create')) res.sendStatus(403);
 
   const { aircrash = {}, newInfoSources } = req.body;
-/*
-  const response = await db.insert(aircrash)
-    .into('AirCrash.AirCrash')
-    .returning('*');
-*/
+
   const exists = await db.select('*')
   .from('dbo.vAircrash')
   .where('dbo.vAircrash.yacsinumber', aircrash.yacsinumber)
   .first();
 
   if(exists){
-    //this is a 409 conflict, i might change the status to 409 after some tests
     res.status(409).send('The YACSI Number already exists');
     return;
   }
@@ -158,7 +151,6 @@ router.post('/new', authenticateToken, async (req, res) => {
 
     if (newInfoSources.length) {
       const finalInfoSources = newInfoSources.map(source => ({ YACSINumber: newAirCrash.YACSINumber, ...source }))
-
       await db.insert(finalInfoSources)
       .into('AirCrash.InfoSource')
       .returning('*')
@@ -169,7 +161,7 @@ router.post('/new', authenticateToken, async (req, res) => {
 
     return newAirCrash;
   });
-
+  console.log(response);
   res.status(200).send(response);
 
 });

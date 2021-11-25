@@ -31,7 +31,7 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 1" v-if="mode == 'new'" @click="saveChanges">
+                <v-btn color="success" :disabled="showSave < 1 || regNumberWarning.length == 1"  v-if="mode == 'new'" @click="saveChanges">
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Create Boat
                 </v-btn>
@@ -124,6 +124,8 @@
                                     label="Registration Number"
                                     v-model="fields.RegistrationNumber"
                                     :readonly="mode == 'view'"
+                                    :error-messages="regNumberWarning"
+                                    @blur="validateRegNumber()"
                                 ></v-text-field>
                             </v-col>
                         </v-row>
@@ -449,9 +451,10 @@ export default {
     // select vars
         selectedImage: null,
     // vessel typle select options
-        vesselTypeOptions: ["Launch", "Sternwheeler", "Ferry", "Barge"],
+        vesselTypeOptions: [],
         dateFormatted: "",
         isLoadingVessels: false,
+        regNumberWarning: []
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -497,6 +500,25 @@ export default {
                 histories: []
             };
             this.infoLoaded = true;
+        },
+        async validateRegNumber(){
+            //console.log("original ", this.fieldsHistory.yacsinumber, "new",this.fields.yacsinumber);
+            if(this.fieldsHistory){
+                if(this.fieldsHistory.RegistrationNumber == this.fields.RegistrationNumber){
+                    this.regNumberWarning = [];
+                    return;
+                }
+            }
+            
+
+            let resp = await boats.getAvailableRegNumber(this.fields.RegistrationNumber);
+            if(resp.available){
+                this.regNumberWarning = [];
+            }
+            else{
+                this.regNumberWarning = ["The Registration Number must be unique."]
+            }
+            
         },
         saveCurrentBoat(){
             localStorage.currentBoatID = this.$route.params.id;
@@ -571,11 +593,23 @@ export default {
                 //console.log(data);
                 
             let currentBoat= {};
-            //console.log(this.fields);
+            console.log(data);
             
             if(this.mode == 'new'){
-                await boats.post(data);
-                this.$router.push(`/boats/`);
+                let resp = await boats.post(data);
+                if(resp.response){
+                    if(resp.response.status == 409){
+                        this.$store.commit('alerts/setText', "The registration number already exists.");
+                        this.$store.commit('alerts/setType', "warning");
+                        this.$store.commit('alerts/setTimeout', 5000);
+                        this.$store.commit('alerts/setAlert', true);
+                        this.overlay = false;
+                    }
+                }
+                else{
+                    this.$router.push(`/boats/`);
+                }
+               
             }
             else{
                 await boats.put(localStorage.currentBoatID,data);
