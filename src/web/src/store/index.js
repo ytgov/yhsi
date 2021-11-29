@@ -5,10 +5,6 @@ import auth from "./auth";
 import profile from "./profile";
 import boats from "./boats";
 import alerts from "./alerts";
-<<<<<<< HEAD
-
-=======
->>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
 Vue.use(Vuex);
 
 export default new Vuex.Store({
