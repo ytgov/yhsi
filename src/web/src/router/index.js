@@ -25,10 +25,6 @@ import Feature from "../components/MainPhotos/PhotosComponents/Feature";
 import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
 import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSites";
 import Photo from "../components/MainPhotos/PhotosComponents/Photo";
-<<<<<<< HEAD
-
-=======
->>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
 import Users from "../components/Users/UsersGrid";
 import UserForm from "../components/Users/UsersComponents/Form";
 import OwnersGrid from "../components/PhotoOwners/OwnersGrid";
