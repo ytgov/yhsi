@@ -229,104 +229,134 @@ export default {
     /*this function checks if the current path contains a specific word, this can be done with a simple includes but 
     //it causes confusion when a boat or owner has 'new' in its name, leading the component to think it should use the 'new' mode,
     this problem is solved by using this funtion.*/
-    checkPath(word) {
-      let path = this.$route.path.split("/");
-      if (path[3] == word) {
-        return true;
+    checkPath(word){
+        let path = this.$route.path.split("/");
+        if(path[3] == word){
+            return true;
+        }
+        return false;
+    },
+    resetValidation() {
+        this.$refs.sForm.reset();
+      },
+    deleteAccess(site){
+      let index = this.sites.findIndex(x => x == site);
+      if (index > -1) {
+        this.sites.splice(index, 1);
       }
-      return false;
     },
-    saveCurrentUser() {
-      localStorage.currentUserID = this.$route.params.id;
+    saveCurrentUser(){
+        localStorage.currentUserID = this.$route.params.id;
     },
-    async getDataFromApi() {
-      this.overlay = true;
-      if (this.$route.params.id) {
-        this.saveCurrentUser();
+    addSitePermissions(){
+      if(this.siteDataAccess == "" || this.siteRole == ""){
+        return;
       }
-      this.fields = await users.getById(localStorage.currentUserID);
-      this.fields.ExpirationDate = this.fields.ExpirationDate
-        ? this.fields.ExpirationDate.substr(0, 10)
-        : "";
-      console.log(this.fields);
-      this.overlay = false;
-    },
-    getColor(access) {
-      if (!access || access == "No Access") return "grey lighten-2";
 
-      if (access == "Edit") return "lime lighten-3";
+      this.sites.push({
+        id: this.sites.length +1,
+        role: this.siteRole,
+        dataAccess: this.siteDataAccess
+      });
+      this.resetValidation();
+      console.log(this.availableDataAccess);
+      
+    },
+    async getDataFromApi(){
+      console.log(this.fields.sites);
+        this.overlay = true;
+        if(this.$route.params.id){
+            this.saveCurrentUser();
+        }
+        this.fields = await users.getById(localStorage.currentUserID);
+        this.fields.ExpirationDate = this.fields.ExpirationDate ? this.fields.ExpirationDate.substr(0, 10): ""; 
+        this.overlay = false;
+        console.log(this.availableDataAccess);
+    },
+    getColor(access){
+      if(!access || access == 'No Access')
+        return 'grey lighten-2';
 
-      if (access == "View") return "amber lighten-3";
+      if(access == 'Edit')
+        return 'lime lighten-3';
+
+      if(access == 'View')
+        return 'amber lighten-3';
     },
-    showDialog() {
-      this.dialog = true;
+    showDialog(){
+      this.dialog =  true;
     },
-    closeDialog() {
+    closeDialog(){
       this.dialog = false;
     },
-    viewMode() {
-      this.mode = "view";
-      this.$router.push(`/admin/users/view/${this.$route.params.id}`);
+    viewMode(){
+        this.mode="view";
+        this.$router.push(`/admin/users/view/${this.$route.params.id}`);
     },
-    editMode() {
-      this.fieldsHistory = { ...this.fields };
-      this.mode = "edit";
-      this.$router.push(`/admin/users/edit/${this.$route.params.id}`);
-      this.showSave = 0;
+    editMode(){
+        this.fieldsHistory = {...this.fields};
+        this.mode="edit";
+        this.$router.push(`/admin/users/edit/${this.$route.params.id}`);
+        this.showSave = 0;
     },
-    cancelEdit() {
-      if (this.fieldsHistory) {
-        this.fields = { ...this.fieldsHistory };
-      }
-      this.mode = "view";
-      //this.resetListVariables();
-      this.$router.push(`/admin/users/view/${this.$route.params.id}`);
+    cancelEdit(){
+        if(this.fieldsHistory){
+            this.fields = {...this.fieldsHistory};
+        }
+        this.mode="view";
+        //this.resetListVariables();
+        this.$router.push(`/admin/users/view/${this.$route.params.id}`);
     },
-    async saveChanges() {
-      this.overlay = true;
-      let data = {};
-      console.log(data);
+    async saveChanges(){
+            this.overlay = true; 
+             let data = {
+                };
+                console.log(data);
+                
+            let currentBoat= {};
+            console.log(this.fields);
 
-      let currentBoat = {};
-      console.log(this.fields);
-
-      await users.put(localStorage.currentUserID, data);
-      currentBoat.id = localStorage.currentUserID;
-      currentBoat.name = this.fields.Name;
-      this.mode = "view";
-      this.$router.push({
-        name: "boatView",
-        params: { name: currentBoat.name, id: currentBoat.id },
-      });
-      this.$router.go();
-    },
-    save(date) {
+            await users.put(localStorage.currentUserID,data);
+            currentBoat.id = localStorage.currentUserID;
+            currentBoat.name = this.fields.Name; 
+            this.mode = 'view';
+            this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});   
+            this.$router.go();   
+            
+        },
+    save (date) {
       this.$refs.menu.save(date);
     },
-    formatDate(date) {
-      if (!date) return null;
-      //date = date.substr(0, 10);
-      const [year, month, day] = date.split("-");
-      return `${month}/${day}/${year}`;
+    formatDate (date) {
+        if (!date) return null
+        //date = date.substr(0, 10);
+        const [year, month, day] = date.split('-')
+        return `${month}/${day}/${year}`
     },
   },
   computed: {
+    isEditable(){
+      return this.mode == 'edit' ? true : false;
+    },
     param() {
-      return this.$route.params.id;
+        return this.$route.params.id;
     },
-    serviceEnd() {
-      return this.formatDate(this.fields.ServiceEnd);
+    serviceEnd(){
+        return this.formatDate(this.fields.ServiceEnd);
     },
+    availableDataAccess(){
+      return this.dataAccessOptions.filter(x => !this.sites.some(item => item.dataAccess === x));
+    }
   },
   watch: {
     fields: {
-      handler() {
-        this.showSave = this.showSave + 1;
-      },
-      deep: true,
+        handler(){
+            this.showSave = this.showSave+1;
+        },
+        deep: true
     },
-  },
-};
+  }
+}
 </script>
 
 

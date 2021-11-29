@@ -2,7 +2,11 @@
   <div class="">
     <v-container fluid>
       <h1>User Management</h1>
+<<<<<<< HEAD
       <Breadcrumbs />
+=======
+      <Breadcrumbs/>
+>>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
       <v-row>
         <v-col cols="6" class="d-flex">
           <v-text-field
@@ -14,7 +18,11 @@
             v-model="search"
             @keyup.enter="searchChange()"
             v-on:input="searchChange()"
+<<<<<<< HEAD
           ></v-text-field>
+=======
+            ></v-text-field>
+>>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
 
           <v-menu
             transition="slide-y-transition"
@@ -27,8 +35,12 @@
                 class="black--text"
                 v-bind="attrs"
                 v-on="on"
+<<<<<<< HEAD
               >
                 <v-icon>mdi-filter</v-icon>
+=======
+              > <v-icon>mdi-filter</v-icon>
+>>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
                 Filter
               </v-btn>
             </template>
@@ -38,6 +50,7 @@
                 color="primary"
                 multiple
               >
+<<<<<<< HEAD
                 <v-list-item v-for="(item, i) in filterOptions" :key="i" link>
                   <template v-slot:default="{ active }">
                     <v-list-item-action>
@@ -48,12 +61,35 @@
                     </v-list-item-action>
                     <v-list-item-title>{{ item.name }}</v-list-item-title>
                   </template>
+=======
+                <v-list-item
+                  v-for="(item, i) in filterOptions"
+                  :key="i"
+                  link
+                >   
+                  <template v-slot:default="{ active }">
+                      <v-list-item-action>
+                        <v-icon
+                          v-if="!active"
+                        >
+                          mdi-checkbox-blank-outline
+                        </v-icon>
+                        <v-icon
+                          v-else
+                        >
+                          mdi-checkbox-marked-outline
+                        </v-icon>
+                      </v-list-item-action>
+                      <v-list-item-title>{{ item.name }}</v-list-item-title>
+                    </template>
+>>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
                 </v-list-item>
               </v-list-item-group>
             </v-list>
           </v-menu>
         </v-col>
         <v-spacer></v-spacer>
+<<<<<<< HEAD
         <v-col cols="auto"> </v-col>
       </v-row>
       <div class="mt-2">
@@ -92,6 +128,53 @@
           </v-row>
         </v-card>
       </div>
+=======
+        <v-col cols="auto">
+        
+        </v-col>
+        
+      </v-row>
+      <div class="mt-2">
+        <v-card class="px-3 py-3">
+            <v-row>
+              <v-col cols="12">
+                <h2>{{filteredData.length}} Results</h2><!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
+              </v-col>
+            </v-row>
+            <v-divider inset class="mb-4"></v-divider>
+            <v-row>
+              <v-col>
+                  <v-data-table
+                    :items="filteredData"
+                    :headers="headers"
+                    :loading="loading"    
+                    :search="search"
+                    :options.sync="options"
+                    :server-items-length="totalLength"
+                    @click:row="handleClick"
+                    :footer-props="{'items-per-page-options': [10, 30, 100]}"
+                  >
+                    <template v-slot:item.Status="{ item }">
+                        <div v-if="item.Status == 1">
+                            Active
+                        </div>  
+                        <div v-else>
+                            Expired
+                        </div> 
+                    </template>
+                    <template v-slot:item.actions="{ item }">
+                        <v-btn color="success" outlined @click="removeItem(item)">
+                          <v-icon class="mr-1">mdi-delete</v-icon>
+                          Remove
+                        </v-btn>
+                    </template>
+                  </v-data-table>
+              </v-col>
+            </v-row>
+        </v-card>
+    </div>  
+      
+>>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
     </v-container>
   </div>
 </template>

@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
   <div>
     <v-card-title style="width: 100%; display: block">
       Themes & Function
@@ -11,6 +12,122 @@
       <div class="row mx-1">
         <div class="col-md-12">
           <v-textarea
+=======
+    <div>
+        <v-card-title style="width: 100%; display: block">
+            Themes & Function
+            <div class="float-right">
+              <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
+            </div>
+        </v-card-title>
+          <v-divider inset></v-divider>
+          <v-form v-model="valid">
+              <v-container>
+                <v-row>
+                    <v-col
+                        cols="12"
+                    >
+                        <v-textarea
+                            label="YHS Themes"
+                            v-model="fields.yHSThemes"
+                        ></v-textarea>
+                        <div class="mb-2">Themes</div>
+                        <v-alert v-for="(item, i) in fields.themes" :key="`theme-${i+1}`"
+                          outlined
+                          color="primary"
+                        >
+                            <div class="sub-title">
+                                Theme {{ i+1 }}
+                            </div>
+                            <v-btn
+                                icon
+                                color="primary"
+                                class="top-right-button"
+                                @click="removeItem('themes', i)"
+                            >
+                                <v-icon dark>mdi-close-circle</v-icon>
+                            </v-btn>
+                            <v-combobox
+                            v-model="item.category"
+                            label="Category / Type"
+                            ></v-combobox>
+                        </v-alert>
+                        <v-btn
+                        outlined
+                        color="primary"
+                        @click="addItem('themes')"
+                        >
+                            Add New
+                        </v-btn>
+                    </v-col>
+                </v-row>
+                <v-divider class="mt-2 mb-2"></v-divider>
+                <v-row>
+                    <v-col
+                        cols="12"
+                    >                
+                    <div class="mb-2">Functional Users</div>
+                        <v-alert v-for="(item, i) in fields.functionalUses" :key="`theme-${i+1}`"
+                                        outlined
+                                        color="primary"
+                                        >
+                            <div class="sub-title">
+                                Functional User {{ i+1 }}
+                            </div>
+                            <v-btn
+                                icon
+                                color="primary"
+                                class="top-right-button"
+                                @click="removeItem('functionalUses', i)"
+                            >
+                                <v-icon dark>mdi-close-circle</v-icon>
+                            </v-btn>
+                            <v-row>
+                                <v-col cols="4"> 
+                                    <v-combobox
+                                    label="Use Type"
+                                    v-model="item.useType"
+                                    ></v-combobox>
+                                </v-col>
+                                <v-col cols="8">
+                                    <v-combobox
+                                    v-model="item.category"
+                                    label="Functional Category / Type"
+                                    ></v-combobox>
+                                </v-col>
+                            </v-row>
+                        </v-alert>
+                        <v-btn
+                        outlined
+                        color="primary"
+                        @click="addItem('functionalUses')"
+                        >
+                            Add New
+                        </v-btn>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="6">
+                        <v-textarea
+                        label="YHS Current Use"
+                        v-model="fields.currentUseComment"
+                        ></v-textarea>
+                    </v-col>
+                    <v-col cols="6">
+                        <v-textarea
+                        label="YHS Past Use"
+                        v-model="fields.yHSPastUse"
+                        ></v-textarea>
+                    </v-col>
+                </v-row>
+                <v-divider class="mt-2 mb-2"></v-divider>
+                <v-btn color="success">Save Changes</v-btn>
+              </v-container>
+            </v-form>
+            <!--
+        </div>
+        <div class="col-md-6"> <v-textarea
+>>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
             label="YHS Themes"
             v-model="fields.yHSThemes"
             dense
@@ -134,7 +251,7 @@
           ></v-textarea>
         </div>
       </div>
-    </v-form>
+    </v-form> -->
   </div>
 </template>
 
@@ -225,6 +342,9 @@ export default {
         .catch((err) => {
           this.$emit("showError", err);
         });
+    },
+    saveChanges() {
+      console.log("SAVING", this.fields);
     },
   },
 };

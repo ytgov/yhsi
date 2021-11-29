@@ -1,4 +1,60 @@
 <template>
+    <!-- <div>
+          <v-card-title primary-title>
+            Photos
+          </v-card-title>
+          <v-divider inset></v-divider>
+          <v-form v-model="valid">
+              <v-container>
+                <v-row>
+                    <v-col
+                        cols="12"
+                    >
+                        <v-text-field 
+                        v-model="categoryOfProperty"
+                        label="Category of Property"
+                        required
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row>  
+                    <v-col cols="6" v-for="(item, i) in fields.photos" :key="`theme-${i+1}`">
+                        <v-alert 
+                            outlined
+                            color="primary"
+                        >
+                            <div class="sub-title">
+                                Photo {{ i+1 }}
+                            </div>
+                            <v-btn
+                                icon
+                                color="primary"
+                                class="top-right-button"
+                                @click="removeItem('photos', i)"
+                            >
+                                <v-icon dark>mdi-close-circle</v-icon>
+                            </v-btn>
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-img v-if="item.img == null"
+                                    class="center-img"
+                                    max-width="128"
+                                    :src="require('../../../assets/add_photo.png')">
+                                    </v-img>
+                                    <v-img v-else
+                                    class="center-img"
+                                    max-width="128"
+                                    :src="item.img">
+                                    </v-img>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-text-field 
+                                    v-model="item.name"
+                                    label="Feature Name"
+                                    required
+                                    ></v-text-field> -->
   <div>
     <v-card-title style="width: 100%; display: block">
       Photos
@@ -87,6 +143,7 @@
                 background-color="white"
               ></v-text-field>
 
+<<<<<<< HEAD
               <v-text-field
                 v-model="item.location"
                 label="Location"
@@ -112,6 +169,67 @@
           <v-btn color="primary" @click="addPhoto()">Add Photo</v-btn>
         </v-col>
       </div>
+=======
+                                    <v-text-field 
+                                    v-model="item.location"
+                                    label="Location"
+                                    required
+                                    ></v-text-field>
+                                    <v-file-input
+                                        :id="`fi-${i}`"
+                                        label="Upload image"
+                                        prepend-icon="mdi-camera"
+                                        accept="image/*"
+                                        @change="onFileSelection($event, i)"
+                                    ></v-file-input>
+                                </v-col>
+                            </v-row>
+                        </v-alert>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-btn
+                        outlined
+                        color="primary"
+                        @click="addItem('photos')"
+                        >
+                            Add New
+                        </v-btn>
+                    </v-col>
+
+                </v-row>
+                <v-divider class="mt-2 mb-2"></v-divider>
+                <v-btn color="success">Save Changes</v-btn>
+                <!--
+              </v-container>
+            </v-form>
+        </div>-->
+          <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    v-model="item.location"
+                    label="Location"
+                    required
+                  ></v-text-field>
+                  <v-file-input
+                    :id="`fi-${i}`"
+                    label="Upload image"
+                    prepend-icon="mdi-camera"
+                    accept="image/*"
+                    @change="onFileSelection($event, i)"
+                  ></v-file-input>
+                </v-col>
+
+              <!--
+            </v-alert>
+          </v-col>-->
+          <v-col cols="12">
+            <v-btn outlined color="primary" @click="addItem('photos')">
+              Add New
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-container>
+>>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
     </v-form>
   </div>
 </template>

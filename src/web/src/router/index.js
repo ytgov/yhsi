@@ -25,7 +25,10 @@ import Feature from "../components/MainPhotos/PhotosComponents/Feature";
 import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
 import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSites";
 import Photo from "../components/MainPhotos/PhotosComponents/Photo";
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
 import Users from "../components/Users/UsersGrid";
 import UserForm from "../components/Users/UsersComponents/Form";
 import OwnersGrid from "../components/PhotoOwners/OwnersGrid";
@@ -95,6 +98,65 @@ const routes = [
     },
   },
   {
+    path: "/users",
+    name: "Users",
+    component: Users,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/photo-owners",
+    name: "PhotoOwners",
+    component: OwnersGrid,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities",
+    name: "Communities",
+    component: Communities,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+      path: "/users/edit/:id",
+      component: UserForm,
+      meta: {
+        requiresAuth: false
+      }
+  },
+  {
+    path: "/photo-owners/edit/:id",
+    component: OwnerForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/photo-owners/add",
+    component: OwnerForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities/edit/:id",
+    component: CommunitiesForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities/add",
+    component: CommunitiesForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
     path: "/sites/:id",
     name: "SitesForm",
     component: SitesForm,
@@ -141,8 +203,8 @@ const routes = [
     ]
   },
   {
-    path: "/photos/:id",
-    name: "PhotosForm",
+    path: "/photos/edit/:id",
+    name: "PhotosFormEdit",
     component: MainPhotos,
     meta: {
       requiresAuth: false
@@ -376,6 +438,133 @@ const routes = [
     meta: {
       requiresAuth: false
     },
+  },
+  {
+    path: "/photos/add",
+    name: "PhotosFormAdd",
+    component: MainPhotos,
+    meta: {
+      requiresAuth: false
+    },
+    children: [
+      {
+        path: "feature", 
+        component: Feature
+      },
+      {
+        path: "site_record",
+        component: SiteRecord
+      },
+      {
+        path: "historic_sites",
+        component: HistoricSites
+      },
+      {
+        path: "photo", 
+        component: Photo
+      }
+    ]
+  },
+  {
+    path: "/boats",
+    
+    component: Boats,
+    meta: {
+      requiresAuth: false
+    },
+    children: [
+      {
+        path: "",
+        name: "Boats",
+        component: BoatsGrid
+      },
+      {
+        path: "owner",
+        component: OwnerGrid
+      }
+    ]
+  },
+  {
+    path: "/boats/view/:name",
+    name: "boatView",
+    component: BoatsForm,
+    props: true
+  },
+  {
+    path: "/boats/edit/:name",
+    name: "boatEditView",
+    component: BoatsForm,
+    props: true
+  },
+  {
+    path: "/boats/new",
+    name: "boatAddView",
+    component: BoatsForm
+  },
+  {
+    path: "/boats/owner/view/:name",
+    name: "ownerView",
+    component: BoatsOwnerForm,
+    props: true
+  },
+  {
+    path: "/boats/owner/edit/:name",
+    name: "ownerEditView",
+    component: BoatsOwnerForm,
+    props: true
+  },
+  {
+    path: "/boats/owner/new",
+    name: "ownerAddView",
+    component: BoatsOwnerForm
+  },
+  {
+    path: "/airplane",
+    name: "airplane",
+    component: AirplaneGrid
+  },
+  {
+    path: "/airplane/view/:name",
+    name: "airplaneView",
+    component: AirplaneViewForm,
+    props: true
+  },
+  {
+    path: "/airplane/edit/:name",
+    name: "airplaneEditView",
+    component: AirplaneEditForm,
+    props: true
+  },
+  {
+    path: "/airplane/New",
+    name: "airplaneAddView",
+    component: AirplaneEditForm,
+    props: true
+  },
+  {
+    path: "/admin",
+    name: "AdminDashboard",
+    component: AdminDashboard,
+  },
+  {
+    path: "/admin/users",
+    name: "AdminUserGrid",
+    component: AdminUserGrid
+  },
+  {
+    path: "/admin/users/view/:id",
+    name: "AdminUserView",
+    component: AdminUserForm
+  },
+  {
+    path: "/admin/users/edit/:id",
+    name: "AdminUserEdit",
+    component: AdminUserForm
+  },
+  {
+    path: "/admin/vessel_type",
+    name: "VesselTypeGrid",
+    component: VesselTypeGrid
   },
   {
     path: "*",

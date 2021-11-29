@@ -38,6 +38,12 @@ export const sections = [
     },
     {
         name: "Photos",
+        url: "/photos",
+        icon: "mdi-wallpaper",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/photos` }
+    },
+    {
+        name: "Photos (combined)",
         icon: "mdi-image",
         makeUrl: (id) => { return `/sites/${id}/photos` }
     },
@@ -57,10 +63,59 @@ export const sections = [
         icon: "mdi-map-maker",// eslint-disable-next-line no-unused-vars
         makeUrl: (id) => { return `/places/` }
     },
-
-
-
-
+    {
+        name: "Maps",
+        url: "/maps",
+        icon: "mdi-map",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/maps` }
+    },
+    {
+        name: "Users",
+        url: "/users",
+        icon: "mdi-account-group",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/users` }
+    },
+    {
+        name: "PhotoOwners",
+        url: "/photo-owners",
+        icon: "mdi-image-album",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/photo-owners` }
+    },
+    {
+        name: "Communities",
+        url: "/communities",
+        icon: "mdi-home-group",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/communities` }
+    },
+    {
+        name: "Airplane Crash",
+        url: "/airplane/",
+        icon: "mdi-airplane-landing",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/airplane/` }
+    },
+    {
+        name: "Boats",
+        url: "/boats/",
+        icon: "mdi-ferry",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/boats/` }
+    },
+    {
+        name: "Administration",
+        url: "/admin",
+        icon: "mdi-cube",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/admin` }
+    }
+    // {
+    //     name: "Basic Form",
+    //     url: "/form",
+    //     icon: "mdi-newspaper-variant-multiple"
+    // },
+    // {
+    //     name: "Data grid",
+    //     url: "/grid",
+    //     icon: "mdi-table-large"
+    // }
 ];
 export const environment = process.env.NODE_ENV;
-export const apiBaseUrl = process.env.NODE_ENV == "production" ? "" : "http://localhost:3000";
+export const apiBaseUrl = process.env.NODE_ENV == "production" ? "" : "https://api.gov.yk.ca/heritage";
+
