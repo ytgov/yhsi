@@ -145,7 +145,13 @@
               ></v-text-field>
             </v-col>
           </v-row>
-
+<!--
+          </v-row>
+                <v-divider class="mt-2 mb-2"></v-divider>
+                <v-btn color="success">Save Changes</v-btn>
+              </v-container>
+            </v-form>
+            -->
           <v-text-field
             dense
             outlined
@@ -232,6 +238,7 @@ export default {
       this.coordinateDeterminationOptions = resp.data.data;
     });
   },
+<<<<<<< HEAD
   methods: {
     saveChanges() {
       let body = {
@@ -266,5 +273,12 @@ export default {
       this.$refs.map.show(this.fields.latitude, this.fields.longitude);
     },
   },
+=======
+  methods:{
+    saveChanges() {
+      console.log("SAVING", this.fields);
+    },
+  }
+>>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
 };
 </script>

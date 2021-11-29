@@ -137,14 +137,19 @@
       <v-container fluid :class="`${isSites($route.path, true)}`">
         <v-row>
           <v-col :class="`${isSites($route.path, false)}`">
-            <router-view
-              v-on:showError="showError"
-              v-on:showSuccess="showSuccess"
-              v-on:showAPIMessages="showAPIMessages"
-            ></router-view>
-            <notifier ref="notifier"></notifier>
+            <!-- 
+              <router-view
+                v-on:showError="showError"
+                v-on:showSuccess="showSuccess"
+                v-on:showAPIMessages="showAPIMessages"
+              ></router-view>
+              <notifier ref="notifier"></notifier>
+            -->
+            <router-view></router-view>
+            <RequestAlert/>
           </v-col>
         </v-row>
+        
       </v-container>
     </v-main>
 
@@ -157,11 +162,12 @@ import router from "./router";
 import store from "./store";
 import * as config from "./config";
 import { mapState } from "vuex";
+import RequestAlert from "./components/RequestAlert.vue";
 import { LOGOUT_URL } from "./urls";
 
 export default {
   name: "App",
-  components: {},
+  components: { RequestAlert },
   computed: {
     ...mapState(["isAuthenticated", "user", "showAppSidebar"]),
     username() {
@@ -188,18 +194,21 @@ export default {
     applicationName: config.applicationName,
     applicationIcon: config.applicationIcon,
     sections: config.sections,
-    hasSidebar: false, //config.hasSidebar,
+    hasSidebar: true, //config.hasSidebar,
     hasSidebarClosable: false, //config.hasSidebarClosable
     currentId: 0,
   }),
   created: async function () {
+    await store.dispatch("checkAuthentication");
     store.dispatch("setAppSidebar", this.$route.path.startsWith("/sites/"));
     this.hasSidebar = this.$route.path.startsWith("/sites/");
     this.currentId = this.$route.params.id;
 
+    this.hasSidebar = true;
     await store.dispatch("checkAuthentication");
   },
   watch: {
+    /*
     isAuthenticated: function (val) {
       if (!val) this.hasSidebar = false;
       else this.hasSidebar = store.getters.showAppSidebar;
@@ -210,7 +219,7 @@ export default {
       }
 
       this.hasSidebar = val; // && this.isAuthenticated;
-    },
+    },*/
   },
   methods: {
     nav: function (location) {
@@ -226,7 +235,14 @@ export default {
       window.location = LOGOUT_URL;
     },
     isSites(route, chooser) {
+       if(chooser)
+         return (route.includes('sites') || route.includes('photos') || route.includes('users') 
+               || route.includes('photo-owners') || route.includes('communities')) ? 'siteslp' :  '';
+       else
+         return (route.includes('sites') || route.includes('photos') || route.includes('users') 
+               || route.includes('photo-owners') || route.includes('communities')) ? 'sitesnp' :  '';
       //this function helps to show certain classes depending on the route
+      /*
       if (chooser)
         return route.includes("sites/") || route.includes("photos")
           ? "siteslp"
@@ -235,6 +251,7 @@ export default {
         return route.includes("sites/") || route.includes("photos")
           ? "sitesnp"
           : "";
+          */
     },
     showHistory() {
       this.$refs.historySidebar.show();
