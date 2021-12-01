@@ -1,17 +1,12 @@
 <template>
   <div>
     <v-app-bar color="primary" dark flat>
-      <v-btn color="primary" @click="goBack()">
+      <v-btn color="primary" to="/sites" exact>
         <v-icon>mdi-arrow-left-drop-circle</v-icon>
         <div class="ml-2">Back to Sites</div>
       </v-btn>
-      <!--  <v-spacer></v-spacer>
-      <v-btn color="primary" @click="goToSummary()">
-        <v-icon>mdi-book-open-variant</v-icon>
-        <div class="ml-2">
-          <v-toolbar-title> View site: {{ site }} </v-toolbar-title>
-        </div>
-      </v-btn> -->
+      <v-spacer></v-spacer>
+      {{ siteName }}
       <v-spacer></v-spacer>
       <v-btn color="primary" @click="showDialog()">
         <v-icon class="mr-2">mdi-printer</v-icon>
@@ -20,17 +15,26 @@
     </v-app-bar>
     <PrintDialog
       :dialog="dialog"
-      :sitename="'Site Name'"
+      :sitename="siteName"
       @closeDialog="closeDialog"
+      v-on:showError="showError"
+      v-on:showSuccess="showSuccess"
+      v-on:showAPIMessages="showAPIMessages"
     />
     <div>
-      <router-view id="sites-router" />
+      <router-view
+        id="sites-router"
+        v-on:showError="showError"
+        v-on:showSuccess="showSuccess"
+        v-on:showAPIMessages="showAPIMessages"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import PrintDialog from "./SitesGrid/PrintDialog";
+
 export default {
   name: "sitesForm",
   components: {
@@ -38,76 +42,25 @@ export default {
   },
   data: () => ({
     site: "site name",
-    items: null,
-    selectedItem: null,
+    siteName: "",
     dialog: false, //tells the print dialog when to show itself
   }),
-  created() {
-    this.items = [
-      {
-        name: "Summary",
-        icon: "mdi-note-text-outline",
-        route: `/sites/${this.param}/summary`,
-      },
-      {
-        name: "Location",
-        icon: "mdi-map-check",
-        route: `/sites/${this.param}/location`,
-      },
-      {
-        name: "Dates & Condition",
-        icon: "mdi-calendar-range",
-        route: `/sites/${this.param}/dates_&_condition`,
-      },
-      {
-        name: "Themes & Function",
-        icon: "mdi-shape",
-        route: `/sites/${this.param}/themes_&_function`,
-      },
-      {
-        name: "Associations",
-        icon: "mdi-account-group",
-        route: `/sites/${this.param}/associations`,
-      },
-      {
-        name: "Legal & Zoning",
-        icon: "mdi-script-text-outline",
-        route: `/sites/${this.param}/legal_&_zoning`,
-      },
-      {
-        name: "Photos",
-        icon: "mdi-image",
-        route: `/sites/${this.param}/photos`,
-      },
-      {
-        name: "Management",
-        icon: "mdi-hammer-wrench",
-        route: `/sites/${this.param}/management`,
-      },
-      {
-        name: "Description",
-        icon: "mdi-alphabetical",
-        route: `/sites/${this.param}/description`,
-      },
-    ];
-  },
+  created() {},
   methods: {
-    goBack() {
-      this.$router.push("/sites");
-    },
-    goToSummary() {
-      this.$router.push(`/sites/${this.param}/summary`);
-    },
     showDialog() {
       this.dialog = true;
     },
     closeDialog() {
       this.dialog = false;
     },
-  },
-  computed: {
-    param() {
-      return this.$route.params.id;
+    showError: function (msg) {
+      this.$emit("showError", msg);
+    },
+    showSuccess: function (msg) {
+      this.$emit("showSuccess", msg);
+    },
+    showAPIMessages: function (msg) {
+      this.$emit("showAPIMessages", msg);
     },
   },
 };

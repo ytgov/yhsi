@@ -99,6 +99,11 @@ export default {
           url: ""
         },
         {
+          icon: 'mdi-map-outline',
+          text: 'Place Type',
+          url: "/admin/placetype"
+        },
+        {
           icon: 'mdi-ferry',
           text: 'Vessel Type',
           url: "/admin/vessel_type"

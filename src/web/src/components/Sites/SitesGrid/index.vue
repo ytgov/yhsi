@@ -40,7 +40,31 @@
         </v-col>
       </v-row>
 
+<<<<<<< HEAD
+    <v-text-field
+      v-model="search"
+      label="Search"
+      dense
+      outlined
+      append-icon="mdi-magnify"
+      @click:append="doSearch"
+      hint="Enter criteria and press enter"
+      @keyup="keyUp"
+    ></v-text-field>
+
+    <v-data-table
+      dense
+      :items="items"
+      :headers="headers"
+      :options.sync="options"
+      :loading="loading"
+      :server-items-length="totalLength"
+      @click:row="handleClick"
+      :footer-props="{ 'items-per-page-options': items_per_page }"
+    ></v-data-table>
+=======
     </v-container>
+>>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
   </div>
 </template>
 
@@ -53,6 +77,7 @@ import _ from "lodash";
 export default {
   name: "Grid",
   data: () => ({
+    items_per_page: [20, 50, 100],
     loading: false,
     items: [],
     search: "",
@@ -95,7 +120,7 @@ export default {
   methods: {
     handleClick(value) {
       //Redirects the user to the site form
-      store.dispatch("addSiteHistory", value);
+      //store.dispatch("addSiteHistory", value);
       this.$router.push(`/sites/${value.id}/summary`);
     },
 
@@ -119,7 +144,14 @@ export default {
       axios
         .post(`${PLACE_URL}/search`, body)
         .then((resp) => {
+<<<<<<< HEAD
+          // Djpratt testing
+          console.log(body);
+          console.log(`${PLACE_URL}/search`);
+          console.log(resp.data);
+=======
           //console.log(resp.data);
+>>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
           this.items = resp.data.data;
           //this.pagination.totalLength = resp.data.meta.count;
           this.totalLength = resp.data.meta.count || resp.data.meta.count.item_count;

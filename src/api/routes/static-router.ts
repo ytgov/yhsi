@@ -13,6 +13,26 @@ staticRouter.get("/community", async (req: Request, res: Response) => {
     return res.json({ data: list });
 });
 
+staticRouter.get("/association-type", async (req: Request, res: Response) => {
+    let list = await placeService.getAssociationTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/first-nation-association-type", async (req: Request, res: Response) => {
+    let list = await placeService.getFNAssociationTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/construction-period", async (req: Request, res: Response) => {
+    let list = await placeService.getConstructionPeriodTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/date-type", async (req: Request, res: Response) => {
+    let list = await placeService.getDateTypes();
+    return res.json({ data: list });
+});
+
 staticRouter.get("/first-nation", async (req: Request, res: Response) => {
     let list = await staticService.getFirstNations();
     return res.json({ data: list });
@@ -23,6 +43,46 @@ staticRouter.get("/functional-type", async (req: Request, res: Response) => {
     return res.json({ data: list });
 });
 
+staticRouter.get("/functional-use-type", async (req: Request, res: Response) => {
+    let list = await placeService.getFunctionalUseTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/ownership-types", async (req: Request, res: Response) => {
+    let list = await placeService.getOwnershipTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/contact-type", async (req: Request, res: Response) => {
+    let list = await placeService.getContactTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/link-type", async (req: Request, res: Response) => {
+    let list = await placeService.getWebLinkTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/jurisdiction", async (req: Request, res: Response) => {
+    let list = await staticService.getJurisdictions();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/revision-log-type", async (req: Request, res: Response) => {
+    let list = await placeService.getRevisionLogTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/description-type", async (req: Request, res: Response) => {
+    let list = await placeService.getDescriptionTypes();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/owner-consent", async (req: Request, res: Response) => {
+    let list = await staticService.getOwnerConsents();
+    return res.json({ data: list });
+});
+
 staticRouter.get("/original-media", async (req: Request, res: Response) => {
     let list = await staticService.getOriginalMedias();
     return res.json({ data: list });
@@ -30,11 +90,23 @@ staticRouter.get("/original-media", async (req: Request, res: Response) => {
 
 staticRouter.get("/place-theme", async (req: Request, res: Response) => {
     let list = await staticService.getPlaceThemes();
+    list = list.map(l => Object.assign(l, { display: `${l.category} / ${l.type}` }))
     return res.json({ data: list });
 });
 
 staticRouter.get("/statute", async (req: Request, res: Response) => {
     let list = await staticService.getStatutes();
+
+    for (let item of list) {
+        (item as any).display = item.recognitionAuthority;
+
+        if (item.recognitionType && item.recognitionType.length > 0)
+            (item as any).display += ` / ${item.recognitionType}`;
+
+        if (item.allStatute && item.allStatute.length > 0)
+            (item as any).display += ` / ${item.allStatute}`;
+    }
+
     return res.json({ data: list });
 });
 

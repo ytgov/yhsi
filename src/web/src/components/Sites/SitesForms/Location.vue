@@ -28,7 +28,7 @@
             dense
             outlined
             v-model="fields.otherCommunity"
-            label="Other Community"
+            label="Other community"
             hide-details
           ></v-text-field>
         </div>
@@ -37,7 +37,7 @@
             dense
             outlined
             v-model="fields.otherLocality"
-            label="Other Locality"
+            label="Other locality"
             hide-details
           ></v-text-field>
         </div>
@@ -76,7 +76,7 @@
                     dense
                     outlined
                     v-model="fields.physicalPostalCode"
-                    label="Postal Code"
+                    label="Postal code"
                     background-color="white"
                     hide-details
                   ></v-text-field>
@@ -89,7 +89,7 @@
           <v-textarea
             dense
             outlined
-            label="Previous Address"
+            label="Previous address"
             v-model="fields.previousAddress"
           ></v-textarea>
           <v-textarea
@@ -118,8 +118,13 @@
             outlined
             :items="coordinateDeterminationOptions"
             v-model="fields.coordinateDetermination"
-            label="Coordinate Determination"
+            label="Coordinate determination"
+            hide-details
           ></v-select>
+
+          <v-btn color="secondary" @click="showMap()" :disabled="!showMapButton"
+            ><v-icon class="mr-2">mdi-map-marker</v-icon>Show on Map</v-btn
+          >
         </div>
         <div class="col-md-6">
           <v-row>
@@ -128,7 +133,7 @@
                 dense
                 outlined
                 v-model="fields.nTSMapSheet"
-                label="NTS Map Sheet"
+                label="NTS map sheet"
               ></v-text-field>
             </v-col>
             <v-col cols="6">
@@ -151,28 +156,32 @@
             dense
             outlined
             v-model="fields.bordenNumber"
-            label="Border Number"
+            label="Border number"
           ></v-text-field>
           <v-textarea
             dense
             outlined
-            label="Misc. Info"
+            label="Misc. info"
             v-model="fields.locationComment"
           ></v-textarea>
         </div>
       </div>
     </v-form>
+
+    <map-dialog ref="map"></map-dialog>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import store from "../../../store";
 import { COMMUNITY_URL, PLACE_URL, STATIC_URL } from "../../../urls";
 /* Important, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created */
 export default {
   name: "formLocation",
   data: () => ({
     valid: false,
+    loadedId: -1,
     generalRules: [
       (v) => !!v || "This input is required",
       (v) => v.length <= 20 || "This input must be less than 20 characters",
@@ -200,14 +209,24 @@ export default {
       previousAddress: "", //
     },
   }),
+  computed: {
+    showMapButton: function () {
+      if (this.fields.latitude && this.fields.longitude) {
+        return true;
+      }
+      return false;
+    },
+  },
   created: function () {
-    let id = this.$route.params.id;
+    this.loadedId = this.$route.params.id;
 
     axios
-      .get(`${PLACE_URL}/${id}`)
+      .get(`${PLACE_URL}/${this.loadedId}`)
       .then((resp) => {
         this.fields = resp.data.data;
-        console.log("PLACE", this.fields);
+
+        store.dispatch("addSiteHistory", resp.data.data);
+        this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
 
@@ -219,10 +238,47 @@ export default {
       this.coordinateDeterminationOptions = resp.data.data;
     });
   },
+<<<<<<< HEAD
+  methods: {
+    saveChanges() {
+      let body = {
+        bordenNumber: this.fields.bordenNumber,
+        communityId: this.fields.communityId,
+        coordinateDetermination: this.fields.coordinateDetermination,
+        hectareArea: this.fields.hectareArea,
+        latitude: this.fields.latitude,
+        locationComment: this.fields.locationComment,
+        locationContext: this.fields.locationContext,
+        longitude: this.fields.longitude,
+        nTSMapSheet: this.fields.nTSMapSheet,
+        otherCommunity: this.fields.otherCommunity,
+        otherLocality: this.fields.otherLocality,
+        physicalAddress: this.fields.physicalAddress,
+        physicalCountry: this.fields.physicalCountry,
+        physicalPostalCode: this.fields.physicalPostalCode,
+        physicalProvince: this.fields.physicalProvince,
+        previousAddress: this.fields.previousAddress,
+      };
+
+      axios
+        .put(`${PLACE_URL}/${this.loadedId}/location`, body)
+        .then((resp) => {
+          this.$emit("showAPIMessages", resp.data);
+        })
+        .catch((err) => {
+          this.$emit("showError", err);
+        });
+    },
+    showMap() {
+      this.$refs.map.show(this.fields.latitude, this.fields.longitude);
+    },
+  },
+=======
   methods:{
     saveChanges() {
       console.log("SAVING", this.fields);
     },
   }
+>>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
 };
 </script>
