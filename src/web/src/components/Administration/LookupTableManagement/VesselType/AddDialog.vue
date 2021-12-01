@@ -1,4 +1,13 @@
 <template>
+<<<<<<< HEAD
+  <v-row justify="center">
+    <v-dialog v-model="dialog" persistent max-width="600px">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn v-bind="attrs" v-on="on" class="black--text mx-1">
+          <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
+          Add Vessel Type
+        </v-btn>
+=======
     <v-row justify="center">
     <v-dialog
       v-model="dialog"
@@ -13,6 +22,7 @@
               <v-icon class="mr-1">mdi-plus-circle-outline</v-icon> 
               Add Vessel Type
             </v-btn>
+>>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
       </template>
       <v-card>
         <v-card-title>
@@ -21,38 +31,26 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col
-                cols="12"
-              >
-              <v-form 
-                ref="addVesselTypeForm"
-                :lazy-validation="false"
-                v-model="valid">
-                    <v-text-field
-                        label="Vessel Name"
-                        v-model="input"
-                        :rules="generalRules"
-                    ></v-text-field>
-              </v-form>
-                
+              <v-col cols="12">
+                <v-form
+                  ref="addVesselTypeForm"
+                  :lazy-validation="false"
+                  v-model="valid"
+                >
+                  <v-text-field
+                    label="Vessel Name"
+                    v-model="input"
+                    :rules="generalRules"
+                  ></v-text-field>
+                </v-form>
               </v-col>
             </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-btn
-            text
-            @click="closeDialog"
-          >
-            Close
-          </v-btn>
+          <v-btn text @click="closeDialog"> Close </v-btn>
           <v-spacer></v-spacer>
-          <v-btn
-            color="success"
-            text
-            :disabled="!valid"
-            @click="save"
-          >
+          <v-btn color="success" text :disabled="!valid" @click="save">
             Save
           </v-btn>
         </v-card-actions>
@@ -62,39 +60,38 @@
 </template>
 
 <script>
-import catalogs from "../../../../controllers/catalogs"
+import catalogs from "../../../../controllers/catalogs";
 export default {
-    props: [],
-    data: ()=>({
-        dialog: false,
-        input: null,
-        valid: false,
-        generalRules: [
-        v => !!v || 'This field is required',],
-    }),
-    methods:{
-        closeDialog(){
-            this.dialog = false;
-            this.reset();
-            this.resetValidation();
-        },
-        async save(){
-            let data = {
-                    vesselType: { Type: this.input }
-                    }
-            await catalogs.postVesselType(data);
-            this.$router.go();
-        },
-        //not needed
-        validate () {
-            this.$refs.addVesselTypeForm.validate();
-        },
-        reset() {
-            this.$refs.addVesselTypeForm.reset();
-        },
-        resetValidation () {
-            this.$refs.addVesselTypeForm.resetValidation();
-        },
+  props: [],
+  data: () => ({
+    dialog: false,
+    input: null,
+    valid: false,
+    generalRules: [(v) => !!v || "This field is required"],
+  }),
+  methods: {
+    closeDialog() {
+      this.dialog = false;
+      this.reset();
+      this.resetValidation();
     },
-}
+    async save() {
+      let data = {
+        vesselType: { Type: this.input },
+      };
+      await catalogs.postVesselType(data);
+      this.$router.go();
+    },
+    //not needed
+    validate() {
+      this.$refs.addVesselTypeForm.validate();
+    },
+    reset() {
+      this.$refs.addVesselTypeForm.reset();
+    },
+    resetValidation() {
+      this.$refs.addVesselTypeForm.resetValidation();
+    },
+  },
+};
 </script>

@@ -1,7 +1,7 @@
 import { api } from './config';
 
 export default {
-  async get(page, limit, textToMatch,sortBy, sort){
+  async get(page, limit, textToMatch, sortBy, sort){
       return await api.get(`boats/`, {
         crossdomain: true,
         params: {
@@ -19,17 +19,17 @@ export default {
         console.log(error);
       });
   },
-  async getById(id){
+  async getById(id) {
     return await api.get(`boats/${id}`)
-    .then(res => {
-      return res.data;
-    }).catch(error =>{
-      // handle error
-      console.log(error);
-    });
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
   },
   async put(id, data){
-    return await api.put(`boats/${id}`,data)
+    return await api.put(`boats/${id}`, data)
     .then(res => {
       return res.data;
     }).catch(error =>{
@@ -37,7 +37,7 @@ export default {
     });
   },
   async post(data){
-    return await api.post(`boats/new`,data)
+    return await api.post(`boats/new`, data)
     .then(res => {
       return res.data;
     }).catch(error =>{

@@ -71,6 +71,15 @@
             <v-list-item to="/maps">
               <v-list-item-title>Maps</v-list-item-title>
             </v-list-item>
+            <v-list-item to="/airplane">
+              <v-list-item-title>Airplane Crash Sites</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/boats">
+              <v-list-item-title>Boats & Owners</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/places">
+              <v-list-item-title>Places</v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
 
@@ -99,7 +108,7 @@
               </v-list-item-icon>
               <v-list-item-title>My profile</v-list-item-title>
             </v-list-item>
-            <v-list-item to="/administration">
+            <v-list-item to="/admin">
               <v-list-item-icon>
                 <v-icon>mdi-cogs</v-icon>
               </v-list-item-icon>
@@ -128,6 +137,14 @@
       <v-container fluid :class="`${isSites($route.path, true)}`">
         <v-row>
           <v-col :class="`${isSites($route.path, false)}`">
+            <!-- 
+              <router-view
+                v-on:showError="showError"
+                v-on:showSuccess="showSuccess"
+                v-on:showAPIMessages="showAPIMessages"
+              ></router-view>
+              <notifier ref="notifier"></notifier>
+            -->
             <router-view></router-view>
             <RequestAlert/>
           </v-col>
@@ -185,6 +202,8 @@ export default {
     await store.dispatch("checkAuthentication");
     store.dispatch("setAppSidebar", this.$route.path.startsWith("/sites/"));
     this.hasSidebar = this.$route.path.startsWith("/sites/");
+    this.currentId = this.$route.params.id;
+
     this.hasSidebar = true;
     await store.dispatch("checkAuthentication");
   },
@@ -236,6 +255,15 @@ export default {
     },
     showHistory() {
       this.$refs.historySidebar.show();
+    },
+    showError: function (msg) {
+      this.$refs.notifier.showError(msg);
+    },
+    showSuccess: function (msg) {
+      this.$refs.notifier.showSuccess(msg);
+    },
+    showAPIMessages: function (msg) {
+      this.$refs.notifier.showAPIMessages(msg);
     },
   },
 };

@@ -1,5 +1,5 @@
 import { knex, Knex } from "knex";
-import { Community, FirstNation, FunctionalType, OriginalMedia, PhotoOwner, PhotoProject, PlaceTheme } from "../data";
+import { Community, FirstNation, FunctionalType, OriginalMedia, PhotoOwner, PhotoProject, PlaceTheme, Statute } from "../data";
 
 export class StaticService {
 
@@ -18,7 +18,7 @@ export class StaticService {
     }
 
     async getFunctionalTypes(): Promise<Array<FunctionalType>> {
-        return this.knex<FunctionalType>("FunctionalType").select("id", "description")
+        return this.knex<FunctionalType>("FunctionalType").select("id", "description").orderBy("description")
     }
 
     async getOriginalMedias(): Promise<Array<OriginalMedia>> {
@@ -69,8 +69,8 @@ export class StaticService {
         return this.knex<PlaceTheme>("PlaceTheme").select("id", "category", "type");
     }
 
-    async getStatutes(): Promise<Array<PlaceTheme>> {
-        return this.knex<PlaceTheme>("Statute").select("id", "recognitionAuthority", "recognitionType", "description", "allStatute");
+    async getStatutes(): Promise<Array<Statute>> {
+        return this.knex<Statute>("Statute").select("id", "recognitionAuthority", "recognitionType", "description", "allStatute");
     }
 
     getJurisdictions(): GenericEnum[] {

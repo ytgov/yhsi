@@ -292,18 +292,26 @@
 */
 /* eslint-disable */
 import { latLng, Icon } from "leaflet";
-import 'leaflet/dist/leaflet.css';
-import { LMap, LTileLayer, LControl, LPolygon, LMarker, LTooltip, LPopup } from "vue2-leaflet";
-import { yukonPolygon } from '../../../misc/yukon_territory_polygon'
-import proj4 from 'proj4'
+import "leaflet/dist/leaflet.css";
+import {
+  LMap,
+  LTileLayer,
+  LControl,
+  LPolygon,
+  LMarker,
+  LTooltip,
+  LPopup,
+} from "vue2-leaflet";
+import { yukonPolygon } from "../../../misc/yukon_territory_polygon";
+import proj4 from "proj4";
 
-const pointInPolygon = require('point-in-polygon');
-const utmObj = require('utm-latlng');
-const utmVar = new utmObj(); 
-  /* eslint-enable */
+const pointInPolygon = require("point-in-polygon");
+const utmObj = require("utm-latlng");
+const utmVar = new utmObj();
+/* eslint-enable */
 export default {
-    props: [ "fields", "mode"],
-    components: {
+  props: ["fields", "mode"],
+  components: {
     LMap,
     LTileLayer,
     LControl,
@@ -587,21 +595,19 @@ export default {
                 this.flag++
             }
         },*/
-        modifiableFields: {
-            handler(){
-                this.modifiableFields.inyukon = !this.isOutsideYukon;
-                this.$emit("modifiedDataCoordinates", this.modifiableFields);
-  
-            },
-            deep: true
-        },
-        
-    }
-}
+    modifiableFields: {
+      handler() {
+        this.modifiableFields.inyukon = !this.isOutsideYukon;
+        this.$emit("modifiedDataCoordinates", this.modifiableFields);
+      },
+      deep: true,
+    },
+  },
+};
 </script>
 
 <style scoped>
-.map{
-    z-index: 1;
+.map {
+  z-index: 1;
 }
 </style>

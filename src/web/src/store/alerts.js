@@ -1,5 +1,6 @@
 
 
+
 const state = {
     alert: false,
     text: null,
@@ -26,7 +27,6 @@ const mutations = {
         state.timeout = timeout;
     }
 };
-
 
 export default {
     namespaced: true,

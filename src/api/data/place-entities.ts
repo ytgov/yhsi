@@ -10,6 +10,9 @@ export const PLACE_FIELDS = ["place.id", "primaryName", "yHSIId", "jurisdiction"
     "physicalCountry", "physicalPostalCode", "mailingAddress", "mailingProvince", "mailingCountry",
     "mailingPostalCode", "showInRegister", "siteCategories", "designations", "contributingResources", "records"];
 
+export const REGISTER_FIELDS = ["place.id", "primaryName", "yHSIId", "latitude", "longitude",
+    "recognitionDate", "community.name as communityName", "designations"];
+
 export class Place {
     id!: number;
     primaryName!: string;
@@ -68,7 +71,7 @@ export class Place {
     mailingCountry!: string;
     mailingPostalCode!: string;
     showInRegister!: boolean;
-    siteCategories!: string;
+    siteCategories!: string | string[];
     designations!: string;
     contributingResources!: string;
     records!: string;
@@ -106,7 +109,7 @@ export class Dates {
     type!: number;
     fromDate!: string;
     toDate!: string;
-    Details!: string;
+    details!: string;
 }
 
 export class Description {
@@ -120,7 +123,7 @@ export class FirstNationAssociation {
     id!: number;
     placeId!: number;
     firstNationId!: number;
-    fistNationAssociationType!: number;
+    firstNationAssociationType!: number;
     comments!: string;
 }
 
