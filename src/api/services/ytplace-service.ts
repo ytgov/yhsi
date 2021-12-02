@@ -13,17 +13,17 @@ export class YtPlaceService {
     }
 
     async getAll(skip: number, take: number): Promise<Array<YtPlace>> {
-        return this.knex("place.place").select<YtPlace[]>(YTPLACE_FIELDS).orderBy("id").offset(skip).limit(take);
+        return this.knex("Place.place").select<YtPlace[]>(YTPLACE_FIELDS).orderBy("id").offset(skip).limit(take);
     }
 
     async getById(id: number): Promise<YtPlace | undefined> {
-        return this.knex("place.place").select<YtPlace>(YTPLACE_FIELDS).where({ id: id }).first()
+        return this.knex("Place.place").select<YtPlace>(YTPLACE_FIELDS).where({ id: id }).first()
             .catch(err => { console.log("BOMBED", err); return undefined; })
     }
 
     async getPlaceCount(): Promise<number> {
         return new Promise(async (resolve, reject) => {
-            let results = await this.knex<number>("place.place").count("*", { as: 'count' })
+            let results = await this.knex<number>("Place.place").count("*", { as: 'count' })
 
             if (results) {
                 let val = results[0].count as number;
@@ -35,15 +35,15 @@ export class YtPlaceService {
     }
 
     async addPlace(item: YtPlace): Promise<YtPlace | undefined> {
-        return this.knex("place.place").insert(item).returning<YtPlace>(PLACE_FIELDS);
+        return this.knex("Place.place").insert(item).returning<YtPlace>(PLACE_FIELDS);
     }
 
     async updatePlace(id: number, item: YtPlace): Promise<YtPlace | undefined> {
-        return this.knex("place.place").where({ id }).update(item);
+        return this.knex("Place.place").where({ id }).update(item);
     }
 
     async generateIdFor(nTSMapSheet: string): Promise<string> {
-        let maxPlace = await this.knex("place.place").where({ nTSMapSheet }).max("yhsiId", { as: "maxVal" });
+        let maxPlace = await this.knex("Place.place").where({ nTSMapSheet }).max("yhsiId", { as: "maxVal" });
 
         if (maxPlace && maxPlace.length == 1 && maxPlace[0].maxVal) {
             let val = maxPlace[0].maxVal;
@@ -60,54 +60,70 @@ export class YtPlaceService {
     }
 
     async getPlaceTypesFor(id: number): Promise<PlaceType[]> {
-        return this.knex("place.placetype").where({ placeId: id }).select<PlaceType[]>(["placeId", "placeTypeLookupId"]);
+        return this.knex("Place.placetype").where({ placeId: id }).select<PlaceType[]>(["placeId", "placeTypeLookupId"]);
     }
 
     async getPlaceTypeNames(): Promise<Array<PlaceTypeLookup>> {
-        return this.knex<PlaceTypeLookup>("place.PlaceTypeLookup").select("id", "placeType")
+        return this.knex<PlaceTypeLookup>("Place.PlaceTypeLookup").select("id", "placeType")
     }
 
     // Note "fnDesription" is a typo in the table column
     async getFirstNationNamesFor(id: number): Promise<FirstNationName[]> {
-        return this.knex("place.FirstNationName").where({ placeId: id }).select<FirstNationName[]>(["id", "placeId", "fnName", "fnLanguage", "fnDesription"]);
+        return this.knex("Place.FirstNationName").where({ placeId: id }).select<FirstNationName[]>(["id", "placeId", "fnName", "fnLanguage", "fnDesription"]);
     }   
 
     async getAlternateNamesFor(id: number): Promise<AlternateName[]> {
-        return this.knex("place.AlternateName").where({ placeId: id }).select<AlternateName[]>(["id", "placeId","alternateName"]);
+        return this.knex("Place.AlternateName").where({ placeId: id }).select<AlternateName[]>(["id", "placeId","alternateName"]);
     }   
 
     async getPlaceHistoriesFor(id: number): Promise<PlaceHistory[]> {
-        return this.knex("place.PlaceHistory").where({ placeId: id }).select<PlaceHistory[]>(["id", "placeId","historyText", "reference", "restricted"]);
+        return this.knex("Place.PlaceHistory").where({ placeId: id }).select<PlaceHistory[]>(["id", "placeId","historyText", "reference", "restricted"]);
     }  
 
     async getPlacePhotosFor(id: number): Promise<PlacePhoto[]> {
-        return this.knex("place.PlacePhoto").where({ placeId: id }).select<PlacePhoto[]>(["id", "placeId", "photoRowId"]);
+        return this.knex("Place.PlacePhoto").where({ placeId: id }).select<PlacePhoto[]>(["id", "placeId", "photoRowId"]);
     }
 
     async getFNAssociationsFor(id: number): Promise<FnAssociation[]> {
-        return this.knex("place.FnAssociation").where({ placeId: id }).select<FnAssociation[]>(["placeId", "firstNationId", "fNAssociationType"]);
+        return this.knex("Place.FnAssociation").where({ placeId: id }).select<FnAssociation[]>(["placeId", "firstNationId", "fnAssociationType"]);
     }
 
-    async addFNAssociation(name: FnAssociation) {
-        return this.knex("place.FnAssociation").insert(name);
+    async addFNAssociation(fnAssoc: FnAssociation) {
+        return this.knex("Place.FnAssociation").insert(fnAssoc);
     }
 
-    // Need to match by placeId and firstNationId
-    async removeFNAssociation(id: number) {
-        return this.knex("place.FnAssociation").where({ id }).delete();
+    async removeFNAssociation(fnAssoc: FnAssociation) {
+        return this.knex("Place.FnAssociation").where(fnAssoc).delete();
     }
 
-    async getNamesFor(id: number) {
-        return this.knex("name").where({ placeId: id }).select<Name[]>(["id", "placeId", "description"]);
+    async addFirstNationName(name: FnAssociation) {
+        return this.knex("Place.FirstNationName").insert(name);
     }
 
-    async addSecondaryName(name: Name) {
-        return this.knex("name").insert(name);
+    async removeFirstNationName(nameId: number) {
+        return this.knex("Place.FirstNationName").where({ id: nameId }).delete();
     }
 
-    async removeSecondaryName(id: number) {
-        return this.knex("name").where({ id }).delete();
+    async getAltNamesFor(id: number) {
+        return this.knex("Place.AlternateName").where({ placeId: id }).select<AlternateName[]>(["id", "placeId", "alternateName"]);
     }
+
+    async addAlternateName(name: AlternateName) {
+        return this.knex("Place.AlternateName").insert(name);
+    }
+
+    async removeAlternateName(id: number) {
+        return this.knex("Place.AlternateName").where({ id }).delete();
+    }
+
+    async addPlaceType(placeType: PlaceType) {
+        return this.knex("Place.PlaceType").insert(placeType);
+    }
+
+    async removePlaceType(placeType: PlaceType) {
+        return this.knex("Place.PlaceType").where(placeType).delete();
+    }
+
 
     async getHistoricalPatternsFor(id: number): Promise<HistoricalPattern[]> {
         return this.knex("historicalpattern").where({ placeId: id }).select<HistoricalPattern[]>(["id", "placeId", "comments", "historicalPatternType"]);
@@ -223,11 +239,11 @@ export class YtPlaceService {
     async doSearch(query: Array<QueryStatement>, sort: Array<SortStatement>, page: number, page_size: number, skip: number, take: number): Promise<any> {
         return new Promise(async (resolve, reject) => {
 
-            let selectStmt = this.knex("place.place").distinct().select(YTPLACE_FIELDS);
-                //.leftOuterJoin("firstnationassociation", "place.id", "firstnationassociation.placeid")
-                //.leftOuterJoin("constructionPeriod", "place.id", "constructionPeriod.placeid")
-            //.leftOuterJoin("revisionLog", "place.id", "revisionLog.placeid")
-            //.leftOuterJoin("description", "place.id", "description.placeid");
+            let selectStmt = this.knex("Place.place").distinct().select(YTPLACE_FIELDS);
+                //.leftOuterJoin("firstnationassociation", "Place.id", "firstnationassociation.placeId")
+                //.leftOuterJoin("constructionPeriod", "Place.id", "constructionPeriod.placeId")
+            //.leftOuterJoin("revisionLog", "Place.id", "revisionLog.placeId")
+            //.leftOuterJoin("description", "Place.id", "description.placeId");
 
             if (query && query.length > 0) {
 
@@ -284,7 +300,7 @@ export class YtPlaceService {
                 })
             }
             else {
-                selectStmt.orderBy("place.id");
+                selectStmt.orderBy("Place.id");
             }
 
             let fullData = await selectStmt;

@@ -50,13 +50,7 @@ export const sections = [
         name: "Description",
         icon: "mdi-alphabetical",
         makeUrl: (id) => { return `/sites/${id}/description` }
-    },    
-    {
-        name: "Places",
-        url: "/places/",
-        icon: "mdi-map-maker",// eslint-disable-next-line no-unused-vars
-        makeUrl: (id) => { return `/places/` }
-    },
+    }, 
 
 
 

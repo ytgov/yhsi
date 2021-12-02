@@ -46,6 +46,7 @@ import AdminUserForm from "../components/Administration/UserManagement/UserCompo
 import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
 import PlacesGrid from "../components/Places/PlacesGrid";
 import PlaceTypeGrid from "../components/Administration/LookupTableManagement/PlaceType/PlaceType";
+import PlacesForm from "../components/Places/PlacesComponents/PlacesForm";
 
 Vue.use(VueRouter);
 
@@ -363,12 +364,6 @@ const routes = [
     }
   },
 
-
-
-
-
-
-
   {
     path: "/places",
     name: "PlacesGrid",
@@ -377,6 +372,24 @@ const routes = [
       requiresAuth: false
     },
   },
+  {
+    path: "/places/view/:name",
+    name: "placeView",
+    component: PlacesForm,
+    props: true
+  },
+  {
+    path: "/places/edit/:name",
+    name: "placeEditView",
+    component: PlacesForm,
+    props: true
+  },
+  {
+    path: "/places/new",
+    name: "placeAddView",
+    component: PlacesForm
+  },
+
   {
     path: "*",
     name: "Not Found",

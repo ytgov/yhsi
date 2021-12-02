@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { body, check, param, query, validationResult } from "express-validator";
 import { PhotoService, YtPlaceService, SortDirection, SortStatement, StaticService } from "../services";
-import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership, Photo, WebLink, RevisionLog, Contact, Description, YtPlace } from "../data";
+import { AlternateName, HistoricalPattern, Name, Place, PlaceType, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FnAssociation, FirstNationName, Ownership, PreviousOwnership, Photo, WebLink, RevisionLog, Contact, Description, YtPlace } from "../data";
 import { ReturnValidationErrors } from "../middleware";
 import moment from "moment";
 
@@ -104,7 +104,7 @@ ytPlaceRouter.get("/:id",
  
                     let fnAssociations = await ytPlaceService.getFNAssociationsFor(place.id);
                     fnAssociations = combine(fnAssociations, fnList, "firstNationId", "id", "description", "firstNationDescription" );   
-                    fnAssociations = combine(fnAssociations, await ytPlaceService.getFNAssociationTypes(), 'value', 'fNAssociationType', "text", "fnAssocationDesc");
+                    fnAssociations = combine(fnAssociations, await ytPlaceService.getFNAssociationTypes(), 'value', 'fnAssociationType', "text", "fnAssocationDesc");
 
                     let relationships = {
                         placeTypes: { data: placeTypes },
@@ -115,6 +115,9 @@ ytPlaceRouter.get("/:id",
                         // TODO 
                         // photos: { data: photos },
                     };
+
+                    //console.log(place);
+                    //console.log(relationships);
 
                     return res.send({
                         data: place,
@@ -165,69 +168,110 @@ ytPlaceRouter.post("/",
         return res.json({ data: result });
     });
 
-ytPlaceRouter.put("/:id/summary",
+ytPlaceRouter.put("/:id",
     [
         param("id").isInt().notEmpty(),
-        body("primaryName").isString().bail().notEmpty().trim(),
-        body("showInRegister").isBoolean().notEmpty()
+        body("name").isString().bail().notEmpty().trim()
     ], ReturnValidationErrors,
     async (req: Request, res: Response) => {
         let { id } = req.params;
-        let { secondaryNames, historicalPatterns } = req.body;
+        let { photos, placeTypes, fnNames, altNames, histories, fnAssociations } = req.body;
         let updater = req.body;
-        delete updater.secondaryNames;
-        delete updater.historicalPatterns;
-        delete updater.yHSIId;
+        delete updater.photos;
+        delete updater.placeTypes;
+        delete updater.fnNames;
+        delete updater.altNames;
+        delete updater.histories;
+        delete updater.fnAssociations;
 
-        updater.siteCategories = (updater.siteCategories as string[]).join(',')
-
-        console.log(updater)
+        console.log(updater);
+        console.log(fnAssociations);
 
         await ytPlaceService.updatePlace(parseInt(id), updater);
-        let oldNames = await ytPlaceService.getNamesFor(parseInt(id));
-        secondaryNames = secondaryNames.map((n: Name) => Object.assign(n, { description: n.description.trim() }));
 
-        for (let on of oldNames) {
-            let match = secondaryNames.filter((n: Name) => n.description == on.description);
+        // Update alternate names
+        let oldNames = await ytPlaceService.getAltNamesFor(parseInt(id));
+        altNames = altNames.map((n: AlternateName) => Object.assign(n, { alternateName: n.alternateName.trim() }));
 
+        /*for (let on of oldNames) {
+            let match = altNames.filter((n: AlternateName) => n.alternateName == on.alternateName);
             if (match.length == 0) {
-                await ytPlaceService.removeSecondaryName(on.id);
+                await ytPlaceService.removeAlternateName(on.id);
             }
         }
-
-        for (let on of secondaryNames) {
-            let match = oldNames.filter((n: Name) => n.description == on.description);
-
-            if (match.length == 0) {
-                delete on.id;
-                await ytPlaceService.addSecondaryName(on);
-            }
-        }
-
-        let oldPatterns = await ytPlaceService.getHistoricalPatternsFor(parseInt(id))
-
-        for (let on of oldPatterns) {
-            let match = historicalPatterns.filter((n: HistoricalPattern) => n.comments == on.comments && n.historicalPatternType == on.historicalPatternType);
-
-            if (match.length == 0) {
-                await ytPlaceService.removeHistoricalPattern(on.id);
-            }
-        }
-
-        for (let on of historicalPatterns) {
-            let match = oldPatterns.filter((n: HistoricalPattern) => n.comments == on.comments && n.historicalPatternType == on.historicalPatternType);
-
+        for (let on of altNames) {
+            let match = oldNames.filter((n: AlternateName) => n.alternateName == on.alternateName);
             if (match.length == 0) {
                 delete on.id;
-                delete on.typeText;
-                await ytPlaceService.addHistoricalPattern(on);
+                await ytPlaceService.addAlternateName(on);
+            }
+        }*/
+
+        // Update place types - note that placeTypes is just an array of placeTypeLookupIds
+        let oldPlaceTypes = await ytPlaceService.getPlaceTypesFor(parseInt(id));
+
+        for (let on of oldPlaceTypes) {
+            let match = placeTypes.filter((n: Number) => n == on.placeTypeLookupId);
+            if (match.length == 0) {
+                let placeTypeInsert = new PlaceType ();
+                placeTypeInsert.placeId = parseInt(id);
+                placeTypeInsert.placeTypeLookupId = on.placeTypeLookupId;
+                await ytPlaceService.removePlaceType(placeTypeInsert);
+            }
+        }
+        for (let on of placeTypes) {
+            let match = oldPlaceTypes.filter((n: PlaceType) => n.placeTypeLookupId == on);
+            if (match.length == 0) {
+                let placeTypeInsert = new PlaceType ();
+                placeTypeInsert.placeId = parseInt(id);
+                placeTypeInsert.placeTypeLookupId = on;
+                await ytPlaceService.addPlaceType(placeTypeInsert);
             }
         }
 
-        return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
+        // FnAssociations
+        let oldFnAssocations = await ytPlaceService.getFNAssociationsFor(parseInt(id));
+        for (let on of oldFnAssocations) {
+            let match = fnAssociations.filter((n: FnAssociation) => n.fnAssociationType == on.fnAssociationType && n.firstNationId == on.firstNationId);
+            if (match.length == 0) {
+                let FnAssociationInsert = new FnAssociation ();
+                FnAssociationInsert.placeId = parseInt(id);
+                FnAssociationInsert.fnAssociationType = on.fnAssociationType;
+                FnAssociationInsert.firstNationId = on.firstNationId;
+                await ytPlaceService.removeFNAssociation(FnAssociationInsert);
+            }
+        }
+        for (let on of fnAssociations) {
+            let match = oldFnAssocations.filter((n: FnAssociation) => n.fnAssociationType == on.fnAssociationType && n.firstNationId == on.firstNationId);
+            if (match.length == 0) {
+                on.placeId = parseInt(id);
+                delete on.fnAssocationDesc;
+                delete on.firstNationDescription;
+                await ytPlaceService.addFNAssociation(on);
+            }
+        }
+
+        // FnNames
+        /*let oldFnNames = await ytPlaceService.getFirstNationNamesFor(parseInt(id));
+        for (let on of oldFnNames) {
+            let match = fnNames.filter((n: FirstNationName) => n.fnName == on.fnName && n.fnDescription == on.fnDescription && n.fnLanguage == on.fnLanguage);
+            if (match.length == 0) {
+                await ytPlaceService.removeFirstNationName(on.id);
+            }
+        }
+        for (let on of fnNames) {
+            let match = oldFnNames.filter((n: FirstNationName) => n.fnName == on.fnName && n.fnDescription == on.fnDescription && n.fnLanguage == on.fnLanguage);
+            if (match.length == 0) {
+                on.placeId = parseInt(id);
+                delete on.id;
+                await ytPlaceService.addFirstNationName(on);
+            }
+        }*/
+        
+        return res.json({ messages: [{ variant: "success", text: "Place updated" }] });
     });
 
-ytPlaceRouter.put("/:id/all",
+/*ytPlaceRouter.put("/:id/all",
     [
         check("id").isInt().bail().notEmpty(),
         body("primaryName").isString().bail().notEmpty().trim(),
@@ -262,7 +306,7 @@ ytPlaceRouter.put("/:id/all",
 
         return res.json({ data: result });
     });
-
+*/
 
 function combine(list1: Array<any>, list2: Array<any>, linker: any, linker2: any, value: any, typeText: any = "typeText"): any[] {
     list1.forEach(item => {
