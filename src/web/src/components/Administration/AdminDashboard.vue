@@ -129,7 +129,11 @@ export default {
           url: ""
         },
         {
+<<<<<<< HEAD
           icon: 'mdi-map',
+=======
+          icon: 'mdi-home',
+>>>>>>> 6472a9d (Built most of places form (except map and photos widgets))
           text: 'Place Type',
           url: "/admin/placetype"
         },

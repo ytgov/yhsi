@@ -56,6 +56,7 @@ export const sections = [
         name: "Description",
         icon: "mdi-alphabetical",
         makeUrl: (id) => { return `/sites/${id}/description` }
+<<<<<<< HEAD
     },    
     {
         name: "Places",
@@ -121,6 +122,13 @@ export const sections = [
     //     url: "/grid",
     //     icon: "mdi-table-large"
     // }
+=======
+    }, 
+
+
+
+
+>>>>>>> 6472a9d (Built most of places form (except map and photos widgets))
 ];
 export const environment = process.env.NODE_ENV;
 export const apiBaseUrl = process.env.NODE_ENV == "production" ? "" : "http://localhost:3000";

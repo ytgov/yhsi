@@ -13,3 +13,14 @@
 .siteslp {
     padding: 12px 12px;
 }
+
+/* Djpratt CSS Classes */
+.read-only-form-item .v-select__selection.v-select__selection--comma.v-select__selection--disabled {
+    color: #000000de;
+}
+.read-only-form-item .v-input__append-inner {
+    display: none;
+}
+.v-main .v-btn.form-header {
+    margin: 0;
+}

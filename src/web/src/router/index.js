@@ -44,8 +44,14 @@ import AdminDashboard from "../components/Administration/AdminDashboard";
 import AdminUserGrid from "../components/Administration/UserManagement/Grid";
 import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form";
 import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
+<<<<<<< HEAD
 import BurialsGrid from "../components/Burials/Grid";
 import BurialsForm from "../components/Burials/BurialsComponents/Form";
+=======
+import PlacesGrid from "../components/Places/PlacesGrid";
+import PlaceTypeGrid from "../components/Administration/LookupTableManagement/PlaceType/PlaceType";
+import PlacesForm from "../components/Places/PlacesComponents/PlacesForm";
+>>>>>>> 6472a9d (Built most of places form (except map and photos widgets))
 
 Vue.use(VueRouter);
 
@@ -390,12 +396,34 @@ const routes = [
     component: BurialsForm,
     props: true
   },
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6472a9d (Built most of places form (except map and photos widgets))
   {
     path: "/burials/edit/:name",
     name: "BurialsEditForm",
     component: BurialsForm,
     props: true
   },
+  {
+    path: "/places/view/:name",
+    name: "placeView",
+    component: PlacesForm,
+    props: true
+  },
+  {
+    path: "/places/edit/:name",
+    name: "placeEditView",
+    component: PlacesForm,
+    props: true
+  },
+  {
+    path: "/places/new",
+    name: "placeAddView",
+    component: PlacesForm
+  },
+
   {
     path: "*",
     name: "Not Found",
