@@ -10,3 +10,4 @@ export const PLACE_URL = `${config.apiBaseUrl}/api/place`;
 export const COMMUNITY_URL = `${config.apiBaseUrl}/api/community`;
 export const STATIC_URL = `${config.apiBaseUrl}/api`;
 export const YTPLACE_URL = `${config.apiBaseUrl}/api/ytplace`;
+export const YTPLACEHISTORY_URL = `${config.apiBaseUrl}/api/ytplacehistory`;

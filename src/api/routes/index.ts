@@ -11,4 +11,5 @@ export * from "./histories-router";
 export * from "./catalogs-router";
 export * from "./users-extras-router";
 export * from "./photos-extra-router";
+export * from "./ytplace-history-router";
 export * from "./ytplace-router";

@@ -181,6 +181,8 @@ export default {
         addingItem: false,
     }),
     mounted(){
+        console.log("in mounted with data");
+        console.log(this.data);
         this.data = this.historicRecords;
     },
     methods:{

@@ -99,7 +99,7 @@ export default {
           url: ""
         },
         {
-          icon: 'mdi-map-outline',
+          icon: 'mdi-home',
           text: 'Place Type',
           url: "/admin/placetype"
         },
