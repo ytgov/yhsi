@@ -196,7 +196,6 @@
           ></v-text-field>
         </div>
 
-<<<<<<< HEAD
         <div class="col-md-12">
           <v-card class="default mb-0">
             <v-card-text>
@@ -255,71 +254,6 @@
           </v-card>
         </div>
       </div>
-=======
-                        <v-text-field 
-                        v-model="fields.planNumber"
-                        label="Plan Number"
-                        required
-                        ></v-text-field>
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col
-                        cols="12"
-                    >
-                        <div class="mb-2">Previous Ownerships</div>
-                        <v-alert v-for="(item, i) in fields.previous_ownerships" :key="`theme-${i+1}`"
-                          outlined
-                          color="primary"
-                        >
-                            <div class="sub-title">
-                                Previous Ownership {{ i+1 }}
-                            </div>
-                            <v-btn
-                                icon
-                                color="primary"
-                                class="top-right-button"
-                                @click="removeItem('previous_ownerships', i)"
-                            >
-                                <v-icon dark>mdi-close-circle</v-icon>
-                            </v-btn>
-                            <v-row>
-                                <v-col cols="6">
-                                    <v-text-field 
-                                    v-model="item.dates"
-                                    label="Dates"
-                                    required
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col cols="6">
-                                    <v-text-field 
-                                    v-model="item.numbers"
-                                    label="Numbers"
-                                    required
-                                    ></v-text-field>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-text-field 
-                                    v-model="item.names"
-                                    label="Names"
-                                    required
-                                    ></v-text-field>      
-                                </v-col>
-                            </v-row>
-                        </v-alert>
-                        <v-btn
-                        outlined
-                        color="primary"
-                        @click="addItem('previous_ownerships')"
-                        >
-                            Add New
-                        </v-btn>
-                    </v-col>
-                </v-row>
-      </v-container>
->>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
     </v-form>
   </div>
 </template>

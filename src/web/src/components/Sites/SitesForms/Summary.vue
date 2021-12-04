@@ -41,7 +41,6 @@
               item-value="id"
             ></v-select>
 
-<<<<<<< HEAD
           <v-select
             dense
             outlined
@@ -52,19 +51,6 @@
             clearable
             label="Records"
           ></v-select>
-=======
-            <v-select
-              dense
-              outlined
-              v-model="fields.siteCategories"
-              :items="siteCategoryOptions"
-              item-text="text"
-              item-value="text"
-              multiple
-              clearable
-              label="Site categories"
-            ></v-select>
->>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
 
             <v-select
               dense
