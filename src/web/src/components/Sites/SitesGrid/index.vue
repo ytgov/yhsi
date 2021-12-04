@@ -40,7 +40,6 @@
         </v-col>
       </v-row>
 
-<<<<<<< HEAD
     <v-text-field
       v-model="search"
       label="Search"
@@ -62,9 +61,7 @@
       @click:row="handleClick"
       :footer-props="{ 'items-per-page-options': items_per_page }"
     ></v-data-table>
-=======
     </v-container>
->>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
   </div>
 </template>
 
@@ -144,14 +141,10 @@ export default {
       axios
         .post(`${PLACE_URL}/search`, body)
         .then((resp) => {
-<<<<<<< HEAD
           // Djpratt testing
           console.log(body);
           console.log(`${PLACE_URL}/search`);
           console.log(resp.data);
-=======
-          //console.log(resp.data);
->>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
           this.items = resp.data.data;
           //this.pagination.totalLength = resp.data.meta.count;
           this.totalLength = resp.data.meta.count || resp.data.meta.count.item_count;

@@ -71,7 +71,6 @@
                   ></v-text-field>
                 </div>
 
-<<<<<<< HEAD
                 <div class="col-md-2">
                   <v-btn
                     color="warning"
@@ -94,61 +93,6 @@
                   ></v-text-field>
                 </div>
                 <div class="col-md-5">
-=======
-                                    <v-text-field 
-                                    v-model="item.details"
-                                    label="Details"
-                                    required
-                                    ></v-text-field>
-                                </v-col>
-                            </v-row>
-                        </v-alert>
-                        <v-btn
-                        outlined
-                        color="primary"
-                        @click="addItem('revisionLogs')"
-                        >
-                            Add New
-                        </v-btn>
-                    </v-col>
-                </v-row>
-                <v-divider class="mt-2 mb-2"></v-divider>
-                <v-row>
-                    <v-col
-                        cols="12"
-                    >
-                        <div class="mb-2">Contacts</div>
-                        <v-alert v-for="(item, i) in fields.contacts" :key="`theme-${i+1}`"
-                          outlined
-                          color="primary"
-                        >
-                            <div class="sub-title">
-                                Contact {{ i+1 }}
-                            </div>
-                            <v-btn
-                            icon
-                            color="primary"
-                            class="top-right-button"
-                            @click="removeItem('contacts', i)"
-                            >
-                            <v-icon dark>mdi-close-circle</v-icon>
-                            </v-btn>
-                            <v-row>
-                                <v-col cols="6">
-                                    <v-combobox
-                                    v-model="item.type"
-                                    label="Type"
-                                    ></v-combobox>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                 <v-col cols="6">
-                                    <v-text-field 
-                                    v-model="item.firstName"
-                                    label="First Name"
-                                    required
-                                    ></v-text-field>
->>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
                   <v-text-field
                     v-model="item.details"
                     label="Details"
@@ -239,7 +183,6 @@
                     background-color="white"
                     hide-details
                   ></v-text-field>
-<<<<<<< HEAD
                 </div>
                 <div class="col-md-5">
                   <v-textarea
@@ -252,88 +195,6 @@
                   ></v-textarea>
                 </div>
                 <div class="col-md-5">
-=======
-
-                                    <v-textarea
-                                        label="Description"
-                                        v-model="item.description"
-                                    ></v-textarea>
-                                </v-col>
-                            </v-row>
-                        </v-alert>
-                        <v-btn
-                        outlined
-                        color="primary"
-                        @click="addItem('contacts')"
-                        >
-                            Add New
-                        </v-btn>
-                    </v-col>
-                </v-row>
-                <v-divider class="mt-2 mb-2"></v-divider>
-                <v-row>
-                    <v-col
-                        cols="12"
-                    >
-                        <div class="mb-2">Web Links</div>
-                        <v-alert v-for="(item, i) in fields.webLinks" :key="`theme-${i+1}`"
-                          outlined
-                          color="primary"
-                        >
-                            <div class="sub-title">
-                                Web Link {{ i+1 }}
-                            </div>
-                            <v-btn
-                            icon
-                            color="primary"
-                            class="top-right-button"
-                            @click="removeItem('webLinks', i)"
-                            >
-                            <v-icon dark>mdi-close-circle</v-icon>
-                            </v-btn>
-                            <v-row>
-                                <v-col cols="6">
-                                    <v-combobox
-                                    v-model="item.type"
-                                    label="Link Type"
-                                    ></v-combobox>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                 <v-col cols="6">
-                                    <v-text-field 
-                                    v-model="item.webAddress"
-                                    label="Web Address"
-                                    required
-                                    ></v-text-field>
-                                </v-col>
-                            </v-row>
-                        </v-alert>
-                        <v-btn
-                        outlined
-                        color="primary"
-                        @click="addItem('webLinks')"
-                        >
-                            Add New
-                        </v-btn>
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col cols="6">
-                        <v-alert 
-                          outlined
-                          color="primary"
-                        >
-                            <div class="sub-title">
-                                Designation Information
-                            </div>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-combobox
-                                    v-model="fields.jurisdiction"
-                                    label="Jurisdiction"
-                                    ></v-combobox>
->>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
                   <v-textarea
                     label="Description"
                     v-model="item.description"
@@ -482,7 +343,6 @@
             background-color="white"
           ></v-text-field>
 
-<<<<<<< HEAD
           <v-text-field
             v-model="fields.cIHBNumber"
             label="CIHB number"
@@ -490,33 +350,6 @@
             outlined
             background-color="white"
           ></v-text-field>
-=======
-                        <v-combobox
-                        v-model="fields.statute2Id"
-                        label="Recognition Authority / Recognition Type / Statute 2"
-                        ></v-combobox>
-                    </v-col>
-                </v-row>
-                <v-divider class="mt-2 mb-2"></v-divider>
-                <v-btn color="success">Save Changes</v-btn>
-     
-    
-         <v-row>
-          <v-col>
-            <v-text-field
-              v-model="fields.fHBRONumber"
-              label="FHBRO Number"
-              required
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-combobox
-              v-model="fields.statuteId"
-              label="Recognition Authority / Recognition Type / Statute"
-            ></v-combobox>
->>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
 
           <v-text-field
             v-model="fields.fHBRONumber"

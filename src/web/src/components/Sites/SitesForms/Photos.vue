@@ -143,7 +143,6 @@
                 background-color="white"
               ></v-text-field>
 
-<<<<<<< HEAD
               <v-text-field
                 v-model="item.location"
                 label="Location"
@@ -169,67 +168,6 @@
           <v-btn color="primary" @click="addPhoto()">Add Photo</v-btn>
         </v-col>
       </div>
-=======
-                                    <v-text-field 
-                                    v-model="item.location"
-                                    label="Location"
-                                    required
-                                    ></v-text-field>
-                                    <v-file-input
-                                        :id="`fi-${i}`"
-                                        label="Upload image"
-                                        prepend-icon="mdi-camera"
-                                        accept="image/*"
-                                        @change="onFileSelection($event, i)"
-                                    ></v-file-input>
-                                </v-col>
-                            </v-row>
-                        </v-alert>
-                    </v-col>
-                    <v-col cols="12">
-                        <v-btn
-                        outlined
-                        color="primary"
-                        @click="addItem('photos')"
-                        >
-                            Add New
-                        </v-btn>
-                    </v-col>
-
-                </v-row>
-                <v-divider class="mt-2 mb-2"></v-divider>
-                <v-btn color="success">Save Changes</v-btn>
-                <!--
-              </v-container>
-            </v-form>
-        </div>-->
-          <v-row>
-                <v-col cols="12">
-                  <v-text-field
-                    v-model="item.location"
-                    label="Location"
-                    required
-                  ></v-text-field>
-                  <v-file-input
-                    :id="`fi-${i}`"
-                    label="Upload image"
-                    prepend-icon="mdi-camera"
-                    accept="image/*"
-                    @change="onFileSelection($event, i)"
-                  ></v-file-input>
-                </v-col>
-
-              <!--
-            </v-alert>
-          </v-col>-->
-          <v-col cols="12">
-            <v-btn outlined color="primary" @click="addItem('photos')">
-              Add New
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
->>>>>>> 6510c97e1d3a28bc93f7f10d8994fd40fdf8f7e6
     </v-form>
   </div>
 </template>
