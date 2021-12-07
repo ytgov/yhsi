@@ -25,15 +25,15 @@
         </v-btn>
         <PrintButton
           v-if="mode == 'view'"
-          :data="fields"
-          :name="fields.name"
+          :data="printData"
+          :name="printData.name"
           :selectedImage="selectedImage"
           class="mx-1 form-header"
         />
 
         <!-- buttons for the edit state -->
         <v-btn
-          class="black--text mx-1"
+          class="black--text mx-1 form-header"
           @click="cancelEdit"
           v-if="mode == 'edit'"
         >
@@ -45,21 +45,23 @@
           :disabled="changesMade < 1"
           v-if="mode == 'edit'"
           @click="saveChanges"
+          class="form-header"
         >
           <v-icon class="mr-1">mdi-check</v-icon>
           Done
         </v-btn>
 
         <!-- buttons for the new state -->
-        <v-btn class="black--text mx-1" @click="cancelNew" v-if="mode == 'new'">
+        <v-btn class="black--text mx-1 form-header" @click="cancelNew" v-if="mode == 'new'">
           <v-icon>mdi-close</v-icon>
           Cancel
         </v-btn>
         <v-btn
-          color="success"
+          color="primary"
           :disabled="changesMade < 1"
           v-if="mode == 'new'"
-          @click="saveChanges"
+          @click="createPlace"
+          class="form-header"
         >
           <v-icon class="mr-1">mdi-check</v-icon>
           Create Place
@@ -69,18 +71,9 @@
     </v-row>
     <!-- end header section -->
 
-    <!-- Body -->
-    <div class="row mx-1">
+    <!-- Body top -->
+    <div class="row">
       <div class="col-md-4">
-          <v-text-field
-            v-model="fields.name"
-            v-if="mode == 'new'"
-            label="Name"
-            dense
-            outlined
-            background-color="white"
-            hide-details
-          ></v-text-field>
           <!-- Names list -->
           <v-card class="default mb-5">
             <v-card-text>
@@ -189,7 +182,7 @@
                 <v-row>
                   <div class="col-md-12">
                     <v-text-field
-                      v-model="item.fnDescription"
+                      v-model="item.fnDesription"
                       :readonly="mode == 'view'"
                       label="Description"
                       dense
@@ -304,17 +297,34 @@
         </v-row>
       </div>
     </div>
-    <!-- end body -->
+    <!-- end body top -->
+
+    <MapLoader
+      v-if="infoLoaded"
+      :mode="mode"
+      :mapType="'ytPlace'"
+      @modifiedDataCoordinates="modifiedDataCoordinates"
+      :fields="{
+        accuracy: fields.accuracy,
+        inyukon: null,
+        locationDesc: fields.locationDesc,
+        lat: fields.latitude,
+        long: fields.longitude,
+        Location: null,
+        mapSheet: fields.mapSheet,
+      }"
+    />
 
     <v-divider class="my-5"></v-divider>
-    <!-- Historic Record component -->
+
     <HistoricRecord
-      v-if="fields.histories != undefined && mode != 'new'"
-      :historicRecords="fields.histories"
+      v-if="histories != undefined && mode != 'new' && infoLoaded"
+      :historicRecords="histories"
       :mode="mode"
-      :placeId="getPlaceId"
+      :placeId="placeId"
       @historic-record-change="historicRecordChange"
     />
+
   </div>
 </template>
 
@@ -323,6 +333,7 @@ import Breadcrumbs from "../../Breadcrumbs.vue";
 //import Photos from "./Photos/Photos";
 import HistoricRecord from "./HistoricRecord";
 import PrintButton from "./PrintButton";
+import MapLoader from "../../MapLoader";
 import catalogs from "../../../controllers/catalogs";
 import { YTPLACE_URL, STATIC_URL } from "../../../urls";
 import axios from "axios";
@@ -331,7 +342,7 @@ import axios from "axios";
 export default {
   name: "placesForm",
   //components: { Photos, Breadcrumbs, HistoricRecord, PrintButton },
-  components: { Breadcrumbs, PrintButton, HistoricRecord },
+  components: { Breadcrumbs, PrintButton, HistoricRecord, MapLoader},
   data: () => ({
     mode: "",
     fields: {},
@@ -340,12 +351,14 @@ export default {
     fnNames: [],
     altNames: [],
     fnAssociations: [],
-    fieldsHistory: null,
     placeTypeOptions: [],
     selectedImage: null,
     changesMade: 0,
     firstNationOptions: [],
     fnAssociationTypeOptions: [],
+    histories: [],
+    modifiedMapFields: null,
+    placeId: null,
 
     //helper vars used for the name list functions
     editTableNames: -1, // tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
@@ -353,6 +366,8 @@ export default {
     helperName: null,
     validName: false,
     nameRules: [(v) => !!v || "Name is required"],
+
+    infoLoaded: false,
  
   }),
   created() {
@@ -402,7 +417,14 @@ export default {
       } /* eslint-enable */,
       deep: true,
     },
-    changesMadeFlag: {
+    fnNames: {
+      /* eslint-disable */
+      handler() {
+        this.changesMade = this.changesMade + 1;
+      } /* eslint-enable */,
+      deep: true,
+    },
+    altNames: {
       /* eslint-disable */
       handler() {
         this.changesMade = this.changesMade + 1;
@@ -422,6 +444,7 @@ export default {
       if (this.$route.params.id) {
         localStorage.currentPlaceId = this.$route.params.id;
       }
+      this.placeId = localStorage.currentPlaceId;
     },
     loadItem(id) {
       axios
@@ -434,14 +457,14 @@ export default {
     },
     setPlace(place) {
       this.fields = place.data;
-      // Djpratt: Histories data doesn't load if it's directly in the data. However if it's in fields it works (I'm unsure why)
-      this.fields.histories = place.relationships.histories.data;
+      this.histories = place.relationships.histories.data;
       this.placeTypes = place.relationships.placeTypes.data;    
       this.placeTypeNames = this.placeTypes.map((x) => (x = x.placeType));
       this.placeTypes = this.placeTypes.map((x) => (x = x.placeTypeLookupId));
       this.fnNames = place.relationships.fnNames.data;
       this.altNames = place.relationships.altNames.data;
       this.fnAssociations = place.relationships.fnAssociations.data;
+      this.infoLoaded = true;
     },
     setPlaceTypeNames() {
       this.placeTypeNames = [];
@@ -466,17 +489,18 @@ export default {
         longitude: "",
         mapSheet: "",
         notes: "",
+        accuracy: "",
       };
       this.photos = [];
       this.placeTypes = [];
       this.fnNames = [];
       this.altNames = [];
-      this.fields.histories = [];
+      this.histories = [];
       this.fnAssociations = [];
+      this.histories = [];
     },
     editMode() {
       // Store the current fields in order to avoid reloading data on cancel edit
-      this.fieldsHistory = { ...this.fields };
       this.mode = "edit";
       this.$router.push(`/places/edit/${this.fields.name}`);
       this.changesMade = 0;
@@ -486,9 +510,6 @@ export default {
       this.selectedImage = val;
     },
     cancelEdit() {
-      if (this.fieldsHistory) {
-        this.fields = { ...this.fieldsHistory };
-      }
       this.mode = "view";
       this.$router.push(`/places/view/${this.fields.name}`);
       this.loadItem(localStorage.currentPlaceId);
@@ -499,16 +520,17 @@ export default {
     saveChanges() {
       let body = {
         name: this.fields.name,
-        locationDesc: this.fields.locationDesc,
-        latitude: this.fields.latitude,
-        longitude: this.fields.longitude,
-        mapSheet: this.fields.mapSheet,
+        locationDesc: this.modifiedMapFields.locationDesc,
+        latitude: this.modifiedMapFields.lat,
+        longitude: this.modifiedMapFields.long,
+        accuracy: this.modifiedMapFields.accuracy,
+        mapSheet: this.modifiedMapFields.mapSheet,
         notes: this.fields.notes,
         photos: this.photos,
         placeTypes: this.placeTypes,
         fnNames: this.fnNames,
         altNames: this.altNames,
-        histories: this.fields.histories,
+        histories: this.histories,
         fnAssociations: this.fnAssociations,
       };
 
@@ -524,6 +546,34 @@ export default {
           this.$emit("showError", err);
         });
     },
+    createPlace() {
+      let body = {
+        place: {
+          name: this.fields.name,
+          notes: this.fields.notes,
+        },
+        altNames: this.altNames,
+        fnNames: this.fnNames,
+        fnAssociations: this.fnAssociations,
+        placeTypes: this.placeTypes,
+      };
+
+      console.log(body);
+
+      axios
+        .post(`${YTPLACE_URL}/`, body)
+        .then((resp) => {
+          this.mode = "view";
+          this.$router.push(`/places/view/${this.fields.name}`);
+          localStorage.currentPlaceId = resp.data.data.id;
+          this.placeId = localStorage.currentPlaceId;
+          this.loadItem(localStorage.currentPlaceId);
+          this.$emit("showAPIMessages", resp.data);
+        })
+        .catch((err) => {
+          this.$emit("showError", err);
+        });
+    },
     addName() {
       this.altNames.push({ alternateName: "", placeId: localStorage.currentPlaceId, id: null });
     },
@@ -531,7 +581,7 @@ export default {
       this.altNames.splice(index, 1);
     },
     addFNAssociation() {
-      this.fnAssociations.push({ placeId: localStorage.currentPlaceId, fnAssociationType: 1, firstNationId: 1  });
+      this.fnAssociations.push({ placeId: localStorage.currentPlaceId, fnAssociationType: 1, firstNationId: 1 });
     },
     removeFNAssociation(index) {
       this.fnAssociations.splice(index, 1);
@@ -542,19 +592,33 @@ export default {
     removeFnName(index) {
       this.fnNames.splice(index, 1);
     },
+    historicRecordChange() {
+      this.changesMade = this.changesMade + 1;
+    },
+    modifiedDataCoordinates(val) {
+      this.modifiedMapFields = val;
+      this.changesMade = this.changesMade + 1;
+    },
+  }, 
+  computed: {
     getPlaceId() {
       if (this.$route.params.id) {
         return this.$route.params.id;
       } else return localStorage.currentPlaceId;
     },
-    historicRecordChange() {
-      this.changesMade = this.changesMade + 1;
-    },
-  }, // end of methods 
-  computed: {
-    changesMadeFlag() {
-      return [this.placeTypes, this.altNames, this.fnNames, this.fnAssociations].join();
-    },
-  }
+    printData() {
+      let printData = this.fields;
+      printData.histories = this.histories;
+      printData.placeTypes = this.placeTypes;
+      printData.placeTypeNames = this.placeTypeNames;
+      printData.fnNames = this.fnNames;
+      printData.fnAssociations = this.fnAssociations;
+      printData.histories = this.histories;
+      printData.altNames = this.altNames;
+      printData.fnAssociationTypeOptions = this.fnAssociationTypeOptions;
+      printData.firstNationOptions = this.firstNationOptions;
+      return printData;
+    }
+  },
 };
 </script>

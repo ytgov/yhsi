@@ -74,30 +74,11 @@ export class YtPlaceService {
 	async addPlace(item: YtPlace): Promise<YtPlace | undefined> {
 		return this.knex('Place.place')
 			.insert(item)
-			.returning<YtPlace>(PLACE_FIELDS);
+			.returning<YtPlace>(YTPLACE_FIELDS);
 	}
 
 	async updatePlace(id: number, item: YtPlace): Promise<YtPlace | undefined> {
 		return this.knex('Place.place').where({ id }).update(item);
-	}
-
-	async generateIdFor(nTSMapSheet: string): Promise<string> {
-		let maxPlace = await this.knex('Place.place')
-			.where({ nTSMapSheet })
-			.max('yhsiId', { as: 'maxVal' });
-
-		if (maxPlace && maxPlace.length == 1 && maxPlace[0].maxVal) {
-			let val = maxPlace[0].maxVal;
-			let parts = val.split('/');
-			let lastPart = parseInt(parts[2]);
-
-			lastPart++;
-
-			let strVal = lastPart.toString().padStart(3, '0');
-			return `${nTSMapSheet}/${strVal}`;
-		}
-
-		return `${nTSMapSheet}/001`;
 	}
 
 	async getPlaceTypesFor(id: number): Promise<PlaceType[]> {
@@ -196,155 +177,6 @@ export class YtPlaceService {
 
 	async removePlaceType(placeType: PlaceType) {
 		return this.knex('Place.PlaceType').where(placeType).delete();
-	}
-
-	async getHistoricalPatternsFor(id: number): Promise<HistoricalPattern[]> {
-		return this.knex('historicalpattern')
-			.where({ placeId: id })
-			.select<HistoricalPattern[]>([
-				'id',
-				'placeId',
-				'comments',
-				'historicalPatternType',
-			]);
-	}
-
-	async addHistoricalPattern(name: Name) {
-		return this.knex('historicalpattern').insert(name);
-	}
-
-	async removeHistoricalPattern(id: number) {
-		return this.knex('historicalpattern').where({ id }).delete();
-	}
-
-	async getThemesFor(id: number): Promise<Theme[]> {
-		return this.knex('theme')
-			.where({ placeId: id })
-			.select<Theme[]>(['id', 'placeId', 'placeThemeId']);
-	}
-
-	async addTheme(name: Theme) {
-		return this.knex('theme').insert(name);
-	}
-
-	async removeTheme(id: number) {
-		return this.knex('theme').where({ id }).delete();
-	}
-
-	async getFunctionUsesFor(id: number): Promise<FunctionalUse[]> {
-		return this.knex('FunctionalUse')
-			.where({ placeId: id })
-			.select<FunctionalUse[]>([
-				'id',
-				'placeId',
-				'functionalTypeId',
-				'functionalUseType',
-				'description',
-			]);
-	}
-
-	async addFunctionalUse(name: FunctionalUse) {
-		return this.knex('FunctionalUse').insert(name);
-	}
-
-	async removeFunctionalUse(id: number) {
-		return this.knex('FunctionalUse').where({ id }).delete();
-	}
-
-	async getOwnershipsFor(id: number): Promise<Ownership[]> {
-		return this.knex('Ownership')
-			.where({ placeId: id })
-			.select<Ownership[]>(['id', 'placeId', 'ownershipType', 'comments']);
-	}
-
-	async addOwnership(name: Ownership) {
-		return this.knex('Ownership').insert(name);
-	}
-
-	async removeOwnership(id: number) {
-		return this.knex('Ownership').where({ id }).delete();
-	}
-
-	async addPreviousOwnership(name: PreviousOwnership) {
-		return this.knex('PreviousOwnership').insert(name);
-	}
-
-	async removePreviousOwnership(id: number) {
-		return this.knex('PreviousOwnership').where({ id }).delete();
-	}
-
-	async getContactsFor(id: number): Promise<Contact[]> {
-		return this.knex('Contact')
-			.where({ placeId: id })
-			.select<Contact[]>([
-				'id',
-				'placeId',
-				'firstName',
-				'lastName',
-				'phoneNumber',
-				'email',
-				'mailingAddress',
-				'description',
-				'contactType',
-			]);
-	}
-
-	async addContact(name: Contact) {
-		return this.knex('Contact').insert(name);
-	}
-
-	async removeContact(id: number) {
-		return this.knex('Contact').where({ id }).delete();
-	}
-
-	async getRevisionLogFor(id: number): Promise<RevisionLog[]> {
-		return this.knex('RevisionLog')
-			.where({ placeId: id })
-			.select<RevisionLog[]>([
-				'id',
-				'placeId',
-				'revisionLogType',
-				'revisionDate',
-				'revisedBy',
-				'details',
-			])
-			.orderBy('revisionDate');
-	}
-
-	async addRevisionLog(name: RevisionLog) {
-		return this.knex('RevisionLog').insert(name);
-	}
-
-	async removeRevisionLog(id: number) {
-		return this.knex('RevisionLog').where({ id }).delete();
-	}
-
-	async getWebLinksFor(id: number): Promise<WebLink[]> {
-		return this.knex('WebLink')
-			.where({ placeId: id })
-			.select<WebLink[]>(['id', 'placeId', 'type', 'address']);
-	}
-
-	async addWebLink(name: WebLink) {
-		return this.knex('WebLink').insert(name);
-	}
-
-	async removeWebLink(id: number) {
-		return this.knex('WebLink').where({ id }).delete();
-	}
-
-	async getDescriptionsFor(id: number): Promise<Description[]> {
-		return this.knex('Description')
-			.where({ placeId: id })
-			.select<Description[]>(['id', 'placeId', 'descriptionText', 'type']);
-	}
-
-	async addDescription(name: Description) {
-		return this.knex('Description').insert(name);
-	}
-
-	async removeDescription(id: number) {
-		return this.knex('Description').where({ id }).delete();
 	}
 
 	getFNAssociationTypes(): GenericEnum[] {
