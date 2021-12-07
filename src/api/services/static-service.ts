@@ -1,5 +1,5 @@
 import { knex, Knex } from "knex";
-import { Community, FirstNation, FunctionalType, OriginalMedia, PhotoOwner, PhotoProject, PlaceTheme, Statute } from "../data";
+import { Community, FirstNation, FunctionalType, OriginalMedia, PhotoOwner, PhotoProject, PlaceTheme, Statute, MapSheetLookup } from "../data";
 
 export class StaticService {
 
@@ -71,6 +71,10 @@ export class StaticService {
 
     async getStatutes(): Promise<Array<Statute>> {
         return this.knex<Statute>("Statute").select("id", "recognitionAuthority", "recognitionType", "description", "allStatute");
+    }
+
+    async getMapSheets(): Promise<Array<MapSheetLookup>> {
+        return this.knex<MapSheetLookup>("YHIS.MapSheetLookup").select("id", "map50k", "map250k").orderBy("map50k");
     }
 
     getJurisdictions(): GenericEnum[] {

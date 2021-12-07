@@ -237,14 +237,16 @@
     <MapLoader
       v-if="infoLoaded"
       :mode="mode"
+      :mapType="planeCrash"
       @modifiedDataCoordinates="modifiedDataCoordinates"
       :fields="{
         accuracy: fields.accuracy,
         inyukon: fields.inyukon,
-        crashlocation: fields.crashlocation,
+        locationDesc: fields.crashlocation,
         lat: fields.lat,
         long: fields.long,
         Location: fields.Location,
+        mapsheet: null,
       }"
     />
     <v-row>
@@ -471,7 +473,7 @@ import Breadcrumbs from "../../Breadcrumbs.vue";
 import Photos from "./Photos/Photos";
 import PrintButton from "./PrintButton";
 import aircrash from "../../../controllers/aircrash";
-import MapLoader from "./MapLoader";
+import MapLoader from "../../MapLoader";
 import _ from "lodash";
 export default {
   name: "crashForm",
@@ -643,12 +645,12 @@ export default {
       this.overlay = true;
       //console.log(this.fields);
       //Mapping coordinate data
-      let { lat, long, inyukon, crashlocation, accuracy } =
+      let { lat, long, inyukon, locationDesc, accuracy } =
         this.modifiedMapFields;
       this.fields.lat = lat;
       this.fields.long = long;
       this.fields.inyukon = inyukon;
-      this.fields.crashlocation = crashlocation;
+      this.fields.crashlocation = locationDesc;
       this.fields.accuracy = accuracy;
       //Mapping general fields
       let crash = { ...this.fields };

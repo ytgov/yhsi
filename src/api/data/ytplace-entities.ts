@@ -1,5 +1,5 @@
 
-export const YTPLACE_FIELDS = ["place.id", "name", "locationDesc", "latitude", "longitude", "mapSheet", "notes"];
+export const YTPLACE_FIELDS = ["id", "name", "locationDesc", "latitude", "longitude", "mapSheet", "notes", "accuracy"];
 
 export class YtPlace {
 id!: number;
@@ -9,6 +9,7 @@ latitude!: number;
 longitude!: number;
 mapSheet!: string;
 notes!: string;
+accuracy!: string;
 }
 
 export class PlaceType {
@@ -26,7 +27,7 @@ export class FirstNationName {
     placeId!: number;
     fnName!: string;
     fnLanguage!: string;
-    fnDescription!: string;
+    fnDesription!: string;
 }
 
 export class AlternateName {
