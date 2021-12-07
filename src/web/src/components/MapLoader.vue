@@ -12,6 +12,10 @@
               label="Coordinate System"
               @change="changedSystem"
               v-model="selectedSystem"
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-select>
           </v-col>
           <v-col>
@@ -21,7 +25,11 @@
               item-text="name"
               label="Projection"
               @change="changedDatum"
-              v-model="selectedProjection"
+              v-model="selectedProjection"          
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-select>
           </v-col>
         </v-row>
@@ -36,7 +44,11 @@
               @change="changedLocation"
               v-model="dd.lat"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
         </v-row>
@@ -49,7 +61,11 @@
               @change="changedLocation"
               v-model="dd.lng"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
         </v-row>
@@ -61,7 +77,11 @@
               @change="changedLocation"
               v-model="utm.Easting"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
           <v-col cols="3">
@@ -70,7 +90,11 @@
               @change="changedLocation"
               v-model="utm.Northing"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
           <v-col cols="3">
@@ -79,7 +103,12 @@
               @change="changedLocation"
               v-model="utm.ZoneLetter"
               :readonly="mode == 'view'"
-              :items="hemispheres"
+              :items="hemispheres"    
+              :class="{ 'read-only-form-item': mode == 'view' } "   
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-select>
           </v-col>
           <v-col cols="3">
@@ -88,7 +117,11 @@
               @change="changedLocation"
               v-model="utm.ZoneNumber"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
         </v-row>
@@ -104,7 +137,11 @@
               @change="changedLocation"
               v-model="dms.lat.deg"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
           <v-col>
@@ -113,7 +150,11 @@
               @change="changedLocation"
               v-model="dms.lat.min"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
           <v-col>
@@ -122,7 +163,11 @@
               @change="changedLocation"
               v-model="dms.lat.sec"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
           <v-col>
@@ -130,7 +175,11 @@
             <v-text-field
               @change="changedLocation"
               v-model="dms.lat.dir"
-              :readonly="mode == 'view'"
+              :readonly="mode == 'view'"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
         </v-row>
@@ -143,7 +192,11 @@
               @change="changedLocation"
               v-model="dms.lng.deg"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
           <v-col>
@@ -151,7 +204,11 @@
               @change="changedLocation"
               v-model="dms.lng.min"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
           <v-col>
@@ -159,14 +216,22 @@
               @change="changedLocation"
               v-model="dms.lng.sec"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
           <v-col>
             <v-text-field
               @change="changedLocation"
               v-model="dms.lng.dir"
-              :readonly="mode == 'view'"
+              :readonly="mode == 'view'"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
         </v-row>
@@ -180,7 +245,11 @@
               @change="changedLocation"
               v-model="nad83.x"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
         </v-row>
@@ -193,7 +262,11 @@
               @change="changedLocation"
               v-model="nad83.y"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
+              dense
+              outlined
+              background-color="white"
+              hide-details
             ></v-text-field>
           </v-col>
         </v-row>
@@ -215,17 +288,42 @@
     </v-col>
     <v-col cols="2">
       <v-textarea
-        label="Crash Location Description"
-        v-model="modifiableFields.crashlocation"
+        label="Location Description"
+        v-model="modifiableFields.locationDesc"
+        class="mb-5"
         :readonly="mode == 'view'"
+        dense
+        outlined
+        background-color="white"
+        hide-details
       ></v-textarea>
       <v-select
         label="Location Accuracy"
         v-model="modifiableFields.accuracy"
         :items="locationAccuracyOptions"
         :readonly="mode == 'view'"
+        class="mb-5"
+        :class="{ 'read-only-form-item': mode == 'view' } "
+        dense
+        outlined
+        background-color="white"
+        hide-details
       ></v-select>
-      <v-checkbox
+      <label for="mapSheetDropdown" :style="{fontSize: '15px', color: '#666666'}">Mapsheet</label>
+      <Dropdown
+        :options="mapSheetOptions"
+        v-on:selected="handleMapSheetSelected"
+        :disabled="mode == 'view'"
+        name="mapSheetDropdown"
+        :maxItem="10"
+        :placeholder="modifiableFields.mapSheet"
+        class="mapsheet"
+        dense
+        outlined
+        background-color="white"
+        hide-details>
+      </Dropdown>
+      <v-checkbox v-if="mapType == 'planeCrash'"
         :value="!isOutsideYukon"
         :readonly="true"
         label="Crash site within Yukon"
@@ -262,7 +360,7 @@
             <l-tooltip :content="marker.tooltip" />
           </l-marker>
           <l-control :position="'bottomleft'" class="custom-control-watermark"
-            >Crash Site
+            >{{ mapTypeNoun }}
           </l-control>
         </l-map>
       </div>
@@ -280,6 +378,7 @@
 /* eslint-disable */
 import { latLng, Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import Dropdown from 'vue-simple-search-dropdown';
 import {
   LMap,
   LTileLayer,
@@ -289,15 +388,17 @@ import {
   LTooltip,
   LPopup,
 } from "vue2-leaflet";
-import { yukonPolygon } from "../../../misc/yukon_territory_polygon";
+import { yukonPolygon } from "../misc/yukon_territory_polygon";
 import proj4 from "proj4";
+import { YTPLACE_URL, STATIC_URL } from "../urls";
+import axios from "axios";
 
 const pointInPolygon = require("point-in-polygon");
 const utmObj = require("utm-latlng");
 const utmVar = new utmObj();
 /* eslint-enable */
 export default {
-  props: ["fields", "mode"],
+  props: ["fields", "mode", "mapType"],
   components: {
     LMap,
     LTileLayer,
@@ -306,17 +407,21 @@ export default {
     LMarker,
     LPopup,
     LTooltip,
+    Dropdown,
   },
   data: () => ({
     flag: 1, // tells the component if it should accept new prop data
+    mapTypeNoun: "", // shared noun based on map type
     modifiableFields: {
       accuracy: "",
       inyukon: "",
-      crashlocation: "",
+      locationDesc: "",
       lat: 0.0,
       long: 0.0,
       Location: "",
+      mapSheet: "",
     },
+    selectedMapsheet: "",
     //fields for the types of coordinate systems
     dd: {
       lat: 0,
@@ -339,7 +444,8 @@ export default {
     //Selection vars
     selectedSystem: { id: 1, text: "Decimal Degrees" },
     selectedProjection: { id: 1, name: "WSG 84" },
-    locationAccuracyOptions: ["Approx."],
+    locationAccuracyOptions: ["Approximate","Actual"],
+    mapSheetOptions: [],
     projectionOptions: [
       //datums
       {
@@ -382,11 +488,11 @@ export default {
       { id: 2, text: "UTM Zone 8" },
       { id: 3, text: "Degrees, Minutes, Seconds" },
     ],
-    //Crash site marker
+    // Site marker
     marker: {
       visible: false,
       latLng: [0, 0],
-      tooltip: "Selected crash site",
+      tooltip: "",
     },
     //predefined map & marker
     map: {
@@ -401,6 +507,8 @@ export default {
   mounted() {
     this.getFields();
     this.fixMarkers();
+    this.setSharedVerbage();
+    this.getMapSheetLookup();
     //console.log(proj4);
     proj4.defs([
       [
@@ -448,6 +556,11 @@ export default {
         iconUrl: require("leaflet/dist/images/marker-icon.png"),
         shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
       });
+    },
+    // Determine any shared verbage based on mapType
+    setSharedVerbage() {
+        this.mapTypeNoun = (this.mapType == 'planeCrash') ? 'Site Crash' : (this.mapType == 'ytPlace') ? 'Place' : '';
+        this.marker.tooltip = "Selected "+this.mapTypeNoun;
     },
     setCenter(lat, lng) {
       //This method sets the center focus of the map
@@ -619,6 +732,15 @@ export default {
       } // Don't do anything for N or E
       return dd;
     },
+    async getMapSheetLookup() {
+        axios.get(`${STATIC_URL}/mapsheet`).then((resp) => {
+        this.mapSheetOptions = resp.data.data;
+        this.mapSheetOptions = this.mapSheetOptions.map((x) => (x = {id: x.map50k, name: x.map50k}));
+        });
+    },
+    handleMapSheetSelected(item) {
+      this.modifiableFields.mapSheet = item.id;
+    }
   },
   computed: {
     isOutsideYukon() {

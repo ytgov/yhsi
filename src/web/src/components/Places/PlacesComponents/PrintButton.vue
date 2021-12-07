@@ -30,13 +30,13 @@ export default {
       { title: "Comments", key: "Comments" },
     ],
     textFields: [
-      { title: "Registration Number", key: "RegistrationNumber" },
-      { title: "Construction Date:", key: "ConstructionDate" },
-      { title: "Service Start Date:", key: "ServiceStart" },
-      { title: "Service End Date:", key: "ServiceEnd" },
-      { title: "Vessel Type:", key: "VesselType" },
-      { title: "Current Location Description:", key: "CurrentLocation" },
-      { title: "Notes:", key: "Notes" },
+      { title: "Place Types:", key: "placeTypeNames" },
+      { title: "Notes:", key: "notes" },
+      { title: "Latitude:", key: "latitude" },
+      { title: "Longitude:", key: "longitude" },
+      { title: "Location Description:", key: "locationDesc" },
+      { title: "Location Accuracy:", key: "accuracy" },
+      { title: "MapSheet:", key: "mapSheet" },
     ],
     toPrint: {},
     textpos: 0,
@@ -54,25 +54,35 @@ export default {
       this.toPrint.historicRecords = [];
       let hR = this.data.histories;
       this.toPrint.historicRecords = hR.map((x) => {
-        return [x.HistoryText, x.Reference];
+        let restrictedVal = (x.restricted == 1) ? 'Yes' : 'No';
+        return [x.historyText, x.reference, restrictedVal];
       });
 
-      this.toPrint.general.pastNames = this.toPrint.general.pastNames.map(
+      this.toPrint.general.altNames = this.toPrint.general.altNames.map(
         (x) => {
-          return [x.BoatName];
+          return [x.alternateName];
         }
       );
-      let owners = this.toPrint.general.owners;
-      this.toPrint.general.owners = owners.map((x) => {
-        return [x.OwnerName];
-      });
-      //console.log(this.toPrint.general.owners);
+
+      this.toPrint.general.fnNames = this.toPrint.general.fnNames.map(
+        (x) => {
+          return [x.fnName, x.fnLanguage, x.fnDesription];
+        }
+      );
+
+      this.toPrint.general.fnAssociations = this.toPrint.general.fnAssociations.map(
+        (x) => {
+          let fnAssociationType = this.toPrint.general.fnAssociationTypeOptions.find(y => y.value === x.fnAssociationType).text;
+          let firstNation = this.toPrint.general.firstNationOptions.find(y => y.id === x.firstNationId).description;
+          return [fnAssociationType, firstNation];
+        }
+      );
     },
     exportPDF() {
       this.mapData();
 
       this.doc = new jsPDF("p", "pt");
-      this.doc.text(`Boat: ${this.name}`, 40, 40);
+      this.doc.text(`Place: ${this.name}`, 40, 40);
       this.textpos = 70;
       //let sections = Object.keys(this.toPrint);
 
@@ -80,15 +90,16 @@ export default {
       if (this.selectedImage) this.printPhoto();
       this.printHistoricalRecord();
 
-      this.doc.save(`Boat_${this.name}.pdf`);
+      this.doc.save(`Place_${this.name}.pdf`);
     },
     printGeneral() {
       for (let i = 0; i < this.textFields.length; i++) {
         this.addTitle(this.textFields[i].title);
         this.addText(`${this.toPrint.general[this.textFields[i].key]}`);
       }
-      this.printNames();
-      this.printOwners();
+      this.printAltNames();
+      this.printFnNames();
+      this.printFnAssociations();
     },
     addText(text) {
       let rText = "Empty";
@@ -131,32 +142,43 @@ export default {
       if (this.toPrint.historicRecords.length == 0) return;
       this.doc.autoTable({
         startY: this.textpos,
-        head: [["Historic Record", "Reference"]],
+        head: [["Historic Record", "Reference", "Restricted"]],
         body: this.toPrint.historicRecords,
       });
 
       this.textpos = this.doc.lastAutoTable.finalY + 20;
     },
-    printNames() {
-      if (this.toPrint.general.pastNames.length == 0) return;
+    printAltNames() {
+      if (this.toPrint.general.altNames.length == 0) return;
       this.doc.autoTable({
         startY: this.textpos,
-        head: [["Name/s:"]],
-        body: this.toPrint.general.pastNames,
+        head: [["Alternate Name"]],
+        body: this.toPrint.general.altNames,
       });
 
       this.textpos = this.doc.lastAutoTable.finalY + 20;
     },
-    printOwners() {
-      if (this.toPrint.general.owners.length == 0) return;
+    printFnNames() {
+      if (this.toPrint.general.fnNames.length == 0) return;
       this.doc.autoTable({
         startY: this.textpos,
-        head: [["Owner/s:"]],
-        body: this.toPrint.general.owners,
+        head: [["First Nation Name","Language","Description"]],
+        body: this.toPrint.general.fnNames,
       });
 
       this.textpos = this.doc.lastAutoTable.finalY + 20;
     },
+    printFnAssociations() {
+      if (this.toPrint.general.fnAssociations.length == 0) return;
+      this.doc.autoTable({
+        startY: this.textpos,
+        head: [["First Nation Association","First Nation"]],
+        body: this.toPrint.general.fnAssociations,
+      });
+
+      this.textpos = this.doc.lastAutoTable.finalY + 20;
+    },
+
     changePos(val) {
       if (this.textpos + val >= 790) {
         this.doc.addPage();
