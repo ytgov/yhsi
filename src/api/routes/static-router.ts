@@ -165,6 +165,11 @@ staticRouter.get("/contributing-resource-type", async (req: Request, res: Respon
     return res.json({ data: list });
 });
 
+staticRouter.get("/mapsheet", async (req: Request, res: Response) => {
+    let list = await staticService.getMapSheets();
+    return res.json({ data: list });
+});
+
 staticRouter.get("/photo-owner", async (req: Request, res: Response) => {
     let list = await staticService.getPhotoOwners();
     return res.json({ data: list });

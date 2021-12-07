@@ -10,13 +10,13 @@ const db = knex(DB_CONFIG);
 ytPlaceHistoryRouter.post('/',
   async (req: Request, res: Response) => {
     const history = req.body;
-    console.log(history);
+    history.placeId = parseInt(history.placeId);
 
     const response = await db.insert(history)
       .into('Place.PlaceHistory')
       .returning('*');
 
-    res.status(200).send(response);
+    res.status(200).send(response); 
 
   });
 
@@ -25,7 +25,6 @@ ytPlaceHistoryRouter.post('/',
   async (req: Request, res: Response) => {
     const history = req.body;
     const { historyId } = req.params;
-    console.log(history);
     //make the update
     await db('Place.PlaceHistory')
       .update(history)

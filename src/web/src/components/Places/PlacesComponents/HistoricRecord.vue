@@ -17,7 +17,7 @@
 
             <v-spacer></v-spacer>
 
-            <v-btn v-if="mode != 'view'" color="info" :disabled="addingItem" @click="addRecord">Add Historic Record</v-btn>
+            <v-btn v-if="mode != 'view'" color="info" :disabled="disableAddRecord" @click="addRecord">Add Historic Record</v-btn>
         </div>
     </v-row>
     <v-row>
@@ -54,9 +54,10 @@
                             <td>
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
-                                            <v-btn v-bind="attrs"
+                                            <v-btn 
+                                            v-bind="attrs"
                                             v-on="on" 
-                                            :disabled="!referenceHelper && !historicRecordHelper && !restrictedHelper"
+                                            :disabled="!historicRecordHelper"
                                             icon class="black--text" color="success"  @click="saveNewRecord()">
                                                 <v-icon
                                                 small
@@ -118,7 +119,7 @@
                         ></v-checkbox>
                     </template>
                     <template v-if="mode == 'edit'" v-slot:item.actions="{  index, item }">
-                        <v-tooltip bottom v-if="editTable != index">
+                        <v-tooltip bottom v-if="editTable != index && !addingItem">
                             <template v-slot:activator="{ on, attrs }">
                                     <v-btn 
                                     v-bind="attrs"
@@ -243,12 +244,20 @@ export default {
                 .post(`${YTPLACEHISTORY_URL}/`, body)
                 .then((resp) => {
                 this.$emit("showAPIMessages", resp.data);
-                if(resp[0].historyText);
-                    this.data.push(resp[0]);
+                // Add the placeHistory record that was just created to data
+                if(resp.data[0].HistoryText);
+                    let respData = {};
+                    respData.historyText = resp.data[0].HistoryText;
+                    respData.reference = resp.data[0].Reference;
+                    respData.restricted = resp.data[0].Restricted;
+                    respData.placeId = resp.data[0].PlaceId;
+                    respData.id = resp.data[0].Id;
+                    this.data.push(respData);
                 this.historicRecordHelper = null;
                 this.referenceHelper = null;
                 this.restrictedHelper = null;
                 this.addingItem = false;
+                this.editTable = -1;
                 })
                 .catch((err) => {
                 this.$emit("showError", err);
@@ -257,6 +266,17 @@ export default {
         },
         cancelItem(){
             this.addingItem = false;
+        }
+    },
+    computed:{
+        disableAddRecord() {
+            if (this.addingItem) {
+                return true;
+            } 
+            if (this.editTable>=0) { 
+                return true;
+            } 
+            return false;
         }
     },
     watch:{

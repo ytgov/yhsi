@@ -235,6 +235,7 @@
                     </v-col>
             </v-col>
         </v-row>
+<<<<<<< HEAD
         <MapLoader v-if="infoLoaded"
             :mode="mode"
             @modifiedDataCoordinates="modifiedDataCoordinates"
@@ -244,6 +245,38 @@
                         lat: fields.lat,
                         long: fields.long,
                         Location: fields.Location } "/>
+=======
+      </v-col>
+      <v-col cols="5">
+        <v-col cols="12">
+          <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
+          <Photos
+            v-if="infoLoaded"
+            :showDefault="isNewCrash"
+            :yacsiNumber="getYACSINumber"
+            @updateSelectedImage="selectedImageChanged"
+          />
+        </v-col>
+      </v-col>
+    </v-row>
+    <MapLoader
+      v-if="infoLoaded"
+      :mode="mode"
+      :mapType="planeCrash"
+      @modifiedDataCoordinates="modifiedDataCoordinates"
+      :fields="{
+        accuracy: fields.accuracy,
+        inyukon: fields.inyukon,
+        locationDesc: fields.crashlocation,
+        lat: fields.lat,
+        long: fields.long,
+        Location: fields.Location,
+        mapsheet: null,
+      }"
+    />
+    <v-row>
+      <v-col col="6">
+>>>>>>> 68a9650 (Finished create/edit places form and print screen. Only the photos widget is left)
         <v-row>
             <v-col col="6">
                 <v-row>
@@ -449,8 +482,13 @@ import Breadcrumbs from '../../Breadcrumbs.vue';
 import Photos from "./Photos/Photos";
 import PrintButton from "./PrintButton";
 import aircrash from "../../../controllers/aircrash";
+<<<<<<< HEAD
 import MapLoader from "./MapLoader";
 import _ from 'lodash';
+=======
+import MapLoader from "../../MapLoader";
+import _ from "lodash";
+>>>>>>> 68a9650 (Finished create/edit places form and print screen. Only the photos widget is left)
 export default {
     name: "crashForm",
     components: { Photos, Breadcrumbs, PrintButton, MapLoader },
@@ -606,6 +644,7 @@ export default {
             this.overlay = false;
         },
     //Functions dedicated to handle the edit, add, view modes
+<<<<<<< HEAD
         cancelEdit(){
             if(this.fieldsHistory){
                 this.fields = {...this.fieldsHistory};
@@ -692,6 +731,100 @@ export default {
                 this.$router.push({name: 'airplaneView', params: { name: localStorage.currentCrashNumber, yacsinumber: localStorage.currentCrashNumber}});
             } 
         },
+=======
+    cancelEdit() {
+      if (this.fieldsHistory) {
+        this.fields = { ...this.fieldsHistory };
+      }
+      this.mode = "view";
+      this.yacsiWarning = [];
+      this.resetListVariables();
+      this.$router.push(`/airplane/view/${this.fields.yacsinumber}`);
+    },
+    cancelNew() {
+      this.$router.push(`/airplane/`);
+    },
+    viewMode() {
+      this.mode = "view";
+      this.$router.push(`/airplane/view/${this.fields.yacsinumber}`);
+    },
+    editMode() {
+      this.fieldsHistory = { ...this.fields };
+      this.mode = "edit";
+      this.$router.push(`/airplane/edit/${this.fields.yacsinumber}`);
+      this.showSave = 0;
+      this.resetListVariables();
+    },
+    resetListVariables() {
+      this.addingSource = false;
+      this.editTableSources = -1;
+    },
+    async saveChanges() {
+      this.overlay = true;
+      //console.log(this.fields);
+      //Mapping coordinate data
+      let { lat, long, inyukon, locationDesc, accuracy } =
+        this.modifiedMapFields;
+      this.fields.lat = lat;
+      this.fields.long = long;
+      this.fields.inyukon = inyukon;
+      this.fields.crashlocation = locationDesc;
+      this.fields.accuracy = accuracy;
+      //Mapping general fields
+      let crash = { ...this.fields };
+      crash.pilot = this.getPilotName();
+      crash.sources = this.getSources();
+      crash.Location = `POINT(${crash.long} ${crash.lat})`;
+      //Removing useless values
+      delete crash.pilotFirstName;
+      delete crash.pilotLastName;
+      delete crash.infoSources;
+      delete crash.sources;
+      delete crash.lat;
+      delete crash.long;
+      //Mapping infosources
+      let editedInfoSources = this.fields.infoSources.filter(
+        (x) => x.isEdited == true
+      );
+      let removedInfoSources = this.deletedSources;
+      let newInfoSources = this.fields.infoSources
+        .filter((x) => x.isNew == true)
+        .map((x) => ({ Type: x.Type, Source: x.Source }));
+
+      //console.log(crash);
+      //Final data obj
+      let data = {
+        aircrash: crash,
+        removedInfoSources,
+        newInfoSources,
+        editedInfoSources,
+      };
+      //console.log(data);
+
+      if (this.mode == "new") {
+        let { response } = await aircrash.post(data);
+        if (response.status == 409) {
+          //open a dialog
+          this.overlay = false;
+          //this.dataDialog = true;
+        } else {
+          this.overlay = false;
+          this.$router.push(`/airplane/`);
+        }
+      } else {
+        await aircrash.put(localStorage.currentCrashNumber, data);
+        this.overlay = false;
+        this.mode = "view";
+        this.$router.push({
+          name: "airplaneView",
+          params: {
+            name: localStorage.currentCrashNumber,
+            yacsinumber: localStorage.currentCrashNumber,
+          },
+        });
+      }
+    },
+>>>>>>> 68a9650 (Finished create/edit places form and print screen. Only the photos widget is left)
     //functions for editing the table "Sources" values
         changeEditTableSources(item,index){
             this.editTableSources = index;
