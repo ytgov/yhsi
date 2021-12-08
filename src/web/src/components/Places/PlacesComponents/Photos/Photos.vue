@@ -22,7 +22,7 @@
     <v-row v-if="showDefault">
       <v-col cols="12">
         <p class="text-center font-weight-bold pt-3">
-          Once you upload your new Boat data, you will be able to attach photos
+          Once you upload your new place data you will be able to attach photos
         </p>
       </v-col>
     </v-row>
@@ -393,7 +393,7 @@ import PhotoList from "./PhotoList";
 export default {
   name: "photos",
   components: { Carousell, PhotoList },
-  props: ["boatID", "showDefault"],
+  props: ["placeId", "showDefault"],
   data: () => ({
     overlay: false,
     //search variables
@@ -407,7 +407,7 @@ export default {
     photos: [],
     //form variables
     fields: {
-      BoatId: 1,
+      placeId: 1,
       Caption: "",
       FeatureName: "",
       OwnerId: null,
@@ -481,7 +481,7 @@ export default {
         value: 4,
       },
       {
-        text: "Boat",
+        text: "Place",
         value: 5,
       },
     ],
@@ -502,29 +502,33 @@ export default {
   mounted() {
     if (this.showDefault) return;
 
-    if (this.boatID) this.getDataFromAPI();
+    if (this.placeId) this.getDataFromAPI();
   },
   methods: {
     async getAll() {
       this.showSkeletons = true;
-      let data = await photos.getAll(this.page - 1, this.searchPhotos);
-      this.availablePhotos = data.body.map((x) => {
-        x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
-        x.selected = false;
-        return x;
-      });
-      //console.log(data.count);
-      this.numberOfPages = Math.round(data.count / 6);
-      this.showSkeletons = false;
+      let res = await photos.getAll(this.page - 1, this.searchPhotos);
+      if (res) {
+        this.availablePhotos = res.body.map((x) => {
+          x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
+          x.selected = false;
+          return x;
+        });
+        //console.log(data.count);
+        this.numberOfPages = Math.round(res.count / 6);
+        this.showSkeletons = false;
+      };
     },
     async getDataFromAPI() {
-      let data = await photos.getByBoatId(Number(this.boatID));
-      this.photos = data.map((x) => {
-        x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
-        x.selected = false;
-        return x;
-      });
-      this.updateSelectedImage(0);
+      let res = await photos.getByPlaceId(Number(this.placeId));
+      if (res) {
+        this.photos = res.map((x) => {
+          x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
+          x.selected = false;
+          return x;
+        });
+        this.updateSelectedImage(0);
+      };
     },
     async getOwners() {
       this.isLoadingOwner = true;
@@ -544,7 +548,7 @@ export default {
         OriginalMediaId,
         UsageRights,
       } = this.sendObj;
-      this.sendObj.BoatId = Number(this.boatID);
+      this.sendObj.placeId = Number(this.placeId);
       this.sendObj.IsComplete = IsComplete ? 1 : 0;
       this.sendObj.Program = Program.value;
       this.sendObj.CommunityId = CommunityId.Id;
@@ -557,7 +561,7 @@ export default {
         formData.append(prevFields[i][0], prevFields[i][1]);
       }
       formData.append("file", this.file);
-      await photos.postBoatPhoto(formData);
+      await photos.postPlacePhoto(formData);
       this.reset();
       this.$router.go();
       this.overlay = false;
@@ -568,7 +572,7 @@ export default {
         .map((x) => {
           return x.RowId;
         });
-      await photos.linkBoatPhotos(Number(this.boatID), {
+      await photos.linkPlacePhotos(Number(this.placeId), {
         linkPhotos: photosToLink,
       });
       this.reset();

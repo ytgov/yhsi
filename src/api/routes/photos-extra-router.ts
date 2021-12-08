@@ -123,6 +123,29 @@ photosExtraRouter.post('/aircrash/link/:AirCrashId',
     res.status(200).send({ message: 'Successfully linked the photos' });
   });
 
+  
+// Link ytplace photo
+photosExtraRouter.post('/ytplace/link/:placeId',
+[param("placeId").notEmpty()], ReturnValidationErrors,
+[upload.single('file')],
+async (req: Request, res: Response) => {
+  const { placeId } = req.params;
+  const { linkPhotos } = req.body;
+
+  let currentPhotos = await db.select('Photo_RowID').from('place.Photo').where('placeId', placeId)
+  let filteredLinkPhotos = _.difference(linkPhotos, currentPhotos.map(x => { return x.Photo_RowID }))
+
+  for (const rowId of filteredLinkPhotos)
+    await db.insert({ placeId, Photo_RowID: rowId })
+      .into('place.photo')
+      .returning('*')
+      .then(rows => {
+        return rows;
+      });
+
+  res.status(200).send({ message: 'Successfully linked the photos' });
+});
+
 
 //GET BOAT PHOTOS
 photosExtraRouter.get('/boat/:boatId',
@@ -168,6 +191,27 @@ photosExtraRouter.get('/aircrash/:aircrashId',
 
     res.status(200).send(photos);
   });
+
+
+// Get yt place photos
+photosExtraRouter.get('/ytplace/:placeId',
+  [param("placeId").notEmpty()], ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+
+    const { placeId } = req.params;
+
+    const page = parseInt(req.query.page as string);
+    const limit = parseInt(req.query.limit as string);
+    const offset = (page * limit) || 0;
+
+    const photos = await db.select('*')
+      .from('place.photo as P')
+      .join('dbo.photo', 'P.Photo_RowID', '=', 'dbo.photo.RowID')
+      .where('P.placeId', placeId)
+      .limit(limit).offset(offset);
+
+    res.status(200).send(photos); 
+});
 
 // ADD NEW BOAT PHOTO
 photosExtraRouter.post('/boat', [upload.single('file')],
@@ -230,3 +274,29 @@ photosExtraRouter.post('/aircrash', [upload.single('file')],
 
     res.status(200).send({ message: 'Upload Success' });
   });
+
+  // Add ytplace photo
+  photosExtraRouter.post('/ytplace', [upload.single('file')],
+    async (req: Request, res: Response) => {
+      const { placeId, ...restBody } = req.body;
+      const ThumbFile = await createThumbnail(req.file.buffer);
+  
+      const body = { File: req.file.buffer, ThumbFile, ...restBody }
+  
+      const response = await db.insert(body)
+        .into('dbo.photo')
+        .returning('*')
+        .then(async rows => {
+          const newPlacePhoto = rows[0];
+  
+          await db.insert({ placeId, Photo_RowID: newPlacePhoto.RowId })
+            .into('place.photo')
+            .returning('*')
+            .then(rows => {
+              return rows;
+            });
+  
+          return newPlacePhoto;
+        });
+      res.status(200).send({ message: 'Upload Success' });
+    });
