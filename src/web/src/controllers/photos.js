@@ -2,7 +2,7 @@ import { api, apiP } from './config';
 
 export default {
   async getAll(page, textToMatch) {
-    return await api.get(`photos`, {
+    return await api.get(`extras/photos`, {
       crossdomain: true,
       params: {
         page: page,
@@ -17,8 +17,14 @@ export default {
         console.log(error);
       });
   },
+<<<<<<< HEAD
     async getByBoatId(id) {
       return await api.get(`photos/boat/${id}`)
+=======
+  // Boats
+  async getByBoatId(id) {
+    return await api.get(`photos/boat/${id}`)
+>>>>>>> 4b3f5fe (Finished photo widget and id updates. Ready for pull request to combined branch)
       .then(res => {
         return res.data;
       }).catch(error =>{
@@ -27,6 +33,7 @@ export default {
       });
   },
   async postBoatPhoto(data) {
+<<<<<<< HEAD
     return await apiP.post(`photos/boat/new`,data)
     .then(res => {
       return res.data;
@@ -36,6 +43,26 @@ export default {
     });
   }, 
   //AIRCRASH PHOTOS
+=======
+    return await apiP.post(`photos/boat/new`, data)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  async linkBoatPhotos(id, data) {
+    return await api.post(`photos/boat/link/${id}`, data)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  // Aircrashes
+>>>>>>> 4b3f5fe (Finished photo widget and id updates. Ready for pull request to combined branch)
   async getByYACSINumber(yacsinumber) {
     return await api.get(`photos/aircrash/${yacsinumber}`)
     .then(res => {
@@ -82,6 +109,7 @@ export default {
       console.log(err);
     })
   },
+<<<<<<< HEAD
   async getByPersonId(id) {
     return await api.get(`photos/people/${id}`)
     .then(res => {
@@ -90,6 +118,35 @@ export default {
       // handle error
       console.log(error);
     });
+=======
+  // Yt Places
+  async getByPlaceId(id) {
+    return await api.get(`extras/photos/ytplace/${id}`)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  async postPlacePhoto(data) {
+    return await apiP.post(`extras/photos/ytplace`, data)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  async linkPlacePhotos(id, data) {
+    return await api.post(`extras/photos/ytplace/link/${id}`, data)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+>>>>>>> 4b3f5fe (Finished photo widget and id updates. Ready for pull request to combined branch)
   },
   async postPersonPhoto(data) {
     return await apiP.post(`photos/people/new`,data)
