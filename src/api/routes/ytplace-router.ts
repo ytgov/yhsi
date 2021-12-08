@@ -370,12 +370,7 @@ ytPlaceRouter.get("/:id",
                     placeTypes = combine(placeTypes, await ytPlaceService.getPlaceTypeNames(), 'id', 'placeTypeLookupId', "placeType", "placeType");   
                     let fnNames = await ytPlaceService.getFirstNationNamesFor(place.id);
                     let altNames = await ytPlaceService.getAlternateNamesFor(place.id);
-                    let histories = await ytPlaceService.getPlaceHistoriesFor(place.id);                 
-
-                    // TODO: add function photoService to fetch all photos given an array of rowids (or something)
-                    //let photos = await photoService.getAllForPlace(place.id);
-                    //let placePhotos = await ytPlaceService.getPlacePhotosFor(place.id);
-                    //let photos = combine(getPhotos, placePhotos, "rowId", "photoRowId", Photo);
+                    let histories = await ytPlaceService.getPlaceHistoriesFor(place.id);      
  
                     let fnAssociations = await ytPlaceService.getFNAssociationsFor(place.id);
                     fnAssociations = combine(fnAssociations, fnList, "firstNationId", "id", "description", "firstNationDescription" );   
@@ -387,8 +382,6 @@ ytPlaceRouter.get("/:id",
                         altNames: { data: altNames },
                         histories: { data: histories },
                         fnAssociations: { data: fnAssociations },
-                        // TODO 
-                        // photos: { data: photos },
                     };
 
                     return res.send({
@@ -414,9 +407,6 @@ ytPlaceRouter.post("/",
         const errors = validationResult(req);
         const { place = {}, altNames = [], fnNames = [], fnAssociations = [], placeTypes = [] } = req.body;
 
-        // FOR TESTING until the place table has a proper ID
-        place.id = 885;
-
         if (!errors.isEmpty()) {
             console.log('Validation error');
             console.log(errors.array());
@@ -424,6 +414,7 @@ ytPlaceRouter.post("/",
         }
 
         // YtPlaceService returning a YtPlace object was causing errors so using the same structure as boat-router
+        delete place.id; 
         const response = await db.insert(place)
         .into('place.place')
         .returning('*')

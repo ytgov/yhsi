@@ -73,13 +73,13 @@
 
     <!-- Body top -->
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-md-3">
           <!-- Names list -->
           <v-card class="default mb-5">
             <v-card-text>
               <h3>Alternate Names</h3>
               <div class="row" v-for="(item, i) of altNames" :key="i">
-                <div class="col-md-11">
+                <div class="col-md-10">
                   <v-text-field
                     v-model="item.alternateName"
                     label="Alternate name"
@@ -92,7 +92,7 @@
                   </v-text-field>
                 </div>
 
-                <div v-if="mode != 'view'" class="col-md-1">
+                <div v-if="mode != 'view'" class="col-md-2">
                   <v-btn
                     color="warning"
                     x-small
@@ -147,7 +147,7 @@
       </div>
 
       <!-- Middle section --> 
-      <div class="col-md-4">
+      <div class="col-md-5">
         <v-card class="default mb-5">
           <v-card-text>
             <h3>First Nation Names</h3>
@@ -282,19 +282,15 @@
       </div>
       <!-- End middle section -->
 
-      <div class="col-md-4">
-        <v-row>        
-            <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-            <!--
-              <Photos
-              v-if="infoLoaded"
-              :showDefault="mode == 'new'"
-              :placeID="getPlaceId"
-              @updateSelectedImage="selectedImageChanged"
-              :selectedImage="selectedImage"
-            />
-            -->
-        </v-row>
+      <!-- Photos component -->
+      <div class="col-md-4">     
+        <Photos
+        v-if="infoLoaded"
+        :showDefault="mode == 'new'"
+        :placeId="placeId"
+        @updateSelectedImage="selectedImageChanged"
+        :selectedImage="selectedImage"
+        />
       </div>
     </div>
     <!-- end body top -->
@@ -330,7 +326,7 @@
 
 <script>
 import Breadcrumbs from "../../Breadcrumbs.vue";
-//import Photos from "./Photos/Photos";
+import Photos from "./Photos/Photos";
 import HistoricRecord from "./HistoricRecord";
 import PrintButton from "./PrintButton";
 import MapLoader from "../../MapLoader";
@@ -341,8 +337,7 @@ import axios from "axios";
 
 export default {
   name: "placesForm",
-  //components: { Photos, Breadcrumbs, HistoricRecord, PrintButton },
-  components: { Breadcrumbs, PrintButton, HistoricRecord, MapLoader},
+  components: { Breadcrumbs, PrintButton, HistoricRecord, MapLoader, Photos},
   data: () => ({
     mode: "",
     fields: {},
@@ -558,8 +553,6 @@ export default {
         placeTypes: this.placeTypes,
       };
 
-      console.log(body);
-
       axios
         .post(`${YTPLACE_URL}/`, body)
         .then((resp) => {
@@ -601,11 +594,6 @@ export default {
     },
   }, 
   computed: {
-    getPlaceId() {
-      if (this.$route.params.id) {
-        return this.$route.params.id;
-      } else return localStorage.currentPlaceId;
-    },
     printData() {
       let printData = this.fields;
       printData.histories = this.histories;
