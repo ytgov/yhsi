@@ -3,12 +3,13 @@ import VueRouter from "vue-router";
 import Home from "../components/Home.vue";
 import Dashboard from "../components/Dashboard.vue";
 import NotFound from "../views/NotFound.vue";
+import Form from "../components/Form";
 import Login from "../views/Login";
 import LoginComplete from "../views/LoginComplete";
 import Profile from "../views/Profile";
 import store from "../store";
-
 import SitesForm from "../components/Sites";
+
 import Summary from "../components/Sites/SitesForms/Summary";
 import Location from "../components/Sites/SitesForms/Location";
 import Dates from "../components/Sites/SitesForms/Dates";
@@ -43,9 +44,6 @@ import AdminDashboard from "../components/Administration/AdminDashboard";
 import AdminUserGrid from "../components/Administration/UserManagement/Grid";
 import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form";
 import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
-import PlacesGrid from "../components/Places/PlacesGrid";
-import PlaceTypeGrid from "../components/Administration/LookupTableManagement/PlaceType/PlaceType";
-
 Vue.use(VueRouter);
 
 const routes = [
@@ -58,6 +56,14 @@ const routes = [
     path: "/dashboard",
     name: "Dashboard",
     component: Dashboard
+  },
+  {
+    path: "/form",
+    name: "Basic Form",
+    component: Form,
+    meta: {
+      requiresAuth: false
+    }
   },
   {
     path: "/sign-in",
@@ -223,217 +229,6 @@ const routes = [
         component: Photo
       }
     ]
-  },
-
-
-  {
-    path: "/photos/add",
-    name: "PhotosFormAdd",
-    component: MainPhotos,
-    meta: {
-      requiresAuth: false
-    },
-    children: [
-      {
-        path: "feature", 
-        component: Feature
-      },
-      {
-        path: "site_record",
-        component: SiteRecord
-      },
-      {
-        path: "historic_sites",
-        component: HistoricSites
-      },
-      {
-        path: "photo", 
-        component: Photo
-      }
-    ]
-  },
-  {
-    path: "/boats",
-    
-    component: Boats,
-    meta: {
-      requiresAuth: false
-    },
-    children: [
-      {
-        path: "",
-        name: "Boats",
-        component: BoatsGrid
-      },
-      {
-        path: "owner",
-        component: OwnerGrid
-      }
-    ]
-  },
-  {
-    path: "/boats/view/:name",
-    name: "boatView",
-    component: BoatsForm,
-    props: true
-  },
-  {
-    path: "/boats/edit/:name",
-    name: "boatEditView",
-    component: BoatsForm,
-    props: true
-  },
-  {
-    path: "/boats/new",
-    name: "boatAddView",
-    component: BoatsForm
-  },
-  {
-    path: "/boats/owner/view/:name",
-    name: "ownerView",
-    component: BoatsOwnerForm,
-    props: true
-  },
-  {
-    path: "/boats/owner/edit/:name",
-    name: "ownerEditView",
-    component: BoatsOwnerForm,
-    props: true
-  },
-  {
-    path: "/boats/owner/new",
-    name: "ownerAddView",
-    component: BoatsOwnerForm
-  },
-  {
-    path: "/airplane",
-    name: "airplane",
-    component: AirplaneGrid
-  },
-  {
-    path: "/airplane/view/:name",
-    name: "airplaneView",
-    component: AirplaneViewForm,
-    props: true
-  },
-  {
-    path: "/airplane/edit/:name",
-    name: "airplaneEditView",
-    component: AirplaneEditForm,
-    props: true
-  },
-  {
-    path: "/airplane/New",
-    name: "airplaneAddView",
-    component: AirplaneEditForm,
-    props: true
-  },
-  {
-    path: "/admin",
-    name: "AdminDashboard",
-    component: AdminDashboard,
-  },
-  {
-    path: "/admin/users",
-    name: "AdminUserGrid",
-    component: AdminUserGrid
-  },
-  {
-    path: "/admin/users/view/:id",
-    name: "AdminUserView",
-    component: AdminUserForm
-  },
-  {
-    path: "/admin/users/edit/:id",
-    name: "AdminUserEdit",
-    component: AdminUserForm
-  },
-  {
-    path: "/admin/vessel_type",
-    name: "VesselTypeGrid",
-    component: VesselTypeGrid
-  },
-  {
-    path: "/admin/placetype",
-    name: "PlaceTypeGrid",
-    component: PlaceTypeGrid
-  },
-
-
-
-  {
-    path: "/users",
-    name: "Users",
-    component: Users,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: "/photo-owners",
-    name: "PhotoOwners",
-    component: OwnersGrid,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: "/communities",
-    name: "Communities",
-    component: Communities,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-      path: "/users/edit/:id",
-      component: UserForm,
-      meta: {
-        requiresAuth: false
-      }
-  },
-  {
-    path: "/photo-owners/edit/:id",
-    component: OwnerForm,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: "/photo-owners/add",
-    component: OwnerForm,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: "/communities/edit/:id",
-    component: CommunitiesForm,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: "/communities/add",
-    component: CommunitiesForm,
-    meta: {
-      requiresAuth: false
-    }
-  },
-
-
-
-
-
-
-
-  {
-    path: "/places",
-    name: "PlacesGrid",
-    component: PlacesGrid,
-    meta: {
-      requiresAuth: false
-    },
   },
   {
     path: "/photos/add",

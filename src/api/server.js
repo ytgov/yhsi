@@ -33,6 +33,10 @@ app.use(function(req, res, next) {
 
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
+console.log("host: ", process.env.DB_HOST);
+console.log("user: ",process.env.DB_USER);
+console.log("psss: ",process.env.DB_PASS);
+console.log("db name: ",process.env.DB_NAME);
 
 
 var conn = knex({
