@@ -161,7 +161,6 @@ router.post('/new', authenticateToken, async (req, res) => {
 
     return newAirCrash;
   });
-  console.log(response);
   res.status(200).send(response);
 
 });
