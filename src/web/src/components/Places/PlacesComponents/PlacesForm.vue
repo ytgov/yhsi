@@ -287,7 +287,8 @@
         <Photos
         v-if="infoLoaded"
         :showDefault="mode == 'new'"
-        :placeId="placeId"
+        :photoType="'ytplace'"
+        :itemId="placeId"
         @updateSelectedImage="selectedImageChanged"
         :selectedImage="selectedImage"
         />
@@ -326,7 +327,7 @@
 
 <script>
 import Breadcrumbs from "../../Breadcrumbs.vue";
-import Photos from "./Photos/Photos";
+import Photos from "../../PhotoEditor/Photos";
 import HistoricRecord from "./HistoricRecord";
 import PrintButton from "./PrintButton";
 import MapLoader from "../../MapLoader";

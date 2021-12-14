@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "vue-json-csv": "^1.2.12",
-    "vue-simple-search-dropdown": "^1.0.1"
+    "vue-json-csv": "^1.2.12"
   }
 }

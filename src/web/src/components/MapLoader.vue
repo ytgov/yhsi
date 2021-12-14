@@ -593,20 +593,22 @@
         background-color="white"
         hide-details
       ></v-select>
-      <label for="mapSheetDropdown" :style="{fontSize: '15px', color: '#666666'}">Mapsheet</label>
-      <Dropdown
-        :options="mapSheetOptions"
-        v-on:selected="handleMapSheetSelected"
-        :disabled="mode == 'view'"
-        name="mapSheetDropdown"
-        :maxItem="10"
-        :placeholder="modifiableFields.mapSheet"
-        class="mapsheet"
+      <v-autocomplete
+        @click="getMapSheetLookup"
+        v-model="modifiableFields.mapSheet"
+        :items="mapSheetOptions"
+        :loading="isLoadingMapsheetOptions"
+        :readonly="mode == 'view'"
+        :class="{ 'read-only-form-item': mode == 'view' }"
+        clearable
+        label="Mapsheet"
+        item-text="name"
+        item-value="id"
         dense
         outlined
         background-color="white"
-        hide-details>
-      </Dropdown>
+        hide-details
+      ></v-autocomplete>
       <v-checkbox v-if="mapType == 'planeCrash'"
         :value="!isOutsideYukon"
         :readonly="true"
@@ -663,7 +665,6 @@
 /* eslint-disable */
 import { latLng, Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import Dropdown from 'vue-simple-search-dropdown';
 import {
   LMap,
   LTileLayer,
@@ -775,7 +776,6 @@ export default {
     }, 
 =======
     LTooltip,
-    Dropdown,
   },
   data: () => ({
     flag: 1, // tells the component if it should accept new prop data
@@ -814,6 +814,7 @@ export default {
     selectedProjection: { id: 1, name: "WSG 84" },
     locationAccuracyOptions: ["Approximate","Actual"],
     mapSheetOptions: [],
+    isLoadingMapsheetOptions: false,
     projectionOptions: [
       //datums
       {
@@ -876,8 +877,6 @@ export default {
     this.getFields();
     this.fixMarkers();
     this.setSharedVerbage();
-    this.getMapSheetLookup();
-    //console.log(proj4);
     proj4.defs([
       [
         "EPSG:4326",
@@ -900,6 +899,10 @@ export default {
         return;
       }
       this.modifiableFields = this.fields;
+      // If there is a mapsheet already prepopulate the options array with it so it shows on page load
+      if (this.modifiableFields.mapSheet) {
+        this.mapSheetOptions = [ { id: this.modifiableFields.mapSheet, name: this.modifiableFields.mapSheet }];
+      };
       this.dd = {
         lat: this.modifiableFields.lat,
         lng: this.modifiableFields.long,
@@ -1130,7 +1133,6 @@ export default {
             this.modifiableFields.long,
             1
           );
-          //console.log(this.utm);
           this.dms = null;
           this.dd = null;
           break;
@@ -1153,7 +1155,6 @@ export default {
       };
     },
     convertDMSToDD(val) {
-      //console.log(val);
       let { deg, min, sec, dir } = val;
       let dd = deg + min / 60 + sec / (60 * 60);
       dd = parseFloat(dd);
@@ -1163,13 +1164,15 @@ export default {
       return dd;
     },
     async getMapSheetLookup() {
-        axios.get(`${STATIC_URL}/mapsheet`).then((resp) => {
+      this.isLoadingMapsheetOptions = true;
+      axios.get(`${STATIC_URL}/mapsheet`).then((resp) => {
         this.mapSheetOptions = resp.data.data;
         this.mapSheetOptions = this.mapSheetOptions.map((x) => (x = {id: x.map50k, name: x.map50k}));
-        });
-    },
-    handleMapSheetSelected(item) {
-      this.modifiableFields.mapSheet = item.id;
+        this.mapSheetOptions = this.mapSheetOptions       
+          .slice()
+          .sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+        this.isLoadingMapsheetOptions = false;
+      })
     }
   },
   computed: {

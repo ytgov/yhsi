@@ -378,6 +378,7 @@
                             :readonly="mode == 'view'"
                         ></v-textarea>
 
+<<<<<<< HEAD
                         <v-textarea outlined dense
                             label="Notes"
                             v-model="fields.Notes"
@@ -396,6 +397,26 @@
                     </v-col>
                 </v-row>
             </v-col>
+=======
+            <v-textarea
+              label="Notes"
+              v-model="fields.Notes"
+              :readonly="mode == 'view'"
+            ></v-textarea>
+          </v-col>
+          <v-col cols="8">
+            <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
+            <Photos
+              v-if="infoLoaded"
+              :showDefault="mode == 'new'"
+              :photoType="'boat'"
+              :itemId="getBoatID"
+              @updateSelectedImage="selectedImageChanged"
+              :selectedImage="selectedImage"
+            />
+            
+          </v-col>
+>>>>>>> 865c296 (Fixed photo owners reference. Made photo and map tools into shared components.)
         </v-row>
         <v-divider class="my-5"></v-divider> 
 <!-- Historic Record component -->
@@ -415,8 +436,13 @@
 </template>
 
 <script>
+<<<<<<< HEAD
 import Breadcrumbs from '../../../Breadcrumbs.vue';
 import Photos from "./Photos/Photos";
+=======
+import Breadcrumbs from "../../../Breadcrumbs.vue";
+import Photos from "../../../PhotoEditor/Photos";
+>>>>>>> 865c296 (Fixed photo owners reference. Made photo and map tools into shared components.)
 import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
 import boats from "../../../../controllers/boats";
