@@ -30,37 +30,17 @@
       <v-row>
         <v-col>
           <v-data-table
+            dense
             :items="items"
             :headers="headers"
             :options.sync="options"
-            :loading="loading"  
-            :search="search"
+            :loading="loading"
+            :server-items-length="totalLength"
             @click:row="handleClick"
+            :footer-props="{ 'items-per-page-options': items_per_page }"
           ></v-data-table>
         </v-col>
       </v-row>
-
-    <v-text-field
-      v-model="search"
-      label="Search"
-      dense
-      outlined
-      append-icon="mdi-magnify"
-      @click:append="doSearch"
-      hint="Enter criteria and press enter"
-      @keyup="keyUp"
-    ></v-text-field>
-
-    <v-data-table
-      dense
-      :items="items"
-      :headers="headers"
-      :options.sync="options"
-      :loading="loading"
-      :server-items-length="totalLength"
-      @click:row="handleClick"
-      :footer-props="{ 'items-per-page-options': items_per_page }"
-    ></v-data-table>
     </v-container>
   </div>
 </template>
