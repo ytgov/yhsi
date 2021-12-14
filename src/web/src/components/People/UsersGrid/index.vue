@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import users from "../../../controllers/user";
+import people from "../../../controllers/people";
 import Breadcrumbs from "../../Breadcrumbs";
 import _ from "lodash";
 export default {
@@ -105,27 +105,20 @@ export default {
   components: { Breadcrumbs },
   data: () => ({
     loading: false,
-    users: [],
+    people: [],
     search: "",
     options: {},
     totalLength: 0,
     headers: [
-      { text: "Email", value: "Email" },
-      { text: "First Name", value: "FirstName" },
-      { text: "Last Name", value: "LastName" },
-      { text: "Status", value: "Status" },
-      { text: "Last Login", value: "LastLogin" },
-      //      { text: "Actions", value: "actions"}
+      { text: "Given Name", value: "GivenName" },
+      { text: "Surname", value: "Surname" },
+      { text: "Birth Year", value: "BirthYear" },
+      { text: "Death Year", value: "DeathYear" },
     ],
     page: 1,
     pageCount: 0,
     iteamsPerPage: 10,
     selectedFilter: [],
-    filterOptions: [
-      { name: "Expired Users" },
-      { name: "Active Users" },
-      { name: "Pending Users" },
-    ],
   }),
   mounted() {
     this.getDataFromApi();
@@ -134,16 +127,16 @@ export default {
     searchChange: _.debounce(function () {
       this.getDataFromApi();
     }, 400),
-    handleClick(value) {
+    handleClick(value) { 
       //Redirects the user to the edit user form
-      this.$router.push(`/admin/users/view/${value.UserId}`);
+      this.$router.push(`/people/edit/${value.UserId}`);
     },
     removeItem(item) {
       //removes one element from the users array
-      const index = this.users.findIndex((a) => a.id == item.id);
+      const index = this.people.findIndex((a) => a.id == item.id);
       console.log(index);
       if (index > -1) {
-        this.users.splice(index, 1);
+        this.people.splice(index, 1);
       }
     },
     async getDataFromApi() {
@@ -152,7 +145,7 @@ export default {
       page = page > 0 ? page - 1 : 0;
       itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
       let textToMatch = this.search;
-      let data = await users.get(
+      let data = await people.get(
         page,
         itemsPerPage,
         textToMatch,
@@ -160,11 +153,11 @@ export default {
         sortDesc[0] ? "desc" : "asc"
       );
 
-      this.users = _.get(data, "body", []);
-      this.users.map((x) => {
+      this.people = _.get(data, "body", []);
+      this.people.map((x) => {
         x.LastLogin = this.formatDate(x.LastLogin);
       });
-      console.log(this.users);
+      console.log(this.people);
       this.totalLength = _.get(data, "count", 0);
       this.loading = false;
     },
@@ -179,7 +172,7 @@ export default {
     filteredData() {
       // returns a filtered users array depending on the selected filters
       let sorters = JSON.parse(JSON.stringify(this.selectedFilter));
-      let data = JSON.parse(JSON.stringify(this.users));
+      let data = JSON.parse(JSON.stringify(this.people));
       for (let i = 0; i < sorters.length; i++) {
         switch (sorters[i]) {
           case 0: // expired

@@ -26,8 +26,8 @@ import Feature from "../components/MainPhotos/PhotosComponents/Feature";
 import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
 import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSites";
 import Photo from "../components/MainPhotos/PhotosComponents/Photo";
-import Users from "../components/Users/UsersGrid";
-import UserForm from "../components/Users/UsersComponents/Form";
+import Users from "../components/People/UsersGrid";
+import UserForm from "../components/People/UsersComponents/Form";
 import OwnersGrid from "../components/PhotoOwners/OwnersGrid";
 import OwnerForm from "../components/PhotoOwners/OwnersComponents/Form";
 import Communities from "../components/Communities/CommunitiesGrid";
@@ -100,8 +100,8 @@ const routes = [
     },
   },
   {
-    path: "/users",
-    name: "Users",
+    path: "/people",
+    name: "People",
     component: Users,
     meta: {
       requiresAuth: false
@@ -124,11 +124,25 @@ const routes = [
     }
   },
   {
-      path: "/users/edit/:id",
+      path: "/people/edit/:id",
       component: UserForm,
       meta: {
         requiresAuth: false
       }
+  },
+  {
+    path: "/people/view/:id",
+    component: UserForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/people/new",
+    component: UserForm,
+    meta: {
+      requiresAuth: false
+    }
   },
   {
     path: "/photo-owners/edit/:id",
