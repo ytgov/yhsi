@@ -123,7 +123,7 @@ ytPlaceRouter.post("/",
         }
 
         // YtPlaceService returning a YtPlace object was causing errors so using the same structure as boat-router
-        delete place.id; 
+        delete place.id;
         const response = await db.insert(place)
         .into('place.place')
         .returning('*')

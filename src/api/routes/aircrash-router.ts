@@ -14,7 +14,7 @@ aircrashRouter.get('/',
     /* const permissions = req.decodedToken['yg-claims'].permissions;
     if (!permissions.includes('view')) res.sendStatus(403);
   
-    const db = req.app.get('db'); */
+    const db = req.app.get('db'); */ 
 
     const { textToMatch = '', sortBy = 'yacsinumber', sort = 'asc' } = req.query;
     const page = parseInt(req.query.page as string);
@@ -56,7 +56,7 @@ aircrashRouter.get('/',
         .limit(limit).offset(offset);
 
     } else {
-      counter = await db.from('dbo.placess').count('yhsiid', { as: 'count' })
+      counter = await db.from('dbo.vAircrash').count('yacsinumber', { as: 'count' })
 
       aircrashes = await db.select('*')
         .from('dbo.vAircrash')

@@ -32,8 +32,10 @@ photosExtraRouter.get('/',
 
       counter = await db.from('dbo.photo as PH')
         .join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-        .join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
+        //.join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
+        .leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
         .where('PH.FeatureName', 'like', `%${textToMatch}%`)
+        //.whereNotNull("ThumbFile")
         .orWhere('PH.OriginalFileName', 'like', `%${textToMatch}%`)
         .orWhere('PH.Address', 'like', `%${textToMatch}%`)
         .orWhere('PH.Caption', 'like', `%${textToMatch}%`)
@@ -45,8 +47,10 @@ photosExtraRouter.get('/',
         .select()
         .from('dbo.photo as PH')
         .join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-        .join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
+        //.join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
+        .leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
         .where('FeatureName', 'like', `%${textToMatch}%`)
+        //.whereNotNull("ThumbFile") 
         .orWhere('OriginalFileName', 'like', `%${textToMatch}%`)
         .orWhere('Address', 'like', `%${textToMatch}%`)
         .orWhere('Caption', 'like', `%${textToMatch}%`)
@@ -62,9 +66,11 @@ photosExtraRouter.get('/',
         .select()
         .from('dbo.photo as PH')
         .join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-        .join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
+        //.join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
+        .leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
+        //.whereNotNull("ThumbFile") 
         .orderBy('PH.RowId', 'asc')
-        .limit(limit).offset(offset);
+        .limit(limit).offset(offset); 
     }
 
     res.status(200).send({ count: counter[0].count, body: photos });
@@ -102,7 +108,7 @@ photosExtraRouter.post('/boat/link/:BoatId',
 photosExtraRouter.post('/aircrash/link/:AirCrashId',
   [param("AirCrashId").notEmpty()], ReturnValidationErrors,
   async (req: Request, res: Response) => {
-    /* const db = req.app.get('db');
+    /* const db = req.app.get('db'); 
   
     const permissions = req.decodedToken['yg-claims'].permissions;
     if (!permissions.includes('create')) res.sendStatus(403); */
@@ -221,7 +227,7 @@ photosExtraRouter.post('/boat', [upload.single('file')],
     const permissions = req.decodedToken['yg-claims'].permissions;
     if (!permissions.includes('create')) res.sendStatus(403); */
 
-    const { BoatId, ...restBody } = req.body;
+    const { boatId, ...restBody } = req.body;
     const ThumbFile = await createThumbnail(req.file.buffer);
 
     const body = { File: req.file.buffer, ThumbFile, ...restBody }
@@ -232,7 +238,7 @@ photosExtraRouter.post('/boat', [upload.single('file')],
       .then(async rows => {
         const newBoatPhoto = rows[0];
 
-        await db.insert({ BoatId, Photo_RowID: newBoatPhoto.RowId })
+        await db.insert({ boatId, Photo_RowID: newBoatPhoto.RowId })
           .into('boat.photo')
           .returning('*')
           .then(rows => {
@@ -247,12 +253,12 @@ photosExtraRouter.post('/boat', [upload.single('file')],
 // ADD NEW AIRCRASH PHOTO
 photosExtraRouter.post('/aircrash', [upload.single('file')],
   async (req: Request, res: Response) => {
-    /*  const db = req.app.get('db');
+    /*  const db = req.app.get('db');  
    
      const permissions = req.decodedToken['yg-claims'].permissions;
      if (!permissions.includes('create')) res.sendStatus(403); */
 
-    const { YACSINumber, ...restBody } = req.body;
+    const { yacsiNumber, ...restBody } = req.body;
     const ThumbFile = await createThumbnail(req.file.buffer);
     const body = { File: req.file.buffer, ThumbFile, ...restBody }
 
@@ -262,7 +268,7 @@ photosExtraRouter.post('/aircrash', [upload.single('file')],
       .then(async rows => {
         const newAirCrashPhoto = rows[0];
 
-        await db.insert({ YACSINumber, Photo_RowID: newAirCrashPhoto.RowId })
+        await db.insert({ yacsiNumber, Photo_RowID: newAirCrashPhoto.RowId })
           .into('AirCrash.Photo')
           .returning('*')
           .then(rows => {

@@ -8,21 +8,21 @@
       <v-img
         height="200"
         width="200"
-        :src="require('../../../../assets/add_photo.png')"
-        :lazy-src="require('../../../../assets/add_photo.png')"
+        :src="require('../../assets/add_photo.png')"
+        :lazy-src="require('../../assets/add_photo.png')"
       ></v-img>
     </div>
     <Carousell
       v-if="photos.length > 0"
       :photos="photos"
+      :showDefault="showDefault"
       @changedSelectedImage="updateSelectedImage"
     />
     <v-divider></v-divider>
     <v-row v-if="showDefault">
       <v-col cols="12">
         <p class="text-center font-weight-bold pt-3">
-          Once you upload your new Crash Site data, you will be able to attach
-          photos
+          Once you upload your new item data you will be able to attach photos
         </p>
       </v-col>
     </v-row>
@@ -81,8 +81,8 @@
                           clearable
                           label="Owner Name"
                           :rules="ownerRules"
-                          item-text="OwnerName"
-                          item-value="ownerid"
+                          item-text="name"
+                          item-value="id"
                         ></v-autocomplete>
                         <v-combobox
                           v-model="fields.CommunityId"
@@ -296,7 +296,14 @@
                           </v-card>
                         </template>
                       </v-hover>
-                      <!--
+                    </v-col>
+                    <!--
+                                        <v-col
+                                        v-for="(item,i) in availablePhotos"
+                                        :key="`ph-${i}`"
+                                        class="d-flex child-flex"
+                                        cols="6"
+                                        >
                                         <v-card
                                         outlined
                                         @click="selectImage(item)"
@@ -308,13 +315,6 @@
                                                 aspect-ratio="1"
                                                 class="grey lighten-2"
                                             >
-                                            <v-row>
-                                                <v-spacer></v-spacer>
-                                                <v-checkbox class="white"
-                                                    v-model="item.selected"
-                                                ></v-checkbox>
-                                            </v-row>
-                                                
                                                 <template v-slot:placeholder>
                                                 <v-row
                                                     class="fill-height ma-0"
@@ -330,17 +330,19 @@
                                             </v-img>
                                             <v-row>
                                                 <v-col cols="12" class="d-flex">
-                                                    <v-card-text v-if="item.Caption" class="text-truncate text-caption">
-                                                        {{item.Caption}} 
+                                                    <v-card-text>
+                                                        Feature name: {{item.FeatureName}} 
+                                                        Community: {{item.CommunityName}}
+                                                        Place: {{item.PlaceName}}
                                                     </v-card-text>
-                                                    <v-card-text v-else class="text-caption">
-                                                        No caption 
-                                                    </v-card-text>
+                                                    <v-checkbox
+                                                    v-model="item.selected"
+                                                    ></v-checkbox>
                                                 </v-col>
                                             </v-row>     
                                         </v-card>
-                                        -->
-                    </v-col>
+                                        
+                                        </v-col>-->
                   </v-row>
                 </v-container>
                 <v-row class="mb-2" v-if="availablePhotos">
@@ -383,29 +385,30 @@
 </template>
 
 <script>
-import photos from "../../../../controllers/photos";
-import owners from "../../../../controllers/owners";
-import catalogs from "../../../../controllers/catalogs";
+import catalogs from "../../controllers/catalogs";
 import Carousell from "./Carousell";
 import PhotoList from "./PhotoList";
+import { EXTRA_PHOTOS_URL, STATIC_URL } from "../../urls";
+import axios from "axios";
+
 export default {
   name: "photos",
   components: { Carousell, PhotoList },
-  props: ["yacsiNumber", "showDefault"],
+  props: ["photoType", "itemId", "showDefault"],
   data: () => ({
     overlay: false,
     //search variables
     searchPhotos: null,
+    availablePhotos: null,
     numberOfPages: 10,
     page: 1,
-    availablePhotos: null,
     showSkeletons: false,
     skeletons: [1, 2, 3, 4, 5, 6],
     dialog1: false,
     photos: [],
     //form variables
     fields: {
-      BoatId: 1,
+      itemId: 1,
       Caption: "",
       FeatureName: "",
       OwnerId: null,
@@ -423,6 +426,7 @@ export default {
       Rating: 1,
       isPirvate: 0,
     },
+    sendObj: null,
     //selection options
     usageRightOptions: [
       {
@@ -478,8 +482,8 @@ export default {
         value: 4,
       },
       {
-        text: "Airplane Crash",
-        value: 6,
+        text: "Place",
+        value: 5,
       },
     ],
     availableCommunities: [],
@@ -497,82 +501,133 @@ export default {
     generalRules: [(v) => !!v || "This field is required"],
   }),
   mounted() {
-    //console.log("DATA",this.showDefault);
     if (this.showDefault) return;
 
-    //console.log("yacsi", this.yacsiNumber);
-    if (this.yacsiNumber) this.getDataFromAPI();
-    //this.getAll();
+    if (this.itemId) this.getDataFromAPI();
   },
   methods: {
     async getAll() {
       this.showSkeletons = true;
-      let data = await photos.getAll(this.page - 1, this.searchPhotos);
-      this.availablePhotos = data.body.map((x) => {
-        x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
-        x.selected = false;
-        return x;
-      });
-      this.numberOfPages = Math.round(data.count / 6);
-      this.showSkeletons = false;
+      axios
+        .get(`${EXTRA_PHOTOS_URL}/photo-owner`, {
+          crossdomain: true,
+          params: {
+            page: this.page - 1,
+            limit: 6,
+            textToMatch: this.searchPhotos
+          }
+        })
+        .then((resp) => {
+          if (resp) {
+            this.availablePhotos = resp.data.body.map((x) => {
+              // Todo: use thumbnail files whenever fetching all. Need to create thumbnails for all existing photos first
+              //console.log(x);
+              //x.File.base64 = `data:image/png;base64,${this.toBase64(x.Thumbfile.data)}`;
+              x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
+              x.selected = false;
+              return x;
+            });
+            //console.log(data.count);
+            this.numberOfPages = Math.round(resp.count / 6);
+            this.showSkeletons = false;
+          };       
+        })
+        .catch((error) => console.error(error))
+        ;  
     },
-    async getDataFromAPI() {
-      let data = await photos.getByYACSINumber(this.yacsiNumber);
-      this.photos = data.map((x) => {
-        x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
-        x.selected = false;
-        return x;
-      });
-      this.updateSelectedImage(0);
+    async getDataFromAPI() {  
+      axios
+        .get(`${EXTRA_PHOTOS_URL}/${this.photoType}/${this.itemId}`)
+        .then((resp) => {
+          if (resp) {
+            this.photos = resp.data.map((x) => {
+              x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
+              x.selected = false;
+              return x;
+            });
+            this.updateSelectedImage(0);
+          };       
+        })
+        .catch((error) => console.error(error))
+        ;  
     },
     async getOwners() {
       this.isLoadingOwner = true;
-      let data = await owners.get();
-      this.owners = data.body;
-      this.isLoadingOwner = false;
-    },
-    selectImage(item) {
-      let index = this.availablePhotos.indexOf(item);
-      if (index > -1) {
-        this.availablePhotos[index].selected =
-          !this.availablePhotos[index].selected;
-      }
+      axios
+        .get(`${STATIC_URL}/photo-owner`)
+        .then((resp) => {
+          if (resp) {
+            this.owners = resp.data.data.slice().sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+            this.isLoadingOwner = false;
+          };       
+        })
+        .catch((error) => console.error(error))
+        ;  
     },
     async savePhoto() {
       this.overlay = true;
-      this.fields.BoatId = Number(this.boatID);
-      //console.log(this.fields);
-      this.fields.CommunityId = this.fields.CommunityId.Id;
-      this.fields.Copyright = this.fields.Copyright.id;
-      this.fields.OriginalMediaId = this.fields.OriginalMediaId.Id;
-      this.fields.UsageRights = this.fields.UsageRights.id;
+      this.sendObj = this.fields;
+      let {
+        IsComplete,
+        Program,
+        CommunityId,
+        Copyright,
+        OriginalMediaId,
+        UsageRights,
+      } = this.sendObj;
+      
+      // Set the proper item id based on photoType
+      switch (this.photoType) {
+        case "ytplace":
+          this.sendObj.placeId = Number(this.itemId);
+          break;
+        case "boat":
+          this.sendObj.boatId = Number(this.itemId);
+          break;
+        case "aircrash":
+          this.sendObj.yacsiNumber = String(this.itemId);
+          break;         
+      }
+      delete this.sendObj.itemId;
+
+      this.sendObj.IsComplete = IsComplete ? 1 : 0;
+      this.sendObj.Program = Program.value;
+      this.sendObj.CommunityId = CommunityId.Id;
+      this.sendObj.Copyright = Copyright.id;
+      this.sendObj.OriginalMediaId = OriginalMediaId.Id;
+      this.sendObj.UsageRights = UsageRights.id;
       const formData = new FormData();
-      let prevFields = Object.entries(this.fields);
-      //console.log(prevFields);
+      let prevFields = Object.entries(this.sendObj);
       for (let i = 0; i < prevFields.length; i++) {
         formData.append(prevFields[i][0], prevFields[i][1]);
       }
       formData.append("file", this.file);
-      let resp = await photos.postAirCrashPhoto(formData);
-      console.log(resp);
-      this.reset();
-      this.overlay = false;
+
+      axios
+        .post(`${EXTRA_PHOTOS_URL}/${this.photoType}`, formData)
+        .then(() => {
+          this.reset();
+          this.$router.go();
+          this.overlay = false;  
+        })
+        .catch((error) => console.error(error))
+        ;  
     },
     async saveAndLink() {
-      //console.log("DATA HERE");
-      //console.log(this.availablePhotos);
       let photosToLink = this.availablePhotos
         .filter((x) => x.selected == true)
         .map((x) => {
           return x.RowId;
         });
-      //console.log(photosToLink);
-      let resp = await photos.linkAirCrashPhotos(this.yacsiNumber, {
-        linkPhotos: photosToLink,
-      });
-      console.log(resp);
-      this.reset();
-      this.$router.go();
+      
+      axios
+        .post(`${EXTRA_PHOTOS_URL}/${this.photoType}/link/${this.itemId}`, { linkPhotos: photosToLink })
+        .then(() => {
+          this.reset();
+          this.$router.go();     
+        })
+        .catch((error) => console.error(error))
+        ;  
     },
     toBase64(arr) {
       return btoa(
@@ -615,6 +670,13 @@ export default {
       this.availableOriginalMedia = data;
       this.isLoadingMedias = false;
     },
+    selectImage(item) {
+      let index = this.availablePhotos.indexOf(item);
+      if (index > -1) {
+        this.availablePhotos[index].selected =
+          !this.availablePhotos[index].selected;
+      }
+    },
     updateSelectedImage(val) {
       //updates the carousell selected image
       this.$emit("updateSelectedImage", this.photos[val]);
@@ -623,9 +685,6 @@ export default {
   watch: {
     page() {
       this.getAll();
-    },
-    showDefault() {
-      //console.log("show default",this.showDefault);
     },
   },
 };
@@ -640,21 +699,5 @@ export default {
 .center-children {
   display: grid;
   place-items: center;
-}
-.top-checkbox {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 34px;
-  height: 34px;
-}
-.top-checkbox
-  > .v-input__control
-  > .v-input__slot
-  > .v-input--selection-controls__input {
-  width: 34px;
-  height: 34px;
-  margin: 0px;
-  padding: 0px;
 }
 </style>

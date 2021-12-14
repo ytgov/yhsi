@@ -432,10 +432,12 @@
             <Photos
               v-if="infoLoaded"
               :showDefault="mode == 'new'"
-              :boatID="getBoatID"
+              :photoType="'boat'"
+              :itemId="getBoatID"
               @updateSelectedImage="selectedImageChanged"
               :selectedImage="selectedImage"
             />
+            
           </v-col>
         </v-row>
       </v-col>
@@ -456,7 +458,7 @@
 
 <script>
 import Breadcrumbs from "../../../Breadcrumbs.vue";
-import Photos from "./Photos/Photos";
+import Photos from "../../../PhotoEditor/Photos";
 import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
 import boats from "../../../../controllers/boats";
