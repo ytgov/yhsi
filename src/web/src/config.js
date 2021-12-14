@@ -70,10 +70,10 @@ export const sections = [
         makeUrl: (id) => { return `/maps` }
     },
     {
-        name: "Users",
-        url: "/users",
+        name: "People",
+        url: "/people",
         icon: "mdi-account-group",// eslint-disable-next-line no-unused-vars
-        makeUrl: (id) => { return `/users` }
+        makeUrl: (id) => { return `/people` }
     },
     {
         name: "PhotoOwners",
