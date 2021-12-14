@@ -253,8 +253,10 @@
           <Photos
             v-if="infoLoaded"
             :showDefault="isNewCrash"
-            :yacsiNumber="getYACSINumber"
+            :photoType="'aircrash'"
+            :itemId="getYACSINumber"
             @updateSelectedImage="selectedImageChanged"
+            :selectedImage="selectedImage"
           />
         </v-col>
       </v-col>
@@ -262,7 +264,7 @@
     <MapLoader
       v-if="infoLoaded"
       :mode="mode"
-      :mapType="planeCrash"
+      :mapType="'planeCrash'"
       @modifiedDataCoordinates="modifiedDataCoordinates"
       :fields="{
         accuracy: fields.accuracy,
@@ -478,8 +480,13 @@
 </template>
 
 <script>
+<<<<<<< HEAD
 import Breadcrumbs from '../../Breadcrumbs.vue';
 import Photos from "./Photos/Photos";
+=======
+import Breadcrumbs from "../../Breadcrumbs.vue";
+import Photos from "../../PhotoEditor/Photos";
+>>>>>>> 865c296 (Fixed photo owners reference. Made photo and map tools into shared components.)
 import PrintButton from "./PrintButton";
 import aircrash from "../../../controllers/aircrash";
 <<<<<<< HEAD

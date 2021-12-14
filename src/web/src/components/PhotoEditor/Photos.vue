@@ -8,8 +8,8 @@
       <v-img
         height="200"
         width="200"
-        :src="require('../../../../assets/add_photo.png')"
-        :lazy-src="require('../../../../assets/add_photo.png')"
+        :src="require('../../assets/add_photo.png')"
+        :lazy-src="require('../../assets/add_photo.png')"
       ></v-img>
     </div>
     <Carousell
@@ -22,7 +22,7 @@
     <v-row v-if="showDefault">
       <v-col cols="12">
         <p class="text-center font-weight-bold pt-3">
-          Once you upload your new place data you will be able to attach photos
+          Once you upload your new item data you will be able to attach photos
         </p>
       </v-col>
     </v-row>
@@ -81,8 +81,8 @@
                           clearable
                           label="Owner Name"
                           :rules="ownerRules"
-                          item-text="OwnerName"
-                          item-value="ownerid"
+                          item-text="name"
+                          item-value="id"
                         ></v-autocomplete>
                         <v-combobox
                           v-model="fields.CommunityId"
@@ -385,15 +385,16 @@
 </template>
 
 <script>
-import photos from "../../../../controllers/photos";
-import owners from "../../../../controllers/owners";
-import catalogs from "../../../../controllers/catalogs";
+import catalogs from "../../controllers/catalogs";
 import Carousell from "./Carousell";
 import PhotoList from "./PhotoList";
+import { EXTRA_PHOTOS_URL, STATIC_URL } from "../../urls";
+import axios from "axios";
+
 export default {
   name: "photos",
   components: { Carousell, PhotoList },
-  props: ["placeId", "showDefault"],
+  props: ["photoType", "itemId", "showDefault"],
   data: () => ({
     overlay: false,
     //search variables
@@ -407,7 +408,7 @@ export default {
     photos: [],
     //form variables
     fields: {
-      placeId: 1,
+      itemId: 1,
       Caption: "",
       FeatureName: "",
       OwnerId: null,
@@ -502,40 +503,66 @@ export default {
   mounted() {
     if (this.showDefault) return;
 
-    if (this.placeId) this.getDataFromAPI();
+    if (this.itemId) this.getDataFromAPI();
   },
   methods: {
     async getAll() {
       this.showSkeletons = true;
-      let res = await photos.getAll(this.page - 1, this.searchPhotos);
-      if (res) {
-        this.availablePhotos = res.body.map((x) => {
-          x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
-          x.selected = false;
-          return x;
-        });
-        //console.log(data.count);
-        this.numberOfPages = Math.round(res.count / 6);
-        this.showSkeletons = false;
-      };
+      axios
+        .get(`${EXTRA_PHOTOS_URL}/photo-owner`, {
+          crossdomain: true,
+          params: {
+            page: this.page - 1,
+            limit: 6,
+            textToMatch: this.searchPhotos
+          }
+        })
+        .then((resp) => {
+          if (resp) {
+            this.availablePhotos = resp.data.body.map((x) => {
+              // Todo: use thumbnail files whenever fetching all. Need to create thumbnails for all existing photos first
+              //console.log(x);
+              //x.File.base64 = `data:image/png;base64,${this.toBase64(x.Thumbfile.data)}`;
+              x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
+              x.selected = false;
+              return x;
+            });
+            //console.log(data.count);
+            this.numberOfPages = Math.round(resp.count / 6);
+            this.showSkeletons = false;
+          };       
+        })
+        .catch((error) => console.error(error))
+        ;  
     },
-    async getDataFromAPI() {
-      let res = await photos.getByPlaceId(Number(this.placeId));
-      if (res) {
-        this.photos = res.map((x) => {
-          x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
-          x.selected = false;
-          return x;
-        });
-        this.updateSelectedImage(0);
-      };
+    async getDataFromAPI() {  
+      axios
+        .get(`${EXTRA_PHOTOS_URL}/${this.photoType}/${this.itemId}`)
+        .then((resp) => {
+          if (resp) {
+            this.photos = resp.data.map((x) => {
+              x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
+              x.selected = false;
+              return x;
+            });
+            this.updateSelectedImage(0);
+          };       
+        })
+        .catch((error) => console.error(error))
+        ;  
     },
     async getOwners() {
       this.isLoadingOwner = true;
-      let data = await owners.get();
-      this.owners = data.body;
-      //console.log(this.owners);
-      this.isLoadingOwner = false;
+      axios
+        .get(`${STATIC_URL}/photo-owner`)
+        .then((resp) => {
+          if (resp) {
+            this.owners = resp.data.data.slice().sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+            this.isLoadingOwner = false;
+          };       
+        })
+        .catch((error) => console.error(error))
+        ;  
     },
     async savePhoto() {
       this.overlay = true;
@@ -548,7 +575,21 @@ export default {
         OriginalMediaId,
         UsageRights,
       } = this.sendObj;
-      this.sendObj.placeId = Number(this.placeId);
+      
+      // Set the proper item id based on photoType
+      switch (this.photoType) {
+        case "ytplace":
+          this.sendObj.placeId = Number(this.itemId);
+          break;
+        case "boat":
+          this.sendObj.boatId = Number(this.itemId);
+          break;
+        case "aircrash":
+          this.sendObj.yacsiNumber = String(this.itemId);
+          break;         
+      }
+      delete this.sendObj.itemId;
+
       this.sendObj.IsComplete = IsComplete ? 1 : 0;
       this.sendObj.Program = Program.value;
       this.sendObj.CommunityId = CommunityId.Id;
@@ -561,10 +602,16 @@ export default {
         formData.append(prevFields[i][0], prevFields[i][1]);
       }
       formData.append("file", this.file);
-      await photos.postPlacePhoto(formData);
-      this.reset();
-      this.$router.go();
-      this.overlay = false;
+
+      axios
+        .post(`${EXTRA_PHOTOS_URL}/${this.photoType}`, formData)
+        .then(() => {
+          this.reset();
+          this.$router.go();
+          this.overlay = false;  
+        })
+        .catch((error) => console.error(error))
+        ;  
     },
     async saveAndLink() {
       let photosToLink = this.availablePhotos
@@ -572,11 +619,15 @@ export default {
         .map((x) => {
           return x.RowId;
         });
-      await photos.linkPlacePhotos(Number(this.placeId), {
-        linkPhotos: photosToLink,
-      });
-      this.reset();
-      this.$router.go();
+      
+      axios
+        .post(`${EXTRA_PHOTOS_URL}/${this.photoType}/link/${this.itemId}`, { linkPhotos: photosToLink })
+        .then(() => {
+          this.reset();
+          this.$router.go();     
+        })
+        .catch((error) => console.error(error))
+        ;  
     },
     toBase64(arr) {
       return btoa(

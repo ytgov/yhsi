@@ -23,6 +23,7 @@ photosExtraRouter.get(
     if (!permissions.includes('view')) res.sendStatus(403);
   
     const db = req.app.get('db'); */
+
 		const { textToMatch } = req.query;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
@@ -34,8 +35,10 @@ photosExtraRouter.get(
 			counter = await db
 				.from('dbo.photo as PH')
 				.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-				.join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
+				//.join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
+				.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
 				.where('PH.FeatureName', 'like', `%${textToMatch}%`)
+				//.whereNotNull("ThumbFile")
 				.orWhere('PH.OriginalFileName', 'like', `%${textToMatch}%`)
 				.orWhere('PH.Address', 'like', `%${textToMatch}%`)
 				.orWhere('PH.Caption', 'like', `%${textToMatch}%`)
@@ -52,8 +55,10 @@ photosExtraRouter.get(
 				.select()
 				.from('dbo.photo as PH')
 				.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-				.join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
+				//.join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
+				.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
 				.where('FeatureName', 'like', `%${textToMatch}%`)
+				//.whereNotNull("ThumbFile")
 				.orWhere('OriginalFileName', 'like', `%${textToMatch}%`)
 				.orWhere('Address', 'like', `%${textToMatch}%`)
 				.orWhere('Caption', 'like', `%${textToMatch}%`)
@@ -74,7 +79,9 @@ photosExtraRouter.get(
 				.select()
 				.from('dbo.photo as PH')
 				.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-				.join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
+				//.join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
+				.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
+				//.whereNotNull("ThumbFile")
 				.orderBy('PH.RowId', 'asc')
 				.limit(limit)
 				.offset(offset);
@@ -129,7 +136,7 @@ photosExtraRouter.post(
 	[param('AirCrashId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		/* const db = req.app.get('db');
+		/* const db = req.app.get('db'); 
   
     const permissions = req.decodedToken['yg-claims'].permissions;
     if (!permissions.includes('create')) res.sendStatus(403); */
@@ -269,11 +276,17 @@ photosExtraRouter.get(
 );
 
 // ADD NEW BOAT PHOTO
+
 photosExtraRouter.post(
 	'/boat',
-	[multer().single('file')],
+	[upload.single('file')],
 	async (req: Request, res: Response) => {
-		const { BoatId, ...restBody } = req.body;
+		/* const db = req.app.get('db');
+  
+    const permissions = req.decodedToken['yg-claims'].permissions;
+    if (!permissions.includes('create')) res.sendStatus(403); */
+
+		const { boatId, ...restBody } = req.body;
 		const ThumbFile = await createThumbnail(req.file.buffer);
 
 		const body = { File: req.file.buffer, ThumbFile, ...restBody };
@@ -282,14 +295,14 @@ photosExtraRouter.post(
 			.insert(body)
 			.into('dbo.photo')
 			.returning('*')
-			.then(async (rows: any) => {
+			.then(async (rows) => {
 				const newBoatPhoto = rows[0];
 
 				await db
-					.insert({ BoatId, Photo_RowID: newBoatPhoto.RowId })
+					.insert({ boatId, Photo_RowID: newBoatPhoto.RowId })
 					.into('boat.photo')
 					.returning('*')
-					.then((rows: any) => {
+					.then((rows) => {
 						return rows;
 					});
 
@@ -300,17 +313,16 @@ photosExtraRouter.post(
 );
 
 // ADD NEW AIRCRASH PHOTO
-
 photosExtraRouter.post(
 	'/aircrash',
 	[upload.single('file')],
 	async (req: Request, res: Response) => {
-		/*  const db = req.app.get('db');
+		/*  const db = req.app.get('db');  
    
      const permissions = req.decodedToken['yg-claims'].permissions;
      if (!permissions.includes('create')) res.sendStatus(403); */
 
-		const { YACSINumber, ...restBody } = req.body;
+		const { yacsiNumber, ...restBody } = req.body;
 		const ThumbFile = await createThumbnail(req.file.buffer);
 		const body = { File: req.file.buffer, ThumbFile, ...restBody };
 
@@ -322,7 +334,7 @@ photosExtraRouter.post(
 				const newAirCrashPhoto = rows[0];
 
 				await db
-					.insert({ YACSINumber, Photo_RowID: newAirCrashPhoto.RowId })
+					.insert({ yacsiNumber, Photo_RowID: newAirCrashPhoto.RowId })
 					.into('AirCrash.Photo')
 					.returning('*')
 					.then((rows) => {
