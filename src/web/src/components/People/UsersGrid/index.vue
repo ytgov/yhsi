@@ -54,7 +54,14 @@
           </v-menu>
         </v-col>
         <v-spacer></v-spacer>
-        <v-col cols="auto"> </v-col>
+        <v-col cols="auto"> 
+          <JsonCSV :data="people">
+          <v-btn class="black--text mx-1" :disabled="people.length == 0">
+            <v-icon class="mr-1"> mdi-export </v-icon>
+            Export
+          </v-btn>
+        </JsonCSV>
+        </v-col>
       </v-row>
       <div class="mt-2">
         <v-card class="px-3 py-3">
@@ -99,10 +106,11 @@
 <script>
 import people from "../../../controllers/people";
 import Breadcrumbs from "../../Breadcrumbs";
+import JsonCSV from "vue-json-csv";
 import _ from "lodash";
 export default {
   name: "usersgrid",
-  components: { Breadcrumbs },
+  components: { Breadcrumbs, JsonCSV },
   data: () => ({
     loading: false,
     people: [],
@@ -119,6 +127,11 @@ export default {
     pageCount: 0,
     iteamsPerPage: 10,
     selectedFilter: [],
+    filterOptions: [
+      { name: "Expired Users" },
+      { name: "Active Users" },
+      { name: "Pending Users" },
+    ],
   }),
   mounted() {
     this.getDataFromApi();
@@ -129,7 +142,11 @@ export default {
     }, 400),
     handleClick(value) { 
       //Redirects the user to the edit user form
-      this.$router.push(`/people/edit/${value.UserId}`);
+      //this.$router.push(`/people/edit/${value.PersonID}`);
+      this.$router.push({
+        name: "personView",
+        params: { name: `${value.GivenName}-${value.Surname}`, id: value.PersonID },
+      });
     },
     removeItem(item) {
       //removes one element from the users array
@@ -154,18 +171,8 @@ export default {
       );
 
       this.people = _.get(data, "body", []);
-      this.people.map((x) => {
-        x.LastLogin = this.formatDate(x.LastLogin);
-      });
-      console.log(this.people);
       this.totalLength = _.get(data, "count", 0);
       this.loading = false;
-    },
-    formatDate(date) {
-      if (!date) return null;
-      date = date.substr(0, 10);
-      const [year, month, day] = date.split("-");
-      return `${month}/${day}/${year}`;
     },
   },
   computed: {

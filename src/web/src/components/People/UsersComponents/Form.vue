@@ -123,7 +123,6 @@ import Breadcrumbs from '../../Breadcrumbs.vue';
 //import Photos from "./Photos/Photos";
 //import HistoricRecord from "../HistoricRecord";
 //import PrintButton from "./PrintButton";
-import boats from "../../../controllers/boats";
 import people from "../../../controllers/people";
 
 //import _ from 'lodash';
@@ -202,8 +201,8 @@ export default {
         },
         noData(){
             this.fields = {
-                Surname: "test modification",
-                GivenName: "Harry F.",
+                Surname: "",
+                GivenName: "",
                 BirthYear: 0,
                 BirthAccuracy: "",
                 DeathYear: 0,
@@ -231,19 +230,31 @@ export default {
             }
             this.mode="view";
             this.resetListVariables();
-            this.$router.push(`/users/view/${this.fields.GivenName}`);
+            //this.$router.push(`/users/view/${this.fields.GivenName}`);
+            this.$router.push({
+                name: "personView",
+                params: { name: `${this.fields.GivenName}-${this.fields.Surname}`, id: this.fields.PersonID },
+            });
         },
         cancelNew(){
             this.$router.push(`/users/`);
         },
         viewMode(){
             this.mode="view";
-            this.$router.push(`/users/view/${this.fields.GivenName}`);
+             this.$router.push({
+                name: "personView",
+                params: { name: `${this.fields.GivenName}-${this.fields.Surname}`, id: this.fields.PersonID },
+            });
+            //this.$router.push(`/users/view/${this.fields.GivenName}`);
         },
         editMode(){
             this.fieldsHistory = {...this.fields};
             this.mode="edit";
-            this.$router.push(`/users/edit/${this.fields.GivenName}`);
+            this.$router.push({
+                name: "personEditView",
+                params: { name: `${this.fields.GivenName}-${this.fields.Surname}`, id: this.fields.PersonID },
+            });
+            //this.$router.push(`/users/edit/${this.fields.GivenName}`);
             this.showSave = 0;
             this.resetListVariables();
         },
@@ -252,26 +263,23 @@ export default {
             let { Surname,
                 GivenName,
                 BirthYear,
-                BirthAccuracy,
-                DeathYear,
-                DeathAccuracy } = this.fields;
+                //BirthAccuracy,DeathAccuracy
+                DeathYear } = this.fields;
              let data = {
                     person: {
                         Surname,
                         GivenName,
                         BirthYear,
-                        BirthAccuracy,
+                        BirthAccuracy: "",
                         DeathYear,
-                        DeathAccuracy
+                        DeathAccuracy: ""
                     }
                 };
                 //console.log(data);
-                
-            let currentBoat= {};
             console.log(data);
-            
+            let currentPerson = {};
             if(this.mode == 'new'){
-                let resp = await boats.post(data);
+                let resp = await people.post(data);
                 if(resp.response){
                     if(resp.response.status == 409){
                         this.$store.commit('alerts/setText', "The registration number already exists.");
@@ -282,18 +290,18 @@ export default {
                     }
                 }
                 else{
-                    this.$router.push(`/boats/`);
+                    this.$router.push(`/people`);
                 }
                
             }
             else{
-                await boats.put(localStorage.currentBoatID,data);
-                currentBoat.id = localStorage.currentBoatID;
-                currentBoat.name = this.fields.Name; 
+                await people.put(localStorage.currentPersonID,data);
+                currentPerson.id = localStorage.currentPersonID;
+                currentPerson.name =  `${this.fields.GivenName}-${this.fields.Surname}`; 
                 this.mode = 'view';
-                this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});   
+                this.overlay = false;
+                this.$router.push({name: 'personView', params: { name: currentPerson.name, id: currentPerson.id },});   
                 this.$router.go();   
-               
             } 
             
         },
@@ -308,17 +316,6 @@ export default {
             this.editTableOwners = -1;
             this.addingName = false;
             this.editTableNames = -1;
-        },
-        saveTableOwners(index){
-            if(this.addingOwner)
-                this.fields.owners[index] = { ...this.helperOwner, isNew: true};
-            else{
-                this.fields.ownerRemovedArray.push(this.fields.owners[index]);
-                this.fields.owners[index] = { ...this.helperOwner, isNew: true};
-            }
-            this.showSave = this.showSave+1;
-            this.addingOwner = false;  
-            this.editTableOwners = -1;    
         },
         //handles the new values added to the historic records
         historicRecordChange(val){
@@ -344,21 +341,12 @@ export default {
         isNewMode(){
           return this.mode == "new" ? true : false;
         },
-        getBoatID(){
+        getPersonID(){
             if(this.$route.params.id){
                 return  this.$route.params.id;
             }
-            else return localStorage.currentBoatID;
+            else return localStorage.currentPersonID;
         },
-        constructionDate () {
-            return this.formatDate(this.fields.ConstructionDate);
-        },
-        serviceStart(){
-            return this.formatDate(this.fields.ServiceStart);
-        },
-        serviceEnd(){
-            return this.formatDate(this.fields.ServiceEnd);
-        }
     },
     watch: {
         fields: {/* eslint-disable */

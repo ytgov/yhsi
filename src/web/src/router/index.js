@@ -124,15 +124,19 @@ const routes = [
     }
   },
   {
-      path: "/people/edit/:id",
+      path: "/people/edit/:name",
+      name: "personEditView",
       component: UserForm,
+      props: true,
       meta: {
         requiresAuth: false
       }
   },
   {
-    path: "/people/view/:id",
+    path: "/people/view/:name",
     component: UserForm,
+    name: "personView",
+    props: true,
     meta: {
       requiresAuth: false
     }
@@ -140,6 +144,8 @@ const routes = [
   {
     path: "/people/new",
     component: UserForm,
+    name: "personAddView",
+    props: true,
     meta: {
       requiresAuth: false
     }
