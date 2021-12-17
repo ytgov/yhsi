@@ -111,7 +111,23 @@ router.post('/', authenticateToken, async (req, res) => {
     res.status(200).send({ message: 'success' });
 });
 
+router.get('/:personId/histories', authenticateToken, async (req, res) => {
+    const db = req.app.get('db');
+    const permissions = req.decodedToken['yg-claims'].permissions;
+    if (!permissions.includes('edit')) res.sendStatus(403);
+  
+    const { personId } = req.params;
 
+    const histories = await db.from('Person.History')
+            .where('History.PersonID', personId);
+
+    if(histories.length == 0){
+        res.status(200).send({ message: 'The person doesnt exist or doesn´t have any historc records'});
+        return;
+    }
+  
+    res.status(200).send({ histories });
+});
 //Modify history
 router.put('/history/:historyId', authenticateToken, async (req, res) => {
     const db = req.app.get('db');
@@ -148,8 +164,8 @@ router.post('/:personId/history', authenticateToken, async (req, res) => {
     history.PersonID = personId;
 
     const exists = await db.from('Person.History').where('History.PersonID', personId).returning('*');
-    console.log(exists);
-    if(exists){
+
+    if(!exists){
         res.status(404).send({ message: 'The person doesnt exist'});
         return;
     }

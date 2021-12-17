@@ -8,8 +8,8 @@
       <v-img
         height="200"
         width="200"
-        :src="require('../../../../../assets/add_photo.png')"
-        :lazy-src="require('../../../../../assets/add_photo.png')"
+        :src="require('../../../../assets/add_photo.png')"
+        :lazy-src="require('../../../../assets/add_photo.png')"
       ></v-img>
     </div>
     <Carousell
@@ -385,15 +385,15 @@
 </template>
 
 <script>
-import photos from "../../../../../controllers/photos";
-import owners from "../../../../../controllers/owners";
-import catalogs from "../../../../../controllers/catalogs";
+import photos from "../../../../controllers/photos";
+import owners from "../../../../controllers/owners";
+import catalogs from "../../../../controllers/catalogs";
 import Carousell from "./Carousell";
 import PhotoList from "./PhotoList";
 export default {
   name: "photos",
   components: { Carousell, PhotoList },
-  props: ["boatID", "showDefault"],
+  props: ["PersonID", "showDefault"],
   data: () => ({
     overlay: false,
     //search variables
@@ -407,7 +407,7 @@ export default {
     photos: [],
     //form variables
     fields: {
-      BoatId: 1,
+      PersonID: 1,
       Caption: "",
       FeatureName: "",
       OwnerId: null,
@@ -502,7 +502,7 @@ export default {
   mounted() {
     if (this.showDefault) return;
 
-    if (this.boatID) this.getDataFromAPI();
+    if (this.PersonID) this.getDataFromAPI();
   },
   methods: {
     async getAll() {
@@ -513,12 +513,12 @@ export default {
         x.selected = false;
         return x;
       });
-      //console.log(data.count);
+      console.log(this.availablePhotos);
       this.numberOfPages = Math.round(data.count / 6);
       this.showSkeletons = false;
     },
     async getDataFromAPI() {
-      let data = await photos.getByBoatId(Number(this.boatID));
+      let data = await photos.getByPersonId(Number(this.PersonID));
       this.photos = data.map((x) => {
         x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
         x.selected = false;
@@ -544,7 +544,7 @@ export default {
         OriginalMediaId,
         UsageRights,
       } = this.sendObj;
-      this.sendObj.BoatId = Number(this.boatID);
+      this.sendObj.PersonID = Number(this.PersonID);
       this.sendObj.IsComplete = IsComplete ? 1 : 0;
       this.sendObj.Program = Program.value;
       this.sendObj.CommunityId = CommunityId.Id;
@@ -557,7 +557,7 @@ export default {
         formData.append(prevFields[i][0], prevFields[i][1]);
       }
       formData.append("file", this.file);
-      await photos.postBoatPhoto(formData);
+      await photos.postPersonPhoto(formData);
       this.reset();
       this.$router.go();
       this.overlay = false;
@@ -568,11 +568,14 @@ export default {
         .map((x) => {
           return x.RowId;
         });
-      await photos.linkBoatPhotos(Number(this.boatID), {
+        console.log("person id", this.PersonID);
+        
+      let res = await photos.linkPersonPhotos(Number(this.PersonID), {
         linkPhotos: photosToLink,
       });
-      this.reset();
-      this.$router.go();
+      console.log("response",res);
+      //this.reset();
+      //this.$router.go();
     },
     toBase64(arr) {
       return btoa(

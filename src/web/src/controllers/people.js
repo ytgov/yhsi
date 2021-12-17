@@ -37,8 +37,36 @@ export default {
     });
   },
   async post(data){
-    return await api.post(`people/new`, data)
+    return await api.post(`people/`, data)
     .then(res => {
+      return res.data;
+    }).catch(error =>{
+      return error;
+    });
+  },
+
+  //history
+
+  async postHistory(id,data){
+    return await api.post(`people/${id}/history`, data)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      return error;
+    });
+  },
+  async putHistory(id,data){
+    return await api.put(`people/history/${id}`, data)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      return error;
+    });
+  },
+  async getHistories(id){
+    return await api.get(`people/${id}/histories`)
+    .then(res => {
+      console.log(res);
       return res.data;
     }).catch(error =>{
       return error;
