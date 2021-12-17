@@ -74,6 +74,13 @@
           </v-btn>
         </JsonCSV>
         </v-col>
+        <v-col cols="auto"> 
+          <PrintButton
+          key="prt-person"
+          :data="{ people }"
+          :disabled="people.length == 0"
+        />
+        </v-col>
       </v-row>
       <div class="mt-2">
         <v-card class="px-3 py-3">
@@ -108,10 +115,11 @@
 import people from "../../../controllers/people";
 import Breadcrumbs from "../../Breadcrumbs";
 import JsonCSV from "vue-json-csv";
+import PrintButton from "./PrintButton";
 import _ from "lodash";
 export default {
   name: "usersgrid",
-  components: { Breadcrumbs, JsonCSV },
+  components: { Breadcrumbs, JsonCSV, PrintButton },
   data: () => ({
     loading: false,
     people: [],
