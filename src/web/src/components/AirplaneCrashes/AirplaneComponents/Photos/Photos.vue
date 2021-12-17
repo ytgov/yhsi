@@ -81,8 +81,8 @@
                           clearable
                           label="Owner Name"
                           :rules="ownerRules"
-                          item-text="OwnerName"
-                          item-value="ownerid"
+                          item-text="Name"
+                          item-value="Id"
                         ></v-autocomplete>
                         <v-combobox
                           v-model="fields.CommunityId"
@@ -384,7 +384,7 @@
 
 <script>
 import photos from "../../../../controllers/photos";
-import owners from "../../../../controllers/owners";
+import owners from "../../../../controllers/photoOwners";
 import catalogs from "../../../../controllers/catalogs";
 import Carousell from "./Carousell";
 import PhotoList from "./PhotoList";
@@ -405,7 +405,7 @@ export default {
     photos: [],
     //form variables
     fields: {
-      BoatId: 1,
+      YACSINumber: 1,
       Caption: "",
       FeatureName: "",
       OwnerId: null,
@@ -422,6 +422,7 @@ export default {
       IsComplete: false,
       Rating: 1,
       isPirvate: 0,
+      
     },
     //selection options
     usageRightOptions: [
@@ -495,6 +496,8 @@ export default {
     //input rules
     ownerRules: [(v) => !!v || "Owner Name is required"],
     generalRules: [(v) => !!v || "This field is required"],
+    loadingData: false,
+    sendObj: {}
   }),
   mounted() {
     //console.log("DATA",this.showDefault);
@@ -517,6 +520,7 @@ export default {
       this.showSkeletons = false;
     },
     async getDataFromAPI() {
+      this.loadingPhotosChange(true);
       let data = await photos.getByYACSINumber(this.yacsiNumber);
       this.photos = data.map((x) => {
         x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
@@ -524,12 +528,7 @@ export default {
         return x;
       });
       this.updateSelectedImage(0);
-    },
-    async getOwners() {
-      this.isLoadingOwner = true;
-      let data = await owners.get();
-      this.owners = data.body;
-      this.isLoadingOwner = false;
+      this.loadingPhotosChange(false);
     },
     selectImage(item) {
       let index = this.availablePhotos.indexOf(item);
@@ -540,22 +539,34 @@ export default {
     },
     async savePhoto() {
       this.overlay = true;
-      this.fields.BoatId = Number(this.boatID);
-      //console.log(this.fields);
-      this.fields.CommunityId = this.fields.CommunityId.Id;
-      this.fields.Copyright = this.fields.Copyright.id;
-      this.fields.OriginalMediaId = this.fields.OriginalMediaId.Id;
-      this.fields.UsageRights = this.fields.UsageRights.id;
+      this.sendObj = this.fields;
+      let {
+        IsComplete,
+        Program,
+        CommunityId,
+        Copyright,
+        OriginalMediaId,
+        UsageRights,
+      } = this.sendObj;
+      this.sendObj.YACSINumber = Number(this.yacsiNumber);
+      this.sendObj.IsComplete = IsComplete ? 1 : 0;
+      this.sendObj.Program = Program.value;
+      this.sendObj.CommunityId = CommunityId.Id;
+      this.sendObj.Copyright = Copyright.id;
+      this.sendObj.OriginalMediaId = OriginalMediaId.Id;
+      this.sendObj.UsageRights = UsageRights.id;
+
       const formData = new FormData();
-      let prevFields = Object.entries(this.fields);
+      let prevFields = Object.entries(this.sendObj);
+      console.log(this.sendObj);
       //console.log(prevFields);
       for (let i = 0; i < prevFields.length; i++) {
         formData.append(prevFields[i][0], prevFields[i][1]);
       }
       formData.append("file", this.file);
-      let resp = await photos.postAirCrashPhoto(formData);
-      console.log(resp);
+      await photos.postAirCrashPhoto(formData);
       this.reset();
+      this.$router.go();
       this.overlay = false;
     },
     async saveAndLink() {
@@ -615,10 +626,19 @@ export default {
       this.availableOriginalMedia = data;
       this.isLoadingMedias = false;
     },
+    async getOwners() {
+      this.isLoadingOwner = true;
+      let data = await owners.get();
+      this.owners = data.body.filter( x => x.Name != null && x.Name != "");
+      this.isLoadingOwner = false;
+    },
     updateSelectedImage(val) {
       //updates the carousell selected image
       this.$emit("updateSelectedImage", this.photos[val]);
     },
+    loadingPhotosChange(val){
+      this.$emit("loadingPhotosChange",val);
+    }
   },
   watch: {
     page() {

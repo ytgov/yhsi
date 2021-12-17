@@ -201,7 +201,6 @@ router.post('/boat/new', [authenticateToken, upload.single('file')], async (req,
   if (!permissions.includes('create')) res.sendStatus(403);
 
   const { BoatId, ...restBody } = req.body;
-
   let options = { percentage: 66, jpegOptions: { force: true, quality: 33 } };
   const ThumbFile = await imageThumbnail(req.file.buffer, options);
 

@@ -16,7 +16,12 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  v-if="mode == 'view'" :data="fields" :name="fields.Name" :selectedImage="selectedImage"/>
+                <PrintButton  
+                    v-if="mode == 'view'" :data="fields" 
+                    :name="fields.Name" 
+                    :selectedImage="selectedImage"
+                    :loadingPhotos="loadingPhotos"
+                    :loadingHistories="loadingHistories" />
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
                     <v-icon>mdi-close</v-icon>
@@ -385,14 +390,21 @@
                             v-if="infoLoaded" 
                             :showDefault="mode == 'new'" 
                             :boatID="getBoatID"
-                            @updateSelectedImage="selectedImageChanged" :selectedImage="selectedImage"/>
+                            @updateSelectedImage="selectedImageChanged" 
+                            :selectedImage="selectedImage"
+                            @loadingPhotosChange="loadingPhotosChange"/>
                     </v-col>
                 </v-row>
             </v-col>
         </v-row>
         <v-divider class="my-5"></v-divider> 
 <!-- Historic Record component -->
-        <HistoricRecord v-if="fields.histories != undefined && mode !='new'" :historicRecords="fields.histories" :mode="'edit'" :boatID="getBoatID" />
+        <HistoricRecord 
+            v-if="fields.histories != undefined && mode !='new'" 
+            :historicRecords="fields.histories" 
+            :mode="'edit'" 
+            :boatID="getBoatID" />
+
         <v-overlay :value="overlay">
             <v-progress-circular
                 indeterminate
@@ -454,7 +466,9 @@ export default {
         vesselTypeOptions: [],
         dateFormatted: "",
         isLoadingVessels: false,
-        regNumberWarning: []
+        regNumberWarning: [],
+        loadingPhotos: false,
+        loadingHistories: false
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -733,6 +747,12 @@ export default {
         },
         selectedImageChanged(val){
             this.selectedImage = val;
+        },
+        loadingPhotosChange(val){
+            this.loadingPhotos = val;
+        },
+        loadingHistoriesChange(val){
+            this.loadingHistories = val;
         }
     },   
     computed:{

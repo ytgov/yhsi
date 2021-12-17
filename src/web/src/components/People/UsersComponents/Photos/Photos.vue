@@ -81,8 +81,8 @@
                           clearable
                           label="Owner Name"
                           :rules="ownerRules"
-                          item-text="OwnerName"
-                          item-value="ownerid"
+                          item-text="Name"
+                          item-value="Id"
                         ></v-autocomplete>
                         <v-combobox
                           v-model="fields.CommunityId"
@@ -386,7 +386,7 @@
 
 <script>
 import photos from "../../../../controllers/photos";
-import owners from "../../../../controllers/owners";
+import owners from "../../../../controllers/photoOwners";
 import catalogs from "../../../../controllers/catalogs";
 import Carousell from "./Carousell";
 import PhotoList from "./PhotoList";
@@ -535,8 +535,7 @@ export default {
     async getOwners() {
       this.isLoadingOwner = true;
       let data = await owners.get();
-      this.owners = data.body;
-      //console.log(this.owners);
+      this.owners = data.body.filter( x => x.Name != null && x.Name != "");
       this.isLoadingOwner = false;
     },
     async savePhoto() {

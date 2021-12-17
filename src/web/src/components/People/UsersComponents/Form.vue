@@ -298,9 +298,6 @@ export default {
         onHistoryChange(data){
             this.histories = data;
         },
-        waitingForPhotos(val){
-            this.loadingPhotos = val;
-        },
         loadingPhotosChange(val){
             this.loadingPhotos = val;
         },

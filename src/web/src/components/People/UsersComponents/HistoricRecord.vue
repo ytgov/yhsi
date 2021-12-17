@@ -193,7 +193,8 @@ export default {
                 history: {
                     HistoryText: this.historicRecordHelper, 
                     Reference: this.referenceHelper, 
-                    PersonID: this.personID 
+                    PersonID: this.personID,
+                    SeqID: this.data[index].SeqID
                 }  
             };
             console.log(index,this.data[index].PersonHistID, data);
@@ -220,7 +221,8 @@ export default {
                 history: {
                     HistoryText: this.historicRecordHelper, 
                     Reference: this.referenceHelper, 
-                    PersonID: this.personID 
+                    PersonID: this.personID,
+                    SeqID: this.data.length+1
                 }  
             };
             let resp = await people.postHistory(this.personID, data);
