@@ -498,6 +498,7 @@ export default {
     //input rules
     ownerRules: [(v) => !!v || "Owner Name is required"],
     generalRules: [(v) => !!v || "This field is required"],
+    loadingData: false
   }),
   mounted() {
     if (this.showDefault) return;
@@ -518,13 +519,18 @@ export default {
       this.showSkeletons = false;
     },
     async getDataFromAPI() {
+      this.loadingData = true;
+      this.loadingPhotosChange(this.loadingData);
       let data = await photos.getByPersonId(Number(this.PersonID));
       this.photos = data.map((x) => {
         x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
         x.selected = false;
         return x;
       });
+      this.loadingData = false;
       this.updateSelectedImage(0);
+      this.loadingPhotosChange(this.loadingData);
+      
     },
     async getOwners() {
       this.isLoadingOwner = true;
@@ -570,12 +576,12 @@ export default {
         });
         console.log("person id", this.PersonID);
         
-      let res = await photos.linkPersonPhotos(Number(this.PersonID), {
+      await photos.linkPersonPhotos(Number(this.PersonID), {
         linkPhotos: photosToLink,
       });
-      console.log("response",res);
-      //this.reset();
-      //this.$router.go();
+
+      this.reset();
+      this.$router.go();
     },
     toBase64(arr) {
       return btoa(
@@ -629,6 +635,9 @@ export default {
       //updates the carousell selected image
       this.$emit("updateSelectedImage", this.photos[val]);
     },
+    loadingPhotosChange(val){
+        this.$emit('loadingPhotosChange', val);
+    }
   },
   watch: {
     page() {

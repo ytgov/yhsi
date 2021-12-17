@@ -13,7 +13,14 @@
                     Edit
                 </v-btn>
                 
-                <PrintButton  v-if="isViewMode && histories != null" :data="fields" :histories="histories" :name="`${fields.Surname}-${fields.GivenName}`" :selectedImage="selectedImage"/>
+                <PrintButton  
+                    v-if="isViewMode" 
+                    :loadingPhotos="loadingPhotos" 
+                    :loadingHistories="loadingHistories"  
+                    :histories="histories" 
+                    :data="fields" 
+                    :name="`${fields.Surname}-${fields.GivenName}`" 
+                    :selectedImage="selectedImage"/>
  <!--buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="isEditMode">
                     <v-icon>mdi-close</v-icon>
@@ -97,12 +104,18 @@
                 v-if="infoLoaded" 
                 :showDefault="isNewMode" 
                 :PersonID="getPersonID"
-                @updateSelectedImage="selectedImageChanged" :selectedImage="selectedImage"/>   
+                @updateSelectedImage="selectedImageChanged" 
+                :selectedImage="selectedImage" 
+                @loadingPhotosChange="loadingPhotosChange"/>   
             </v-col>
         </v-row>
         <v-divider class="my-5"></v-divider> 
 <!-- Historic Record component -->
-        <HistoricRecord v-if="!isNewMode" :mode="'edit'" :personID="getPersonID" @historicRecordChange="onHistoryChange"/>
+        <HistoricRecord 
+            v-if="!isNewMode" :mode="'edit'" 
+            :personID="getPersonID" 
+            @historicRecordChange="onHistoryChange" 
+            @loadingHistoriesChange="loadingHistoriesChange"/>
         
         <v-overlay :value="overlay">
             <v-progress-circular
@@ -138,6 +151,8 @@ export default {
         fieldsHistory: null,
     // select vars
         selectedImage: null,
+        loadingPhotos: false,
+        loadingHistories: false
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -282,6 +297,15 @@ export default {
         },
         onHistoryChange(data){
             this.histories = data;
+        },
+        waitingForPhotos(val){
+            this.loadingPhotos = val;
+        },
+        loadingPhotosChange(val){
+            this.loadingPhotos = val;
+        },
+        loadingHistoriesChange(val){
+            this.loadingHistories = val;
         }
     },   
     computed:{
