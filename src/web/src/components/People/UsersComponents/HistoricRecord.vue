@@ -24,7 +24,7 @@
                         :headers="headers"
                         :items="data"
                         :search="search"
-                        :footer-props="{'items-per-page-options': [10, 30, 100, 1000]}"
+                        :footer-props="{'items-per-page-options': [10, 30, 100, 500]}"
                         :loading="loadingData"
                     >
                         <template v-slot:body.prepend="{}" v-if="addingItem">
@@ -171,9 +171,11 @@ export default {
     methods:{
         async getDataFromApi(){
             this.loadingData = true;
+            this.loadingHistoriesChange(this.loadingData);
             let res = await people.getHistories(this.personID);
             this.data = res.histories;
             this.loadingData = false;
+            this.loadingHistoriesChange(this.loadingData);
         },
         //functions for editing the table values
         changeEditTable(index, item){
@@ -236,13 +238,15 @@ export default {
         },
         cancelItem(){
             this.addingItem = false;
+        },
+        loadingHistoriesChange(val){
+            this.$emit('loadingHistoriesChange', val);
         }
     },
     watch:{
         data(val){
             if(val != undefined){
-                this.$emit('historicRecordChange', true);
-                localStorage.setItem('personHistories', JSON.stringify(val));
+                this.$emit('historicRecordChange', val);
             }
         },
 

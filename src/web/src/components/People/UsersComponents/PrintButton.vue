@@ -1,5 +1,5 @@
 <template>
-  <v-btn class="black--text mx-1" @click="exportPDF">
+  <v-btn class="black--text mx-1" @click="exportPDF" :loading="loadingPhotos || loadingHistories">
     <v-icon class="mr-1">mdi-printer</v-icon>
     Print
   </v-btn>
@@ -12,7 +12,7 @@ import "jspdf-autotable";
 import _ from "lodash";
 export default {
   name: "printButton",
-  props: ["name", "data", "selectedImage", "histories"],
+  props: ["name", "data", "selectedImage",  "histories", "personID" , "loadingPhotos", "loadingHistories"],
   components: {},
   data: () => ({
     doc: null,
@@ -40,10 +40,17 @@ export default {
     ],
     toPrint: {},
     textpos: 0,
+    histories: [],
+    loading: false
   }),
-
+  async mounted(){
+    if(this.personID){
+      await this.getDataFromApi();
+    }
+  },
   methods: {
     mapData() {
+      
       let props = Object.getOwnPropertyNames(this.data);
       props = _.filter(props, (x) => x != "photos" && x != "historicRecords");
       this.toPrint.general = _.pickBy(this.data, (value, key) =>
@@ -52,24 +59,15 @@ export default {
       this.toPrint.photos = this.data.photos;
 
       this.toPrint.historicRecords = [];
-      console.log("before");
-      let hR = JSON.parse(localStorage.personHistories);//this.histories;
-      console.log("im here");/*
+      let hR = this.histories.slice(0,1000);
       this.toPrint.historicRecords = hR.map((x) => {
         return [x.HistoryText, x.Reference];
       });
-*/
-      for(let i = 0; i < hR.length; i+=5){
-        this.toPrint.historicRecords.push([hR[i].HistoryText, hR[i].Reference]);
-        this.toPrint.historicRecords.push([hR[i+1].HistoryText, hR[i+1].Reference]);
-        this.toPrint.historicRecords.push([hR[i+2].HistoryText, hR[i+2].Reference]);
-        this.toPrint.historicRecords.push([hR[i+3].HistoryText, hR[i+3].Reference]);
-        this.toPrint.historicRecords.push([hR[i+4].HistoryText, hR[i+4].Reference]);
-      }
 
       //console.log(this.toPrint.general.owners);
     },
     exportPDF() {
+      this.loading = true;
       this.mapData();
 
       this.doc = new jsPDF("p", "pt");
@@ -82,6 +80,7 @@ export default {
       this.printHistoricalRecord();
 
       this.doc.save(`Boat_${this.name}.pdf`);
+      this.loading = false;
     },
     printGeneral() {
       for (let i = 0; i < this.textFields.length; i++) {
