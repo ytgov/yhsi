@@ -40,7 +40,6 @@ export default {
     ],
     toPrint: {},
     textpos: 0,
-    histories: [],
     loading: false
   }),
   async mounted(){

@@ -13,7 +13,12 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  v-if="isViewingCrash" :data="fields" :yacsinumber="fields.yacsinumber" :selectedImage="selectedImage"/>
+                <PrintButton  
+                    v-if="isViewingCrash" 
+                    :data="fields" 
+                    :yacsinumber="fields.yacsinumber" 
+                    :selectedImage="selectedImage"
+                    :loadingPhotos="loadingPhotos"/>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="isEditingCrash">
                     <v-icon>mdi-close</v-icon>
@@ -225,7 +230,8 @@
                         v-if="infoLoaded" 
                         :showDefault="isNewCrash" 
                         :yacsiNumber="getYACSINumber"
-                        @updateSelectedImage="selectedImageChanged"/>
+                        @updateSelectedImage="selectedImageChanged"
+                        @loadingPhotosChange="loadingPhotosChange"/>
                     </v-col>
             </v-col>
         </v-row>
@@ -487,7 +493,9 @@ export default {
     //number Rules
         numberRules: [ v =>{
             return /^[0-9]*$/.test(v) || 'A number is required';
-        }]
+        }],
+
+        loadingPhotos: false
     }),
     async mounted(){
         if(this.checkPath("edit")){
@@ -743,6 +751,9 @@ export default {
         selectedImageChanged(val){
             this.selectedImage = val;
             //console.log(val);
+        },
+        loadingPhotosChange(val){
+            this.loadingPhotos = val;
         }
         
     },   
