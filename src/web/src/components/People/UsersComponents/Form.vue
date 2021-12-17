@@ -12,9 +12,9 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <!--
-                <PrintButton  v-if="mode == 'view'" :data="fields" :name="fields.Name" :selectedImage="selectedImage"/>
- buttons for the edit state -->
+                
+                <PrintButton  v-if="isViewMode && histories != null" :data="fields" :histories="histories" :name="`${fields.Surname}-${fields.GivenName}`" :selectedImage="selectedImage"/>
+ <!--buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="isEditMode">
                     <v-icon>mdi-close</v-icon>
                     Cancel
@@ -102,7 +102,7 @@
         </v-row>
         <v-divider class="my-5"></v-divider> 
 <!-- Historic Record component -->
-        <HistoricRecord v-if="!isNewMode" :mode="'edit'" :personID="getPersonID" />
+        <HistoricRecord v-if="!isNewMode" :mode="'edit'" :personID="getPersonID" @historicRecordChange="onHistoryChange"/>
         
         <v-overlay :value="overlay">
             <v-progress-circular
@@ -117,13 +117,13 @@
 import Breadcrumbs from '../../Breadcrumbs.vue';
 import Photos from "./Photos/Photos";
 import HistoricRecord from "./HistoricRecord";
-//import PrintButton from "./PrintButton";
+import PrintButton from "./PrintButton";
 import people from "../../../controllers/people";
 
 //import _ from 'lodash';
 export default {
     name: "boatsForm",
-    components: {  Breadcrumbs, HistoricRecord, Photos },
+    components: {  Breadcrumbs, HistoricRecord, Photos, PrintButton },
     data: ()=> ({
         overlay: false,
         infoLoaded: false,
@@ -134,6 +134,7 @@ export default {
     //input fields
         search: "",
         fields: {},
+        histories: null,
         fieldsHistory: null,
     // select vars
         selectedImage: null,
@@ -200,7 +201,7 @@ export default {
                 this.fields = {...this.fieldsHistory};
             }
             this.mode="view";
-            this.resetListVariables();
+            //this.resetListVariables();
             //this.$router.push(`/users/view/${this.fields.GivenName}`);
             this.$router.push({
                 name: "personView",
@@ -227,7 +228,7 @@ export default {
             });
             //this.$router.push(`/users/edit/${this.fields.GivenName}`);
             this.showSave = 0;
-            this.resetListVariables();
+            //this.resetListVariables();
         },
         async saveChanges(){
             this.overlay = true; 
@@ -278,6 +279,9 @@ export default {
         },
         selectedImageChanged(val){
             this.selectedImage = val;
+        },
+        onHistoryChange(data){
+            this.histories = data;
         }
     },   
     computed:{

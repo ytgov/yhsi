@@ -241,7 +241,8 @@ export default {
     watch:{
         data(val){
             if(val != undefined){
-                this.$emit('historicRecordChange', val);
+                this.$emit('historicRecordChange', true);
+                localStorage.setItem('personHistories', JSON.stringify(val));
             }
         },
 
