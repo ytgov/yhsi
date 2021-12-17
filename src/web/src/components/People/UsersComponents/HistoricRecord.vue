@@ -24,7 +24,8 @@
                         :headers="headers"
                         :items="data"
                         :search="search"
-                        :footer-props="{'items-per-page-options': [10, 30, 100]}"
+                        :footer-props="{'items-per-page-options': [10, 30, 100, 1000]}"
+                        :loading="loadingData"
                     >
                         <template v-slot:body.prepend="{}" v-if="addingItem">
                             <tr>
@@ -41,20 +42,11 @@
                                 <td>
                                     <v-tooltip bottom>
                                         <template v-slot:activator="{ on, attrs }">
-                                                <v-btn v-if="boatID"
+                                                <v-btn
                                                 v-bind="attrs"
                                                 v-on="on" 
                                                 :disabled="!referenceHelper && !historicRecordHelper"
-                                                icon class="black--text" color="success"  @click="newBoatItem()">
-                                                    <v-icon
-                                                    small
-                                                    >mdi-check</v-icon>  
-                                                </v-btn>
-                                                <v-btn v-else
-                                                v-bind="attrs"
-                                                v-on="on" 
-                                                :disabled="!referenceHelper && !historicRecordHelper"
-                                                icon class="black--text" color="success"  @click="newOwnerItem()">
+                                                icon class="black--text" color="success"  @click="newItem()">
                                                     <v-icon
                                                     small
                                                     >mdi-check</v-icon>  
@@ -110,20 +102,11 @@
                             </v-tooltip>
                             <v-tooltip bottom v-if="editTable == index">
                                 <template v-slot:activator="{ on, attrs }">
-                                        <v-btn v-if="boatID"
+                                        <v-btn
                                         v-bind="attrs"
                                         v-on="on" 
                                         :disabled="referenceHelper === '' || historicRecordHelper === ''"
-                                        icon class="black--text" color="success"  @click="saveTableToBoat(index)">
-                                            <v-icon
-                                            small
-                                            >mdi-check</v-icon>  
-                                        </v-btn>
-                                        <v-btn v-else
-                                        v-bind="attrs"
-                                        v-on="on" 
-                                        :disabled="referenceHelper === '' || historicRecordHelper === ''"
-                                        icon class="black--text" color="success"  @click="saveTableToOwner(index)">
+                                        icon class="black--text" color="success"  @click="saveTable(index)">
                                             <v-icon
                                             small
                                             >mdi-check</v-icon>  
@@ -161,10 +144,10 @@
 </template>
 
 <script>
-import histories from "../../../controllers/histories";
+import people from "../../../controllers/people";
 export default {
     name: "historicRecord",
-    props: ["historicRecords", "mode", "boatID", "ownerID"],
+    props: ["mode", "personID"],
     data: ()=>({
         search: "",
         headers: [
@@ -178,12 +161,20 @@ export default {
         historicRecordHelper: "",
         referenceHelper: "",
         overlay: false,
+        loadingData: false,
         addingItem: false,
     }),
     mounted(){
-        this.data = this.historicRecords;
+        //this.data = this.historicRecords;
+        this.getDataFromApi();
     },
     methods:{
+        async getDataFromApi(){
+            this.loadingData = true;
+            let res = await people.getHistories(this.personID);
+            this.data = res.histories;
+            this.loadingData = false;
+        },
         //functions for editing the table values
         changeEditTable(index, item){
             this.editTable = index;
@@ -194,35 +185,18 @@ export default {
             this.editTable = -1;
             //this.data.shift();
         },
-        async saveTableToBoat(index){
+        async saveTable(index){
             this.overlay = true;
             let data = {
                 history: {
                     HistoryText: this.historicRecordHelper, 
                     Reference: this.referenceHelper, 
-                    UID: this.boatID 
+                    PersonID: this.personID 
                 }  
             };
-            let resp = await histories.put(this.data[index].id, data);
-            if(resp.message == "success"){
-                this.data[index].Reference = this.referenceHelper;
-                this.data[index].HistoryText = this.historicRecordHelper;
-            }
-            this.overlay = false;
-            
-            this.editTable = -1;
-        },
-        async saveTableToOwner(index){
-            this.overlay = true;
-            let data = {
-                history: {
-                    HistoryText: this.historicRecordHelper, 
-                    Reference: this.referenceHelper, 
-                    OwnerId: this.ownerID 
-                }  
-            };
-            //console.log(this.data[index].id);
-            let resp = await histories.putOwner(this.data[index].Id, data);
+            console.log(index,this.data[index].PersonHistID, data);
+
+            let resp = await people.putHistory(this.data[index].PersonHistID, data);
             if(resp.message == "success"){
                 this.data[index].Reference = this.referenceHelper;
                 this.data[index].HistoryText = this.historicRecordHelper;
@@ -237,38 +211,24 @@ export default {
             this.referenceHelper = null;
             this.addingItem = true;
         },
-        //for adding a new item
-        async newBoatItem(){
+        //for adding a new item  personID
+        async newItem(){
             this.overlay = true;
             let data = {
                 history: {
                     HistoryText: this.historicRecordHelper, 
                     Reference: this.referenceHelper, 
-                    UID: this.boatID 
+                    PersonID: this.personID 
                 }  
             };
-            let resp = await histories.post(data);
-
-            if(resp[0].HistoryText);
-                this.data.push(resp[0]);
-            this.overlay = false;
-            this.historicRecordHelper = null;
-            this.referenceHelper = null;
-            this.addingItem = false;
-        },
-         async newOwnerItem(){
-            this.overlay = true;
-            let data = {
-                history: {
-                    HistoryText: this.historicRecordHelper, 
-                    Reference: this.referenceHelper, 
-                    OwnerId: this.ownerID 
-                }  
-            };
-            let resp = await histories.postOwner(data);
-            //console.log(resp);
-            if(resp[0].HistoryText);
-                this.data.push(resp[0]);
+            let resp = await people.postHistory(this.personID, data);
+    console.log(resp);
+            if(resp.message == 'success'){
+                this.data.push(data.history);
+                console.log("DATA PUSHED");
+                console.log(this.data);
+            }
+                
             this.overlay = false;
             this.historicRecordHelper = null;
             this.referenceHelper = null;
@@ -283,7 +243,6 @@ export default {
             if(val != undefined){
                 this.$emit('historicRecordChange', val);
             }
-            
         },
 
     }

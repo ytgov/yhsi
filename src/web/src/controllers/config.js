@@ -11,7 +11,7 @@ axios.defaults.headers.common['Ocp-Apim-Subscription-Key'] = '5d23d587d6674b88b2
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 24000,
+  timeout: 240000,
   //withCredentials: true,
 });
 //axios.defaults.withCredentials = true;

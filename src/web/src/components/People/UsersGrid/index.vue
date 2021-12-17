@@ -33,13 +33,11 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item-group
-                v-model="selectedFilter"
-                color="primary"
-                multiple
-              >
+              <v-list-item-group color="primary">
                 <v-list-item v-for="(item, i) in filterOptions" :key="i" link>
-                  <template v-slot:default="{ active }">
+                  <!-- 
+
+<template v-slot:default="{ active }">
                     <v-list-item-action>
                       <v-icon v-if="!active">
                         mdi-checkbox-blank-outline
@@ -48,12 +46,26 @@
                     </v-list-item-action>
                     <v-list-item-title>{{ item.name }}</v-list-item-title>
                   </template>
+                  -->
+
+                  <v-text-field
+                    :name="item.name"
+                    :label="item.name"
+                    v-model="item.value"
+                  ></v-text-field>
+                  
                 </v-list-item>
               </v-list-item-group>
             </v-list>
           </v-menu>
         </v-col>
         <v-spacer></v-spacer>
+        <v-col cols="auto">
+          <v-btn class="black--text mx-1" @click="addNewPerson">
+            <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
+            Add Person
+          </v-btn>
+        </v-col>
         <v-col cols="auto"> 
           <JsonCSV :data="people">
           <v-btn class="black--text mx-1" :disabled="people.length == 0">
@@ -83,18 +95,7 @@
                 :server-items-length="totalLength"
                 @click:row="handleClick"
                 :footer-props="{ 'items-per-page-options': [10, 30, 100] }"
-              >
-                <template v-slot:item.Status="{ item }">
-                  <div v-if="item.Status == 1">Active</div>
-                  <div v-else>Expired</div>
-                </template>
-                <template v-slot:item.actions="{ item }">
-                  <v-btn color="success" outlined @click="removeItem(item)">
-                    <v-icon class="mr-1">mdi-delete</v-icon>
-                    Remove
-                  </v-btn>
-                </template>
-              </v-data-table>
+              ></v-data-table>
             </v-col>
           </v-row>
         </v-card>
@@ -128,9 +129,9 @@ export default {
     iteamsPerPage: 10,
     selectedFilter: [],
     filterOptions: [
-      { name: "Expired Users" },
-      { name: "Active Users" },
-      { name: "Pending Users" },
+      { name: "Name", value: "" },
+      { name: "Birth Year", value: "" },
+      { name: "Death Year", value: "" },
     ],
   }),
   mounted() {
@@ -141,8 +142,6 @@ export default {
       this.getDataFromApi();
     }, 400),
     handleClick(value) { 
-      //Redirects the user to the edit user form
-      //this.$router.push(`/people/edit/${value.PersonID}`);
       this.$router.push({
         name: "personView",
         params: { name: `${value.GivenName}-${value.Surname}`, id: value.PersonID },
@@ -171,28 +170,25 @@ export default {
       );
 
       this.people = _.get(data, "body", []);
+      console.log(data);
       this.totalLength = _.get(data, "count", 0);
       this.loading = false;
     },
+    addNewPerson(){
+      this.$router.push({
+        name: "personAddView"
+      });
+    }
   },
   computed: {
     filteredData() {
       // returns a filtered users array depending on the selected filters
-      let sorters = JSON.parse(JSON.stringify(this.selectedFilter));
-      let data = JSON.parse(JSON.stringify(this.people));
-      for (let i = 0; i < sorters.length; i++) {
-        switch (sorters[i]) {
-          case 0: // expired
-            data = data.filter((x) => x.Status == 0);
-            break;
-          case 1: // active
-            data = data.filter((x) => x.Status == 1);
-            break;
-          case 2: // pending
-            data = data.filter((x) => x.Status == 2);
-            break;
-        }
-      }
+      let data = [...this.people];
+
+      data = this.filterOptions[0].value != "" ?  data.filter((x) => `${x.GivenName} ${x.Surname}`.toLowerCase().includes(this.filterOptions[0].value)) : data;
+      data = this.filterOptions[1].value != "" ? data.filter((x) => x.BirthYear == this.filterOptions[1].value) : data;
+      data = this.filterOptions[2].value != "" ? data.filter((x) =>  x.DeathYear == this.filterOptions[2].value) : data;
+
       return data;
     },
   },

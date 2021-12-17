@@ -145,7 +145,6 @@ const routes = [
     path: "/people/new",
     component: UserForm,
     name: "personAddView",
-    props: true,
     meta: {
       requiresAuth: false
     }

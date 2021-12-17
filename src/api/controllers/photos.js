@@ -87,6 +87,31 @@ router.post('/boat/link/:BoatId', [authenticateToken, upload.single('file')], as
   res.status(200).send({ message: 'Successfully linked the photos' });
 });
 
+
+//LINK PERSON PHOTOS  
+router.post('/people/link/:PersonID', [authenticateToken, upload.single('file')], async (req, res) => {
+  const db = req.app.get('db');
+
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('create')) res.sendStatus(403);
+
+  const { PersonID } = req.params;
+  const { linkPhotos } = req.body;
+
+  let currentPhotos = await db.select('PhotoID').from('Person.Photo').where('PersonID', PersonID)
+  let filteredLinkPhotos = _.difference(linkPhotos, currentPhotos.map(x => {return x.Photo_RowID}))
+
+  for(const rowId of filteredLinkPhotos)
+    await db.insert({ PersonID, PhotoID: rowId })
+      .into('Person.Photo')
+      .returning('*')
+    .then(rows => {
+      return rows;
+    });
+
+  res.status(200).send({ message: 'Successfully linked the photos' });
+});
+
 //LINK AIRCRASH PHOTOS  
 router.post('/aircrash/link/:AirCrashId',  authenticateToken, async (req, res) => {
   const db = req.app.get('db');
@@ -146,6 +171,25 @@ router.get('/aircrash/:aircrashId', authenticateToken, async (req, res) => {
     .where('AP.YACSINumber', aircrashId)
     .limit(limit).offset(offset);
 
+  res.status(200).send(photos);
+});
+
+
+//GET PERSON PHOTOS
+router.get('/people/:PersonID', authenticateToken, async (req, res) => {
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('view')) res.sendStatus(403);
+  const { PersonID } = req.params;
+
+  const db = req.app.get('db');
+  const { page = 0, limit = 10 } = req.query;
+  const offset = (page*limit) || 0;
+
+  const photos = await db.select('*')
+    .from('Person.Photo as PP')
+    .join('dbo.photo', 'PP.PhotoID', '=', 'dbo.photo.RowID')
+    .where('PP.PersonID', PersonID)
+    .limit(limit).offset(offset);
   res.status(200).send(photos);
 });
 
@@ -210,6 +254,41 @@ router.post('/aircrash/new', [authenticateToken, upload.single('file')], async (
       });
 
       return newAirCrashPhoto;
+    });
+  
+  res.status(200).send({ message: 'Upload Success' });
+});
+
+
+
+// ADD NEW PERSON PHOTO
+router.post('/people/new', [authenticateToken, upload.single('file')], async (req, res) => {
+  const db = req.app.get('db');
+
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if (!permissions.includes('create')) res.sendStatus(403);
+
+  const { PersonID, ...restBody } = req.body;
+
+  let options = { percentage: 30 }
+  const ThumbFile = await imageThumbnail(req.file.buffer, options);
+
+  const body = { File: req.file.buffer, ThumbFile, ...restBody }
+
+  const response = await db.insert(body)
+    .into('dbo.photo')
+    .returning('*')
+    .then(async rows => {
+      const newPersonPhoto = rows[0];
+
+      await db.insert({ PersonID, PhotoID: newPersonPhoto.RowId })
+        .into('Person.Photo')
+        .returning('*')
+      .then(rows => {
+        return rows;
+      });
+
+      return newPersonPhoto;
     });
   
   res.status(200).send({ message: 'Upload Success' });

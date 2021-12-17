@@ -28,7 +28,7 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 1 || regNumberWarning.length == 1"  v-if="isNewMode" @click="saveChanges">
+                <v-btn color="success" :disabled="showSave < 1"  v-if="isNewMode" @click="saveChanges">
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Create Person
                 </v-btn>
@@ -39,8 +39,8 @@
                 <v-row>
                     <v-col cols="6">
                       <v-text-field
-                        name="Last Name"
-                        label="Last Name"
+                        name="Surname"
+                        label="Surname"
                         v-model="fields.Surname"
                         :readonly="isViewMode"
                       ></v-text-field>
@@ -91,24 +91,19 @@
                     </v-col>
                   </v-row>
             </v-col>
-            <v-col cols="3">
-                <v-row>
-                    <v-col cols="12">
-<!-- Photos component, it includes a carousel and some dialogs for the button actions 
-                            <Photos 
-                            v-if="infoLoaded" 
-                            :showDefault="mode == 'new'" 
-                            :boatID="getBoatID"
-                            @updateSelectedImage="selectedImageChanged" :selectedImage="selectedImage"/>
-                            -->
-                    </v-col>
-                </v-row>
+            <v-col cols="5">
+<!-- Photos component, it includes a carousel and some dialogs for the button actions   -->
+                <Photos 
+                v-if="infoLoaded" 
+                :showDefault="isNewMode" 
+                :PersonID="getPersonID"
+                @updateSelectedImage="selectedImageChanged" :selectedImage="selectedImage"/>   
             </v-col>
         </v-row>
         <v-divider class="my-5"></v-divider> 
-<!-- Historic Record component 
-        <HistoricRecord v-if="fields.histories != undefined && mode !='new'" :historicRecords="fields.histories" :mode="'edit'" :boatID="getBoatID" />
-        -->
+<!-- Historic Record component -->
+        <HistoricRecord v-if="!isNewMode" :mode="'edit'" :personID="getPersonID" />
+        
         <v-overlay :value="overlay">
             <v-progress-circular
                 indeterminate
@@ -120,56 +115,28 @@
 
 <script>
 import Breadcrumbs from '../../Breadcrumbs.vue';
-//import Photos from "./Photos/Photos";
-//import HistoricRecord from "../HistoricRecord";
+import Photos from "./Photos/Photos";
+import HistoricRecord from "./HistoricRecord";
 //import PrintButton from "./PrintButton";
 import people from "../../../controllers/people";
 
 //import _ from 'lodash';
 export default {
     name: "boatsForm",
-    components: {  Breadcrumbs },
+    components: {  Breadcrumbs, HistoricRecord, Photos },
     data: ()=> ({
         overlay: false,
         infoLoaded: false,
-    //helper vars used for the name list functions
-        editTableNames: -1,// tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
-        addingName: false,// tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
-        helperName: null,
-        validName: false,
-        nameRules: [
-            v => !!v || 'Name is required',
-        ],
-    //helper vars used for the name list functions
-        isLoadingOwner: false,
-        editTableOwners: -1,// tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
-        addingOwner: false,// tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
-        helperOwner: null,
-        validOwner: false,
-        ownerRules: [
-            v => !!v || 'Owner Name is required',
-        ],
-
     //helper vars, they are used to determine if the component is in an edit, view or add new state
         mode: "",
         edit: false,
         showSave: 0,
-    //input fields, datatable, etc
-        menu1: "",
-        menu2: "",
-        menu3: "",
-        activePicker: null,
+    //input fields
         search: "",
         fields: {},
         fieldsHistory: null,
-        owners: [],
     // select vars
         selectedImage: null,
-    // vessel typle select options
-        vesselTypeOptions: [],
-        dateFormatted: "",
-        isLoadingVessels: false,
-        regNumberWarning: []
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -179,6 +146,7 @@ export default {
         }
         else if(this.checkPath("new")){
             this.mode="new";
+            console.log(this.mode);
             //inputs remain empty
             this.noData();
         }
@@ -219,6 +187,9 @@ export default {
                 this.saveCurrentPerson();
             }
             this.fields = await people.getById(localStorage.currentPersonID);
+            //const data = await people.getHistories(localStorage.currentPersonID);
+            //this.histories = data.histories;
+
             this.infoLoaded = true;
             this.overlay = false;
             //console.log(this.fields);
@@ -304,28 +275,6 @@ export default {
                 this.$router.go();   
             } 
             
-        },
-        editHistoricRecord(newVal){
-            this.historiRecordHelper = newVal;
-        },
-        editReference(newVal){
-            this.referenceHelper = newVal;
-        },
-        resetListVariables(){
-            this.addingOwner = false;  
-            this.editTableOwners = -1;
-            this.addingName = false;
-            this.editTableNames = -1;
-        },
-        //handles the new values added to the historic records
-        historicRecordChange(val){
-            this.fields.histories = val;
-        },
-        formatDate (date) {
-            if (!date) return null
-            //date = date.substr(0, 10);
-            const [year, month, day] = date.split('-')
-            return `${month}/${day}/${year}`
         },
         selectedImageChanged(val){
             this.selectedImage = val;

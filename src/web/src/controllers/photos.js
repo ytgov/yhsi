@@ -73,4 +73,32 @@ export default {
     });
   }, 
 
+  //PEOPLE PHOTOS
+  async linkPersonPhotos(id, data){
+    return await api.post(`photos/people/link/${id}`, data)
+    .then(res => {
+      return res.data;
+    }).catch( err => {
+      console.log(err);
+    })
+  },
+  async getByPersonId(id) {
+    return await api.get(`photos/people/${id}`)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      // handle error
+      console.log(error);
+    });
+  },
+  async postPersonPhoto(data) {
+    return await apiP.post(`photos/people/new`,data)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      // handle error
+      console.log(error);
+    });
+  }, 
+
 }
