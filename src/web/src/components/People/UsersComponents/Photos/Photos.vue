@@ -15,14 +15,14 @@
     <Carousell
       v-if="photos.length > 0"
       :photos="photos"
+      :showDefault="showDefault"
       @changedSelectedImage="updateSelectedImage"
     />
     <v-divider></v-divider>
     <v-row v-if="showDefault">
       <v-col cols="12">
         <p class="text-center font-weight-bold pt-3">
-          Once you upload your new Crash Site data, you will be able to attach
-          photos
+          Once you upload your new Boat data, you will be able to attach photos
         </p>
       </v-col>
     </v-row>
@@ -296,7 +296,14 @@
                           </v-card>
                         </template>
                       </v-hover>
-                      <!--
+                    </v-col>
+                    <!--
+                                        <v-col
+                                        v-for="(item,i) in availablePhotos"
+                                        :key="`ph-${i}`"
+                                        class="d-flex child-flex"
+                                        cols="6"
+                                        >
                                         <v-card
                                         outlined
                                         @click="selectImage(item)"
@@ -308,13 +315,6 @@
                                                 aspect-ratio="1"
                                                 class="grey lighten-2"
                                             >
-                                            <v-row>
-                                                <v-spacer></v-spacer>
-                                                <v-checkbox class="white"
-                                                    v-model="item.selected"
-                                                ></v-checkbox>
-                                            </v-row>
-                                                
                                                 <template v-slot:placeholder>
                                                 <v-row
                                                     class="fill-height ma-0"
@@ -330,17 +330,19 @@
                                             </v-img>
                                             <v-row>
                                                 <v-col cols="12" class="d-flex">
-                                                    <v-card-text v-if="item.Caption" class="text-truncate text-caption">
-                                                        {{item.Caption}} 
+                                                    <v-card-text>
+                                                        Feature name: {{item.FeatureName}} 
+                                                        Community: {{item.CommunityName}}
+                                                        Place: {{item.PlaceName}}
                                                     </v-card-text>
-                                                    <v-card-text v-else class="text-caption">
-                                                        No caption 
-                                                    </v-card-text>
+                                                    <v-checkbox
+                                                    v-model="item.selected"
+                                                    ></v-checkbox>
                                                 </v-col>
                                             </v-row>     
                                         </v-card>
-                                        -->
-                    </v-col>
+                                        
+                                        </v-col>-->
                   </v-row>
                 </v-container>
                 <v-row class="mb-2" v-if="availablePhotos">
@@ -391,21 +393,21 @@ import PhotoList from "./PhotoList";
 export default {
   name: "photos",
   components: { Carousell, PhotoList },
-  props: ["yacsiNumber", "showDefault"],
+  props: ["PersonID", "showDefault"],
   data: () => ({
     overlay: false,
     //search variables
     searchPhotos: null,
+    availablePhotos: null,
     numberOfPages: 10,
     page: 1,
-    availablePhotos: null,
     showSkeletons: false,
     skeletons: [1, 2, 3, 4, 5, 6],
     dialog1: false,
     photos: [],
     //form variables
     fields: {
-      YACSINumber: 1,
+      PersonID: 1,
       Caption: "",
       FeatureName: "",
       OwnerId: null,
@@ -422,8 +424,8 @@ export default {
       IsComplete: false,
       Rating: 1,
       isPirvate: 0,
-      
     },
+    sendObj: null,
     //selection options
     usageRightOptions: [
       {
@@ -479,8 +481,8 @@ export default {
         value: 4,
       },
       {
-        text: "Airplane Crash",
-        value: 6,
+        text: "Boat",
+        value: 5,
       },
     ],
     availableCommunities: [],
@@ -496,16 +498,12 @@ export default {
     //input rules
     ownerRules: [(v) => !!v || "Owner Name is required"],
     generalRules: [(v) => !!v || "This field is required"],
-    loadingData: false,
-    sendObj: {}
+    loadingData: false
   }),
   mounted() {
-    //console.log("DATA",this.showDefault);
     if (this.showDefault) return;
 
-    //console.log("yacsi", this.yacsiNumber);
-    if (this.yacsiNumber) this.getDataFromAPI();
-    //this.getAll();
+    if (this.PersonID) this.getDataFromAPI();
   },
   methods: {
     async getAll() {
@@ -516,26 +514,29 @@ export default {
         x.selected = false;
         return x;
       });
+      console.log(this.availablePhotos);
       this.numberOfPages = Math.round(data.count / 6);
       this.showSkeletons = false;
     },
     async getDataFromAPI() {
-      this.loadingPhotosChange(true);
-      let data = await photos.getByYACSINumber(this.yacsiNumber);
+      this.loadingData = true;
+      this.loadingPhotosChange(this.loadingData);
+      let data = await photos.getByPersonId(Number(this.PersonID));
       this.photos = data.map((x) => {
         x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
         x.selected = false;
         return x;
       });
+      this.loadingData = false;
       this.updateSelectedImage(0);
-      this.loadingPhotosChange(false);
+      this.loadingPhotosChange(this.loadingData);
+      
     },
-    selectImage(item) {
-      let index = this.availablePhotos.indexOf(item);
-      if (index > -1) {
-        this.availablePhotos[index].selected =
-          !this.availablePhotos[index].selected;
-      }
+    async getOwners() {
+      this.isLoadingOwner = true;
+      let data = await owners.get();
+      this.owners = data.body.filter( x => x.Name != null && x.Name != "");
+      this.isLoadingOwner = false;
     },
     async savePhoto() {
       this.overlay = true;
@@ -548,40 +549,36 @@ export default {
         OriginalMediaId,
         UsageRights,
       } = this.sendObj;
-      this.sendObj.YACSINumber = Number(this.yacsiNumber);
+      this.sendObj.PersonID = Number(this.PersonID);
       this.sendObj.IsComplete = IsComplete ? 1 : 0;
       this.sendObj.Program = Program.value;
       this.sendObj.CommunityId = CommunityId.Id;
       this.sendObj.Copyright = Copyright.id;
       this.sendObj.OriginalMediaId = OriginalMediaId.Id;
       this.sendObj.UsageRights = UsageRights.id;
-
       const formData = new FormData();
       let prevFields = Object.entries(this.sendObj);
-      console.log(this.sendObj);
-      //console.log(prevFields);
       for (let i = 0; i < prevFields.length; i++) {
         formData.append(prevFields[i][0], prevFields[i][1]);
       }
       formData.append("file", this.file);
-      await photos.postAirCrashPhoto(formData);
+      await photos.postPersonPhoto(formData);
       this.reset();
       this.$router.go();
       this.overlay = false;
     },
     async saveAndLink() {
-      //console.log("DATA HERE");
-      //console.log(this.availablePhotos);
       let photosToLink = this.availablePhotos
         .filter((x) => x.selected == true)
         .map((x) => {
           return x.RowId;
         });
-      //console.log(photosToLink);
-      let resp = await photos.linkAirCrashPhotos(this.yacsiNumber, {
+        console.log("person id", this.PersonID);
+        
+      await photos.linkPersonPhotos(Number(this.PersonID), {
         linkPhotos: photosToLink,
       });
-      console.log(resp);
+
       this.reset();
       this.$router.go();
     },
@@ -626,26 +623,24 @@ export default {
       this.availableOriginalMedia = data;
       this.isLoadingMedias = false;
     },
-    async getOwners() {
-      this.isLoadingOwner = true;
-      let data = await owners.get();
-      this.owners = data.body.filter( x => x.Name != null && x.Name != "");
-      this.isLoadingOwner = false;
+    selectImage(item) {
+      let index = this.availablePhotos.indexOf(item);
+      if (index > -1) {
+        this.availablePhotos[index].selected =
+          !this.availablePhotos[index].selected;
+      }
     },
     updateSelectedImage(val) {
       //updates the carousell selected image
       this.$emit("updateSelectedImage", this.photos[val]);
     },
     loadingPhotosChange(val){
-      this.$emit("loadingPhotosChange",val);
+        this.$emit('loadingPhotosChange', val);
     }
   },
   watch: {
     page() {
       this.getAll();
-    },
-    showDefault() {
-      //console.log("show default",this.showDefault);
     },
   },
 };
@@ -660,21 +655,5 @@ export default {
 .center-children {
   display: grid;
   place-items: center;
-}
-.top-checkbox {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 34px;
-  height: 34px;
-}
-.top-checkbox
-  > .v-input__control
-  > .v-input__slot
-  > .v-input--selection-controls__input {
-  width: 34px;
-  height: 34px;
-  margin: 0px;
-  padding: 0px;
 }
 </style>

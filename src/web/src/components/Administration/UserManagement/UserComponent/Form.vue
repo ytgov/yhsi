@@ -375,7 +375,6 @@ export default {
       
     },
     async getDataFromApi(){
-      console.log(this.fields.sites);
         this.overlay = true;
         if(this.$route.params.id){
             this.saveCurrentUser();

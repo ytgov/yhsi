@@ -81,8 +81,8 @@
                           clearable
                           label="Owner Name"
                           :rules="ownerRules"
-                          item-text="OwnerName"
-                          item-value="ownerid"
+                          item-text="Name"
+                          item-value="Id"
                         ></v-autocomplete>
                         <v-combobox
                           v-model="fields.CommunityId"
@@ -386,7 +386,7 @@
 
 <script>
 import photos from "../../../../../controllers/photos";
-import owners from "../../../../../controllers/owners";
+import owners from "../../../../../controllers/photoOwners";
 import catalogs from "../../../../../controllers/catalogs";
 import Carousell from "./Carousell";
 import PhotoList from "./PhotoList";
@@ -498,6 +498,7 @@ export default {
     //input rules
     ownerRules: [(v) => !!v || "Owner Name is required"],
     generalRules: [(v) => !!v || "This field is required"],
+    loadingData: false
   }),
   mounted() {
     if (this.showDefault) return;
@@ -518,6 +519,8 @@ export default {
       this.showSkeletons = false;
     },
     async getDataFromAPI() {
+      this.loadingData = true;
+      this.loadingPhotosChange(this.loadingData);
       let data = await photos.getByBoatId(Number(this.boatID));
       this.photos = data.map((x) => {
         x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
@@ -525,12 +528,13 @@ export default {
         return x;
       });
       this.updateSelectedImage(0);
+      this.loadingData = false;
+      this.loadingPhotosChange(this.loadingData);
     },
     async getOwners() {
       this.isLoadingOwner = true;
       let data = await owners.get();
-      this.owners = data.body;
-      //console.log(this.owners);
+      this.owners = data.body.filter( x => x.Name != null && x.Name != "");
       this.isLoadingOwner = false;
     },
     async savePhoto() {
@@ -626,6 +630,9 @@ export default {
       //updates the carousell selected image
       this.$emit("updateSelectedImage", this.photos[val]);
     },
+    loadingPhotosChange(val){
+      this.$emit("loadingPhotosChange", val);
+    }
   },
   watch: {
     page() {
