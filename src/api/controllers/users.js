@@ -100,4 +100,34 @@ router.put('/:userId', authenticateToken, async (req, res) => {
 });
 
 
+router.get('/access/:userId', authenticateToken, async (req, res) =>{
+  const db = req.app.get('db');
+  const permissions = req.decodedToken['yg-claims'].permissions;
+  if(!permissions.includes('edit')) res.sendStatus(403);
+
+  const { userId } = req.params;
+  const exists = await db.select('*')
+      .from('dbo.Ibbit_User')
+      .where('dbo.Ibbit_User.UserId', userId)
+      .returning('*');
+  
+  if(!exists){
+    res.status(404).send({message: 'User not found'});
+    return;
+  }
+
+  const access = await db.select('*')
+      .from('dbo.Website_UserAccess')
+      .where('dbo.Website_UserAccess.UserID', userId)
+      .returning('*');
+
+  if(!access){
+    res.status(200).send({ message: 'User has no permissions loaded'});
+    return;
+  }
+
+
+  res.status(200).send(access);
+})
+
 module.exports = router;
