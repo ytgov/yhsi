@@ -79,22 +79,20 @@ router.put('/:userId', authenticateToken, async (req, res) => {
 
   const { userId } = req.params;
 
-  const { user = {}, 
-  expirationDate,
-  access } = req.body;
+  const { user, 
+  expirationDate } = req.body;
 
-  //updates the main user table
   const updatedUser = await db('dbo.Ibbit_User')
       .update(user)
       .where('dbo.Ibbit_User.UserId', userId)
       .returning('*');
   if(updatedUser){
-    //updates the expiration date
-    await db('dbo.Ibbit_User').update({ ExpirationDate: expirationDate })
-        .where('dbo.Ibbit_User.UserId', userId);
-  // updates the user access
-   // await db('dbo.HSUserAccess')
-   // .where('dbo.HSUserAccess.UserId', userId);
+    await db('dbo.HSUser').update({ ExpirationDate: expirationDate })
+        .where('dbo.HSUser.UserId', userId);
+  }
+  else{
+    res.status(404).send({ message: `User not found`});
+    return;
   }
 
   res.status(200).send({ message: 'success' });
@@ -160,18 +158,20 @@ router.put('/access/:userId', authenticateToken, async (req, res) =>{
 
   const editedAccess = access.filter( x => x.UAID );
   const newAccess = access.filter( x => !x.UAID );
+  if(editedAccess.length > 0){
+    editedAccess.forEach(async access => {
+      const accessBody = { ...access };
+      delete accessBody.UAID;
+      await db('dbo.Website_UserAccess')
+      .update(accessBody)
+      .where('dbo.Website_UserAccess.UAID', access.UAID)
+      .returning('*');
+    });
+  }
 
-  editedAccess.forEach(async access => {
-    const accessBody = { ...access };
-    delete accessBody.UAID;
-    await db('dbo.Website_UserAccess')
-    .update(accessBody)
-    .where('dbo.Website_UserAccess.UAID', access.UAID)
-    .returning('*');
-  });
 
 
-  if(newAccess){
+  if(newAccess.length > 0){
     await db.insert(newAccess)
     .into('dbo.Website_UserAccess')
     .returning('*')
