@@ -141,7 +141,6 @@ export default {
     removeItem(item) {
       //removes one element from the users array
       const index = this.users.findIndex((a) => a.id == item.id);
-      console.log(index);
       if (index > -1) {
         this.users.splice(index, 1);
       }
@@ -164,7 +163,6 @@ export default {
       this.users.map((x) => {
         x.LastLogin = this.formatDate(x.LastLogin);
       });
-      console.log(this.users);
       this.totalLength = _.get(data, "count", 0);
       this.loading = false;
     },
