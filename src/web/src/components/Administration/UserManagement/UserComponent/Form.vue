@@ -103,6 +103,7 @@
             </v-card>
             
           </v-col>
+          <!-- this card will be disabled temporarily
           <v-col cols="12">
             <v-card
               elevation="2"
@@ -179,7 +180,7 @@
                                 </v-col>
                                 <v-btn
                                   class="mx-2"
-                                  fab
+                                  fab 
                                   dark
                                   x-small
                                   color="primary"
@@ -197,8 +198,9 @@
               </v-container>
              
             </v-card>
-          </v-col>
+          </v-col>-->
         </v-row>
+        
         <v-row>
           <v-col>
             <h3 class="mt-2">Section Acess</h3>
@@ -207,19 +209,19 @@
         <v-row>
           <v-col cols="4"
             v-for="sec in sections"
-            :key="`card-${sec.id}`"
+            :key="`card-${sec.SectionID}`"
             >
             <v-card
               elevation="2"
             >
             <v-toolbar
-                :color="getColor(sec.access)"
+                :color="getColor(sec.AccessID)"
                 dark
                 flat
                 >
 
                 <v-card-title class="card-text">
-                  <v-icon class="mr-1" color="rgb(0, 0, 0, 0.5)">mdi-{{sec.icon}}</v-icon> {{sec.title}}
+                  <v-icon class="mr-1" color="rgb(0, 0, 0, 0.5)">mdi-{{sec.icon}}</v-icon> {{sec.SectionName}}
                 </v-card-title>
 
                 <v-spacer></v-spacer>
@@ -231,32 +233,36 @@
                     ref="siteForm"
                     lazy-validation
                   >
+                    <v-radio-group
+                      v-model="sec.AccessID"
+                      row
+                    >
                     <v-row>
-                      <v-col cols="4">
-                        <v-checkbox
-                          label="No Access"
-                          value="No Access"
-                          v-model="sec.access"
-                          :readonly="!isEditable"
-                        ></v-checkbox>
-                      </v-col>
-                      <v-col cols="4">
-                        <v-checkbox
-                          label="View"
-                          value="View"
-                          v-model="sec.access"
-                          :readonly="!isEditable"
-                        ></v-checkbox>
-                      </v-col>
-                      <v-col cols="4">
-                        <v-checkbox
-                          label="Edit"
-                          value="Edit"
-                          v-model="sec.access"
-                          :readonly="!isEditable"
-                        ></v-checkbox>
-                      </v-col>
+
+                        <v-col cols="4">
+                          <v-radio
+                            label="No Access"
+                            :value="1"
+                            :readonly="!isEditable"
+                          ></v-radio>
+                        </v-col>
+                        <v-col cols="4">
+                          <v-radio
+                            label="View"
+                            :value="2"
+                            :readonly="!isEditable"
+                          ></v-radio>
+                        </v-col>
+                        <v-col cols="4">
+                          <v-radio
+                            label="Edit"
+                            :value="3"
+                            :readonly="!isEditable"
+                          ></v-radio>
+                        </v-col>
+                        
                     </v-row>
+                    </v-radio-group>
                   </v-form>
               </v-container>  
             </v-card>
@@ -303,6 +309,7 @@ export default {
     },
     fieldsHistory: null,
     sections: [
+      /*
       { id: 1, access: null, title: "Photos", icon:"camera" },
       { id: 2, access: null, title: "Airplane Crash", icon:"airplane-landing" },
       { id: 3, access: null, title: "Places", icon:"routes" },
@@ -312,6 +319,7 @@ export default {
       { id: 7, access: null, title: "Burials", icon:"grave-stone"},
       { id: 8, access: null, title: "Map", icon:"buffer" },
       { id: 9, access: null, title: "Administration", icon:"cube" },
+      */
     ],
     sites: [   
         {
@@ -379,17 +387,29 @@ export default {
         if(this.$route.params.id){
             this.saveCurrentUser();
         }
+        let baseSections = await users.getSections();
         this.fields = await users.getById(localStorage.currentUserID);
         this.fields.ExpirationDate = this.fields.ExpirationDate ? this.fields.ExpirationDate.substr(0, 10): ""; 
+        let access = await users.getAccess(localStorage.currentUserID);
+        this.sections = baseSections.map((x)=>{
+          let accessSection = access.filter(acc => acc.SectionID == x.SectionID).pop();
+          if(accessSection){
+            x.AccessID = accessSection.AccessID;
+            x.UAID = accessSection.UAID;
+          }
+          else{
+            x.AccessID = 1;
+          }
+          return x;
+        });
         this.overlay = false;
-        console.log(this.availableDataAccess);
     },
     getColor(access){
-      if(!access || access == 'No Access')
+      if(!access || access == 1)
         return 'grey lighten-2';
-      if(access == 'Edit')
+      if(access == 3)
         return 'lime lighten-3';
-      if(access == 'View')
+      if(access == 2)
         return 'amber lighten-3';
     },
     showDialog(){
