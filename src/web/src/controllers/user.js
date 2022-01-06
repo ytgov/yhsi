@@ -37,5 +37,32 @@ export default {
         console.log(error);
       });
   },
+  async putAccess(userID, data) {
+    return await api.put(`users/access/${userID}`, data)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  async getAccess(userID) {
+    return await api.get(`users/access/${userID}`)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  async getSections() {
+    return await api.get(`users/access/sections`)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
 }
 
