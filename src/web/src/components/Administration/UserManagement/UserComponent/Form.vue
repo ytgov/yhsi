@@ -58,43 +58,60 @@
                       ></v-text-field>
 
                       <v-menu
-                          ref="menu"
-                          v-model="menu"
-                          :close-on-content-click="false"
-                          transition="scale-transition"
-                          offset-y
-                          min-width="auto"
-                          :disabled="!isEditable"
-                      >
-                          <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                              v-model="fields.ExpirationDate"
-                              label="Expiration Date"
-                              append-icon="mdi-calendar"
-                              readonly
-                              v-bind="attrs"
-                              v-on="on"
-                              :disabled="!isEditable"
-                          ></v-text-field>
-                          </template>
-                          <v-date-picker
-                          ref="picker"
-                          v-model="fields.ExpirationDate"
-                          :max="new Date().toISOString().substr(0, 10)"
-                          min="1950-01-01"
-                          @change="save"
-                          ></v-date-picker>
-                      </v-menu>
+                            ref="menu"
+                            v-model="menu"
+                            :close-on-content-click="false"
+                            :return-value.sync="fields.ExpirationDate"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="auto"
+                            :disabled="!isEditable"
+                        >
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                                v-model="fields.ExpirationDate"
+                                label="Expiration Date"
+                                append-icon="mdi-calendar"
+                                readonly
+                                :disabled="!isEditable"
+                                v-bind="attrs"
+                                v-on="on"
+                            ></v-text-field>
+                            </template>
+                            <v-date-picker
+                            v-model="fields.ExpirationDate"
+                            no-title
+                            scrollable
+                            >
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                text
+                                color="primary"
+                                @click="menu = false"
+                            >
+                                Cancel
+                            </v-btn>
+                            <v-btn
+                                text
+                                color="primary"
+                                @click="$refs.menu.save(fields.ExpirationDate)"
+                            >
+                                OK
+                            </v-btn>
+                            </v-date-picker>
+                        </v-menu>
 
                     </v-col>
                   </v-row>
                 </v-form>
                 <v-row>
                   <v-col>
+                    <!--
                     <v-btn class="black--text" depressed elevation="0"
                       v-if="isEditable">
                         Reset Password
                     </v-btn>
+                    -->
                   </v-col>
                 </v-row>
                 
@@ -103,6 +120,7 @@
             </v-card>
             
           </v-col>
+          <!-- this card will be disabled temporarily
           <v-col cols="12">
             <v-card
               elevation="2"
@@ -179,7 +197,7 @@
                                 </v-col>
                                 <v-btn
                                   class="mx-2"
-                                  fab
+                                  fab 
                                   dark
                                   x-small
                                   color="primary"
@@ -197,8 +215,9 @@
               </v-container>
              
             </v-card>
-          </v-col>
+          </v-col>-->
         </v-row>
+        
         <v-row>
           <v-col>
             <h3 class="mt-2">Section Acess</h3>
@@ -207,19 +226,19 @@
         <v-row>
           <v-col cols="4"
             v-for="sec in sections"
-            :key="`card-${sec.id}`"
+            :key="`card-${sec.SectionID}`"
             >
             <v-card
               elevation="2"
             >
             <v-toolbar
-                :color="getColor(sec.access)"
+                :color="getColor(sec.AccessID)"
                 dark
                 flat
                 >
 
                 <v-card-title class="card-text">
-                  <v-icon class="mr-1" color="rgb(0, 0, 0, 0.5)">mdi-{{sec.icon}}</v-icon> {{sec.title}}
+                  <v-icon class="mr-1" color="rgb(0, 0, 0, 0.5)">mdi-{{sec.SectionIcon}}</v-icon> {{sec.SectionName}}
                 </v-card-title>
 
                 <v-spacer></v-spacer>
@@ -231,32 +250,36 @@
                     ref="siteForm"
                     lazy-validation
                   >
+                    <v-radio-group
+                      v-model="sec.AccessID"
+                      row
+                    >
                     <v-row>
-                      <v-col cols="4">
-                        <v-checkbox
-                          label="No Access"
-                          value="No Access"
-                          v-model="sec.access"
-                          :readonly="!isEditable"
-                        ></v-checkbox>
-                      </v-col>
-                      <v-col cols="4">
-                        <v-checkbox
-                          label="View"
-                          value="View"
-                          v-model="sec.access"
-                          :readonly="!isEditable"
-                        ></v-checkbox>
-                      </v-col>
-                      <v-col cols="4">
-                        <v-checkbox
-                          label="Edit"
-                          value="Edit"
-                          v-model="sec.access"
-                          :readonly="!isEditable"
-                        ></v-checkbox>
-                      </v-col>
+
+                        <v-col cols="4">
+                          <v-radio
+                            label="No Access"
+                            :value="1"
+                            :readonly="!isEditable"
+                          ></v-radio>
+                        </v-col>
+                        <v-col cols="4">
+                          <v-radio
+                            label="View"
+                            :value="2"
+                            :readonly="!isEditable"
+                          ></v-radio>
+                        </v-col>
+                        <v-col cols="4">
+                          <v-radio
+                            label="Edit"
+                            :value="3"
+                            :readonly="!isEditable"
+                          ></v-radio>
+                        </v-col>
+                        
                     </v-row>
+                    </v-radio-group>
                   </v-form>
               </v-container>  
             </v-card>
@@ -298,21 +321,10 @@ export default {
       FirstName: "",
       LastName: "",
       Email: "",
-      access: "",
       ExpirationDate: null,
     },
     fieldsHistory: null,
-    sections: [
-      { id: 1, access: null, title: "Photos", icon:"camera" },
-      { id: 2, access: null, title: "Airplane Crash", icon:"airplane-landing" },
-      { id: 3, access: null, title: "Places", icon:"routes" },
-      { id: 4, access: null, title: "Boats", icon:"ferry" },
-      { id: 5, access: null, title: "People", icon:"human-male-female" },
-      { id: 6, access: null, title: "Interpretive Signs", icon:"image" },
-      { id: 7, access: null, title: "Burials", icon:"grave-stone"},
-      { id: 8, access: null, title: "Map", icon:"buffer" },
-      { id: 9, access: null, title: "Administration", icon:"cube" },
-    ],
+    sections: [],
     sites: [   
         {
           id: 1,
@@ -371,7 +383,7 @@ export default {
         dataAccess: this.siteDataAccess
       });
       this.resetValidation();
-      console.log(this.availableDataAccess);
+
       
     },
     async getDataFromApi(){
@@ -379,17 +391,29 @@ export default {
         if(this.$route.params.id){
             this.saveCurrentUser();
         }
+        let baseSections = await users.getSections();
         this.fields = await users.getById(localStorage.currentUserID);
         this.fields.ExpirationDate = this.fields.ExpirationDate ? this.fields.ExpirationDate.substr(0, 10): ""; 
+        let access = await users.getAccess(localStorage.currentUserID);
+        this.sections = baseSections.map((x)=>{
+          let accessSection = access.filter(acc => acc.SectionID == x.SectionID).pop();
+          if(accessSection){
+            x.AccessID = accessSection.AccessID;
+            x.UAID = accessSection.UAID;
+          }
+          else{
+            x.AccessID = 1;
+          }
+          return x;
+        });
         this.overlay = false;
-        console.log(this.availableDataAccess);
     },
     getColor(access){
-      if(!access || access == 'No Access')
+      if(!access || access == 1)
         return 'grey lighten-2';
-      if(access == 'Edit')
+      if(access == 3)
         return 'lime lighten-3';
-      if(access == 'View')
+      if(access == 2)
         return 'amber lighten-3';
     },
     showDialog(){
@@ -418,18 +442,36 @@ export default {
     },
     async saveChanges(){
             this.overlay = true; 
-             let data = {
-                };
-                console.log(data);
-                
-            let currentBoat= {};
-            console.log(this.fields);
-            await users.put(localStorage.currentUserID,data);
-            currentBoat.id = localStorage.currentUserID;
-            currentBoat.name = this.fields.Name; 
-            this.mode = 'view';
-            this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});   
-            this.$router.go();   
+            let access = this.sections.map((x) =>{
+              delete x.SectionName;
+              delete x.SectionIcon;
+              x.UserID = parseInt(localStorage.currentUserID);
+              return x;
+            })
+            const accessData = {
+              access
+            };
+            const {
+              FirstName,
+              LastName,
+              Email,
+              ExpirationDate
+            } = this.fields;
+            const data = {
+              user: {
+                FirstName,
+                LastName,
+                Email
+              },
+              expirationDate: ExpirationDate
+            }
+
+            await users.put(localStorage.currentUserID, data);
+            await users.putAccess(localStorage.currentUserID, accessData);
+            this.overlay = false;   
+            this.$router.push({name: 'AdminUserGrid'});   
+            //this.$router.go(); 
+            
             
         },
     save (date) {
@@ -463,6 +505,12 @@ export default {
         },
         deep: true
     },
+    sections: {
+      handler(){
+            this.showSave = this.showSave+1;
+        },
+        deep: true
+    }
   }
 }
 </script>
