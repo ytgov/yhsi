@@ -1,3 +1,6 @@
+
+
+
 const state = {
     alert: false,
     text: null,
@@ -14,13 +17,13 @@ const mutations = {
     setAlert(state, alert) {
         state.alert = alert;
     },
-    setText(state, text) {
+    setText(state, text){
         state.text = text;
     },
-    setType(state, type) {
+    setType(state, type){
         state.type = type;
     },
-    setTimeout(state, timeout) {
+    setTimeout(state, timeout){
         state.timeout = timeout;
     }
 };

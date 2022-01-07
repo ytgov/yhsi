@@ -3,12 +3,13 @@ import VueRouter from "vue-router";
 import Home from "../components/Home.vue";
 import Dashboard from "../components/Dashboard.vue";
 import NotFound from "../views/NotFound.vue";
+import Form from "../components/Form";
 import Login from "../views/Login";
 import LoginComplete from "../views/LoginComplete";
 import Profile from "../views/Profile";
 import store from "../store";
-
 import SitesForm from "../components/Sites";
+
 import Summary from "../components/Sites/SitesForms/Summary";
 import Location from "../components/Sites/SitesForms/Location";
 import Dates from "../components/Sites/SitesForms/Dates";
@@ -25,9 +26,8 @@ import Feature from "../components/MainPhotos/PhotosComponents/Feature";
 import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
 import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSites";
 import Photo from "../components/MainPhotos/PhotosComponents/Photo";
-
-import Users from "../components/Users/UsersGrid";
-import UserForm from "../components/Users/UsersComponents/Form";
+import Users from "../components/People/UsersGrid";
+import UserForm from "../components/People/UsersComponents/Form";
 import OwnersGrid from "../components/PhotoOwners/OwnersGrid";
 import OwnerForm from "../components/PhotoOwners/OwnersComponents/Form";
 import Communities from "../components/Communities/CommunitiesGrid";
@@ -44,9 +44,6 @@ import AdminDashboard from "../components/Administration/AdminDashboard";
 import AdminUserGrid from "../components/Administration/UserManagement/Grid";
 import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form";
 import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
-import PlacesGrid from "../components/Places/PlacesGrid";
-import PlaceTypeGrid from "../components/Administration/LookupTableManagement/PlaceType/PlaceType";
-
 Vue.use(VueRouter);
 
 const routes = [
@@ -59,6 +56,14 @@ const routes = [
     path: "/dashboard",
     name: "Dashboard",
     component: Dashboard
+  },
+  {
+    path: "/form",
+    name: "Basic Form",
+    component: Form,
+    meta: {
+      requiresAuth: false
+    }
   },
   {
     path: "/sign-in",
@@ -93,6 +98,84 @@ const routes = [
     meta: {
       requiresAuth: false
     },
+  },
+  {
+    path: "/people",
+    name: "People",
+    component: Users,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/photo-owners",
+    name: "PhotoOwners",
+    component: OwnersGrid,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities",
+    name: "Communities",
+    component: Communities,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+      path: "/people/edit/:name",
+      name: "personEditView",
+      component: UserForm,
+      props: true,
+      meta: {
+        requiresAuth: false
+      }
+  },
+  {
+    path: "/people/view/:name",
+    component: UserForm,
+    name: "personView",
+    props: true,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/people/new",
+    component: UserForm,
+    name: "personAddView",
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/photo-owners/edit/:id",
+    component: OwnerForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/photo-owners/add",
+    component: OwnerForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities/edit/:id",
+    component: CommunitiesForm,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: "/communities/add",
+    component: CommunitiesForm,
+    meta: {
+      requiresAuth: false
+    }
   },
   {
     path: "/sites/:id",
@@ -141,8 +224,8 @@ const routes = [
     ]
   },
   {
-    path: "/photos/:id",
-    name: "PhotosForm",
+    path: "/photos/edit/:id",
+    name: "PhotosFormEdit",
     component: MainPhotos,
     meta: {
       requiresAuth: false
@@ -166,8 +249,6 @@ const routes = [
       }
     ]
   },
-
-
   {
     path: "/photos/add",
     name: "PhotosFormAdd",
@@ -294,88 +375,6 @@ const routes = [
     path: "/admin/vessel_type",
     name: "VesselTypeGrid",
     component: VesselTypeGrid
-  },
-  {
-    path: "/admin/placetype",
-    name: "PlaceTypeGrid",
-    component: PlaceTypeGrid
-  },
-
-
-
-  {
-    path: "/users",
-    name: "Users",
-    component: Users,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: "/photo-owners",
-    name: "PhotoOwners",
-    component: OwnersGrid,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: "/communities",
-    name: "Communities",
-    component: Communities,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-      path: "/users/edit/:id",
-      component: UserForm,
-      meta: {
-        requiresAuth: false
-      }
-  },
-  {
-    path: "/photo-owners/edit/:id",
-    component: OwnerForm,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: "/photo-owners/add",
-    component: OwnerForm,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: "/communities/edit/:id",
-    component: CommunitiesForm,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: "/communities/add",
-    component: CommunitiesForm,
-    meta: {
-      requiresAuth: false
-    }
-  },
-
-
-
-
-
-
-
-  {
-    path: "/places",
-    name: "PlacesGrid",
-    component: PlacesGrid,
-    meta: {
-      requiresAuth: false
-    },
   },
   {
     path: "*",

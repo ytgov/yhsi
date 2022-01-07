@@ -1,5 +1,5 @@
 <template>
-  <v-btn class="black--text mx-1" @click="exportPDF">
+  <v-btn class="black--text mx-1" @click="exportPDF" :loading="loadingPhotos">
     <v-icon class="mr-1">mdi-printer</v-icon>
     Print
   </v-btn>
@@ -12,7 +12,7 @@ import "jspdf-autotable";
 import _ from "lodash";
 export default {
   name: "printButton",
-  props: ["yacsinumber", "data", "selectedImage"],
+  props: ["yacsinumber", "data", "selectedImage", "loadingPhotos"],
   components: {},
   data: () => ({
     doc: null,

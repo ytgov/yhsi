@@ -1,4 +1,60 @@
 <template>
+    <!-- <div>
+          <v-card-title primary-title>
+            Photos
+          </v-card-title>
+          <v-divider inset></v-divider>
+          <v-form v-model="valid">
+              <v-container>
+                <v-row>
+                    <v-col
+                        cols="12"
+                    >
+                        <v-text-field 
+                        v-model="categoryOfProperty"
+                        label="Category of Property"
+                        required
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row>  
+                    <v-col cols="6" v-for="(item, i) in fields.photos" :key="`theme-${i+1}`">
+                        <v-alert 
+                            outlined
+                            color="primary"
+                        >
+                            <div class="sub-title">
+                                Photo {{ i+1 }}
+                            </div>
+                            <v-btn
+                                icon
+                                color="primary"
+                                class="top-right-button"
+                                @click="removeItem('photos', i)"
+                            >
+                                <v-icon dark>mdi-close-circle</v-icon>
+                            </v-btn>
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-img v-if="item.img == null"
+                                    class="center-img"
+                                    max-width="128"
+                                    :src="require('../../../assets/add_photo.png')">
+                                    </v-img>
+                                    <v-img v-else
+                                    class="center-img"
+                                    max-width="128"
+                                    :src="item.img">
+                                    </v-img>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-text-field 
+                                    v-model="item.name"
+                                    label="Feature Name"
+                                    required
+                                    ></v-text-field> -->
   <div>
     <v-card-title style="width: 100%; display: block">
       Photos

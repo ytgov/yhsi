@@ -37,8 +37,7 @@ a {
     font-size: 16px;
     font-weight: 400;
     ;
-}
-
+} 
 /* .v-main .v-btn.primary {
     border: 1px #000 solid !important;
 }
@@ -110,6 +109,16 @@ ul.v-breadcrumbs {
     font-size: .80rem;
     line-height: .80rem;
 }
+.sitesnp{
+    padding: 0px;
+  }
+.siteslp{
+    padding: 12px 12px;
+}
+#carousell .v-window__prev button,
+#carousell .v-window__next button{
+    margin: 0px 0px !important;
+}  
 
 .v-card.info-card .v-card__title {
     margin-top: 5px;
