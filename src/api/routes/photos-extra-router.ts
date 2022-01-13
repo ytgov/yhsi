@@ -1,11 +1,12 @@
-import express, { Request, Response } from "express";
+import { Request, Response } from "express";
+const express = require("express");
 import { DB_CONFIG } from "../config"
 import { createThumbnail } from "../utils/image";
-import knex from "knex";
+const knex = require("knex");
 import { ReturnValidationErrors } from "../middleware";
 import { param, query } from "express-validator";
-import * as multer from "multer";
-import _ from "lodash";
+const multer = require("multer");
+const _ = require("lodash");
 
 export const photosExtraRouter = express.Router();
 const db = knex(DB_CONFIG);

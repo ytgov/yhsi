@@ -1,9 +1,9 @@
 import { Express, NextFunction, Request, Response } from "express"
-import * as ExpressSession from "express-session";
+const ExpressSession = require("express-session");
 import { AUTH_REDIRECT, FRONTEND_URL } from "../config";
 
 import { auth } from "express-openid-connect";
-import { AuthUser } from "../models";
+const AuthUser = require("../models/index");
 
 //const db = new UserService();
 

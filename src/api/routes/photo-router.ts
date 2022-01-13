@@ -1,9 +1,10 @@
-import express, { Request, Response } from "express";
+import { Request, Response } from "express";
+const express = require("express");
 import { DB_CONFIG } from "../config"
 import { body, check, query, validationResult } from "express-validator";
 import { PhotoService } from "../services";
 import { Photo } from "../data";
-import multer from "multer";
+const multer = require("multer");
 import { createThumbnail } from "../utils/image";
 import { ReturnValidationErrors } from "../middleware";
 
