@@ -3,7 +3,7 @@ const ExpressSession = require("express-session");
 import { AUTH_REDIRECT, FRONTEND_URL } from "../config";
 
 import { auth } from "express-openid-connect";
-const AuthUser = require("../models/index");
+const AuthUser = require("../models");
 
 //const db = new UserService();
 
