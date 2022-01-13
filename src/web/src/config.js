@@ -100,6 +100,12 @@ export const sections = [
         makeUrl: (id) => { return `/boats/` }
     },
     {
+        name: "Burials",
+        url: "/burials/",
+        icon: "mdi-grave-stone",// eslint-disable-next-line no-unused-vars
+        makeUrl: (id) => { return `/burials/` }
+    },
+    {
         name: "Administration",
         url: "/admin",
         icon: "mdi-cube",// eslint-disable-next-line no-unused-vars
