@@ -47,7 +47,7 @@
       <v-col cols="auto" class="d-flex">
         <v-btn class="black--text mx-1" @click="addNewBoat">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-          Add Crash Site
+          Add Burial
         </v-btn>
 
         <JsonCSV :data="crashsites">
