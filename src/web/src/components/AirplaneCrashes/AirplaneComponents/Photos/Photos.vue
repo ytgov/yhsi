@@ -66,14 +66,14 @@
                           </v-col>
                         </v-row>
 
-                        <v-text-field
+                        <v-text-field outlined dense
                           v-model="fields.FeatureName"
                           label="Feature Name"
                           :rules="generalRules"
                         >
                         </v-text-field>
 
-                        <v-autocomplete
+                        <v-autocomplete outlined dense
                           @click="getOwners"
                           v-model="fields.OwnerId"
                           :items="owners"
@@ -84,7 +84,7 @@
                           item-text="Name"
                           item-value="Id"
                         ></v-autocomplete>
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.CommunityId"
                           @click="getCommunities"
                           :items="availableCommunities"
@@ -96,7 +96,7 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.OriginalMediaId"
                           @click="getOriginalMedia"
                           :items="availableOriginalMedia"
@@ -108,7 +108,7 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.Copyright"
                           :items="copyrightOptions"
                           item-value="id"
@@ -117,7 +117,7 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.UsageRights"
                           :items="usageRightOptions"
                           ritem-value="id"
@@ -125,21 +125,21 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
-                        <v-textarea
+                        <v-textarea outlined 
                           v-model="fields.Caption"
                           dense
                           label="Caption"
                           rows="2"
                         >
                         </v-textarea>
-                        <v-textarea
+                        <v-textarea outlined 
                           v-model="fields.Comments"
                           dense
                           label="Comments"
                           rows="2"
                         >
                         </v-textarea>
-                        <v-textarea
+                        <v-textarea outlined 
                           v-model="fields.CreditLine"
                           dense
                           label="Credit Line"
@@ -148,7 +148,7 @@
                         >
                         </v-textarea>
 
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.Program"
                           :items="programOptions"
                           item-value="value"
@@ -172,7 +172,7 @@
                           ></v-rating>
                         </div>
 
-                        <v-file-input
+                        <v-file-input outlined dense
                           accept="image/*"
                           label="Choose photo for upload"
                           prepend-icon="mdi-camera"
@@ -213,13 +213,13 @@
                 <v-container class="scroll">
                   <v-row>
                     <v-col class="d-flex">
-                      <v-text-field
+                      <v-text-field outlined dense
                         v-model="searchPhotos"
                         @keyup.enter="getAll"
                         label="Search"
                       >
                       </v-text-field>
-                      <v-btn @click="getAll" icon class="mt-auto mb-auto">
+                      <v-btn @click="getAll" icon class="ma-0 ml-1">
                         <v-icon>mdi-magnify</v-icon>
                       </v-btn>
                     </v-col>
