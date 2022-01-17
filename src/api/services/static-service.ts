@@ -1,5 +1,5 @@
 import { knex, Knex } from "knex";
-import { Community, FirstNation, FunctionalType, OriginalMedia, PhotoOwner, PhotoProject, PlaceTheme, Statute, MapSheetLookup } from "../data";
+import { Community, FirstNation, FunctionalType, OriginalMedia, PhotoOwner, PhotoSubject, PhotoProject, PlaceTheme, Statute, MapSheetLookup } from "../data";
 
 export class StaticService {
 
@@ -75,6 +75,35 @@ export class StaticService {
 
     async getMapSheets(): Promise<Array<MapSheetLookup>> {
         return this.knex<MapSheetLookup>("YHIS.MapSheetLookup").select("id", "map50k", "map250k").orderBy("map50k");
+    }
+    
+    async getPhotoSubjects(): Promise<Array<PhotoSubject>> {
+        return this.knex<PhotoSubject>("PhotoSubject").select("id", "name")
+    }
+
+    async getPhotoSubject(id: number): Promise<PhotoSubject | undefined> {
+        return this.knex<PhotoSubject>("PhotoSubject").where({ id }).select("id", "name").first();
+    }
+
+    async addPhotoSubject(owner: PhotoSubject): Promise<PhotoSubject | undefined> {
+        return this.knex("PhotoSubject").insert(owner).returning<PhotoSubject>(["id", "name"]);
+    }
+
+    async updatePhotoSubject(id: number, item: PhotoSubject): Promise<PhotoSubject | undefined> {
+        return this.knex("PhotoSubject").where({ id: id }).update(item).returning<PhotoSubject>(["id", "name"]);
+    }
+
+    async deletePhotoSubject(id: number): Promise<any> {
+        return this.knex("PhotoSubject").where({ id }).delete();
+    }
+
+    getPhotoProjectSections(): GenericEnum[] {
+        return [
+            { value: 1, text: "Archival" },
+            { value: 2, text: "Archaeology" },
+            { value: 3, text: "Palaeontology" },
+            { value: 4, text: "Historic Sites" }
+        ];
     }
 
     getJurisdictions(): GenericEnum[] {

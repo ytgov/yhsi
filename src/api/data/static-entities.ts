@@ -28,6 +28,11 @@ export class PhotoOwner {
     contactPerson!: string;
 }
 
+export class PhotoSubject {
+    id?: number;
+    name!: string;
+}
+
 export class PhotoProject {
     id?: number;
     name!: string;

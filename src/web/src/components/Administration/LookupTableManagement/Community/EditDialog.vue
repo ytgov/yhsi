@@ -3,20 +3,20 @@
     <v-dialog v-model="dialog" persistent max-width="600px" @click:outside="reset()">
       <v-card>
         <v-card-title>
-          <span class="text-h5">Edit Place Type</span>
+          <span class="text-h5">Edit Community</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
                 <v-form
-                  ref="editPlaceTypeForm"
+                  ref="editCommunityForm"
                   :lazy-validation="false"
                   v-model="valid"
                 >
                   <v-text-field
                     ref="editInput"
-                    label="Place Name"
+                    label="Community Name"
                     v-model="input"
                     :rules="generalRules"
                   ></v-text-field>
@@ -52,27 +52,27 @@ export default {
     },
     async save() {
       let data = {
-        placeType: { PlaceType: this.input },
+        community: { Name: this.input },
       };
-      await catalogs.putPlaceType(this.data.Id, data);
+      await catalogs.putCommunity(this.data.Id, data);
       this.$router.go();
     },
     //not needed
     validate() {
-      this.$refs.editPlaceTypeForm.validate();
+      this.$refs.editCommunityForm.validate();
     },
     reset() {
-      this.dialog = false;
-      this.$refs.editPlaceTypeForm.reset();
+      this.$refs.editCommunityForm.reset();
+      this.$emit("closeEditDialog");
     },
     resetValidation() {
-      this.$refs.editPlaceTypeForm.resetValidation();
+      this.$refs.editCommunityForm.resetValidation();
     },
   },
   watch: {
     data: {
       handler() {
-        this.input = this.data.PlaceType;
+        this.input = this.data.Name;
       },
       deep: true,
     },

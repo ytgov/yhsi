@@ -1,22 +1,27 @@
 <template>
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent max-width="600px" @click:outside="reset()">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn v-bind="attrs" v-on="on" class="black--text mx-1">
+          <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
+          Add Community
+        </v-btn>
+      </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">Edit Place Type</span>
+          <span class="text-h5">New Community</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
                 <v-form
-                  ref="editPlaceTypeForm"
+                  ref="addCommunityForm"
                   :lazy-validation="false"
                   v-model="valid"
                 >
                   <v-text-field
-                    ref="editInput"
-                    label="Place Name"
+                    label="Community Name"
                     v-model="input"
                     :rules="generalRules"
                   ></v-text-field>
@@ -40,41 +45,36 @@
 <script>
 import catalogs from "../../../../controllers/catalogs";
 export default {
-  props: ["dialog", "data"],
+  props: [],
   data: () => ({
+    dialog: false,
     input: null,
     valid: false,
     generalRules: [(v) => !!v || "This field is required"],
   }),
   methods: {
     closeDialog() {
-      this.$emit("closeEditDialog");
+      this.dialog = false;
+      this.reset();
+      this.resetValidation();
     },
     async save() {
       let data = {
-        placeType: { PlaceType: this.input },
+        community: { Name: this.input },
       };
-      await catalogs.putPlaceType(this.data.Id, data);
+      await catalogs.postCommunity(data);
       this.$router.go();
     },
     //not needed
     validate() {
-      this.$refs.editPlaceTypeForm.validate();
+      this.$refs.addCommunityForm.validate();
     },
     reset() {
       this.dialog = false;
-      this.$refs.editPlaceTypeForm.reset();
+      this.$refs.addCommunityForm.reset();
     },
     resetValidation() {
-      this.$refs.editPlaceTypeForm.resetValidation();
-    },
-  },
-  watch: {
-    data: {
-      handler() {
-        this.input = this.data.PlaceType;
-      },
-      deep: true,
+      this.$refs.addCommunityForm.resetValidation();
     },
   },
 };

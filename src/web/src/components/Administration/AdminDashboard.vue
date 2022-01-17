@@ -86,12 +86,22 @@ export default {
         {
           icon: 'mdi-camera-outline',
           text: 'Photo Owner',
-          url: ""
+          url: "/admin/photo-owner"
+        },
+        {
+          icon: 'mdi-image-album',
+          text: 'Photo Project',
+          url: "/admin/photo-project"
+        },
+        {
+          icon: 'mdi-image',
+          text: 'Photo Subject',
+          url: "/admin/photo-subject"
         },
         {
           icon: 'mdi-map-marker-multiple-outline',
           text: 'Community',
-          url: ""
+          url: "/admin/community"
         },
         {
           icon: 'mdi-run',

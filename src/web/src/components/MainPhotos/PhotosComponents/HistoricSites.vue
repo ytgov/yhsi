@@ -12,7 +12,7 @@
                   >
                      <v-combobox
                         v-model="fields.program"
-                        label="Programm Type"
+                        label="Program Type"
                     ></v-combobox>
 
                     <v-combobox

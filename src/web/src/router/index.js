@@ -47,6 +47,10 @@ import VesselTypeGrid from "../components/Administration/LookupTableManagement/V
 import PlacesGrid from "../components/Places/PlacesGrid";
 import PlaceTypeGrid from "../components/Administration/LookupTableManagement/PlaceType/PlaceType";
 import PlacesForm from "../components/Places/PlacesComponents/PlacesForm";
+import CommunityGrid from "../components/Administration/LookupTableManagement/Community/CommunityGrid";
+import PhotoOwnerGrid from "../components/Administration/LookupTableManagement/PhotoOwner/PhotoOwnerGrid";
+import PhotoProjectGrid from "../components/Administration/LookupTableManagement/PhotoProject/PhotoProjectGrid";
+import PhotoSubjectGrid from "../components/Administration/LookupTableManagement/PhotoSubject/PhotoSubjectGrid";
 
 Vue.use(VueRouter);
 
@@ -301,8 +305,26 @@ const routes = [
     name: "PlaceTypeGrid",
     component: PlaceTypeGrid
   },
-
-
+  {
+    path: "/admin/community",
+    name: "CommunityGrid",
+    component: CommunityGrid
+  },
+  {
+    path: "/admin/photo-owner",
+    name: "PhotoOwnerGrid",
+    component: PhotoOwnerGrid
+  },
+  {
+    path: "/admin/photo-project",
+    name: "PhotoProjectGrid",
+    component: PhotoProjectGrid
+  },
+  {
+    path: "/admin/photo-subject",
+    name: "PhotoSubjectGrid",
+    component: PhotoSubjectGrid
+  },
 
   {
     path: "/users",

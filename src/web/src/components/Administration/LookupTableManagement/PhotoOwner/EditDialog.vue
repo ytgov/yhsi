@@ -3,22 +3,38 @@
     <v-dialog v-model="dialog" persistent max-width="600px" @click:outside="reset()">
       <v-card>
         <v-card-title>
-          <span class="text-h5">Edit Place Type</span>
+          <span class="text-h5">Edit Photo Owner</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
                 <v-form
-                  ref="editPlaceTypeForm"
+                  ref="editPhotoOwnerForm"
                   :lazy-validation="false"
                   v-model="valid"
                 >
                   <v-text-field
                     ref="editInput"
-                    label="Place Name"
-                    v-model="input"
+                    label="Photo Owner Name"
+                    v-model="fields.name"
                     :rules="generalRules"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Contact"
+                    v-model="fields.contactPerson"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Email"
+                    v-model="fields.email"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Phone"
+                    v-model="fields.telephone"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Address"
+                    v-model="fields.address"
                   ></v-text-field>
                 </v-form>
               </v-col>
@@ -42,7 +58,13 @@ import catalogs from "../../../../controllers/catalogs";
 export default {
   props: ["dialog", "data"],
   data: () => ({
-    input: null,
+    fields: { 
+      name: null,
+      contactPerson: null,
+      email: null,
+      telephone: null,
+      address: null, 
+    },
     valid: false,
     generalRules: [(v) => !!v || "This field is required"],
   }),
@@ -51,28 +73,30 @@ export default {
       this.$emit("closeEditDialog");
     },
     async save() {
-      let data = {
-        placeType: { PlaceType: this.input },
-      };
-      await catalogs.putPlaceType(this.data.Id, data);
+      let data = this.fields;
+      await catalogs.putPhotoOwner(this.data.Id, data);
       this.$router.go();
     },
     //not needed
     validate() {
-      this.$refs.editPlaceTypeForm.validate();
+      this.$refs.editPhotoOwnerForm.validate();
     },
     reset() {
-      this.dialog = false;
-      this.$refs.editPlaceTypeForm.reset();
+      this.$refs.editPhotoOwnerForm.reset();
+      this.$emit("closeEditDialog");
     },
     resetValidation() {
-      this.$refs.editPlaceTypeForm.resetValidation();
+      this.$refs.editPhotoOwnerForm.resetValidation();
     },
   },
   watch: {
     data: {
       handler() {
-        this.input = this.data.PlaceType;
+        this.fields.name = this.data.Name;
+        this.fields.contactPerson = this.data.ContactPerson;
+        this.fields.email = this.data.Email;
+        this.fields.telephone = this.data.Telephone;
+        this.fields.address = this.data.Address;
       },
       deep: true,
     },
