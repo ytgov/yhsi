@@ -44,6 +44,9 @@ import AdminDashboard from "../components/Administration/AdminDashboard";
 import AdminUserGrid from "../components/Administration/UserManagement/Grid";
 import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form";
 import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
+import BurialsGrid from "../components/Burials/Grid";
+import BurialsForm from "../components/Burials/BurialsComponents/Form";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -375,6 +378,23 @@ const routes = [
     path: "/admin/vessel_type",
     name: "VesselTypeGrid",
     component: VesselTypeGrid
+  },
+  {
+    path: "/burials",
+    name: "BurialsGrid",
+    component: BurialsGrid
+  },
+  {
+    path: "/burials/view/:name",
+    name: "BurialsViewForm",
+    component: BurialsForm,
+    props: true
+  },
+  {
+    path: "/burials/edit/:name",
+    name: "BurialsEditForm",
+    component: BurialsForm,
+    props: true
   },
   {
     path: "*",
