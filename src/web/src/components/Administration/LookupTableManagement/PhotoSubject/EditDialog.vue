@@ -3,20 +3,20 @@
     <v-dialog v-model="dialog" persistent max-width="600px" @click:outside="reset()">
       <v-card>
         <v-card-title>
-          <span class="text-h5">Edit Place Type</span>
+          <span class="text-h5">Edit Photo Subject</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
                 <v-form
-                  ref="editPlaceTypeForm"
+                  ref="editPhotoSubjectForm"
                   :lazy-validation="false"
                   v-model="valid"
                 >
                   <v-text-field
                     ref="editInput"
-                    label="Place Name"
+                    label="Subject Name"
                     v-model="input"
                     :rules="generalRules"
                   ></v-text-field>
@@ -51,28 +51,26 @@ export default {
       this.$emit("closeEditDialog");
     },
     async save() {
-      let data = {
-        placeType: { PlaceType: this.input },
-      };
-      await catalogs.putPlaceType(this.data.Id, data);
+      let data = { name: this.input } ;
+      await catalogs.putPhotoSubject(this.data.Id, data);
       this.$router.go();
     },
     //not needed
     validate() {
-      this.$refs.editPlaceTypeForm.validate();
+      this.$refs.editPhotoSubjectForm.validate();
     },
     reset() {
-      this.dialog = false;
-      this.$refs.editPlaceTypeForm.reset();
+      this.$refs.editPhotoSubjectForm.reset();
+      this.$emit("closeEditDialog");
     },
     resetValidation() {
-      this.$refs.editPlaceTypeForm.resetValidation();
+      this.$refs.editPhotoSubjectForm.resetValidation();
     },
   },
   watch: {
     data: {
       handler() {
-        this.input = this.data.PlaceType;
+        this.input = this.data.Name;
       },
       deep: true,
     },

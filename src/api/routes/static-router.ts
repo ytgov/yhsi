@@ -68,6 +68,11 @@ staticRouter.get("/jurisdiction", async (req: Request, res: Response) => {
     return res.json({ data: list });
 });
 
+staticRouter.get("/photo-project-section", async (req: Request, res: Response) => {
+    let list = await staticService.getPhotoProjectSections();
+    return res.json({ data: list });
+});
+
 staticRouter.get("/revision-log-type", async (req: Request, res: Response) => {
     let list = await placeService.getRevisionLogTypes();
     return res.json({ data: list });
@@ -316,3 +321,71 @@ staticRouter.delete("/photo-project/:id",
         let list = await staticService.deletePhotoProject(parseInt(id));
         return res.json({ data: list });
     });
+
+
+    staticRouter.get("/photo-subject", async (req: Request, res: Response) => {
+        let list = await staticService.getPhotoSubjects();
+        return res.json({ data: list });
+    });
+    
+    staticRouter.get("/photo-subject/:id",
+        [check("id").isInt().notEmpty()],
+        async (req: Request, res: Response) => {
+            const errors = validationResult(req);
+    
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+    
+            const id = req.params.id as string;
+            let list = await staticService.getPhotoSubject(parseInt(id));
+            return res.json({ data: list });
+        });
+    
+    staticRouter.post("/photo-subject",
+        [
+            body("name").isString().notEmpty().trim()
+        ],
+        async (req: Request, res: Response) => {
+            const errors = validationResult(req);
+    
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+    
+            let { name } = req.body;
+            let result = await staticService.addPhotoSubject({ name });
+            return res.json({ data: result });
+        });
+    
+    staticRouter.put("/photo-subject/:id",
+        [
+            check("id").isInt().notEmpty(),
+            body("name").isString().notEmpty().trim()
+        ], async (req: Request, res: Response) => {
+            const errors = validationResult(req);
+    
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+    
+            const id = req.params.id as string;
+            let { name } = req.body;
+            let result = await staticService.updatePhotoSubject(parseInt(id), { name });
+            return res.json({ data: result });
+        });
+    
+    staticRouter.delete("/photo-subject/:id",
+        [check("id").isInt().notEmpty()],
+        async (req: Request, res: Response) => {
+            const errors = validationResult(req);
+    
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+    
+            const id = req.params.id as string;
+            let list = await staticService.deletePhotoSubject(parseInt(id));
+            return res.json({ data: list });
+        });
+    

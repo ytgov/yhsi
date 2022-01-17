@@ -6,6 +6,7 @@ import { ReturnValidationErrors } from "../middleware";
 import { param, query } from "express-validator";
 import * as multer from "multer";
 import _ from "lodash";
+import { Photo, PHOTO_FIELDS } from "../data";
 
 export const photosExtraRouter = express.Router();
 const db = knex(DB_CONFIG);
@@ -32,43 +33,40 @@ photosExtraRouter.get('/',
 
       counter = await db.from('dbo.photo as PH')
         .join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-        //.join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
         .leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
         .where('PH.FeatureName', 'like', `%${textToMatch}%`)
-        //.whereNotNull("ThumbFile")
+        .whereNotNull("ThumbFile")
         .orWhere('PH.OriginalFileName', 'like', `%${textToMatch}%`)
         .orWhere('PH.Address', 'like', `%${textToMatch}%`)
         .orWhere('PH.Caption', 'like', `%${textToMatch}%`)
         .orWhere('CO.Name', 'like', `%${textToMatch}%`)
         .orWhere('PL.PrimaryName', 'like', `%${textToMatch}%`)
         .count('RowId', { as: 'count' });
-
-      photos = await db.column('PH.*', { CommunityName: 'CO.Name' }, { PlaceName: 'PL.PrimaryName' })
+        
+      photos = await db.column(['RowId','Address','Caption','OriginalFileName','FeatureName','ThumbFile'], { CommunityName: 'CO.Name' }, { PlaceName: 'PL.PrimaryName' })
         .select()
         .from('dbo.photo as PH')
         .join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-        //.join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
         .leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
         .where('FeatureName', 'like', `%${textToMatch}%`)
-        //.whereNotNull("ThumbFile") 
+        .whereNotNull("ThumbFile") 
         .orWhere('OriginalFileName', 'like', `%${textToMatch}%`)
         .orWhere('Address', 'like', `%${textToMatch}%`)
         .orWhere('Caption', 'like', `%${textToMatch}%`)
         .orWhere('CO.Name', 'like', `%${textToMatch}%`)
         .orWhere('PL.PrimaryName', 'like', `%${textToMatch}%`)
         .orderBy('PH.RowId', 'asc')
-        .limit(limit).offset(offset);
+        .limit(limit).offset(offset); 
     }
     else {
       counter = await db.from('dbo.photo').count('RowId', { as: 'count' });
 
-      photos = await db.column('PH.*', { CommunityName: 'CO.Name' }, { PlaceName: 'PL.PrimaryName' })
+      photos = await db.column(['RowId','Address','Caption','OriginalFileName','FeatureName','ThumbFile'], { CommunityName: 'CO.Name' }, { PlaceName: 'PL.PrimaryName' })
         .select()
         .from('dbo.photo as PH')
         .join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-        //.join('dbo.Place as PL', 'PH.PlaceId', '=', 'PL.Id')
         .leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
-        //.whereNotNull("ThumbFile") 
+        .whereNotNull("ThumbFile") 
         .orderBy('PH.RowId', 'asc')
         .limit(limit).offset(offset); 
     }
@@ -210,9 +208,10 @@ photosExtraRouter.get('/ytplace/:placeId',
     const limit = parseInt(req.query.limit as string);
     const offset = (page * limit) || 0;
 
-    const photos = await db.select('*')
+    const photos = await db.select(['Address','Caption','OriginalFileName','FeatureName','CO.Name as CommunityName','ThumbFile'])
       .from('place.photo as P')
-      .join('dbo.photo', 'P.Photo_RowID', '=', 'dbo.photo.RowID')
+      .join('dbo.photo as PH', 'P.Photo_RowID', '=', 'PH.RowID')
+      .join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
       .where('P.placeId', placeId)
       .limit(limit).offset(offset);
 

@@ -4,7 +4,7 @@ export const PHOTO_FIELDS = [
     "yHSIRecord", "bordenRecord", "paleoRecord", "archivalRecord", "isOtherRecord", "originalMediaId", "originalRecord", "mediaStorage",
     "comments", "caption", "copyright", "creditLine", "ownerId", "photoProjectId", "program", "creator", "communityName", "location",
     "usageRights", "isComplete", "imageHeight", "imageWidth", "rating", "subjects", "legacyBatchInfo", "isSiteDefault"
-];
+]; 
 
 export class Photo {
     rowId!: number;

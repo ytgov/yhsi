@@ -187,10 +187,6 @@ export default {
       axios
         .post(`${YTPLACE_URL}/search`, body)
         .then((resp) => {
-          // Djpratt testing
-          /*console.log(body);
-          console.log(`${YTPLACE_URL}/search`);
-          console.log(resp.data);*/
           this.places = resp.data.data;
           this.totalLength = resp.data.meta.item_count;
 

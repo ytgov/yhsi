@@ -63,8 +63,8 @@
           >
             <v-card outlined hover>
               <v-img
-                :src="item.File.base64"
-                :lazy-src="item.File.base64"
+                :src="item.ThumbFile.base64"
+                :lazy-src="item.ThumbFile.base64"
                 aspect-ratio="1"
                 class="grey lighten-2"
               >

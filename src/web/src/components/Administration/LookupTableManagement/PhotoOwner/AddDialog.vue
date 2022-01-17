@@ -4,26 +4,42 @@
       <template v-slot:activator="{ on, attrs }">
         <v-btn v-bind="attrs" v-on="on" class="black--text mx-1">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-          Add Place Type
+          Add Photo Owner
         </v-btn>
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">New Place Type</span>
+          <span class="text-h5">New Photo Owner</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
                 <v-form
-                  ref="addPlaceTypeForm"
+                  ref="addPhotoOwnerForm"
                   :lazy-validation="false"
                   v-model="valid"
                 >
                   <v-text-field
-                    label="Place Name"
-                    v-model="input"
+                    label="Name"
+                    v-model="fields.name"
                     :rules="generalRules"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Contact"
+                    v-model="fields.contactPerson"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Email"
+                    v-model="fields.email"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Phone"
+                    v-model="fields.telephone"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Address"
+                    v-model="fields.address"
                   ></v-text-field>
                 </v-form>
               </v-col>
@@ -48,7 +64,13 @@ export default {
   props: [],
   data: () => ({
     dialog: false,
-    input: null,
+    fields: { 
+      name: null,
+      contactPerson: null,
+      email: null,
+      telephone: null,
+      address: null, 
+    },
     valid: false,
     generalRules: [(v) => !!v || "This field is required"],
   }),
@@ -59,22 +81,20 @@ export default {
       this.resetValidation();
     },
     async save() {
-      let data = {
-        placeType: { PlaceType: this.input },
-      };
-      await catalogs.postPlaceType(data);
+      let data = this.fields;
+      await catalogs.postPhotoOwner(data);
       this.$router.go();
     },
     //not needed
     validate() {
-      this.$refs.addPlaceTypeForm.validate();
+      this.$refs.addPhotoOwnerForm.validate();
     },
     reset() {
       this.dialog = false;
-      this.$refs.addPlaceTypeForm.reset();
+      this.$refs.addPhotoOwnerForm.reset();
     },
     resetValidation() {
-      this.$refs.addPlaceTypeForm.resetValidation();
+      this.$refs.addPhotoOwnerForm.resetValidation();
     },
   },
 };

@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <v-container fluid>
-      <h1>Place Type</h1>
+      <h1>Photo Project</h1>
       <Breadcrumbs/>
       <v-row class="mb-2">
         <v-col cols="6" class="d-flex">
@@ -61,7 +61,7 @@
             </v-row>
         </v-card>
     </div>  
-      <EditDialog :dialog="editDialog" :data="displayPlaceType" @closeEditDialog="closeDialog"/>
+      <EditDialog :dialog="editDialog" :data="displayProject" @closeEditDialog="closeDialog"/>
     </v-container>
   </div>
 </template>
@@ -73,21 +73,24 @@ import EditDialog from "./EditDialog";
 import AddDialog from "./AddDialog";
 import _ from 'lodash';
 export default {
-  name: "placetypegrid",
+  name: "photoprojectgrid",
   components: { Breadcrumbs, EditDialog, AddDialog },
   data: () => ({
     loading: false,
-    placetypes: [],
+    projects: [],
     search: "",
     options: {},
     totalLength: 10,
     headers: [
-      { text: "Type", value: "PlaceType" },
+      { text: "Name", value: "Name" },
+      { text: "Permit", value: "Permit" },
+      { text: "Section", value: "section.text" },
+      { text: "Year", value: "Year" },
     ],
     page: 1,
     pageCount: 0,
     iteamsPerPage: 10,
-    displayPlaceType: {},
+    displayProject: {},
     editDialog: false,
   }),
   mounted() {
@@ -98,26 +101,26 @@ export default {
       this.getDataFromApi();
     }, 400),
     handleClick(value){   //Redirects the user to the edit user form
-        this.displayPlaceType = value;
+        this.displayProject = value;
         this.editDialog = true;
     },
     removeItem(item){ //removes one element from the users array
-      const index = this.placetypes.findIndex(a=> a.id == item.id);
+      const index = this.projects.findIndex(a=> a.id == item.id);
       console.log(index);
       if (index > -1) {
-        this.placetypes.splice(index, 1);
+        this.projects.splice(index, 1);
       }
     },
     async getDataFromApi() {
         this.loading = true;
         let { page, itemsPerPage, sortBy, sortDesc } = this.options;
-        if (!sortBy[0]) sortBy[0] = 'PlaceType'; 
+        if (!sortBy[0]) sortBy[0] = 'Name'; 
         page = page > 0 ? page-1 : 0;
         itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
         let textToMatch = this.search;
-        let data = await catalogs.getPlaceTypes(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
-        this.placetypes = _.get(data, 'body', []);
-        console.log(this.placetypes);
+        let data = await catalogs.getPhotoProjects(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
+        this.projects = _.get(data, 'body', []);
+        console.log(this.projects);
         this.totalLength = _.get(data, 'count', 0);
         this.loading = false;
     },
@@ -134,7 +137,7 @@ export default {
   },
   computed: {
     filteredData(){// returns a filtered users array depending on the selected filters
-      let data = JSON.parse(JSON.stringify(this.placetypes));
+      let data = JSON.parse(JSON.stringify(this.projects));
       return data;
     },
   },

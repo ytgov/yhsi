@@ -59,9 +59,9 @@
                           <v-col cols="12" class="d-flex my-0 py-0">
                             <v-spacer></v-spacer>
                             <v-checkbox
-                              class="align-self-end"
+                              class="align-self-end" 
                               label="Private"
-                              v-model="fields.isPirvate"
+                              v-model="fields.isPrivate"
                             ></v-checkbox>
                           </v-col>
                         </v-row>
@@ -262,8 +262,8 @@
                         <template v-slot:default="{ hover }">
                           <v-card outlined hover>
                             <v-img
-                              :src="item.File.base64"
-                              :lazy-src="item.File.base64"
+                              :src="item.ThumbFile.base64"
+                              :lazy-src="item.ThumbFile.base64"
                               aspect-ratio="1"
                               class="grey lighten-2"
                             ></v-img>
@@ -310,8 +310,8 @@
                                         hover
                                         >
                                             <v-img
-                                                :src="item.File.base64"
-                                                :lazy-src="item.File.base64"
+                                                :src="item.ThumbFile.base64"
+                                                :lazy-src="item.ThumbFile.base64"
                                                 aspect-ratio="1"
                                                 class="grey lighten-2"
                                             >
@@ -424,7 +424,7 @@ export default {
       Program: null,
       IsComplete: false,
       Rating: 1,
-      isPirvate: 0,
+      isPrivate: 0,
     },
     sendObj: null,
     //selection options
@@ -509,7 +509,7 @@ export default {
     async getAll() {
       this.showSkeletons = true;
       axios
-        .get(`${EXTRA_PHOTOS_URL}/photo-owner`, {
+        .get(`${EXTRA_PHOTOS_URL}`, {
           crossdomain: true,
           params: {
             page: this.page - 1,
@@ -522,8 +522,8 @@ export default {
             this.availablePhotos = resp.data.body.map((x) => {
               // Todo: use thumbnail files whenever fetching all. Need to create thumbnails for all existing photos first
               //console.log(x);
-              //x.File.base64 = `data:image/png;base64,${this.toBase64(x.Thumbfile.data)}`;
-              x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
+              x.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(x.ThumbFile.data)}`;
+              //x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
               x.selected = false;
               return x;
             });
@@ -541,7 +541,8 @@ export default {
         .then((resp) => {
           if (resp) {
             this.photos = resp.data.map((x) => {
-              x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
+              x.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(x.ThumbFile.data)}`;
+              //x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
               x.selected = false;
               return x;
             });
@@ -661,7 +662,7 @@ export default {
     async getCommunities() {
       this.isLoadingCommunities = true;
       let data = await catalogs.getCommunities();
-      this.availableCommunities = data;
+      this.availableCommunities = data.body;
       this.isLoadingCommunities = false;
     },
     async getOriginalMedia() {

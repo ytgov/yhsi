@@ -1,22 +1,27 @@
 <template>
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent max-width="600px" @click:outside="reset()">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn v-bind="attrs" v-on="on" class="black--text mx-1">
+          <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
+          Add Photo Subject
+        </v-btn>
+      </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">Edit Place Type</span>
+          <span class="text-h5">New Photo Subject</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
                 <v-form
-                  ref="editPlaceTypeForm"
+                  ref="addPhotoSubjectForm"
                   :lazy-validation="false"
                   v-model="valid"
                 >
                   <v-text-field
-                    ref="editInput"
-                    label="Place Name"
+                    label="Subject Name"
                     v-model="input"
                     :rules="generalRules"
                   ></v-text-field>
@@ -40,41 +45,34 @@
 <script>
 import catalogs from "../../../../controllers/catalogs";
 export default {
-  props: ["dialog", "data"],
+  props: [],
   data: () => ({
+    dialog: false,
     input: null,
     valid: false,
     generalRules: [(v) => !!v || "This field is required"],
   }),
   methods: {
     closeDialog() {
-      this.$emit("closeEditDialog");
+      this.dialog = false;
+      this.reset();
+      this.resetValidation();
     },
     async save() {
-      let data = {
-        placeType: { PlaceType: this.input },
-      };
-      await catalogs.putPlaceType(this.data.Id, data);
+      let data = { name: this.input };
+      await catalogs.postPhotoSubject(data);
       this.$router.go();
     },
     //not needed
     validate() {
-      this.$refs.editPlaceTypeForm.validate();
+      this.$refs.addSubjectForm.validate();
     },
     reset() {
       this.dialog = false;
-      this.$refs.editPlaceTypeForm.reset();
+      this.$refs.addSubjectForm.reset();
     },
     resetValidation() {
-      this.$refs.editPlaceTypeForm.resetValidation();
-    },
-  },
-  watch: {
-    data: {
-      handler() {
-        this.input = this.data.PlaceType;
-      },
-      deep: true,
+      this.$refs.addSubjectForm.resetValidation();
     },
   },
 };

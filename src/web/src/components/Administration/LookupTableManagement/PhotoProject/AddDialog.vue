@@ -4,26 +4,41 @@
       <template v-slot:activator="{ on, attrs }">
         <v-btn v-bind="attrs" v-on="on" class="black--text mx-1">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-          Add Place Type
+          Add Photo Project
         </v-btn>
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">New Place Type</span>
+          <span class="text-h5">New Photo Project</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
                 <v-form
-                  ref="addPlaceTypeForm"
+                  ref="addPhotoProjectForm"
                   :lazy-validation="false"
                   v-model="valid"
                 >
                   <v-text-field
-                    label="Place Name"
-                    v-model="input"
+                    label="Name"
+                    v-model="fields.name"
                     :rules="generalRules"
+                  ></v-text-field>
+                  <v-text-field
+                    label="Permit"
+                    v-model="fields.permit"
+                  ></v-text-field>
+                  <v-select
+                    v-model="fields.section"
+                    label="Section"
+                    :items="sectionOptions"
+                    item-value="value"
+                    item-text="text"
+                  ></v-select>
+                  <v-text-field
+                    label="Year"
+                    v-model="fields.year"
                   ></v-text-field>
                 </v-form>
               </v-col>
@@ -44,14 +59,27 @@
 
 <script>
 import catalogs from "../../../../controllers/catalogs";
+import { STATIC_URL } from "../../../../urls";
+import axios from "axios";
 export default {
   props: [],
   data: () => ({
     dialog: false,
-    input: null,
+    fields: { 
+      name: null,
+      permit: null,
+      section: null,
+      year: null,
+    },
     valid: false,
     generalRules: [(v) => !!v || "This field is required"],
+    sectionOptions: [],
   }),
+  created() {
+    axios.get(`${STATIC_URL}/photo-project-section`).then((resp) => {
+      this.sectionOptions = resp.data.data;
+    });
+  }, 
   methods: {
     closeDialog() {
       this.dialog = false;
@@ -59,22 +87,20 @@ export default {
       this.resetValidation();
     },
     async save() {
-      let data = {
-        placeType: { PlaceType: this.input },
-      };
-      await catalogs.postPlaceType(data);
+      let data = this.fields;
+      await catalogs.postPhotoProject(data);
       this.$router.go();
     },
     //not needed
     validate() {
-      this.$refs.addPlaceTypeForm.validate();
+      this.$refs.addPhotoProjectForm.validate();
     },
     reset() {
       this.dialog = false;
-      this.$refs.addPlaceTypeForm.reset();
+      this.$refs.addPhotoProjectForm.reset();
     },
     resetValidation() {
-      this.$refs.addPlaceTypeForm.resetValidation();
+      this.$refs.addPhotoProjectForm.resetValidation();
     },
   },
 };
