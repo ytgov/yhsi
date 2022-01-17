@@ -1,7 +1,8 @@
-import express, { Request, Response } from "express";
+import { Request, Response } from "express";
+const express = require("express");
 import { DB_CONFIG } from "../config"
 import { PhotoService, PlaceService } from "../services";
-import moment from "moment";
+const moment = require("moment");
 import { createThumbnail } from "../utils/image";
 
 const placeService = new PlaceService(DB_CONFIG);
