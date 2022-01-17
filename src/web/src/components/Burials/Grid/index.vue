@@ -70,7 +70,7 @@
           <v-row>
             <v-col cols="12">
               <h2 v-if="crashsites" class="ma-2">
-                {{ filteredData.length }} Results
+                {{ filteredData.length }} results out of {{ totalLength }}
               </h2>
             </v-col>
           </v-row>
@@ -85,7 +85,7 @@
                 :options.sync="options"
                 :server-items-length="totalLength"
                 @click:row="handleClick"
-                :footer-props="{ 'items-per-page-options': [10, 30, 100] }"
+                :footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
               >
                 <template v-slot:item.crashlocation="{ item }">
                   <div style="width: 200px">
@@ -133,7 +133,7 @@ export default {
     page: 0,
     pageCount: 6,
     totalLength: 0,
-    options: {},
+    options: { itemsPerPage: 50 },
     filterOptions: [
       { name: "Crash Date", value: "" },
       { name: "Maker", value: "" },
