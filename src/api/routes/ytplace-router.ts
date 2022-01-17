@@ -1,10 +1,10 @@
-import express, { Request, Response } from "express";
+import { Request, Response } from "express";
+const express = require("express");
 import { DB_CONFIG } from "../config"
 import { body, check, param, query, validationResult } from "express-validator";
 import { PhotoService, YtPlaceService, SortDirection, SortStatement, StaticService } from "../services";
 import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership, Photo, WebLink, RevisionLog, Contact, Description, YtPlace } from "../data";
 import { ReturnValidationErrors } from "../middleware";
-import moment from "moment";
 
 const ytPlaceService = new YtPlaceService(DB_CONFIG);
 const staticService = new StaticService(DB_CONFIG);
