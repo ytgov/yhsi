@@ -1,10 +1,11 @@
 namespace Express {
-    export interface Request {
-        user?: any;
-        //isAuthenticated?: boolean;
-        sessionId?: string;
-        file: any;
+	export interface Request {
+		user?: any;
+		//isAuthenticated?: boolean;
+		sessionId?: string;
+		file: any;
+		session: any;
 
-        isAuthenticated(): boolean;
-    }
+		isAuthenticated(): boolean;
+	}
 }
