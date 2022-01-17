@@ -1,6 +1,7 @@
-import express, { Request, Response } from "express";
+import { Request, Response } from "express";
+const express = require("express");
 import { DB_CONFIG } from "../config"
-import knex from "knex";
+const knex = require("knex");
 import { ReturnValidationErrors } from "../middleware";
 import { param, query } from "express-validator";
 
