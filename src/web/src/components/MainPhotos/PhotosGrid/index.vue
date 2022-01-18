@@ -25,8 +25,20 @@
       </v-btn>
     </v-app-bar>
     <v-container grid-list-xs>
-      <v-text-field v-model="search" label="Search"></v-text-field>
       <v-row>
+        <v-col class="d-flex">
+          <v-text-field
+            v-model="search"
+            @keyup.enter="getDataFromApi"
+            label="Search"
+          >
+          </v-text-field>
+          <v-btn @click="getDataFromApi" icon class="mt-auto mb-auto">
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-row v-if="!loading">
         <v-col
           v-for="(item, i) in sortedData"
           :key="`photo-${i}`"
@@ -37,17 +49,17 @@
             <template v-slot:default="{ hover }">
               <v-card class="mx-auto" @click="sortData()">
                 <v-img
-                  :src="item.photo"
-                  :lazy-src="item.photo"
+                  :src="item.thumbFile.base64"
+                  :lazy-src="item.thumbFile.base64"
                   class="white--text align-end"
-                  gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                  aspect-ratio="1"
                 >
                 </v-img>
 
                 <v-card-actions>
                   <v-card-subtitle
                     v-if="selectedSorter == 0"
-                    v-text="item.name"
+                    v-text="item.featureName"
                   ></v-card-subtitle>
                   <v-card-subtitle
                     v-else-if="selectedSorter == 1"
@@ -56,7 +68,7 @@
                   <v-card-subtitle
                     v-else
                     v-text="
-                      `Photo taken, ${new Date(item.date).toLocaleDateString()}`
+                      `Photo taken, ${new Date(item.dateCreated).toLocaleDateString()}`
                     "
                   ></v-card-subtitle>
                 </v-card-actions>
@@ -71,6 +83,20 @@
           </v-hover>
         </v-col>
       </v-row>
+      <v-row v-if="loading">
+        <div class="loading">Loading...</div>
+      </v-row>
+      <v-row class="mb-2" v-if="!loading">
+        <v-col>
+          <div class="text-center">
+            <v-pagination
+              v-model="page"
+              :length="numberOfPages"
+              :total-visible="5"
+            ></v-pagination>
+          </div>
+        </v-col>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -79,6 +105,7 @@
 
 import axios from "axios";
 import Search from "../PhotosComponents/Search";
+import { PHOTO_URL } from "../../../urls";
 
 export default {
   name: "Grid",
@@ -93,14 +120,21 @@ export default {
     ],
     photos: [],
     sortedData: [],
+    numberOfPages: 10,
+    page: 1,
+    totalLength: 0,
+    page_size: 12,
+    loading: true,
   }),
   watch: {
-    search: {
+    selectedSorter: {
       handler() {
-        this.getDataFromApi();
         this.sortData();
       },
       deep: true,
+    },    
+    page() {
+      this.getDataFromApi();
     },
   },
   mounted() {
@@ -111,21 +145,33 @@ export default {
       //Redirects the user to the site form
       this.$router.push(`/photos/${value}/feature`);
     },
-    getDataFromApi() {
-      
-      axios
+    getDataFromApi() {  
+      this.loading = true;
+      let body = {};
+      body.query = [
+        { field: "featureName", operator: "contains", value: this.search },
+      ];
+      body.page = this.page;
 
-      for (let i = 0; i < 12; i++) {
-        this.photos.push({
-          id: i,
-          name: `photo-${i + 1}.png`,
-          photo: `https://picsum.photos/500/300?image=${i * 5 + 10}`,
-          date: new Date(2019, 2, Math.floor(Math.random() * 30) + 1),
-          rating: Math.floor(Math.random() * 6),
+      axios
+        .post(`${PHOTO_URL}/search`, body)
+        .then((resp) => {
+          this.photos = resp.data.data.map((x) => {
+            x.thumbFile.base64 = `data:image/png;base64,${this.toBase64(x.thumbFile.data)}`;
+            return x;
+          });
+          this.totalLength = resp.data.meta.item_count;
+          this.numberOfPages = resp.data.meta.page_count;
+          this.page_size = resp.data.meta.page_size;
+          this.sortData();
+
+        })
+        .catch((err) => console.error('Error in getDataFromApi: '+ err))        
+        .finally(() => {
+          this.loading = false;
         });
-      }
-      this.sortData();
     },
+
     sortData() {
       //this function handles the logic for the data sorter
       switch (this.selectedSorter) {
@@ -140,17 +186,22 @@ export default {
           break;
       }
     },
+    toBase64(arr) {
+      return btoa(
+        arr.reduce((data, byte) => data + String.fromCharCode(byte), "")
+      );
+    },
   },
   computed: {
     sortByName: function () {
       return this.photos
         .slice()
-        .filter((a) => a.name.toLowerCase().includes(this.search.toLowerCase()))
-        .sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+        //.filter((a) => a.featureName.toLowerCase().includes(this.search.toLowerCase()))
+        .sort((a, b) => (a.featureName.toLowerCase() > b.featureName.toLowerCase() ? 1 : b.featureName.toLowerCase() > a.featureName.toLowerCase() ? -1 : 0));
     },
     sortByRating() {
       return this.photos
-        .filter((a) => a.name.toLowerCase().includes(this.search.toLowerCase()))
+        //.filter((a) => a.featureName.toLowerCase().includes(this.search.toLowerCase()))
         .slice()
         .sort((a, b) =>
           a.rating > b.rating ? 1 : b.rating > a.rating ? -1 : 0
@@ -159,10 +210,21 @@ export default {
     sortByAge() {
       //let photos =JSON.parse(JSON.stringify(this.photos));
       return this.photos
-        .filter((a) => a.name.toLowerCase().includes(this.search.toLowerCase()))
+        //.filter((a) => a.featureName.toLowerCase().includes(this.search.toLowerCase()))
         .slice()
-        .sort((a, b) => b.date - a.date);
+        .sort((a, b) =>
+          a.dateCreated > b.dateCreated ? 1 : b.dateCreated > a.dateCreated ? -1 : 0
+        );
     },
   },
 };
 </script>
+
+<style scoped>
+.loading {
+  font-size: 18px;
+  color: #979797 !important;
+  margin: auto;
+  margin-top: 20%;
+}
+</style>

@@ -1,6 +1,7 @@
 import knex, { Knex } from "knex";
 import { QueryStatement, SortStatement } from "./";
 import { Photo, PHOTO_FIELDS } from "../data";
+import _ from 'lodash';
 
 export class PhotoService {
 
@@ -136,7 +137,9 @@ export class PhotoService {
             }
 
             let page_count = Math.ceil(count / page_size);
-            let data = await selectStmt.select<Photo[]>(PHOTO_FIELDS).offset(skip).limit(take);
+            let fields = _.clone(PHOTO_FIELDS);
+            fields.push("thumbFile"); 
+            let data = await selectStmt.select<Photo[]>(fields).offset(skip).limit(take);
             let results = { data, meta: { page, page_size, item_count: count, page_count } };
 
             resolve(results);
