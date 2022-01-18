@@ -520,14 +520,10 @@ export default {
         .then((resp) => {
           if (resp) {
             this.availablePhotos = resp.data.body.map((x) => {
-              // Todo: use thumbnail files whenever fetching all. Need to create thumbnails for all existing photos first
-              //console.log(x);
               x.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(x.ThumbFile.data)}`;
-              //x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
               x.selected = false;
               return x;
             });
-            //console.log(data.count);
             this.numberOfPages = Math.round(resp.count / 6);
             this.showSkeletons = false;
           };       
@@ -540,6 +536,7 @@ export default {
         .get(`${EXTRA_PHOTOS_URL}/${this.photoType}/${this.itemId}`)
         .then((resp) => {
           if (resp) {
+            console.log(resp.data);
             this.photos = resp.data.map((x) => {
               x.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(x.ThumbFile.data)}`;
               //x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;

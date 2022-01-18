@@ -43,6 +43,7 @@ export class Photo {
     subjects!: string;
     legacyBatchInfo!: string;
     isSiteDefault!: boolean;
+    thumbFile!: Buffer;
 }
 
 export class PhotoBatch {

@@ -8,7 +8,7 @@ import { createThumbnail } from "../utils/image";
 import { ReturnValidationErrors } from "../middleware";
 
 const photoService = new PhotoService(DB_CONFIG);
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 12;
 
 export const photoRouter = express.Router();
 
