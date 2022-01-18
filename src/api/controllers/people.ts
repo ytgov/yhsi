@@ -44,7 +44,10 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.limit(limit)
 			.offset(offset);
 	} else {
-		counter = await db.from('Person.Person').count('PersonID', { as: 'count' });
+		counter = await db
+			.from('Person.Person')
+			.count('PersonID', { as: 'count' })
+			.first();
 
 		people = await db
 			.from('Person.Person')
@@ -53,7 +56,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.offset(offset);
 	}
 
-	res.status(200).send({ count: counter[0].count, body: people });
+	res.status(200).send({ count: counter, body: people });
 });
 
 router.get(

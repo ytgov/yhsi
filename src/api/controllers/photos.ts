@@ -50,7 +50,10 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.limit(limit)
 			.offset(offset);
 	} else {
-		counter = await db.from('dbo.photo').count('RowId', { as: 'count' });
+		counter = await db
+			.from('dbo.photo')
+			.count('RowId', { as: 'count' })
+			.first();
 
 		photos = await db
 			.column(
@@ -67,7 +70,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.offset(offset);
 	}
 
-	res.status(200).send({ count: counter[0].count, body: photos });
+	res.status(200).send({ count: counter, body: photos });
 });
 
 //LINK BOAT PHOTOS
@@ -86,7 +89,7 @@ router.post(
 			.where('BoatId', BoatId);
 		let filteredLinkPhotos = _.difference(
 			linkPhotos,
-			currentPhotos.map((x) => {
+			currentPhotos.map((x: any) => {
 				return x.Photo_RowID;
 			})
 		);
@@ -153,7 +156,7 @@ router.post(
 			.where('YACSINumber', AirCrashId);
 		let filteredLinkPhotos = _.difference(
 			linkPhotos,
-			currentPhotos.map((x) => {
+			currentPhotos.map((x: any) => {
 				return x.Photo_RowID;
 			})
 		);

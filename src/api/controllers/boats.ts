@@ -39,7 +39,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.limit(limit)
 			.offset(offset);
 	} else {
-		counter = await db.from('boat.boat').count('Id', { as: 'count' });
+		counter = await db.from('boat.boat').count('Id', { as: 'count' }).first();
 
 		boats = await db
 			.select('*')
@@ -58,7 +58,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.where('boat.boatowner.boatid', boat.Id);
 	}
 
-	res.status(200).send({ count: counter[0].count, body: boats });
+	res.status(200).send({ count: counter, body: boats });
 });
 
 router.get(
@@ -173,7 +173,7 @@ router.post(
 						.insert(newHistories)
 						.into('boat.history')
 						.returning('*')
-						.then((rows) => {
+						.then((rows: any) => {
 							return rows;
 						});
 				}
@@ -226,9 +226,11 @@ router.put(
 
 		if (pastNamesNewArray.length > 0) {
 			await db
-				.insert(pastNamesNewArray.map((name) => ({ BoatId: boatId, ...name })))
+				.insert(
+					pastNamesNewArray.map((name: any) => ({ BoatId: boatId, ...name }))
+				)
 				.into('boat.pastnames')
-				.then((rows) => {
+				.then((rows: any) => {
 					return rows;
 				});
 		}
@@ -240,10 +242,7 @@ router.put(
 router.get(
 	'/available_number/:RegistrationNumber',
 	RequiresAuthentication,
-	async (req, res) => {
-		const permissions = req.decodedToken['yg-claims'].permissions;
-		if (!permissions.includes('view')) res.sendStatus(403);
-
+	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
 		const { RegistrationNumber } = req.params;

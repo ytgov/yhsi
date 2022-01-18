@@ -40,7 +40,10 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.limit(limit)
 			.offset(offset);
 	} else {
-		counter = await db.from('dbo.Ibbit_User').count('UserId', { as: 'count' });
+		counter = await db
+			.from('dbo.Ibbit_User')
+			.count('UserId', { as: 'count' })
+			.first();
 
 		aircrashes = await db
 			.from('dbo.Ibbit_User')
@@ -49,7 +52,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.offset(offset);
 	}
 
-	res.status(200).send({ count: counter[0].count, body: aircrashes });
+	res.status(200).send({ count: counter, body: aircrashes });
 });
 
 router.get(

@@ -65,7 +65,7 @@ router.get(
 				.limit(limit)
 				.offset(offset);
 		} else {
-			counter = await db.from('Boat.Type').count('Id', { as: 'count' });
+			counter = await db.from('Boat.Type').count('Id', { as: 'count' }).first();
 
 			types = await db
 				.select('*')
@@ -75,7 +75,7 @@ router.get(
 				.offset(offset);
 		}
 
-		res.status(200).send({ count: counter[0].count, body: types });
+		res.status(200).send({ count: counter, body: types });
 	}
 );
 
@@ -95,18 +95,22 @@ router.put(
 	}
 );
 
-router.post('/vesseltype/new', RequiresAuthentication, async (req, res) => {
-	const db = req.app.get('db');
+router.post(
+	'/vesseltype/new',
+	RequiresAuthentication,
+	async (req: Request, res: Response) => {
+		const db = req.app.get('db');
 
-	const permissions = req.decodedToken['yg-claims'].permissions;
-	if (!permissions.includes('create')) res.sendStatus(403);
+		const { vesselType = {} } = req.body;
 
-	const { vesselType = {} } = req.body;
+		const response = await db
+			.insert(vesselType)
+			.into('boat.Type')
+			.returning('*');
 
-	const response = await db.insert(vesselType).into('boat.Type').returning('*');
-
-	res.status(200).send(response);
-});
+		res.status(200).send(response);
+	}
+);
 
 router.get(
 	'/sites',
