@@ -107,7 +107,11 @@ router.put(
 			// updates the user access
 			// await db('dbo.HSUserAccess')
 			// .where('dbo.HSUserAccess.UserId', userId);
+		} else{
+			res.status(404).send({ message: `User not found`});
+			return;
 		}
+	
 
 		res.status(200).send({ message: 'success' });
 	}
@@ -145,5 +149,52 @@ router.get(
 		res.status(200).send(access);
 	}
 );
+
+router.put(
+	'/access/:userId',
+	RequiresAuthentication,
+	async (req, res) =>{
+		const db = req.app.get('db');
+		const permissions = req.decodedToken['yg-claims'].permissions;
+		if(!permissions.includes('edit')) res.sendStatus(403);
+
+		const { userId } = req.params;
+		const { access } = req.body;
+		const exists = await db.select('*')
+				.from('dbo.Ibbit_User')
+				.where('dbo.Ibbit_User.UserId', userId)
+				.returning('*');
+		
+		if(!exists){
+			res.status(404).send({message: 'User not found'});
+			return;
+		}
+
+		const editedAccess = access.filter( x => x.UAID );
+		const newAccess = access.filter( x => !x.UAID );
+		if(editedAccess.length > 0){
+			editedAccess.forEach(async access => {
+				const accessBody = { ...access };
+				delete accessBody.UAID;
+				await db('dbo.Website_UserAccess')
+				.update(accessBody)
+				.where('dbo.Website_UserAccess.UAID', access.UAID)
+				.returning('*');
+			});
+		}
+
+
+
+  if(newAccess.length > 0){
+    await db.insert(newAccess)
+    .into('dbo.Website_UserAccess')
+    .returning('*')
+    .then(rows => {
+      return rows;
+    });
+  }
+
+  res.status(200).send({message: "success"});
+})
 
 module.exports = router;

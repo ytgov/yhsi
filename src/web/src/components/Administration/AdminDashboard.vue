@@ -84,12 +84,42 @@ export default {
         tablemodel: null,
         items: [
         {
-          icon: 'mdi-camera-outline',
-          text: 'Photo Owner',
+          icon: 'mdi-ferry',
+          text: 'Boats - Vessel Type',
+          url: "/admin/vessel_type"
+        },
+        {
+          icon: 'mdi-wrench',
+          text: 'Burials - Occupations',
+          url: "/admin/burials/occupations"
+        },
+        {
+          icon: 'mdi-wallet-membership',
+          text: 'Burials - Memberships',
+          url: "/admin/burials/memberships"
+        },
+        {
+          icon: 'mdi-database',
+          text: 'Burials - Cementeries',
+          url: "/admin/burials/cementeries"
+        },
+        {
+          icon: 'mdi-shape',
+          text: 'Burials - Religions',
+          url: "/admin/burials/religions"
+        },
+        {
+          icon: 'mdi-bug',
+          text: 'Burials - Causes',
+          url: "/admin/burials/causes"
+        },
+        {
+          icon: 'mdi-camera',
+          text: 'Photos - Owner',
           url: ""
         },
         {
-          icon: 'mdi-map-marker-multiple-outline',
+          icon: 'mdi-map-marker-multiple',
           text: 'Community',
           url: ""
         },
@@ -99,15 +129,11 @@ export default {
           url: ""
         },
         {
-          icon: 'mdi-map-outline',
+          icon: 'mdi-map',
           text: 'Place Type',
           url: "/admin/placetype"
         },
-        {
-          icon: 'mdi-ferry',
-          text: 'Vessel Type',
-          url: "/admin/vessel_type"
-        },
+        
       ],
       model: 1,
     }),
