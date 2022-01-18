@@ -58,7 +58,8 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 	} else {
 		counter = await db
 			.from('dbo.vAircrash')
-			.count('yacsinumber', { as: 'count' });
+			.count('yacsinumber', { as: 'count' })
+			.first();
 		aircrashes = await db
 			.select('*')
 			.from('dbo.vAircrash')
@@ -68,7 +69,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.offset(offset);
 	}
 
-	res.status(200).send({ count: counter[0].count, body: aircrashes });
+	res.status(200).send({ count: counter, body: aircrashes });
 });
 
 router.get(
@@ -121,13 +122,13 @@ router.put(
 		if (newInfoSources.length > 0) {
 			await db
 				.insert(
-					newInfoSources.map((source) => ({
+					newInfoSources.map((source: any) => ({
 						YACSINumber: aircrashId,
 						...source,
 					}))
 				)
 				.into('AirCrash.InfoSource')
-				.then((rows) => {
+				.then((rows: any) => {
 					return rows;
 				});
 		}
@@ -172,11 +173,11 @@ router.post(
 			.insert(aircrash)
 			.into('AirCrash.AirCrash')
 			.returning('*')
-			.then(async (rows) => {
+			.then(async (rows: any) => {
 				const newAirCrash = rows[0];
 
 				if (newInfoSources.length) {
-					const finalInfoSources = newInfoSources.map((source) => ({
+					const finalInfoSources = newInfoSources.map((source: any) => ({
 						YACSINumber: newAirCrash.YACSINumber,
 						...source,
 					}));
@@ -184,7 +185,7 @@ router.post(
 						.insert(finalInfoSources)
 						.into('AirCrash.InfoSource')
 						.returning('*')
-						.then((rows) => {
+						.then((rows: any) => {
 							return rows;
 						});
 				}

@@ -43,7 +43,8 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 		counter = await db
 			.from('boat.Owner AS BO')
 			.join('boat.boatowner AS CO', 'CO.ownerid', '=', 'BO.Id')
-			.countDistinct('BO.id', { as: 'count' });
+			.countDistinct('BO.id', { as: 'count' })
+			.first();
 
 		owners = await db
 			.select(
@@ -60,7 +61,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.offset(offset);
 	}
 
-	res.status(200).send({ count: counter[0].count, body: owners });
+	res.status(200).send({ count: counter, body: owners });
 });
 
 router.get(
