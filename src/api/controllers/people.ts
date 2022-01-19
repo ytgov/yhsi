@@ -17,7 +17,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 		sortBy = 'PersonId',
 		sort = 'asc',
 	} = req.query;
-	const offset = page * limit || 0;
+	const offset = Number(page) * Number(limit) || 0;
 	let counter = 0;
 	let people = [];
 

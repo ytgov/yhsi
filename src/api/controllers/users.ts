@@ -17,7 +17,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 		sortBy = 'UserId',
 		sort = 'asc',
 	} = req.query;
-	const offset = page * limit || 0;
+	const offset = Number(page) * Number(limit) || 0;
 	let counter = 0;
 	let aircrashes = [];
 
@@ -153,35 +153,35 @@ router.get(
 router.put(
 	'/access/:userId',
 	RequiresAuthentication,
-	async (req, res) =>{
-		const db = req.app.get('db');
-		const permissions = req.decodedToken['yg-claims'].permissions;
-		if(!permissions.includes('edit')) res.sendStatus(403);
+	async (req: Request, res: Response) =>{
+  const db = req.app.get('db');
+  // const permissions = req.decodedToken['yg-claims'].permissions;
+  // if(!permissions.includes('edit')) res.sendStatus(403);
 
-		const { userId } = req.params;
-		const { access } = req.body;
-		const exists = await db.select('*')
-				.from('dbo.Ibbit_User')
-				.where('dbo.Ibbit_User.UserId', userId)
-				.returning('*');
-		
-		if(!exists){
-			res.status(404).send({message: 'User not found'});
-			return;
-		}
+  const { userId } = req.params;
+  const { access } = req.body;
+  const exists = await db.select('*')
+      .from('dbo.Ibbit_User')
+      .where('dbo.Ibbit_User.UserId', userId)
+      .returning('*');
+  
+  if(!exists){
+    res.status(404).send({message: 'User not found'});
+    return;
+  }
 
-		const editedAccess = access.filter( x => x.UAID );
-		const newAccess = access.filter( x => !x.UAID );
-		if(editedAccess.length > 0){
-			editedAccess.forEach(async access => {
-				const accessBody = { ...access };
-				delete accessBody.UAID;
-				await db('dbo.Website_UserAccess')
-				.update(accessBody)
-				.where('dbo.Website_UserAccess.UAID', access.UAID)
-				.returning('*');
-			});
-		}
+  const editedAccess = access.filter((x: { UAID: any; }) => x.UAID );
+  const newAccess = access.filter((x: { UAID: any; }) => !x.UAID );
+  if(editedAccess.length > 0){
+    editedAccess.forEach(async (access: { UAID: any; }) => {
+      const accessBody = { ...access };
+      delete accessBody.UAID;
+      await db('dbo.Website_UserAccess')
+      .update(accessBody)
+      .where('dbo.Website_UserAccess.UAID', access.UAID)
+      .returning('*');
+    });
+  }
 
 
 
@@ -189,7 +189,7 @@ router.put(
     await db.insert(newAccess)
     .into('dbo.Website_UserAccess')
     .returning('*')
-    .then(rows => {
+    .then((rows: any) => {
       return rows;
     });
   }

@@ -47,7 +47,7 @@ router.get(
 			sortBy = 'Id',
 			sort = 'asc',
 		} = req.query;
-		const offset = page * limit || 0;
+		const offset = Number(page) * Number(limit) || 0;
 		let counter = 0;
 
 		let types = [];
@@ -125,7 +125,7 @@ router.get(
 			sortBy = 'Name',
 			sort = 'asc',
 		} = req.query;
-		const offset = page * limit || 0;
+		const offset = Number(page) * Number(limit) || 0;
 
 		let sites = [];
 
