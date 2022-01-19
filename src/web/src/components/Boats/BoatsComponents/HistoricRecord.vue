@@ -8,6 +8,7 @@
                 class="mx-4"
                 hide-details
                 label="Search"
+                
                 v-model="search"
                 v-if="mode != 'new'"
                 ></v-text-field>
@@ -20,11 +21,14 @@
         <v-row>
             <v-col cols="12" >
                 <v-card>
+                    <h2 class="mx-4 mt-2">{{ numberOfResults }} results out of {{pagination.itemsLength}}</h2>
+                    <v-divider inset></v-divider>
                     <v-data-table
                         :headers="headers"
                         :items="data"
-                        :search="search"
-                        :footer-props="{'items-per-page-options': [10, 30, 100]}"
+                        :search="search" @pagination="yourMethod"
+                        :options="options"
+                        :footer-props="{'items-per-page-options': [10, 20, 30, 100]}"
                     >
                         <template v-slot:body.prepend="{}" v-if="addingItem">
                             <tr>
@@ -180,11 +184,17 @@ export default {
         referenceHelper: "",
         overlay: false,
         addingItem: false,
+        options: { itemsPerPage: 20},
+        pagination: { itemsLength: 0 }
     }),
     mounted(){
         this.data = this.historicRecords;
     },
     methods:{
+        yourMethod(pagination) {
+            console.log(pagination) // length of filtered/searched items in Vuetify data-table
+            this.pagination = pagination;
+        },
         //functions for editing the table values
         changeEditTable(index, item){
             this.editTable = index;
@@ -277,6 +287,11 @@ export default {
         },
         cancelItem(){
             this.addingItem = false;
+        }
+    },
+    computed: {
+        numberOfResults(){
+           return this.pagination.itemsLength < this.pagination.itemsPerPage ? this.pagination.itemsLength :  this.pagination.itemsPerPage;
         }
     },
     watch:{

@@ -66,7 +66,7 @@
                           </v-col>
                         </v-row>
 
-                        <v-text-field
+                        <v-text-field outlined dense
                           v-model="fields.FeatureName"
                           label="Feature Name"
                           :rules="generalRules"
@@ -125,21 +125,21 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
-                        <v-textarea
+                        <v-textarea outlined
                           v-model="fields.Caption"
                           dense
                           label="Caption"
                           rows="2"
                         >
                         </v-textarea>
-                        <v-textarea
+                        <v-textarea outlined
                           v-model="fields.Comments"
                           dense
                           label="Comments"
                           rows="2"
                         >
                         </v-textarea>
-                        <v-textarea
+                        <v-textarea outlined 
                           v-model="fields.CreditLine"
                           dense
                           label="Credit Line"
@@ -148,7 +148,7 @@
                         >
                         </v-textarea>
 
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.Program"
                           :items="programOptions"
                           item-value="value"
@@ -172,7 +172,7 @@
                           ></v-rating>
                         </div>
 
-                        <v-file-input
+                        <v-file-input outlined dense
                           accept="image/*"
                           label="Choose photo for upload"
                           prepend-icon="mdi-camera"
@@ -213,13 +213,13 @@
                 <v-container class="scroll">
                   <v-row>
                     <v-col class="d-flex">
-                      <v-text-field
+                      <v-text-field outlined dense
                         v-model="searchPhotos"
                         @keyup.enter="getAll"
                         label="Search"
                       >
                       </v-text-field>
-                      <v-btn @click="getAll" icon class="mt-auto mb-auto">
+                      <v-btn @click="getAll" icon class="mt-1 mb-1">
                         <v-icon>mdi-magnify</v-icon>
                       </v-btn>
                     </v-col>
