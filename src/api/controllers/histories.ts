@@ -6,7 +6,7 @@ var router = express.Router();
 // router.all('*', cors());
 var RequiresAuthentication = require('../middleware');
 
-// router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
+// router.get('/', async (req: Request, res: Response) => {
 // 	const db = req.app.get('db');
 // 	const { page = 0, limit = 10 } = req.query;
 // 	const offset = Number(page) * Number(limit) || 0;
@@ -25,7 +25,7 @@ var RequiresAuthentication = require('../middleware');
 
 router.post(
 	'/new',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -42,7 +42,7 @@ router.post(
 
 router.put(
 	'/:historyId',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -61,7 +61,7 @@ router.put(
 
 // router.get(
 // 	'/owner/',
-// 	RequiresAuthentication,
+// 
 // 	async (req: Request, res: Response) => {
 // 		const db = req.app.get('db');
 // 		const { page = 0, limit = 10 } = req.query;
@@ -82,7 +82,7 @@ router.put(
 
 router.post(
 	'/owner/new',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -99,7 +99,7 @@ router.post(
 
 router.put(
 	'/owner/:historyId',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -114,4 +114,4 @@ router.put(
 	}
 );
 
-module.exports = router;
+export default router;
