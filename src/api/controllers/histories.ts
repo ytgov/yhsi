@@ -4,7 +4,7 @@ var router = express.Router();
 // const cors = require('cors')//
 // router.use(cors());
 // router.all('*', cors());
-var RequiresAuthentication = require('../middleware');
+import { RequiresAuthentication } from '../middleware';
 
 // router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 // 	const db = req.app.get('db');
@@ -25,6 +25,7 @@ var RequiresAuthentication = require('../middleware');
 
 router.post(
 	'/new',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -41,6 +42,7 @@ router.post(
 
 router.put(
 	'/:historyId',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -80,6 +82,7 @@ router.put(
 
 router.post(
 	'/owner/new',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -96,6 +99,7 @@ router.post(
 
 router.put(
 	'/owner/:historyId',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 

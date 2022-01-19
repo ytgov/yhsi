@@ -2,12 +2,12 @@ import { Request, Response, Router } from 'express';
 
 var router = Router();
 
-var RequiresAuthentication = require('../middleware');
+import { RequiresAuthentication } from '../middleware';
 var _ = require('lodash'); //added for testing
 // router.use(express.json()); // for parsing application/json
 // router.use(express.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 
 	const {
@@ -57,6 +57,7 @@ router.get('/', async (req: Request, res: Response) => {
 
 router.get(
 	'/:userId',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 		const { userId } = req.params;
@@ -85,6 +86,7 @@ router.get(
 
 router.put(
 	'/:userId',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -116,6 +118,7 @@ router.put(
 
 router.get(
 	'/access/:userId',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -148,6 +151,7 @@ router.get(
 
 router.put(
 	'/access/:userId',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 		// const permissions = req.decodedToken['yg-claims'].permissions;

@@ -4,13 +4,13 @@ const router = express.Router();
 // const cors = require('cors')//
 // router.use(cors());
 // router.all('*', cors());
-var RequiresAuthentication = require('../middleware');
+import { RequiresAuthentication } from '../middleware';
 var _ = require('lodash'); //added for testing
 
 router.use(express.json()); // for parsing application/json
 router.use(express.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 
 	const {
@@ -65,6 +65,7 @@ router.get('/', async (req: Request, res: Response) => {
 
 router.get(
 	'/:boatId',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 		const { boatId } = req.params;
@@ -106,6 +107,7 @@ router.get(
 
 router.post(
 	'/new',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -187,6 +189,7 @@ router.post(
 
 router.put(
 	'/:boatId',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -240,6 +243,7 @@ router.put(
 
 router.get(
 	'/available_number/:RegistrationNumber',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
