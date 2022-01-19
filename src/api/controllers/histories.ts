@@ -61,7 +61,7 @@ router.put(
 
 // router.get(
 // 	'/owner/',
-// 
+//
 // 	async (req: Request, res: Response) => {
 // 		const db = req.app.get('db');
 // 		const { page = 0, limit = 10 } = req.query;
@@ -114,4 +114,4 @@ router.put(
 	}
 );
 
-export default router;
+module.exports = router;

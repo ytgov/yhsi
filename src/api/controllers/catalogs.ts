@@ -149,4 +149,4 @@ router.get(
 		res.status(200).send({ body: sites });
 	}
 );
-export default router;
+module.exports = router;
