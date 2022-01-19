@@ -175,4 +175,4 @@ router.post(
 	}
 );
 
-z
+module.exports = router;

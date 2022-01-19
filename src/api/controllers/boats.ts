@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 // const cors = require('cors')//
 // router.use(cors());
 // router.all('*', cors());
@@ -10,7 +10,7 @@ var _ = require('lodash'); //added for testing
 router.use(express.json()); // for parsing application/json
 router.use(express.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
 
-router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 
 	const {
@@ -20,7 +20,9 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 		sortBy = 'Id',
 		sort = 'asc',
 	} = req.query;
+
 	const offset = Number(page) * Number(limit) || 0;
+
 	let counter = 0;
 	let boats = [];
 
@@ -63,7 +65,6 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 
 router.get(
 	'/:boatId',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 		const { boatId } = req.params;
@@ -105,7 +106,6 @@ router.get(
 
 router.post(
 	'/new',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -181,13 +181,12 @@ router.post(
 				return newBoat;
 			});
 
-		res.send(response);
+		res.status(200).send(response);
 	}
 );
 
 router.put(
 	'/:boatId',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -241,7 +240,6 @@ router.put(
 
 router.get(
 	'/available_number/:RegistrationNumber',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
