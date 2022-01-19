@@ -245,7 +245,7 @@ router.get(
 // ADD NEW BOAT PHOTO
 router.post(
 	'/boat/new',
-	RequiresAuthentication,
+	[RequiresAuthentication, upload.single('file')],
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -279,7 +279,7 @@ router.post(
 // ADD NEW AIRCRASH PHOTO
 router.post(
 	'/aircrash/new',
-	RequiresAuthentication,
+	[RequiresAuthentication, upload.single('file')],
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -315,7 +315,7 @@ router.post(
 // ADD NEW PERSON PHOTO
 router.post(
 	'/people/new',
-	RequiresAuthentication,
+	[RequiresAuthentication, upload.single('file')],
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
