@@ -25,7 +25,6 @@ var RequiresAuthentication = require('../middleware');
 
 router.post(
 	'/new',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -42,7 +41,6 @@ router.post(
 
 router.put(
 	'/:historyId',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -82,7 +80,6 @@ router.put(
 
 router.post(
 	'/owner/new',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -99,7 +96,6 @@ router.post(
 
 router.put(
 	'/owner/:historyId',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 

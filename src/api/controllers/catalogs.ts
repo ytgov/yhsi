@@ -6,7 +6,6 @@ var multer = require('multer');
 
 router.get(
 	'/community',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -21,7 +20,6 @@ router.get(
 
 router.get(
 	'/originalmedia',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -36,7 +34,6 @@ router.get(
 
 router.get(
 	'/vesseltype',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -81,7 +78,6 @@ router.get(
 
 router.put(
 	'/vesseltype/:vesselId',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -97,7 +93,6 @@ router.put(
 
 router.post(
 	'/vesseltype/new',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -114,7 +109,6 @@ router.post(
 
 router.get(
 	'/sites',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 

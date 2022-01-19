@@ -136,7 +136,6 @@ router.post('/people/link/:PersonID', async (req: Request, res: Response) => {
 //LINK AIRCRASH PHOTOS
 router.post(
 	'/aircrash/link/:AirCrashId',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -169,7 +168,6 @@ router.post(
 //GET BOAT PHOTOS
 router.get(
 	'/boat/:boatId',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const { boatId } = req.params;
 
@@ -192,7 +190,6 @@ router.get(
 // GET AIRCRASH PHOTOS
 router.get(
 	'/aircrash/:aircrashId',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const { aircrashId } = req.params;
 
@@ -215,7 +212,6 @@ router.get(
 //GET PERSON PHOTOS
 router.get(
 	'/people/:PersonID',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const { PersonID } = req.params;
 

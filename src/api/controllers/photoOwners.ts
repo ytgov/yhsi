@@ -5,7 +5,7 @@ var RequiresAuthentication = require('../middleware');
 // const cors = require('cors')//
 // router.use(cors());
 // router.all('*', cors());
-router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 	const {
 		page = 0,

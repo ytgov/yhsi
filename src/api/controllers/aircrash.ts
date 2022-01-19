@@ -74,7 +74,6 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 
 router.get(
 	'/:aircrashId',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 		const { aircrashId } = req.params;
@@ -101,7 +100,6 @@ router.get(
 
 router.put(
 	'/:aircrashId',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -152,7 +150,6 @@ router.put(
 
 router.post(
 	'/new',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -198,7 +195,6 @@ router.post(
 
 router.get(
 	'/available_yacsi/:YACSINumber',
-	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
