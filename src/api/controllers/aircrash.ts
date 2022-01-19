@@ -7,7 +7,7 @@ var _ = require('lodash'); //added for testing
 router.use(express.json()); // for parsing application/json
 router.use(express.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
 
-router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 
 	const {
@@ -74,7 +74,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 
 router.get(
 	'/:aircrashId',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 		const { aircrashId } = req.params;
@@ -101,7 +101,7 @@ router.get(
 
 router.put(
 	'/:aircrashId',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -152,7 +152,7 @@ router.put(
 
 router.post(
 	'/new',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -198,7 +198,7 @@ router.post(
 
 router.get(
 	'/available_yacsi/:YACSINumber',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -219,4 +219,4 @@ router.get(
 	}
 );
 
-module.exports = router;
+export default router;

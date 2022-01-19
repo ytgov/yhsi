@@ -4,15 +4,15 @@ require('dotenv').config();
 
 const cors = require('cors'); // might want to remove before going to prod
 
-var boatsRouter = require('./controllers/boats');
 var ownersRouter = require('./controllers/owners');
 var historiesRouter = require('./controllers/histories');
-var photosRouter = require('./controllers/photos');
 var aircrashRouter = require('./controllers/aircrash');
 var catalogsRouter = require('./controllers/catalogs');
 var usersRouter = require('./controllers/users');
 var peopleRouter = require('./controllers/people');
 var photoOwners = require('./controllers/photoOwners');
+var boatsRouter = require('./controllers/boats');
+var photosRouter = require('./controllers/photos');
 
 var knex = require('knex');
 var express = require('express');
@@ -82,15 +82,15 @@ app.get('/', function (req: Request, res: Response) {
 		});
 });
 
-app.use('/api/boats', boatsRouter);
+app.use('/api/aircrash', aircrashRouter);
 app.use('/api/owners', ownersRouter);
 app.use('/api/histories', historiesRouter);
 app.use('/api/photos', photosRouter);
-app.use('/api/aircrash', aircrashRouter);
 app.use('/api/catalogs', catalogsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/people', peopleRouter);
 app.use('/api/photo-owners', photoOwners);
+app.use('/api/boats', boatsRouter);
 
 console.log(
 	`Database Info: ${process.env.DB_HOST} ${process.env.DB_NAME}, `,

@@ -7,7 +7,7 @@ var _ = require('lodash'); //added for testing
 router.use(express.json()); // for parsing application/json
 router.use(express.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
 
-router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 
 	const {
@@ -57,7 +57,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 
 router.get(
 	'/:userId',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 		const { userId } = req.params;
@@ -86,7 +86,7 @@ router.get(
 
 router.put(
 	'/:userId',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -119,7 +119,7 @@ router.put(
 
 router.get(
 	'/access/:userId',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -152,7 +152,7 @@ router.get(
 
 router.put(
 	'/access/:userId',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) =>{
   const db = req.app.get('db');
   // const permissions = req.decodedToken['yg-claims'].permissions;
@@ -197,4 +197,4 @@ router.put(
   res.status(200).send({message: "success"});
 })
 
-module.exports = router;
+export default router;

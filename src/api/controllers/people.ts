@@ -7,7 +7,7 @@ var _ = require('lodash'); //added for testing
 router.use(express.json()); // for parsing application/json
 router.use(express.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
 
-router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 
 	const {
@@ -61,7 +61,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 
 router.get(
 	'/:personId',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 		const { personId } = req.params;
@@ -83,7 +83,7 @@ router.get(
 //Modify Person
 router.put(
 	'/:personId',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -107,7 +107,7 @@ router.put(
 //Add Person
 router.post(
 	'/',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -129,7 +129,7 @@ router.post(
 
 router.get(
 	'/:personId/histories',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -152,7 +152,7 @@ router.get(
 //Modify history
 router.put(
 	'/history/:historyId',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -179,7 +179,7 @@ router.put(
 //Add history
 router.post(
 	'/:personId/history',
-	RequiresAuthentication,
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -213,7 +213,7 @@ router.post(
 	}
 );
 /* Delete history record (OPTIONAL, COMMENTED FOR SECURITY PURPOSES... UNCOMMENT IF NEEDED )
-router.delete('/history/:historyId', RequiresAuthentication, async (req, res) => {
+router.delete('/history/:historyId', async (req, res) => {
     const db = req.app.get('db');
     const permissions = req.decodedToken['yg-claims'].permissions;
     if (!permissions.includes('edit')) res.sendStatus(403);
@@ -235,4 +235,4 @@ router.delete('/history/:historyId', RequiresAuthentication, async (req, res) =>
 });
 */
 
-module.exports = router;
+export default router;
