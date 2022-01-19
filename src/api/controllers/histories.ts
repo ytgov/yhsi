@@ -6,26 +6,26 @@ var router = express.Router();
 // router.all('*', cors());
 var RequiresAuthentication = require('../middleware');
 
-// router.get('/', async (req: Request, res: Response) => {
-// 	const db = req.app.get('db');
-// 	const { page = 0, limit = 10 } = req.query;
-// 	const offset = Number(page) * Number(limit) || 0;
+router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
+	const db = req.app.get('db');
+	const { page = 0, limit = 10 } = req.query;
+	const offset = Number(page) * Number(limit) || 0;
 
-// 	const histories = await db
-// 		.select('*')
-// 		.from('Boat.History')
-// 		// .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-// 		// .orderBy('boat.boatowner.ownerid', 'asc')
-// 		.where('boat.history.uid', boatId)
-// 		.limit(limit)
-// 		.offset(offset);
+	const histories = await db
+		.select('*')
+		.from('Boat.History')
+		// .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
+		// .orderBy('boat.boatowner.ownerid', 'asc')
+		.where('boat.history.uid', boatId)
+		.limit(limit)
+		.offset(offset);
 
-// 	res.status(200).send(histories);
-// });
+	res.status(200).send(histories);
+});
 
 router.post(
 	'/new',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -42,7 +42,7 @@ router.post(
 
 router.put(
 	'/:historyId',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -59,30 +59,30 @@ router.put(
 
 //OWNER HISTORIES
 
-// router.get(
-// 	'/owner/',
-// 
-// 	async (req: Request, res: Response) => {
-// 		const db = req.app.get('db');
-// 		const { page = 0, limit = 10 } = req.query;
-// 		const offset = Number(page) * Number(limit) || 0;
+router.get(
+	'/owner/',
+	RequiresAuthentication,
+	async (req: Request, res: Response) => {
+		const db = req.app.get('db');
+		const { page = 0, limit = 10 } = req.query;
+		const offset = Number(page) * Number(limit) || 0;
 
-// 		const histories = await db
-// 			.select('*')
-// 			.from('Boat.History')
-// 			// .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-// 			// .orderBy('boat.boatowner.ownerid', 'asc')
-// 			.where('boat.history.uid', boatId)
-// 			.limit(limit)
-// 			.offset(offset);
+		const histories = await db
+			.select('*')
+			.from('Boat.History')
+			// .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
+			// .orderBy('boat.boatowner.ownerid', 'asc')
+			.where('boat.history.uid', boatId)
+			.limit(limit)
+			.offset(offset);
 
-// 		res.status(200).send(histories);
-// 	}
-// );
+		res.status(200).send(histories);
+	}
+);
 
 router.post(
 	'/owner/new',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -99,7 +99,7 @@ router.post(
 
 router.put(
 	'/owner/:historyId',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -114,4 +114,4 @@ router.put(
 	}
 );
 
-export default router;
+module.exports = router;

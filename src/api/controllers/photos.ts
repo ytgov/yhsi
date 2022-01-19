@@ -10,7 +10,7 @@ const imageThumbnail = require('image-thumbnail');
 const upload = multer();
 
 //GET ALL AVAILABLE PHOTOS
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 	const { page = 0, limit = 5, textToMatch } = req.query;
 	const offset = Number(page) * Number(limit) || 0;
@@ -76,6 +76,7 @@ router.get('/', async (req: Request, res: Response) => {
 //LINK BOAT PHOTOS
 router.post(
 	'/boat/link/:BoatId',
+	[RequiresAuthentication, upload.single('file')],
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -93,7 +94,7 @@ router.post(
 			})
 		);
 
-		for (const rowId of filteredLinkPhotos) {
+		for (const rowId of filteredLinkPhotos)
 			await db
 				.insert({ BoatId, Photo_RowID: rowId })
 				.into('boat.photo')
@@ -101,7 +102,7 @@ router.post(
 				.then((rows: any) => {
 					return rows;
 				});
-		}
+
 		res.status(200).send({ message: 'Successfully linked the photos' });
 	}
 );
@@ -109,6 +110,7 @@ router.post(
 //LINK PERSON PHOTOS
 router.post(
 	'/people/link/:PersonID',
+	[RequiresAuthentication, upload.single('file')],
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -142,6 +144,7 @@ router.post(
 //LINK AIRCRASH PHOTOS
 router.post(
 	'/aircrash/link/:AirCrashId',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -174,7 +177,7 @@ router.post(
 //GET BOAT PHOTOS
 router.get(
 	'/boat/:boatId',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const { boatId } = req.params;
 
@@ -197,7 +200,7 @@ router.get(
 // GET AIRCRASH PHOTOS
 router.get(
 	'/aircrash/:aircrashId',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const { aircrashId } = req.params;
 
@@ -220,7 +223,7 @@ router.get(
 //GET PERSON PHOTOS
 router.get(
 	'/people/:PersonID',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const { PersonID } = req.params;
 
@@ -242,7 +245,7 @@ router.get(
 // ADD NEW BOAT PHOTO
 router.post(
 	'/boat/new',
-	
+	[RequiresAuthentication, upload.single('file')],
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -276,7 +279,7 @@ router.post(
 // ADD NEW AIRCRASH PHOTO
 router.post(
 	'/aircrash/new',
-	
+	[RequiresAuthentication, upload.single('file')],
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -312,7 +315,7 @@ router.post(
 // ADD NEW PERSON PHOTO
 router.post(
 	'/people/new',
-	
+	[RequiresAuthentication, upload.single('file')],
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
