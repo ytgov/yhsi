@@ -13,7 +13,7 @@ const upload = multer();
 router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 	const { page = 0, limit = 5, textToMatch } = req.query;
-	const offset = page * limit || 0;
+	const offset = Number(page) * Number(limit) || 0;
 	let photos = [];
 	let counter = 0;
 
@@ -183,7 +183,7 @@ router.get(
 
 		const db = req.app.get('db');
 		const { page = 0, limit = 10 } = req.query;
-		const offset = page * limit || 0;
+		const offset = Number(page) * Number(limit) || 0;
 
 		const photos = await db
 			.select('*')
@@ -206,7 +206,7 @@ router.get(
 
 		const db = req.app.get('db');
 		const { page = 0, limit = 10 } = req.query;
-		const offset = page * limit || 0;
+		const offset = Number(page) * Number(limit) || 0;
 
 		const photos = await db
 			.select('*')
@@ -229,7 +229,7 @@ router.get(
 
 		const db = req.app.get('db');
 		const { page = 0, limit = 10 } = req.query;
-		const offset = page * limit || 0;
+		const offset = Number(page) * Number(limit) || 0;
 
 		const photos = await db
 			.select('*')
