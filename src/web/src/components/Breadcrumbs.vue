@@ -34,7 +34,7 @@ export default {
       //items = items.filter(x => x != "");
       items.shift();
       for (let i = 0; i < items.length; i++) {
-        if(items[i] != 'view'){
+        if(items[i] != 'view' && items[i] != 'edit'){
           this.items.push({
             text: items[i].replace(/%20/g, " ").replace(/%23/g, "#"),
             to: { path: "/" + items.slice(0, i + 1).join("/") },

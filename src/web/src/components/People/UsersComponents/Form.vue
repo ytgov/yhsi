@@ -45,21 +45,21 @@
             <v-col cols="7">
                 <v-row>
                     <v-col cols="6">
-                      <v-text-field
+                      <v-text-field outlined dense
                         name="Surname"
                         label="Surname"
                         v-model="fields.Surname"
                         :readonly="isViewMode"
                       ></v-text-field>
 
-                      <v-text-field
+                      <v-text-field outlined dense
                         name="Given Name"
                         label="Given Name"
                         v-model="fields.GivenName"
                         :readonly="isViewMode"
                       ></v-text-field>
 
-                      <v-text-field
+                      <v-text-field outlined dense
                         name="Notes"
                         label="Notes"
                         v-model="fields.Notes"
@@ -68,14 +68,14 @@
                     </v-col>
 
                     <v-col cols="4">
-                      <v-text-field
+                      <v-text-field outlined dense
                         name="Birth Year"
                         label="Birth Year"
                         v-model="fields.BirthYear"
                         :readonly="isViewMode"
                       ></v-text-field>
 
-                      <v-text-field
+                      <v-text-field outlined dense
                         name="Death Year"
                         label="Death Year"
                         v-model="fields.DeathYear"
@@ -84,13 +84,13 @@
                     </v-col>
 
                     <v-col cols="2">
-                      <v-checkbox
+                      <v-checkbox class="my-2"
                         v-model="fields.BirthAccuracy"
                         :readonly="isViewMode"
                         label="Estimated"
                       ></v-checkbox>
 
-                      <v-checkbox
+                      <v-checkbox class="my-2"
                         v-model="fields.DeathAccuracy"
                         :readonly="isViewMode"
                         label="Estimated"
