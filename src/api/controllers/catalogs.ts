@@ -6,7 +6,7 @@ var multer = require('multer');
 
 router.get(
 	'/community',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -21,7 +21,7 @@ router.get(
 
 router.get(
 	'/originalmedia',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -36,7 +36,7 @@ router.get(
 
 router.get(
 	'/vesseltype',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -47,7 +47,7 @@ router.get(
 			sortBy = 'Id',
 			sort = 'asc',
 		} = req.query;
-		const offset = Number(page) * Number(limit) || 0;
+		const offset = page * limit || 0;
 		let counter = 0;
 
 		let types = [];
@@ -81,7 +81,7 @@ router.get(
 
 router.put(
 	'/vesseltype/:vesselId',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -97,7 +97,7 @@ router.put(
 
 router.post(
 	'/vesseltype/new',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -114,7 +114,7 @@ router.post(
 
 router.get(
 	'/sites',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -125,7 +125,7 @@ router.get(
 			sortBy = 'Name',
 			sort = 'asc',
 		} = req.query;
-		const offset = Number(page) * Number(limit) || 0;
+		const offset = page * limit || 0;
 
 		let sites = [];
 
@@ -149,4 +149,4 @@ router.get(
 		res.status(200).send({ body: sites });
 	}
 );
-export default router;
+module.exports = router;

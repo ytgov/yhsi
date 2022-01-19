@@ -1,11 +1,11 @@
-import { Request, Response, Router } from 'express';
-
-var router = Router();
+import { Request, Response } from 'express';
+var express = require('express');
+var router = express.Router();
 var RequiresAuthentication = require('../middleware');
 // const cors = require('cors')//
 // router.use(cors());
 // router.all('*', cors());
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 	const {
 		page = 0,
@@ -66,7 +66,7 @@ router.get('/', async (req: Request, res: Response) => {
 
 router.get(
 	'/:ownerId',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 		const { ownerId } = req.params;
@@ -100,7 +100,7 @@ router.get(
 
 router.put(
 	'/:ownerId',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -140,7 +140,7 @@ router.put(
 
 router.post(
 	'/new',
-
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -175,4 +175,4 @@ router.post(
 	}
 );
 
-export default router;
+z
