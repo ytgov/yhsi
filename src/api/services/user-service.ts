@@ -1,27 +1,27 @@
-import { knex, Knex } from "knex";
+import Knex from 'knex';
 
 export class UserService {
+	private knex: Knex;
 
-    private knex: Knex;
+	constructor(config: Knex.Config<any>) {
+		this.knex = Knex(config);
+	}
 
-    constructor(config: Knex.Config<any>) {
-        this.knex = knex(config);
-    }
+	isConnected(): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			this.knex
+				.raw("SELECT 'Connected' as [working]")
+				.then((data: Array<any>) => {
+					if (data && data.length == 1) {
+						resolve(data[0].working === 'Connected');
+					}
 
-    isConnected(): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            this.knex.raw("SELECT 'Connected' as [working]")
-                .then((data: Array<any>) => {
-                    if (data && data.length == 1) {
-                        resolve(data[0].working === 'Connected')
-                    }
-
-                    resolve(false)
-                })
-                .catch(err => {
-                    console.error(err)
-                    resolve(false);
-                })
-        })
-    }
+					resolve(false);
+				})
+				.catch((err: Error) => {
+					console.error(err);
+					resolve(false);
+				});
+		});
+	}
 }
