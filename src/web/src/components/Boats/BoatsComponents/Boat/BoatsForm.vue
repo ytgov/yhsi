@@ -5,7 +5,7 @@
         <v-row>
             <v-col cols="12" class="d-flex">
                 <h1 v-if="mode == 'view'">{{fields.Name}}</h1>
-                <v-text-field v-else-if="mode == 'edit'"
+                <v-text-field v-else-if="mode == 'edit'" outlined dense
                     label="Boat name"
                     v-model="fields.Name"
                 ></v-text-field>
@@ -46,7 +46,7 @@
             <v-col cols="5">
                 <v-row >
                     <v-col cols="6">
-                        <v-text-field
+                        <v-text-field outlined dense
                                 v-model="fields.Name"
                                 v-if="mode == 'new'"
                                 label="Name"
@@ -61,7 +61,7 @@
                                         <v-list-item-content>
                                             <v-list-item-title v-if="index != editTableNames || mode == 'view'">{{item.BoatName}}</v-list-item-title>
                                             <v-form v-model="validName" v-if="mode != 'view'" v-on:submit.prevent>
-                                                <v-text-field
+                                                <v-text-field outlined dense
                                                 v-if="editTableNames == index "
                                                 label="Name"
                                                 v-model="helperName"
@@ -125,7 +125,7 @@
                         </v-row>
                         <v-row>
                             <v-col cols="12" >
-                                <v-text-field
+                                <v-text-field outlined dense
                                     label="Registration Number"
                                     v-model="fields.RegistrationNumber"
                                     :readonly="mode == 'view'"
@@ -147,7 +147,7 @@
                             :disabled="mode == 'view'"
                         >
                             <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
+                            <v-text-field outlined dense
                                 v-model="constructionDate"
                                 label="Construction Date"
                                 append-icon="mdi-calendar"
@@ -189,7 +189,7 @@
                             :disabled="mode == 'view'"
                         >
                             <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
+                            <v-text-field outlined dense
                                 v-model="serviceStart"
                                 label="Service Start Date"
                                 append-icon="mdi-calendar"
@@ -231,7 +231,7 @@
                             :disabled="mode == 'view'"
                         >
                             <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
+                            <v-text-field outlined dense
                                 v-model="serviceEnd"
                                 label="Service End Date"
                                 append-icon="mdi-calendar"
@@ -286,7 +286,7 @@
                                                 label="Owner Name"
                                                 :rules="ownerRules"
                                                 item-text="OwnerName"
-                                                return-object
+                                                return-object outlined dense
                                                 ></v-autocomplete>
                                             </v-form>
                                         </v-list-item-content>
@@ -362,7 +362,7 @@
             <v-col cols="7">
                 <v-row>
                     <v-col cols="4">
-                        <v-select
+                        <v-select outlined dense
                         @click="getVesselTypes"
                         :loading="isLoadingOwner"
                         v-model="fields.VesselType"
@@ -372,13 +372,13 @@
                         :readonly="mode == 'view'"
                         ></v-select>
 
-                        <v-textarea
+                        <v-textarea outlined dense
                             label="Current Location Description"
                             v-model="fields.CurrentLocation"
                             :readonly="mode == 'view'"
                         ></v-textarea>
 
-                        <v-textarea
+                        <v-textarea outlined dense
                             label="Notes"
                             v-model="fields.Notes"
                             :readonly="mode == 'view'"

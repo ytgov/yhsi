@@ -3,8 +3,8 @@
         <v-row>
             <v-col cols="12" class="d-flex">
                 <v-text-field
-                flat
-                prepend-icon="mdi-magnify"
+                outlined dense
+                append-icon="mdi-magnify"
                 class="mx-4"
                 hide-details
                 label="Search"
@@ -30,12 +30,12 @@
                         <template v-slot:body.prepend="{}" v-if="addingItem">
                             <tr>
                                 <td>
-                                    <v-textarea
+                                    <v-textarea outlined dense class="mt-3"
                                     v-model="historicRecordHelper"
                                     ></v-textarea>
                                 </td>
                                 <td>
-                                    <v-textarea
+                                    <v-textarea outlined dense class="mt-3"
                                     v-model="referenceHelper"
                                     ></v-textarea>
                                 </td>
@@ -72,7 +72,7 @@
                         </template>
                         <template v-slot:item.HistoryText="{ item, index }">
                             <div v-if="editTable == index">
-                                <v-textarea
+                                <v-textarea outlined dense class="mt-3"
                                 v-model="historicRecordHelper "
                                 ></v-textarea>
                             </div>
@@ -80,26 +80,13 @@
                         </template>
                         <template v-slot:item.Reference="{ item, index }">
                             <div v-if="editTable == index">
-                                <v-textarea
+                                <v-textarea outlined dense class="mt-3"
                                 v-model="referenceHelper"
                                 ></v-textarea>
                             </div>
                             <div v-else>{{item.Reference}}</div>
                         </template>
                         <template v-slot:item.actions="{  index, item }">
-                            <v-tooltip bottom v-if="editTable != index">
-                                <template v-slot:activator="{ on, attrs }">
-                                        <v-btn 
-                                        v-bind="attrs"
-                                        v-on="on"
-                                        icon class="black--text"   @click="changeEditTable(index,item)">
-                                            <v-icon
-                                                small
-                                            > mdi-pencil</v-icon>
-                                        </v-btn>
-                                </template>
-                                <span>Edit</span>
-                            </v-tooltip>
                             <v-tooltip bottom v-if="editTable == index">
                                 <template v-slot:activator="{ on, attrs }">
                                         <v-btn
@@ -114,6 +101,20 @@
                                 </template>
                                 <span>Save changes</span>
                             </v-tooltip>
+                            <v-tooltip bottom v-if="editTable != index">
+                                <template v-slot:activator="{ on, attrs }">
+                                        <v-btn 
+                                        v-bind="attrs"
+                                        v-on="on"
+                                        icon class="black--text"   @click="changeEditTable(index,item)">
+                                            <v-icon
+                                                small
+                                            > mdi-pencil</v-icon>
+                                        </v-btn>
+                                </template>
+                                <span>Edit</span>
+                            </v-tooltip>
+                            
                             <v-tooltip bottom v-if="editTable == index">
                                 <template v-slot:activator="{ on, attrs }">
                                         <v-btn 
