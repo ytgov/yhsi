@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 var express = require('express');
 var router = express.Router();
-var RequiresAuthentication = require('../middleware');
+import { RequiresAuthentication } from '../middleware';
 var multer = require('multer');
 var _ = require('lodash');
 const imageThumbnail = require('image-thumbnail');
@@ -74,68 +74,77 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 });
 
 //LINK BOAT PHOTOS
-router.post('/boat/link/:BoatId', async (req: Request, res: Response) => {
-	const db = req.app.get('db');
+router.post(
+	'/boat/link/:BoatId',
+	RequiresAuthentication,
+	async (req: Request, res: Response) => {
+		const db = req.app.get('db');
 
-	const { BoatId } = req.params;
-	const { linkPhotos } = req.body;
+		const { BoatId } = req.params;
+		const { linkPhotos } = req.body;
 
-	let currentPhotos = await db
-		.select('Photo_RowID')
-		.from('boat.Photo')
-		.where('BoatId', BoatId);
-	let filteredLinkPhotos = _.difference(
-		linkPhotos,
-		currentPhotos.map((x: any) => {
-			return x.Photo_RowID;
-		})
-	);
+		let currentPhotos = await db
+			.select('Photo_RowID')
+			.from('boat.Photo')
+			.where('BoatId', BoatId);
+		let filteredLinkPhotos = _.difference(
+			linkPhotos,
+			currentPhotos.map((x: any) => {
+				return x.Photo_RowID;
+			})
+		);
 
-	for (const rowId of filteredLinkPhotos) {
-		await db
-			.insert({ BoatId, Photo_RowID: rowId })
-			.into('boat.photo')
-			.returning('*')
-			.then((rows: any) => {
-				return rows;
-			});
+		for (const rowId of filteredLinkPhotos) {
+			await db
+				.insert({ BoatId, Photo_RowID: rowId })
+				.into('boat.photo')
+				.returning('*')
+				.then((rows: any) => {
+					return rows;
+				});
+		}
+		res.status(200).send({ message: 'Successfully linked the photos' });
 	}
-	res.status(200).send({ message: 'Successfully linked the photos' });
-});
+);
 
 //LINK PERSON PHOTOS
-router.post('/people/link/:PersonID', async (req: Request, res: Response) => {
-	const db = req.app.get('db');
+router.post(
+	'/people/link/:PersonID',
+	RequiresAuthentication,
+	async (req: Request, res: Response) => {
+		const db = req.app.get('db');
 
-	const { PersonID } = req.params;
-	const { linkPhotos } = req.body;
+		const { PersonID } = req.params;
+		const { linkPhotos } = req.body;
 
-	let currentPhotos = await db
-		.select('PhotoID')
-		.from('Person.Photo')
-		.where('PersonID', PersonID);
-	let filteredLinkPhotos = _.difference(
-		linkPhotos,
-		currentPhotos.map((x: any) => {
-			return x.Photo_RowID;
-		})
-	);
+		let currentPhotos = await db
+			.select('PhotoID')
+			.from('Person.Photo')
+			.where('PersonID', PersonID);
+		let filteredLinkPhotos = _.difference(
+			linkPhotos,
+			currentPhotos.map((x: any) => {
+				return x.Photo_RowID;
+			})
+		);
 
-	for (const rowId of filteredLinkPhotos)
-		await db
-			.insert({ PersonID, PhotoID: rowId })
-			.into('Person.Photo')
-			.returning('*')
-			.then((rows: any) => {
-				return rows;
-			});
+		for (const rowId of filteredLinkPhotos)
+			await db
+				.insert({ PersonID, PhotoID: rowId })
+				.into('Person.Photo')
+				.returning('*')
+				.then((rows: any) => {
+					return rows;
+				});
 
-	res.status(200).send({ message: 'Successfully linked the photos' });
-});
+		res.status(200).send({ message: 'Successfully linked the photos' });
+	}
+);
 
 //LINK AIRCRASH PHOTOS
 router.post(
 	'/aircrash/link/:AirCrashId',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -168,6 +177,7 @@ router.post(
 //GET BOAT PHOTOS
 router.get(
 	'/boat/:boatId',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const { boatId } = req.params;
 
@@ -190,6 +200,7 @@ router.get(
 // GET AIRCRASH PHOTOS
 router.get(
 	'/aircrash/:aircrashId',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const { aircrashId } = req.params;
 
@@ -212,6 +223,7 @@ router.get(
 //GET PERSON PHOTOS
 router.get(
 	'/people/:PersonID',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const { PersonID } = req.params;
 
@@ -233,6 +245,7 @@ router.get(
 // ADD NEW BOAT PHOTO
 router.post(
 	'/boat/new',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -266,6 +279,7 @@ router.post(
 // ADD NEW AIRCRASH PHOTO
 router.post(
 	'/aircrash/new',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -301,6 +315,7 @@ router.post(
 // ADD NEW PERSON PHOTO
 router.post(
 	'/people/new',
+	RequiresAuthentication,
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
