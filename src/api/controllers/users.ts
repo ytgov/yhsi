@@ -107,11 +107,10 @@ router.put(
 			// updates the user access
 			// await db('dbo.HSUserAccess')
 			// .where('dbo.HSUserAccess.UserId', userId);
-		} else{
-			res.status(404).send({ message: `User not found`});
+		} else {
+			res.status(404).send({ message: `User not found` });
 			return;
 		}
-	
 
 		res.status(200).send({ message: 'success' });
 	}
@@ -153,48 +152,49 @@ router.get(
 router.put(
 	'/access/:userId',
 
-	async (req: Request, res: Response) =>{
-  const db = req.app.get('db');
-  // const permissions = req.decodedToken['yg-claims'].permissions;
-  // if(!permissions.includes('edit')) res.sendStatus(403);
+	async (req: Request, res: Response) => {
+		const db = req.app.get('db');
+		// const permissions = req.decodedToken['yg-claims'].permissions;
+		// if(!permissions.includes('edit')) res.sendStatus(403);
 
-  const { userId } = req.params;
-  const { access } = req.body;
-  const exists = await db.select('*')
-      .from('dbo.Ibbit_User')
-      .where('dbo.Ibbit_User.UserId', userId)
-      .returning('*');
-  
-  if(!exists){
-    res.status(404).send({message: 'User not found'});
-    return;
-  }
+		const { userId } = req.params;
+		const { access } = req.body;
+		const exists = await db
+			.select('*')
+			.from('dbo.Ibbit_User')
+			.where('dbo.Ibbit_User.UserId', userId)
+			.returning('*');
 
-  const editedAccess = access.filter((x: { UAID: any; }) => x.UAID );
-  const newAccess = access.filter((x: { UAID: any; }) => !x.UAID );
-  if(editedAccess.length > 0){
-    editedAccess.forEach(async (access: { UAID: any; }) => {
-      const accessBody = { ...access };
-      delete accessBody.UAID;
-      await db('dbo.Website_UserAccess')
-      .update(accessBody)
-      .where('dbo.Website_UserAccess.UAID', access.UAID)
-      .returning('*');
-    });
-  }
+		if (!exists) {
+			res.status(404).send({ message: 'User not found' });
+			return;
+		}
 
+		const editedAccess = access.filter((x: { UAID: any }) => x.UAID);
+		const newAccess = access.filter((x: { UAID: any }) => !x.UAID);
+		if (editedAccess.length > 0) {
+			editedAccess.forEach(async (access: { UAID: any }) => {
+				const accessBody = { ...access };
+				delete accessBody.UAID;
+				await db('dbo.Website_UserAccess')
+					.update(accessBody)
+					.where('dbo.Website_UserAccess.UAID', access.UAID)
+					.returning('*');
+			});
+		}
 
+		if (newAccess.length > 0) {
+			await db
+				.insert(newAccess)
+				.into('dbo.Website_UserAccess')
+				.returning('*')
+				.then((rows: any) => {
+					return rows;
+				});
+		}
 
-  if(newAccess.length > 0){
-    await db.insert(newAccess)
-    .into('dbo.Website_UserAccess')
-    .returning('*')
-    .then((rows: any) => {
-      return rows;
-    });
-  }
+		res.status(200).send({ message: 'success' });
+	}
+);
 
-  res.status(200).send({message: "success"});
-})
-
-export default router;
+module.exports = router;

@@ -38,4 +38,4 @@ router.get('/', async (req: Request, res: Response) => {
 	res.status(200).send({ body: owners });
 });
 
-export default router;
+module.exports = router;

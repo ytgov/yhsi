@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 var RequiresAuthentication = require('../middleware');
 var _ = require('lodash'); //added for testing
@@ -219,4 +219,4 @@ router.get(
 	}
 );
 
-export default router;
+module.exports = router;

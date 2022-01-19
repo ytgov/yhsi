@@ -5,7 +5,9 @@ namespace Express {
 		sessionId?: string;
 		file: any;
 		session: any;
+		oidc: any;
 
 		isAuthenticated(): boolean;
 	}
 }
+x;

@@ -74,70 +74,64 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 //LINK BOAT PHOTOS
-router.post(
-	'/boat/link/:BoatId',
-	async (req: Request, res: Response) => {
-		const db = req.app.get('db');
+router.post('/boat/link/:BoatId', async (req: Request, res: Response) => {
+	const db = req.app.get('db');
 
-		const { BoatId } = req.params;
-		const { linkPhotos } = req.body;
+	const { BoatId } = req.params;
+	const { linkPhotos } = req.body;
 
-		let currentPhotos = await db
-			.select('Photo_RowID')
-			.from('boat.Photo')
-			.where('BoatId', BoatId);
-		let filteredLinkPhotos = _.difference(
-			linkPhotos,
-			currentPhotos.map((x: any) => {
-				return x.Photo_RowID;
-			})
-		);
+	let currentPhotos = await db
+		.select('Photo_RowID')
+		.from('boat.Photo')
+		.where('BoatId', BoatId);
+	let filteredLinkPhotos = _.difference(
+		linkPhotos,
+		currentPhotos.map((x: any) => {
+			return x.Photo_RowID;
+		})
+	);
 
-		for (const rowId of filteredLinkPhotos) {
-			await db
-				.insert({ BoatId, Photo_RowID: rowId })
-				.into('boat.photo')
-				.returning('*')
-				.then((rows: any) => {
-					return rows;
-				});
-		}
-		res.status(200).send({ message: 'Successfully linked the photos' });
+	for (const rowId of filteredLinkPhotos) {
+		await db
+			.insert({ BoatId, Photo_RowID: rowId })
+			.into('boat.photo')
+			.returning('*')
+			.then((rows: any) => {
+				return rows;
+			});
 	}
-);
+	res.status(200).send({ message: 'Successfully linked the photos' });
+});
 
 //LINK PERSON PHOTOS
-router.post(
-	'/people/link/:PersonID',
-	async (req: Request, res: Response) => {
-		const db = req.app.get('db');
+router.post('/people/link/:PersonID', async (req: Request, res: Response) => {
+	const db = req.app.get('db');
 
-		const { PersonID } = req.params;
-		const { linkPhotos } = req.body;
+	const { PersonID } = req.params;
+	const { linkPhotos } = req.body;
 
-		let currentPhotos = await db
-			.select('PhotoID')
-			.from('Person.Photo')
-			.where('PersonID', PersonID);
-		let filteredLinkPhotos = _.difference(
-			linkPhotos,
-			currentPhotos.map((x: any) => {
-				return x.Photo_RowID;
-			})
-		);
+	let currentPhotos = await db
+		.select('PhotoID')
+		.from('Person.Photo')
+		.where('PersonID', PersonID);
+	let filteredLinkPhotos = _.difference(
+		linkPhotos,
+		currentPhotos.map((x: any) => {
+			return x.Photo_RowID;
+		})
+	);
 
-		for (const rowId of filteredLinkPhotos)
-			await db
-				.insert({ PersonID, PhotoID: rowId })
-				.into('Person.Photo')
-				.returning('*')
-				.then((rows: any) => {
-					return rows;
-				});
+	for (const rowId of filteredLinkPhotos)
+		await db
+			.insert({ PersonID, PhotoID: rowId })
+			.into('Person.Photo')
+			.returning('*')
+			.then((rows: any) => {
+				return rows;
+			});
 
-		res.status(200).send({ message: 'Successfully linked the photos' });
-	}
-);
+	res.status(200).send({ message: 'Successfully linked the photos' });
+});
 
 //LINK AIRCRASH PHOTOS
 router.post(
@@ -242,7 +236,7 @@ router.get(
 // ADD NEW BOAT PHOTO
 router.post(
 	'/boat/new',
-	
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -276,7 +270,7 @@ router.post(
 // ADD NEW AIRCRASH PHOTO
 router.post(
 	'/aircrash/new',
-	
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -312,7 +306,7 @@ router.post(
 // ADD NEW PERSON PHOTO
 router.post(
 	'/people/new',
-	
+
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
