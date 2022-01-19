@@ -57,7 +57,6 @@ router.get('/', async (req: Request, res: Response) => {
 
 router.get(
 	'/:userId',
-
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 		const { userId } = req.params;
@@ -86,7 +85,6 @@ router.get(
 
 router.put(
 	'/:userId',
-
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -118,7 +116,6 @@ router.put(
 
 router.get(
 	'/access/:userId',
-
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -151,7 +148,6 @@ router.get(
 
 router.put(
 	'/access/:userId',
-
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 		// const permissions = req.decodedToken['yg-claims'].permissions;
