@@ -194,8 +194,8 @@ export default {
     applicationName: config.applicationName,
     applicationIcon: config.applicationIcon,
     sections: config.sections,
-    hasSidebar: true, //config.hasSidebar,
-    hasSidebarClosable: false, //config.hasSidebarClosable
+    hasSidebar: config.hasSidebar,
+    hasSidebarClosable: config.hasSidebarClosable,
     currentId: 0,
   }),
   created: async function () {
@@ -208,7 +208,7 @@ export default {
     await store.dispatch("checkAuthentication");
   },
   watch: {
-    /*
+
     isAuthenticated: function (val) {
       if (!val) this.hasSidebar = false;
       else this.hasSidebar = store.getters.showAppSidebar;
@@ -218,8 +218,8 @@ export default {
         this.currentId = this.$route.params.id;
       }
 
-      this.hasSidebar = val; // && this.isAuthenticated;
-    },*/
+      this.hasSidebar = val && this.isAuthenticated;
+    },
   },
   methods: {
     nav: function (location) {

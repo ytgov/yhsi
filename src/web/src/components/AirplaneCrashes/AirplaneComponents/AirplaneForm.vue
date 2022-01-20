@@ -4,7 +4,7 @@
         <Breadcrumbs/>
         <v-row>
             <v-col cols="12" class="d-flex">
-                <h1 v-if="isViewingCrash">{{fields.yacsinumber}}</h1>
+                <h1 v-if="isViewingCrash">{{fields.yacsinumber}} {{fields.aircrafttype}} ({{fields.aircraftregistration}})</h1>
                 <h1 v-else-if="isEditingCrash">Edit: {{fields.yacsinumber}}</h1>
                 <h1 v-else>New Crash Site</h1>
                 <v-spacer></v-spacer>
@@ -46,7 +46,7 @@
                 <v-row>
                     <v-col>
                     <!-- YASCI number -->
-                        <v-text-field
+                        <v-text-field outlined dense
                             label="YASCI number"
                             v-model="fields.yacsinumber"
                             :readonly="isViewingCrash"
@@ -56,15 +56,15 @@
                     </v-col>
                     <v-col>
                     <!-- Aircraft Maker -->
-                        <v-text-field
-                            label="Aircraft Maker"
+                        <v-text-field outlined dense
+                            label="Aircraft Make/Model"
                             v-model="fields.aircrafttype"
                             :readonly="isViewingCrash"
                         ></v-text-field>
                     </v-col>
                     <v-col>
                     <!-- Aircraft Registration -->
-                        <v-text-field
+                        <v-text-field outlined dense
                             label="Aircraft Registration"
                             v-model="fields.aircraftregistration"
                             :readonly="isViewingCrash"
@@ -87,10 +87,10 @@
                                         :disabled="isViewingCrash"
                                     >
                                         <template v-slot:activator="{ on, attrs }">
-                                        <v-text-field
+                                        <v-text-field outlined dense
                                             v-model="crashdate"
                                             label="Crash Date"
-                                            prepend-icon="mdi-calendar"
+                                            append-icon="mdi-calendar"
                                             readonly
                                             v-bind="attrs"
                                             v-on="on"
@@ -121,7 +121,7 @@
                                 
                             </v-col>
                             <v-col cols="6">
-                                <v-select
+                                <v-select outlined dense
                                     v-model="fields.datedescriptor"
                                     :items="dateDescriptorOptions"
                                     :readonly="isViewingCrash"
@@ -131,7 +131,7 @@
                         </v-row>
                         <v-row>
                             <v-col cols="12">
-                                <v-text-field
+                                <v-text-field outlined dense
                                     v-model="fields.datenote"
                                     label="Date Note"
                                     :readonly="isViewingCrash"
@@ -143,7 +143,7 @@
                         <v-row>
                             <v-col cols="6">
                                 <h4>Country of Registration</h4>
-                                <v-checkbox
+                                <v-checkbox 
                                     label="Canadian"
                                     value="Canadian"
                                     v-model="fields.nation"
@@ -161,7 +161,7 @@
                                     @click="changeNation"
                                     :readonly="isViewingCrash"
                                 ></v-checkbox>
-                                <v-text-field
+                                <v-text-field outlined dense
                                     v-if="otherNation"
                                     v-model="fields.nation"
                                     label="Other"
@@ -197,21 +197,21 @@
                             </div>
                             <v-row>
                                 <v-col>
-                                    <v-text-field
+                                    <v-text-field outlined dense
                                         v-model="fields.pilotfirstname"
                                         label="First Name"
                                         :readonly="isViewingCrash"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col>
-                                    <v-text-field
+                                    <v-text-field outlined dense
                                         v-model="fields.pilotlastname"
                                         label="Last Name"
                                         :readonly="isViewingCrash"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col>
-                                    <v-text-field
+                                    <v-text-field outlined dense
                                         v-model="fields.pilotrank"
                                         label="Rank"
                                         :readonly="isViewingCrash"
@@ -248,14 +248,14 @@
             <v-col col="6">
                 <v-row>
                     <v-col>
-                         <v-text-field
+                         <v-text-field outlined dense
                             v-model.number="fields.remainsonsite"
                             label="Remains on Site"
                             :readonly="isViewingCrash"
                             :rules="numberRules"
          
                         ></v-text-field>    
-                        <v-textarea
+                        <v-textarea outlined dense
                             rows="5"
                             class="mt-0 pt-0"
                             v-model="fields.extentofremainsonsite"
@@ -264,7 +264,7 @@
                         ></v-textarea>
                     </v-col>
                     <v-col>
-                        <v-textarea
+                        <v-textarea outlined dense
                             rows="7"
                             v-model="fields.otherlocationsofremains"
                             label="Other Location of Remains"
@@ -276,19 +276,19 @@
              <v-col col="6">
                  <v-row>
                       <v-col cols="6">
-                                <v-text-field
+                                <v-text-field outlined dense
                                     v-model="fields.soulsonboard"
                                     label="Souls on Board"
                                     :readonly="isViewingCrash"
                                     :rules="numberRules"
                                 ></v-text-field>
-                                <v-text-field
+                                <v-text-field outlined dense
                                     v-model="fields.injuries"
                                     label="Injuries"
                                     :readonly="isViewingCrash"
                                     :rules="numberRules"
                                 ></v-text-field>
-                                <v-text-field
+                                <v-text-field outlined dense
                                     v-model="fields.fatalities"
                                     label="Fatalities"
                                     :readonly="isViewingCrash"
@@ -297,7 +297,7 @@
                         </v-col>
                          <v-col cols="6">
                             <v-textarea
-                                rows="7"
+                                rows="7" outlined dense
                                 v-model="fields.descriptionofcrashevent"
                                 label="Description of Crash Event"
                                 :readonly="isViewingCrash"
@@ -309,7 +309,7 @@
 <!-- Additional information -->
         <v-row>
             <v-col cols="12">
-                <v-textarea
+                <v-textarea outlined dense
                     v-model="fields.comments"
                     label="Additional Information"
                     :readonly="isViewingCrash"
@@ -328,7 +328,7 @@
                                 <v-list-item-content>
                                     <v-list-item-title v-if="index != editTableSources || isViewingCrash">{{item.Source}}</v-list-item-title>
                                     <v-form v-model="validSource" v-if="!isViewingCrash" v-on:submit.prevent>
-                                        <v-text-field
+                                        <v-text-field outlined dense
                                         v-if="editTableSources == index "
                                         label="Source"
                                         v-model="helperSource"
@@ -405,7 +405,7 @@
                 </v-row>
             </v-col>
             <v-col cols="7">
-                <v-textarea
+                <v-textarea outlined dense
                     label="Significance of Aircraft"
                     v-model="fields.significanceofaircraft"
                     :readonly="isViewingCrash"

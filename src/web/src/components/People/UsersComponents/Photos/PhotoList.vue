@@ -44,7 +44,7 @@
       <v-container class="scroll">
         <v-row>
           <v-col>
-            <v-text-field v-model="searchPhotos" label="Search"> </v-text-field>
+            <v-text-field v-model="searchPhotos" outlined dense label="Search"> </v-text-field>
           </v-col>
         </v-row>
         <v-row v-if="photos.length < 1">

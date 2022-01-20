@@ -10,7 +10,7 @@
                 </div>
                 <v-row>
                     <v-col>
-                        <v-select
+                        <v-select outlined dense
                             :items="coordinateSystemOptions"
                             return-object
                             item-text="text"
@@ -20,7 +20,7 @@
                         ></v-select>
                     </v-col>
                     <v-col>
-                        <v-select
+                        <v-select outlined dense
                             :items="projectionOptions"
                             return-object
                             item-text="name"
@@ -37,7 +37,7 @@
                     </v-col>
                     <v-col cols="9">
                         <h4>Degrees</h4>
-                        <v-text-field
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="dd.lat"
                             :readonly="mode == 'view'"
@@ -50,7 +50,7 @@
                         <h4>Longitude</h4>
                     </v-col>
                     <v-col cols="9">
-                        <v-text-field
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="dd.lng"
                             :readonly="mode == 'view'"
@@ -62,7 +62,7 @@
                 <v-row v-if="selectedSystem.id == 2 && selectedProjection.id == 1">
                     <v-col cols="3">
                         <h4>Easting</h4>
-                        <v-text-field
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="utm.Easting"
                             :readonly="mode == 'view'"
@@ -71,7 +71,7 @@
                     </v-col>
                     <v-col cols="3">
                         <h4>Northing</h4>
-                        <v-text-field
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="utm.Northing"
                             :readonly="mode == 'view'"
@@ -80,7 +80,7 @@
                     </v-col>
                     <v-col cols="3">
                         <h4>Hemisphere</h4>
-                        <v-select
+                        <v-select outlined dense
                         @change="changedLocation"
                         v-model="utm.ZoneLetter"
                         :readonly="mode == 'view'"
@@ -89,7 +89,7 @@
                     </v-col>
                      <v-col cols="3">
                         <h4>Zone</h4>
-                        <v-text-field
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="utm.ZoneNumber"
                             :readonly="mode == 'view'"
@@ -104,7 +104,7 @@
                     </v-col>
                     <v-col >
                         <h4>Degrees</h4>
-                        <v-text-field
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="dms.lat.deg"
                             :readonly="mode == 'view'"
@@ -113,7 +113,7 @@
                     </v-col>
                     <v-col >
                         <h4>Minutes</h4>
-                        <v-text-field
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="dms.lat.min"
                             :readonly="mode == 'view'"
@@ -122,7 +122,7 @@
                     </v-col>
                     <v-col >
                         <h4>Seconds</h4>
-                        <v-text-field
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="dms.lat.sec"
                             :readonly="mode == 'view'"
@@ -130,8 +130,8 @@
                         ></v-text-field>
                     </v-col>
                     <v-col>
-                        <h4>Direction</h4>
-                        <v-text-field
+                        <h4>Direction</h4> 
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="dms.lat.dir"
                             :readonly="mode == 'view'"
@@ -143,7 +143,7 @@
                         <h4>Longitude</h4>
                     </v-col>
                     <v-col >
-                        <v-text-field
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="dms.lng.deg"
                             :readonly="mode == 'view'"
@@ -151,7 +151,7 @@
                         ></v-text-field>
                     </v-col>
                     <v-col >
-                        <v-text-field
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="dms.lng.min"
                             :readonly="mode == 'view'"
@@ -159,7 +159,7 @@
                         ></v-text-field>
                     </v-col>
                     <v-col >
-                        <v-text-field
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="dms.lng.sec"
                             :readonly="mode == 'view'"
@@ -167,7 +167,7 @@
                         ></v-text-field>
                     </v-col>
                     <v-col >
-                        <v-text-field
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="dms.lng.dir"
                             :readonly="mode == 'view'"
@@ -180,7 +180,7 @@
                         <h4>X</h4>
                     </v-col>
                     <v-col cols="9">
-                        <v-text-field
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="nad83.x"
                             :readonly="mode == 'view'"
@@ -192,8 +192,8 @@
                     <v-col cols="2.4">
                         <h4>Y</h4>
                     </v-col>
-                    <v-col cols="9">
-                        <v-text-field
+                    <v-col cols="9"> 
+                        <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="nad83.y"
                             :readonly="mode == 'view'"
@@ -226,12 +226,12 @@
             </v-alert>
         </v-col>
         <v-col cols="2">
-            <v-textarea
+            <v-textarea outlined dense
                 label="Crash Location Description"
                 v-model="modifiableFields.crashlocation"
                 :readonly="mode == 'view'"
             ></v-textarea>
-            <v-select
+            <v-select outlined dense
                 label="Location Accuracy"
                 v-model="modifiableFields.accuracy"
                 :items="locationAccuracyOptions"
@@ -348,7 +348,7 @@ export default {
     //Selection vars
         selectedSystem: { id: 1, text: "Decimal Degrees" },
         selectedProjection: { id: 1, name: "WSG 84" },
-        locationAccuracyOptions: ["Approximate", "Accurate"],
+        locationAccuracyOptions: ["Approximate", "Map Measurement", "GPS"],
         projectionOptions: [//datums
                 {
                     id: 1,
