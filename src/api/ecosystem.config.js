@@ -6,7 +6,7 @@ module.exports = {
   apps: [{
     name: 'ykgov-hsif-api',
     script: './server.js',
-    watch: ['server.js', './package.json', './controllers'],
+    watch: ['index.ts', './package.json', './controllers'],
     merge_logs: true,
     env: {
       NODE_ENV: 'development',
