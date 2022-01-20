@@ -3,8 +3,8 @@
         <v-row>
             <v-col cols="12" class="d-flex">
                 <v-text-field
-                flat
-                prepend-icon="mdi-magnify"
+                outlined dense
+                append-icon="mdi-magnify"
                 class="mx-4"
                 hide-details
                 label="Search"
@@ -20,22 +20,25 @@
         <v-row>
             <v-col cols="12" >
                 <v-card>
+                    <h2 class="mx-4 mt-2">{{ numberOfResults }} results out of {{pagination.itemsLength}}</h2>
+                    <v-divider inset></v-divider>
                     <v-data-table
                         :headers="headers"
                         :items="data"
                         :search="search"
-                        :footer-props="{'items-per-page-options': [10, 30, 100, 500]}"
+                        :options="options"
+                        :footer-props="{'items-per-page-options': [10, 20, 30, 100, 500]}"
                         :loading="loadingData"
                     >
                         <template v-slot:body.prepend="{}" v-if="addingItem">
                             <tr>
                                 <td>
-                                    <v-textarea
+                                    <v-textarea outlined dense class="mt-3"
                                     v-model="historicRecordHelper"
                                     ></v-textarea>
                                 </td>
                                 <td>
-                                    <v-textarea
+                                    <v-textarea outlined dense class="mt-3"
                                     v-model="referenceHelper"
                                     ></v-textarea>
                                 </td>
@@ -72,7 +75,7 @@
                         </template>
                         <template v-slot:item.HistoryText="{ item, index }">
                             <div v-if="editTable == index">
-                                <v-textarea
+                                <v-textarea outlined dense class="mt-3"
                                 v-model="historicRecordHelper "
                                 ></v-textarea>
                             </div>
@@ -80,26 +83,13 @@
                         </template>
                         <template v-slot:item.Reference="{ item, index }">
                             <div v-if="editTable == index">
-                                <v-textarea
+                                <v-textarea outlined dense class="mt-3"
                                 v-model="referenceHelper"
                                 ></v-textarea>
                             </div>
                             <div v-else>{{item.Reference}}</div>
                         </template>
                         <template v-slot:item.actions="{  index, item }">
-                            <v-tooltip bottom v-if="editTable != index">
-                                <template v-slot:activator="{ on, attrs }">
-                                        <v-btn 
-                                        v-bind="attrs"
-                                        v-on="on"
-                                        icon class="black--text"   @click="changeEditTable(index,item)">
-                                            <v-icon
-                                                small
-                                            > mdi-pencil</v-icon>
-                                        </v-btn>
-                                </template>
-                                <span>Edit</span>
-                            </v-tooltip>
                             <v-tooltip bottom v-if="editTable == index">
                                 <template v-slot:activator="{ on, attrs }">
                                         <v-btn
@@ -114,6 +104,20 @@
                                 </template>
                                 <span>Save changes</span>
                             </v-tooltip>
+                            <v-tooltip bottom v-if="editTable != index">
+                                <template v-slot:activator="{ on, attrs }">
+                                        <v-btn 
+                                        v-bind="attrs"
+                                        v-on="on"
+                                        icon class="black--text"   @click="changeEditTable(index,item)">
+                                            <v-icon
+                                                small
+                                            > mdi-pencil</v-icon>
+                                        </v-btn>
+                                </template>
+                                <span>Edit</span>
+                            </v-tooltip>
+                            
                             <v-tooltip bottom v-if="editTable == index">
                                 <template v-slot:activator="{ on, attrs }">
                                         <v-btn 
@@ -163,6 +167,8 @@ export default {
         overlay: false,
         loadingData: false,
         addingItem: false,
+        options: { itemsPerPage: 20 },
+        pagination: { itemsLength: 0 }
     }),
     mounted(){
         //this.data = this.historicRecords;
@@ -243,6 +249,11 @@ export default {
         },
         loadingHistoriesChange(val){
             this.$emit('loadingHistoriesChange', val);
+        }
+    },
+    computed: {
+        numberOfResults(){
+           return this.pagination.itemsLength < this.pagination.itemsPerPage ? this.pagination.itemsLength :  this.pagination.itemsPerPage;
         }
     },
     watch:{

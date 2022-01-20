@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row>
       <v-col cols="12">
-        <h2 v-if="boats">{{ filteredData.length }} Results</h2>
+        <h2 v-if="boats">{{ filteredData.length }} results out of {{ totalLength }}</h2>
         <!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
       </v-col>
     </v-row>
@@ -17,7 +17,7 @@
           :options.sync="options"
           :server-items-length="totalLength"
           @click:row="handleClick"
-          :footer-props="{ 'items-per-page-options': [10, 30, 100] }"
+          :footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
         >
           <template v-slot:item.owners="{ item }">
             <div v-if="item.owners.length > 0">
@@ -51,8 +51,8 @@ export default {
     //table options
     page: 0,
     pageCount: 6,
-    options: {},
-    totalLength: 100,
+    options: { itemsPerPage: 50},
+    totalLength: 0,
     filterOptions: null,
   }),
   mounted() {
