@@ -86,7 +86,9 @@
         <v-card class="px-3 py-3">
           <v-row>
             <v-col cols="12">
-              <h2>{{ filteredData.length }} Results</h2>
+              <h2 class="ma-2">
+                {{ filteredData.length }} results out of {{ totalLength }}
+              </h2>
               <!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
             </v-col>
           </v-row>
@@ -179,7 +181,7 @@ export default {
 
       this.people = _.get(data, "body", []);
       console.log(data);
-      this.totalLength = _.get(data, "count", 0);
+      this.totalLength = _.get(data, "count", 0).count;
       this.loading = false;
     },
     addNewPerson(){
