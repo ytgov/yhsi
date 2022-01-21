@@ -275,7 +275,7 @@
             </v-col>
              <v-col col="6">
                  <v-row>
-                      <v-col cols="6">
+                      <v-col cols="3">
                                 <v-text-field outlined dense
                                     v-model="fields.soulsonboard"
                                     label="Souls on Board"
@@ -295,7 +295,7 @@
                                     :rules="numberRules"
                                 ></v-text-field>
                         </v-col>
-                         <v-col cols="6">
+                         <v-col cols="9">
                             <v-textarea
                                 rows="7" outlined dense
                                 v-model="fields.descriptionofcrashevent"
