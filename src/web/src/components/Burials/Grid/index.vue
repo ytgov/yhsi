@@ -182,8 +182,9 @@ export default {
         sortBy[0],
         sortDesc[0] ? "desc" : "asc"
       );
+      let { count } = data.count;
       this.crashsites = data.body;
-      this.totalLength = data.count;
+      this.totalLength = count;
       this.crashsites.map((x) => {
         x.crashdate = this.formatDate(x.crashdate);
       });
