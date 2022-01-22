@@ -246,13 +246,14 @@
         <v-col cols="5">
             <div >
                 <l-map class="map"
-                :center="map.center"
-                :zoom="map.zoom"
+                :center="layer.center"
+                :zoom="layer.zoom"
                 style="height: 350px; width: 100%"
                 >
+
                     <l-tile-layer
-                        :url="map.url"
-                        :attribution="map.attribution"
+                    :url="layer.url"
+                    :attribution="layer.attribution"
                     />
                     <l-polygon
                         :lat-lngs="yukonPolygon.latlngs"
@@ -271,6 +272,42 @@
                         <l-popup :content="marker.tooltip" />
                         <l-tooltip :content="marker.tooltip" />
                     </l-marker>
+                    <l-control :position="'topright'">
+                        <v-card class="pa-2">
+                            <v-tooltip left>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-icon
+                                    color="primary"
+                                    dark
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    @click="showTopographicMap = !showTopographicMap"
+                                    >
+                                     {{ showTopographicMap ? 'mdi-image' : 'mdi-image-off' }}
+                                    </v-icon>
+                                </template>
+                                <span>Topographic Map</span>
+                            </v-tooltip>
+                        </v-card>
+                    </l-control>
+                    <l-control :position="'bottomright'">
+                        <v-card class="pa-2">
+                            <v-tooltip left>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-icon
+                                    color="primary"
+                                    dark
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    @click="showTopographicMap = !showTopographicMap"
+                                    >
+                                    mdi-home
+                                    </v-icon>
+                                </template>
+                                <span>Home</span>
+                            </v-tooltip>
+                        </v-card>
+                    </l-control>
                     <l-control
                         :position="'bottomleft'"
                         class="custom-control-watermark"
@@ -322,6 +359,7 @@ export default {
   },
     data: () =>({
         flag: 1,// tells the component if it should accept new prop data
+        showTopographicMap: false,
         modifiableFields: {   
             accuracy: "",
             inyukon: "",
@@ -372,12 +410,18 @@ export default {
             tooltip: "Selected crash site"
         },
     //predefined map & marker
-        map: {
+        maps: [{
             zoom: 4,
             center: latLng(64.000000, -135.000000), //latLng(64.000000, -135.000000),
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
         },
+        {
+            zoom: 4,
+            center: latLng(64.000000, -135.000000), //latLng(64.000000, -135.000000),
+            url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', 
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        }],
         yukonPolygon,
     }),
     mounted() {
@@ -574,6 +618,9 @@ export default {
         isEmpty(){
             let { lat, long } = this.modifiableFields;
             return lat == 0.0 && long == 0.0;
+        },
+        layer () {
+            return this.maps[ this.showTopographicMap ? 1 : 0]
         }
     },
     watch:{

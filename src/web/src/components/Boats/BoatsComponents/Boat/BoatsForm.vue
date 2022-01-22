@@ -390,6 +390,7 @@
                             v-if="infoLoaded" 
                             :showDefault="mode == 'new'" 
                             :boatID="getBoatID"
+                            :mode="mode"
                             @updateSelectedImage="selectedImageChanged" 
                             :selectedImage="selectedImage"
                             @loadingPhotosChange="loadingPhotosChange"/>
@@ -402,7 +403,7 @@
         <HistoricRecord 
             v-if="fields.histories != undefined && mode !='new'" 
             :historicRecords="fields.histories" 
-            :mode="'edit'" 
+            :mode="mode" 
             :boatID="getBoatID" />
 
         <v-overlay :value="overlay">
