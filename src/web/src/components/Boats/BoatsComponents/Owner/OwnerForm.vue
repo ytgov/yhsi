@@ -212,7 +212,7 @@
     <HistoricRecord
       v-if="fields.histories != undefined && mode != 'new'"
       :historicRecords="fields.histories"
-      :mode="'edit'"
+      :mode="mode"
       :ownerID="getOwnerID"
     />
     <v-overlay :value="overlay">
