@@ -250,7 +250,6 @@
                 :zoom="layer.zoom"
                 style="height: 350px; width: 100%"
                 >
-
                     <l-tile-layer
                     :url="layer.url"
                     :attribution="layer.attribution"
@@ -262,8 +261,8 @@
                     >
                         <l-tooltip content="Yukon" />
                     </l-polygon>
-                    <l-marker :lat-lng="[63.6333308, -135.7666636]" :visible="!marker.visible"></l-marker>
 
+                    <l-marker :lat-lng="[63.6333308, -135.7666636]" :visible="!marker.visible"></l-marker>
                     <l-marker
                         :visible="marker.visible"
                         :draggable="false"
@@ -476,7 +475,7 @@ export default {
             if(isNaN(lat) || isNaN(lng))
                 return;
             
-            this.map.center = latLng(lat, lng); 
+            //this.map.center = latLng(lat, lng); 
         },
         addMarker(lat, lng){
             if(isNaN(lat) || isNaN(lng))
