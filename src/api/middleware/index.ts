@@ -9,7 +9,7 @@ export function RequiresAuthentication(
 ) {
 	// DJPRATT temporary hack to get around login issue
 	return next();
-	/*
+/*
 	if (req.oidc.isAuthenticated()) {
 		return next();
 	}
