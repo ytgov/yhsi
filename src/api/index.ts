@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
+import { configureAuthentication } from './routes/auth';
+// import cors from 'cors';
 
 require('dotenv').config();
 
-const cors = require('cors'); // might want to remove before going to prod
+// const cors = require('cors'); // might want to remove before going to prod
 
 var ownersRouter = require('./controllers/owners');
 var historiesRouter = require('./controllers/histories');
@@ -40,6 +42,9 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
 
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
+
+configureAuthentication(app);
+
 console.log('host: ', process.env.DB_HOST);
 console.log('user: ', process.env.DB_USER);
 console.log('psss: ', process.env.DB_PASS);
@@ -62,25 +67,29 @@ var conn = knex({
 app.set('db', conn);
 
 // URI for tediousJS = `mssql://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/${process.env.DB_NAME}?encrypt=true`
-app.get('/', function (req: Request, res: Response) {
-	const db = req.app.get('db');
+// app.get('/', function (req: Request, res: Response) {
+// 	const db = req.app.get('db');
 
-	db.raw('SELECT TOP 1 * FROM Boat.Owner;')
-		.then((rows: any) => {
-			if (rows.length > 0) {
-				console.log(rows);
-				res.status(200).send('Successful Connection');
-				return;
-			}
-		})
-		.catch((e: Error) => {
-			console.error(e);
-			res
-				.status(500)
-				.send(
-					"ERROR: Either the connection to the database isn't working or the query is incorrect"
-				);
-		});
+// 	db.raw('SELECT TOP 1 * FROM Boat.Owner;')
+// 		.then((rows: any) => {
+// 			if (rows.length > 0) {
+// 				console.log(rows);
+// 				res.status(200).send('Successful Connection');
+// 				return;
+// 			}
+// 		})
+// 		.catch((e: Error) => {
+// 			console.error(e);
+// 			res
+// 				.status(500)
+// 				.send(
+// 					"ERROR: Either the connection to the database isn't working or the query is incorrect"
+// 				);
+// 		});
+// });
+
+app.get('/', function (req: Request, res: Response) {
+	res.json('API is up.');
 });
 
 app.use('/api/aircrash', aircrashRouter);
