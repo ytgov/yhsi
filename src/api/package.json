@@ -4,7 +4,7 @@
   "description": "Orace connector for Node.js",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "nodemon index.ts",
     "development": "pm2 start ecosystem.config.js --no-daemon",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start-yhsif": "nodemon index.ts",
