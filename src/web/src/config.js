@@ -123,5 +123,5 @@ export const sections = [
     // }
 ];
 export const environment = process.env.NODE_ENV;
-export const apiBaseUrl = process.env.NODE_ENV == "production" ? "" : "https://api.gov.yk.ca/heritage";
+export const apiBaseUrl = process.env.NODE_ENV == "production" ? "" : "localhost:4125";
 
