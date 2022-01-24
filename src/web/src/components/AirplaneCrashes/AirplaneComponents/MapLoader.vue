@@ -245,7 +245,7 @@
         </v-col>
         <v-col cols="5">
             <div >
-                <l-map class="map"
+                <l-map class="map" ref="myMap"
                 :center="layer.center"
                 :zoom="layer.zoom"
                 style="height: 350px; width: 100%"
@@ -298,7 +298,7 @@
                                     dark
                                     v-bind="attrs"
                                     v-on="on"
-                                    @click="showTopographicMap = !showTopographicMap"
+                                    @click="recenterMap()"
                                     >
                                     mdi-home
                                     </v-icon>
@@ -410,13 +410,13 @@ export default {
         },
     //predefined map & marker
         maps: [{
-            zoom: 4,
+            zoom: 8,
             center: latLng(64.000000, -135.000000), //latLng(64.000000, -135.000000),
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
         },
         {
-            zoom: 4,
+            zoom: 8,
             center: latLng(64.000000, -135.000000), //latLng(64.000000, -135.000000),
             url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', 
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -471,11 +471,16 @@ export default {
                 shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
             });
         },
+        recenterMap() {
+            this.$refs.myMap.mapObject.panTo(latLng(64.000000, -135.000000));
+            //this.maps[ this.showTopographicMap ? 1 : 0].center = latLng(lat, lng); 
+        },
         setCenter(lat, lng){//This method sets the center focus of the map
             if(isNaN(lat) || isNaN(lng))
                 return;
             
             //this.map.center = latLng(lat, lng); 
+            this.maps[ this.showTopographicMap ? 1 : 0].center = latLng(lat, lng); 
         },
         addMarker(lat, lng){
             if(isNaN(lat) || isNaN(lng))
