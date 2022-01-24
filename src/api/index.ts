@@ -1,6 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import path from 'path';
+import helmet from 'helmet';
+import * as config from './config';
+import { doHealthCheck } from './utils/healthCheck';
 import { configureAuthentication } from './routes/auth';
-// import cors from 'cors';
+import { RequiresAuthentication } from './middleware';
 
 require('dotenv').config();
 
@@ -17,33 +22,28 @@ var boatsRouter = require('./controllers/boats');
 var photosRouter = require('./controllers/photos');
 
 var knex = require('knex');
-var express = require('express');
 
-var app = express();
+const app = express();
 //var port = process.env.PORT || 3000;
 var port = process.env.PORT || 4125;
 var _ = require('lodash');
-// app.use(cors({
-//   origin: '*',
-//   optionsSuccessStatus: 200,
-//   credentials: true
-// }));
-// app.all('*', cors());
-
-app.use(function (req: Request, res: Response, next: NextFunction) {
-	res.header('Access-Control-Allow-Origin', '*');
-	res.header('Access-Control-Allow-Methods', 'POST, PUT, GET, OPTIONS');
-	res.header(
-		'Access-Control-Allow-Headers',
-		'Origin, X-Requested-With, Content-Type, Accept, Authorization, Ocp-Apim-Subscription-Key'
-	);
-	next();
-});
 
 app.use(express.json()); // for parsing application/json
-app.use(express.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+app.use(
+	cors({
+		origin: config.FRONTEND_URL,
+		optionsSuccessStatus: 200,
+		credentials: true,
+	})
+);
 
 configureAuthentication(app);
+
+app.get('/api/healthCheck', (req: Request, res: Response) => {
+	res.send('API is up!');
+});
 
 console.log('host: ', process.env.DB_HOST);
 console.log('user: ', process.env.DB_USER);
