@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { RequiresAuthentication } from '../middleware';
 import _ from "lodash";
 import { createThumbnail } from "../utils/image";
+import multer from "multer";
 
 var router = express.Router();
 
@@ -241,7 +242,7 @@ router.get(
 // ADD NEW BOAT PHOTO
 router.post(
 	'/boat/new',
-	[RequiresAuthentication, upload.single('file')],
+	[RequiresAuthentication, multer().single('file')],
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
@@ -274,14 +275,13 @@ router.post(
 // ADD NEW AIRCRASH PHOTO
 router.post(
 	'/aircrash/new',
-	[RequiresAuthentication, upload.single('file')],
+	[RequiresAuthentication, multer().single('file')],
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
 
 		const { YACSINumber, ...restBody } = req.body;
 
-		let options = { percentage: 30 };
-		const ThumbFile = await imageThumbnail(req.file.buffer, options);
+		const ThumbFile = await createThumbnail(req.file.buffer);
 
 		const body = { File: req.file.buffer, ThumbFile, ...restBody };
 
@@ -310,15 +310,11 @@ router.post(
 // ADD NEW PERSON PHOTO
 router.post(
 	'/people/new',
-	[RequiresAuthentication, upload.single('file')],
+	[RequiresAuthentication, multer().single('file')],
 	async (req: Request, res: Response) => {
 		const db = req.app.get('db');
-
 		const { PersonID, ...restBody } = req.body;
-
-		let options = { percentage: 30 };
-		const ThumbFile = await imageThumbnail(req.file.buffer, options);
-
+		const ThumbFile = await createThumbnail(req.file.buffer);
 		const body = { File: req.file.buffer, ThumbFile, ...restBody };
 
 		const response = await db
