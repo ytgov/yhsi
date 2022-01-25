@@ -1,4 +1,4 @@
-interface AuthUser {
+export interface AuthUser {
     id: string;
     display_name: string;
     last_name: string;

@@ -1,13 +1,9 @@
-import { Request, Response } from 'express';
-var express = require('express');
-var router = express.Router();
+import express, { Request, Response } from "express";
 import { RequiresAuthentication } from '../middleware';
-var multer = require('multer');
-var _ = require('lodash');
-const imageThumbnail = require('image-thumbnail');
-// router.use(cors());
-// router.all('*', cors());
-const upload = multer();
+import _ from "lodash";
+import { createThumbnail } from "../utils/image";
+
+var router = express.Router();
 
 //GET ALL AVAILABLE PHOTOS
 router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
@@ -250,8 +246,7 @@ router.post(
 		const db = req.app.get('db');
 
 		const { BoatId, ...restBody } = req.body;
-		let options = { percentage: 66, jpegOptions: { force: true, quality: 33 } };
-		const ThumbFile = await imageThumbnail(req.file.buffer, options);
+		const ThumbFile = await createThumbnail(req.file.buffer);
 
 		const body = { File: req.file.buffer, ThumbFile, ...restBody };
 
