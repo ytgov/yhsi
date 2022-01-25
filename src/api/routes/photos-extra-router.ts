@@ -1,31 +1,18 @@
-import { Request, Response } from 'express';
-const express = require('express');
+import express, { Request, Response } from "express";
 import { DB_CONFIG } from '../config';
 import { createThumbnail } from '../utils/image';
-const knex = require('knex');
+import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
-const multer = require('multer');
-const _ = require('lodash');
+import multer from "multer";
+import _ from "lodash";
 
 export const photosExtraRouter = express.Router();
 const db = knex(DB_CONFIG);
 
-const upload = multer.default();
-
 //GET ALL AVAILABLE PHOTOS
-photosExtraRouter.get(
-	'/',
-	[
-		query('page').default(0).isInt(),
-		query('limit').default(10).isInt({ gt: 0 }),
-	],
-	ReturnValidationErrors,
+photosExtraRouter.get('/', [query('page').default(0).isInt(), query('limit').default(10).isInt({ gt: 0 }),], ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		/* const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('view')) res.sendStatus(403);
-  
-    const db = req.app.get('db'); */
 		const { textToMatch } = req.query;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
@@ -88,17 +75,8 @@ photosExtraRouter.get(
 );
 
 //LINK BOAT PHOTOS
-photosExtraRouter.post(
-	'/boat/link/:BoatId',
-	[param('BoatId').notEmpty()],
-	ReturnValidationErrors,
-	[upload.single('file')],
+photosExtraRouter.post('/boat/link/:BoatId', [param('BoatId').notEmpty()], ReturnValidationErrors, multer().single('file'),
 	async (req: Request, res: Response) => {
-		/* const db = req.app.get('db');
-  
-    const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('create')) res.sendStatus(403); */
-
 		const { BoatId } = req.params;
 		const { linkPhotos } = req.body;
 
@@ -127,16 +105,8 @@ photosExtraRouter.post(
 );
 
 //LINK AIRCRASH PHOTOS
-photosExtraRouter.post(
-	'/aircrash/link/:AirCrashId',
-	[param('AirCrashId').notEmpty()],
-	ReturnValidationErrors,
+photosExtraRouter.post('/aircrash/link/:AirCrashId', [param('AirCrashId').notEmpty()], ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		/* const db = req.app.get('db');
-  
-    const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('create')) res.sendStatus(403); */
-
 		const { AirCrashId } = req.params;
 		const { linkPhotos } = req.body;
 		let currentPhotos = await db
@@ -164,17 +134,9 @@ photosExtraRouter.post(
 );
 
 //GET BOAT PHOTOS
-photosExtraRouter.get(
-	'/boat/:boatId',
-	[param('boatId').notEmpty()],
-	ReturnValidationErrors,
+photosExtraRouter.get('/boat/:boatId', [param('boatId').notEmpty()], ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		/* const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('view')) res.sendStatus(403);
-    const db = req.app.get('db'); */
-
 		const { boatId } = req.params;
-
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
@@ -192,14 +154,11 @@ photosExtraRouter.get(
 );
 
 // GET AIRCRASH PHOTOS
-photosExtraRouter.get(
-	'/aircrash/:aircrashId',
-	[param('aircrashId').notEmpty()],
-	ReturnValidationErrors,
+photosExtraRouter.get('/aircrash/:aircrashId', [param('aircrashId').notEmpty()], ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		/* const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('view')) res.sendStatus(403);
-    const db = req.app.get('db'); */
+	if (!permissions.includes('view')) res.sendStatus(403);
+	const db = req.app.get('db'); */
 		const { aircrashId } = req.params;
 
 		const page = parseInt(req.query.page as string);
@@ -219,15 +178,8 @@ photosExtraRouter.get(
 );
 
 // ADD NEW BOAT PHOTO
-photosExtraRouter.post(
-	'/boat',
-	[upload.single('file')],
+photosExtraRouter.post('/boat', [multer().single('file')],
 	async (req: Request, res: Response) => {
-		/* const db = req.app.get('db');
-  
-    const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('create')) res.sendStatus(403); */
-
 		const { BoatId, ...restBody } = req.body;
 		const ThumbFile = await createThumbnail(req.file.buffer);
 
@@ -255,15 +207,8 @@ photosExtraRouter.post(
 );
 
 // ADD NEW AIRCRASH PHOTO
-photosExtraRouter.post(
-	'/aircrash',
-	[upload.single('file')],
+photosExtraRouter.post('/aircrash', [multer().single('file')],
 	async (req: Request, res: Response) => {
-		/*  const db = req.app.get('db');
-   
-     const permissions = req.decodedToken['yg-claims'].permissions;
-     if (!permissions.includes('create')) res.sendStatus(403); */
-
 		const { YACSINumber, ...restBody } = req.body;
 		const ThumbFile = await createThumbnail(req.file.buffer);
 		const body = { File: req.file.buffer, ThumbFile, ...restBody };

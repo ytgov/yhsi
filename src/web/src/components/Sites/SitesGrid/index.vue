@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <v-container fluid>
-    <v-row>
+      <v-row>
         <v-col cols="12">
           <h2>Sites</h2>
         </v-col>
@@ -9,21 +9,22 @@
       <v-divider class="mb-5"></v-divider>
       <v-row>
         <v-col cols="12">
-              <v-text-field
-                v-model="search"
-                label="Search"
-                dense
-                outlined
-                append-icon="mdi-magnify"
-                @click:append="doSearch"
-                hint="Enter criteria and press enter"
-                @keyup="keyUp"
-              ></v-text-field>
+          <v-text-field
+            v-model="search"
+            label="Search"
+            dense
+            outlined
+            append-icon="mdi-magnify"
+            @click:append="doSearch"
+            hint="Enter criteria and press enter"
+            @keyup="keyUp"
+          ></v-text-field>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12">
-          <h2>{{items.length}} Results</h2><!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
+          <h2>{{ items.length }} Results</h2>
+          <!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
         </v-col>
       </v-row>
       <v-divider inset class="mb-2"></v-divider>
@@ -121,17 +122,8 @@ export default {
       axios
         .post(`${PLACE_URL}/search`, body)
         .then((resp) => {
-          // Djpratt testing
-          console.log(body);
-          console.log(`${PLACE_URL}/search`);
-          console.log(resp.data);
           this.items = resp.data.data;
-          //this.pagination.totalLength = resp.data.meta.count;
-          this.totalLength = resp.data.meta.count || resp.data.meta.count.item_count;
-
-          //console.log(this.totalLength);
-
-          this.loading = false;
+          this.totalLength = resp.data.meta.item_count;
         })
         .catch((err) => console.error(err))
         .finally(() => {

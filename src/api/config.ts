@@ -35,14 +35,3 @@ export const DB_CONFIG = {
 		port: parseInt(DB_PORT),
 	},
 };
-
-export const VIVVO_CONFIG = {
-	issuer: 'https://yukon.vivvocloud.com/',
-	authorizationURL: 'https://yukon.vivvocloud.com/oauth/v2/authorize',
-	tokenURL: 'https://yukon.vivvocloud.com/oauth/v2/token',
-	userInfoURL: 'https://yukon.vivvocloud.com/oauth/v2/userinfo',
-	clientID: process.env.VIVVO_CLIENT_ID || '',
-	clientSecret: process.env.VIVVO_CLIENT_SECRET || '',
-	callbackURL: process.env.VIVVO_CALLBACK_URL || '',
-	scope: 'openid profile email phone address',
-};

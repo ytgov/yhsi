@@ -1,5 +1,4 @@
-import { Request, Response } from "express";
-const express = require("express");
+import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { validationResult } from "express-validator";
 import { UserService } from "../services";
