@@ -24,7 +24,6 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                {{formValid}}
                 <v-btn color="success" :disabled="showSave < 1 || yacsiWarning.length == 1 || !formValid" v-if="isEditingCrash" @click="saveChanges" >
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Done
