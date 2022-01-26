@@ -1,7 +1,6 @@
-import { Request, Response } from 'express';
-const express = require('express');
+import express, { Request, Response } from "express";
 import { DB_CONFIG } from '../config';
-const knex = require('knex');
+import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 
@@ -17,8 +16,8 @@ ownerRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		/*  const permissions = req.decodedToken['yg-claims'].permissions;
-     if (!permissions.includes('view')) res.sendStatus(403);
-    */
+	 if (!permissions.includes('view')) res.sendStatus(403);
+	*/
 		const { textToMatch = '', sortBy = 'ownerid', sort = 'asc' } = req.query;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
@@ -78,9 +77,9 @@ ownerRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		/*  const permissions = req.decodedToken['yg-claims'].permissions;
-     if (!permissions.includes('view')) res.sendStatus(403);
+	 if (!permissions.includes('view')) res.sendStatus(403);
    
-     const db = req.app.get('db'); */
+	 const db = req.app.get('db'); */
 		const { ownerId } = req.params;
 		const owner = await db
 			.select('*')
@@ -116,9 +115,9 @@ ownerRouter.put(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		/*   const db = req.app.get('db');
-      const permissions = req.decodedToken['yg-claims'].permissions;
-      if (!permissions.includes('edit')) res.sendStatus(403);
-     */
+	  const permissions = req.decodedToken['yg-claims'].permissions;
+	  if (!permissions.includes('edit')) res.sendStatus(403);
+	 */
 		const { ownerId } = req.params;
 		const { owner = {}, newOwnerAlias = [], editOwnerAlias = [] } = req.body;
 		const { OwnerName } = owner;
@@ -156,8 +155,8 @@ ownerRouter.put(
 ownerRouter.post('/', async (req: Request, res: Response) => {
 	/*   const db = req.app.get('db');
   
-    const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('create')) res.sendStatus(403); */
+	const permissions = req.decodedToken['yg-claims'].permissions;
+	if (!permissions.includes('create')) res.sendStatus(403); */
 
 	const { owner = {}, ownerAlias = [] } = req.body;
 

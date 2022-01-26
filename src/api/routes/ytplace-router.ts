@@ -1,5 +1,4 @@
-import { Request, Response } from "express";
-const express = require("express");
+import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { body, check, param, query, validationResult } from "express-validator";
 import { PhotoService, YtPlaceService, SortDirection, SortStatement, StaticService } from "../services";
