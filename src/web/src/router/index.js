@@ -146,7 +146,7 @@ const routes = [
     ]
   },
   {
-    path: "/photos/:id",
+    path: "/photos/:mode",
     name: "PhotosForm",
     component: MainPhotos,
     meta: {

@@ -30,6 +30,11 @@ export class PhotoService {
             .catch(err => { console.log("BOMBED", err); return undefined; })
     }
 
+    async getThumbFileById(id: string): Promise<Photo | undefined> {
+        return this.knex("photo").select<Photo>("thumbFile").where({ rowId: id }).first()
+            .catch(err => { console.log("BOMBED", err); return undefined; })
+    }
+
     async getPhotoCount(): Promise<number> {
         return new Promise(async (resolve, reject) => {
             let results = await this.knex<number>("photo").count("*", { as: 'count' })

@@ -86,7 +86,7 @@ export class StaticService {
     }
 
     async addPhotoSubject(owner: PhotoSubject): Promise<PhotoSubject | undefined> {
-        return this.knex("PhotoSubject").insert(owner).returning<PhotoSubject>(["id", "name"]);
+        return this.knex("PhotoSubject").insert(owner).returning<PhotoSubject>(["id", "name"]); 
     }
 
     async updatePhotoSubject(id: number, item: PhotoSubject): Promise<PhotoSubject | undefined> {
@@ -199,6 +199,46 @@ export class StaticService {
             { value: 1, text: "Structure" }
         ];
     }
+
+    getPhotoPrograms(): GenericEnum[] {
+        return [
+            { value: 1, text: "General" },
+            { value: 2, text: "Interpretation" },
+            { value: 3, text: "HPAC" },
+            { value: 4, text: "YHSI" },
+        ];
+    }
+
+    getMediaStorages(): GenericEnum[] {
+        return [
+            { value: 1, text: "Library" },
+            { value: 2, text: "YHSI Files" },
+            { value: 3, text: "Restoration Officer" },
+            { value: 4, text: "Database" },
+            { value: 5, text: "Archaeology Slide Collection" },
+        ];
+    }
+
+    getCopyrights(): GenericEnum[] {
+        return [
+            { value: 1, text: "Use Credit Line" },
+            { value: 2, text: "No reproduction without permission from Archives" },
+            { value: 3, text: "No reproduction without permission from donor" },
+            { value: 4, text: "No reproduction for commercial purposes" },
+            { value: 5, text: "Credit Archives" },
+            { value: 6, text: "Incomplete Image Information - check ownership" },
+            { value: 7, text: "Use Owner" },
+        ];
+    }
+
+    getUsageRights(): GenericEnum[] {
+        return [
+            { value: 0, text: "No reuse permitted" },
+            { value: 1, text: "Non-commercial reuse permitted" },
+        ];
+    }
+
+
 }
 
 export interface GenericEnum {

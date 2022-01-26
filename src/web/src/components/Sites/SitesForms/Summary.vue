@@ -236,7 +236,6 @@ export default {
     });
     axios.get(`${STATIC_URL}/record-type`).then((resp) => {
       this.recordOptions = resp.data.data;
-      console.log(this.recordOptions);
     });
     axios.get(`${STATIC_URL}/historical-pattern`).then((resp) => {
       this.historicalPatternOptions = resp.data.data;

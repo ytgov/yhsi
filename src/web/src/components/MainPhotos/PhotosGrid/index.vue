@@ -18,8 +18,8 @@
         </v-list>
       </v-menu>
       <v-spacer></v-spacer>
-      <Search :data="photos" />
-      <v-btn color="primary" @click="handleClick('23')">
+      <!--<Search :data="photos" />-->
+      <v-btn color="primary" @click="handleClick('add')">
         <v-icon>mdi-plus</v-icon>
         <div>Add Photo</div>
       </v-btn>
@@ -75,7 +75,7 @@
 
                 <v-fade-transition>
                   <v-overlay v-if="hover" absolute color="#036358">
-                    <v-btn @click="handleClick(i)">Edit Photo</v-btn>
+                    <v-btn @click="handleClick('view',item.rowId)">View Photo</v-btn>
                   </v-overlay>
                 </v-fade-transition>
               </v-card>
@@ -104,12 +104,12 @@
 <script>
 
 import axios from "axios";
-import Search from "../PhotosComponents/Search";
+//import Search from "../PhotosComponents/Search";
 import { PHOTO_URL } from "../../../urls";
 
 export default {
   name: "Grid",
-  components: { Search },
+  //components: { Search },
   data: () => ({
     search: "",
     selectedSorter: 0,
@@ -138,12 +138,16 @@ export default {
     },
   },
   mounted() {
+    if(this.$store.getters["photos/searchText"]) {
+      this.search = this.$store.getters["photos/searchText"];
+    };
     this.getDataFromApi();
   },
   methods: {
-    handleClick(value) {
+    handleClick(pageState, rowId) {
       //Redirects the user to the site form
-      this.$router.push(`/photos/${value}/feature`);
+      this.$store.commit("photos/setRowId", rowId);
+      this.$router.push(`/photos/${pageState}`);
     },
     getDataFromApi() {  
       this.loading = true;

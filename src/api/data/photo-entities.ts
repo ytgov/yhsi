@@ -3,7 +3,7 @@ export const PHOTO_FIELDS = [
     "rowId", "id", "placeId", "originalFileName", "featureName", "communityId", "nTSMapNumber", "address", "dateCreated",
     "yHSIRecord", "bordenRecord", "paleoRecord", "archivalRecord", "isOtherRecord", "originalMediaId", "originalRecord", "mediaStorage",
     "comments", "caption", "copyright", "creditLine", "ownerId", "photoProjectId", "program", "creator", "communityName", "location",
-    "usageRights", "isComplete", "imageHeight", "imageWidth", "rating", "subjects", "legacyBatchInfo", "isSiteDefault"
+    "usageRights", "isComplete", "imageHeight", "imageWidth", "rating", "subjects", "legacyBatchInfo", "isSiteDefault", "isPrivate"
 ]; 
 
 export class Photo {
@@ -44,6 +44,7 @@ export class Photo {
     legacyBatchInfo!: string;
     isSiteDefault!: boolean;
     thumbFile!: Buffer;
+    isPrivate!: boolean;
 }
 
 export class PhotoBatch {

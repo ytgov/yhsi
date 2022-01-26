@@ -48,7 +48,7 @@ photoRouter.post("/search",
     ],
     async (req: Request, res: Response) => {
 
-        let { query, sort, page } = req.body
+        let { query, sort, page } = req.body 
 
         let skip = (page - 1) * PAGE_SIZE;
         let take = PAGE_SIZE;
@@ -99,7 +99,8 @@ photoRouter.get("/:id/file",
         await photoService.getFileById(req.params.id)
             .then(photo => {
                 if (photo && photo.file) {
-                    return res.contentType("image/jpg").send(photo.file);
+                    //return res.contentType("image/jpg").send(photo.file);
+                    return res.json({ data: photo.file }); 
                 }
 
                 return res.status(404).send("Photo not found");
@@ -109,6 +110,32 @@ photoRouter.get("/:id/file",
                 return res.status(404).send("Photo not found");
             })
     });
+
+    photoRouter.get("/:id/thumbfile",
+        [
+            check("id").notEmpty().isUUID()
+        ],
+        async (req: Request, res: Response) => {
+            const errors = validationResult(req);
+    
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+    
+            await photoService.getThumbFileById(req.params.id)
+                .then(photo => {
+                    if (photo && photo.thumbFile) {
+                        //return res.contentType("image/jpg").send(photo.thumbFile);
+                        return res.json({ data: photo.thumbFile });
+                    }
+    
+                    return res.status(404).send("Photo not found");
+                })
+                .catch(err => {
+                    console.error(err)
+                    return res.status(404).send("Photo not found");
+                })
+        });
 
 photoRouter.get("/:id/file/thumbnail",
     [
@@ -147,50 +174,65 @@ photoRouter.post("/", multer().single("file"),
         body("photoProjectId").notEmpty().bail().isInt(),
         body("program").notEmpty().bail().isInt(),
         body("isComplete").notEmpty().bail().isBoolean(),
-        body("isSiteDefault").notEmpty().bail().isBoolean()
+        body("isSiteDefault").notEmpty().bail().isBoolean(),
+        body("isPrivate").notEmpty().bail().isBoolean() 
     ],
     async (req: Request, res: Response) => {
-        const errors = validationResult(req);
+        const errors = validationResult(req); 
         req.body.file = req.file.buffer;
+        req.body.thumbFile = await createThumbnail(req.file.buffer);
+        req.body.originalFileName = req.file.originalname;  
 
         if (!errors.isEmpty()) {
+            console.log(errors);
             return res.status(400).json({ errors: errors.array() });
         }
 
         let result = await photoService.addPhoto(req.body as Photo).then(item => item)
             .catch(err => {
+                console.log(err);
                 return res.json({ errors: [err.originalError.info.message] });
             });
 
         return res.json({ data: result });
     });
 
-photoRouter.put("/:id", multer().single("file"),
+photoRouter.put("/:id", multer().single('file'),
     [
         check("id").notEmpty().isUUID(),
         body("communityId").notEmpty().bail().isInt(),
         body("isOtherRecord").notEmpty().bail().isBoolean(),
         body("originalMediaId").notEmpty().bail().isInt(),
-        body("mediaStorage").notEmpty().bail().isInt(),
+        body("mediaStorage").notEmpty().bail().isInt(), 
         body("copyright").notEmpty().bail().isInt(),
         body("ownerId").notEmpty().bail().isInt(),
         body("photoProjectId").notEmpty().bail().isInt(),
         body("program").notEmpty().bail().isInt(),
-        body("isComplete").notEmpty().bail().isBoolean(),
-        body("isSiteDefault").notEmpty().bail().isBoolean()
+        body("isComplete").notEmpty().bail().isBoolean(), 
+        body("isSiteDefault").notEmpty().bail().isBoolean() , 
+        body("isPrivate").notEmpty().bail().isBoolean() 
     ],
     async (req: Request, res: Response) => {
-        const errors = validationResult(req);
+        let updater = req.body;
+        const errors = validationResult(req);    
+        
+        delete updater.file;
 
-        if (req.file)
-            req.body.file = req.file.buffer;
+        if (req.file != null && req.file != 'undefined' && req.file.buffer != null && req.file.buffer != 'undefined') {
+            updater.file = req.file.buffer;
+            updater.thumbFile = await createThumbnail(req.file.buffer);
+            updater.originalFileName = req.file.originalname; 
+        }
+
 
         if (!errors.isEmpty()) {
+            console.log(errors);
             return res.status(400).json({ errors: errors.array() });
         }
 
-        let result = await photoService.updatePhoto(req.params.id, req.body as Photo).then(item => item)
+        let result = await photoService.updatePhoto(req.params.id, updater as Photo).then(item => item)
             .catch(err => {
+                console.log(err);
                 return res.json({ errors: [err.originalError.info.message] });
             });
 

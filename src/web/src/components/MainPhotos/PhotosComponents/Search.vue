@@ -39,10 +39,11 @@ export default {
     }),
     methods: {
       sortData() {
-        null;
+        if(this.dataSorted.length > 0) {
         this.dataSorted = this.data.slice()
           .sort((a, b) => (a.featureName.toLowerCase() > b.featureName.toLowerCase() ? 1 : b.featureName.toLowerCase() > a.featureName.toLowerCase() ? -1 : 0)
           );
+        };
       }
     },
     watch:{
