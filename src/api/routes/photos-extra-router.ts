@@ -228,8 +228,10 @@ photosExtraRouter.post('/boat', [upload.single('file')],
 
     const { boatId, ...restBody } = req.body;
     const ThumbFile = await createThumbnail(req.file.buffer);
+    const DateCreated = new Date();
+    const OriginalFileName = req.file.originalname;
 
-    const body = { File: req.file.buffer, ThumbFile, ...restBody }
+    const body = { File: req.file.buffer, ThumbFile, DateCreated, OriginalFileName, ...restBody }
 
     const response = await db.insert(body)
       .into('dbo.photo')
@@ -259,7 +261,10 @@ photosExtraRouter.post('/aircrash', [upload.single('file')],
 
     const { yacsiNumber, ...restBody } = req.body;
     const ThumbFile = await createThumbnail(req.file.buffer);
-    const body = { File: req.file.buffer, ThumbFile, ...restBody }
+    const DateCreated = new Date();
+    const OriginalFileName = req.file.originalname;
+
+    const body = { File: req.file.buffer, ThumbFile, DateCreated, OriginalFileName, ...restBody }
 
     const response = await db.insert(body)
       .into('dbo.photo')
@@ -285,8 +290,10 @@ photosExtraRouter.post('/aircrash', [upload.single('file')],
     async (req: Request, res: Response) => {
       const { placeId, ...restBody } = req.body;
       const ThumbFile = await createThumbnail(req.file.buffer);
+      const DateCreated = new Date();
+      const OriginalFileName = req.file.originalname;
   
-      const body = { File: req.file.buffer, ThumbFile, ...restBody }
+      const body = { File: req.file.buffer, ThumbFile, DateCreated, OriginalFileName, ...restBody }
   
       const response = await db.insert(body)
         .into('dbo.photo')

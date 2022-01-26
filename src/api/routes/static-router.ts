@@ -93,6 +93,16 @@ staticRouter.get("/original-media", async (req: Request, res: Response) => {
     return res.json({ data: list });
 });
 
+staticRouter.get("/photo-copyright", async (req: Request, res: Response) => {
+    let list = await staticService.getCopyrights();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/usage-right", async (req: Request, res: Response) => {
+    let list = await staticService.getUsageRights();
+    return res.json({ data: list });
+});
+
 staticRouter.get("/place-theme", async (req: Request, res: Response) => {
     let list = await staticService.getPlaceThemes();
     list = list.map(l => Object.assign(l, { display: `${l.category} / ${l.type}` }))
@@ -152,7 +162,7 @@ staticRouter.get("/coordinate-determination", async (req: Request, res: Response
 
 staticRouter.get("/site-status", async (req: Request, res: Response) => {
     let list = staticService.getSiteStatuses();
-    return res.json({ data: list });
+    return res.json({ data: list }); 
 });
 
 staticRouter.get("/record-type", async (req: Request, res: Response) => {
@@ -172,6 +182,16 @@ staticRouter.get("/contributing-resource-type", async (req: Request, res: Respon
 
 staticRouter.get("/mapsheet", async (req: Request, res: Response) => {
     let list = await staticService.getMapSheets();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/photo-program", async (req: Request, res: Response) => {
+    let list = staticService.getPhotoPrograms();
+    return res.json({ data: list });
+});
+
+staticRouter.get("/media-storage", async (req: Request, res: Response) => {
+    let list = staticService.getMediaStorages();
     return res.json({ data: list });
 });
 
@@ -246,7 +266,7 @@ staticRouter.delete("/photo-owner/:id",
 
         const id = req.params.id as string;
         let list = await staticService.deletePhotoOwner(parseInt(id));
-        return res.json({ data: list });
+        return res.json({ data: list }); 
     });
 
 
