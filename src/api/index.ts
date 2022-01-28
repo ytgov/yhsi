@@ -9,7 +9,7 @@ import { configureAuthentication } from './routes/auth';
 import { RequiresAuthentication } from './middleware';
 
 
-import { userRouter, placeRouter, photoRouter, registerRouter, staticRouter, ytPlaceRouter } from "./routes";
+import { userRouter, placeRouter, photoRouter, registerRouter, staticRouter, ytPlaceRouter, peopleRouter, photoOwnersRouter } from "./routes";
 import { boatsRouter, ownerRouter, aircrashRouter, historiesRouter, catalogsRouter, usersExtraRouter, photosExtraRouter } from "./routes";
 
 
@@ -96,8 +96,10 @@ app.use('/api/owners', RequiresAuthentication, ownerRouter);
 app.use('/api/aircrash', RequiresAuthentication, aircrashRouter);
 app.use('/api/histories', RequiresAuthentication, historiesRouter);
 app.use('/api/catalogs', RequiresAuthentication, catalogsRouter);
-app.use('/api/extras/photos', RequiresAuthentication, photosExtraRouter);
-app.use('/api/extras/users', RequiresAuthentication, usersExtraRouter);
+app.use('/api/people', RequiresAuthentication, peopleRouter);
+app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
+// app.use('/api/extras/photos', RequiresAuthentication, photosExtraRouter);
+// app.use('/api/extras/users', RequiresAuthentication, usersExtraRouter);
 
 app.use("/api", RequiresAuthentication, staticRouter);
 
