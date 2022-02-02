@@ -18,7 +18,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import * as config from "../config";
 import router from "../router";
 import store from "../store";
