@@ -71,21 +71,20 @@ peopleRouter.get(
   '/:personId',
   ReturnValidationErrors,
   async (req: Request, res: Response) => {
+		const { personId } = req.params;
 
-		const { person = {} } = req.body;
-    const { personId } = req.params;
+		const person = await db
+			.from('Person.Person')
+			.where('Person.PersonID', personId)
+			.first();
 
-		const updatePerson = await db('Person.Person')
-			.update(person)
-			.where('Person.Person.PersonID', personId)
-			.returning('*');
-
-		if (updatePerson.length == 0) {
-			res.status(404).send({ message: `Couldn´t find the person` });
+		if (!person) {
+			res.status(403).send('Person id not found');
+			return;
 		}
 
-		res.status(200).send({ message: 'success' });
-  }
+		res.status(200).send(person);
+	}
 );
 
 //Modify Person
@@ -95,7 +94,6 @@ peopleRouter.put(
 	async (req: Request, res: Response) => {
 
 		const { personId } = req.params;
-
 		const { person = {} } = req.body;
 
 		const updatePerson = await db('Person.Person')
