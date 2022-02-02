@@ -12,3 +12,5 @@ export * from "./static-router";
 export * from "./user-router";
 export * from "./users-extras-router";
 export * from "./ytplace-router";
+export * from "./photo-owners-router";
+export * from "./people-router";
