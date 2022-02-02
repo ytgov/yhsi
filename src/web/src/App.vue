@@ -77,8 +77,14 @@
             <v-list-item to="/boats">
               <v-list-item-title>Boats & Owners</v-list-item-title>
             </v-list-item>
+            <v-list-item to="/burials">
+              <v-list-item-title>Burials</v-list-item-title>
+            </v-list-item>
             <v-list-item to="/places">
               <v-list-item-title>Places</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/people">
+              <v-list-item-title>People</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -199,12 +205,11 @@ export default {
     currentId: 0,
   }),
   created: async function () {
-    await store.dispatch("checkAuthentication");
     store.dispatch("setAppSidebar", this.$route.path.startsWith("/sites/"));
     this.hasSidebar = this.$route.path.startsWith("/sites/");
     this.currentId = this.$route.params.id;
 
-    this.hasSidebar = true;
+    //this.hasSidebar = true;
     await store.dispatch("checkAuthentication");
   },
   watch: {
