@@ -1,13 +1,13 @@
 import knex, { Knex } from "knex";
 import { QueryStatement, SortStatement } from "./";
-import { Photo, PHOTO_FIELDS } from "../data";
+import { Photo, PHOTO_FIELDS, SavedFilter } from "../data";
 import _ from 'lodash';
 
 export class PhotoService {
 
     private knex: Knex;
 
-    constructor(config: Knex.Config<any>) {
+    constructor(config: Knex.Config<any>) {  
         this.knex = knex(config);
     }
 
@@ -66,13 +66,13 @@ export class PhotoService {
                     switch (stmt.operator) {
                         case "eq": {
                             let p = {};
-                            let m = `{"${stmt.field}": "${stmt.value}"}`;
+                            let m = `{"${stmt.field}": "${stmt.value}"}`; 
                             Object.assign(p, JSON.parse(m));
                             selectStmt.where(p);
                             countStmt.where(p);
                             break;
                         }
-                        case "in": {
+                        case "in": { 
                             let items = stmt.value.split(',');
                             countStmt.whereIn(stmt.field, items);
                             selectStmt.whereIn(stmt.field, items);
@@ -110,6 +110,11 @@ export class PhotoService {
                             countStmt.whereRaw(`LOWER(${stmt.field}) like '%${stmt.value.toLowerCase()}%'`);
                             break;
                         }
+                        case "notcontains": {
+                            selectStmt.whereRaw(`LOWER(${stmt.field}) not like '%${stmt.value.toLowerCase()}%'`);
+                            countStmt.whereRaw(`LOWER(${stmt.field}) not like '%${stmt.value.toLowerCase()}%'`);
+                            break;
+                        }
                         default: {
                             console.log(`IGNORING ${stmt.field} on ${stmt.value}`)
                         }
@@ -130,6 +135,7 @@ export class PhotoService {
                 .then(t => t)
                 .catch(err => {
                     console.log("COUNT Query Error");
+                    console.log(err);
                     return reject(err.originalError.info.message);
                 });
 
@@ -146,9 +152,28 @@ export class PhotoService {
             fields.push("thumbFile"); 
             let data = await selectStmt.select<Photo[]>(fields).offset(skip).limit(take);
             let results = { data, meta: { page, page_size, item_count: count, page_count } };
+            //console.log(data);
 
             resolve(results);
         })
+    }
+
+    async addSavedFilter(item: SavedFilter): Promise<SavedFilter | undefined> {
+        return this.knex("savedFilter").insert(item).returning<SavedFilter>(["id","userId","name","resultType","value"]);
+    }
+
+    async deleteSavedFilter(id: number): Promise<any> {
+        return this.knex("savedFilter").where({ id }).delete();
+    }
+
+    async getSavedFilter(id: string): Promise<SavedFilter | undefined> {
+        return this.knex("savedFilter").select<SavedFilter>(["id","userId","name","resultType","value"]).where({ id: id }).first()
+            .catch(err => { console.log("BOMBED", err); return undefined; })
+    }
+
+    async getSavedFilterByUser(id: string): Promise<any> {
+        return this.knex("savedFilter").select<SavedFilter>(["id","userId","name","resultType","value"]).where({ userId: id }).where({ resultType: 'Photo' })
+            .catch(err => { console.log("BOMBED", err); return undefined; })
     }
 
 }

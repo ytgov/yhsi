@@ -38,12 +38,12 @@
       </v-btn>
       </v-col>
 
-      <v-btn color="primary" @click="showDialog()">
+      <!--<v-btn color="primary" @click="showDialog()">
         <v-icon class="mr-2">mdi-printer</v-icon> 
         <div>
           Print Record
         </div>
-      </v-btn>
+      </v-btn>-->
     </v-app-bar>
     <PrintDialog :dialog="dialog" :photoname="fields.featureName" @closeDialog="closeDialog"/>
 

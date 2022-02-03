@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { body, check, query, validationResult } from "express-validator";
 import { PhotoService } from "../services";
-import { Photo } from "../data";
+import { Photo, SavedFilter } from "../data";
 import multer from "multer";
 import { createThumbnail } from "../utils/image";
 import { ReturnValidationErrors } from "../middleware";
@@ -57,6 +57,7 @@ photoRouter.post("/search",
                 res.json(results);
             })
             .catch(err => {
+                console.error(err)
                 res.status(500).json({ errors: [err] });
             })
     });
@@ -107,7 +108,7 @@ photoRouter.get("/:id/file",
             })
             .catch(err => {
                 console.error(err)
-                return res.status(404).send("Photo not found");
+                return res.status(404).send("Photo not found"); 
             })
     });
 
@@ -238,3 +239,91 @@ photoRouter.put("/:id", multer().single('file'),
 
         return res.json({ data: result });
     });
+
+photoRouter.post("/saved-filter",
+    [
+        body("userId").notEmpty().isInt(),
+        body("name").notEmpty().bail().isString(),
+        body("resultType").notEmpty().bail().isString(),
+        body("value").notEmpty().bail().isString(),
+    ],
+    async (req: Request, res: Response) => {
+        const errors = validationResult(req); 
+
+        if (!errors.isEmpty()) {
+            console.log(errors);
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        let result = await photoService.addSavedFilter(req.body as SavedFilter).then(item => item)
+            .catch(err => {
+                console.log(err);
+                return res.json({ errors: [err.originalError.info.message] });
+            });
+
+        return res.json({ data: result });
+    });
+
+photoRouter.delete("/saved-filter/:id",
+    [check("id").isInt().notEmpty()],
+    async (req: Request, res: Response) => {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const id = req.params.id as string;
+        let list = await photoService.deleteSavedFilter(parseInt(id));
+        return res.json({ data: list }); 
+    });
+
+photoRouter.get("/saved-filter/:id",
+    [
+        check("id").notEmpty().isInt()
+    ],
+    async (req: Request, res: Response) => {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            console.log(errors);
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        await photoService.getSavedFilter(req.params.id)
+            .then(item => {
+                if (item)
+                    return res.json({ data: item });
+
+                return res.status(404).send("Filter not found");
+            })
+            .catch(err => {
+                console.error(err)
+                return res.status(404).send("Filter not found");
+            })
+    });
+
+    photoRouter.get("/saved-filter/user/:id",
+        [
+            check("id").notEmpty().isInt()
+        ],
+        async (req: Request, res: Response) => {
+            const errors = validationResult(req);
+    
+            if (!errors.isEmpty()) {
+                console.log(errors);
+                return res.status(400).json({ errors: errors.array() });
+            }
+    
+            await photoService.getSavedFilterByUser(req.params.id)
+                .then(item => {
+                    if (item)
+                        return res.json({ data: item });
+    
+                    return res.status(404).send("Filters not found");
+                })
+                .catch(err => {
+                    console.error(err)
+                    return res.status(404).send("Filters not found");
+                })
+        });

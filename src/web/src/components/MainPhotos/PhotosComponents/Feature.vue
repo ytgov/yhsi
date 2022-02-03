@@ -36,6 +36,7 @@
                       background-color="white"
                       hide-details
                       :readonly="mode == 'view'"
+                      rows="3"
                     ></v-textarea>
                   </v-col>
 

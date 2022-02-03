@@ -312,3 +312,19 @@ photosExtraRouter.post('/aircrash', [upload.single('file')],
         });
       res.status(200).send({ message: 'Upload Success' });
     });
+
+    // Get item links as an array of strings
+    photosExtraRouter.get("/:id/item-link", 
+    [param("id").notEmpty()], ReturnValidationErrors,
+    async (req: Request, res: Response) => {
+  
+      const { id } = req.params;
+  
+      const items = await db.from("place.photo").select(db.raw("'Place' as itemName")).where('Photo_RowID', id).union(
+        db.from("boat.photo").select(db.raw("'Boat' as itemName")).where('Photo_RowID', id),
+        db.from("aircrash.photo").select(db.raw("'Airplane Crash' as itemName")).where('Photo_RowID', id),
+        db.from("photo").select(db.raw("'Site' as itemName")).where('RowID', id).whereNotNull('placeId')
+      );
+  
+      res.status(200).send(items); 
+  });

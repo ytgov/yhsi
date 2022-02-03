@@ -50,6 +50,11 @@ VALUES
     ('Civil Structure');
 GO
 
+ ALTER TABLE dbo.photo ADD photoSize AS (case when ((ImageHeight * ImageWidth) < 1920000) then 'small'
+	when ((ImageHeight * ImageWidth) < 5947392) then 'medium'
+	else 'large' end) PERSISTED;
+GO
+
 /* Decided the photoprogram tables are unnecessary since we already have linking tables, just use those. Keeping these scripts in case I want them
 -- Create PhotoProgram lookup table
 -- drop table [PhotoProgram]

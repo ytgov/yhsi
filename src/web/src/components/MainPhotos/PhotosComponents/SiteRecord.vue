@@ -81,6 +81,19 @@
                       :readonly="mode == 'view'"
                     ></v-checkbox>
                   </v-col>
+                  <v-col
+                    cols="6"
+                  >
+                    <v-combobox
+                      v-model="itemLinks"
+                      label="Item Links"
+                      multiple
+                      readonly
+                      dense
+                      outlined
+                      class="read-only-form-item"
+                    ></v-combobox>
+                  </v-col>
                 </v-row>
               </v-container>
             </v-form>
@@ -88,6 +101,9 @@
 </template>
 
 <script>
+import axios from "axios";
+import { EXTRA_PHOTOS_URL } from "../../../urls";
+
 export default {
     name: "siteRecord",
     props: [ 'fields', 'mode' ],
@@ -97,8 +113,16 @@ export default {
           v => !!v || 'This input is required',
           v => v.length <= 20 || 'This input must be less than 20 characters',
       ],
+      itemLinks: []
     }),
   created(){
+    if(this.fields.rowId) {
+      axios.get(`${EXTRA_PHOTOS_URL}/${this.fields.rowId}/item-link`).then((resp) => {
+        let itemNames = resp.data;
+        itemNames = itemNames.map(a => a.itemName);
+        this.itemLinks = itemNames;
+      });
+    }
   },
   methods:{
   },
