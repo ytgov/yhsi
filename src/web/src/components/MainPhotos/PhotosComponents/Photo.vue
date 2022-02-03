@@ -75,6 +75,32 @@
                       ></v-rating>
                     </div>
 
+                    <v-checkbox
+                      v-model="fields.isComplete"
+                      :label="'Is Complete?'"
+                      dense
+                      outlined
+                      background-color="white"
+                      hide-details
+                      :readonly="mode == 'view'"
+                    ></v-checkbox>
+
+                    <v-checkbox
+                      v-model="fields.isPrivate"
+                      :label="'Is Private?'"
+                      class="default mb-5" 
+                      dense
+                      outlined
+                      background-color="white"
+                      hide-details
+                      :readonly="mode == 'view'"
+                    ></v-checkbox>
+                  </v-col>
+
+                  <v-col
+                    cols="6"
+                  >
+                  
                     <v-select
                         v-model="fields.ownerId"
                         :items="ownerOptions"
@@ -117,32 +143,7 @@
                         :readonly="mode == 'view'"
                         :class="{ 'read-only-form-item': mode == 'view' }"
                     ></v-select>
-
-                    <v-checkbox
-                      v-model="fields.isComplete"
-                      :label="'Is Complete?'"
-                      dense
-                      outlined
-                      background-color="white"
-                      hide-details
-                      :readonly="mode == 'view'"
-                    ></v-checkbox>
-
-                    <v-checkbox
-                      v-model="fields.isPrivate"
-                      :label="'Is Private?'"
-                      class="default mb-5" 
-                      dense
-                      outlined
-                      background-color="white"
-                      hide-details
-                      :readonly="mode == 'view'"
-                    ></v-checkbox>
-                  </v-col>
-
-                  <v-col
-                    cols="6"
-                  >
+                    
                     <v-select
                       v-model="fields.subjects"
                       multiple
@@ -163,6 +164,7 @@
                     <v-textarea
                       v-model="fields.caption"
                       label="Caption"
+                      rows="3"
                       required
                       class="default mb-5" 
                       dense
@@ -175,6 +177,7 @@
                     <v-textarea
                       v-model="fields.comments"
                       label="Comments"
+                      rows="3"
                       required
                       class="default mb-5" 
                       dense
@@ -187,6 +190,7 @@
                     <v-textarea
                       v-model="fields.creditLine"
                       label="Credit Line"
+                      rows="3"
                       required
                       class="default mb-5" 
                       dense
@@ -199,6 +203,7 @@
                     <v-textarea
                       v-model="fields.legacyBatchInfo"
                       label="Legacy Batch"
+                      rows="3"
                       required
                       dense
                       outlined
@@ -233,6 +238,10 @@ export default {
   created(){
     axios.get(`${STATIC_URL}/photo-owner`).then((resp) => {
       this.ownerOptions = resp.data.data;
+      this.ownerOptions = this.ownerOptions
+        .slice()
+        .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : b.name.toLowerCase() > a.name.toLowerCase() ? -1 : 0)
+      );
     });
 
     axios.get(`${STATIC_URL}/photo-copyright`).then((resp) => {

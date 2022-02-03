@@ -1,28 +1,27 @@
 <template>
-  <v-row justify="center">
     <v-dialog v-model="dialog" persistent max-width="600px" @click:outside="reset()">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn v-bind="attrs" v-on="on" class="black--text mx-1">
-          <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-          Add Vessel Type
+        <v-btn v-bind="attrs" v-on="on" color="secondary" :disabled="isDisabled">
+          <v-icon class="mr-1">mdi-check</v-icon>
+          Save Filter(s)
         </v-btn>
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">New Vessel Type</span>
+          <span class="text-h7">What would you like to call this filter?</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
                 <v-form
-                  ref="addVesselTypeForm"
+                  ref="saveFilterForm"
                   :lazy-validation="false"
                   v-model="valid"
                 >
                   <v-text-field
-                    label="Vessel Name"
-                    v-model="input"
+                    placeholder="Enter a name"
+                    v-model="filterName"
                     :rules="generalRules"
                   ></v-text-field>
                 </v-form>
@@ -31,24 +30,22 @@
           </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-btn text @click="closeDialog"> Close </v-btn>
+          <v-btn text @click="closeDialog" class="black--text"> Close </v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="success" text :disabled="!valid" @click="save">
+          <v-btn color="success" text :disabled="!valid" @click="onSave">
             Save
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-row>
 </template>
 
 <script>
-import catalogs from "../../../../controllers/catalogs";
 export default {
-  props: [],
+  props: ['query', 'isDisabled'],
   data: () => ({
     dialog: false,
-    input: null,
+    filterName: null,
     valid: false,
     generalRules: [(v) => !!v || "This field is required"],
   }),
@@ -58,22 +55,20 @@ export default {
       this.reset();
       this.resetValidation();
     },
-    async save() {
-      let data = {
-        vesselType: { Type: this.input },
-      };
-      await catalogs.postVesselType(data);
-      this.$router.go();
+    onSave() {
+      this.$emit('saveFilter',this.filterName);
+      this.closeDialog();
     },
-    //not needed
     validate() {
-      this.$refs.addVesselTypeForm.validate();
+      this.$refs.saveFilterForm.validate();
     },
     reset() {
-      this.$refs.addVesselTypeForm.reset();
+      this.filterName = null;
+      this.dialog = false;
+      this.$refs.saveFilterForm.reset();
     },
     resetValidation() {
-      this.$refs.addVesselTypeForm.resetValidation();
+      this.$refs.saveFilterForm.resetValidation();
     },
   },
 };

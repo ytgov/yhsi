@@ -121,7 +121,7 @@ export class YtPlaceService {
                 //.leftOuterJoin("firstnationassociation", "Place.id", "firstnationassociation.placeId")
                 //.leftOuterJoin("constructionPeriod", "Place.id", "constructionPeriod.placeId")
             //.leftOuterJoin("revisionLog", "Place.id", "revisionLog.placeId")
-            //.leftOuterJoin("description", "Place.id", "description.placeId");
+            //.leftOuterJoin("description", "Place.id", "description.placeId"); 
 
             if (query && query.length > 0) {
 

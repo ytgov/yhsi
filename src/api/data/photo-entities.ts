@@ -86,3 +86,11 @@ export class PhotoBatchPhoto {
     photoFileName!: string;
     photoContentType!: string;
 }
+
+export class SavedFilter {
+    id!: number;
+    userId!: number;
+    name!: string;
+    resultType!: string;
+    value!: string;
+}

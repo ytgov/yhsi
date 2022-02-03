@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "vue-affix": "^0.5.2",
-    "vue-json-csv": "^1.2.12"
+    "vue-json-csv": "^1.2.12",
+    "vue-query-builder": "^0.8.2"
   }
 }

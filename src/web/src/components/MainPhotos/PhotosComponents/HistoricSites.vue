@@ -137,6 +137,7 @@
                     <v-textarea
                       v-model="fields.originalRecord"
                       label="Original Media Record"
+                      rows="3"
                       required
                       dense
                       outlined

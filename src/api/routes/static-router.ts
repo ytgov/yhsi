@@ -200,6 +200,11 @@ staticRouter.get("/photo-owner", async (req: Request, res: Response) => {
     return res.json({ data: list });
 });
 
+staticRouter.get("/photo-rating", async (req: Request, res: Response) => {
+    let list = await staticService.getPhotoRatings();
+    return res.json({ data: list });
+});
+
 staticRouter.get("/photo-owner/:id",
     [check("id").isInt().notEmpty()],
     async (req: Request, res: Response) => {
