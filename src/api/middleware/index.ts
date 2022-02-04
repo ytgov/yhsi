@@ -8,10 +8,11 @@ export function RequiresAuthentication(
 	next: NextFunction
 ) {
 	// DJPRATT temporary hack to get around login issue
-	//return next();
+	return next();
+	/*
 	if (req.oidc.isAuthenticated()) {
 		return next();
-	}
+	}*/
 
 	res.status(401).send('Not authenticated'); //;.redirect('/api/auth/login');
 }
