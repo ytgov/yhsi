@@ -25,7 +25,7 @@ import store from "../store";
 export default {
   name: "Login",
   data: () => ({
-    loginLink: `http://${config.apiBaseUrl}/api/auth/login`,
+    loginLink: `${config.apiBaseUrl}/api/auth/login`,
     title: `Welcome to ${config.applicationName}`,
   }),
   async created() {
@@ -33,7 +33,7 @@ export default {
     var isAuthenticated = store.getters.isAuthenticated;
 
     if (isAuthenticated) {
-      router.push("/");
+      router.push("/dashboard");
     }
   },
 };
