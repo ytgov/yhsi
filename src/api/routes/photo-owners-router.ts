@@ -13,7 +13,7 @@ photoOwnersRouter.get(
     query('page').default(0).isInt(),
     query('limit').default(10).isInt({ gt: 0 }),
     query('textToMatch').default('').isString(),
-    query('sortBy').default('ownerid').isString(),
+    query('sortBy').default('Name').isString(),
     query('sort').default('asc').isString(),
   ],
   ReturnValidationErrors,
@@ -28,7 +28,7 @@ photoOwnersRouter.get(
 
     let counter = 0;
     let owners = [];
-  
+
     if (textToMatch) {
       owners = await db
         .select('*')
@@ -45,7 +45,7 @@ photoOwnersRouter.get(
         .limit(limit)
         .offset(offset);
     }
-  
+
     res.status(200).send({ body: owners });
   }
 );
