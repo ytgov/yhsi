@@ -27,7 +27,7 @@ export default {
       });
   },
   async postBoatPhoto(data) {
-    return await apiP.post(`photos/boat/new`,data)
+    return await apiP.post(`photos/boat`,data)
     .then(res => {
       return res.data;
     }).catch(error =>{
@@ -46,7 +46,7 @@ export default {
     });
   },
   async postAirCrashPhoto(data) {
-    return await apiP.post(`photos/aircrash/new`,data)
+    return await apiP.post(`photos/aircrash`,data)
     .then(res => {
       return res.data;
     }).catch(error =>{
@@ -92,7 +92,7 @@ export default {
     });
   },
   async postPersonPhoto(data) {
-    return await apiP.post(`photos/people/new`,data)
+    return await apiP.post(`photos/people`,data)
     .then(res => {
       return res.data;
     }).catch(error =>{
