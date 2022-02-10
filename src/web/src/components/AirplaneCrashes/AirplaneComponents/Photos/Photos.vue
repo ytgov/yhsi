@@ -421,7 +421,7 @@ export default {
       Program: null,
       IsComplete: false,
       Rating: 1,
-      isPirvate: 0,
+      isPrivate: 0,
       
     },
     //selection options

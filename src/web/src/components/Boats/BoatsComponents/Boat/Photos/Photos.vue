@@ -423,7 +423,7 @@ export default {
       Program: null,
       IsComplete: false,
       Rating: 1,
-      isPirvate: 0,
+      isPrivate: 0,
     },
     sendObj: null,
     //selection options
@@ -541,13 +541,14 @@ export default {
       this.overlay = true;
       this.sendObj = this.fields;
       let {
-        IsComplete,
+        IsComplete, 
         Program,
         CommunityId,
         Copyright,
         OriginalMediaId,
         UsageRights,
       } = this.sendObj;
+      console.log("sendobj", this.fields);
       this.sendObj.BoatId = Number(this.boatID);
       this.sendObj.IsComplete = IsComplete ? 1 : 0;
       this.sendObj.Program = Program.value;
@@ -562,8 +563,8 @@ export default {
       }
       formData.append("file", this.file);
       await photos.postBoatPhoto(formData);
-      this.reset();
-      this.$router.go();
+      //this.reset();
+      //this.$router.go();
       this.overlay = false;
     },
     async saveAndLink() {
