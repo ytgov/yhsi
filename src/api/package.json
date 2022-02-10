@@ -1,7 +1,7 @@
 {
-  "name": "oracle_connector",
+  "name": "yhsi-api",
   "version": "1.0.0",
-  "description": "Orace connector for Node.js",
+  "description": "API for YHSI Application",
   "main": "server.js",
   "scripts": {
     "start": "nodemon index.ts",
@@ -25,7 +25,7 @@
     "moment": "^2.29.1",
     "mssql": "^6.3.1",
     "multer": "1.4.3",
-    "sharp": "0.28.3"
+    "sharp": "0.26.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
