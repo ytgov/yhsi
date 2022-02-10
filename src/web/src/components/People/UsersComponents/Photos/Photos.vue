@@ -527,6 +527,7 @@ export default {
         x.selected = false;
         return x;
       });
+      
       this.loadingData = false;
       this.updateSelectedImage(0);
       this.loadingPhotosChange(this.loadingData);
@@ -573,12 +574,11 @@ export default {
         .map((x) => {
           return x.RowId;
         });
-        console.log("person id", this.PersonID);
+        //console.log("person id", this.PersonID);
         
-      await photos.linkPersonPhotos(Number(this.PersonID), {
+        await photos.linkPersonPhotos(Number(this.PersonID), {
         linkPhotos: photosToLink,
       });
-
       this.reset();
       this.$router.go();
     },
