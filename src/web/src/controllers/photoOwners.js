@@ -8,7 +8,7 @@ export default {
         limit,
         textToMatch,
         sortBy,
-        sort
+        sort 
       }
     })
       .then(res => {
