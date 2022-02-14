@@ -10,7 +10,7 @@ import _ from 'lodash';
 export const photosExtraRouter = express.Router();
 const db = knex(DB_CONFIG);
 
-const upload = multer.default();
+const upload = multer();
 
 //GET ALL AVAILABLE PHOTOS
 photosExtraRouter.get(
