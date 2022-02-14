@@ -7,6 +7,7 @@ import {
 	SortDirection,
 	SortStatement,
 	StaticService,
+	PlaceService,
 } from '../services';
 import {
 	AlternateName,
@@ -34,6 +35,7 @@ import {
 import { ReturnValidationErrors } from '../middleware';
 
 const ytPlaceService = new YtPlaceService(DB_CONFIG);
+const placeService = new PlaceService(DB_CONFIG);
 const staticService = new StaticService(DB_CONFIG);
 const photoService = new PhotoService(DB_CONFIG);
 const PAGE_SIZE = 10;
@@ -139,7 +141,7 @@ ytPlaceRouter.post(
 
 		let { nTSMapSheet } = req.body;
 
-		let newId = await ytPlaceService.generateIdFor(nTSMapSheet);
+		let newId = await placeService.generateIdFor(nTSMapSheet);
 
 		res.json({ data: { yHSIId: newId, nTSMapSheet } });
 	}
