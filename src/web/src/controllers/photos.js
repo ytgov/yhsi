@@ -42,18 +42,6 @@ export default {
 				console.log(error);
 			});
 	},
-	//AIRCRASH PHOTOS
-	async linkBoatPhotos(id, data) {
-		return await api
-			.post(`photos/boat/link/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.log(error);
-			});
-	},
 	// Aircrashes
 	async getByYACSINumber(yacsinumber) {
 		return await api

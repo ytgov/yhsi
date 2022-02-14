@@ -416,7 +416,19 @@ const routes = [
 		name: 'placeAddView',
 		component: PlacesForm,
 	},
-
+	{
+		path: '/admin/placetype',
+		name: 'PlaceTypeGrid',
+		component: PlaceTypeGrid,
+	},
+	{
+		path: '/places',
+		name: 'PlacesGrid',
+		component: PlacesGrid,
+		meta: {
+			requiresAuth: false,
+		},
+	},
 	{
 		path: '*',
 		name: 'Not Found',
