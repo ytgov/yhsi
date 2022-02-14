@@ -514,8 +514,8 @@ export default {
           params: {
             page: this.page - 1,
             limit: 6,
-            textToMatch: this.searchPhotos
-          }
+            textToMatch: this.searchPhotos,
+          },
         })
         .then((resp) => {
           if (resp) {
@@ -523,33 +523,35 @@ export default {
               // Todo: use thumbnail files whenever fetching all. Need to create thumbnails for all existing photos first
               //console.log(x);
               //x.File.base64 = `data:image/png;base64,${this.toBase64(x.Thumbfile.data)}`;
-              x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
+              x.File.base64 = `data:image/png;base64,${this.toBase64(
+                x.File.data
+              )}`;
               x.selected = false;
               return x;
             });
             //console.log(data.count);
             this.numberOfPages = Math.round(resp.count / 6);
             this.showSkeletons = false;
-          };       
+          }
         })
-        .catch((error) => console.error(error))
-        ;  
+        .catch((error) => console.error(error));
     },
-    async getDataFromAPI() {  
+    async getDataFromAPI() {
       axios
         .get(`${EXTRA_PHOTOS_URL}/${this.photoType}/${this.itemId}`)
         .then((resp) => {
           if (resp) {
             this.photos = resp.data.map((x) => {
-              x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
+              x.File.base64 = `data:image/png;base64,${this.toBase64(
+                x.File.data
+              )}`;
               x.selected = false;
               return x;
             });
             this.updateSelectedImage(0);
-          };       
+          }
         })
-        .catch((error) => console.error(error))
-        ;  
+        .catch((error) => console.error(error));
     },
     async getOwners() {
       this.isLoadingOwner = true;
@@ -557,12 +559,13 @@ export default {
         .get(`${STATIC_URL}/photo-owner`)
         .then((resp) => {
           if (resp) {
-            this.owners = resp.data.data.slice().sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+            this.owners = resp.data.data
+              .slice()
+              .sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
             this.isLoadingOwner = false;
-          };       
+          }
         })
-        .catch((error) => console.error(error))
-        ;  
+        .catch((error) => console.error(error));
     },
     async savePhoto() {
       this.overlay = true;
@@ -575,7 +578,7 @@ export default {
         OriginalMediaId,
         UsageRights,
       } = this.sendObj;
-      
+
       // Set the proper item id based on photoType
       switch (this.photoType) {
         case "ytplace":
@@ -586,7 +589,7 @@ export default {
           break;
         case "aircrash":
           this.sendObj.yacsiNumber = String(this.itemId);
-          break;         
+          break;
       }
       delete this.sendObj.itemId;
 
@@ -608,10 +611,9 @@ export default {
         .then(() => {
           this.reset();
           this.$router.go();
-          this.overlay = false;  
+          this.overlay = false;
         })
-        .catch((error) => console.error(error))
-        ;  
+        .catch((error) => console.error(error));
     },
     async saveAndLink() {
       let photosToLink = this.availablePhotos
@@ -619,15 +621,16 @@ export default {
         .map((x) => {
           return x.RowId;
         });
-      
+
       axios
-        .post(`${EXTRA_PHOTOS_URL}/${this.photoType}/link/${this.itemId}`, { linkPhotos: photosToLink })
+        .post(`${EXTRA_PHOTOS_URL}/${this.photoType}/link/${this.itemId}`, {
+          linkPhotos: photosToLink,
+        })
         .then(() => {
           this.reset();
-          this.$router.go();     
+          this.$router.go();
         })
-        .catch((error) => console.error(error))
-        ;  
+        .catch((error) => console.error(error));
     },
     toBase64(arr) {
       return btoa(
