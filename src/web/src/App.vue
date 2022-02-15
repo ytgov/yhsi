@@ -80,8 +80,14 @@
             <v-list-item to="/boats">
               <v-list-item-title>Boats & Owners</v-list-item-title>
             </v-list-item>
+            <v-list-item to="/burials">
+              <v-list-item-title>Burials</v-list-item-title>
+            </v-list-item>
             <v-list-item to="/places">
               <v-list-item-title>Places</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/people">
+              <v-list-item-title>People</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -140,14 +146,19 @@
       <v-container fluid :class="`${isSites($route.path, true)}`">
         <v-row>
           <v-col :class="`${isSites($route.path, false)}`">
-            <router-view
-              v-on:showError="showError"
-              v-on:showSuccess="showSuccess"
-              v-on:showAPIMessages="showAPIMessages"
-            ></router-view>
-            <notifier ref="notifier"></notifier>
+            <!-- 
+              <router-view
+                v-on:showError="showError"
+                v-on:showSuccess="showSuccess"
+                v-on:showAPIMessages="showAPIMessages"
+              ></router-view>
+              <notifier ref="notifier"></notifier>
+            -->
+            <router-view></router-view>
+            <RequestAlert/>
           </v-col>
         </v-row>
+        
       </v-container>
     </v-main>
 
@@ -160,11 +171,12 @@ import router from "./router";
 import store from "./store";
 import * as config from "./config";
 import { mapState } from "vuex";
+import RequestAlert from "./components/RequestAlert.vue";
 import { LOGOUT_URL } from "./urls";
 
 export default {
   name: "App",
-  components: {},
+  components: { RequestAlert },
   computed: {
     ...mapState(["isAuthenticated", "user", "showAppSidebar"]),
     username() {
@@ -191,8 +203,8 @@ export default {
     applicationName: config.applicationName,
     applicationIcon: config.applicationIcon,
     sections: config.sections,
-    hasSidebar: false, //config.hasSidebar,
-    hasSidebarClosable: false, //config.hasSidebarClosable
+    hasSidebar: config.hasSidebar,
+    hasSidebarClosable: config.hasSidebarClosable,
     currentId: 0,
   }),
   created: async function () {
@@ -200,9 +212,11 @@ export default {
     this.hasSidebar = this.$route.path.startsWith("/sites/");
     this.currentId = this.$route.params.id;
 
+    //this.hasSidebar = true;
     await store.dispatch("checkAuthentication");
   },
   watch: {
+
     isAuthenticated: function (val) {
       if (!val) this.hasSidebar = false;
       else this.hasSidebar = store.getters.showAppSidebar;
@@ -212,7 +226,7 @@ export default {
         this.currentId = this.$route.params.id;
       }
 
-      this.hasSidebar = val; // && this.isAuthenticated;
+      this.hasSidebar = val && this.isAuthenticated;
     },
   },
   methods: {
@@ -229,7 +243,14 @@ export default {
       window.location = LOGOUT_URL;
     },
     isSites(route, chooser) {
+       if(chooser)
+         return (route.includes('sites') || route.includes('photos') || route.includes('users') 
+               || route.includes('photo-owners') || route.includes('communities')) ? 'siteslp' :  '';
+       else
+         return (route.includes('sites') || route.includes('photos') || route.includes('users') 
+               || route.includes('photo-owners') || route.includes('communities')) ? 'sitesnp' :  '';
       //this function helps to show certain classes depending on the route
+      /*
       if (chooser)
         return route.includes("sites/") || route.includes("photos")
           ? "siteslp"
@@ -238,6 +259,7 @@ export default {
         return route.includes("sites/") || route.includes("photos")
           ? "sitesnp"
           : "";
+          */
     },
     showHistory() {
       this.$refs.historySidebar.show();

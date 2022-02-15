@@ -204,7 +204,6 @@ export class PhotoService {
 				data,
 				meta: { page, page_size, item_count: count, page_count },
 			};
-			//console.log(data);
 
 			resolve(results);
 		});

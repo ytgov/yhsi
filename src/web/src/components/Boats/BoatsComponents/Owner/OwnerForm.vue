@@ -56,7 +56,7 @@
       <v-col cols="6">
         <v-row>
           <v-col cols="6">
-            <v-text-field
+            <v-text-field outlined dense
               v-if="mode != 'view'"
               v-model="fields.OwnerName"
               label="Owner Name"
@@ -82,7 +82,7 @@
                           v-if="mode != 'view'"
                           v-on:submit.prevent
                         >
-                          <v-text-field
+                          <v-text-field outlined dense
                             v-if="editTableAlias == index"
                             label="Alias"
                             v-model="helperAlias"

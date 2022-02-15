@@ -3,11 +3,12 @@
         <v-row>
             <v-col cols="12" class="d-flex">
                 <v-text-field
-                flat
+                outlined dense
                 prepend-icon="mdi-magnify"
                 class="mx-4"
                 hide-details
                 label="Search"
+                
                 v-model="search"
                 v-if="mode != 'new'"
                 ></v-text-field>
@@ -20,26 +21,29 @@
         <v-row>
             <v-col cols="12" >
                 <v-card>
+                    <h2 class="mx-4 mt-2">{{ numberOfResults }} results out of {{pagination.itemsLength}}</h2>
+                    <v-divider inset></v-divider>
                     <v-data-table
                         :headers="headers"
                         :items="data"
-                        :search="search"
-                        :footer-props="{'items-per-page-options': [10, 30, 100]}"
+                        :search="search" @pagination="yourMethod"
+                        :options="options"
+                        :footer-props="{'items-per-page-options': [10, 20, 30, 100]}"
                     >
                         <template v-slot:body.prepend="{}" v-if="addingItem">
                             <tr>
                                 <td>
-                                    <v-textarea
+                                    <v-textarea outlined dense class="mt-3"
                                     v-model="historicRecordHelper"
                                     ></v-textarea>
                                 </td>
                                 <td>
-                                    <v-textarea
+                                    <v-textarea outlined dense class="mt-3"
                                     v-model="referenceHelper"
                                     ></v-textarea>
                                 </td>
                                 <td>
-                                    <v-tooltip bottom>
+                                    <v-tooltip top>
                                         <template v-slot:activator="{ on, attrs }">
                                                 <v-btn v-if="boatID"
                                                 v-bind="attrs"
@@ -80,7 +84,7 @@
                         </template>
                         <template v-slot:item.HistoryText="{ item, index }">
                             <div v-if="editTable == index">
-                                <v-textarea
+                                <v-textarea outlined dense class="mt-3"
                                 v-model="historicRecordHelper "
                                 ></v-textarea>
                             </div>
@@ -88,26 +92,13 @@
                         </template>
                         <template v-slot:item.Reference="{ item, index }">
                             <div v-if="editTable == index">
-                                <v-textarea
+                                <v-textarea outlined dense class="mt-3"
                                 v-model="referenceHelper"
                                 ></v-textarea>
                             </div>
                             <div v-else>{{item.Reference}}</div>
                         </template>
                         <template v-slot:item.actions="{  index, item }">
-                            <v-tooltip bottom v-if="editTable != index">
-                                <template v-slot:activator="{ on, attrs }">
-                                        <v-btn 
-                                        v-bind="attrs"
-                                        v-on="on"
-                                        icon class="black--text"   @click="changeEditTable(index,item)">
-                                            <v-icon
-                                                small
-                                            > mdi-pencil</v-icon>
-                                        </v-btn>
-                                </template>
-                                <span>Edit</span>
-                            </v-tooltip>
                             <v-tooltip bottom v-if="editTable == index">
                                 <template v-slot:activator="{ on, attrs }">
                                         <v-btn v-if="boatID"
@@ -131,6 +122,20 @@
                                 </template>
                                 <span>Save changes</span>
                             </v-tooltip>
+                            <v-tooltip bottom v-if="editTable != index">
+                                <template v-slot:activator="{ on, attrs }">
+                                        <v-btn 
+                                        v-bind="attrs"
+                                        v-on="on"
+                                        icon class="black--text"   @click="changeEditTable(index,item)">
+                                            <v-icon
+                                                small
+                                            > mdi-pencil</v-icon>
+                                        </v-btn>
+                                </template>
+                                <span>Edit</span>
+                            </v-tooltip>
+                            
                             <v-tooltip bottom v-if="editTable == index">
                                 <template v-slot:activator="{ on, attrs }">
                                         <v-btn 
@@ -179,6 +184,8 @@ export default {
         referenceHelper: "",
         overlay: false,
         addingItem: false,
+        options: { itemsPerPage: 20},
+        pagination: { itemsLength: 0 }
     }),
     mounted(){
         console.log("in mounted with data");
@@ -186,6 +193,10 @@ export default {
         this.data = this.historicRecords;
     },
     methods:{
+        yourMethod(pagination) {
+            console.log(pagination) // length of filtered/searched items in Vuetify data-table
+            this.pagination = pagination;
+        },
         //functions for editing the table values
         changeEditTable(index, item){
             this.editTable = index;
@@ -278,6 +289,11 @@ export default {
         },
         cancelItem(){
             this.addingItem = false;
+        }
+    },
+    computed: {
+        numberOfResults(){
+           return this.pagination.itemsLength < this.pagination.itemsPerPage ? this.pagination.itemsLength :  this.pagination.itemsPerPage;
         }
     },
     watch:{

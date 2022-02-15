@@ -33,8 +33,8 @@ export default {
     var isAuthenticated = store.getters.isAuthenticated;
 
     if (isAuthenticated) {
-      router.push("/");
+      router.push("/dashboard");
     }
-  }
+  },
 };
 </script>

@@ -79,7 +79,7 @@
           Add Owner
         </v-btn>
 
-        <JsonCSV :data="owners">
+        <JsonCSV :data="owners"  name="owner_data.csv">
           <v-btn class="black--text mx-1" :disabled="owners.length == 0">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
@@ -98,7 +98,7 @@
           Add Boat
         </v-btn>
 
-        <JsonCSV :data="boats">
+        <JsonCSV :data="boats"  name="boat_data.csv">
           <v-btn class="black--text mx-1" :disabled="boats.length == 0">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export

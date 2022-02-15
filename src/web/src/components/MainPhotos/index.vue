@@ -221,7 +221,7 @@ export default {
     storeRowId() {
       if(this.$store.getters["photos/rowId"]) {
         localStorage.currentRowId = this.$store.getters["photos/rowId"];
-      };
+      }
     },
     loadItem() {
       axios
