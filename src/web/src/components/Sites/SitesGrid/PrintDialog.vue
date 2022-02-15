@@ -42,6 +42,9 @@
 </template>
 
 <script>
+//import { jsPDF } from "jspdf";
+import 'jspdf-autotable';
+//import _ from 'lodash';
 export default {
   props: ["dialog", "sitename"],
   data: () => ({

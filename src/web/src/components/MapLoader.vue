@@ -534,7 +534,7 @@ export default {
       // If there is a mapsheet already prepopulate the options array with it so it shows on page load
       if (this.modifiableFields.mapSheet) {
         this.mapSheetOptions = [ { id: this.modifiableFields.mapSheet, name: this.modifiableFields.mapSheet }];
-      };
+      }
       this.dd = {
         lat: this.modifiableFields.lat,
         lng: this.modifiableFields.long,
@@ -745,6 +745,7 @@ export default {
       })
     }
   },
+
   computed: {
     isOutsideYukon() {
       let { lat, long } = this.modifiableFields;

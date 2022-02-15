@@ -218,7 +218,7 @@ export default {
     // Get search text when searching from view screen
     if(this.$store.getters["photos/searchText"]) {
       this.search = this.$store.getters["photos/searchText"];
-    };
+    }
 
     this.setQueryFilters();
     this.getDataFromApi();

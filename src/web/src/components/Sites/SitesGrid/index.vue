@@ -1,28 +1,48 @@
 <template>
-  <div class="books">
-    <h1>Sites</h1>
-
-    <v-text-field
-      v-model="search"
-      label="Search"
-      dense
-      outlined
-      append-icon="mdi-magnify"
-      @click:append="doSearch"
-      hint="Enter criteria and press enter"
-      @keyup="keyUp"
-    ></v-text-field>
-
-    <v-data-table
-      dense
-      :items="items"
-      :headers="headers"
-      :options.sync="options"
-      :loading="loading"
-      :server-items-length="totalLength"
-      @click:row="handleClick"
-      :footer-props="{ 'items-per-page-options': items_per_page }"
-    ></v-data-table>
+  <div class="">
+    <v-container fluid>
+      <v-row>
+        <v-col cols="12">
+          <h2>Sites</h2>
+        </v-col>
+      </v-row>
+      <v-divider class="mb-5"></v-divider>
+      <v-row>
+        <v-col cols="12">
+          <v-text-field
+            v-model="search"
+            label="Search"
+            dense
+            outlined
+            append-icon="mdi-magnify"
+            @click:append="doSearch"
+            hint="Enter criteria and press enter"
+            @keyup="keyUp"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <h2>{{ items.length }} Results</h2>
+          <!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
+        </v-col>
+      </v-row>
+      <v-divider inset class="mb-2"></v-divider>
+      <v-row>
+        <v-col>
+          <v-data-table
+            dense
+            :items="items"
+            :headers="headers"
+            :options.sync="options"
+            :loading="loading"
+            :server-items-length="totalLength"
+            @click:row="handleClick"
+            :footer-props="{ 'items-per-page-options': items_per_page }"
+          ></v-data-table>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -52,6 +72,9 @@ export default {
     pageCount: 0,
     iteamsPerPage: 10,
   }),
+  mounted() {
+    this.getDataFromApi();
+  },
   created() {
     this.search = store.getters.search;
   },
@@ -101,7 +124,6 @@ export default {
         .then((resp) => {
           this.items = resp.data.data;
           this.totalLength = resp.data.meta.item_count;
-          this.loading = false;
         })
         .catch((err) => console.error(err))
         .finally(() => {

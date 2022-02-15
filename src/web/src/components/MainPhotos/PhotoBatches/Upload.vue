@@ -106,7 +106,7 @@ export default {
     storeRowId() {
       if(this.$store.getters["photos/batchId"]) {
         localStorage.currentBatchId = this.$store.getters["photos/batchId"];
-      };
+      }
     },
     loadBatch() {
       this.loading = true;

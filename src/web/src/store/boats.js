@@ -1,3 +1,5 @@
+
+
 const state = {
     selectedFilters: [],
     ownerSearch: "",
@@ -22,10 +24,10 @@ const mutations = {
     setSelectedFilters(state, arr) {
         state.selectedFilters = arr;
     },
-    setBoats(state, arr) {
+    setBoats(state, arr){
         state.boats = arr;
     },
-    setOwners(state, arr) {
+    setOwners(state, arr){
         state.owners = arr;
     }
 };
