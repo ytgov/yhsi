@@ -163,8 +163,6 @@ export default {
                     )
                   : false
               );
-        // Djpratt testing
-        console.log(data);
         return data;
       } else {
         return this.boats;
