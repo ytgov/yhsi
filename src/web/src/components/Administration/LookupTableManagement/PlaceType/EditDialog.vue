@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialog" persistent max-width="600px">
+    <v-dialog v-model="dialog" persistent max-width="600px" @click:outside="reset()">
       <v-card>
         <v-card-title>
           <span class="text-h5">Edit Place Type</span>
@@ -62,6 +62,7 @@ export default {
       this.$refs.editPlaceTypeForm.validate();
     },
     reset() {
+      this.dialog = false;
       this.$refs.editPlaceTypeForm.reset();
     },
     resetValidation() {

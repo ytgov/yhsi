@@ -9,7 +9,6 @@ import LoginComplete from '../views/LoginComplete';
 import Profile from '../views/Profile';
 import store from '../store';
 import SitesForm from '../components/Sites';
-
 import Summary from '../components/Sites/SitesForms/Summary';
 import Location from '../components/Sites/SitesForms/Location';
 import Dates from '../components/Sites/SitesForms/Dates';
@@ -49,6 +48,13 @@ import BurialsForm from '../components/Burials/BurialsComponents/Form';
 import PlacesGrid from '../components/Places/PlacesGrid';
 import PlaceTypeGrid from '../components/Administration/LookupTableManagement/PlaceType/PlaceType';
 import PlacesForm from '../components/Places/PlacesComponents/PlacesForm';
+import PhotoBatchGrid from "../components/MainPhotos/PhotoBatches/Grid";
+import PhotoBatchUpload from "../components/MainPhotos/PhotoBatches/Upload";
+import PhotoBatchAttributes from "../components/MainPhotos/PhotoBatches/Attributes";
+import CommunityGrid from "../components/Administration/LookupTableManagement/Community/CommunityGrid";
+import PhotoOwnerGrid from "../components/Administration/LookupTableManagement/PhotoOwner/PhotoOwnerGrid";
+import PhotoProjectGrid from "../components/Administration/LookupTableManagement/PhotoProject/PhotoProjectGrid";
+import PhotoSubjectGrid from "../components/Administration/LookupTableManagement/PhotoSubject/PhotoSubjectGrid";
 
 Vue.use(VueRouter);
 
@@ -229,57 +235,57 @@ const routes = [
 			},
 		],
 	},
+
 	{
-		path: '/photos/edit/:id',
-		name: 'PhotosFormEdit',
+		path: "/photos/:mode",
+		name: "PhotosForm",
 		component: MainPhotos,
-		meta: {
-			requiresAuth: false,
-		},
+		meta: { requiresAuth: false },
 		children: [
 			{
-				path: 'feature',
-				component: Feature,
+			path: "feature",
+			component: Feature
 			},
 			{
-				path: 'site_record',
-				component: SiteRecord,
+			path: "site_record",
+			component: SiteRecord
 			},
 			{
-				path: 'historic_sites',
-				component: HistoricSites,
+			path: "historic_sites",
+			component: HistoricSites
 			},
 			{
-				path: 'photo',
-				component: Photo,
-			},
-		],
+			path: "photo",
+			component: Photo
+			}
+		]
 	},
+	
 	{
-		path: '/photos/add',
-		name: 'PhotosFormAdd',
-		component: MainPhotos,
-		meta: {
-			requiresAuth: false,
+	path: "/photos/add",
+	name: "PhotosFormAdd",
+	component: MainPhotos,
+	meta: {
+		requiresAuth: false
+	},
+	children: [
+		{
+		path: "feature", 
+		component: Feature
 		},
-		children: [
-			{
-				path: 'feature',
-				component: Feature,
-			},
-			{
-				path: 'site_record',
-				component: SiteRecord,
-			},
-			{
-				path: 'historic_sites',
-				component: HistoricSites,
-			},
-			{
-				path: 'photo',
-				component: Photo,
-			},
-		],
+		{
+		path: "site_record",
+		component: SiteRecord
+		},
+		{
+		path: "historic_sites",
+		component: HistoricSites
+		},
+		{
+		path: "photo", 
+		component: Photo
+		}
+	]
 	},
 	{
 		path: '/boats',
@@ -428,7 +434,42 @@ const routes = [
 		meta: {
 			requiresAuth: false,
 		},
+	},	
+	{
+		path: "/admin/community",
+		name: "CommunityGrid",
+		component: CommunityGrid
 	},
+	{
+	path: "/admin/photo-owner",
+	name: "PhotoOwnerGrid",
+	component: PhotoOwnerGrid
+	},
+	{
+	path: "/admin/photo-project",
+	name: "PhotoProjectGrid",
+	component: PhotoProjectGrid
+	},
+	{
+	path: "/admin/photo-subject",
+	name: "PhotoSubjectGrid",
+	component: PhotoSubjectGrid
+	},
+	{
+	path: "/photobatches",
+	name: "PhotoBatchGrid",
+	component: PhotoBatchGrid
+	},
+	{
+	path: "/photobatches/upload",
+	name: "PhotoBatchUpload",
+	component: PhotoBatchUpload
+	},
+	{
+	path: "/photobatches/attributes/:mode",
+	name: "PhotoBatchAttributes",
+	component: PhotoBatchAttributes
+	}, 
 	{
 		path: '*',
 		name: 'Not Found',

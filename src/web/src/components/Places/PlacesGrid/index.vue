@@ -187,10 +187,6 @@ export default {
       axios
         .post(`${YTPLACE_URL}/search`, body)
         .then((resp) => {
-          // Djpratt testing
-          /*console.log(body);
-          console.log(`${YTPLACE_URL}/search`);
-          console.log(resp.data);*/
           this.places = resp.data.data;
           this.totalLength = resp.data.meta.item_count;
 
@@ -216,12 +212,12 @@ export default {
           this.loading = false;
         });
       },
-      formatDate (date) {
-          if (!date) return null
-          date = date.substr(0, 10);
-          const [year, month, day] = date.split('-')
-          return `${month}/${day}/${year}`
-      },
+    formatDate (date) {
+        if (!date) return null
+        date = date.substr(0, 10);
+        const [year, month, day] = date.split('-')
+        return `${month}/${day}/${year}`
+    },
     getPlaceTypeNames(placeTypes) {
       if (!placeTypes) return null;  
       placeTypes = placeTypes.map((x) => (x = x.placeType));
@@ -286,12 +282,12 @@ export default {
       },        
   },
   watch: {/* eslint-disable */
-        options: {
-            handler () {
-                this.getDataFromApi()
-            },
-            deep: true,
-        }, 
+    options: {
+        handler () {
+            this.getDataFromApi()
+        },
+        deep: true,
+    }, 
   }
 };
 </script>

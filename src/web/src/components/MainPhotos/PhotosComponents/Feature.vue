@@ -1,78 +1,146 @@
 <template>
-  <div>
+  <div>   
           <v-card-title primary-title>
             Feature
           </v-card-title>
           <v-divider inset></v-divider>
-          <v-form v-model="valid">
+          <v-form 
+            v-model="valid" 
+            ref="featureForm"
+            :lazy-validation="false"
+          >
               <v-container>
                 <v-row>
                   <v-col
                     cols="6"
                   >
                      <v-text-field
+                      v-if="itemType == 'photo'"
                       v-model="fields.featureName"
+                      class="default mb-5"      
                       label="Feature Name"
+                      :rules="generalRules"
                       required
+                      dense
+                      outlined
+                      background-color="white"
+                      hide-details
+                      :readonly="mode == 'view'"
+                    ></v-text-field>
+                    <v-text-field
+                      v-if="itemType == 'batch'"
+                      v-model="fields.name"
+                      class="default mb-5"      
+                      label="Batch Name"
+                      :rules="generalRules"
+                      required
+                      dense
+                      outlined
+                      background-color="white"
+                      hide-details
+                      :readonly="mode == 'view'"
                     ></v-text-field>
 
                     <v-textarea
                       v-model="fields.address"
                       label="Address"
                       required
+                      dense
+                      outlined
+                      background-color="white"
+                      hide-details
+                      :readonly="mode == 'view'"
+                      rows="3"
                     ></v-textarea>
                   </v-col>
 
-                  <v-col
-                    cols="6"
-                  >
-                    <v-combobox
-                        v-model="fields.communityName"
-                        label="Community"
-                    ></v-combobox>
+                  <v-col cols="6">
+                    <v-select
+                      v-model="fields.communityId"
+                      :items="availableCommunities"
+                      :rules="generalRules"
+                      clearable
+                      item-text="name"
+                      item-value="id"
+                      label="Community"
+                      class="default mb-5"
+                      dense
+                      outlined
+                      background-color="white"
+                      hide-details
+                      :readonly="mode == 'view'"
+                      :class="{ 'read-only-form-item': mode == 'view' }"
+                    ></v-select>
 
                      <v-text-field
                       v-model="fields.location"
+                      class="default mb-5"   
                       label="Location"
                       required
+                      dense
+                      outlined
+                      background-color="white"
+                      hide-details
+                      :readonly="mode == 'view'"
                     ></v-text-field>
 
                     <v-text-field
                       v-model="fields.nTSMapNumber"
                       label="NTS Map Number"
                       required
+                      dense
+                      outlined
+                      background-color="white"
+                      hide-details
+                      :readonly="mode == 'view'"
                     ></v-text-field>
                   </v-col>
                 </v-row>
-                <v-btn color="success">Save Changes</v-btn>
               </v-container>
             </v-form>
         </div> 
 </template>
 
 <script>
-/* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
+
+import axios from "axios";
+import { STATIC_URL } from "../../../urls";
+
 export default {
-    name: "formSummary",
-    data: () =>({
-            valid: false,
-            generalRules: [
-                v => !!v || 'This input is required',
-                v => v.length <= 20 || 'This input must be less than 20 characters',
-            ],
-            fields: {
-                /* Placeholder variables below this line **Read above** */
-                search: '',
-                /*Field data from the swaggerhub api docs below this line*/
-                address: "",//
-                communityId: 0,//
-                communityName: "",//
-                featureName: "",//
-                location: "",//
-                nTSMapNumber: "",//
-            }
-    }),
-    methods:{
-    }
+  name: "feature",
+  props: [ 'fields', 'mode', 'itemType' ],
+  data: () =>({
+    valid: false,
+    generalRules: [ v => !!v || 'This input is required' ],
+    availableCommunities: [],
+  }),
+  created(){
+    axios.get(`${STATIC_URL}/community`).then((resp) => {
+      this.availableCommunities = resp.data.data;
+      this.availableCommunities = this.availableCommunities
+        .slice()
+        .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : b.name.toLowerCase() > a.name.toLowerCase() ? -1 : 0)
+      );
+    });
+
+  },
+  methods:{
+    validate() {
+      this.$refs.featureForm.validate();
+    },
+  },
+  watch: {
+    fields: {
+      handler() {
+        this.$emit("featureChange", this.fields);
+      },
+      deep: true,
+    },
+    valid: {
+      handler() {
+        this.$emit("featureValidChange", this.valid);
+      }
+    },
+  }
 }
 </script>
