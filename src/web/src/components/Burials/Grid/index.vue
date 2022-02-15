@@ -87,11 +87,6 @@
                 @click:row="handleClick"
                 :footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
               >
-                <template v-slot:item.crashlocation="{ item }">
-                  <div style="width: 200px">
-                    {{ item.crashlocation }}
-                  </div>
-                </template>
               </v-data-table>
             </v-col>
           </v-row>

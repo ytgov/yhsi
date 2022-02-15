@@ -327,6 +327,7 @@
                  </v-row>
             </v-col>
         </v-row>
+      </v-col>
 <!-- Additional information -->
         <v-row>
             <v-col cols="12">
