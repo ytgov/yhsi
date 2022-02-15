@@ -13,3 +13,4 @@ export const PHOTO_URL = `${config.apiBaseUrl}/api/photo`;
 export const YTPLACE_URL = `${config.apiBaseUrl}/api/ytplace`;
 export const YTPLACEHISTORY_URL = `${config.apiBaseUrl}/api/ytplacehistory`;
 export const EXTRA_PHOTOS_URL = `${config.apiBaseUrl}/api/extras/photos`;
+export const PHOTO_BATCH_URL = `${config.apiBaseUrl}/api/photobatch`;

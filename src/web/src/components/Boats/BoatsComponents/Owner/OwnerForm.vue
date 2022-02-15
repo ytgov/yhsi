@@ -367,7 +367,7 @@ export default {
       let currentOwner = {};
 
       if (this.mode == "new") {
-        await owners.post(data);
+        await owners.post(data); 
         this.$router.push(`/boats/owner`);
       } else {
         await owners.put(localStorage.currentOwnerID, data);

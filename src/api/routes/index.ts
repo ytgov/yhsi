@@ -1,5 +1,6 @@
 
 export * from "./photo-router";
+export * from "./photo-batch-router";
 export * from "./place-router";
 export * from "./register-router";
 export * from "./static-router";

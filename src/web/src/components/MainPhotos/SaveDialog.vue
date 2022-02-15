@@ -1,27 +1,32 @@
 <template>
     <v-dialog v-model="dialog" persistent max-width="600px" @click:outside="reset()">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn v-bind="attrs" v-on="on" color="secondary" :disabled="isDisabled">
+        <v-btn v-if="itemType == 'filter'" v-bind="attrs" v-on="on" color="secondary" :disabled="isDisabled">
           <v-icon class="mr-1">mdi-check</v-icon>
           Save Filter(s)
+        </v-btn>
+        <v-btn v-if="itemType == 'photobatch'" v-bind="attrs" v-on="on" :disabled="isDisabled" class="black--text mx-1">
+          <v-icon class="mr-1">mdi-plus-circle-outline</v-icon> 
+          Add Batch
         </v-btn>
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h7">What would you like to call this filter?</span>
+          <span v-if="itemType == 'filter'" class="text-h7">What would you like to name this filter?</span>
+          <span v-if="itemType == 'photobatch'" class="text-h7">What would you like to name this photo batch?</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
                 <v-form
-                  ref="saveFilterForm"
+                  ref="itemForm"
                   :lazy-validation="false"
                   v-model="valid"
                 >
                   <v-text-field
                     placeholder="Enter a name"
-                    v-model="filterName"
+                    v-model="itemName"
                     :rules="generalRules"
                   ></v-text-field>
                 </v-form>
@@ -42,10 +47,10 @@
 
 <script>
 export default {
-  props: ['query', 'isDisabled'],
+  props: ['itemType', 'isDisabled'],
   data: () => ({
     dialog: false,
-    filterName: null,
+    itemName: null,
     valid: false,
     generalRules: [(v) => !!v || "This field is required"],
   }),
@@ -56,19 +61,19 @@ export default {
       this.resetValidation();
     },
     onSave() {
-      this.$emit('saveFilter',this.filterName);
+      this.$emit('saveDialog',this.itemName);
       this.closeDialog();
     },
     validate() {
-      this.$refs.saveFilterForm.validate();
+      this.$refs.itemForm.validate();
     },
     reset() {
-      this.filterName = null;
+      this.itemName = null;
       this.dialog = false;
-      this.$refs.saveFilterForm.reset();
+      this.$refs.itemForm.reset();
     },
     resetValidation() {
-      this.$refs.saveFilterForm.resetValidation();
+      this.$refs.itemForm.resetValidation();
     },
   },
 };

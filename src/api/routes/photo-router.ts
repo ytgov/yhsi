@@ -6,6 +6,7 @@ import { Photo, SavedFilter } from "../data";
 import multer from "multer";
 import { createThumbnail } from "../utils/image";
 import { ReturnValidationErrors } from "../middleware";
+import sharp from "sharp";
 
 const photoService = new PhotoService(DB_CONFIG);
 const PAGE_SIZE = 12;
@@ -178,8 +179,8 @@ photoRouter.post("/", multer().single("file"),
         body("isSiteDefault").notEmpty().bail().isBoolean(),
         body("isPrivate").notEmpty().bail().isBoolean() 
     ],
-    async (req: Request, res: Response) => {
-        const errors = validationResult(req); 
+    async (req: Request, res: Response) => { 
+        const errors = validationResult(req);  
         req.body.file = req.file.buffer;
         req.body.thumbFile = await createThumbnail(req.file.buffer);
         req.body.originalFileName = req.file.originalname;  
@@ -213,9 +214,9 @@ photoRouter.put("/:id", multer().single('file'),
         body("isSiteDefault").notEmpty().bail().isBoolean() , 
         body("isPrivate").notEmpty().bail().isBoolean() 
     ],
-    async (req: Request, res: Response) => {
+    async (req: Request, res: Response) => { 
         let updater = req.body;
-        const errors = validationResult(req);    
+        const errors = validationResult(req);  
         
         delete updater.file;
 
@@ -303,7 +304,7 @@ photoRouter.get("/saved-filter/:id",
             })
     });
 
-    photoRouter.get("/saved-filter/user/:id",
+photoRouter.get("/saved-filter/user/:id",
         [
             check("id").notEmpty().isInt()
         ],

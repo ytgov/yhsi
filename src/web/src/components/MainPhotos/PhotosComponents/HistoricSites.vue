@@ -159,7 +159,7 @@ import { STATIC_URL } from "../../../urls";
 
 export default {
   name: "historicSites",
-  props: [ 'fields', 'mode' ],
+  props: [ 'fields', 'mode' ,'itemType' ],
   data: () =>({
     valid: false,
     generalRules: [ v => !!v || 'This input is required' ],

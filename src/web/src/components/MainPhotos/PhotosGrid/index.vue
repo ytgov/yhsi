@@ -75,7 +75,7 @@
               View Results
             </div>
           </v-btn>    
-            <SaveDialog @saveFilter="saveFilter" :isDisabled="queryBuilderEmpty" />
+            <SaveDialog @saveDialog="saveDialog" :isDisabled="queryBuilderEmpty" :itemType="`filter`" />
           </v-row>
           </div>
       </v-card> 
@@ -163,7 +163,7 @@
 import axios from "axios";
 //import Search from "../PhotosComponents/Search";
 import QueryMultiSelect from "./QueryMultiSelect";
-import SaveDialog from "./SaveDialog";
+import SaveDialog from "../SaveDialog";
 import { PHOTO_URL, STATIC_URL } from "../../../urls";
 import VueQueryBuilder from 'vue-query-builder';
 import Vue from "vue";
@@ -482,7 +482,7 @@ export default {
     });
   },
 
-  saveFilter(filterName) {
+  saveDialog(filterName) {
     let query = JSON.stringify(this.queryBuilder.children);
     // TODO - set userId once users are set up
     let body = { userId: 99, name: filterName, resultType: "Photo", value: query}

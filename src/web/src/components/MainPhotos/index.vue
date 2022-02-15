@@ -100,6 +100,7 @@
               v-if="infoLoaded"
               :fields="fields"
               :mode="mode"
+              :itemType="'photo'"
               @featureChange="featureChange"   
               @featureValidChange="featureValidChange" 
             /> 
@@ -109,6 +110,7 @@
               v-if="infoLoaded"
               :fields="fields"
               :mode="mode"
+              :itemType="'photo'"
               @siteRecordChange="siteRecordChange" 
             />
           </div>
@@ -117,6 +119,7 @@
               v-if="infoLoaded"
               :fields="fields"
               :mode="mode"
+              :itemType="'photo'"
               @historicSiteChange="historicSiteChange" 
               @siteValidChange="siteValidChange"
             />
@@ -126,6 +129,7 @@
               v-if="infoLoaded && imageLoaded"
               :fields="fields"
               :mode="mode"
+              :itemType="'photo'"
               @photoChange="photoChange" 
               @photoValidChange="photoValidChange" 
               @photoRotate="photoRotate"
@@ -395,7 +399,7 @@ export default {
     },
     createPhoto() {
       if(!this.fields.file) {
-        alert('Select a photo to upload');
+        this.$emit("showError", 'Select a photo to upload');
       } else {
         this.imageLoaded = false;
         this.infoLoaded = false;
