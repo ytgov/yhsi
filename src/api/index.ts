@@ -10,7 +10,7 @@ import { RequiresAuthentication } from './middleware';
 
 
 import { userRouter, placeRouter, photoRouter, registerRouter, staticRouter, ytPlaceRouter, peopleRouter, photoOwnersRouter } from "./routes";
-import { boatsRouter, ownerRouter, aircrashRouter, historiesRouter, catalogsRouter, usersExtraRouter, photosExtraRouter } from "./routes";
+import { boatsRouter, ownerRouter, aircrashRouter, historiesRouter, catalogsRouter, usersExtraRouter, photosExtraRouter, burialsRouter } from "./routes";
 
 
 /*
@@ -101,6 +101,7 @@ app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
 app.use('/api/photos', photosExtraRouter);
 app.use('/api/users', usersExtraRouter);
 app.use('/api/people', peopleRouter);
+app.use('/api/burials', burialsRouter);
 // app.use('/api/extras/photos', RequiresAuthentication, photosExtraRouter);
 // app.use('/api/extras/users', RequiresAuthentication, usersExtraRouter);
 

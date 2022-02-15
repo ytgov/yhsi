@@ -106,7 +106,7 @@ import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
 import PrintButton from "./PrintButton";
 import _ from "lodash";
-import aircrash from "../../../controllers/aircrash";
+import burials from "../../../controllers/burials";
 export default {
   name: "boatsgrid-index",
   components: { Breadcrumbs, JsonCSV, PrintButton },
@@ -116,18 +116,20 @@ export default {
     crashsites: [],
     search: "",
     headers: [
-      { text: "YACSI Number", value: "yacsinumber" },
-      { text: "Crash Date", value: "crashdate" },
-      { text: "Aircraft Type", value: "aircrafttype" },
-      { text: "Aircraft Registration", value: "aircraftregistration" },
-      { text: "Country of Registration", value: "nation" },
-      { text: "Registration Type", value: "militarycivilian" },
-      { text: "Location Description", value: "crashlocation" },
-      { text: "Pilot First Name", value: "pilotfirstname" },
-      { text: "Pilot Last Name", value: "pilotlastname" },
-      { text: "Souls Onboard", value: "soulsonboard" },
-      { text: "Injuries", value: "injuries" },
-      { text: "Fatalities", value: "fatalities" },
+      { text: "LastName", value: "LastName" },
+      { text: "FirstName", value: "FirstName" },
+      { text: "Gender", value: "Gender" },
+      { text: "BirthYear", value: "BirthYear" },
+      { text: "DeathYear", value: "DeathYear" },
+      { text: "Manner", value: "Manner" },
+      { text: "CauseID", value: "CauseID" },
+      { text: "CementaryID", value: "CementaryID" },
+      { text: "OtherCemetaryDesc", value: "OtherCemetaryDesc" },
+      { text: "OriginCity", value: "OriginCity" },
+      { text: "OriginState", value: "OriginState" },
+      { text: "OriginCountry", value: "OriginCountry" },
+      { text: "OtherCountry", value: "OtherCountry" },
+
     ],
     //table options
     page: 0,
@@ -175,13 +177,14 @@ export default {
       page = page > 0 ? page - 1 : 0;
       itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
       let textToMatch = this.search;
-      let data = await aircrash.get(
+      let data = await burials.get(
         page,
         itemsPerPage,
         textToMatch,
         sortBy[0],
         sortDesc[0] ? "desc" : "asc"
       );
+      console.log(data);
       this.crashsites = data.body;
       this.totalLength = data.count;
       this.crashsites.map((x) => {

@@ -14,3 +14,4 @@ export * from "./users-extras-router";
 export * from "./ytplace-router";
 export * from "./photo-owners-router";
 export * from "./people-router";
+export * from "./burials-router";
