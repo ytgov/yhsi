@@ -172,7 +172,7 @@ export default {
           this.$emit("showSucess", 'Batch added');
         })
         .catch((err) => {
-          this.$emit("showError", err);
+          this.$emit("showError", err); 
         });
     },
   },
