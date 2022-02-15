@@ -38,7 +38,7 @@ export class YtPlaceService {
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<YtPlace>> {
-		return this.knex('place.place')
+		return this.knex('Place.place')
 			.select<YtPlace[]>(YTPLACE_FIELDS)
 			.orderBy('id')
 			.offset(skip)
@@ -46,11 +46,11 @@ export class YtPlaceService {
 	}
 
 	async getById(id: number): Promise<YtPlace | undefined> {
-		return this.knex('place.place')
+		return this.knex('Place.place')
 			.select<YtPlace>(YTPLACE_FIELDS)
 			.where({ id: id })
 			.first()
-			.catch((err: Error) => {
+			.catch((err) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});
@@ -58,7 +58,7 @@ export class YtPlaceService {
 
 	async getPlaceCount(): Promise<number> {
 		return new Promise(async (resolve, reject) => {
-			let results = await this.knex<number>('place.place').count('*', {
+			let results = await this.knex<number>('Place.place').count('*', {
 				as: 'count',
 			});
 
@@ -72,42 +72,23 @@ export class YtPlaceService {
 	}
 
 	async addPlace(item: YtPlace): Promise<YtPlace | undefined> {
-		return this.knex('place.place')
+		return this.knex('Place.place')
 			.insert(item)
-			.returning<YtPlace>(PLACE_FIELDS);
+			.returning<YtPlace>(YTPLACE_FIELDS);
 	}
 
 	async updatePlace(id: number, item: YtPlace): Promise<YtPlace | undefined> {
-		return this.knex('place.place').where({ id }).update(item);
-	}
-
-	async generateIdFor(nTSMapSheet: string): Promise<string> {
-		let maxPlace = await this.knex('place.place')
-			.where({ nTSMapSheet })
-			.max('yhsiId', { as: 'maxVal' });
-
-		if (maxPlace && maxPlace.length == 1 && maxPlace[0].maxVal) {
-			let val = maxPlace[0].maxVal;
-			let parts = val.split('/');
-			let lastPart = parseInt(parts[2]);
-
-			lastPart++;
-
-			let strVal = lastPart.toString().padStart(3, '0');
-			return `${nTSMapSheet}/${strVal}`;
-		}
-
-		return `${nTSMapSheet}/001`;
+		return this.knex('Place.place').where({ id }).update(item);
 	}
 
 	async getPlaceTypesFor(id: number): Promise<PlaceType[]> {
-		return this.knex('place.placetype')
+		return this.knex('Place.placetype')
 			.where({ placeId: id })
 			.select<PlaceType[]>(['placeId', 'placeTypeLookupId']);
 	}
 
 	async getPlaceTypeNames(): Promise<Array<PlaceTypeLookup>> {
-		return this.knex<PlaceTypeLookup>('place.PlaceTypeLookup').select(
+		return this.knex<PlaceTypeLookup>('Place.PlaceTypeLookup').select(
 			'id',
 			'placeType'
 		);
@@ -115,7 +96,7 @@ export class YtPlaceService {
 
 	// Note "fnDesription" is a typo in the table column
 	async getFirstNationNamesFor(id: number): Promise<FirstNationName[]> {
-		return this.knex('place.FirstNationName')
+		return this.knex('Place.FirstNationName')
 			.where({ placeId: id })
 			.select<FirstNationName[]>([
 				'id',
@@ -127,13 +108,13 @@ export class YtPlaceService {
 	}
 
 	async getAlternateNamesFor(id: number): Promise<AlternateName[]> {
-		return this.knex('place.AlternateName')
+		return this.knex('Place.AlternateName')
 			.where({ placeId: id })
 			.select<AlternateName[]>(['id', 'placeId', 'alternateName']);
 	}
 
 	async getPlaceHistoriesFor(id: number): Promise<PlaceHistory[]> {
-		return this.knex('place.PlaceHistory')
+		return this.knex('Place.PlaceHistory')
 			.where({ placeId: id })
 			.select<PlaceHistory[]>([
 				'id',
@@ -145,191 +126,57 @@ export class YtPlaceService {
 	}
 
 	async getPlacePhotosFor(id: number): Promise<PlacePhoto[]> {
-		return this.knex('place.PlacePhoto')
+		return this.knex('Place.PlacePhoto')
 			.where({ placeId: id })
 			.select<PlacePhoto[]>(['id', 'placeId', 'photoRowId']);
 	}
 
 	async getFNAssociationsFor(id: number): Promise<FnAssociation[]> {
-		return this.knex('place.FnAssociation')
+		return this.knex('Place.FnAssociation')
 			.where({ placeId: id })
 			.select<FnAssociation[]>([
 				'placeId',
 				'firstNationId',
-				'fNAssociationType',
+				'fnAssociationType',
 			]);
 	}
 
-	async addFNAssociation(name: FnAssociation) {
-		return this.knex('place.FnAssociation').insert(name);
+	async addFNAssociation(fnAssoc: FnAssociation) {
+		return this.knex('Place.FnAssociation').insert(fnAssoc);
 	}
 
-	// Need to match by placeId and firstNationId
-	async removeFNAssociation(id: number) {
-		return this.knex('place.FnAssociation').where({ id }).delete();
+	async removeFNAssociation(fnAssoc: FnAssociation) {
+		return this.knex('Place.FnAssociation').where(fnAssoc).delete();
 	}
 
-	async getNamesFor(id: number) {
-		return this.knex('name')
+	async addFirstNationName(name: FnAssociation) {
+		return this.knex('Place.FirstNationName').insert(name);
+	}
+
+	async removeFirstNationName(nameId: number) {
+		return this.knex('Place.FirstNationName').where({ id: nameId }).delete();
+	}
+
+	async getAltNamesFor(id: number) {
+		return this.knex('Place.AlternateName')
 			.where({ placeId: id })
-			.select<Name[]>(['id', 'placeId', 'description']);
+			.select<AlternateName[]>(['id', 'placeId', 'alternateName']);
 	}
 
-	async addSecondaryName(name: Name) {
-		return this.knex('name').insert(name);
+	async addAlternateName(name: AlternateName) {
+		return this.knex('Place.AlternateName').insert(name);
 	}
 
-	async removeSecondaryName(id: number) {
-		return this.knex('name').where({ id }).delete();
+	async removeAlternateName(id: number) {
+		return this.knex('Place.AlternateName').where({ id }).delete();
 	}
 
-	async getHistoricalPatternsFor(id: number): Promise<HistoricalPattern[]> {
-		return this.knex('historicalpattern')
-			.where({ placeId: id })
-			.select<HistoricalPattern[]>([
-				'id',
-				'placeId',
-				'comments',
-				'historicalPatternType',
-			]);
+	async addPlaceType(placeType: PlaceType) {
+		return this.knex('Place.PlaceType').insert(placeType);
 	}
 
-	async addHistoricalPattern(name: Name) {
-		return this.knex('historicalpattern').insert(name);
-	}
-
-	async removeHistoricalPattern(id: number) {
-		return this.knex('historicalpattern').where({ id }).delete();
-	}
-
-	async getThemesFor(id: number): Promise<Theme[]> {
-		return this.knex('theme')
-			.where({ placeId: id })
-			.select<Theme[]>(['id', 'placeId', 'placeThemeId']);
-	}
-
-	async addTheme(name: Theme) {
-		return this.knex('theme').insert(name);
-	}
-
-	async removeTheme(id: number) {
-		return this.knex('theme').where({ id }).delete();
-	}
-
-	async getFunctionUsesFor(id: number): Promise<FunctionalUse[]> {
-		return this.knex('FunctionalUse')
-			.where({ placeId: id })
-			.select<FunctionalUse[]>([
-				'id',
-				'placeId',
-				'functionalTypeId',
-				'functionalUseType',
-				'description',
-			]);
-	}
-
-	async addFunctionalUse(name: FunctionalUse) {
-		return this.knex('FunctionalUse').insert(name);
-	}
-
-	async removeFunctionalUse(id: number) {
-		return this.knex('FunctionalUse').where({ id }).delete();
-	}
-
-	async getOwnershipsFor(id: number): Promise<Ownership[]> {
-		return this.knex('Ownership')
-			.where({ placeId: id })
-			.select<Ownership[]>(['id', 'placeId', 'ownershipType', 'comments']);
-	}
-
-	async addOwnership(name: Ownership) {
-		return this.knex('Ownership').insert(name);
-	}
-
-	async removeOwnership(id: number) {
-		return this.knex('Ownership').where({ id }).delete();
-	}
-
-	async addPreviousOwnership(name: PreviousOwnership) {
-		return this.knex('PreviousOwnership').insert(name);
-	}
-
-	async removePreviousOwnership(id: number) {
-		return this.knex('PreviousOwnership').where({ id }).delete();
-	}
-
-	async getContactsFor(id: number): Promise<Contact[]> {
-		return this.knex('Contact')
-			.where({ placeId: id })
-			.select<Contact[]>([
-				'id',
-				'placeId',
-				'firstName',
-				'lastName',
-				'phoneNumber',
-				'email',
-				'mailingAddress',
-				'description',
-				'contactType',
-			]);
-	}
-
-	async addContact(name: Contact) {
-		return this.knex('Contact').insert(name);
-	}
-
-	async removeContact(id: number) {
-		return this.knex('Contact').where({ id }).delete();
-	}
-
-	async getRevisionLogFor(id: number): Promise<RevisionLog[]> {
-		return this.knex('RevisionLog')
-			.where({ placeId: id })
-			.select<RevisionLog[]>([
-				'id',
-				'placeId',
-				'revisionLogType',
-				'revisionDate',
-				'revisedBy',
-				'details',
-			])
-			.orderBy('revisionDate');
-	}
-
-	async addRevisionLog(name: RevisionLog) {
-		return this.knex('RevisionLog').insert(name);
-	}
-
-	async removeRevisionLog(id: number) {
-		return this.knex('RevisionLog').where({ id }).delete();
-	}
-
-	async getWebLinksFor(id: number): Promise<WebLink[]> {
-		return this.knex('WebLink')
-			.where({ placeId: id })
-			.select<WebLink[]>(['id', 'placeId', 'type', 'address']);
-	}
-
-	async addWebLink(name: WebLink) {
-		return this.knex('WebLink').insert(name);
-	}
-
-	async removeWebLink(id: number) {
-		return this.knex('WebLink').where({ id }).delete();
-	}
-
-	async getDescriptionsFor(id: number): Promise<Description[]> {
-		return this.knex('Description')
-			.where({ placeId: id })
-			.select<Description[]>(['id', 'placeId', 'descriptionText', 'type']);
-	}
-
-	async addDescription(name: Description) {
-		return this.knex('Description').insert(name);
-	}
-
-	async removeDescription(id: number) {
-		return this.knex('Description').where({ id }).delete();
+	async removePlaceType(placeType: PlaceType) {
+		return this.knex('Place.PlaceType').where(placeType).delete();
 	}
 
 	getFNAssociationTypes(): GenericEnum[] {
@@ -348,13 +195,13 @@ export class YtPlaceService {
 		take: number
 	): Promise<any> {
 		return new Promise(async (resolve, reject) => {
-			let selectStmt = this.knex('place.place')
+			let selectStmt = this.knex('Place.place')
 				.distinct()
 				.select(YTPLACE_FIELDS);
-			//.leftOuterJoin("firstnationassociation", "place.id", "firstnationassociation.placeid")
-			//.leftOuterJoin("constructionPeriod", "place.id", "constructionPeriod.placeid")
-			//.leftOuterJoin("revisionLog", "place.id", "revisionLog.placeid")
-			//.leftOuterJoin("description", "place.id", "description.placeid");
+			//.leftOuterJoin("firstnationassociation", "Place.id", "firstnationassociation.placeId")
+			//.leftOuterJoin("constructionPeriod", "Place.id", "constructionPeriod.placeId")
+			//.leftOuterJoin("revisionLog", "Place.id", "revisionLog.placeId")
+			//.leftOuterJoin("description", "Place.id", "description.placeId");
 
 			if (query && query.length > 0) {
 				query.forEach((stmt: any) => {
@@ -411,11 +258,11 @@ export class YtPlaceService {
 					selectStmt.orderBy(stmt.field, stmt.direction);
 				});
 			} else {
-				selectStmt.orderBy('place.id');
+				selectStmt.orderBy('Place.id');
 			}
 
 			let fullData = await selectStmt;
-			let uniqIds = _.uniq(fullData.map((i: any) => i.id));
+			let uniqIds = _.uniq(fullData.map((i) => i.id));
 			let count = uniqIds.length;
 			let page_count = Math.ceil(count / page_size);
 

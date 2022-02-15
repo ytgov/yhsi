@@ -1,6 +1,6 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response } from 'express';
 import { DB_CONFIG } from '../config';
-import knex from "knex";
+import knex from 'knex';
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 

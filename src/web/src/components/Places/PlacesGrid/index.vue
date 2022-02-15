@@ -54,7 +54,7 @@
               Add Place
             </v-btn>
 
-            <JsonCSV :data="places" >
+            <JsonCSV :data="placesCsv" >
               <v-btn  class="black--text mx-1" :disabled="places.length == 0">
                 <v-icon class="mr-1">
                   mdi-export
@@ -63,7 +63,7 @@
               </v-btn>
             </JsonCSV>
 
-            <PrintButton key="prt-2" :data="{places}" :disabled="places.length == 0"/>
+            <PrintButton key="prt-2" :data="{places: placesCsv}" :disabled="places.length == 0"/>
         </v-col>
     </v-row>
     <div class="mt-2">
@@ -131,6 +131,7 @@ export default {
     route: "",
     loading: false,
     places: [],
+    placesCsv: [],
     search: "",
     headers: [
     //{ text: "Id", value: "id"},
@@ -165,15 +166,15 @@ export default {
   },
   methods: {
     addNewPlace(){
-        this.$router.push(`/place/new`);
+        this.$router.push(`/places/new`);
     },
     placeSearchChange: _.debounce(function () {
         this.getDataFromApi();
-      }, 400),
+    }, 400),
     handleClick(value){   //Redirects the user to the place form component
-          this.$router.push({name: 'placeView', params: { placeId: value.id}});
-      },
-      async getDataFromApi() {
+          this.$router.push({name: 'placeView', params: { id: value.id, name: value.name}});
+    },
+    async getDataFromApi() {
       // modelled from sites getDataFromApi 
       this.loading = true;
 
@@ -187,12 +188,26 @@ export default {
         .post(`${YTPLACE_URL}/search`, body)
         .then((resp) => {
           // Djpratt testing
-          console.log(body);
+          /*console.log(body);
           console.log(`${YTPLACE_URL}/search`);
-          console.log(resp.data);
+          console.log(resp.data);*/
           this.places = resp.data.data;
-          //this.totalLength = resp.data.meta.count || resp.data.meta.count.item_count;
           this.totalLength = resp.data.meta.item_count;
+
+          // Set up places CSV      
+          this.placesCsv = [];
+          this.places.forEach(val => this.placesCsv.push(Object.assign({}, val)));
+
+          this.placesCsv.map((x) => {
+            x.placeTypes = x.placeTypes.map((x) => (x = x.placeType));
+            x.alternateNames = x.alternateNames.map((x) => (x = x.alternateName));
+            x.firstNationNames = x.firstNationNames.map((x) => (x = x.fnName));
+          });
+          this.placesCsv = this.placesCsv.filter((temp) => {
+            delete temp.id;
+            delete temp.notes;
+            return true;
+          });
 
           this.loading = false;
         })
@@ -200,21 +215,6 @@ export default {
         .finally(() => {
           this.loading = false;
         });
-
-      /* from aircrash - using sites getDataFromApi instead
-          this.loading = true;
-          let { page, itemsPerPage, sortBy, sortDesc } = this.options;
-          page = page > 0 ? page-1 : 0;
-          itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
-          let textToMatch = this.search;
-          let data = await aircrash.get(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
-          this.places = data.body;
-          this.totalLength = data.count;
-          this.places.map(x => {
-              x.crashdate = this.formatDate(x.crashdate);
-          });
-          this.loading = false;
-      */
       },
       formatDate (date) {
           if (!date) return null
@@ -222,20 +222,20 @@ export default {
           const [year, month, day] = date.split('-')
           return `${month}/${day}/${year}`
       },
-    // Djpratt TODO actually show all values
     getPlaceTypeNames(placeTypes) {
-      if (!placeTypes) return null;
-      //let owner = owners.filter( x => x.currentowner === true);
-      //console.log(owner);
-      return placeTypes[0].placeType;
+      if (!placeTypes) return null;  
+      placeTypes = placeTypes.map((x) => (x = x.placeType));
+      return placeTypes.toString();
     },
     getAlternateNames(alternateNames) {
       if (!alternateNames) return null;
-      return alternateNames[0].alternateName;
+      alternateNames = alternateNames.map((x) => (x = x.alternateName));
+      return alternateNames.toString();
     },
     getFnNames(fnNames) {
       if (!fnNames) return null;
-      return fnNames[0].fnName;
+      fnNames = fnNames.map((x) => (x = x.fnName));
+      return fnNames.toString();
     },
   },
   computed:{
@@ -257,7 +257,6 @@ export default {
                           )
                         : false
                     );       
-              // Djpratt TODO filter needs to look at all placetypes, not sure the first one
               data =
                 sorters[1].value == null || sorters[1].value == ""
                   ? data
