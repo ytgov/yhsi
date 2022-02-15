@@ -49,3 +49,9 @@ export class Statute {
     description!: string;
     allStatute!: string;
 }
+
+export class MapSheetLookup {
+    id!: number;
+    map50k!: string;
+    map250k!: string;
+}

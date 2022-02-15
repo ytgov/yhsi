@@ -8,6 +8,7 @@ import {
 	PhotoProject,
 	PlaceTheme,
 	Statute,
+	MapSheetLookup,
 } from '../data';
 
 export class StaticService {
@@ -136,6 +137,12 @@ export class StaticService {
 			'description',
 			'allStatute'
 		);
+	}
+
+	async getMapSheets(): Promise<Array<MapSheetLookup>> {
+		return this.knex<MapSheetLookup>('YHIS.MapSheetLookup')
+			.select('id', 'map50k', 'map250k')
+			.orderBy('map50k');
 	}
 
 	getJurisdictions(): GenericEnum[] {

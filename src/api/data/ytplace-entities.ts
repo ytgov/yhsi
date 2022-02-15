@@ -1,5 +1,5 @@
 
-export const YTPLACE_FIELDS = ["place.id", "name", "locationDesc", "latitude", "longitude", "mapSheet", "notes"];
+export const YTPLACE_FIELDS = ["id", "name", "locationDesc", "latitude", "longitude", "mapSheet", "notes", "accuracy"];
 
 export class YtPlace {
 id!: number;
@@ -9,11 +9,12 @@ latitude!: number;
 longitude!: number;
 mapSheet!: string;
 notes!: string;
+accuracy!: string;
 }
 
 export class PlaceType {
     placeId!: number;
-    placeTypeLookupId!: string;
+    placeTypeLookupId!: number;
 }
 
 export class PlaceTypeLookup {
@@ -23,21 +24,21 @@ export class PlaceTypeLookup {
 
 export class FirstNationName {
     id!: number;
-    placeid!: number;
+    placeId!: number;
     fnName!: string;
     fnLanguage!: string;
-    fnDescription!: string;
+    fnDesription!: string;
 }
 
 export class AlternateName {
     id!: number;
-    placeid!: number;
+    placeId!: number;
     alternateName!: string;
 }
 
 export class PlaceHistory {
     id!: number;
-    placeid!: number;
+    placeId!: number;
     historyText!: string;
     reference!: string;
     restricted!: number;
@@ -45,12 +46,12 @@ export class PlaceHistory {
 
 export class PlacePhoto {
     id!: number;
-    placeid!: number;
+    placeId!: number;
     photoRowId!: number;
 }
 
 export class FnAssociation {
-    placeid!: number;
+    placeId!: number;
     firstNationId!: number;
-    fnAssocationType!: string;
+    fnAssociationType!: number;
 }
