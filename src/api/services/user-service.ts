@@ -1,10 +1,10 @@
-import { knex, Knex } from 'knex';
+import Knex from 'knex';
 
 export class UserService {
 	private knex: Knex;
 
 	constructor(config: Knex.Config<any>) {
-		this.knex = knex(config);
+		this.knex = Knex(config);
 	}
 
 	isConnected(): Promise<boolean> {

@@ -1,4 +1,4 @@
-import { knex, Knex } from 'knex';
+import Knex from 'knex';
 import {
 	Community,
 	FirstNation,
@@ -16,7 +16,7 @@ export class StaticService {
 	private knex: Knex;
 
 	constructor(config: Knex.Config<any>) {
-		this.knex = knex(config);
+		this.knex = Knex(config);
 	}
 
 	async getCommunities(): Promise<Array<Community>> {
