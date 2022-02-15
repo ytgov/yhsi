@@ -16,13 +16,15 @@ burialsRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { textToMatch = '', sortBy = 'LastName', sort = 'asc' } = req.query;
+		const filters = { FirstName: 'Abb'};
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
 		let counter = [{ count: 0 }];
 		let burials = [];
-
-		if (textToMatch) {
+// filter by names, birth and death dates, gender, cause and manner of death, cemetery, other location, country of origin
+		if (textToMatch || filters) {
+			console.log(filters);
 			counter = await db
 				.from('Burial.Burial')
 				.where('FirstName', 'like', `%${textToMatch}%`)
@@ -32,12 +34,27 @@ burialsRouter.get(
                 .orWhere('DeathYear', 'like', `%${textToMatch}%`)
                 .orWhere('Manner', 'like', `%${textToMatch}%`)
                 .orWhere('CauseID', 'like', `%${textToMatch}%`)
-                .orWhere('CementaryID', 'like', `%${textToMatch}%`)
+                .orWhere('CemetaryID', 'like', `%${textToMatch}%`)
                 .orWhere('OtherCemetaryDesc', 'like', `%${textToMatch}%`)
 				.orWhere('OriginCity', 'like', `%${textToMatch}%`)
 				.orWhere('OriginState', 'like', `%${textToMatch}%`)
 				.orWhere('OriginCountry', 'like', `%${textToMatch}%`)
 				.orWhere('OtherCountry', 'like', `%${textToMatch}%`)
+				// test below
+				.andWhere('FirstName', 'like', `%${filters.FirstName}%`)
+				/*
+                .andWhere('LastName', 'like', `%${textToMatch}%`)
+                .andWhere('Gender', 'like', `%${textToMatch}%`)
+                .andWhere('BirthYear', 'like', `%${textToMatch}%`)
+                .andWhere('DeathYear', 'like', `%${textToMatch}%`)
+                .andWhere('Manner', 'like', `%${textToMatch}%`)
+                .andWhere('CauseID', 'like', `%${textToMatch}%`)
+                .andWhere('CemetaryID', 'like', `%${textToMatch}%`)
+                .andWhere('OtherCemetaryDesc', 'like', `%${textToMatch}%`)
+				.andWhere('OriginCity', 'like', `%${textToMatch}%`)
+				.andWhere('OriginState', 'like', `%${textToMatch}%`)
+				.andWhere('OriginCountry', 'like', `%${textToMatch}%`)
+				.andWhere('OtherCountry', 'like', `%${textToMatch}%`)*/
 				.count('BurialID', { as: 'count' });
 
 			burials = await db
@@ -50,12 +67,13 @@ burialsRouter.get(
                 .orWhere('DeathYear', 'like', `%${textToMatch}%`)
                 .orWhere('Manner', 'like', `%${textToMatch}%`)
                 .orWhere('CauseID', 'like', `%${textToMatch}%`)
-                .orWhere('CementaryID', 'like', `%${textToMatch}%`)
+                .orWhere('CemetaryID', 'like', `%${textToMatch}%`)
                 .orWhere('OtherCemetaryDesc', 'like', `%${textToMatch}%`)
 				.orWhere('OriginCity', 'like', `%${textToMatch}%`)
 				.orWhere('OriginState', 'like', `%${textToMatch}%`)
 				.orWhere('OriginCountry', 'like', `%${textToMatch}%`)
 				.orWhere('OtherCountry', 'like', `%${textToMatch}%`)
+				.andWhere('FirstName', 'like', `%${filters.FirstName}%`)
 				.orderBy(`${sortBy}`, `${sort}`)
 				.limit(limit)
 				.offset(offset);
@@ -65,7 +83,6 @@ burialsRouter.get(
 			burials = await db
 				.select('*')
 				.from('Burial.Burial')
-				//.orderBy('boat.boat.id', 'asc')
 				.orderBy(`${sortBy}`, `${sort}`)
 				.limit(limit)
 				.offset(offset);
