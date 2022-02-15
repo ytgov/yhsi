@@ -1,5 +1,6 @@
 
 export * from "./photo-service";
+export * from "./photo-batch-service";
 export * from "./place-service";
 export * from "./static-service";
 export * from "./user-service";

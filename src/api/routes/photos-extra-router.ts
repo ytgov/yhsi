@@ -285,8 +285,8 @@ photosExtraRouter.post('/aircrash', [upload.single('file')],
     res.status(200).send({ message: 'Upload Success' });
   });
 
-  // Add ytplace photo
-  photosExtraRouter.post('/ytplace', [upload.single('file')],
+// Add ytplace photo
+photosExtraRouter.post('/ytplace', [upload.single('file')],
     async (req: Request, res: Response) => {
       const { placeId, ...restBody } = req.body;
       const ThumbFile = await createThumbnail(req.file.buffer);
@@ -311,10 +311,10 @@ photosExtraRouter.post('/aircrash', [upload.single('file')],
           return newPlacePhoto;
         });
       res.status(200).send({ message: 'Upload Success' });
-    });
+});
 
-    // Get item links as an array of strings
-    photosExtraRouter.get("/:id/item-link", 
+// Get item links as an array of strings
+photosExtraRouter.get("/:id/item-link", 
     [param("id").notEmpty()], ReturnValidationErrors,
     async (req: Request, res: Response) => {
   

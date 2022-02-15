@@ -15,9 +15,23 @@
                     cols="6"
                   >
                      <v-text-field
+                      v-if="itemType == 'photo'"
                       v-model="fields.featureName"
                       class="default mb-5"      
                       label="Feature Name"
+                      :rules="generalRules"
+                      required
+                      dense
+                      outlined
+                      background-color="white"
+                      hide-details
+                      :readonly="mode == 'view'"
+                    ></v-text-field>
+                    <v-text-field
+                      v-if="itemType == 'batch'"
+                      v-model="fields.name"
+                      class="default mb-5"      
+                      label="Batch Name"
                       :rules="generalRules"
                       required
                       dense
@@ -94,7 +108,7 @@ import { STATIC_URL } from "../../../urls";
 
 export default {
   name: "feature",
-  props: [ 'fields', 'mode' ],
+  props: [ 'fields', 'mode', 'itemType' ],
   data: () =>({
     valid: false,
     generalRules: [ v => !!v || 'This input is required' ],

@@ -85,6 +85,7 @@
                     cols="6"
                   >
                     <v-combobox
+                      v-if="itemType == 'photo'"
                       v-model="itemLinks"
                       label="Item Links"
                       multiple
@@ -106,7 +107,7 @@ import { EXTRA_PHOTOS_URL } from "../../../urls";
 
 export default {
     name: "siteRecord",
-    props: [ 'fields', 'mode' ],
+    props: [ 'fields', 'mode', 'itemType' ],
     data: () =>({
       valid: false,
       generalRules: [

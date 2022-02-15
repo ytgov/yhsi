@@ -25,6 +25,9 @@ import Feature from "../components/MainPhotos/PhotosComponents/Feature";
 import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
 import HistoricSites from "../components/MainPhotos/PhotosComponents/HistoricSites";
 import Photo from "../components/MainPhotos/PhotosComponents/Photo";
+import PhotoBatchGrid from "../components/MainPhotos/PhotoBatches/Grid";
+import PhotoBatchUpload from "../components/MainPhotos/PhotoBatches/Upload";
+import PhotoBatchAttributes from "../components/MainPhotos/PhotoBatches/Attributes";
 
 import Users from "../components/Users/UsersGrid";
 import UserForm from "../components/Users/UsersComponents/Form";
@@ -325,6 +328,22 @@ const routes = [
     name: "PhotoSubjectGrid",
     component: PhotoSubjectGrid
   },
+  {
+    path: "/photobatches",
+    name: "PhotoBatchGrid",
+    component: PhotoBatchGrid
+  },
+  {
+    path: "/photobatches/upload",
+    name: "PhotoBatchUpload",
+    component: PhotoBatchUpload
+  },
+  {
+    path: "/photobatches/attributes/:mode",
+    name: "PhotoBatchAttributes",
+    component: PhotoBatchAttributes
+  }, 
+  
 
   {
     path: "/users",

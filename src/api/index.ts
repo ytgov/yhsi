@@ -3,7 +3,7 @@ import cors from "cors";
 import path from "path";
 import helmet from "helmet";
 
-import { userRouter, placeRouter, photoRouter, registerRouter, staticRouter, ytPlaceHistoryRouter, ytPlaceRouter } from "./routes";
+import { userRouter, placeRouter, photoRouter, photoBatchRouter, registerRouter, staticRouter, ytPlaceHistoryRouter, ytPlaceRouter } from "./routes";
 import { boatsRouter, ownerRouter, aircrashRouter, historiesRouter, catalogsRouter, usersExtraRouter, photosExtraRouter } from "./routes";
 
 import * as config from './config';
@@ -53,6 +53,7 @@ app.use("/api/place", RequiresAuthentication, placeRouter);
 app.use("/api/ytplace", RequiresAuthentication, ytPlaceRouter);
 app.use("/api/ytplacehistory", RequiresAuthentication, ytPlaceHistoryRouter);
 app.use("/api/photo", RequiresAuthentication, photoRouter);
+app.use("/api/photobatch", RequiresAuthentication, photoBatchRouter);
 app.use("/api/register", registerRouter);
 
 

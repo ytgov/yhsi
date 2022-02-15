@@ -176,4 +176,7 @@ export class PhotoService {
             .catch(err => { console.log("BOMBED", err); return undefined; })
     }
 
+    async updateThumbFile(id: string, thumbnail: Buffer): Promise<Photo | undefined> {
+        return this.knex("photo").where({ rowId: id }).update({ ThumbFile: thumbnail }).returning<Photo>(PHOTO_FIELDS);
+    }
 }

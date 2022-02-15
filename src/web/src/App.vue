@@ -68,6 +68,9 @@
             <v-list-item to="/photos">
               <v-list-item-title>Photos</v-list-item-title>
             </v-list-item>
+            <v-list-item to="/photobatches">
+              <v-list-item-title>Photo Batches</v-list-item-title>
+            </v-list-item>
             <v-list-item to="/maps">
               <v-list-item-title>Maps</v-list-item-title>
             </v-list-item>

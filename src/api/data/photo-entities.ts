@@ -6,6 +6,14 @@ export const PHOTO_FIELDS = [
     "usageRights", "isComplete", "imageHeight", "imageWidth", "rating", "subjects", "legacyBatchInfo", "isSiteDefault", "isPrivate"
 ]; 
 
+export const PHOTO_BATCH_FIELDS = [
+    "name", "placeId", "communityId", "nTSMapNumber", "address", "dateCreated",
+    "yHSIRecord", "bordenRecord", "paleoRecord", "archivalRecord", "isOtherRecord", "originalMediaId", "originalRecord", "mediaStorage",
+    "comments", "caption", "copyright", "creditLine", "ownerId", "photoProjectId", "program", "creator", "communityName", "location",
+    "usageRights", "isComplete",  "subjects", "isPrivate"
+]; 
+
+
 export class Photo {
     rowId!: number;
     id!: number;
@@ -51,7 +59,7 @@ export class PhotoBatch {
     id!: number;
     name!: string;
     userId!: number;
-    createDate!: Date;
+    dateCreated!: Date;
     placeId!: number;
     communityId!: number;
     nTSMapNumber!: string;
@@ -77,6 +85,7 @@ export class PhotoBatch {
     usageRights!: number;
     isComplete!: boolean;
     subjects!: string;
+    isPrivate!: boolean;
 }
 
 export class PhotoBatchPhoto {

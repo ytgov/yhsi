@@ -10,7 +10,7 @@
                   <v-col
                     cols="6"
                   >
-                    <div v-if="mode == 'view' && fields.file.base64">
+                    <div v-if="mode == 'view' && fields.file && fields.file.base64">
                       <v-card  class="mx-auto">
                         <v-img
                         :src="fields.file.base64"
@@ -42,13 +42,13 @@
                       <canvas id="canvas" style="display:none"></canvas>
                     </div>
 
-                    <v-img v-if="mode != 'view'"
+                    <v-img v-if="mode != 'view' && itemType == 'photo'" 
                       class="mr-auto ml-auto"
                       max-width="128"
                       :src="require('../../../assets/add_photo.png')">
                       </v-img>
 
-                    <v-file-input v-if="mode != 'view'"
+                    <v-file-input v-if="mode != 'view' && itemType == 'photo'"
                       label="Choose photo to upload"
                       prepend-icon="mdi-camera"
                       accept="image/*"
@@ -60,7 +60,7 @@
                       hide-details
                     ></v-file-input>
 
-                    <div class="d-flex default mb-5">
+                    <div v-if="itemType == 'photo'" class="d-flex default mb-5">
                       <p class="mt-auto mb-auto grey--text text--darken-2">
                         Rating
                       </p>
@@ -201,6 +201,7 @@
                     ></v-textarea>
 
                     <v-textarea
+                      v-if="itemType == 'photo'"
                       v-model="fields.legacyBatchInfo"
                       label="Legacy Batch"
                       rows="3"
@@ -225,7 +226,7 @@ import { STATIC_URL } from "../../../urls";
 
 export default {
   name: "photo",
-  props: [ 'fields', 'mode' ],
+  props: [ 'fields', 'mode' ,'itemType' ],
   data: () =>({
     valid: false,
     generalRules: [ v => !!v || 'This input is required' ],
@@ -314,12 +315,15 @@ export default {
       // Save image file
       let dataUrl = canvas.toDataURL("image/png");
       //console.log(dataUrl);
-      var arr = dataUrl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+      console.log(dataUrl);
+      var arr = dataUrl.split(','), mime = 'img/jpeg',
       bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
       while(n--){
         u8arr[n] = bstr.charCodeAt(n);
       }
+      console.log(u8arr);
       this.fields.file = new File([u8arr], this.fields.originalFileName, {type:mime});
+      console.log(this.fields.file);
       
       this.$emit("photoRotate", this.fields.file);
     }
