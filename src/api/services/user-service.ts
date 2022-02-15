@@ -1,10 +1,10 @@
-import Knex from 'knex';
+import { knex, Knex } from 'knex';
 
 export class UserService {
 	private knex: Knex;
 
 	constructor(config: Knex.Config<any>) {
-		this.knex = Knex(config);
+		this.knex = knex(config);
 	}
 
 	isConnected(): Promise<boolean> {
@@ -18,7 +18,7 @@ export class UserService {
 
 					resolve(false);
 				})
-				.catch((err: Error) => {
+				.catch((err) => {
 					console.error(err);
 					resolve(false);
 				});

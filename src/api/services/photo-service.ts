@@ -1,12 +1,13 @@
-import Knex from 'knex';
+import knex, { Knex } from 'knex';
 import { QueryStatement, SortStatement } from './';
-import { Photo, PHOTO_FIELDS } from '../data';
+import { Photo, PHOTO_FIELDS, SavedFilter } from '../data';
+import _ from 'lodash';
 
 export class PhotoService {
 	private knex: Knex;
 
 	constructor(config: Knex.Config<any>) {
-		this.knex = Knex(config);
+		this.knex = knex(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Photo>> {
@@ -22,7 +23,7 @@ export class PhotoService {
 			.select<Photo>(PHOTO_FIELDS)
 			.where({ rowId: id })
 			.first()
-			.catch((err: Error) => {
+			.catch((err) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});
@@ -32,7 +33,7 @@ export class PhotoService {
 		return this.knex('photo')
 			.select<Photo[]>(PHOTO_FIELDS)
 			.where({ placeId: id })
-			.catch((err: Error) => {
+			.catch((err) => {
 				console.log('BOMBED', err);
 				return new Array<Photo>();
 			});
@@ -43,7 +44,18 @@ export class PhotoService {
 			.select<Photo>('file')
 			.where({ rowId: id })
 			.first()
-			.catch((err: Error) => {
+			.catch((err) => {
+				console.log('BOMBED', err);
+				return undefined;
+			});
+	}
+
+	async getThumbFileById(id: string): Promise<Photo | undefined> {
+		return this.knex('photo')
+			.select<Photo>('thumbFile')
+			.where({ rowId: id })
+			.first()
+			.catch((err) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});
@@ -140,6 +152,15 @@ export class PhotoService {
 							);
 							break;
 						}
+						case 'notcontains': {
+							selectStmt.whereRaw(
+								`LOWER(${stmt.field}) not like '%${stmt.value.toLowerCase()}%'`
+							);
+							countStmt.whereRaw(
+								`LOWER(${stmt.field}) not like '%${stmt.value.toLowerCase()}%'`
+							);
+							break;
+						}
 						default: {
 							console.log(`IGNORING ${stmt.field} on ${stmt.value}`);
 						}
@@ -157,10 +178,11 @@ export class PhotoService {
 
 			let item_count = await countStmt
 				.count('*', { as: 'counter' })
-				.then((t: any) => t)
-				.catch((err: Error) => {
+				.then((t) => t)
+				.catch((err) => {
 					console.log('COUNT Query Error');
-					return reject(err);
+					console.log(err);
+					return reject(err.originalError.info.message);
 				});
 
 			let count = 0;
@@ -172,8 +194,10 @@ export class PhotoService {
 			}
 
 			let page_count = Math.ceil(count / page_size);
+			let fields = _.clone(PHOTO_FIELDS);
+			fields.push('thumbFile');
 			let data = await selectStmt
-				.select<Photo[]>(PHOTO_FIELDS)
+				.select<Photo[]>(fields)
 				.offset(skip)
 				.limit(take);
 			let results = {
@@ -183,5 +207,47 @@ export class PhotoService {
 
 			resolve(results);
 		});
+	}
+
+	async addSavedFilter(item: SavedFilter): Promise<SavedFilter | undefined> {
+		return this.knex('savedFilter')
+			.insert(item)
+			.returning<SavedFilter>(['id', 'userId', 'name', 'resultType', 'value']);
+	}
+
+	async deleteSavedFilter(id: number): Promise<any> {
+		return this.knex('savedFilter').where({ id }).delete();
+	}
+
+	async getSavedFilter(id: string): Promise<SavedFilter | undefined> {
+		return this.knex('savedFilter')
+			.select<SavedFilter>(['id', 'userId', 'name', 'resultType', 'value'])
+			.where({ id: id })
+			.first()
+			.catch((err) => {
+				console.log('BOMBED', err);
+				return undefined;
+			});
+	}
+
+	async getSavedFilterByUser(id: string): Promise<any> {
+		return this.knex('savedFilter')
+			.select<SavedFilter>(['id', 'userId', 'name', 'resultType', 'value'])
+			.where({ userId: id })
+			.where({ resultType: 'Photo' })
+			.catch((err) => {
+				console.log('BOMBED', err);
+				return undefined;
+			});
+	}
+
+	async updateThumbFile(
+		id: string,
+		thumbnail: Buffer
+	): Promise<Photo | undefined> {
+		return this.knex('photo')
+			.where({ rowId: id })
+			.update({ ThumbFile: thumbnail })
+			.returning<Photo>(PHOTO_FIELDS);
 	}
 }

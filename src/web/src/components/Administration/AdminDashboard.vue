@@ -95,19 +95,29 @@ export default {
         url: "/admin/burials/causes",
       },
       {
-        icon: "mdi-camera",
-        text: "Photos - Owner",
-        url: "",
-      },
-      {
-        icon: "mdi-map-marker-multiple",
-        text: "Community",
-        url: "",
+        icon: 'mdi-map-marker-multiple-outline',
+        text: 'Community',
+        url: "/admin/community"
       },
       {
         icon: "mdi-run",
         text: "Contributing Resources",
         url: "",
+      },
+      {
+          icon: 'mdi-camera-outline',
+          text: 'Photo Owner',
+          url: "/admin/photo-owner"
+      },
+      {
+        icon: 'mdi-image-album',
+        text: 'Photo Project',
+        url: "/admin/photo-project"
+      },
+      {
+        icon: 'mdi-image',
+        text: 'Photo Subject',
+        url: "/admin/photo-subject"
       },
       {
         icon: "mdi-home",
@@ -117,11 +127,13 @@ export default {
     ],
     model: 1,
   }),
-  methods: {
-    goTo(url) {
-      if (url == "") return;
-      this.$router.push(url);
-    },
-  },
+  methods:{
+      goTo(url){
+          if(url == "")
+              return;
+          this.$router.push(url);
+      }
+  }
 };
+
 </script>

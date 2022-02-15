@@ -59,21 +59,21 @@
                           <v-col cols="12" class="d-flex my-0 py-0">
                             <v-spacer></v-spacer>
                             <v-checkbox
-                              class="align-self-end"
+                              class="align-self-end" 
                               label="Private"
-                              v-model="fields.isPirvate"
+                              v-model="fields.isPrivate"
                             ></v-checkbox>
                           </v-col>
                         </v-row>
 
-                        <v-text-field
+                        <v-text-field outlined dense
                           v-model="fields.FeatureName"
                           label="Feature Name"
                           :rules="generalRules"
                         >
                         </v-text-field>
 
-                        <v-autocomplete
+                        <v-autocomplete outlined dense
                           @click="getOwners"
                           v-model="fields.OwnerId"
                           :items="owners"
@@ -84,7 +84,7 @@
                           item-text="name"
                           item-value="id"
                         ></v-autocomplete>
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.CommunityId"
                           @click="getCommunities"
                           :items="availableCommunities"
@@ -96,7 +96,7 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.OriginalMediaId"
                           @click="getOriginalMedia"
                           :items="availableOriginalMedia"
@@ -108,7 +108,7 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.Copyright"
                           :items="copyrightOptions"
                           item-value="id"
@@ -117,7 +117,7 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.UsageRights"
                           :items="usageRightOptions"
                           ritem-value="id"
@@ -125,7 +125,7 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
-                        <v-textarea
+                        <v-textarea outlined 
                           v-model="fields.Caption"
                           dense
                           label="Caption"
@@ -134,21 +134,21 @@
                         </v-textarea>
                         <v-textarea
                           v-model="fields.Comments"
-                          dense
+                          outlined dense
                           label="Comments"
                           rows="2"
                         >
                         </v-textarea>
                         <v-textarea
                           v-model="fields.CreditLine"
-                          dense
+                          outlined dense
                           label="Credit Line"
                           rows="2"
                           :rules="generalRules"
                         >
                         </v-textarea>
 
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.Program"
                           :items="programOptions"
                           item-value="value"
@@ -172,7 +172,7 @@
                           ></v-rating>
                         </div>
 
-                        <v-file-input
+                        <v-file-input outlined dense
                           accept="image/*"
                           label="Choose photo for upload"
                           prepend-icon="mdi-camera"
@@ -213,13 +213,13 @@
                 <v-container class="scroll">
                   <v-row>
                     <v-col class="d-flex">
-                      <v-text-field
+                      <v-text-field outlined dense
                         v-model="searchPhotos"
                         @keyup.enter="getAll"
                         label="Search"
                       >
                       </v-text-field>
-                      <v-btn @click="getAll" icon class="mt-auto mb-auto">
+                      <v-btn @click="getAll" icon class="mt-1 mb-1">
                         <v-icon>mdi-magnify</v-icon>
                       </v-btn>
                     </v-col>
@@ -262,8 +262,8 @@
                         <template v-slot:default="{ hover }">
                           <v-card outlined hover>
                             <v-img
-                              :src="item.File.base64"
-                              :lazy-src="item.File.base64"
+                              :src="item.ThumbFile.base64"
+                              :lazy-src="item.ThumbFile.base64"
                               aspect-ratio="1"
                               class="grey lighten-2"
                             ></v-img>
@@ -310,8 +310,8 @@
                                         hover
                                         >
                                             <v-img
-                                                :src="item.File.base64"
-                                                :lazy-src="item.File.base64"
+                                                :src="item.ThumbFile.base64"
+                                                :lazy-src="item.ThumbFile.base64"
                                                 aspect-ratio="1"
                                                 class="grey lighten-2"
                                             >
@@ -424,7 +424,7 @@ export default {
       Program: null,
       IsComplete: false,
       Rating: 1,
-      isPirvate: 0,
+      isPrivate: 0,
     },
     sendObj: null,
     //selection options
@@ -499,6 +499,7 @@ export default {
     //input rules
     ownerRules: [(v) => !!v || "Owner Name is required"],
     generalRules: [(v) => !!v || "This field is required"],
+    loadingData: false
   }),
   mounted() {
     if (this.showDefault) return;
@@ -509,49 +510,45 @@ export default {
     async getAll() {
       this.showSkeletons = true;
       axios
-        .get(`${EXTRA_PHOTOS_URL}/photo-owner`, {
+        .get(`${EXTRA_PHOTOS_URL}`, {
           crossdomain: true,
           params: {
             page: this.page - 1,
             limit: 6,
-            textToMatch: this.searchPhotos,
-          },
+            textToMatch: this.searchPhotos
+          }
         })
         .then((resp) => {
           if (resp) {
             this.availablePhotos = resp.data.body.map((x) => {
-              // Todo: use thumbnail files whenever fetching all. Need to create thumbnails for all existing photos first
-              //console.log(x);
-              //x.File.base64 = `data:image/png;base64,${this.toBase64(x.Thumbfile.data)}`;
-              x.File.base64 = `data:image/png;base64,${this.toBase64(
-                x.File.data
-              )}`;
+              x.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(x.ThumbFile.data)}`;
               x.selected = false;
               return x;
             });
-            //console.log(data.count);
             this.numberOfPages = Math.round(resp.count / 6);
             this.showSkeletons = false;
-          }
+          }      
         })
-        .catch((error) => console.error(error));
+        .catch((error) => console.error(error))
+        ;  
     },
-    async getDataFromAPI() {
+    async getDataFromAPI() {  
       axios
         .get(`${EXTRA_PHOTOS_URL}/${this.photoType}/${this.itemId}`)
         .then((resp) => {
           if (resp) {
+            console.log(resp.data);
             this.photos = resp.data.map((x) => {
-              x.File.base64 = `data:image/png;base64,${this.toBase64(
-                x.File.data
-              )}`;
+              x.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(x.ThumbFile.data)}`;
+              //x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
               x.selected = false;
               return x;
             });
             this.updateSelectedImage(0);
-          }
+          }     
         })
-        .catch((error) => console.error(error));
+        .catch((error) => console.error(error))
+        ;  
     },
     async getOwners() {
       this.isLoadingOwner = true;
@@ -559,19 +556,19 @@ export default {
         .get(`${STATIC_URL}/photo-owner`)
         .then((resp) => {
           if (resp) {
-            this.owners = resp.data.data
-              .slice()
-              .sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+            this.owners = resp.data.data.slice().sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
             this.isLoadingOwner = false;
-          }
+          }       
         })
-        .catch((error) => console.error(error));
+        .catch((error) => console.error(error))
+        ;  
+
     },
     async savePhoto() {
       this.overlay = true;
       this.sendObj = this.fields;
       let {
-        IsComplete,
+        IsComplete, 
         Program,
         CommunityId,
         Copyright,
@@ -589,7 +586,7 @@ export default {
           break;
         case "aircrash":
           this.sendObj.yacsiNumber = String(this.itemId);
-          break;
+          break;         
       }
       delete this.sendObj.itemId;
 
@@ -611,9 +608,11 @@ export default {
         .then(() => {
           this.reset();
           this.$router.go();
-          this.overlay = false;
+          this.overlay = false;  
         })
-        .catch((error) => console.error(error));
+        .catch((error) => console.error(error))
+        ;  
+
     },
     async saveAndLink() {
       let photosToLink = this.availablePhotos
@@ -621,16 +620,15 @@ export default {
         .map((x) => {
           return x.RowId;
         });
-
+      
       axios
-        .post(`${EXTRA_PHOTOS_URL}/${this.photoType}/link/${this.itemId}`, {
-          linkPhotos: photosToLink,
-        })
+        .post(`${EXTRA_PHOTOS_URL}/${this.photoType}/link/${this.itemId}`, { linkPhotos: photosToLink })
         .then(() => {
           this.reset();
-          this.$router.go();
+          this.$router.go();     
         })
-        .catch((error) => console.error(error));
+        .catch((error) => console.error(error))
+        ;  
     },
     toBase64(arr) {
       return btoa(
@@ -664,7 +662,7 @@ export default {
     async getCommunities() {
       this.isLoadingCommunities = true;
       let data = await catalogs.getCommunities();
-      this.availableCommunities = data;
+      this.availableCommunities = data.body;
       this.isLoadingCommunities = false;
     },
     async getOriginalMedia() {
@@ -684,6 +682,9 @@ export default {
       //updates the carousell selected image
       this.$emit("updateSelectedImage", this.photos[val]);
     },
+    loadingPhotosChange(val){
+      this.$emit("loadingPhotosChange", val);
+    }
   },
   watch: {
     page() {
