@@ -1,4 +1,4 @@
-import { knex, Knex } from 'knex';
+import Knex from 'knex';
 import { QueryStatement, SortStatement } from './';
 import {
 	AlternateName,
@@ -34,7 +34,7 @@ export class YtPlaceService {
 	private knex: Knex;
 
 	constructor(config: Knex.Config<any>) {
-		this.knex = knex(config);
+		this.knex = Knex(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<YtPlace>> {

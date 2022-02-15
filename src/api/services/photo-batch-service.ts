@@ -1,4 +1,4 @@
-import knex, { Knex } from 'knex';
+import Knex  from 'knex';
 import { QueryStatement, SortStatement } from './';
 import {
 	Photo,
@@ -14,7 +14,7 @@ export class PhotoBatchService {
 	private knex: Knex;
 
 	constructor(config: Knex.Config<any>) {
-		this.knex = knex(config);
+		this.knex = Knex(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<any>> {
@@ -150,7 +150,7 @@ export class PhotoBatchService {
 			.select<PhotoBatch>(PHOTO_BATCH_FIELDS)
 			.where({ id: id })
 			.first()
-			.catch((err) => {
+			.catch((err: any) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});
@@ -172,7 +172,7 @@ export class PhotoBatchService {
 				'photoContentType',
 			])
 			.where({ photoBatchId: id })
-			.catch((err) => {
+			.catch((err: any) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});
