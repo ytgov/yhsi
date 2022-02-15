@@ -17,40 +17,44 @@ export default {
     toPrint: {},
     textpos: 0,
     headers: [
-      "YACSI Number",
-      "Crash Date",
-      "Aircraft Type",
-      "Aircraft Registration",
-      "Country",
-      "Registration Type",
-      "Location Description",
-      "Pilot First Name",
-      "Pilot Last Name",
-      "Souls Onboard",
-      "Fatalities",
+      "Last Name",
+      "First Name",
+      "Gender",
+      "Birth Year",
+      "Death Year",
+      "Manner",
+      "CauseID",
+      "CemetaryID",
+      "Other CemetaryDesc",
+      "Origin City",
+      "Origin State",
+      "Origin Country",
+      "Other Country",
     ],
+
   }),
   methods: {
     // this function is used to map the data from the prop to the  "toPrint" variable, and also to transform
     // some of the data from objects to arrays (this is done because of the way jspdf autotable works)
     mapData(data) {
-      if (data.crashsites) {
-        let crashsites = data.crashsites;
-        this.toPrint.crashsites = [];
-        for (let i = 0; i < crashsites.length; i++) {
-          this.toPrint.crashsites.push([
-            crashsites[i].yacsinumber,
-            crashsites[i].crashdate,
-            crashsites[i].aircrafttype,
-            crashsites[i].aircraftregistration,
-            crashsites[i].nation,
-            crashsites[i].militarycivilian,
-            crashsites[i].crashlocation,
-            crashsites[i].pilotfirstname,
-            crashsites[i].pilotlastname,
-            crashsites[i].soulsonboard,
-            crashsites[i].injuries,
-            crashsites[i].fatalities,
+      if (data.burials) {
+        let burials = data.burials;
+        this.toPrint.burials = [];
+        for (let i = 0; i < burials.length; i++) {
+          this.toPrint.burials.push([
+            burials[i].LastName,
+            burials[i].FirstName,
+            burials[i].Gender,
+            burials[i].BirthYear,
+            burials[i].DeathYear,
+            burials[i].Manner,
+            burials[i].CauseID,
+            burials[i].CemetaryID,
+            burials[i].OtherCemetaryDesc,
+            burials[i].OriginCity,
+            burials[i].OriginState,
+            burials[i].OriginCountry,
+            burials[i].OtherCountry,
           ]);
         }
       }
@@ -59,11 +63,11 @@ export default {
       this.mapData(this.data);
 
       this.doc = new jsPDF("l", "mm", [297, 210]); //new jsPDF('p', 'pt');
-      if (this.data.crashsites) {
-        this.doc.text(`Crash Sites`, 15, 15);
+      if (this.data.burials) {
+        this.doc.text(`Burials`, 15, 15);
         this.textpos = 20;
         this.printTable();
-        this.doc.save("Aircrashes.pdf");
+        this.doc.save("Burials.pdf");
       }
     },
     addText(text) {
@@ -81,7 +85,7 @@ export default {
       this.doc.autoTable({
         startY: this.textpos,
         head: [this.headers],
-        body: this.toPrint.crashsites,
+        body: this.toPrint.burials,
       });
 
       this.textpos = this.doc.lastAutoTable.finalY + 20;
