@@ -183,7 +183,7 @@ export default {
       if(confirm("Are you sure want to delete this photo batch?")){
         axios
           .delete(`${PHOTO_BATCH_URL}/${localStorage.currentBatchId}`)
-          .then(() => {
+          .then(() => { 
             this.$router.push('/photobatches');
             this.$emit("showSuccess", 'Batch deleted');
           })

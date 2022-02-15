@@ -350,7 +350,7 @@ const routes = [
     name: "Users",
     component: Users,
     meta: {
-      requiresAuth: false
+      requiresAuth: false 
     }
   },
   {

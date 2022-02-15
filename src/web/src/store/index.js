@@ -48,7 +48,7 @@ export default new Vuex.Store({
   getters: {
     siteHistory: state => state.siteHistory,
     search: state => state.search,
-    showAppSidebar: state => state.showAppSidebar,
+    showAppSidebar: state => state.showAppSidebar, 
   },
   modules: { auth, profile, boats, alerts, photos }
 });
