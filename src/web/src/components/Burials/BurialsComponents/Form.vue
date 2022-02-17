@@ -243,9 +243,11 @@
                           </v-col>
                         </v-row>
                         <v-select
-                          :items="[1,2,3]"
+                          :items="religions"
                           v-model="fields.Religion"
                           outlined dense
+                          item-value="ReligionLUpID"
+                          item-text="Religion"
                           label="Religion"
                         ></v-select>
                       </v-col>
@@ -327,10 +329,13 @@
                           outlined dense
                           label="Manner"
                         ></v-select>
+                        
                         <v-select
-                          :items="[1,2,3]"
-                          v-model="fields.CauseOfDeath"
+                          :items="causes"
+                          v-model="fields.CauseID"
                           outlined dense
+                          item-value="CauseLUpID"
+                          item-text="Cause"
                           label="Cause"
                         ></v-select>
                       </v-col>
@@ -449,6 +454,7 @@
 <script>
 import Breadcrumbs from "../../Breadcrumbs";
 import burials from "../../../controllers/burials";
+import catalogs from "../../../controllers/catalogs";
 import MembershipDialog from "./Dialogs/MembershipDialog.vue";
 import OccupationDialog from "./Dialogs/OccupationDialog.vue";
 import SourceDialog from "./Dialogs/SourceDialog.vue";
@@ -516,6 +522,9 @@ export default {
           { text: 'Chapter', value: 'calories' },
           { text: 'Membership Notes', value: 'fat' },
         ],
+    causes: [],
+    cemetaries: [],
+    religions: []
   }),
   mounted(){
       if(this.checkPath("edit")){
@@ -572,6 +581,10 @@ export default {
             this.saveCurrentBurial();
         }
         this.fields = await burials.getById(localStorage.currentBurialID);
+        this.cemetaries = await catalogs.getCemetaries();
+        this.causes = await catalogs.getCauses();
+        this.religions = await catalogs.getReligions();
+        //this.religions.push("None");
         console.log(this.fields);
         this.overlay = false;
     },

@@ -157,20 +157,20 @@ burialsRouter.get(
 			return;
 		}
 
-		const { Cause } = await db
+		burial.Cause = await db
 			.select('CL.Cause').from('Burial.Burial as BUR')
 			.join('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID').first();
-		burial.Cause = Cause;
+		//burial.Cause = Cause;
 
-		const { Cemetary } = await db
+		burial.Cemetary = await db
 			.select('CL.Cemetary').from('Burial.Burial as BUR')
 			.join('Burial.CemetaryLookup as CL', 'CL.CemetaryLUpID', '=', 'BUR.CemetaryID').first();
-		burial.Cemetary = Cemetary;
+		//burial.Cemetary = Cemetary;
 
-		const { Religion } = await db
+		burial.Religion = await db
 			.select('CL.Religion').from('Burial.Burial as BUR')
 			.join('Burial.ReligionLookup as CL', 'CL.ReligionLUpID', '=', 'BUR.ReligionID').first();
-		burial.Religion = Religion;
+		//burial.Religion = Religion;
 
 
 		res.status(200).send(burial);

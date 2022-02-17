@@ -10,6 +10,33 @@ export default {
         console.log(error);
       });
   },
+  async getCauses() {
+    return await api.get(`catalogs/cause`)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  async getReligions() {
+    return await api.get(`catalogs/religion`)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  async getCemetaries() {
+    return await api.get(`catalogs/cemetary`)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
   async getOriginalMedia() {
     return await api.get(`catalogs/originalmedia`)
       .then(res => {
