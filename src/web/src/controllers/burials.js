@@ -20,7 +20,7 @@ export default {
       });
   },
   async getById(id) {
-    return await api.get(`boats/${id}`)
+    return await api.get(`burials/${id}`)
       .then(res => {
         return res.data;
       }).catch(error => {

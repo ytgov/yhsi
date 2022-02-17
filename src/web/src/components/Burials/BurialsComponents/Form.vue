@@ -27,7 +27,7 @@
         
         <v-row>
           <v-col cols="12">
-            <v-expansion-panels multiple>
+            <v-expansion-panels v-model="panel" multiple>
               <v-expansion-panel>
                 <v-expansion-panel-header>
                   <h2>Information</h2>
@@ -77,6 +77,55 @@
                     <v-row>
                       <v-col cols="4">
                           <h4>Birth / Death</h4>
+                            <v-row>
+                                <v-col cols="4">
+                                    <v-text-field outlined dense
+                                      name="Birth Day"
+                                      label="Birth Day"
+                                      v-model="fields.BirthDay"
+                                    ></v-text-field>
+                                    
+                                </v-col>
+                                <v-col cols="4">
+                                    <v-text-field outlined dense
+                                      name="Birth Month"
+                                      label="Birth Month"
+                                      v-model="fields.BirthMonth"
+                                    ></v-text-field>
+                                </v-col>
+                                <v-col cols="4">
+                                    <v-text-field outlined dense
+                                      name="Birth Year"
+                                      label="Birth Year"
+                                      v-model="fields.BirthYear"
+                                    ></v-text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="4">
+                                    <v-text-field outlined dense
+                                      name="Death Day"
+                                      label="Death Day"
+                                      v-model="fields.DeathDay"
+                                    ></v-text-field>
+                                    
+                                </v-col>
+                                <v-col cols="4">
+                                    <v-text-field outlined dense
+                                      name="Death Month"
+                                      label="Death Month"
+                                      v-model="fields.DeathMonth"
+                                    ></v-text-field>
+                                </v-col>
+                                <v-col cols="4">
+                                    <v-text-field outlined dense
+                                      name="Death Year"
+                                      label="Death Year"
+                                      v-model="fields.DeathYear"
+                                    ></v-text-field>
+                                </v-col>
+                            </v-row>
+                            <!--
                             <v-menu
                                 ref="menu"
                                 v-model="menu"
@@ -166,6 +215,7 @@
                                 </v-btn>
                                 </v-date-picker>
                             </v-menu>
+                            -->
                         </v-col>
                         <v-col cols="4">
                           <h4>Age</h4>
@@ -235,6 +285,7 @@
                         <v-textarea
                           label="Notes"
                           name="Notes"
+                          v-model="fields.sPersonNotes"
                           outlined dense
                         ></v-textarea>
                       </v-col>
@@ -243,15 +294,15 @@
                         <v-radio-group v-model="fields.Gender" row>
                           <v-radio
                             label="Male"
-                            value="m"
+                            value="Male"
                           ></v-radio>
                           <v-radio
                             label="Female"
-                            value="f"
+                            value="Female"
                           ></v-radio>
                           <v-radio
                             label="Other"
-                            value="other"
+                            value="Other"
                           ></v-radio>
                         </v-radio-group>
                       </v-col>
@@ -271,8 +322,8 @@
                           </v-col>
                         </v-row>
                         <v-select
-                          :items="[1,2,3]"
-                          v-model="fields.MannerOfDeath"
+                          :items="['Natural', 'Accident', 'Murder', 'Unknown']"
+                          v-model="fields.Manner"
                           outlined dense
                           label="Manner"
                         ></v-select>
@@ -344,25 +395,25 @@
                           <v-text-field
                             name="DestinationBodyShipped"
                             label="if No, Destination body shipped"
-                            v-mode="fields.BodyShipped"
+                            v-model="fields.BodyShipped"
                             outlined dense
                           ></v-text-field>
                           <v-text-field
                             name="YukonBurialLocation"
-                            v-mode="fields.BurialLocation"
+                            v-model="fields.BurialLocation"
                             label="Yukon Burial Location"
                             outlined dense
                           ></v-text-field>
                           <v-text-field
                             name="Other"
                             label="if Other, Please specify"
-                            v-mode="fields.Other"
+                            v-model="fields.Other"
                             outlined dense
                           ></v-text-field>
                           <v-text-field
                             name="PlodDescription"
                             label="Plot description"
-                            v-mode="fields.PlotDescription"
+                            v-model="fields.PlotDescription"
                             outlined dense
                           ></v-text-field>
                         </v-col>
@@ -397,14 +448,14 @@
 
 <script>
 import Breadcrumbs from "../../Breadcrumbs";
-import users from "../../../controllers/user";
+import burials from "../../../controllers/burials";
 import MembershipDialog from "./Dialogs/MembershipDialog.vue";
 import OccupationDialog from "./Dialogs/OccupationDialog.vue";
 import SourceDialog from "./Dialogs/SourceDialog.vue";
 import KinDialog from "./Dialogs/KinDialog.vue";
 import SiteVisitDialog from "./Dialogs/SiteVisitDialog.vue";
 export default {
-  name: "edituser",
+  name: "BurialComponent",
   components: {
     Breadcrumbs,
     MembershipDialog,
@@ -415,6 +466,7 @@ export default {
   },
   data: () => ({
     username: 'username',
+    panel: [0,1,2,3],
     overlay: false,
     items: null,
     selectedItem: null,
@@ -483,6 +535,7 @@ export default {
     this problem is solved by using this funtion.*/
     checkPath(word){
         let path = this.$route.path.split("/");
+        console.log(path);
         if(path[2] == word){
             return true;
         }
@@ -517,22 +570,9 @@ export default {
         this.overlay = true;
         if(this.$route.params.id){
             this.saveCurrentBurial();
-        }/*
-        let baseSections = await users.getSections();
-        this.fields = await users.getById(localStorage.currentBurialID);
-        this.fields.ExpirationDate = this.fields.ExpirationDate ? this.fields.ExpirationDate.substr(0, 10): ""; 
-        let access = await users.getAccess(localStorage.currentBurialID);
-        this.sections = baseSections.map((x)=>{
-          let accessSection = access.filter(acc => acc.SectionID == x.SectionID).pop();
-          if(accessSection){
-            x.AccessID = accessSection.AccessID;
-            x.UAID = accessSection.UAID;
-          }
-          else{
-            x.AccessID = 1;
-          }
-          return x;
-        });*/
+        }
+        this.fields = await burials.getById(localStorage.currentBurialID);
+        console.log(this.fields);
         this.overlay = false;
     },
     viewMode(){
@@ -554,7 +594,7 @@ export default {
         this.$router.push(`/burials/view/${this.$route.params.id}`);
     },
     async saveChanges(){
-            this.overlay = true; 
+            this.overlay = true; /*
             let access = this.sections.map((x) =>{
               delete x.SectionName;
               delete x.SectionIcon;
@@ -580,7 +620,7 @@ export default {
             }
 
             await users.put(localStorage.currentBurialID, data);
-            await users.putAccess(localStorage.currentBurialID, accessData);
+            await users.putAccess(localStorage.currentBurialID, accessData);*/
             this.overlay = false;   
             this.$router.push({name: 'AdminUserGrid'});   
             //this.$router.go(); 
