@@ -140,3 +140,30 @@ catalogsRouter.put('/placetype/:placeTypeId',
     res.status(200).send({ message: 'success' });
   });
 
+
+
+
+  //RELIGION
+
+
+catalogsRouter.get('/religion', async (req: Request, res: Response) => {
+    const data = await db('Burial.ReligionLookup').orderBy('Burial.ReligionLookup.Religion', 'asc');
+  
+    res.send(data);
+});
+
+  //CAUSES
+catalogsRouter.get('/cause', async (req: Request, res: Response) => {
+  const data = await db('Burial.CauseLookup').orderBy('Burial.CauseLookup.Cause', 'asc');
+
+  res.send(data);
+});
+
+//CEMETARIES
+catalogsRouter.get('/cemetary', async (req: Request, res: Response) => {
+  const data = await db('Burial.CemetaryLookup').orderBy('Burial.CemetaryLookup.Cemetary', 'asc');
+
+  res.send(data);
+});
+  
+

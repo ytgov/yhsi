@@ -102,50 +102,94 @@ burialsRouter.get(
 );
 
 burialsRouter.get(
-	'/:boatId',
-	[param('boatId').notEmpty()],
+	'/:burialId',
+	[param('burialId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { boatId } = req.params;
-		/*   const db = req.app.get('db');
-    
-      const permissions = req.decodedToken['yg-claims'].permissions;
-      if (!permissions.includes('view')) res.sendStatus(403);
-     */
-		const boat = await db
-			.select('*')
-			.from('boat.boat')
-			.where('boat.boat.id', boatId)
+		const { burialId } = req.params;
+		console.log(burialId);
+		const burial = await db
+			.select("BUR.*")
+			.from('Burial.Burial as BUR')
+			.where('BUR.BurialID', burialId)
 			.first();
+			/*
+			.select(
+				'BUR.BurialID',
+				'BUR.LastName',
+				'BUR.FirstName',
+				'BUR.Gender',
+				'BUR.GenderOther',
+				'BUR.BirthYear',
+				'BUR.BirthMonth',
+				'BUR.BirthDay',
+				'BUR.BirthDateNotes',
+				'BUR.DeathYear',
+				'BUR.DeathMonth',
+				'BUR.DeathDay',
+				'BUR.DeathDateNotes',
+				'BUR.Age',
+				'BUR.Manner',
+				'CL.Cause',
+				'CE.Cemetary',
+				'BUR.OtherCemetaryDesc',
+				'BUR.PlotDescription',
+				'BUR.ShippedIndicator',
+				'BUR.DestinationShipped',
+				'BUR.FuneralPaidBy',
+				'BUR.OriginCity',
+				'BUR.OriginState',
+				'BUR.OriginCountry',
+				'BUR.OtherCountry',
+				'BUR.PersonNotes',
+				'RE.Religion'
+				)
+			.from('Burial.Burial as BUR')
+			.where('BUR.BurialID', burialId)
+			.join('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
+			.join('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
+			.join('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
+			.first();
+			*/
 
-		if (!boat) {
-			res.status(403).send('Boat id not found');
+		if (!burial) {
+			res.status(403).send('Burial not found');
 			return;
 		}
 
-		boat.pastNames = await db
-			.select('*')
-			.from('boat.pastnames')
-			.where('boat.pastnames.boatid', boatId);
+		const { Cause } = await db
+			.select('CL.Cause').from('Burial.Burial as BUR')
+			.join('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID').first();
+		burial.Cause = Cause;
 
-		boat.owners = await db
-			.select(
-				'boat.boatowner.currentowner',
-				'boat.Owner.OwnerName',
-				'boat.owner.id'
-			) //added boat.owner.id to the query (I need this for the details button)
-			.from('boat.boatowner')
-			.join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-			.where('boat.boatowner.boatid', boatId);
+		const { Cemetary } = await db
+			.select('CL.Cemetary').from('Burial.Burial as BUR')
+			.join('Burial.CemetaryLookup as CL', 'CL.CemetaryLUpID', '=', 'BUR.CemetaryID').first();
+		burial.Cemetary = Cemetary;
 
-		boat.histories = await db
-			.select('*')
-			.from('boat.history')
-			.where('boat.history.uid', boatId);
+		const { Religion } = await db
+			.select('CL.Religion').from('Burial.Burial as BUR')
+			.join('Burial.ReligionLookup as CL', 'CL.ReligionLUpID', '=', 'BUR.ReligionID').first();
+		burial.Religion = Religion;
 
-		res.status(200).send(boat);
+
+		res.status(200).send(burial);
 	}
 );
+/*
+    [CemetaryID] smallint,
+    [OtherCemetaryDesc] varchar,
+    [PlotDescription] varchar,
+    [ShippedIndicator] varchar,
+    [DestinationShipped] varchar,
+    [FuneralPaidBy] varchar,
+    [OriginCity] varchar,
+    [OriginState] varchar,
+    [OriginCountry] varchar,
+    [OtherCountry] varchar,
+    [PersonNotes] varchar,
+    [ReligionID] smallint,
+	*/
 
 // changed this route from "/new" to "/" to follow RESTFUL conventions
 burialsRouter.post('/', async (req: Request, res: Response) => {

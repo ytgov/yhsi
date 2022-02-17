@@ -45,7 +45,7 @@
       </v-col>
       <v-spacer></v-spacer>
       <v-col cols="auto" class="d-flex">
-        <v-btn class="black--text mx-1" @click="addNewBoat">
+        <v-btn class="black--text mx-1" @click="addNew">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
           Add Burial
         </v-btn>
@@ -148,8 +148,8 @@ export default {
     this.getDataFromApi();
   },
   methods: {
-    addNewBoat() {
-      this.$router.push(`/airplane/new`);
+    addNew() {
+      this.$router.push(`/burials/new`);
     },
     searchChange: _.debounce(function () {
       this.getDataFromApi();
@@ -158,7 +158,7 @@ export default {
       //Redirects the user to the airplane form component
       this.$router.push({
         name: "BurialsViewForm",
-        params: { name: value.yacsinumber, id: value.yacsinumber },
+        params: { name: value.BurialID, id: value.BurialID },
       });
     },
     async getDataFromApi() {
