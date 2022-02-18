@@ -1,4 +1,5 @@
-import Knex from 'knex';
+import knex, { Knex } from 'knex';
+//import Knex from 'knex';
 import { QueryStatement, SortStatement } from './';
 import { Photo, PHOTO_FIELDS, SavedFilter } from '../data';
 import _ from 'lodash';
@@ -7,7 +8,8 @@ export class PhotoService {
 	private knex: Knex;
 
 	constructor(config: Knex.Config<any>) {
-		this.knex = Knex(config);
+		this.knex = knex(config);
+		//this.knex = Knex(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Photo>> {

@@ -233,6 +233,15 @@ export default {
       fnNames = fnNames.map((x) => (x = x.fnName));
       return fnNames.toString();
     },
+    filterPlaceTypes(item) {
+      let sorters = JSON.parse(JSON.stringify(this.filterOptions));
+      if (item.placeTypes[0]) {
+        let placeTypes = item.placeTypes.map((x) => x.placeType); 
+        return placeTypes.toString().toLowerCase().includes(sorters[1].value.toLowerCase());
+      } else {
+        return false;
+      }
+    }
   },
   computed:{
       /*selectedFilters(){
@@ -242,7 +251,7 @@ export default {
           if(this.filterOptions){
               let sorters = JSON.parse(JSON.stringify(this.filterOptions));
               let data = JSON.parse(JSON.stringify(this.places));
-              
+
               data =
                 sorters[0].value == null || sorters[0].value == ""
                   ? data
@@ -256,13 +265,7 @@ export default {
               data =
                 sorters[1].value == null || sorters[1].value == ""
                   ? data
-                  : data.filter((x) =>
-                      x.placeTypes[0]
-                        ? x.placeTypes[0].type.toLowerCase().includes(
-                            sorters[1].value.toLowerCase()
-                          )
-                        : false
-                    );    
+                  : data.filter(this.filterPlaceTypes);
               data =
                 sorters[2].value == null || sorters[2].value == ""
                   ? data

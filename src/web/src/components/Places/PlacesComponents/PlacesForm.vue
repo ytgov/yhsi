@@ -287,6 +287,7 @@
         <Photos
         v-if="infoLoaded"
         :showDefault="mode == 'new'"
+        :mode="mode"
         :photoType="'ytplace'"
         :itemId="placeId"
         @updateSelectedImage="selectedImageChanged"
@@ -532,14 +533,21 @@ export default {
 
       axios
         .put(`${YTPLACE_URL}/${localStorage.currentPlaceId}`, body)
-        .then((resp) => {
+        .then(() => {
           this.mode = "view";
           this.$router.push(`/places/view/${this.fields.name}`);
           this.setPlaceTypeNames();
-          this.$emit("showAPIMessages", resp.data);
+          this.$store.commit("alerts/setText",'Place created');
+          this.$store.commit("alerts/setType", "success");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
         })
-        .catch((err) => {
-          this.$emit("showError", err);
+        .catch(() => {
+          let errText = !this.fields.name ? 'Place name is required' : 'Missing required place data'
+          this.$store.commit("alerts/setText",errText);
+          this.$store.commit("alerts/setType", "warning");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
         });
     },
     createPlace() {
@@ -562,10 +570,17 @@ export default {
           localStorage.currentPlaceId = resp.data.data.id;
           this.placeId = localStorage.currentPlaceId;
           this.loadItem(localStorage.currentPlaceId);
-          this.$emit("showAPIMessages", resp.data);
+          this.$store.commit("alerts/setText",'Place updated');
+          this.$store.commit("alerts/setType", "success");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
         })
-        .catch((err) => {
-          this.$emit("showError", err);
+        .catch(() => { 
+          let errText = !this.fields.name ? 'Place name is required' : 'Missing required place data'
+          this.$store.commit("alerts/setText",errText);
+          this.$store.commit("alerts/setType", "warning");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
         });
     },
     addName() {
@@ -607,7 +622,7 @@ export default {
       printData.fnAssociationTypeOptions = this.fnAssociationTypeOptions;
       printData.firstNationOptions = this.firstNationOptions;
       return printData;
-    }
+    },
   },
 };
 </script>
