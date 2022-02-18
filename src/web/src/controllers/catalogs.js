@@ -37,6 +37,15 @@ export default {
         console.log(error);
       });
   },
+  async getOccupations() {
+    return await api.get(`catalogs/occupation`)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
   async getOriginalMedia() {
     return await api.get(`catalogs/originalmedia`)
       .then(res => {

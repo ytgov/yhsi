@@ -166,4 +166,9 @@ catalogsRouter.get('/cemetary', async (req: Request, res: Response) => {
   res.send(data);
 });
   
+//OCCUPATIONS
+catalogsRouter.get('/occupation', async (req: Request, res: Response) => {
+  const data = await db('Burial.OccupationLookup').orderBy('Burial.OccupationLookup.Occupation', 'asc');
 
+  res.send(data);
+});
