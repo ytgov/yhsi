@@ -5,7 +5,7 @@
       max-width="600px"
     >
       <template v-slot:activator="{ on, attrs }">
-        <v-btn v-if="mode != 'view'"
+        <v-btn
           color="primary"
           v-bind="attrs"
           v-on="on"
@@ -21,7 +21,8 @@
         </v-card-title>
         <v-card-text>
           <v-container>
-                <v-row>
+            <v-form v-model="valid" ref="occupationDialog">
+              <v-row>
                    <v-col cols="12">
                       <v-select
                           :items="data"
@@ -29,9 +30,12 @@
                           item-text="Occupation"
                           v-model="occupation"
                           label="Occupation"
+                          :rules="rules"
                       ></v-select>
                   </v-col>
               </v-row>
+            </v-form>
+                
           </v-container>
         </v-card-text>
         <v-card-actions>
@@ -47,6 +51,7 @@
             color="blue darken-1"
             text
             @click="saveNew"
+            :disabled="!valid"
           >
             Save
           </v-btn>
@@ -57,15 +62,19 @@
 
 <script>
 export default {
-    props: [ "data", "mode" ],
+    props: [ "data" ],
     data: () => ({
         dialog: false,
+        valid: false,
         occupation: "",
+        rules: [
+          value => !!value || 'Required.',
+        ],
     }),
     methods: {
       saveNew(){
         this.$emit("newOccupation", this.occupation);
-        this.occupation = "";
+        this.$refs.occupationDialog.reset();
         this.dialog = false;
       }
     }

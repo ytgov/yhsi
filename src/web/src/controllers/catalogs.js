@@ -46,6 +46,15 @@ export default {
         console.log(error);
       });
   },
+  async getMemberships() {
+    return await api.get(`catalogs/membership`)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
   async getOriginalMedia() {
     return await api.get(`catalogs/originalmedia`)
       .then(res => {
