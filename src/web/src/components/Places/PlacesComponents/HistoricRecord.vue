@@ -214,15 +214,21 @@ export default {
 
             axios
                 .put(`${YTPLACEHISTORY_URL}/${this.data[index].id}`, body)
-                .then((resp) => {
-                this.$emit("showAPIMessages", resp.data);
-                this.data[index].reference = this.referenceHelper;
-                this.data[index].historyText = this.historicRecordHelper;
-                this.data[index].restricted = this.restrictedHelper;
-                this.editTable = -1;
+                .then(() => {
+                    this.$store.commit("alerts/setText",'Record saved');
+                    this.$store.commit("alerts/setType", "success");
+                    this.$store.commit("alerts/setTimeout", 5000);
+                    this.$store.commit("alerts/setAlert", true);
+                    this.data[index].reference = this.referenceHelper;
+                    this.data[index].historyText = this.historicRecordHelper;
+                    this.data[index].restricted = this.restrictedHelper;
+                    this.editTable = -1;
                 })
                 .catch((err) => {
-                this.$emit("showError", err);
+                    this.$store.commit("alerts/setText",err);
+                    this.$store.commit("alerts/setType", "warning");
+                    this.$store.commit("alerts/setTimeout", 5000);
+                    this.$store.commit("alerts/setAlert", true);
                 });           
         },
         addRecord(){
@@ -242,8 +248,11 @@ export default {
             };
             axios
                 .post(`${YTPLACEHISTORY_URL}/`, body)
-                .then((resp) => {
-                this.$emit("showAPIMessages", resp.data);
+                .then((resp) => {            
+                this.$store.commit("alerts/setText",'Record added');
+                this.$store.commit("alerts/setType", "success");
+                this.$store.commit("alerts/setTimeout", 5000);
+                this.$store.commit("alerts/setAlert", true);
                 // Add the placeHistory record that was just created to data
                 if(resp.data[0].HistoryText);
                     let respData = {};
@@ -260,7 +269,10 @@ export default {
                 this.editTable = -1;
                 })
                 .catch((err) => {
-                this.$emit("showError", err);
+                this.$store.commit("alerts/setText",err);
+                this.$store.commit("alerts/setType", "warning");
+                this.$store.commit("alerts/setTimeout", 5000);
+                this.$store.commit("alerts/setAlert", true);
                 });   
 
         },

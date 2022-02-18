@@ -299,10 +299,16 @@
 						this.$router.push(`/photobatches/attributes/view`);
 						this.loadBatch();
 						//this.loadPhotos();
-						this.$emit('showSuccess', 'Batch attributes saved');
+						this.$store.commit("alerts/setText",'Batch attributes saved');
+						this.$store.commit("alerts/setType", "success");
+						this.$store.commit("alerts/setTimeout", 5000);
+						this.$store.commit("alerts/setAlert", true);
 					})
 					.catch((err) => {
-						this.$emit('showError', err);
+						this.$store.commit("alerts/setText",err);
+						this.$store.commit("alerts/setType", "warning");
+						this.$store.commit("alerts/setTimeout", 5000);
+						this.$store.commit("alerts/setAlert", true);
 					});
 			},
 			editMode() {
@@ -320,10 +326,10 @@
 			async processBatch() {
 				// Use community to check that fields have been filled in (user can't save without filling out all required fields)
 				if (!this.fields.communityId) {
-					this.$emit(
-						'showError',
-						'Batch attributes must be filled in before processing the batch'
-					);
+					this.$store.commit("alerts/setText",'Batch attributes must be filled in before processing the batch');
+					this.$store.commit("alerts/setType", "warning");
+					this.$store.commit("alerts/setTimeout", 5000);
+					this.$store.commit("alerts/setAlert", true);
 				} else {
 					if (
 						confirm(
@@ -336,10 +342,16 @@
 							)
 							.then(() => {
 								this.$router.push(`/photobatches`);
-								this.$emit('showSuccess', 'Batch processed successfully');
+								this.$store.commit("alerts/setText",'Batch processed successfully');
+								this.$store.commit("alerts/setType", "success");
+								this.$store.commit("alerts/setTimeout", 5000);
+								this.$store.commit("alerts/setAlert", true);
 							})
 							.catch((err) => {
-								this.$emit('showError', err);
+								this.$store.commit("alerts/setText",err);
+								this.$store.commit("alerts/setType", "warning");
+								this.$store.commit("alerts/setTimeout", 5000);
+								this.$store.commit("alerts/setAlert", true);
 							});
 					}
 				}

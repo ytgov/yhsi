@@ -488,26 +488,38 @@ export default {
     let body = { userId: 99, name: filterName, resultType: "Photo", value: query}
     axios
       .post(`${PHOTO_URL}/saved-filter`, body)
-      .then((resp) => {
+      .then(() => {
         this.filterText = ' - '+ filterName;
         this.getDataFromApi();
-        this.$emit("showAPIMessages", resp.data);
+        this.$store.commit("alerts/setText",'Filter saved');
+        this.$store.commit("alerts/setType", "success");
+        this.$store.commit("alerts/setTimeout", 5000);
+        this.$store.commit("alerts/setAlert", true);
       })
-      .catch((err) => {
-        this.$emit("showError", err);
+      .catch((err) => {            
+        this.$store.commit("alerts/setText",err);
+        this.$store.commit("alerts/setType", "warning");
+        this.$store.commit("alerts/setTimeout", 5000);
+        this.$store.commit("alerts/setAlert", true);
       });
   },
 
   deleteFilter(filterId) {
     axios
       .delete(`${PHOTO_URL}/saved-filter/${filterId}`)
-      .then((resp) => {
+      .then(() => {
         this.filterText = null;
-        this.$router.go();
-        this.$emit("showAPIMessages", resp.data);
+        this.$router.go();          
+        this.$store.commit("alerts/setText",'Filter removed');
+        this.$store.commit("alerts/setType", "success");
+        this.$store.commit("alerts/setTimeout", 5000);
+        this.$store.commit("alerts/setAlert", true);
       })
       .catch((err) => {
-        this.$emit("showError", err);
+        this.$store.commit("alerts/setText",err);
+        this.$store.commit("alerts/setType", "warning");
+        this.$store.commit("alerts/setTimeout", 5000);
+        this.$store.commit("alerts/setAlert", true);
       });
   },
 

@@ -3,5 +3,6 @@
     "prettier.useTabs": true,
     "prettier.vueIndentScriptAndStyle": true,
     "prettier.useEditorConfig": false,
-    "prettier.singleQuote": true
+    "prettier.singleQuote": true,
+    "typescript.tsdk": "node_modules\\typescript\\lib"
 }

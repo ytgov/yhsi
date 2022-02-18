@@ -229,6 +229,7 @@
                 <Photos
                   v-if="infoLoaded"
                   :showDefault="isNewCrash"
+                  :mode="mode"
                   :photoType="'aircrash'"
                   :itemId="getYACSINumber"
                   @updateSelectedImage="selectedImageChanged"
