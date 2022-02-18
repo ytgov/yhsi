@@ -21,31 +21,39 @@
         </v-card-title>
         <v-card-text>
           <v-container>
+            <v-form v-model="valid" ref="membershipDialog">
               <v-row>
                   <v-col cols="6">
-                      <v-text-field
+                      <v-select outlined dense
+                          :items="data"
                           name="Membership"
+                          item-text="Membership"
+                          return-object
                           label="Membership"
-                          v-model="membershipName"
-                      ></v-text-field>
+                          v-model="Membership"
+                          :rules="rules"
+                      ></v-select>
                   </v-col>
                   <v-col cols="6">
-                      <v-text-field
+                      <v-text-field outlined dense
                           name="Chapter"
                           label="Chapter"
-                          v-model="chapter"
+                          v-model="Chapter"
+                          :rules="rules"
                       ></v-text-field>
                   </v-col>
               </v-row>
               <v-row>
                    <v-col cols="12">
-                      <v-text-field
+                      <v-text-field outlined dense
                           name="Notes"
                           label="Notes"
-                          v-model="notes"
+                          v-model="Notes"
+                          :rules="rules"
                       ></v-text-field>
                   </v-col>
               </v-row>
+            </v-form>       
           </v-container>
         </v-card-text>
         <v-card-actions>
@@ -60,7 +68,8 @@
           <v-btn
             color="blue darken-1"
             text
-            @click="dialog = false"
+            :disabled="!valid"
+            @click="saveNew"
           >
             Save
           </v-btn>
@@ -71,12 +80,26 @@
 
 <script>
 export default {
-    props: [ 'action' ],
+    props: [ 'action', "data" ],
     data: () => ({
         dialog: false,
-        membershipName: "",
-        chapter: "",
-        notes: "",
-    })
+        valid: false,
+        Membership: "",
+        Chapter: "",
+        Notes: "",
+        rules: [
+        value => !!value || 'Required.',
+      ],
+    }),
+    methods:{
+      saveNew(){
+        const { Chapter, Notes } = this;
+
+        const { Membership, MembershipLUpID } = this.Membership;
+        this.$emit("newMembership",{ Membership, MembershipLUpID, Chapter, Notes });
+        this.$refs.membershipDialog.reset();
+        this.dialog = false;
+      }
+    }
 }
 </script>

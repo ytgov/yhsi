@@ -176,7 +176,12 @@ burialsRouter.get(
 			.where('BOC.BurialID', burialId)
 			.join('Burial.OccupationLookup as OC', 'OC.OccupationLUpID', '=', 'BOC.OccupationID');
 
-		console.log(JSON.stringify(burial.Occupations));
+		burial.Memberships = await db
+			.select('ML.*', 'MEM.Chapter', 'MEM.Notes', 'MEM.ID').from('Burial.Membership AS MEM')
+			.where('MEM.BurialID', burialId)
+			.join('Burial.MembershipLookup as ML', 'ML.MembershipLUpID', '=', 'MEM.MembershipID');
+
+
 		res.status(200).send(burial);
 	}
 );

@@ -172,3 +172,10 @@ catalogsRouter.get('/occupation', async (req: Request, res: Response) => {
 
   res.send(data);
 });
+
+//MEMBERSHIPS
+catalogsRouter.get('/membership', async (req: Request, res: Response) => {
+  const data = await db('Burial.MembershipLookup').orderBy('Burial.MembershipLookup.Membership', 'asc');
+
+  res.send(data);
+});

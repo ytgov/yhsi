@@ -9,16 +9,16 @@
             </div>
             <v-spacer></v-spacer>
             <!-- buttons for the view state -->
-                <v-btn class="black--text mx-1" @click="editMode" v-if="mode == 'view'">
+                <v-btn class="black--text mx-1" @click="editMode" v-if="isView">
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
 <!-- buttons for the edit state -->
-                <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
+                <v-btn class="black--text mx-1" @click="cancelEdit" v-if="isEdit">
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 1" v-if="mode == 'edit'" @click="saveChanges" >
+                <v-btn color="success" :disabled="showSave < 1" v-if="isEdit" @click="saveChanges" >
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Done
                 </v-btn>
@@ -52,8 +52,7 @@
                         <v-col cols="4">
                           <h4>Origin</h4>
                             <v-select
-                              :items="[1,2,3,4]"
-                              v-model="fields.Country"
+                              v-model="fields.OriginCountry"
                               outlined dense
                               label="Country of Origin"
                             ></v-select>
@@ -61,13 +60,13 @@
                               name="Province"
                               outlined dense
                               label="Province/State of Origin"
-                              v-model="fields.State"
+                              v-model="fields.OriginState"
                             ></v-text-field>
                             <v-text-field
                               name="City"
                               outlined dense
                               label="City of Origin"
-                              v-model="fields.City"
+                              v-model="fields.OriginCity"
                             ></v-text-field>
                         </v-col>
                         <v-col cols="4">
@@ -255,7 +254,7 @@
                         <v-row>
                           <v-col cols="12" class="d-flex flex-row align-center">
                             <h4 class="mt-5 mb-5">Occupations</h4>
-                            <OccupationDialog class="ml-auto mr-1" :mode="mode" :data="filteredOccupations" @newOccupation="newOccupation"/>
+                            <OccupationDialog class="ml-auto mr-1" v-if="!isView" :data="filteredOccupations" @newOccupation="newOccupation"/>
                           </v-col>
                         </v-row>
 
@@ -269,7 +268,7 @@
                                             <v-list-item-title >{{item.Occupation}}</v-list-item-title>   
                                         </v-list-item-content>
                                         <v-list-item-action>
-                                            <v-tooltip bottom v-if="mode != 'view' && editTableNames == index">
+                                            <v-tooltip bottom v-if="mode != 'view'">
                                                 <template v-slot:activator="{ on, attrs }">
                                                         <v-btn 
                                                         v-bind="attrs"
@@ -303,7 +302,7 @@
                         <v-row>
                           <v-col cols="12" class="d-flex flex-row align-center">
                             <h4 class="mt-5 mb-5">Memberships</h4>
-                            <MembershipDialog class="ml-auto mr-1"/>
+                            <MembershipDialog class="ml-auto mr-1" v-if="!isView" :data="filteredMemberships" @newMembership="newMembership"/>
                           </v-col>
                         </v-row>
                           <v-data-table
@@ -320,7 +319,7 @@
                         <v-textarea
                           label="Notes"
                           name="Notes"
-                          v-model="fields.sPersonNotes"
+                          v-model="fields.PersonNotes"
                           outlined dense
                         ></v-textarea>
                       </v-col>
@@ -380,11 +379,11 @@
                           </v-col>
                         </v-row>
 
-                        <v-select
-                          :items="[1,2,3]"
-                          outlined dense
+                        <v-text-field outlined dense
+                          name="FunneralPaidBy"
+                          v-model="fields.FuneralPaidBy"
                           label="Funneral paid by"
-                        ></v-select>
+                        ></v-text-field>
 
                         <v-row>
                           <v-col cols="12" class="d-flex flex-row align-center">
@@ -433,7 +432,7 @@
                           <v-text-field
                             name="DestinationBodyShipped"
                             label="if No, Destination body shipped"
-                            v-model="fields.BodyShipped"
+                            v-model="fields.ShippedIndicator"
                             outlined dense
                           ></v-text-field>
                           <v-text-field
@@ -520,9 +519,9 @@ export default {
       //information section
       FirstName: "",
       LastName: "",
-      Country: "",
-      State: "",
-      City: "",
+      OriginCountry: "",
+      OriginState: "",
+      OriginCity: "",
       BirthDate: "",
       DeathDate: "",
       Age: "",
@@ -533,9 +532,9 @@ export default {
       Gender: "",
       Notes: "",
       //Death
-      MannerOfDeath: "",
-      CauseOfDeath: "",
-      FunneralPayer: "",
+      Manner: "",
+      Cause: "",
+      FuneralPaidBy: "",
       Sources: [],
       Kinships: [],
       //Burial
@@ -551,14 +550,15 @@ export default {
     menu2: false,
     showSave: 0,
     membershipHeaders: [
-          { text: 'Membership',value: 'name'},
-          { text: 'Chapter', value: 'calories' },
-          { text: 'Membership Notes', value: 'fat' },
+          { text: 'Membership',value: 'Membership'},
+          { text: 'Chapter', value: 'Chapter' },
+          { text: 'Membership Notes', value: 'Notes' },
         ],
     causes: [],
     cemetaries: [],
     religions: [],
-    occupations: []
+    occupations: [],
+    memberships: []
   }),
   mounted(){
       if(this.checkPath("edit")){
@@ -606,6 +606,9 @@ export default {
         this.causes = await catalogs.getCauses();
         this.religions = await catalogs.getReligions();
         this.occupations = await catalogs.getOccupations();
+        this.memberships = await catalogs.getMemberships();
+
+        console.log(this.fields.Memberships);
         this.overlay = false;
     },
     viewMode(){
@@ -663,6 +666,10 @@ export default {
     newOccupation(val){
       this.fields.Occupations.push(val);
     },
+    newMembership(val){
+      console.log(val);
+      this.fields.Memberships.push(val);
+    },
     save (date) {
       this.$refs.menu.save(date);
     },
@@ -688,6 +695,18 @@ export default {
     },
     filteredOccupations(){
       return this.occupations.filter(x => !this.fields.Occupations.some(item => item === x));
+    },
+    filteredMemberships(){
+      return this.memberships.filter(x => !this.fields.Memberships.some(item => item.MembershipLUpID === x.MembershipLUpID));
+    },
+    isView(){
+      return this.mode == 'view';
+    },
+    isEdit(){
+      return this.mode == 'edit';
+    },
+    isNew(){
+      return this.mode == 'new';
     }
   },
   watch: {
