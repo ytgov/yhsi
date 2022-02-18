@@ -107,7 +107,6 @@ burialsRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { burialId } = req.params;
-		console.log(burialId);
 		const burial = await db
 			.select("BUR.*")
 			.from('Burial.Burial as BUR')
@@ -172,7 +171,12 @@ burialsRouter.get(
 			.join('Burial.ReligionLookup as CL', 'CL.ReligionLUpID', '=', 'BUR.ReligionID').first();
 		//burial.Religion = Religion;
 
+		burial.Occupations = await db
+			.select('OC.*').from('Burial.Occupation AS BOC')
+			.where('BOC.BurialID', burialId)
+			.join('Burial.OccupationLookup as OC', 'OC.OccupationLUpID', '=', 'BOC.OccupationID');
 
+		console.log(JSON.stringify(burial.Occupations));
 		res.status(200).send(burial);
 	}
 );

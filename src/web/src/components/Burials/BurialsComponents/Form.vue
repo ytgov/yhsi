@@ -254,17 +254,50 @@
                       <v-col cols="3">
                         <v-row>
                           <v-col cols="12" class="d-flex flex-row align-center">
-                            <h4 class="mt-5 mb-5">Occupation</h4>
-                            <OccupationDialog class="ml-auto mr-1"/>
+                            <h4 class="mt-5 mb-5">Occupations</h4>
+                            <OccupationDialog class="ml-auto mr-1" :mode="mode" :data="filteredOccupations" @newOccupation="newOccupation"/>
                           </v-col>
                         </v-row>
 
+                        <v-row>
+                          <v-col cols="12">
+                          <v-card v-if="fields.Occupations">
+                            <v-list class="pa-0" >
+                                <template v-for="(item, index) in fields.Occupations">
+                                    <v-list-item :key="`nl-${index}`">
+                                        <v-list-item-content>
+                                            <v-list-item-title >{{item.Occupation}}</v-list-item-title>   
+                                        </v-list-item-content>
+                                        <v-list-item-action>
+                                            <v-tooltip bottom v-if="mode != 'view' && editTableNames == index">
+                                                <template v-slot:activator="{ on, attrs }">
+                                                        <v-btn 
+                                                        v-bind="attrs"
+                                                        v-on="on"
+                                                        icon class="grey--text text--darken-2"  @click="deleteOccupation(index)">
+                                                            <v-icon
+                                                            small
+                                                            >mdi-trash</v-icon>  
+                                                        </v-btn>
+                                                </template>
+                                                <span>Delete</span>
+                                            </v-tooltip> 
+                                        </v-list-item-action>
+                                    </v-list-item>
+                                    <v-divider :key="`divider-${index}`"></v-divider>
+                                </template>
+                            </v-list>
+                        </v-card>
+                          </v-col>
+                        </v-row>
+<!--
                         <v-select v-for="occupation in fields.Occupations"
                           :key="`occ-${occupation.id}`"
                           :items="[1,2,3]"
                           outlined dense
                           label="Occupation"
                         ></v-select>
+                        -->
                       </v-col>
                       <v-col cols="6">
                         <v-row>
@@ -524,7 +557,8 @@ export default {
         ],
     causes: [],
     cemetaries: [],
-    religions: []
+    religions: [],
+    occupations: []
   }),
   mounted(){
       if(this.checkPath("edit")){
@@ -544,7 +578,7 @@ export default {
     this problem is solved by using this funtion.*/
     checkPath(word){
         let path = this.$route.path.split("/");
-        console.log(path);
+       // console.log(path);
         if(path[2] == word){
             return true;
         }
@@ -562,19 +596,6 @@ export default {
     saveCurrentBurial(){
         localStorage.currentBurialID = this.$route.params.id;
     },
-    addSitePermissions(){
-      if(this.siteDataAccess == "" || this.siteRole == ""){
-        return;
-      }
-      this.sites.push({
-        id: this.sites.length +1,
-        role: this.siteRole,
-        dataAccess: this.siteDataAccess
-      });
-      this.resetValidation();
-
-      
-    },
     async getDataFromApi(){
         this.overlay = true;
         if(this.$route.params.id){
@@ -584,8 +605,7 @@ export default {
         this.cemetaries = await catalogs.getCemetaries();
         this.causes = await catalogs.getCauses();
         this.religions = await catalogs.getReligions();
-        //this.religions.push("None");
-        console.log(this.fields);
+        this.occupations = await catalogs.getOccupations();
         this.overlay = false;
     },
     viewMode(){
@@ -640,6 +660,9 @@ export default {
             
             
         },
+    newOccupation(val){
+      this.fields.Occupations.push(val);
+    },
     save (date) {
       this.$refs.menu.save(date);
     },
@@ -662,6 +685,9 @@ export default {
     },
     availableDataAccess(){
       return this.dataAccessOptions.filter(x => !this.sites.some(item => item.dataAccess === x));
+    },
+    filteredOccupations(){
+      return this.occupations.filter(x => !this.fields.Occupations.some(item => item === x));
     }
   },
   watch: {

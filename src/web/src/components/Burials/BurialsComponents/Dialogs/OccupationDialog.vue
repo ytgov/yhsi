@@ -5,7 +5,7 @@
       max-width="600px"
     >
       <template v-slot:activator="{ on, attrs }">
-        <v-btn
+        <v-btn v-if="mode != 'view'"
           color="primary"
           v-bind="attrs"
           v-on="on"
@@ -24,7 +24,9 @@
                 <v-row>
                    <v-col cols="12">
                       <v-select
-                          :items="[1,2,3]"
+                          :items="data"
+                          return-object
+                          item-text="Occupation"
                           v-model="occupation"
                           label="Occupation"
                       ></v-select>
@@ -44,7 +46,7 @@
           <v-btn
             color="blue darken-1"
             text
-            @click="dialog = false"
+            @click="saveNew"
           >
             Save
           </v-btn>
@@ -55,10 +57,17 @@
 
 <script>
 export default {
-    props: [  ],
+    props: [ "data", "mode" ],
     data: () => ({
         dialog: false,
         occupation: "",
-    })
+    }),
+    methods: {
+      saveNew(){
+        this.$emit("newOccupation", this.occupation);
+        this.occupation = "";
+        this.dialog = false;
+      }
+    }
 }
 </script>
