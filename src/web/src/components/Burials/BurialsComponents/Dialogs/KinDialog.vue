@@ -21,7 +21,7 @@
         </v-card-title>
         <v-card-text>
           <v-container>
-            <v-form v-model="valid">
+            <v-form v-model="valid" ref="kinDialog">
               <v-row>
                    <v-col cols="6">
                       <v-text-field outlined dense
