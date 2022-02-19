@@ -21,31 +21,48 @@
         </v-card-title>
         <v-card-text>
           <v-container>
-                <v-row>
+            <v-form v-model="valid">
+              <v-row>
                    <v-col cols="6">
-                      <v-text-field
+                      <v-text-field outlined dense
                           name="Name"
                           label="Name"
                           v-model="name"
+                          :rules="rules"
                       ></v-text-field>
                   </v-col>
                   <v-col cols="6">
-                      <v-text-field
+                      <v-select outlined dense
+                          :items="data"
+                          item-text="Relationship"
+                          return-object
                           name="Relationship"
                           label="Relationship"
                           v-model="relationship"
-                      ></v-text-field>
+                          :rules="rules"
+                      ></v-select>
                   </v-col>
               </v-row>
               <v-row>
-                  <v-col cols="12">
-                      <v-text-field
+                  <v-col cols="6">
+                      <v-text-field outlined dense
                           name="Location"
                           label="Location"
                           v-model="location"
+                          :rules="rules"
+                      ></v-text-field>
+                  </v-col>
+                  <v-col cols="6">
+                      <v-text-field outlined dense
+                          name="Quantity"
+                          label="Quantity"
+                          v-model="quantity"
+                          :rules="rules"
                       ></v-text-field>
                   </v-col>
               </v-row>
+            </v-form>
+                
 
           </v-container>
         </v-card-text>
@@ -61,7 +78,7 @@
           <v-btn
             color="blue darken-1"
             text
-            @click="dialog = false"
+            @click="saveNew"
           >
             Save
           </v-btn>
@@ -72,12 +89,26 @@
 
 <script>
 export default {
-    props: [  ],
+    props: [ "data" ],
     data: () => ({
         dialog: false,
+        valid: false,
         name: "",
         relationship: "",
-        location: ""
-    })
+        location: "",
+        quantity: "",
+        rules: [
+          value => !!value || 'Required.',
+        ],
+    }),
+    methods: {
+        saveNew(){
+          const { relationship, location, quantity, name } = this;
+          const kinship = {
+            relationship, location, quantity, name
+          }
+          this.$emit('newKinship', kinship);
+        }
+    }
 }
 </script>

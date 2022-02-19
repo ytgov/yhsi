@@ -179,3 +179,11 @@ catalogsRouter.get('/membership', async (req: Request, res: Response) => {
 
   res.send(data);
 });
+
+
+//RELATIONSHIPS
+catalogsRouter.get('/relationship', async (req: Request, res: Response) => {
+  const data = await db('Burial.RelationLookup').orderBy('Burial.RelationLookup.Relationship', 'asc');
+
+  res.send(data);
+});

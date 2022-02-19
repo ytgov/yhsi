@@ -404,12 +404,12 @@
                         <v-row>
                           <v-col cols="12" class="d-flex flex-row align-center">
                             <h4 class="mt-5 mb-5">Next of Kin</h4>
-                            <KinDialog/>
+                            <KinDialog v-if="!isView" :data="relationships" @newKinship="newKinship" />
                           </v-col>
                         </v-row>
                           <v-data-table
-                            :headers="membershipHeaders"
-                            :items="fields.Memberships"
+                            :headers="kinshipHeaders"
+                            :items="fields.Kinships"
                             :items-per-page="5"
                             class="elevation-0"
                           ></v-data-table>
@@ -425,14 +425,30 @@
                     <v-row>
                         <v-col cols="4">
                           <v-row>
-                            <v-col cols="12" class="d-flex flex-row align-center">
+                            <v-col cols="6" class="d-flex flex-row align-center">
                               <h4 class="mt-5 mb-5">Buried in Yukon?</h4>
                             </v-col>
+                            <v-col cols="6" >
+                              <v-radio-group
+                                v-model="fields.BuriedInYukon"
+                                row
+                              >
+                                <v-radio
+                                  label="Yes"
+                                  value="y"
+                                ></v-radio>
+                                <v-radio
+                                  label="No"
+                                  value="n"
+                                ></v-radio>
+                              </v-radio-group>
+                            </v-col>
                           </v-row>
+                        
                           <v-text-field
                             name="DestinationBodyShipped"
                             label="if No, Destination body shipped"
-                            v-model="fields.ShippedIndicator"
+                            v-model="fields.DestinationShipped"
                             outlined dense
                           ></v-text-field>
                           <v-text-field
@@ -462,7 +478,7 @@
                             </v-col>
                           </v-row>
                           <v-data-table
-                            :headers="membershipHeaders"
+                            :headers="siteVisitHeaders"
                             :items="fields.SiteVisits"
                             :items-per-page="5"
                             class="elevation-0"
@@ -554,11 +570,25 @@ export default {
           { text: 'Chapter', value: 'Chapter' },
           { text: 'Membership Notes', value: 'Notes' },
         ],
+    siteVisitHeaders: [
+          { text: 'Inscription', value: 'Inscription' },
+          { text: 'Marker description', value: 'MarkerDescription' },
+          { text: 'Condition',value: 'Condition'},
+          { text: 'Recorded by', value: 'RecordedBy' },
+          { text: 'Visit year', value: 'VisitYear' },
+        ],
+    kinshipHeaders: [
+          { text: 'Name', value: 'Name' },
+          { text: 'Location', value: 'Location' },
+          { text: 'Quantity',value: 'Quantity'},
+          { text: 'Relationship', value: 'Relationship' },
+        ],
     causes: [],
     cemetaries: [],
     religions: [],
     occupations: [],
-    memberships: []
+    memberships: [],
+    relationships: []
   }),
   mounted(){
       if(this.checkPath("edit")){
@@ -607,8 +637,8 @@ export default {
         this.religions = await catalogs.getReligions();
         this.occupations = await catalogs.getOccupations();
         this.memberships = await catalogs.getMemberships();
-
-        console.log(this.fields.Memberships);
+        this.relationships = await catalogs.getRelationships();
+        console.log(this.fields);
         this.overlay = false;
     },
     viewMode(){
@@ -665,6 +695,9 @@ export default {
         },
     newOccupation(val){
       this.fields.Occupations.push(val);
+    },
+    newKinship(val){
+      this.fields.Kinships.push(val);
     },
     newMembership(val){
       console.log(val);

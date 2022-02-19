@@ -181,6 +181,15 @@ burialsRouter.get(
 			.where('MEM.BurialID', burialId)
 			.join('Burial.MembershipLookup as ML', 'ML.MembershipLUpID', '=', 'MEM.MembershipID');
 
+		burial.SiteVisits = await db
+			.select('*').from('Burial.SiteVisit')
+			.where('Burial.SiteVisit.BurialID', burialId);
+
+		burial.Kinships = await db
+			.select('KIN.*', 'REL.*').from('Burial.NOKin AS KIN')
+			.where('KIN.BurialID', burialId)
+			.join('Burial.RelationLookup as REL', 'REL.RelationLUpID', '=', 'KIN.RelationshipID');
+
 
 		res.status(200).send(burial);
 	}
