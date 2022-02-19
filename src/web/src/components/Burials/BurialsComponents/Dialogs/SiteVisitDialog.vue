@@ -12,7 +12,7 @@
           outlined
           class="ml-auto mr-1"
         >
-          ADD NEXT OF KIN
+          ADD SITE VISIT
         </v-btn>
       </template>
       <v-card>
@@ -92,7 +92,10 @@ export default {
         inscription: "",
         condition: "",
         yearRecorded: "",
-        recordedBy: ""
+        recordedBy: "",
+        rules: [
+          value => !!value || 'Required.',
+        ],
     })
 }
 </script>
