@@ -188,13 +188,10 @@ export default {
         pagination: { itemsLength: 0 }
     }),
     mounted(){
-        console.log("in mounted with data");
-        console.log(this.data);
         this.data = this.historicRecords;
     },
     methods:{
         yourMethod(pagination) {
-            console.log(pagination) // length of filtered/searched items in Vuetify data-table
             this.pagination = pagination;
         },
         //functions for editing the table values

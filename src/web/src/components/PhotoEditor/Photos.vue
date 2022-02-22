@@ -28,7 +28,7 @@
     </v-row>
     <v-row v-else>
       <v-col cols="12" class="d-flex">
-        <v-dialog
+        <v-dialog v-if="mode != 'view'" 
           v-model="dialog1"
           max-width="600"
           scrollable
@@ -394,7 +394,7 @@ import axios from "axios";
 export default {
   name: "photos",
   components: { Carousell, PhotoList },
-  props: ["photoType", "itemId", "showDefault"],
+  props: ["photoType", "itemId", "showDefault", "mode"],
   data: () => ({
     overlay: false,
     //search variables
@@ -537,7 +537,6 @@ export default {
         .get(`${EXTRA_PHOTOS_URL}/${this.photoType}/${this.itemId}`)
         .then((resp) => {
           if (resp) {
-            console.log(resp.data);
             this.photos = resp.data.map((x) => {
               x.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(x.ThumbFile.data)}`;
               //x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
@@ -643,7 +642,6 @@ export default {
       var reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = function () {
-        //console.log(reader.result);
       };
       reader.onerror = function (error) {
         console.log("Error: ", error);

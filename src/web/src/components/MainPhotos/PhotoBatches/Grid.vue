@@ -169,10 +169,16 @@ export default {
         .then((resp) => {
           this.$store.commit("photos/setBatchId", resp.data.data[0].id);
           this.$router.push(`/photobatches/upload`);
-          this.$emit("showSucess", 'Batch added');
+          this.$store.commit("alerts/setText",'Batch added');
+          this.$store.commit("alerts/setType", "success");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
         })
         .catch((err) => {
-          this.$emit("showError", err); 
+          this.$store.commit("alerts/setText",err);
+          this.$store.commit("alerts/setType", "warning");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true); 
         });
     },
   },

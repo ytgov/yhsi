@@ -142,10 +142,16 @@ export default {
           this.photos = this.photos.filter(function( obj ) {
             return obj.id !== id;
           });  
-          this.$emit("showSuccess", 'Photo removed');
+          this.$store.commit("alerts/setText",'Photo removed');
+          this.$store.commit("alerts/setType", "success");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
         })
         .catch((err) => {
-            this.$emit("showError", err);
+            this.$store.commit("alerts/setText",err);
+            this.$store.commit("alerts/setType", "warning");
+            this.$store.commit("alerts/setTimeout", 5000);
+            this.$store.commit("alerts/setAlert", true);
           });
          
     },
@@ -172,10 +178,15 @@ export default {
             photo.photoFile.base64 = `data:image/png;base64,${this.toBase64(photo.photoFile.data)}`;
             this.photos.push(photo);
             this.$refs.fileupload.reset();
-            this.$emit("showSuccess", 'Photo added');
+            this.$store.commit("alerts/setText",'Photo added');
+            this.$store.commit("alerts/setType", "success");
+            this.$store.commit("alerts/setTimeout", 5000);
+            this.$store.commit("alerts/setAlert", true);
           })
-          .catch((err) => {
-            this.$emit("showError", err);
+          .catch(() => {
+            this.$store.commit("alerts/setType", "warning");
+            this.$store.commit("alerts/setTimeout", 5000);
+            this.$store.commit("alerts/setAlert", true);
           });
       }
     },
@@ -185,7 +196,10 @@ export default {
           .delete(`${PHOTO_BATCH_URL}/${localStorage.currentBatchId}`)
           .then(() => { 
             this.$router.push('/photobatches');
-            this.$emit("showSuccess", 'Batch deleted');
+            this.$store.commit("alerts/setText",'Batch deleted');
+            this.$store.commit("alerts/setType", "success");
+            this.$store.commit("alerts/setTimeout", 5000);
+            this.$store.commit("alerts/setAlert", true);
           })
           .catch((error) => console.error(error))
           ;  
