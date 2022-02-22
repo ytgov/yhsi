@@ -1,7 +1,7 @@
 import { api } from './config';
 
 export default {
-  async get(page, limit, textToMatch, sortBy, sort){
+  async get(page, limit, textToMatch, sortBy, sort, filters){
       return await api.get(`burials/`, {
         crossdomain: true,
         params: {
@@ -9,7 +9,8 @@ export default {
           limit,
           textToMatch,
           sortBy,
-          sort
+          sort,
+          filters
         }
       })
       .then(res => {
