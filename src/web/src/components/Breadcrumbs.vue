@@ -7,7 +7,7 @@
           :event="item.disabled ? '' : 'click'"
           class="text-capitalize"
         >
-          {{ item.text }}
+          {{ decodeURIComponent(item.text) }}
         </router-link>
         <v-icon v-if="i + 1 < items.length">mdi-chevron-right</v-icon>
       </div>

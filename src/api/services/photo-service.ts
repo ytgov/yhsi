@@ -1,4 +1,5 @@
-import Knex from 'knex';
+import knex, { Knex } from 'knex';
+//import Knex from 'knex';
 import { QueryStatement, SortStatement } from './';
 import { Photo, PHOTO_FIELDS, SavedFilter } from '../data';
 import _ from 'lodash';
@@ -7,7 +8,8 @@ export class PhotoService {
 	private knex: Knex;
 
 	constructor(config: Knex.Config<any>) {
-		this.knex = Knex(config);
+		this.knex = knex(config);
+		//this.knex = Knex(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Photo>> {
@@ -23,7 +25,7 @@ export class PhotoService {
 			.select<Photo>(PHOTO_FIELDS)
 			.where({ rowId: id })
 			.first()
-			.catch((err) => {
+			.catch((err: any) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});
@@ -33,7 +35,7 @@ export class PhotoService {
 		return this.knex('photo')
 			.select<Photo[]>(PHOTO_FIELDS)
 			.where({ placeId: id })
-			.catch((err) => {
+			.catch((err: any) => {
 				console.log('BOMBED', err);
 				return new Array<Photo>();
 			});
@@ -44,7 +46,7 @@ export class PhotoService {
 			.select<Photo>('file')
 			.where({ rowId: id })
 			.first()
-			.catch((err) => {
+			.catch((err: any) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});
@@ -55,7 +57,7 @@ export class PhotoService {
 			.select<Photo>('thumbFile')
 			.where({ rowId: id })
 			.first()
-			.catch((err) => {
+			.catch((err: any) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});
@@ -178,8 +180,8 @@ export class PhotoService {
 
 			let item_count = await countStmt
 				.count('*', { as: 'counter' })
-				.then((t) => t)
-				.catch((err) => {
+				.then((t: any) => t)
+				.catch((err: any) => {
 					console.log('COUNT Query Error');
 					console.log(err);
 					return reject(err.originalError.info.message);
@@ -224,7 +226,7 @@ export class PhotoService {
 			.select<SavedFilter>(['id', 'userId', 'name', 'resultType', 'value'])
 			.where({ id: id })
 			.first()
-			.catch((err) => {
+			.catch((err: any) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});
@@ -235,7 +237,7 @@ export class PhotoService {
 			.select<SavedFilter>(['id', 'userId', 'name', 'resultType', 'value'])
 			.where({ userId: id })
 			.where({ resultType: 'Photo' })
-			.catch((err) => {
+			.catch((err: any) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});

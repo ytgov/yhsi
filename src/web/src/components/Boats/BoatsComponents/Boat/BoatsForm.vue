@@ -385,6 +385,7 @@
             <Photos
               v-if="infoLoaded"
               :showDefault="mode == 'new'"
+              :mode="mode"
               :photoType="'boat'"
               :itemId="getBoatID"
               @updateSelectedImage="selectedImageChanged"

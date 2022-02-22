@@ -384,22 +384,31 @@ export default {
 
       axios
         .put(`${PHOTO_URL}/${localStorage.currentRowId}`, formData)
-        .then((resp) => {
+        .then(() => {
           // If editing in view mode we're only rotating the photo. No need to reload the item data
           if (this.mode != 'view') {
             this.$router.push(`/photos/view`);
             this.loadItem();
           }
           this.loadImgFile();
-          this.$emit("showAPIMessages", resp.data);
+          this.$store.commit("alerts/setText",'Changes saved');
+          this.$store.commit("alerts/setType", "success");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
         })
         .catch((err) => {
-          this.$emit("showError", err);
+          this.$store.commit("alerts/setText",err);
+          this.$store.commit("alerts/setType", "warning");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
         });
     },
     createPhoto() {
       if(!this.fields.file) {
-        this.$emit("showError", 'Select a photo to upload');
+          this.$store.commit("alerts/setText",'Select a photo to upload');
+          this.$store.commit("alerts/setType", "warning");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
       } else {
         this.imageLoaded = false;
         this.infoLoaded = false;
@@ -427,10 +436,16 @@ export default {
             localStorage.currentRowId = resp.data.data[0].rowId;
             this.loadItem();
             this.loadImgFile();
-            this.$emit("showAPIMessages", resp.data);
+            this.$store.commit("alerts/setText",'Photo created');
+            this.$store.commit("alerts/setType", "success");
+            this.$store.commit("alerts/setTimeout", 5000);
+            this.$store.commit("alerts/setAlert", true);
           })
           .catch((err) => {
-            this.$emit("showError", err);
+            this.$store.commit("alerts/setText",err);
+            this.$store.commit("alerts/setType", "warning");
+            this.$store.commit("alerts/setTimeout", 5000);
+            this.$store.commit("alerts/setAlert", true);
           });
       }
     },
