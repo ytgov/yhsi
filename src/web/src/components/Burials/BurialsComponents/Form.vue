@@ -656,7 +656,7 @@ export default {
               CemetaryID: Cemetary.CemetaryLUpID, 
               ReligionID: Religion.ReligionLUpID,  
             };
-            console.log(burial);
+            //console.log(data);
             const data = {
               burial,
               Memberships, 
@@ -664,7 +664,7 @@ export default {
               Kinships,
               Occupations
             }
-            
+             console.log(data);
              await burials.put(localStorage.currentBurialID, data);
             // await users.putAccess(localStorage.currentBurialID, accessData);*/
             // this.overlay = false;   
