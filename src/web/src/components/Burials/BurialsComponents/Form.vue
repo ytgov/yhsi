@@ -41,12 +41,14 @@
                               label="First Name"
                               outlined dense
                               v-model="fields.FirstName"
+                              :readonly="isView"
                             ></v-text-field>
                             <v-text-field
                               name="LastName"
                               label="Last Name"
                               outlined dense
                               v-model="fields.LastName"
+                              :readonly="isView"
                             ></v-text-field>
                         </v-col>
                         <v-col cols="4">
@@ -55,17 +57,20 @@
                               v-model="fields.OriginCountry"
                               outlined dense
                               label="Country of Origin"
+                              :readonly="isView"
                             ></v-select>
                             <v-text-field
                               name="Province"
                               outlined dense
                               label="Province/State of Origin"
                               v-model="fields.OriginState"
+                              :readonly="isView"
                             ></v-text-field>
                             <v-text-field
                               name="City"
                               outlined dense
                               label="City of Origin"
+                              :readonly="isView"
                               v-model="fields.OriginCity"
                             ></v-text-field>
                         </v-col>
@@ -82,6 +87,7 @@
                                       name="Birth Day"
                                       label="Birth Day"
                                       v-model="fields.BirthDay"
+                                      :readonly="isView"
                                     ></v-text-field>
                                     
                                 </v-col>
@@ -90,6 +96,7 @@
                                       name="Birth Month"
                                       label="Birth Month"
                                       v-model="fields.BirthMonth"
+                                      :readonly="isView"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col cols="4">
@@ -97,6 +104,7 @@
                                       name="Birth Year"
                                       label="Birth Year"
                                       v-model="fields.BirthYear"
+                                      :readonly="isView"
                                     ></v-text-field>
                                 </v-col>
                             </v-row>
@@ -106,6 +114,7 @@
                                       name="Death Day"
                                       label="Death Day"
                                       v-model="fields.DeathDay"
+                                      :readonly="isView"
                                     ></v-text-field>
                                     
                                 </v-col>
@@ -114,6 +123,7 @@
                                       name="Death Month"
                                       label="Death Month"
                                       v-model="fields.DeathMonth"
+                                      :readonly="isView"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col cols="4">
@@ -121,100 +131,11 @@
                                       name="Death Year"
                                       label="Death Year"
                                       v-model="fields.DeathYear"
+                                      :readonly="isView"
                                     ></v-text-field>
                                 </v-col>
                             </v-row>
-                            <!--
-                            <v-menu
-                                ref="menu"
-                                v-model="menu"
-                                :close-on-content-click="false"
-                                :return-value.sync="fields.ExpirationDate"
-                                transition="scale-transition"
-                                offset-y
-                                min-width="auto"
-                                :disabled="!isEditable"
-                            >
-                                <template v-slot:activator="{ on, attrs }">
-                                <v-text-field
-                                    outlined dense
-                                    v-model="fields.ExpirationDate"
-                                    label="Birth Date"
-                                    append-icon="mdi-calendar"
-                                    readonly
-                                    :disabled="!isEditable"
-                                    v-bind="attrs"
-                                    v-on="on"
-                                ></v-text-field>
-                                </template>
-                                <v-date-picker
-                                v-model="fields.BirthDate"
-                                no-title
-                                scrollable
-                                >
-                                <v-spacer></v-spacer>
-                                <v-btn
-                                    text
-                                    color="primary"
-                                    @click="menu = false"
-                                >
-                                    Cancel
-                                </v-btn>
-                                <v-btn
-                                    text
-                                    color="primary"
-                                    @click="$refs.menu.save(fields.ExpirationDate)"
-                                >
-                                    OK
-                                </v-btn>
-                                </v-date-picker>
-                            </v-menu>
-
-                            <v-menu
-                                ref="menu2"
-                                v-model="menu"
-                                :close-on-content-click="false"
-                                :return-value.sync="fields.ExpirationDate"
-                                transition="scale-transition"
-                                offset-y
-                                min-width="auto"
-                                :disabled="!isEditable"
-                            >
-                                <template v-slot:activator="{ on, attrs }">
-                                <v-text-field
-                                    v-model="fields.ExpirationDate"
-                                    label="Death Date"
-                                    append-icon="mdi-calendar"
-                                    readonly
-                                    outlined dense
-                                    :disabled="!isEditable"
-                                    v-bind="attrs"
-                                    v-on="on"
-                                ></v-text-field>
-                                </template>
-                                <v-date-picker
-                                v-model="fields.DeathDate"
-                                no-title
-                                scrollable
-                                >
-                                <v-spacer></v-spacer>
-                                <v-btn
-                                    text
-                                    color="primary"
-                                    @click="menu = false"
-                                >
-                                    Cancel
-                                </v-btn>
-                                <v-btn
-                                    text
-                                    color="primary"
-                                    @click="$refs.menu2.save(fields.ExpirationDate)"
-                                >
-                                    OK
-                                </v-btn>
-                                </v-date-picker>
-                            </v-menu>
-                            -->
+                       
                         </v-col>
                         <v-col cols="4">
                           <h4>Age</h4>
@@ -223,6 +144,7 @@
                               outlined dense
                               label="Age"
                               v-model="fields.Age"
+                              :readonly="isView"
                             ></v-text-field>
                         </v-col>
                         <v-col cols="4"></v-col>
@@ -241,6 +163,7 @@
                             <h4 class="mt-5 mb-5">Religion</h4>
                           </v-col>
                         </v-row>
+
                         <v-select
                           :items="religions"
                           v-model="fields.Religion"
@@ -248,6 +171,7 @@
                           item-value="ReligionLUpID"
                           item-text="Religion"
                           label="Religion"
+                          :readonly="isView"
                         ></v-select>
                       </v-col>
                       <v-col cols="3">
@@ -289,14 +213,7 @@
                         </v-card>
                           </v-col>
                         </v-row>
-<!--
-                        <v-select v-for="occupation in fields.Occupations"
-                          :key="`occ-${occupation.id}`"
-                          :items="[1,2,3]"
-                          outlined dense
-                          label="Occupation"
-                        ></v-select>
-                        -->
+
                       </v-col>
                       <v-col cols="6">
                         <v-row>
@@ -321,11 +238,12 @@
                           name="Notes"
                           v-model="fields.PersonNotes"
                           outlined dense
+                          :readonly="isView"
                         ></v-textarea>
                       </v-col>
                       <v-col cols="6">
                         <h4 class="mt-5 mb-5">Gender</h4>
-                        <v-radio-group v-model="fields.Gender" row>
+                        <v-radio-group v-model="fields.Gender" row :readonly="isView">
                           <v-radio
                             label="Male"
                             value="Male"
@@ -356,19 +274,21 @@
                           </v-col>
                         </v-row>
                         <v-select
-                          :items="['Natural', 'Accident', 'Murder', 'Unknown']"
+                          :items="['Natural', 'Accidental', 'Murder', 'Unknown']"
                           v-model="fields.Manner"
                           outlined dense
                           label="Manner"
+                          :readonly="isView"
                         ></v-select>
-                        
+
                         <v-select
                           :items="causes"
-                          v-model="fields.CauseID"
+                          v-model="fields.Cause"
                           outlined dense
-                          item-value="CauseLUpID"
+                          return-object
                           item-text="Cause"
                           label="Cause"
+                          :readonly="isView"
                         ></v-select>
                       </v-col>
                       <v-col cols="3">
@@ -383,6 +303,7 @@
                           name="FunneralPaidBy"
                           v-model="fields.FuneralPaidBy"
                           label="Funneral paid by"
+                          :readonly="isView"
                         ></v-text-field>
 
                         <v-row>
@@ -396,6 +317,7 @@
                           :key="`key-${source.id}`"
                           name="source"
                           label="Source"
+                          :readonly="isView"
                           outlined dense
                         ></v-text-field>
 
@@ -412,6 +334,7 @@
                             :items="fields.Kinships"
                             :items-per-page="5"
                             class="elevation-0"
+                            
                           ></v-data-table>
                       </v-col>
                     </v-row>
@@ -432,6 +355,7 @@
                               <v-radio-group
                                 v-model="fields.BuriedInYukon"
                                 row
+                                :readonly="isView"
                               >
                                 <v-radio
                                   label="Yes"
@@ -450,24 +374,28 @@
                             label="if No, Destination body shipped"
                             v-model="fields.DestinationShipped"
                             outlined dense
+                            :readonly="isView"
                           ></v-text-field>
                           <v-text-field
                             name="YukonBurialLocation"
                             v-model="fields.BurialLocation"
                             label="Yukon Burial Location"
                             outlined dense
+                            :readonly="isView"
                           ></v-text-field>
                           <v-text-field
                             name="Other"
                             label="if Other, Please specify"
                             v-model="fields.Other"
                             outlined dense
+                            :readonly="isView"
                           ></v-text-field>
                           <v-text-field
                             name="PlodDescription"
                             label="Plot description"
                             v-model="fields.PlotDescription"
                             outlined dense
+                            :readonly="isView"
                           ></v-text-field>
                         </v-col>
                         <v-col cols="8">
@@ -643,12 +571,12 @@ export default {
     },
     viewMode(){
         this.mode="view";
-        this.$router.push(`/burials/view/${this.$route.params.id}`);
+        this.$router.push(`/burials/view/${localStorage.currentBurialID}`);
     },
     editMode(){
         this.fieldsHistory = {...this.fields};
         this.mode="edit";
-        this.$router.push(`/burials/edit/${this.$route.params.id}`);
+        this.$router.push(`/burials/edit/${localStorage.currentBurialID}`);
         this.showSave = 0;
     },
     cancelEdit(){
@@ -657,39 +585,91 @@ export default {
         }
         this.mode="view";
         //this.resetListVariables();
-        this.$router.push(`/burials/view/${this.$route.params.id}`);
+        this.$router.push(`/burials/view/${localStorage.currentBurialID}`);
     },
     async saveChanges(){
-            this.overlay = true; /*
-            let access = this.sections.map((x) =>{
-              delete x.SectionName;
-              delete x.SectionIcon;
-              x.UserID = parseInt(localStorage.currentBurialID);
-              return x;
-            })
-            const accessData = {
-              access
-            };
-            const {
+            this.overlay = true;
+            console.log(this.fields);
+            let { 
+              BurialID,
+              Age,
+              BirthDateNotes,
+              BirthDay,
+              BirthMonth,
+              BirthYear,
+              Memberships, 
+              SiteVisits, 
+              Kinships,
+              DeathDateNotes,
+              DeathDay,
+              DeathMonth, 
+              DeathYear,
+              DestinationShipped, 
               FirstName,
-              LastName,
-              Email,
-              ExpirationDate
-            } = this.fields;
+              FuneralPaidBy, 
+              Gender,
+              GenderOther,
+              LastName, 
+              Manner, 
+              Occupations,
+              OriginCity,
+              OriginCountry,
+              OriginState,
+              OtherCemetaryDesc, 
+              OtherCountry,
+              PersonNotes,
+              PlotDescription, 
+              ShippedIndicator,
+              Cause,
+              Cemetary,
+              Religion
+             } = this.fields;
+             //BurialID
+            const burial = {
+              BurialID,
+              Age,
+              BirthDateNotes,
+              BirthDay,
+              BirthMonth,
+              BirthYear,
+              DeathDateNotes,
+              DeathDay,
+              DeathMonth, 
+              DeathYear,
+              DestinationShipped, 
+              FirstName,
+              FuneralPaidBy, 
+              Gender,
+              GenderOther,
+              LastName, 
+              Manner,
+              OriginCity,
+              OriginCountry,
+              OriginState,
+              OtherCemetaryDesc, 
+              OtherCountry,
+              PersonNotes,
+              PlotDescription, 
+              ShippedIndicator,
+              //Ids directly on the burial table
+              CauseID: Cause.CauseLUpID,
+              CemetaryID: Cemetary.CemetaryLUpID, 
+              ReligionID: Religion.ReligionLUpID,  
+            };
+            console.log(burial);
             const data = {
-              user: {
-                FirstName,
-                LastName,
-                Email
-              },
-              expirationDate: ExpirationDate
+              burial,
+              Memberships, 
+              SiteVisits, 
+              Kinships,
+              Occupations
             }
-
-            await users.put(localStorage.currentBurialID, data);
-            await users.putAccess(localStorage.currentBurialID, accessData);*/
-            this.overlay = false;   
-            this.$router.push({name: 'AdminUserGrid'});   
-            //this.$router.go(); 
+            
+             await burials.put(localStorage.currentBurialID, data);
+            // await users.putAccess(localStorage.currentBurialID, accessData);*/
+            // this.overlay = false;   
+            // this.$router.push({name: 'BurialsGrid'});   
+            // this.$router.go(); 
             
             
         },
