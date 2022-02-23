@@ -19,74 +19,23 @@ burialsRouter.get(
 			textToMatch = '', 
 			sortBy = 'LastName', 
 			sort = 'asc', 
-			BirthYear,
-			//BirthMonth,
-			//BirthDay,
-			DeathYear,
-			//DeathMonth,
-			//DeathDay,
-			Gender,
-			Cause,
-			Manner,
-			Cemetary,
-			OriginCountry  } = req.query;
+			BirthYear = '',
+			BirthMonth = '',
+			BirthDay = '',
+			DeathYear = '',
+			DeathMonth = '',
+			DeathDay = '',
+			Gender = '',
+			Cause = '',
+			Manner = '',
+			Cemetary = '',
+			OriginCountry = ''  } = req.query;
 
+			console.log(BirthYear);
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
-		let counter = [{ count: 0 }];
 		let burials = [];
-// filter by names, birth and death dates, gender, cause and manner of death, cemetery, other location, country of origin
-		//if (textToMatch) {
-			counter = await db
-					.select(
-						'BUR.BurialID',
-						'BUR.LastName',
-						'BUR.FirstName',
-						'BUR.Gender',
-						'BUR.GenderOther',
-						'BUR.BirthYear',
-						'BUR.BirthMonth',
-						'BUR.BirthDay',
-						'BUR.BirthDateNotes',
-						'BUR.DeathYear',
-						'BUR.DeathMonth',
-						'BUR.DeathDay',
-						'BUR.DeathDateNotes',
-						'BUR.Age',
-						'BUR.Manner',
-						'CL.Cause',
-						'CE.Cemetary',
-						'BUR.OtherCemetaryDesc',
-						'BUR.PlotDescription',
-						'BUR.ShippedIndicator',
-						'BUR.DestinationShipped',
-						'BUR.FuneralPaidBy',
-						'BUR.OriginCity',
-						'BUR.OriginState',
-						'BUR.OriginCountry',
-						'BUR.OtherCountry',
-						'BUR.PersonNotes',
-						'RE.Religion'
-						)
-					.from('Burial.Burial as BUR')
-					.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
-					.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
-					.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
-					.where('BUR.FirstName', 'like', `%${textToMatch}%`)
-					.orWhere('BUR.LastName', 'like', `%${textToMatch}%`)
-					.orWhere('BUR.Gender', 'like', `%${Gender}%`)
-					.orWhere('BUR.BirthYear', 'like', `%${BirthYear}%`)
-					.orWhere('BUR.DeathYear', 'like', `%${DeathYear}%`)
-					.orWhere('BUR.Manner', 'like', `%${Manner}%`)
-					.orWhere('CL.Cause', 'like', `%${Cause}%`)
-					.orWhere('CE.Cemetary', 'like', `%${Cemetary}%`)
-					//.orWhere('BUR.OtherCemetaryDesc', 'like', `%${OtherCemetaryDesc}%`)
-					//.orWhere('BUR.OriginCity', 'like', `%${OriginCity}%`)
-					//.orWhere('BUR.OriginState', 'like', `%${OriginState}%`)
-					.orWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
-					//.orWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
-					.count('BurialID', { as: 'count' });
 
 			burials = await db
 					.select(
@@ -119,73 +68,32 @@ burialsRouter.get(
 						'BUR.PersonNotes',
 						'RE.Religion'
 						)
-					.from('Burial.Burial as BUR')
-					
+					.from('Burial.Burial as BUR')	
 					.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
 					.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
 					.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
-					//.orderBy(`${sortBy}`, `${sort}`)
-					//.groupBy('BUR.BurialID')
 					.where('BUR.FirstName', 'like', `%${textToMatch}%`)
-					.orWhere('BUR.LastName', 'like', `%${textToMatch}%`)
-					.orWhere('BUR.Gender', 'like', `%${Gender}%`)
-					.orWhere('BUR.BirthYear', 'like', `%${BirthYear}%`)
-					.orWhere('BUR.DeathYear', 'like', `%${DeathYear}%`)
-					.orWhere('BUR.Manner', 'like', `%${Manner}%`)
-					.orWhere('CL.Cause', 'like', `%${Cause}%`)
-					.orWhere('CE.Cemetary', 'like', `%${Cemetary}%`)
+					.andWhere('BUR.LastName', 'like', `%${textToMatch}%`)
+					.andWhere('BUR.Gender', 'like', `%${Gender}%`)
+					.andWhere('BUR.BirthYear', 'like', `%${BirthYear}%`)
+					.andWhere('BUR.BirthMonth', 'like', `%${BirthMonth}%`)
+					.andWhere('BUR.BirthDay', 'like', `%${BirthDay}%`)
+					.andWhere('BUR.DeathYear', 'like', `%${DeathYear}%`)
+					.andWhere('BUR.DeathMonth', 'like', `%${DeathMonth}%`)
+					.andWhere('BUR.DeathDay', 'like', `%${DeathDay}%`)
+					.andWhere('BUR.Manner', 'like', `%${Manner}%`)
+					.andWhere('CL.Cause', 'like', `%${Cause}%`)
+					.andWhere('CE.Cemetary', 'like', `%${Cemetary}%`)
 					//.orWhere('BUR.OtherCemetaryDesc', 'like', `%${OtherCemetaryDesc}%`)
 					//.orWhere('BUR.OriginCity', 'like', `%${OriginCity}%`)
 					//.orWhere('BUR.OriginState', 'like', `%${OriginState}%`)
-					.orWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
+					.andWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
 					//.orWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
+					.orderBy(`${sortBy}`, `${sort}`)
 					.limit(limit)
 					.offset(offset);
-		//} else {
-			
-			// counter = await db.from('Burial.Burial').count('BurialID', { as: 'count' });
 
-			// burials = await db
-			// 		.select(
-			// 			'BUR.BurialID',
-			// 			'BUR.LastName',
-			// 			'BUR.FirstName',
-			// 			'BUR.Gender',
-			// 			'BUR.GenderOther',
-			// 			'BUR.BirthYear',
-			// 			'BUR.BirthMonth',
-			// 			'BUR.BirthDay',
-			// 			'BUR.BirthDateNotes',
-			// 			'BUR.DeathYear',
-			// 			'BUR.DeathMonth',
-			// 			'BUR.DeathDay',
-			// 			'BUR.DeathDateNotes',
-			// 			'BUR.Age',
-			// 			'BUR.Manner',
-			// 			'CL.Cause',
-			// 			'CE.Cemetary',
-			// 			'BUR.OtherCemetaryDesc',
-			// 			'BUR.PlotDescription',
-			// 			'BUR.ShippedIndicator',
-			// 			'BUR.DestinationShipped',
-			// 			'BUR.FuneralPaidBy',
-			// 			'BUR.OriginCity',
-			// 			'BUR.OriginState',
-			// 			'BUR.OriginCountry',
-			// 			'BUR.OtherCountry',
-			// 			'BUR.PersonNotes',
-			// 			'RE.Religion'
-			// 			)
-			// 		.from('Burial.Burial as BUR')
-			// 		.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
-			// 		.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
-			// 		.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
-			// 		.orderBy(`${sortBy}`, `${sort}`)
-			// 		.limit(limit)
-			// 		.offset(offset);
-		//}
-
-		res.status(200).send({ count: counter[0].count, body: burials });
+		res.status(200).send({ count: burials.length, body: burials });
 	}
 );
 
@@ -244,16 +152,16 @@ burialsRouter.get(
 			return;
 		}
 
-		burial.Causes = await db
-			.select('CL.Cause').from('Burial.Burial as BUR')
+		burial.Cause = await db
+			.select('CL.*').from('Burial.Burial as BUR')
 			.join('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID').first();
 
-		burial.Cemetaries = await db
-			.select('CL.Cemetary').from('Burial.Burial as BUR')
+		burial.Cemetary = await db
+			.select('CL.*').from('Burial.Burial as BUR')
 			.join('Burial.CemetaryLookup as CL', 'CL.CemetaryLUpID', '=', 'BUR.CemetaryID').first();
 
-		burial.Religions = await db
-			.select('CL.Religion').from('Burial.Burial as BUR')
+		burial.Religion = await db
+			.select('CL.*').from('Burial.Burial as BUR')
 			.join('Burial.ReligionLookup as CL', 'CL.ReligionLUpID', '=', 'BUR.ReligionID').first();
 
 		burial.Occupations = await db
@@ -279,20 +187,7 @@ burialsRouter.get(
 		res.status(200).send(burial);
 	}
 );
-/*
-    [CemetaryID] smallint,
-    [OtherCemetaryDesc] varchar,
-    [PlotDescription] varchar,
-    [ShippedIndicator] varchar,
-    [DestinationShipped] varchar,
-    [FuneralPaidBy] varchar,
-    [OriginCity] varchar,
-    [OriginState] varchar,
-    [OriginCountry] varchar,
-    [OtherCountry] varchar,
-    [PersonNotes] varchar,
-    [ReligionID] smallint,
-	*/
+
 
 // changed this route from "/new" to "/" to follow RESTFUL conventions
 burialsRouter.post('/', async (req: Request, res: Response) => {
@@ -363,22 +258,59 @@ burialsRouter.post('/', async (req: Request, res: Response) => {
 	res.send(response);
 });
 
-burialsRouter.put('/:boatId', async (req: Request, res: Response) => {
-	/*  const db = req.app.get('db');
-   const permissions = req.decodedToken['yg-claims'].permissions;
-   if (!permissions.includes('edit')) res.sendStatus(403);
-  */
-	const {
-		boat = {},
-		ownerNewArray = [],
-		ownerRemovedArray = [],
-		pastNamesNewArray = [],
-		pastNamesEditArray = [],
-	} = req.body;
-	const { boatId } = req.params;
-	//make the update
+burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
+	//const db = req.app.get('db');
 
-	await db('boat.boat').update(boat).where('boat.boat.id', boatId);
+	const {
+		burial = {},
+		Memberships, 
+		SiteVisits, 
+		Kinships
+	} = req.body;
+	const { burialId } = req.params;
+
+	//burial.CauseID
+	console.log("Memberships",Memberships);
+	console.log("SiteVisits",SiteVisits);
+	console.log("Kinships",Kinships);
+
+	let resp = await db('Burial.Burial').update(burial).where('Burial.Burial.BurialID', burialId);
+	if(!resp){
+		res.status(404).send({ message: 'Burial not found'})
+	}
+/*
+		let prevCauses = await db
+			.select('CL.Cause').from('Burial.Burial as BUR')
+			.join('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID').first();
+
+		let prevCemetaries = await db
+			.select('CL.Cemetary').from('Burial.Burial as BUR')
+			.join('Burial.CemetaryLookup as CL', 'CL.CemetaryLUpID', '=', 'BUR.CemetaryID').first();
+
+		let prevReligions = await db
+			.select('CL.Religion').from('Burial.Burial as BUR')
+			.join('Burial.ReligionLookup as CL', 'CL.ReligionLUpID', '=', 'BUR.ReligionID').first();
+
+		let prevOccupations = await db
+			.select('OC.*').from('Burial.Occupation AS BOC')
+			.where('BOC.BurialID', burialId)
+			.join('Burial.OccupationLookup as OC', 'OC.OccupationLUpID', '=', 'BOC.OccupationID');
+
+		let prevMemberships = await db
+			.select('ML.*', 'MEM.Chapter', 'MEM.Notes', 'MEM.ID').from('Burial.Membership AS MEM')
+			.where('MEM.BurialID', burialId)
+			.join('Burial.MembershipLookup as ML', 'ML.MembershipLUpID', '=', 'MEM.MembershipID');
+
+		let prevSiteVisits = await db
+			.select('*').from('Burial.SiteVisit')
+			.where('Burial.SiteVisit.BurialID', burialId);
+
+		let prevKinships = await db
+			.select('KIN.*', 'REL.*').from('Burial.NOKin AS KIN')
+			.where('KIN.BurialID', burialId)
+			.join('Burial.RelationLookup as REL', 'REL.RelationLUpID', '=', 'KIN.RelationshipID');*/
+/*
+	await db.insert(Cause).into('Burial.Burial')
 
 	//Add the new owners (done)
 	await db
@@ -408,6 +340,6 @@ burialsRouter.put('/:boatId', async (req: Request, res: Response) => {
 		.then((rows: any) => {
 			return rows;
 		});
-
+*/
 	res.status(200).send({ message: 'success' });
 });

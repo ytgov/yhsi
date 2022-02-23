@@ -108,6 +108,8 @@ export default {
             relationship, location, quantity, name
           }
           this.$emit('newKinship', kinship);
+          this.$refs.kinDialog.reset();
+          this.dialog = false;
         }
     }
 }
