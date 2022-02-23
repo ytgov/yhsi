@@ -265,7 +265,8 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 		burial = {},
 		Memberships, 
 		SiteVisits, 
-		Kinships
+		Kinships,
+		Occupations
 	} = req.body;
 	const { burialId } = req.params;
 
@@ -273,11 +274,21 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 	console.log("Memberships",Memberships);
 	console.log("SiteVisits",SiteVisits);
 	console.log("Kinships",Kinships);
+	console.log("Occupations", Occupations);
 
 	let resp = await db('Burial.Burial').update(burial).where('Burial.Burial.BurialID', burialId);
 	if(!resp){
 		res.status(404).send({ message: 'Burial not found'})
 	}
+	console.log(Occupations.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationLupID })));
+
+	await db
+		.insert(Occupations.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationLupID })))
+		.into('Burial.Occupation')
+		.then((rows: any) => {
+			return rows;
+		});
+
 /*
 		let prevCauses = await db
 			.select('CL.Cause').from('Burial.Burial as BUR')

@@ -57,7 +57,8 @@
                           name="Quantity"
                           label="Quantity"
                           v-model="Quantity"
-                          :rules="rules"
+                          type="number"
+                          :rules="numberRules"
                       ></v-text-field>
                   </v-col>
               </v-row>
@@ -100,6 +101,9 @@ export default {
         Relationship: '',
         rules: [
           value => !!value || 'Required.',
+        ],
+        numberRules: [
+          value => !!value || 'A number is required.',
         ],
     }),
     methods: {

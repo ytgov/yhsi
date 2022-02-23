@@ -73,6 +73,7 @@ export default {
     }),
     methods: {
       saveNew(){
+        this.occupation.new = true;
         this.$emit("newOccupation", this.occupation);
         this.$refs.occupationDialog.reset();
         this.dialog = false;
