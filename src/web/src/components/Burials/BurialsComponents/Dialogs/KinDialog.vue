@@ -27,7 +27,7 @@
                       <v-text-field outlined dense
                           name="Name"
                           label="Name"
-                          v-model="name"
+                          v-model="Name"
                           :rules="rules"
                       ></v-text-field>
                   </v-col>
@@ -38,7 +38,7 @@
                           return-object
                           name="Relationship"
                           label="Relationship"
-                          v-model="relationship"
+                          v-model="Relationship"
                           :rules="rules"
                       ></v-select>
                   </v-col>
@@ -48,7 +48,7 @@
                       <v-text-field outlined dense
                           name="Location"
                           label="Location"
-                          v-model="location"
+                          v-model="Location"
                           :rules="rules"
                       ></v-text-field>
                   </v-col>
@@ -56,7 +56,7 @@
                       <v-text-field outlined dense
                           name="Quantity"
                           label="Quantity"
-                          v-model="quantity"
+                          v-model="Quantity"
                           :rules="rules"
                       ></v-text-field>
                   </v-col>
@@ -89,24 +89,43 @@
 
 <script>
 export default {
-    props: [ "data" ],
+    props: [ "data",  "BurialID"],
     data: () => ({
         dialog: false,
         valid: false,
-        name: "",
-        relationship: "",
-        location: "",
-        quantity: "",
+        Quantity: "",
+        Name: '',
+        Location: '',
+       // RelationLUpID: 2,
+        Relationship: '',
         rules: [
           value => !!value || 'Required.',
         ],
     }),
     methods: {
         saveNew(){
-          const { relationship, location, quantity, name } = this;
+          const { Relationship, Location, Quantity, Name } = this;
+
           const kinship = {
-            relationship, location, quantity, name
+            RelationshipID: Relationship.RelationLUpID,
+            RelationshipLUpID: Relationship.RelationLUpID,
+            Relationship: Relationship.Relationship,
+            Location, 
+            Quantity, 
+            Name,
+            BurialID: this.BurialID
           }
+          console.log(kinship);
+/*
+          NOKID: 1230,
+    BurialID: 3700,
+    RelationshipID: 2,
+    Quantity: null,
+    Name: 'member Seattle City Police force',
+    Location: '',
+    RelationLUpID: 2,
+    Relationship: 'Brother'
+    */
           this.$emit('newKinship', kinship);
           this.$refs.kinDialog.reset();
           this.dialog = false;

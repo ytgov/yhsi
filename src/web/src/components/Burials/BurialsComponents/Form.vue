@@ -326,7 +326,7 @@
                         <v-row>
                           <v-col cols="12" class="d-flex flex-row align-center">
                             <h4 class="mt-5 mb-5">Next of Kin</h4>
-                            <KinDialog v-if="!isView" :data="relationships" @newKinship="newKinship" />
+                            <KinDialog v-if="!isView" :data="relationships" :BurialID="currentBurialID" @newKinship="newKinship" />
                           </v-col>
                         </v-row>
                           <v-data-table
@@ -720,6 +720,9 @@ export default {
     },
     isNew(){
       return this.mode == 'new';
+    },
+    currentBurialID(){
+      return localStorage.currentBurialID;
     }
   },
   watch: {
