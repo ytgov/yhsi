@@ -117,7 +117,8 @@ export default {
             Location, 
             Quantity, 
             Name,
-            BurialID: this.BurialID
+            BurialID: this.BurialID,
+            new: true
           }
           console.log(kinship);
 /*

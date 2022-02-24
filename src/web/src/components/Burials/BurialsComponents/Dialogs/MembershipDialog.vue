@@ -96,7 +96,7 @@ export default {
         const { Chapter, Notes } = this;
 
         const { Membership, MembershipLUpID } = this.Membership;
-        this.$emit("newMembership",{ Membership, MembershipLUpID, Chapter, Notes });
+        this.$emit("newMembership",{ Membership, MembershipLUpID, Chapter, Notes, new: true });
         this.$refs.membershipDialog.reset();
         this.dialog = false;
       }
