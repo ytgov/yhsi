@@ -402,7 +402,7 @@
                           <v-row>
                             <v-col cols="12" class="d-flex flex-row align-center">
                               <h4 class="mt-5 mb-5">Site Visit</h4>
-                              <SiteVisitDialog/>
+                              <SiteVisitDialog v-if="!isView" @newSiteVisit="newSiteVisit" />
                             </v-col>
                           </v-row>
                           <v-data-table
@@ -680,8 +680,11 @@ export default {
       this.fields.Kinships.push(val);
     },
     newMembership(val){
-      console.log(val);
+      //console.log(val);
       this.fields.Memberships.push(val);
+    },
+    newSiteVisit(val){
+      this.fields.SiteVisits.push(val);
     },
     save (date) {
       this.$refs.menu.save(date);

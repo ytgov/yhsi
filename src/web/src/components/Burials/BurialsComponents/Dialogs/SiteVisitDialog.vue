@@ -21,26 +21,30 @@
         </v-card-title>
         <v-card-text>
           <v-container>
-                <v-row>
+            <v-form v-model="valid" ref="visitDialog" >
+               <v-row>
                    <v-col cols="4">
                       <v-text-field
                           name="MarkerDescription"
                           label="Marker Description"
-                          v-model="markerDescription"
+                          v-model="MarkerDescription"
+                          :rules="rules"
                       ></v-text-field>
                   </v-col>
                   <v-col cols="4">
                       <v-text-field
                           name="Inscription"
                           label="Inscription"
-                          v-model="inscription"
+                          v-model="Inscription"
+                          :rules="rules"
                       ></v-text-field>
                   </v-col>
                   <v-col cols="4">
                       <v-text-field
                           name="Condition"
                           label="Condition"
-                          v-model="condition"
+                          v-model="Condition"
+                          :rules="rules"
                       ></v-text-field>
                   </v-col>
               </v-row>
@@ -49,17 +53,21 @@
                       <v-text-field
                           name="YearRecorded"
                           label="Year Recorded"
-                          v-model="yearRecorded"
+                          v-model="VisitYear"
+                          type="number"
+                          :rules="numberRules"
                       ></v-text-field>
                   </v-col>
                   <v-col cols="6">
                       <v-text-field
                           name="RecordedBy"
                           label="Recorded by"
-                          v-model="recordedBy"
+                          v-model="RecordedBy"
+                          :rules="rules"
                       ></v-text-field>
                   </v-col>
               </v-row>
+            </v-form>
           </v-container>
         </v-card-text>
         <v-card-actions>
@@ -74,7 +82,7 @@
           <v-btn
             color="blue darken-1"
             text
-            @click="dialog = false"
+            @click="saveNew()"
           >
             Save
           </v-btn>
@@ -88,14 +96,30 @@ export default {
     props: [  ],
     data: () => ({
         dialog: false,
-        markerDescription: "",
-        inscription: "",
-        condition: "",
-        yearRecorded: "",
-        recordedBy: "",
+        valid: false,
+        MarkerDescription: "",
+        Inscription: "",
+        Condition: "",
+        VisitYear: "",
+        RecordedBy: "",
         rules: [
           value => !!value || 'Required.',
         ],
-    })
+        numberRules: [
+          value => !!value || 'A number is required.',
+        ],
+    }),
+    methods: {
+      saveNew(){
+        let { MarkerDescription, Inscription, Condition, VisitYear, RecordedBy } = this;
+
+        const visit = {
+          MarkerDescription, Inscription, Condition, VisitYear, RecordedBy, new: true
+        }
+        this.$emit("newSiteVisit", visit);
+        this.dialog = false;
+        this.$refs.visitDialog.reset();
+      }
+    }
 }
 </script>
