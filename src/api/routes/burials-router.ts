@@ -271,17 +271,15 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 	const { burialId } = req.params;
 
 	//burial.CauseID
-	console.log("Memberships",Memberships);
 	console.log("SiteVisits",SiteVisits);
-	console.log("Kinships",Kinships);
-	console.log("Occupations", Occupations);
+
 
 	let resp = await db('Burial.Burial').update(burial).where('Burial.Burial.BurialID', burialId);
 	if(!resp){
 		res.status(404).send({ message: 'Burial not found'})
 	}
-	console.log(Occupations.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationLupID })));
-
+	console.log(SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, VisitYear: x.VisitYear, Condition: x.Condition, MarkerDescription: x.MarkerDescription, Inscription: x.Inscription, RecordedBy: x.RecordedBy })));
+	//OCCUPATIONS
 	await db
 		.insert(Occupations.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationLupID })))
 		.into('Burial.Occupation')
@@ -289,47 +287,29 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 			return rows;
 		});
 
-/*
-		let prevCauses = await db
-			.select('CL.Cause').from('Burial.Burial as BUR')
-			.join('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID').first();
-
-		let prevCemetaries = await db
-			.select('CL.Cemetary').from('Burial.Burial as BUR')
-			.join('Burial.CemetaryLookup as CL', 'CL.CemetaryLUpID', '=', 'BUR.CemetaryID').first();
-
-		let prevReligions = await db
-			.select('CL.Religion').from('Burial.Burial as BUR')
-			.join('Burial.ReligionLookup as CL', 'CL.ReligionLUpID', '=', 'BUR.ReligionID').first();
-
-		let prevOccupations = await db
-			.select('OC.*').from('Burial.Occupation AS BOC')
-			.where('BOC.BurialID', burialId)
-			.join('Burial.OccupationLookup as OC', 'OC.OccupationLUpID', '=', 'BOC.OccupationID');
-
-		let prevMemberships = await db
-			.select('ML.*', 'MEM.Chapter', 'MEM.Notes', 'MEM.ID').from('Burial.Membership AS MEM')
-			.where('MEM.BurialID', burialId)
-			.join('Burial.MembershipLookup as ML', 'ML.MembershipLUpID', '=', 'MEM.MembershipID');
-
-		let prevSiteVisits = await db
-			.select('*').from('Burial.SiteVisit')
-			.where('Burial.SiteVisit.BurialID', burialId);
-
-		let prevKinships = await db
-			.select('KIN.*', 'REL.*').from('Burial.NOKin AS KIN')
-			.where('KIN.BurialID', burialId)
-			.join('Burial.RelationLookup as REL', 'REL.RelationLUpID', '=', 'KIN.RelationshipID');*/
-/*
-	await db.insert(Cause).into('Burial.Burial')
-
-	//Add the new owners (done)
+	//MEMBERSHIPS
 	await db
-		.insert(ownerNewArray.map((owner: any) => ({ BoatId: boatId, ...owner })))
-		.into('boat.boatowner')
+		.insert(Memberships.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, MembershipID: x.MembershipLUpID, Chapter: x.Chapter, Notes: x.Notes })))
+		.into('Burial.Membership')
 		.then((rows: any) => {
 			return rows;
 		});
+	
+	//KINSHIPS
+	await db
+		.insert(Kinships.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, RelationshipID: x.RelationshipID, Quantity: x.Quantity, Name: x.Name, Location: x.Location })))
+		.into('Burial.NOKin')
+		.then((rows: any) => {
+			return rows;
+		});
+	//KINSHIPS
+	await db
+		.insert(SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, RelationshipID: x.RelationshipID, Quantity: x.Quantity, Name: x.Name, Location: x.Location })))
+		.into('Burial.SiteVisit')
+		.then((rows: any) => {
+			return rows;
+		});
+/*
 
 	//remove the previous owners (done)
 	for (const obj of ownerRemovedArray) {
@@ -343,14 +323,6 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 			.where('boat.pastnames.Id', obj.Id)
 			.andWhere('boat.pastnames.BoatId', boatId);
 	}
-
-	//Add the new past names (done)
-	await db
-		.insert(pastNamesNewArray.map((name: any) => ({ BoatId: boatId, ...name })))
-		.into('boat.pastnames')
-		.then((rows: any) => {
-			return rows;
-		});
 */
 	res.status(200).send({ message: 'success' });
 });
