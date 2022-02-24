@@ -266,7 +266,8 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 		Memberships, 
 		SiteVisits, 
 		Kinships,
-		Occupations
+		Occupations,
+		Sources
 	} = req.body;
 	const { burialId } = req.params;
 
@@ -278,7 +279,7 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 	if(!resp){
 		res.status(404).send({ message: 'Burial not found'})
 	}
-	console.log(SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, VisitYear: x.VisitYear, Condition: x.Condition, MarkerDescription: x.MarkerDescription, Inscription: x.Inscription, RecordedBy: x.RecordedBy })));
+	console.log(Sources.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, VisitYear: x.VisitYear, Condition: x.Condition, MarkerDescription: x.MarkerDescription, Inscription: x.Inscription, RecordedBy: x.RecordedBy })));
 	//OCCUPATIONS
 	await db
 		.insert(Occupations.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationLupID })))
@@ -303,8 +304,9 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 			return rows;
 		});
 	//KINSHIPS
+	
 	await db
-		.insert(SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, RelationshipID: x.RelationshipID, Quantity: x.Quantity, Name: x.Name, Location: x.Location })))
+		.insert(SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, VisitYear: x.VisitYear, Condition: x.Condition, MarkerDescription: x.MarkerDescription, Inscription: x.Inscription, RecordedBy: x.RecordedBy })))
 		.into('Burial.SiteVisit')
 		.then((rows: any) => {
 			return rows;
