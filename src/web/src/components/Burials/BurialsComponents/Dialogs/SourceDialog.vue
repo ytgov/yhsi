@@ -21,15 +21,18 @@
         </v-card-title>
         <v-card-text>
           <v-container>
-                <v-row>
+            <v-form v-model="valid" ref="sourceDialog">
+              <v-row>
                    <v-col cols="12">
-                      <v-select
-                          :items="[1,2,3]"
-                          v-model="source"
+                      <v-test-field
+                          v-model="Source"
                           label="Source"
-                      ></v-select>
+                          :rules="rules"
+                      ></v-test-field>
                   </v-col>
               </v-row>
+            </v-form>
+                
           </v-container>
         </v-card-text>
         <v-card-actions>
@@ -44,7 +47,7 @@
           <v-btn
             color="blue darken-1"
             text
-            @click="dialog = false"
+            @click="saveNew()"
           >
             Save
           </v-btn>
@@ -58,7 +61,18 @@ export default {
     props: [  ],
     data: () => ({
         dialog: false,
-        source: "",
-    })
+        Source: "",
+        valid: false,
+        rules: [
+          value => !!value || 'Required.',
+        ],
+    }),
+    methods: {
+      saveNew(){
+        this.$emit("newSource", { Source: this.Source, new: true });
+        this.$refs.sourceDialog.reset();
+        this.dialog = false;
+      }
+    }
 }
 </script>
