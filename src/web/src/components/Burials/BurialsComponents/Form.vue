@@ -178,21 +178,21 @@
                         <v-row>
                           <v-col cols="12" class="d-flex flex-row align-center">
                             <h4 class="mt-5 mb-5">Occupations</h4>
-                            <OccupationDialog class="ml-auto mr-1" v-if="!isView" :data="filteredOccupations" @newOccupation="newOccupation"/>
+                            <OccupationDialog class="ml-auto mr-1" v-if="!isView" :mode="'new'" :data="filteredOccupations" @newOccupation="newOccupation"/>
                           </v-col>
                         </v-row>
-
                         <v-row>
                           <v-col cols="12">
                           <v-card v-if="fields.Occupations">
                             <v-list class="pa-0" >
                                 <template v-for="(item, index) in fields.Occupations">
-                                    <v-list-item :key="`nl-${index}`">
+                                    <v-list-item :key="`nl-${index}`">                            
                                         <v-list-item-content>
                                             <v-list-item-title >{{item.Occupation}}</v-list-item-title>   
                                         </v-list-item-content>
-                                        <v-list-item-action>
-                                            <v-tooltip bottom v-if="mode != 'view'">
+                                        <v-list-item-action class="d-flex flex-row">
+                                            <OccupationDialog v-if="!isView" :mode="'edit'" :data="filteredOccupations" @editOccupation="editOccupation" :occupationToEdit="{ index, Occupation: item}"/>
+                                            <v-tooltip bottom v-if="!isView">
                                                 <template v-slot:activator="{ on, attrs }">
                                                         <v-btn 
                                                         v-bind="attrs"
@@ -200,7 +200,7 @@
                                                         icon class="grey--text text--darken-2"  @click="deleteOccupation(index)">
                                                             <v-icon
                                                             small
-                                                            >mdi-trash</v-icon>  
+                                                            >mdi-trash-can</v-icon>  
                                                         </v-btn>
                                                 </template>
                                                 <span>Delete</span>
@@ -227,7 +227,23 @@
                           :items="fields.Memberships"
                           :items-per-page="5"
                           class="elevation-0"
-                        ></v-data-table>
+                        >
+                          <template v-slot:item.actions="{ item }">
+                            <v-tooltip bottom v-if="!isView">
+                                <template v-slot:activator="{ on, attrs }">
+                                        <v-btn 
+                                        v-bind="attrs"
+                                        v-on="on"
+                                        icon class="grey--text text--darken-2"  @click="deleteOccupation(item)">
+                                            <v-icon
+                                            small
+                                            >mdi-trash-can</v-icon>  
+                                        </v-btn>
+                                </template>
+                                <span>Delete</span>
+                            </v-tooltip> 
+                          </template>
+                        </v-data-table>
                       </v-col>
                     </v-row>
                     <v-row>
@@ -309,17 +325,41 @@
                         <v-row>
                           <v-col cols="12" class="d-flex flex-row align-center">
                             <h4 class="mt-5 mb-5">Sources</h4>
-                            <SourceDialog/>
+                            <SourceDialog @newSource="newSource"/>
                           </v-col>
                         </v-row>
 
-                        <v-text-field v-for="source in fields.Sources"
-                          :key="`key-${source.id}`"
-                          name="source"
-                          label="Source"
-                          :readonly="isView"
-                          outlined dense
-                        ></v-text-field>
+                        <v-row>
+                          <v-col cols="12">
+                             <v-card v-if="fields.Sources">
+                            <v-list class="pa-0" >
+                                <template v-for="(item, index) in fields.Sources">
+                                    <v-list-item :key="`nl-${index}`">
+                                        <v-list-item-content>
+                                            <v-list-item-title >{{item.Source}}</v-list-item-title>   
+                                        </v-list-item-content>
+                                        <v-list-item-action class="d-flex flex-row">
+                                            <v-tooltip bottom v-if="mode != 'view'">
+                                                <template v-slot:activator="{ on, attrs }">
+                                                        <v-btn 
+                                                        v-bind="attrs"
+                                                        v-on="on"
+                                                        icon class="grey--text text--darken-2"  @click="deleteOccupation(index)">
+                                                            <v-icon
+                                                            small
+                                                            >mdi-trash-can</v-icon>  
+                                                        </v-btn>
+                                                </template>
+                                                <span>Delete</span>
+                                            </v-tooltip> 
+                                        </v-list-item-action>
+                                    </v-list-item>
+                                    <v-divider :key="`divider-${index}`"></v-divider>
+                                </template>
+                            </v-list>
+                        </v-card>
+                          </v-col>
+                        </v-row>
 
                       </v-col>
                       <v-col cols="6">
@@ -497,6 +537,7 @@ export default {
           { text: 'Membership',value: 'Membership'},
           { text: 'Chapter', value: 'Chapter' },
           { text: 'Membership Notes', value: 'Notes' },
+          { text: 'Actions', value: 'actions', sortable: false },
         ],
     siteVisitHeaders: [
           { text: 'Inscription', value: 'Inscription' },
@@ -504,12 +545,14 @@ export default {
           { text: 'Condition',value: 'Condition'},
           { text: 'Recorded by', value: 'RecordedBy' },
           { text: 'Visit year', value: 'VisitYear' },
+          { text: 'Actions', value: 'actions', sortable: false },
         ],
     kinshipHeaders: [
           { text: 'Name', value: 'Name' },
           { text: 'Location', value: 'Location' },
           { text: 'Quantity',value: 'Quantity'},
           { text: 'Relationship', value: 'Relationship' },
+          { text: 'Actions', value: 'actions', sortable: false },
         ],
     causes: [],
     cemetaries: [],
@@ -612,6 +655,7 @@ export default {
               LastName, 
               Manner, 
               Occupations,
+              Sources,
               OriginCity,
               OriginCountry,
               OriginState,
@@ -662,6 +706,7 @@ export default {
               Memberships, 
               SiteVisits, 
               Kinships,
+              Sources,
               Occupations
             }
              console.log(data);
@@ -676,6 +721,14 @@ export default {
     newOccupation(val){
       this.fields.Occupations.push(val);
     },
+    editOccupation(val,index){
+      //console.log(val, index);
+      if(this.isNew){
+        delete val.edit;
+        val.new = true;
+      }
+      this.$set(this.fields.Occupations, index, val);
+    },
     newKinship(val){
       this.fields.Kinships.push(val);
     },
@@ -685,6 +738,9 @@ export default {
     },
     newSiteVisit(val){
       this.fields.SiteVisits.push(val);
+    },
+    newSource(val){
+      this.fields.Source.push(val);
     },
     save (date) {
       this.$refs.menu.save(date);
