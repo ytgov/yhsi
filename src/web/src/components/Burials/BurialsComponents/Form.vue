@@ -219,7 +219,7 @@
                         <v-row>
                           <v-col cols="12" class="d-flex flex-row align-center">
                             <h4 class="mt-5 mb-5">Memberships</h4>
-                            <MembershipDialog class="ml-auto mr-1" v-if="!isView" :data="filteredMemberships" @newMembership="newMembership"/>
+                            <MembershipDialog class="ml-auto mr-1" v-if="!isView" :mode="'new'" :data="filteredMemberships" @newMembership="newMembership"/>
                           </v-col>
                         </v-row>
                           <v-data-table
@@ -228,21 +228,31 @@
                           :items-per-page="5"
                           class="elevation-0"
                         >
-                          <template v-slot:item.actions="{ item }">
-                            <v-tooltip bottom v-if="!isView">
-                                <template v-slot:activator="{ on, attrs }">
-                                        <v-btn 
-                                        v-bind="attrs"
-                                        v-on="on"
-                                        icon class="grey--text text--darken-2"  @click="deleteMembership(item)">
-                                            <v-icon
-                                            small
-                                            >mdi-trash-can</v-icon>  
-                                        </v-btn>
-                                </template>
-                                <span>Delete</span>
-                            </v-tooltip> 
-                          </template>
+                          <template v-slot:item="{ item, index }">
+                            <tr v-if="item.deleted != true">
+                                <td class="parent-row">{{ item.Membership }}</td>
+                                <td class="child-row">{{ item.Chapter }}</td>
+                                <td class="child-row">{{ item.Notes }}</td>
+                                <td class="child-row">
+                                  <div class="d-flex flex-row">
+                                    <MembershipDialog v-if="!isView" :mode="'edit'" :data="filteredMemberships.concat(item)" @editMembership="editMembership" :membershipToEdit="{ index, Membership: item}"/>
+                                    <v-tooltip bottom v-if="!isView">
+                                        <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                v-bind="attrs"
+                                                v-on="on"
+                                                icon class="grey--text text--darken-2"  @click="deleteMembership(index)">
+                                                    <v-icon
+                                                    small
+                                                    >mdi-trash-can</v-icon>  
+                                                </v-btn>
+                                        </template>
+                                        <span>Delete</span>
+                                    </v-tooltip>
+                                  </div>
+                                </td>   
+                            </tr>            
+                          </template>   
                         </v-data-table>
                       </v-col>
                     </v-row>
@@ -325,7 +335,7 @@
                         <v-row>
                           <v-col cols="12" class="d-flex flex-row align-center">
                             <h4 class="mt-5 mb-5">Sources</h4>
-                            <SourceDialog @newSource="newSource"/>
+                            <SourceDialog class="ml-auto mr-1" @newSource="newSource" :mode="'new'" />
                           </v-col>
                         </v-row>
 
@@ -334,12 +344,13 @@
                              <v-card v-if="fields.Sources">
                             <v-list class="pa-0" >
                                 <template v-for="(item, index) in fields.Sources">
-                                    <v-list-item :key="`nl-${index}`">
+                                    <v-list-item :key="`nl-${index}`" v-if="item.deleted == undefined">
                                         <v-list-item-content>
                                             <v-list-item-title >{{item.Source}}</v-list-item-title>   
                                         </v-list-item-content>
                                         <v-list-item-action class="d-flex flex-row">
-                                            <v-tooltip bottom v-if="mode != 'view'">
+                                            <SourceDialog v-if="!isView" :mode="'edit'"  @editSource="editSource" :sourceToEdit="{ index, Source: item}"/>
+                                            <v-tooltip bottom v-if="!isView">
                                                 <template v-slot:activator="{ on, attrs }">
                                                         <v-btn 
                                                         v-bind="attrs"
@@ -366,7 +377,7 @@
                         <v-row>
                           <v-col cols="12" class="d-flex flex-row align-center">
                             <h4 class="mt-5 mb-5">Next of Kin</h4>
-                            <KinDialog v-if="!isView" :data="relationships" :BurialID="currentBurialID" @newKinship="newKinship" />
+                            <KinDialog class="ml-auto mr-1" v-if="!isView" :mode="'new'" :data="relationships" :BurialID="currentBurialID" @newKinship="newKinship" />
                           </v-col>
                         </v-row>
                           <v-data-table
@@ -375,7 +386,34 @@
                             :items-per-page="5"
                             class="elevation-0"
                             
-                          ></v-data-table>
+                          >
+                            <template v-slot:item="{ item, index }">
+                            <tr v-if="item.deleted != true">
+                                <td class="parent-row">{{ item.Name }}</td>
+                                <td class="child-row">{{ item.Location }}</td>
+                                <td class="child-row">{{ item.Quantity }}</td>
+                                <td class="child-row">{{ item.Relationship }}</td>
+                                <td class="child-row">
+                                  <div class="d-flex flex-row">
+                                    <KinDialog v-if="!isView" :mode="'edit'" :data="relationships" @editKinship="editKinship" :kinToEdit="{ index, Kinship: item}"/>
+                                    <v-tooltip bottom v-if="!isView">
+                                        <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                v-bind="attrs"
+                                                v-on="on"
+                                                icon class="grey--text text--darken-2"  @click="deleteKinship(index)">
+                                                    <v-icon
+                                                    small
+                                                    >mdi-trash-can</v-icon>  
+                                                </v-btn>
+                                        </template>
+                                        <span>Delete</span>
+                                    </v-tooltip>
+                                  </div>
+                                </td>   
+                            </tr>            
+                          </template>  
+                          </v-data-table>
                       </v-col>
                     </v-row>
                   </v-expansion-panel-content>
@@ -442,7 +480,7 @@
                           <v-row>
                             <v-col cols="12" class="d-flex flex-row align-center">
                               <h4 class="mt-5 mb-5">Site Visit</h4>
-                              <SiteVisitDialog v-if="!isView" @newSiteVisit="newSiteVisit" />
+                              <SiteVisitDialog class="ml-auto mr-1" v-if="!isView" :mode="'new'" @newSiteVisit="newSiteVisit" />
                             </v-col>
                           </v-row>
                           <v-data-table
@@ -450,7 +488,35 @@
                             :items="fields.SiteVisits"
                             :items-per-page="5"
                             class="elevation-0"
-                          ></v-data-table>
+                          >
+                          <template v-slot:item="{ item, index }">
+                            <tr v-if="item.deleted != true">
+                                <td class="parent-row">{{ item.Inscription }}</td>
+                                <td class="child-row">{{ item.MarkerDescription }}</td>
+                                <td class="child-row">{{ item.Condition }}</td>
+                                <td class="child-row">{{ item.RecordedBy }}</td>
+                                <td class="child-row">{{ item.VisitYear }}</td>
+                                <td class="child-row">
+                                  <div class="d-flex flex-row">
+                                    <SiteVisitDialog v-if="!isView" :mode="'edit'" @editSiteVisit="editSiteVisit" :visitToEdit="{ index, SiteVisit: item}"/>
+                                    <v-tooltip bottom v-if="!isView">
+                                        <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                v-bind="attrs"
+                                                v-on="on"
+                                                icon class="grey--text text--darken-2"  @click="deleteSiteVisit(index)">
+                                                    <v-icon
+                                                    small
+                                                    >mdi-trash-can</v-icon>  
+                                                </v-btn>
+                                        </template>
+                                        <span>Delete</span>
+                                    </v-tooltip>
+                                  </div>
+                                </td>   
+                            </tr>            
+                          </template>
+                          </v-data-table>
                         </v-col>
                     </v-row>
                 </v-expansion-panel-content>
@@ -588,12 +654,6 @@ export default {
     resetValidation() {
         this.$refs.sForm.reset();
       },
-    deleteAccess(site){
-      let index = this.sites.findIndex(x => x == site);
-      if (index > -1) {
-        this.sites.splice(index, 1);
-      }
-    },
     saveCurrentBurial(){
         localStorage.currentBurialID = this.$route.params.id;
     },
@@ -710,8 +770,8 @@ export default {
               Occupations
             }
              console.log(JSON.stringify(data));
-             //await burials.put(localStorage.currentBurialID, data);
-            // await users.putAccess(localStorage.currentBurialID, accessData);*/
+             await burials.put(localStorage.currentBurialID, data);
+
              this.overlay = false;   
             // this.$router.push({name: 'BurialsGrid'});   
             // this.$router.go(); 
@@ -739,7 +799,7 @@ export default {
     newKinship(val){
       this.fields.Kinships.push(val);
     },
-    editKinships(val,index){
+    editKinship(val,index){
       //console.log(val, index);
       if(this.isNew){
         delete val.edit;
@@ -759,16 +819,19 @@ export default {
       this.fields.Memberships.push(val);
     },
     editMembership(val,index){
-      //console.log(val, index);
+     // console.log(val, index);
       if(this.isNew){
-        delete val.edit;
+        delete val.edited;
         val.new = true;
       }
-      this.$set(this.fields.Membership, index, val);
+      this.$set(this.fields.Memberships, index, val);
     },
-    deleteMemberships(index){
+    deleteMembership(index){
+      console.log(index);
       if(index > -1){
-        this.fields.Memberships.splice(index,1);
+        let val = this.fields.Memberships[index];
+        val.deleted = true;
+        this.$set(this.fields.Memberships, index, val);
       }
     },
     newSiteVisit(val){
@@ -782,17 +845,29 @@ export default {
       }
       this.$set(this.fields.SiteVisits, index, val);
     },
-    deleteSiteVisits(index){
+    deleteSiteVisit(index){
       if(index > -1){
-        this.fields.SiteVisits.splice(index,1);
+        let val = this.fields.SiteVisits[index];
+        val.deleted = true;
+        this.$set(this.fields.SiteVisits, index, val);
       }
     },
     newSource(val){
-      this.fields.Source.push(val);
+      this.fields.Sources.push(val);
     },
-    deleteSources(index){
+    editSource(val,index){
+      //console.log(val, index);
+      if(this.isNew){
+        delete val.edit;
+        val.new = true;
+      }
+      this.$set(this.fields.Sources, index, val);
+    },
+    deleteSource(index){
       if(index > -1){
-        this.fields.Sources.splice(index,1);
+        let val = this.fields.Sources[index];
+        val.deleted = true;
+        this.$set(this.fields.Sources, index, val);
       }
     },
     save (date) {
@@ -835,7 +910,7 @@ export default {
     },
     currentBurialID(){
       return localStorage.currentBurialID;
-    }
+    },
   },
   watch: {
     fields: {

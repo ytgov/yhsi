@@ -3,7 +3,7 @@
         <v-dialog
         v-if="mode == 'new'"
         v-model="dialog"
-        persistent
+        persistent 
         max-width="600px"
       >
         <template v-slot:activator="{ on, attrs }">
