@@ -165,7 +165,7 @@ burialsRouter.get(
 			.join('Burial.ReligionLookup as CL', 'CL.ReligionLUpID', '=', 'BUR.ReligionID').first();
 
 		burial.Occupations = await db
-			.select('OC.*').from('Burial.Occupation AS BOC')
+			.select('OC.*', 'BOC.*').from('Burial.Occupation AS BOC')
 			.where('BOC.BurialID', burialId)
 			.join('Burial.OccupationLookup as OC', 'OC.OccupationLUpID', '=', 'BOC.OccupationID');
 
@@ -276,21 +276,37 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 	const { burialId } = req.params;
 
 	//burial.CauseID
-	console.log("SiteVisits",SiteVisits);
+	//console.log("SiteVisits",SiteVisits);
 
 
 	let resp = await db('Burial.Burial').update(burial).where('Burial.Burial.BurialID', burialId);
 	if(!resp){
 		res.status(404).send({ message: 'Burial not found'})
 	}
-	//console.log(Sources.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, VisitYear: x.VisitYear, Condition: x.Condition, MarkerDescription: x.MarkerDescription, Inscription: x.Inscription, RecordedBy: x.RecordedBy })));
+	//console.log(Occupations.filter((x: any) => x.edited == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID })));
+
 	//OCCUPATIONS
 	await db
-		.insert(Occupations.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationLupID })))
+		.insert(Occupations.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationLupID })))
 		.into('Burial.Occupation')
 		.then((rows: any) => {
 			return rows;
 		});
+
+	const deletedOccupations = Occupations.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
+	for( const item of deletedOccupations ){
+		await db('Burial.Occupation')
+		.where('Burial.Occupation.ID', item.ID).del();
+	}
+
+	const editOccupations = Occupations.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
+	//console.log("occupations to edit",editOccupations);
+	for( const item of editOccupations ){
+		await db('Burial.Occupation')
+		.update({ BurialID: burialId, OccupationID: item.OccupationID })
+		.where('Burial.Occupation.ID', item.ID);
+	}	
+	
 
 	//MEMBERSHIPS
 	await db
@@ -300,6 +316,19 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 			return rows;
 		});
 	
+	const deletedMemberships = Memberships.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, ID: x.ID }));
+	for( const item of deletedMemberships ){
+		await db('Burial.Membership')
+		.where('Burial.Membership.ID', item.ID).del();
+	}
+
+	const editMemberships = Memberships.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, MembershipID: x.MembershipLUpID, Chapter: x.Chapter, Notes: x.Notes, ID: x.ID }));
+	for( const item of editMemberships ){
+		await db('Burial.Membership')
+		.update({ BurialID: burialId, MembershipID: item.MembershipLUpID, Chapter: item.Chapter, Notes: item.Notes })
+		.where('Burial.Membership.ID', item.ID);
+	}
+	
 	//KINSHIPS
 	await db
 		.insert(Kinships.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, RelationshipID: x.RelationshipID, Quantity: x.Quantity, Name: x.Name, Location: x.Location })))
@@ -307,7 +336,22 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 		.then((rows: any) => {
 			return rows;
 		});
-	
+
+	const deletedKinships = Kinships.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, ID: x.NOKID }));
+	for( const item of deletedKinships ){
+		await db('Burial.NOKin')
+		.where('Burial.NOKin.NOKID', item.ID).del();
+	}
+
+	const editKinships = Kinships.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, RelationshipID: x.RelationshipID, Quantity: x.Quantity, Name: x.Name, Location: x.Location, ID: x.NOKID }));
+	for( const item of editKinships ){
+		await db('Burial.NOKin')
+		.update({ BurialID: burialId, RelationshipID: item.RelationshipID, Quantity: item.Quantity, Name: item.Name, Location: item.Location })
+		.where('Burial.NOKin.NOKID', item.ID);
+	}
+
+
+
 	//SITE VISITS
 	await db
 		.insert(SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, VisitYear: x.VisitYear, Condition: x.Condition, MarkerDescription: x.MarkerDescription, Inscription: x.Inscription, RecordedBy: x.RecordedBy })))
@@ -316,6 +360,19 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 			return rows;
 		});
 	
+	const deletedSiteVisits = SiteVisits.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, ID: x.SiteVisitID }));
+	for( const item of deletedSiteVisits ){
+		await db('Burial.SiteVisit')
+		.where('Burial.SiteVisit.SiteVisitID', item.ID).del();
+	}
+
+	const editSiteVisits = SiteVisits.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, VisitYear: x.VisitYear, Condition: x.Condition, MarkerDescription: x.MarkerDescription, Inscription: x.Inscription, RecordedBy: x.RecordedBy , ID: x.SiteVisitID }));
+	for( const item of editSiteVisits ){
+		await db('Burial.SiteVisit')
+		.update({ BurialID: burialId, VisitYear: item.VisitYear, Condition: item.Condition, MarkerDescription: item.MarkerDescription, Inscription: item.Inscription, RecordedBy: item.RecordedBy  })
+		.where('Burial.SiteVisit.SiteVisitID', item.ID);
+	}
+	
 	//SOURCES
 	await db
 		.insert(Sources.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, Source: x.Source })))
@@ -323,20 +380,19 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 		.then((rows: any) => {
 			return rows;
 		});
-/*
 
-	//remove the previous owners (done)
-	for (const obj of ownerRemovedArray) {
-		await db('boat.boatowner').where('boat.boatowner.ownerid', obj.id).del();
+	const deletedSources = Sources.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, Source: x.Source, ID: x.SourceID }));
+	for( const item of deletedSources ){
+		await db('Burial.Source')
+		.where('Burial.Source.SourceID', item.ID).del();
 	}
 
-	//update the past names (seems to work!)
-	for (const obj of pastNamesEditArray) {
-		await db('boat.pastnames')
-			.update({ BoatName: obj.BoatName })
-			.where('boat.pastnames.Id', obj.Id)
-			.andWhere('boat.pastnames.BoatId', boatId);
+	const editSources = Sources.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, Source: x.Source, ID: x.SourceID }));
+	for( const item of editSources ){
+		await db('Burial.Source')
+		.update({ BurialID: burialId, Source: item.Source })
+		.where('Burial.Source.SourceID', item.ID);
 	}
-*/
+
 	res.status(200).send({ message: 'success' });
 });
