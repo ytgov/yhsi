@@ -186,7 +186,7 @@
                           <v-card v-if="fields.Occupations">
                             <v-list class="pa-0" >
                                 <template v-for="(item, index) in fields.Occupations">
-                                    <v-list-item :key="`nl-${index}`">                            
+                                    <v-list-item :key="`nl-${index}`" v-if="!item.deleted">                            
                                         <v-list-item-content>
                                             <v-list-item-title >{{item.Occupation}}</v-list-item-title>   
                                         </v-list-item-content>
@@ -234,7 +234,7 @@
                                         <v-btn 
                                         v-bind="attrs"
                                         v-on="on"
-                                        icon class="grey--text text--darken-2"  @click="deleteOccupation(item)">
+                                        icon class="grey--text text--darken-2"  @click="deleteMembership(item)">
                                             <v-icon
                                             small
                                             >mdi-trash-can</v-icon>  
@@ -344,7 +344,7 @@
                                                         <v-btn 
                                                         v-bind="attrs"
                                                         v-on="on"
-                                                        icon class="grey--text text--darken-2"  @click="deleteOccupation(index)">
+                                                        icon class="grey--text text--darken-2"  @click="deleteSource(index)">
                                                             <v-icon
                                                             small
                                                             >mdi-trash-can</v-icon>  
@@ -709,10 +709,10 @@ export default {
               Sources,
               Occupations
             }
-             console.log(data);
-             await burials.put(localStorage.currentBurialID, data);
+             console.log(JSON.stringify(data));
+             //await burials.put(localStorage.currentBurialID, data);
             // await users.putAccess(localStorage.currentBurialID, accessData);*/
-            // this.overlay = false;   
+             this.overlay = false;   
             // this.$router.push({name: 'BurialsGrid'});   
             // this.$router.go(); 
             
@@ -720,6 +720,13 @@ export default {
         },
     newOccupation(val){
       this.fields.Occupations.push(val);
+    },
+    deleteOccupation(index){
+      if(index > -1){
+        let val = this.fields.Occupations[index];
+        val.deleted = true;
+        this.$set(this.fields.Occupations, index, val);
+      }
     },
     editOccupation(val,index){
       //console.log(val, index);
@@ -732,15 +739,61 @@ export default {
     newKinship(val){
       this.fields.Kinships.push(val);
     },
+    editKinships(val,index){
+      //console.log(val, index);
+      if(this.isNew){
+        delete val.edit;
+        val.new = true;
+      }
+      this.$set(this.fields.Kinships, index, val);
+    },
+    deleteKinship(index){
+      if(index > -1){
+        let val = this.fields.Kinships[index];
+        val.deleted = true;
+        this.$set(this.fields.Kinships, index, val);
+      }
+    },
     newMembership(val){
       //console.log(val);
       this.fields.Memberships.push(val);
     },
+    editMembership(val,index){
+      //console.log(val, index);
+      if(this.isNew){
+        delete val.edit;
+        val.new = true;
+      }
+      this.$set(this.fields.Membership, index, val);
+    },
+    deleteMemberships(index){
+      if(index > -1){
+        this.fields.Memberships.splice(index,1);
+      }
+    },
     newSiteVisit(val){
       this.fields.SiteVisits.push(val);
     },
+    editSiteVisit(val,index){
+      //console.log(val, index);
+      if(this.isNew){
+        delete val.edit;
+        val.new = true;
+      }
+      this.$set(this.fields.SiteVisits, index, val);
+    },
+    deleteSiteVisits(index){
+      if(index > -1){
+        this.fields.SiteVisits.splice(index,1);
+      }
+    },
     newSource(val){
       this.fields.Source.push(val);
+    },
+    deleteSources(index){
+      if(index > -1){
+        this.fields.Sources.splice(index,1);
+      }
     },
     save (date) {
       this.$refs.menu.save(date);
