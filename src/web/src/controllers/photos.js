@@ -155,4 +155,38 @@ export default {
 				console.log(error);
 			});
 	},
+	//BURIALS
+	async getByBurialId(id) {
+		return await api
+			.get(`photos/burial/${id}`)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.log(error);
+			});
+	},/*
+	async postPlacePhoto(data) {
+		return await apiP
+			.post(`extras/photos/burial`, data)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.log(error);
+			});
+	},
+	async linkPlacePhotos(id, data) {
+		return await api
+			.post(`extras/photos/burial/link/${id}`, data)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.log(error);
+			});
+	},*/
 };

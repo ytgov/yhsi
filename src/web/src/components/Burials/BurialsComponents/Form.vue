@@ -34,121 +34,135 @@
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                     <v-row>
-                        <v-col cols="4">
-                          <h4>Name</h4>
-                            <v-text-field
-                              name="FirstName"
-                              label="First Name"
-                              outlined dense
-                              v-model="fields.FirstName"
-                              :readonly="isView"
-                            ></v-text-field>
-                            <v-text-field
-                              name="LastName"
-                              label="Last Name"
-                              outlined dense
-                              v-model="fields.LastName"
-                              :readonly="isView"
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="4">
-                          <h4>Origin</h4>
-                            <v-select
-                              v-model="fields.OriginCountry"
-                              outlined dense
-                              label="Country of Origin"
-                              :readonly="isView"
-                            ></v-select>
-                            <v-text-field
-                              name="Province"
-                              outlined dense
-                              label="Province/State of Origin"
-                              v-model="fields.OriginState"
-                              :readonly="isView"
-                            ></v-text-field>
-                            <v-text-field
-                              name="City"
-                              outlined dense
-                              label="City of Origin"
-                              :readonly="isView"
-                              v-model="fields.OriginCity"
-                            ></v-text-field>
-                        </v-col>
+                      <v-col cols="8">
+                        <v-row>
+                          <v-col cols="6">
+                            <h4>Name</h4>
+                              <v-text-field
+                                name="FirstName"
+                                label="First Name"
+                                outlined dense
+                                v-model="fields.FirstName"
+                                :readonly="isView"
+                              ></v-text-field>
+                              <v-text-field
+                                name="LastName"
+                                label="Last Name"
+                                outlined dense
+                                v-model="fields.LastName"
+                                :readonly="isView"
+                              ></v-text-field>
+                          </v-col>
+                          <v-col cols="6">
+                            <h4>Origin</h4>
+                              <v-select
+                                v-model="fields.OriginCountry"
+                                outlined dense
+                                label="Country of Origin"
+                                :readonly="isView"
+                              ></v-select>
+                              <v-text-field
+                                name="Province"
+                                outlined dense
+                                label="Province/State of Origin"
+                                v-model="fields.OriginState"
+                                :readonly="isView"
+                              ></v-text-field>
+                              <v-text-field
+                                name="City"
+                                outlined dense
+                                label="City of Origin"
+                                :readonly="isView"
+                                v-model="fields.OriginCity"
+                              ></v-text-field>
+                          </v-col>
+                        </v-row>
+                        <v-row>
+                          <v-col cols="6">
+                              <h4>Birth / Death</h4>
+                                <v-row>
+                                    <v-col cols="4">
+                                        <v-text-field outlined dense
+                                          name="Birth Day"
+                                          label="Birth Day"
+                                          v-model="fields.BirthDay"
+                                          :readonly="isView"
+                                        ></v-text-field>
+                                        
+                                    </v-col>
+                                    <v-col cols="4">
+                                        <v-text-field outlined dense
+                                          name="Birth Month"
+                                          label="Birth Month"
+                                          v-model="fields.BirthMonth"
+                                          :readonly="isView"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="4">
+                                        <v-text-field outlined dense
+                                          name="Birth Year"
+                                          label="Birth Year"
+                                          v-model="fields.BirthYear"
+                                          :readonly="isView"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-col cols="4">
+                                        <v-text-field outlined dense
+                                          name="Death Day"
+                                          label="Death Day"
+                                          v-model="fields.DeathDay"
+                                          :readonly="isView"
+                                        ></v-text-field>
+                                        
+                                    </v-col>
+                                    <v-col cols="4">
+                                        <v-text-field outlined dense
+                                          name="Death Month"
+                                          label="Death Month"
+                                          v-model="fields.DeathMonth"
+                                          :readonly="isView"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="4">
+                                        <v-text-field outlined dense
+                                          name="Death Year"
+                                          label="Death Year"
+                                          v-model="fields.DeathYear"
+                                          :readonly="isView"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                          
+                            </v-col>
+                            <v-col cols="6">
+                              <h4>Age</h4>
+                                <v-text-field
+                                  name="Age"
+                                  outlined dense
+                                  label="Age"
+                                  v-model="fields.Age"
+                                  :readonly="isView"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="4"></v-col>
+                        </v-row>
+                      </v-col>
+                      
+                        
                         <v-col cols="4">
                           <h4>Photos</h4>
+                          <Photos 
+                          v-if="true" 
+                          :showDefault="isNew" 
+                          :BurialID="currentBurialID"
+                          @updateSelectedImage="selectedImageChanged" 
+                          :selectedImage="selectedImage" 
+                          @loadingPhotosChange="loadingPhotosChange"/>   
                         </v-col>
                     </v-row>
-                    <v-row>
-                      <v-col cols="4">
-                          <h4>Birth / Death</h4>
-                            <v-row>
-                                <v-col cols="4">
-                                    <v-text-field outlined dense
-                                      name="Birth Day"
-                                      label="Birth Day"
-                                      v-model="fields.BirthDay"
-                                      :readonly="isView"
-                                    ></v-text-field>
-                                    
-                                </v-col>
-                                <v-col cols="4">
-                                    <v-text-field outlined dense
-                                      name="Birth Month"
-                                      label="Birth Month"
-                                      v-model="fields.BirthMonth"
-                                      :readonly="isView"
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col cols="4">
-                                    <v-text-field outlined dense
-                                      name="Birth Year"
-                                      label="Birth Year"
-                                      v-model="fields.BirthYear"
-                                      :readonly="isView"
-                                    ></v-text-field>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="4">
-                                    <v-text-field outlined dense
-                                      name="Death Day"
-                                      label="Death Day"
-                                      v-model="fields.DeathDay"
-                                      :readonly="isView"
-                                    ></v-text-field>
-                                    
-                                </v-col>
-                                <v-col cols="4">
-                                    <v-text-field outlined dense
-                                      name="Death Month"
-                                      label="Death Month"
-                                      v-model="fields.DeathMonth"
-                                      :readonly="isView"
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col cols="4">
-                                    <v-text-field outlined dense
-                                      name="Death Year"
-                                      label="Death Year"
-                                      v-model="fields.DeathYear"
-                                      :readonly="isView"
-                                    ></v-text-field>
-                                </v-col>
-                            </v-row>
-                       
-                        </v-col>
-                        <v-col cols="4">
-                          <h4>Age</h4>
-                            <v-text-field
-                              name="Age"
-                              outlined dense
-                              label="Age"
-                              v-model="fields.Age"
-                              :readonly="isView"
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="4"></v-col>
-                    </v-row>
+
                 </v-expansion-panel-content>
               </v-expansion-panel>
               <v-expansion-panel>
@@ -542,6 +556,7 @@ import OccupationDialog from "./Dialogs/OccupationDialog.vue";
 import SourceDialog from "./Dialogs/SourceDialog.vue";
 import KinDialog from "./Dialogs/KinDialog.vue";
 import SiteVisitDialog from "./Dialogs/SiteVisitDialog.vue";
+import Photos from "./Photos/Photos";
 export default {
   name: "BurialComponent",
   components: {
@@ -550,7 +565,8 @@ export default {
     OccupationDialog,
     SiteVisitDialog,
     KinDialog,
-    SourceDialog
+    SourceDialog,
+    Photos
   },
   data: () => ({
     username: 'username',
@@ -625,7 +641,11 @@ export default {
     religions: [],
     occupations: [],
     memberships: [],
-    relationships: []
+    relationships: [],
+    //photos
+    selectedImage: null,
+    loadingPhotos: false,
+    infoLoaded: false
   }),
   mounted(){
       if(this.checkPath("edit")){
@@ -689,6 +709,12 @@ export default {
         this.mode="view";
         //this.resetListVariables();
         this.$router.push(`/burials/view/${localStorage.currentBurialID}`);
+    },
+    selectedImageChanged(val){
+            this.selectedImage = val;
+    },
+    loadingPhotosChange(val){
+            this.loadingPhotos = val;
     },
     async saveChanges(){
             this.overlay = true;

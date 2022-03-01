@@ -249,6 +249,37 @@ photosExtraRouter.get(
 		res.status(200).send(photos);
 	}
 );
+/*
+SELECT
+    BP.*,
+    PH.*
+FROM
+    Burial.Photo AS BP
+    INNER JOIN dbo.Photo AS PH ON BP.Photo_RowID = PH.RowId*/
+
+// GET BURIAL PHOTOS
+photosExtraRouter.get(
+	'/burial/:burialId',
+	[param('burialId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { burialId } = req.params;
+
+		const page = parseInt(req.query.page as string);
+		const limit = parseInt(req.query.limit as string);
+		const offset = page * limit || 0;
+
+		const photos = await db
+			.select('*')
+			.from('Burial.Photo as BP')
+			.join('dbo.photo AS PH', 'BP.Photo_RowID', '=', 'PH.RowID')
+			.where('BP.BurialID', burialId)
+			.limit(limit)
+			.offset(offset);
+			
+		res.status(200).send(photos);
+	}
+);
 
 // Get yt place photos
 photosExtraRouter.get(
