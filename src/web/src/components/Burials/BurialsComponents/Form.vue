@@ -18,7 +18,7 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 1" v-if="isEdit" @click="saveChanges" >
+                <v-btn color="success" :disabled="showSave < 1" v-if="!isView" @click="saveChanges" >
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Done
                 </v-btn>
@@ -55,12 +55,39 @@
                           </v-col>
                           <v-col cols="6">
                             <h4>Origin</h4>
-                              <v-select
-                                v-model="fields.OriginCountry"
-                                outlined dense
-                                label="Country of Origin"
-                                :readonly="isView"
-                              ></v-select>
+                           
+                            <v-autocomplete
+                              v-model="fields.OriginCountry"
+                              :items="getCountries"
+                              outlined dense
+                              :readonly="isView"
+                              item-text="label"
+                              item-value="label"
+                              label="Origin Country"
+                            >
+                            <template v-slot:selection="data">
+                              <v-img
+                                  :src="`https://flagcdn.com/w20/${data.item.code.toLowerCase()}.png`"
+                                  :lazy-src="`https://flagcdn.com/w20/${data.item.code.toLowerCase()}.png`"
+                                  class="mr-2"
+                                  max-width="20"
+                                ></v-img>
+                                {{ data.item.label }}
+                            </template>
+                            <template v-slot:item="data">
+                                  <v-img
+                                  :src="`https://flagcdn.com/w20/${data.item.code.toLowerCase()}.png`"
+                                  :lazy-src="`https://flagcdn.com/w20/${data.item.code.toLowerCase()}.png`"
+                                  class="mr-2"
+                                  max-width="20"
+                                ></v-img>
+                                <v-list-item-content>
+                                  <v-list-item-title v-html="data.item.label"></v-list-item-title>
+                                </v-list-item-content>
+                            </template>
+                              
+                            </v-autocomplete>
+                              
                               <v-text-field
                                 name="Province"
                                 outlined dense
@@ -557,6 +584,7 @@ import SourceDialog from "./Dialogs/SourceDialog.vue";
 import KinDialog from "./Dialogs/KinDialog.vue";
 import SiteVisitDialog from "./Dialogs/SiteVisitDialog.vue";
 import Photos from "./Photos/Photos";
+import countries from "../../../misc/countries";
 export default {
   name: "BurialComponent",
   components: {
@@ -582,34 +610,7 @@ export default {
       ],
     /* FIELDS*/
     fields:{
-      //information section
-      FirstName: "",
-      LastName: "",
-      OriginCountry: "",
-      OriginState: "",
-      OriginCity: "",
-      BirthDate: "",
-      DeathDate: "",
-      Age: "",
-      //history section
-      Religion: "",
-      Occupations: [],
-      Memberships: [],
-      Gender: "",
-      Notes: "",
-      //Death
-      Manner: "",
-      Cause: "",
-      FuneralPaidBy: "",
-      Sources: [],
-      Kinships: [],
-      //Burial
-      BuriedInYukon: "",
-      BodyShipped: "",
-      BurialLocation: "",
-      Other: "",
-      PlotDescription: "",
-      SiteVisits: [],
+     
     },
     fieldsHistory: null,
     menu: false,
@@ -658,6 +659,11 @@ export default {
           //after this, the fields get filled with the info obtained from the api
           this.getDataFromApi();
       }
+      else{
+          this.mode="new";
+          this.noData();
+      }      
+      console.log(countries);
   },
   methods: {
     /*this function checks if the current path contains a specific word, this can be done with a simple includes but 
@@ -674,6 +680,41 @@ export default {
     resetValidation() {
         this.$refs.sForm.reset();
       },
+    noData(){
+      this.fields =
+      {
+        //information section
+        FirstName: "",
+        LastName: "",
+        OriginCountry: "",
+        OriginState: "",
+        OriginCity: "",
+        BirthDate: "",
+        DeathDate: "",
+        Age: "",
+        //history section
+        Religion: "",
+        Occupations: [],
+        Memberships: [],
+        Gender: "",
+        Notes: "",
+        //Death
+        Manner: "",
+        Cause: "",
+        FuneralPaidBy: "",
+        Sources: [],
+        Kinships: [],
+        //Burial
+        BuriedInYukon: "",
+        BodyShipped: "",
+        BurialLocation: "",
+        Other: "",
+        PlotDescription: "",
+        CemetaryID: "",
+        Cemetary: "",
+        SiteVisits: [],
+      }
+    },
     saveCurrentBurial(){
         localStorage.currentBurialID = this.$route.params.id;
     },
@@ -795,12 +836,17 @@ export default {
               Sources,
               Occupations
             }
-             console.log(JSON.stringify(data));
-             await burials.put(localStorage.currentBurialID, data);
-
+            console.log(JSON.stringify(data));
+            
+            if(this.isNew){
+              await burials.post(data);
+            }
+            else{
+              await burials.put(localStorage.currentBurialID, data);
+            }
              this.overlay = false;   
-            // this.$router.push({name: 'BurialsGrid'});   
-            // this.$router.go(); 
+             this.$router.push({name: 'BurialsGrid'});   
+             this.$router.go(); 
             
             
         },
@@ -937,6 +983,9 @@ export default {
     currentBurialID(){
       return localStorage.currentBurialID;
     },
+    getCountries(){
+      return countries;
+    }
   },
   watch: {
     fields: {
@@ -945,12 +994,6 @@ export default {
         },
         deep: true
     },
-    sections: {
-      handler(){
-            this.showSave = this.showSave+1;
-        },
-        deep: true
-    }
   }
 }
 </script>
