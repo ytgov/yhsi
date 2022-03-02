@@ -21,6 +21,7 @@ import {
 	catalogsRouter,
 	usersExtraRouter,
 	photosExtraRouter,
+	peopleRouter
 } from './routes';
 
 import * as config from './config';
@@ -82,6 +83,7 @@ app.use('/api/register', registerRouter);
 //console.log("B", boats)
 
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
+app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/owners', RequiresAuthentication, ownerRouter);
 app.use('/api/aircrash', RequiresAuthentication, aircrashRouter);
 app.use('/api/histories', RequiresAuthentication, historiesRouter);
