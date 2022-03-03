@@ -761,7 +761,6 @@ export default {
             this.overlay = true;
             console.log(this.fields);
             let { 
-              BurialID,
               Age,
               BirthDateNotes,
               BirthDay,
@@ -797,7 +796,6 @@ export default {
              } = this.fields;
              //BurialID
             const burial = {
-              BurialID,
               Age,
               BirthDateNotes,
               BirthDay,

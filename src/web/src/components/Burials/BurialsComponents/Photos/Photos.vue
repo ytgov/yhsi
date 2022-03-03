@@ -22,7 +22,7 @@
     <v-row v-if="showDefault">
       <v-col cols="12">
         <p class="text-center font-weight-bold pt-3">
-          Once you upload your new Boat data, you will be able to attach photos
+          Once you upload your new Burial data, you will be able to attach photos
         </p>
       </v-col>
     </v-row>
@@ -509,6 +509,8 @@ export default {
     async getAll() {
       this.showSkeletons = true;
       let data = await photos.getAll(this.page - 1, this.searchPhotos);
+      console.log("look here", data);
+      
       this.availablePhotos = data.body.map((x) => {
         x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
         x.selected = false;
@@ -564,7 +566,7 @@ export default {
         formData.append(prevFields[i][0], prevFields[i][1]);
       }
       formData.append("file", this.file);
-      await photos.postPersonPhoto(formData);
+      await photos.postBurialPhoto(formData);
       this.reset();
       this.$router.go();
       this.overlay = false;
@@ -577,7 +579,7 @@ export default {
         });
         //console.log("person id", this.PersonID);
         
-        await photos.linkPersonPhotos(Number(this.BurialID), {
+        await photos.linkBurialPhotos(Number(this.BurialID), {
         linkPhotos: photosToLink,
       });
       this.reset();

@@ -1,9 +1,12 @@
-import { api, apiP } from './config';
+import {
+	api,
+	apiP
+} from './config';
 
 export default {
 	async getAll(page, textToMatch) {
 		return await api
-			.get(`extras/photos`, {
+			.get(`photos`, {
 				crossdomain: true,
 				params: {
 					page: page,
@@ -166,10 +169,10 @@ export default {
 				// handle error
 				console.log(error);
 			});
-	},/*
-	async postPlacePhoto(data) {
+	},
+	async postBurialPhoto(data) {
 		return await apiP
-			.post(`extras/photos/burial`, data)
+			.post(`photos/burial`, data)
 			.then((res) => {
 				return res.data;
 			})
@@ -178,9 +181,9 @@ export default {
 				console.log(error);
 			});
 	},
-	async linkPlacePhotos(id, data) {
+	async linkBurialPhotos(id, data) {
 		return await api
-			.post(`extras/photos/burial/link/${id}`, data)
+			.post(`photos/burial/link/${id}`, data)
 			.then((res) => {
 				return res.data;
 			})
@@ -188,5 +191,6 @@ export default {
 				// handle error
 				console.log(error);
 			});
-	},*/
+	},
+	
 };

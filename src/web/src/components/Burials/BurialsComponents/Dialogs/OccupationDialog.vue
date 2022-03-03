@@ -53,7 +53,7 @@
               color="blue darken-1"
               text
               @click="saveNew"
-              :disabled="!form2"
+              :disabled="!form1"
             >
               Save
             </v-btn>
