@@ -31,7 +31,6 @@ burialsRouter.get(
 			Cemetary = '',
 			OriginCountry = ''  } = req.query;
 
-			console.log(BirthYear);
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
@@ -68,31 +67,31 @@ burialsRouter.get(
 						'BUR.PersonNotes',
 						'RE.Religion'
 						)
-					.from('Burial.Burial as BUR')	
+					.from('Burial.Burial as BUR')
 					.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
 					.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
 					.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
 					.where('BUR.FirstName', 'like', `%${textToMatch}%`)
 					.orWhere('BUR.LastName', 'like', `%${textToMatch}%`)
-					.orWhere('BUR.Gender', 'like', `%${Gender}%`)
-					.orWhere('BUR.BirthYear', 'like', `%${BirthYear}%`)
-					.orWhere('BUR.BirthMonth', 'like', `%${BirthMonth}%`)
-					.orWhere('BUR.BirthDay', 'like', `%${BirthDay}%`)
-					.orWhere('BUR.DeathYear', 'like', `%${DeathYear}%`)
-					.orWhere('BUR.DeathMonth', 'like', `%${DeathMonth}%`)
-					.orWhere('BUR.DeathDay', 'like', `%${DeathDay}%`)
-					.orWhere('BUR.Manner', 'like', `%${Manner}%`)
-					.orWhere('CL.Cause', 'like', `%${Cause}%`)
-					.orWhere('CE.Cemetary', 'like', `%${Cemetary}%`)
-					//.orWhere('BUR.OtherCemetaryDesc', 'like', `%${OtherCemetaryDesc}%`)
-					//.orWhere('BUR.OriginCity', 'like', `%${OriginCity}%`)
-					//.orWhere('BUR.OriginState', 'like', `%${OriginState}%`)
-					.orWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
-					//.orWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
+					.andWhere('BUR.Gender', 'like', `%${Gender}%`)
+					.andWhere('BUR.BirthYear', 'like', `%${BirthYear}%`)
+					.andWhere('BUR.BirthMonth', 'like', `%${BirthMonth}%`)
+					.andWhere('BUR.BirthDay', 'like', `%${BirthDay}%`)
+					.andWhere('BUR.DeathYear', 'like', `%${DeathYear}%`)
+					.andWhere('BUR.DeathMonth', 'like', `%${DeathMonth}%`)
+					.andWhere('BUR.DeathDay', 'like', `%${DeathDay}%`)
+					.andWhere('BUR.Manner', 'like', `%${Manner}%`)
+					.andWhere('CL.Cause', 'like', `%${Cause}%`)
+					.andWhere('CE.Cemetary', 'like', `%${Cemetary}%`)
+					//.andWhere('BUR.OtherCemetaryDesc', 'like', `%${OtherCemetaryDesc}%`)
+					//.andWhere('BUR.OriginCity', 'like', `%${OriginCity}%`)
+					//.andWhere('BUR.OriginState', 'like', `%${OriginState}%`)
+					.andWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
+					//.andWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
 					.orderBy(`${sortBy}`, `${sort}`)
 					.limit(limit)
 					.offset(offset);
-		console.log(burials);
+		//console.log(burials);
 		res.status(200).send({ count: burials.length, body: burials });
 	}
 );
@@ -203,9 +202,9 @@ burialsRouter.post('/', async (req: Request, res: Response) => {
 		Occupations,
 		Sources
 	} = req.body;
-	const burialId = (await db.select("BUR.BurialID").from("Burial.Burial as BUR").orderBy("BUR.BurialID", "desc").first()).BurialID;
+	//const burialId = (await db.select("BUR.BurialID").from("Burial.Burial as BUR").orderBy("BUR.BurialID", "desc").first()).BurialID;
 	
-	burial.BurialID = burialId + 1;
+	//burial.BurialID = burialId + 1;
 	const response = await db
 		.insert(burial)
 		.into('Burial.Burial')
@@ -215,35 +214,35 @@ burialsRouter.post('/', async (req: Request, res: Response) => {
 			
 			//OCCUPATIONS
 			await db
-				.insert(Occupations.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationLupID })))
+				.insert(Occupations.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ BurialID: newBurial.BurialID, OccupationID: x.OccupationLupID })))
 				.into('Burial.Occupation')
 				.then((rows: any) => {
 					return rows;
 				});
 			//MEMBERSHIPS
 			await db
-				.insert(Memberships.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, MembershipID: x.MembershipLUpID, Chapter: x.Chapter, Notes: x.Notes })))
+				.insert(Memberships.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: newBurial.BurialID, MembershipID: x.MembershipLUpID, Chapter: x.Chapter, Notes: x.Notes })))
 				.into('Burial.Membership')
 				.then((rows: any) => {
 					return rows;
 				});
 			//KINSHIPS
 			await db
-				.insert(Kinships.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, RelationshipID: x.RelationshipID, Quantity: x.Quantity, Name: x.Name, Location: x.Location })))
+				.insert(Kinships.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: newBurial.BurialID, RelationshipID: x.RelationshipID, Quantity: x.Quantity, Name: x.Name, Location: x.Location })))
 				.into('Burial.NOKin')
 				.then((rows: any) => {
 					return rows;
 				});
 			//SITE VISITS
 			await db
-				.insert(SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, VisitYear: x.VisitYear, Condition: x.Condition, MarkerDescription: x.MarkerDescription, Inscription: x.Inscription, RecordedBy: x.RecordedBy })))
+				.insert(SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: newBurial.BurialID, VisitYear: x.VisitYear, Condition: x.Condition, MarkerDescription: x.MarkerDescription, Inscription: x.Inscription, RecordedBy: x.RecordedBy })))
 				.into('Burial.SiteVisit')
 				.then((rows: any) => {
 					return rows;
 				});
 			//SOURCES
 			await db
-				.insert(Sources.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, Source: x.Source })))
+				.insert(Sources.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: newBurial.BurialID, Source: x.Source })))
 				.into('Burial.Source')
 				.then((rows: any) => {
 					return rows;
