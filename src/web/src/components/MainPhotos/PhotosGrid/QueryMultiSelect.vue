@@ -1,17 +1,18 @@
 <template>
   <div>
-    <v-select
+    <v-autocomplete 
       v-model="itemValue"
       :items="options"
-      multiple
       item-text="label"
       item-value="value"
       class="default" 
-      dense
-      outlined
       background-color="white"
+      outlined 
+      dense
+      multiple
       hide-details
-    ></v-select>
+      clearable
+    ></v-autocomplete>
 </div>
 </template>
  

@@ -6,7 +6,7 @@ import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import * as multer from 'multer';
 import _ from 'lodash';
-//import { Photo, PHOTO_FIELDS } from '../data';
+import { Place, PLACE_FIELDS } from '../data';
 
 export const photosExtraRouter = express.Router();
 const db = knex(DB_CONFIG);
@@ -458,5 +458,54 @@ photosExtraRouter.get(
 			);
 
 		res.status(200).send(items);
+	}
+);
+
+// Get all site records associated with photo
+photosExtraRouter.get(
+	'/:id/place',
+	[param('id').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+
+		const items = await db
+			.from('dbo.photo as PH')
+			.where('RowID', id)
+			.join('dbo.place as PL', 'PL.id', '=', 'PH.placeId')
+			.leftOuterJoin('community', 'community.id', 'PL.communityid')
+			.select([
+				'PL.id',
+				'PL.primaryName',
+				'PL.yHSIId',
+				'community.name as communityName',
+			])
+			.catch((err) => {
+				console.log('BOMBED', err);
+				return undefined;
+			});
+
+		res.status(200).send(items);
+	}
+);
+
+// Delete the site id (placeId) from the photo
+photosExtraRouter.delete(
+	'/:id/place',
+	[param('id').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+
+		const items = await db
+			.from('dbo.photo')
+			.where({ RowID: id })
+			.update({ placeId: null })
+			.catch((err) => {
+				console.log('BOMBED', err);
+				return undefined;
+			});
+
+		res.sendStatus(200).send(items);
 	}
 );

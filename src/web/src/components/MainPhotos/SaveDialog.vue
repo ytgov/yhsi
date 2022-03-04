@@ -3,7 +3,7 @@
       <template v-slot:activator="{ on, attrs }">
         <v-btn v-if="itemType == 'filter'" v-bind="attrs" v-on="on" color="secondary" :disabled="isDisabled">
           <v-icon class="mr-1">mdi-check</v-icon>
-          Save Filter(s)
+          Save Filters
         </v-btn>
         <v-btn v-if="itemType == 'photobatch'" v-bind="attrs" v-on="on" :disabled="isDisabled" class="black--text mx-1">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon> 

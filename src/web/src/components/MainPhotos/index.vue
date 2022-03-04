@@ -38,7 +38,8 @@
       </v-btn>
       </v-col>
 
-      <!--<v-btn color="primary" @click="showDialog()">
+      <!-- Not required for now
+        <v-btn color="primary" @click="showDialog()">
         <v-icon class="mr-2">mdi-printer</v-icon> 
         <div>
           Print Record
@@ -50,9 +51,9 @@
     <div>
       <v-row>
         <v-col id="main-content">
-          <!-- Title and buttons -->
-          <div class="page-header">   
-            <h2 class="display-name">{{ this.displayName }}</h2>         
+          <div class="page-header"> 
+            <h2 class="display-name">{{ this.displayName }}</h2>    
+
             <v-btn class="mx-1 form-header" color="primary" @click="editMode" v-if="mode == 'view'">
               <v-icon class="mr-1">mdi-pencil</v-icon>
               Edit
@@ -63,14 +64,15 @@
               class="black--text mx-1 form-header"
               @click="cancelEdit"
               v-if="mode == 'edit'"
+              style="border: 1px #c9c9c9 solid;"
             >
               <v-icon>mdi-close</v-icon>
               Cancel
             </v-btn>
             <v-btn
               color="primary"
-              :disabled="!valid"
               v-if="mode == 'edit'"
+              :disabled="changesMade == 0"
               @click="saveChanges"
               class="form-header"
             >
@@ -79,13 +81,17 @@
             </v-btn>
 
             <!-- buttons for the new state -->
-            <v-btn class="black--text mx-1 form-header" @click="cancelNew" v-if="mode == 'add'">
+            <v-btn class="black--text mx-1 form-header" 
+              @click="cancelNew" 
+              v-if="mode == 'add'"
+              style="border: 1px #c9c9c9 solid;"
+            >
               <v-icon>mdi-close</v-icon>
               Cancel
             </v-btn>
             <v-btn
               color="primary"
-              :disabled="!valid"
+              :disabled="changesMade == 0"
               v-if="mode == 'add'"
               @click="createPhoto"
               class="form-header"
@@ -93,9 +99,85 @@
               <v-icon class="mr-1">mdi-check</v-icon>
               Create Photo
             </v-btn>
+
+            <div v-if="mode != 'add'" 
+              style="float: right; display: inline-block; height:113px; width:113px;">
+            <v-card class="mx-auto mr-2">
+            <v-img 
+              v-if="infoLoaded && imageLoaded && fields.file && fields.file.base64"
+              :src="fields.file.base64"
+              :lazy-src="fields.file.base64"
+              class="white--text align-end"
+              aspect-ratio="1"
+              max-height="113"
+              max-width="113"
+            ></v-img>
+            </v-card>
+            </div>
+
+            <div id="header-tombstone"
+              v-if="mode != 'add'"
+            >                  
+              <v-row>
+                <v-col cols="2">
+                  <v-text-field
+                    v-model="fields.dateCreated"
+                    label="Date Photo Taken"
+                    readonly
+                    outlined
+                    dense
+                    background-color="white"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="3">              
+                  <v-text-field
+                    v-model="fields.originalFileName"
+                    label="Original File Name"
+                    readonly
+                    outlined
+                    dense
+                    background-color="white"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="2">              
+                  <v-text-field
+                    v-model="displayCommunity"
+                    label="Community"
+                    readonly
+                    outlined
+                    dense
+                    background-color="white"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="2">              
+                  <v-text-field
+                    v-model="displayResolution"
+                    label="Resolution"
+                    readonly
+                    outlined
+                    dense
+                    background-color="white"
+                  ></v-text-field>
+                </v-col>                
+                <v-col cols="2" style="margin-top: -7px;"> 
+                  <p class="mt-auto mb-auto grey--text text--darken-2"
+                    style="font-size:12px;">
+                    Rating
+                  </p>
+                  <v-rating
+                    v-model="fields.rating"
+                    background-color="orange lighten-3"
+                    color="orange"
+                    length="5"
+                    readonly
+                    small
+                    style="display: inline-block"
+                  ></v-rating>
+                </v-col>
+              </v-row>
+            </div>
           </div>
 
-          <div ref="feature">  
             <Feature 
               v-if="infoLoaded"
               :fields="fields"
@@ -103,18 +185,16 @@
               :itemType="'photo'"
               @featureChange="featureChange"   
               @featureValidChange="featureValidChange" 
+              ref="feature"
             /> 
-          </div>
-          <div ref="siteRecord">  
             <SiteRecord 
               v-if="infoLoaded"
               :fields="fields"
               :mode="mode"
               :itemType="'photo'"
               @siteRecordChange="siteRecordChange" 
+              ref="siteRecord"
             />
-          </div>
-          <div ref="historicSites">  
             <HistoricSites 
               v-if="infoLoaded"
               :fields="fields"
@@ -122,23 +202,23 @@
               :itemType="'photo'"
               @historicSiteChange="historicSiteChange" 
               @siteValidChange="siteValidChange"
+              ref="historicSites"
             />
-          </div>
-          <div ref="photo">  
             <Photo 
-              v-if="infoLoaded && imageLoaded"
+              v-if="infoLoaded"
               :fields="fields"
               :mode="mode"
               :itemType="'photo'"
+              :imageLoaded="imageLoaded"
               @photoChange="photoChange" 
               @photoValidChange="photoValidChange" 
               @photoRotate="photoRotate"
+              ref="photo"
             />
-          </div>
         </v-col>
 
-        <!-- Side menu -->
-        <v-col cols="2">
+        <!-- Side menu - Leaving for now in case we want it back -->
+        <!--<v-col cols="2">
           <affix class="sidebar-menu" relative-element-selector="#main-content" style="width: 200px; margin-top: 10px;">
           <v-list shaped class="list-menu">
             <v-list-item-group
@@ -161,7 +241,7 @@
             </v-list-item-group>
           </v-list>
           </affix>
-        </v-col>
+        </v-col>-->
       </v-row>
     </div>
  </div>
@@ -175,7 +255,7 @@ import Feature from "./PhotosComponents/Feature";
 import SiteRecord from "./PhotosComponents/SiteRecord";
 import HistoricSites from "./PhotosComponents/HistoricSites";
 import Photo from "./PhotosComponents/Photo";
-import { PHOTO_URL } from "../../urls";
+import { PHOTO_URL, STATIC_URL } from "../../urls";
 import Vue from "vue";
 import Affix from 'vue-affix';
 
@@ -199,6 +279,9 @@ export default {
     featureValid: false,
     photoValid: false,
     siteValid: false,
+    displayCommunity: null,
+    displayResolution: null,
+    displaythumbFile: {},
   }),
   created(){
     this.menuItems = [
@@ -232,7 +315,15 @@ export default {
           this.fields.dateCreated = this.fields.dateCreated
             ? this.fields.dateCreated.substr(0, 10)
             : "";
-          this.displayName = this.fields.originalFileName;   
+          this.displayName = this.fields.originalFileName;
+          axios.get(`${STATIC_URL}/community`).then((resp) => {
+            let community = resp.data.data.filter((a) => a.id == this.fields.communityId);
+            this.displayCommunity = community[0].name;
+          });
+          if (this.fields.imageHeight && this.fields.imageWidth) {
+            this.displayResolution = this.fields.imageHeight.toString() + ' x ' + this.fields.imageWidth.toString();
+          }
+          this.displaythumbFile
           this.infoLoaded = true;    
         })
         .catch((error) => console.error(error))
@@ -286,6 +377,7 @@ export default {
       this.fields.bordenRecord = val.bordenRecord;
       this.fields.archivalRecord = val.archivalRecord;
       this.fields.paleoRecord = val.paleoRecord;
+      this.fields.isSiteDefault = val.isSiteDefault;
       this.changesMade = this.changesMade + 1;
     },
     historicSiteChange(val) {   
@@ -320,18 +412,33 @@ export default {
       this.photoValid = val;
     },
     photoRotate(val) {
-      this.imageLoaded = false;
+      this.changesMade = this.changesMade + 1;
       this.fields.file = val;
-      this.saveChanges();
+      this.imageLoaded = false;
+
+      const formData = new FormData();
+      formData.append("file", this.fields.file);
+
+      axios
+        .put(`${PHOTO_URL}/${localStorage.currentRowId}/file`, formData)
+        .then(() => {
+          this.loadImgFile();
+        })
+        .catch((err) => {
+          this.$store.commit("alerts/setText",err);
+          this.$store.commit("alerts/setType", "warning");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
+        });
+
     },
     setBody() {     
       this.fields.isOtherRecord = this.fields.isOtherRecord ? this.fields.isOtherRecord : false;
+      this.fields.isSiteDefault = this.fields.isSiteDefault ? this.fields.isSiteDefault : false;
       this.fields.isComplete = this.fields.isComplete ? this.fields.isComplete : false;
       this.fields.isPrivate = this.fields.isPrivate ? this.fields.isPrivate : false;
       
       this.body = {
-        isSiteDefault: false,
-
         address: this.fields.address,
         communityId: this.fields.communityId,
         featureName: this.fields.featureName,
@@ -342,6 +449,7 @@ export default {
         bordenRecord: this.fields.bordenRecord,
         archivalRecord: this.fields.archivalRecord,
         paleoRecord: this.fields.paleoRecord,
+        isSiteDefault: this.fields.isSiteDefault,
 
         creator: this.fields.creator,
         dateCreated: this.fields.dateCreated,
@@ -365,10 +473,16 @@ export default {
       };
     },
     saveChanges() {
-      this.imageLoaded = false;
-      if (this.mode != 'view') {
-        this.infoLoaded = false;
+      if (!this.valid) {
+        this.runFormValidations();
+        this.$store.commit("alerts/setText",'Fill in all required fields');
+        this.$store.commit("alerts/setType", "warning");
+        this.$store.commit("alerts/setTimeout", 5000);
+        this.$store.commit("alerts/setAlert", true);
+        return null;
       }
+      this.imageLoaded = false;
+      this.infoLoaded = false;
       this.setBody();
 
       const formData = new FormData();
@@ -385,11 +499,8 @@ export default {
       axios
         .put(`${PHOTO_URL}/${localStorage.currentRowId}`, formData)
         .then(() => {
-          // If editing in view mode we're only rotating the photo. No need to reload the item data
-          if (this.mode != 'view') {
-            this.$router.push(`/photos/view`);
-            this.loadItem();
-          }
+          this.$router.push(`/photos/view`);
+          this.loadItem();
           this.loadImgFile();
           this.$store.commit("alerts/setText",'Changes saved');
           this.$store.commit("alerts/setType", "success");
@@ -404,11 +515,17 @@ export default {
         });
     },
     createPhoto() {
-      if(!this.fields.file) {
-          this.$store.commit("alerts/setText",'Select a photo to upload');
-          this.$store.commit("alerts/setType", "warning");
-          this.$store.commit("alerts/setTimeout", 5000);
-          this.$store.commit("alerts/setAlert", true);
+      if (!this.valid) {
+        this.runFormValidations();
+        this.$store.commit("alerts/setText",'Fill in all required fields');
+        this.$store.commit("alerts/setType", "warning");
+        this.$store.commit("alerts/setTimeout", 5000);
+        this.$store.commit("alerts/setAlert", true);
+      } else if (!this.fields.file) {
+        this.$store.commit("alerts/setText",'Select a photo to upload');
+        this.$store.commit("alerts/setType", "warning");
+        this.$store.commit("alerts/setTimeout", 5000);
+        this.$store.commit("alerts/setAlert", true);
       } else {
         this.imageLoaded = false;
         this.infoLoaded = false;
@@ -468,6 +585,12 @@ export default {
       this.$store.commit("photos/setSearchText", this.searchText);
       this.$router.push(`/photos/`);
     },
+    runFormValidations() {
+      this.$refs.feature.validate();
+      this.$refs.siteRecord.validate();
+      this.$refs.historicSites.validate();
+      this.$refs.photo.validate();
+    }
   },
   computed: {
     mode() {
@@ -498,8 +621,11 @@ export default {
 .page-header {
   padding-top: 15px;
   padding-left: 20px;
+  border-bottom: 1px dotted grey;
+  background-color: #fff2d5;
 }
 .page-header button {
   float:right;
 }
+
 </style>
