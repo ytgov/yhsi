@@ -101,6 +101,8 @@ export class PhotoService {
 			let selectStmt = this.knex('photo');
 			let countStmt = this.knex('photo');
 
+			//console.log(query);
+
 			if (query && query.length > 0) {
 				query.forEach((stmt) => {
 					switch (stmt.operator) {
@@ -241,6 +243,10 @@ export class PhotoService {
 				console.log('BOMBED', err);
 				return undefined;
 			});
+	}
+
+	async updateFile(id: string, loadFile: Buffer): Promise<Photo | undefined> {
+		return this.knex('photo').where({ rowId: id }).update({ File: loadFile });
 	}
 
 	async updateThumbFile(

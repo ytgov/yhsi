@@ -1,16 +1,20 @@
 <template>
   <div>
-          <v-card-title primary-title>
-            Photo
-          </v-card-title>
-          <v-divider inset></v-divider>
-          <v-form v-model="valid">
+  <Accordion>
+    <template v-slot:title>
+      <v-card-title primary-title style="display:inline-block">
+        Photo
+      </v-card-title>
+    </template>
+    <template v-slot:content>
+          <v-form v-model="valid"
+            ref="photoForm">
               <v-container>
                 <v-row>
                   <v-col
                     cols="6"
                   >
-                    <div v-if="mode == 'view' && fields.file && fields.file.base64">
+                    <div v-if="imageLoaded && fields.file && fields.file.base64">
                       <v-card  class="mx-auto">
                         <v-img
                         :src="fields.file.base64"
@@ -20,7 +24,7 @@
                         contain
                         ></v-img>
                       </v-card>
-                      <v-btn class="black--text mx-1" @click="rotateImage()">
+                      <v-btn v-if="mode == 'edit'" class="black--text mx-1" @click="rotateImage()">
                         <v-icon>mdi-rotate-right</v-icon>
                         <div class="ml-2">
                           Rotate
@@ -42,25 +46,17 @@
                       <canvas id="canvas" style="display:none"></canvas>
                     </div>
 
-                    <v-img v-if="mode != 'view' && itemType == 'photo'" 
-                      class="mr-auto ml-auto"
-                      max-width="128"
-                      :src="require('../../../assets/add_photo.png')">
-                      </v-img>
-
                     <v-file-input v-if="mode != 'view' && itemType == 'photo'"
                       label="Choose photo to upload"
                       prepend-icon="mdi-camera"
                       accept="image/*"
                       @change="onFileSelection"
-                      class="default mb-5" 
                       dense
                       outlined
                       background-color="white"
-                      hide-details
                     ></v-file-input>
 
-                    <div v-if="itemType == 'photo'" class="d-flex default mb-5">
+                    <div v-if="itemType == 'photo'" class="d-flex default">
                       <p class="mt-auto mb-auto grey--text text--darken-2">
                         Rating
                       </p>
@@ -81,18 +77,15 @@
                       dense
                       outlined
                       background-color="white"
-                      hide-details
                       :readonly="mode == 'view'"
                     ></v-checkbox>
 
                     <v-checkbox
                       v-model="fields.isPrivate"
                       :label="'Is Private?'"
-                      class="default mb-5" 
                       dense
                       outlined
                       background-color="white"
-                      hide-details
                       :readonly="mode == 'view'"
                     ></v-checkbox>
                   </v-col>
@@ -108,11 +101,9 @@
                         item-text="name"
                         item-value="id"
                         label="Owner"
-                        class="default mb-5" 
                         dense
                         outlined
                         background-color="white"
-                        hide-details
                         :readonly="mode == 'view'"
                         :class="{ 'read-only-form-item': mode == 'view' }"
                     ></v-select>
@@ -122,11 +113,9 @@
                         :items="copyrightOptions"
                         :rules="generalRules"
                         label="Copyright"
-                        class="default mb-5" 
                         dense
                         outlined
                         background-color="white"
-                        hide-details
                         :readonly="mode == 'view'"
                         :class="{ 'read-only-form-item': mode == 'view' }"
                     ></v-select>
@@ -134,12 +123,10 @@
                     <v-select
                         v-model="fields.usageRights"
                         :items="usageRightOptions"
-                        label="Usage Rights"
-                        class="default mb-5" 
+                        label="Usage Rights" 
                         dense
                         outlined
                         background-color="white"
-                        hide-details
                         :readonly="mode == 'view'"
                         :class="{ 'read-only-form-item': mode == 'view' }"
                     ></v-select>
@@ -152,12 +139,10 @@
                       item-text="name"
                       item-value="name"
                       label="Subjects"
-                      class="default mb-5" 
                       :class="{ 'read-only-form-item': mode == 'view' }"
                       dense
                       outlined
                       background-color="white"
-                      hide-details
                       :readonly="mode == 'view'"
                     ></v-select>
 
@@ -166,11 +151,9 @@
                       label="Caption"
                       rows="3"
                       required
-                      class="default mb-5" 
                       dense
                       outlined
                       background-color="white"
-                      hide-details
                       :readonly="mode == 'view'"
                     ></v-textarea>
 
@@ -179,11 +162,9 @@
                       label="Comments"
                       rows="3"
                       required
-                      class="default mb-5" 
                       dense
                       outlined
                       background-color="white"
-                      hide-details
                       :readonly="mode == 'view'"
                     ></v-textarea>
 
@@ -192,11 +173,9 @@
                       label="Credit Line"
                       rows="3"
                       required
-                      class="default mb-5" 
                       dense
                       outlined
                       background-color="white"
-                      hide-details
                       :readonly="mode == 'view'"
                     ></v-textarea>
 
@@ -209,27 +188,30 @@
                       dense
                       outlined
                       background-color="white"
-                      hide-details
                       :readonly="mode == 'view'"
                     ></v-textarea>
                   </v-col>
                 </v-row>
               </v-container>
-            </v-form>
-        </div> 
+            </v-form>  
+      </template>
+    </Accordion>
+  </div> 
 </template>
 
 <script>
 
+import Accordion from "../Accordion"
 import axios from "axios";
 import { STATIC_URL } from "../../../urls";
 
 export default {
   name: "photo",
-  props: [ 'fields', 'mode' ,'itemType' ],
+  components: { Accordion },
+  props: [ 'fields', 'mode' ,'itemType', 'imageLoaded' ],
   data: () =>({
     valid: false,
-    generalRules: [ v => !!v || 'This input is required' ],
+    generalRules: [ v => !!v || 'This field is required' ],
     subjectOptions: [],
     ownerOptions: [],
     copyrightOptions: [],
@@ -275,6 +257,9 @@ export default {
     },
   },
   methods:{
+    validate() {
+      this.$refs.photoForm.validate();
+    },
     onFileSelection(event){
       if(event) {
         //this.fields.photos[i].img = URL.createObjectURL(event.target.files[0]);
@@ -297,13 +282,10 @@ export default {
     },
     rotateImage() {
       let img = document.getElementById('imgFile');
-      //console.log(img);
       let canvas = document.getElementById('canvas');
       
       var cContext = canvas.getContext('2d');
       var cw = img.width, ch = img.height, cx = 0, cy = 0;
-      cw = img.height;
-      ch = img.width;
       cy = img.height * (-1);
 
       //  Rotate image            
@@ -311,19 +293,15 @@ export default {
       canvas.setAttribute('height', ch);
       cContext.rotate(90 * Math.PI / 180);
       cContext.drawImage(img, cx, cy);
-     
+
       // Save image file
       let dataUrl = canvas.toDataURL("image/png");
-      //console.log(dataUrl);
-      console.log(dataUrl);
       var arr = dataUrl.split(','), mime = 'img/jpeg',
       bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
       while(n--){
         u8arr[n] = bstr.charCodeAt(n);
       }
-      console.log(u8arr);
       this.fields.file = new File([u8arr], this.fields.originalFileName, {type:mime});
-      console.log(this.fields.file);
       
       this.$emit("photoRotate", this.fields.file);
     }
