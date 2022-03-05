@@ -13,6 +13,10 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
+                <v-btn class="black--text mx-1" @click="getPdf">  
+                    <v-icon class="mr-1">mdi-printer</v-icon>
+                    Print
+                </v-btn>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="isEdit">
                     <v-icon>mdi-close</v-icon>
@@ -24,7 +28,8 @@
                 </v-btn>
           </v-col>
         </v-row>
-        
+
+
         <v-row>
           <v-col cols="12">
             <v-expansion-panels v-model="panel" multiple>
@@ -949,6 +954,11 @@ export default {
         const [year, month, day] = date.split('-')
         return `${month}/${day}/${year}`
     },
+    async getPdf(){
+      console.log("GETTING DATA");
+      const data = await burials.getPdf(parseInt(localStorage.currentBurialID));
+      console.log(data);
+    }
   },
   computed: {
     isEditable(){
@@ -983,7 +993,8 @@ export default {
     },
     getCountries(){
       return countries;
-    }
+    },
+
   },
   watch: {
     fields: {

@@ -389,3 +389,136 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 
 	res.status(200).send({ message: 'success' });
 });
+
+
+
+
+const pug = require('pug');
+
+
+
+
+
+
+burialsRouter.get(
+	'/:burialId/pdf',
+	[param('burialId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { burialId } = req.params;
+
+		const burial = await db
+			.select("BUR.*")
+			.from('Burial.Burial as BUR')
+			.where('BUR.BurialID', burialId)
+			.first();
+		console.log("AQUI");
+		if (!burial) {
+			res.status(403).send('Burial not found');
+			return;
+		}
+
+		burial.Cause = await db
+			.select('CL.*').from('Burial.Burial as BUR')
+			.join('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID').first();
+
+		burial.Cemetary = await db
+			.select('CL.*').from('Burial.Burial as BUR')
+			.join('Burial.CemetaryLookup as CL', 'CL.CemetaryLUpID', '=', 'BUR.CemetaryID').first();
+
+		burial.Religion = await db
+			.select('CL.*').from('Burial.Burial as BUR')
+			.join('Burial.ReligionLookup as CL', 'CL.ReligionLUpID', '=', 'BUR.ReligionID').first();
+
+		burial.Occupations = await db
+			.select('OC.*', 'BOC.*').from('Burial.Occupation AS BOC')
+			.where('BOC.BurialID', burialId)
+			.join('Burial.OccupationLookup as OC', 'OC.OccupationLUpID', '=', 'BOC.OccupationID');
+
+		burial.Memberships = await db
+			.select('ML.*', 'MEM.Chapter', 'MEM.Notes', 'MEM.ID').from('Burial.Membership AS MEM')
+			.where('MEM.BurialID', burialId)
+			.join('Burial.MembershipLookup as ML', 'ML.MembershipLUpID', '=', 'MEM.MembershipID');
+
+		burial.SiteVisits = await db
+			.select('*').from('Burial.SiteVisit')
+			.where('Burial.SiteVisit.BurialID', burialId);
+
+		burial.Kinships = await db
+			.select('KIN.*', 'REL.*').from('Burial.NOKin AS KIN')
+			.where('KIN.BurialID', burialId)
+			.join('Burial.RelationLookup as REL', 'REL.RelationLUpID', '=', 'KIN.RelationshipID');
+		
+		burial.Sources = await db
+			.select('SO.*').from('Burial.Source AS SO')
+			.where('SO.BurialID', burialId);
+
+
+		// Compile template.pug, and render a set of data
+		let data = pug.renderFile('./templates/burialView.pug', {
+			data: burial
+		});
+		res.status(200).send(data);
+	}
+);
+
+burialsRouter.get('/data', async (req: Request, res: Response) => {
+		const sortBy = 'LastName';
+		const sort = 'asc';
+		console.log("reached the endpoint");
+		let burials = [];
+
+			burials = await db.select(
+						'BUR.BurialID',
+						'BUR.LastName',
+						'BUR.FirstName',
+						'BUR.Gender',
+						'BUR.GenderOther',
+						'BUR.BirthYear',
+						'BUR.BirthMonth',
+						'BUR.BirthDay',
+						'BUR.BirthDateNotes',
+						'BUR.DeathYear',
+						'BUR.DeathMonth',
+						'BUR.DeathDay',
+						'BUR.DeathDateNotes',
+						'BUR.Age',
+						'BUR.Manner',
+						'CL.Cause',
+						'CE.Cemetary',
+						'BUR.OtherCemetaryDesc',
+						'BUR.PlotDescription',
+						'BUR.ShippedIndicator',
+						'BUR.DestinationShipped',
+						'BUR.FuneralPaidBy',
+						'BUR.OriginCity',
+						'BUR.OriginState',
+						'BUR.OriginCountry',
+						'BUR.OtherCountry',
+						'BUR.PersonNotes',
+						'RE.Religion'
+						)
+					.from('Burial.Burial as BUR')
+					.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
+					.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
+					.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
+					.orderBy(`${sortBy}`, `${sort}`);
+console.log("got the data");
+		// Compile template.pug, and render a set of data
+		let data = pug.renderFile('./templates/burialGrid.pug', {
+			data: burials
+		});
+		res.status(200).send(data);
+	}
+);
+
+
+//RELATIONSHIPS
+burialsRouter.get("/pdf", async (req: Request, res: Response) => {
+	const data = await db("Burial.RelationLookup").orderBy(
+	  "Burial.RelationLookup.Relationship",
+	  "asc"
+	);
+  
+	res.send(data);
+  });
