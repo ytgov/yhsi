@@ -78,6 +78,14 @@ export default {
     }).catch(error =>{
       return error;
     });
+  },
+  async getPdf(data){
+    return await api.get(`burials/${data}/pdf`)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      return error;
+    });
   }
 }
 
