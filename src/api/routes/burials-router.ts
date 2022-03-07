@@ -3,7 +3,7 @@ import { DB_CONFIG } from '../config';
 import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
-
+const pug = require('pug');
 export const burialsRouter = express.Router();
 const db = knex(DB_CONFIG);
 
@@ -392,16 +392,8 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 
 
 
-
-const pug = require('pug');
-
-
-
-
-
-
 burialsRouter.get(
-	'/:burialId/pdf',
+	'/pdf/:burialId',
 	[param('burialId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
@@ -412,7 +404,7 @@ burialsRouter.get(
 			.from('Burial.Burial as BUR')
 			.where('BUR.BurialID', burialId)
 			.first();
-		console.log("AQUI");
+
 		if (!burial) {
 			res.status(403).send('Burial not found');
 			return;
@@ -459,13 +451,11 @@ burialsRouter.get(
 			data: burial
 		});
 		res.status(200).send(data);
-	}
-);
+});
 
-burialsRouter.get('/data', async (req: Request, res: Response) => {
+burialsRouter.post('/pdf', async (req: Request, res: Response) => {
 		const sortBy = 'LastName';
 		const sort = 'asc';
-		console.log("reached the endpoint");
 		let burials = [];
 
 			burials = await db.select(
@@ -503,7 +493,6 @@ burialsRouter.get('/data', async (req: Request, res: Response) => {
 					.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
 					.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
 					.orderBy(`${sortBy}`, `${sort}`);
-console.log("got the data");
 		// Compile template.pug, and render a set of data
 		let data = pug.renderFile('./templates/burialGrid.pug', {
 			data: burials
@@ -511,14 +500,3 @@ console.log("got the data");
 		res.status(200).send(data);
 	}
 );
-
-
-//RELATIONSHIPS
-burialsRouter.get("/pdf", async (req: Request, res: Response) => {
-	const data = await db("Burial.RelationLookup").orderBy(
-	  "Burial.RelationLookup.Relationship",
-	  "asc"
-	);
-  
-	res.send(data);
-  });

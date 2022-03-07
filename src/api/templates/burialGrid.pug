@@ -9,11 +9,9 @@ div.divided-row
   div.left
     img(src="./yukon.svg", alt="")
 
-div.section-title Personal information
-
 div.grid
-  table
-    thead 
+  table.grid-table
+    thead
       tr 
         td 
           strong.underline Last Name 
@@ -38,7 +36,7 @@ div.grid
         td 
           strong.underline OriginCountry
     tbody 
-      each val in data.Occupations
+      each val in data
         tr 
           td #{val.FirstName} 
           td #{val.LastName} 
