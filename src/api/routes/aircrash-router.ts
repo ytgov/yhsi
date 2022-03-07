@@ -3,7 +3,7 @@ import { DB_CONFIG } from '../config';
 import knex from 'knex';
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
-
+const pug = require('pug');
 export const aircrashRouter = express.Router();
 const db = knex(DB_CONFIG);
 
@@ -245,4 +245,23 @@ aircrashRouter.get(
 
 		res.status(200).send({ available });
 	}
+);
+
+
+aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
+	const sortBy = 'YACSINumber';
+	const sort = 'asc';
+	let aircrashes = [];
+
+	aircrashes = await db
+	.select('*')
+	.from('dbo.vAircrash')
+	.orderBy(`${sortBy}`, `${sort}`);
+
+	// Compile template.pug, and render a set of data
+	let data = pug.renderFile('./templates/aircrashes/aircrashGrid.pug', {
+		data: aircrashes
+	});
+	res.status(200).send(data);
+}
 );

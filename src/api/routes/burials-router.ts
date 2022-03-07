@@ -447,7 +447,7 @@ burialsRouter.get(
 
 
 		// Compile template.pug, and render a set of data
-		let data = pug.renderFile('./templates/burialView.pug', {
+		let data = pug.renderFile('./templates/burials/burialView.pug', {
 			data: burial
 		});
 		res.status(200).send(data);
@@ -494,7 +494,7 @@ burialsRouter.post('/pdf', async (req: Request, res: Response) => {
 					.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
 					.orderBy(`${sortBy}`, `${sort}`);
 		// Compile template.pug, and render a set of data
-		let data = pug.renderFile('./templates/burialGrid.pug', {
+		let data = pug.renderFile('./templates/burials/burialGrid.pug', {
 			data: burials
 		});
 		res.status(200).send(data);

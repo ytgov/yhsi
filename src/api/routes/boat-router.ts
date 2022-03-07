@@ -3,7 +3,7 @@ import { DB_CONFIG } from '../config';
 import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
-
+const pug = require('pug');
 export const boatsRouter = express.Router();
 const db = knex(DB_CONFIG);
 
@@ -223,3 +223,66 @@ boatsRouter.put('/:boatId', async (req: Request, res: Response) => {
 
 	res.status(200).send({ message: 'success' });
 });
+
+boatsRouter.get(
+	'/pdf/:boatId',
+	[param('boatId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { boatId } = req.params;
+
+		const boat = await db
+			.select('*')
+			.from('boat.boat')
+			.where('boat.boat.id', boatId)
+			.first();
+
+		if (!boat) {
+			res.status(403).send('Boat id not found');
+			return;
+		}
+
+		boat.pastNames = await db
+			.select('*')
+			.from('boat.pastnames')
+			.where('boat.pastnames.boatid', boatId);
+
+		boat.owners = await db
+			.select(
+				'boat.boatowner.currentowner',
+				'boat.Owner.OwnerName',
+				'boat.owner.id'
+			) //added boat.owner.id to the query (I need this for the details button)
+			.from('boat.boatowner')
+			.join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
+			.where('boat.boatowner.boatid', boatId);
+
+		boat.histories = await db
+			.select('*')
+			.from('boat.history')
+			.where('boat.history.uid', boatId);
+
+		// Compile template.pug, and render a set of data
+		let data = pug.renderFile('./templates/boats/boatView.pug', {
+			data: boat
+		});
+		res.status(200).send(data);
+});
+
+boatsRouter.post('/pdf', async (req: Request, res: Response) => {
+		const sortBy = 'Name';
+		const sort = 'asc';
+		let boats = [];
+
+			boats = await db
+			.select('*')
+			.from('boat.boat')
+			.orderBy(`${sortBy}`, `${sort}`);
+
+		// Compile template.pug, and render a set of data
+		let data = pug.renderFile('./templates/boats/boatGrid.pug', {
+			data: boats
+		});
+		res.status(200).send(data);
+	}
+);
