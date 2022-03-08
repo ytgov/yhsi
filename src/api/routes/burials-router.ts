@@ -37,6 +37,25 @@ burialsRouter.get(
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
+
+		const data = await burialService.doSearch(page, limit, offset, 
+		{
+			textToMatch, 
+			sortBy, 
+			sort, 
+			BirthYear,
+			BirthMonth,
+			BirthDay,
+			DeathYear,
+			DeathMonth,
+			DeathDay,
+			Gender,
+			Cause,
+			Manner,
+			Cemetary,
+			OriginCountry
+		});
+		/*
 		let burials = [];
 
 			burials = await db
@@ -93,9 +112,9 @@ burialsRouter.get(
 					//.andWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
 					.orderBy(`${sortBy}`, `${sort}`)
 					.limit(limit)
-					.offset(offset);
+					.offset(offset);*/
 		//console.log(burials);
-		res.status(200).send({ count: burials.length, body: burials });
+		res.status(200).send(data);
 	}
 );
 
