@@ -3,9 +3,11 @@ import { DB_CONFIG } from '../config';
 import knex from 'knex';
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
+import { AircrashService } from '../services';
 const pug = require('pug');
 export const aircrashRouter = express.Router();
 const db = knex(DB_CONFIG);
+const aircrashService = new AircrashService();
 
 aircrashRouter.get(
 	'/',
@@ -15,10 +17,6 @@ aircrashRouter.get(
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		/* const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('view')) res.sendStatus(403);
-  
-    const db = req.app.get('db'); */
 
 		const {
 			textToMatch = '',
@@ -28,58 +26,15 @@ aircrashRouter.get(
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
-		let counter = [{ count: 0 }];
-		let aircrashes = [];
 
-		if (textToMatch) {
-			counter = await db
-				.from('dbo.vAircrash')
-				.where('yacsinumber', 'like', `%${textToMatch}%`)
-				.orWhere('crashdate', 'like', `%${textToMatch}%`)
-				.orWhere('aircrafttype', 'like', `%${textToMatch}%`)
-				.orWhere('aircraftregistration', 'like', `%${textToMatch}%`)
-				.orWhere('nation', 'like', `%${textToMatch}%`)
-				.orWhere('militarycivilian', 'like', `%${textToMatch}%`)
-				.orWhere('crashlocation', 'like', `%${textToMatch}%`)
-				.orWhere('pilot', 'like', `%${textToMatch}%`)
-				.orWhere('soulsonboard', 'like', `%${textToMatch}%`)
-				.orWhere('injuries', 'like', `%${textToMatch}%`)
-				.orWhere('fatalities', 'like', `%${textToMatch}%`)
-				.count('yacsinumber', { as: 'count' });
+		const data = await aircrashService.doSearch(page, limit, offset, 
+		{ 
+			textToMatch,
+			sortBy,
+			sort 
+		});
 
-			aircrashes = await db
-				.select('*')
-				.from('dbo.vAircrash')
-				.where('yacsinumber', 'like', `%${textToMatch}%`)
-				.orWhere('crashdate', 'like', `%${textToMatch}%`)
-				.orWhere('aircrafttype', 'like', `%${textToMatch}%`)
-				.orWhere('aircraftregistration', 'like', `%${textToMatch}%`)
-				.orWhere('nation', 'like', `%${textToMatch}%`)
-				.orWhere('militarycivilian', 'like', `%${textToMatch}%`)
-				.orWhere('crashlocation', 'like', `%${textToMatch}%`)
-				.orWhere('pilot', 'like', `%${textToMatch}%`)
-				.orWhere('soulsonboard', 'like', `%${textToMatch}%`)
-				.orWhere('injuries', 'like', `%${textToMatch}%`)
-				.orWhere('fatalities', 'like', `%${textToMatch}%`)
-				//.orderBy('yacsinumber', 'asc')
-				.orderBy(`${sortBy}`, `${sort}`)
-				.limit(limit)
-				.offset(offset);
-		} else {
-			counter = await db
-				.from('dbo.vAircrash')
-				.count('yacsinumber', { as: 'count' });
-
-			aircrashes = await db
-				.select('*')
-				.from('dbo.vAircrash')
-				//.orderBy('dbo.vAircrash.yacsinumber', 'asc')
-				.orderBy(`${sortBy}`, `${sort}`)
-				.limit(limit)
-				.offset(offset);
-		}
-
-		res.status(200).send({ count: counter[0].count, body: aircrashes });
+		res.status(200).send(data);
 	}
 );
 
@@ -88,31 +43,17 @@ aircrashRouter.get(
 	[param('aircrashId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		/*  const db = req.app.get('db');
-   
-     const permissions = req.decodedToken['yg-claims'].permissions;
-     if (!permissions.includes('view')) res.sendStatus(403); */
 
 		const { aircrashId } = req.params;
-		const aircrash = await db
-			.select('*')
-			.from('dbo.vAircrash')
-			.where('dbo.vAircrash.yacsinumber', aircrashId)
-			.first();
-
-		aircrash.infoSources = await db
-			.select('*')
-			.from('AirCrash.InfoSource')
-			.where('AirCrash.InfoSource.YACSINumber', aircrashId);
+		const aircrash = await aircrashService.getById(aircrashId);
 
 		if (!aircrash) {
-			res.status(403).send('Airplane crash id not found');
+			res.status(404).send('Airplane crash id not found');
 			return;
 		}
 
 		res.status(200).send(aircrash);
-	}
-);
+});
 
 aircrashRouter.put(
 	'/:aircrashId',
@@ -170,9 +111,6 @@ aircrashRouter.put(
 );
 
 aircrashRouter.post('/', async (req: Request, res: Response) => {
-	/* const db = req.app.get('db');
-    const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('create')) res.sendStatus(403); */
 
 	const { aircrash = {}, newInfoSources } = req.body;
 	/*
@@ -225,10 +163,6 @@ aircrashRouter.get(
 	[param('YACSINumber').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		/* const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('view')) res.sendStatus(403);
-  
-    const db = req.app.get('db'); */
 
 		const { YACSINumber } = req.params;
 		let available = true;
@@ -249,18 +183,19 @@ aircrashRouter.get(
 
 
 aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
-	const sortBy = 'YACSINumber';
-	const sort = 'asc';
-	let aircrashes = [];
 
-	aircrashes = await db
-	.select('*')
-	.from('dbo.vAircrash')
-	.orderBy(`${sortBy}`, `${sort}`);
+	let aircrashes = await aircrashService.getAll();
 
 	// Compile template.pug, and render a set of data
 	let data = pug.renderFile('./templates/aircrashes/aircrashGrid.pug', {
 		data: aircrashes
 	});
 	res.status(200).send(data);
+});
+
+aircrashRouter.post('/export', async (req: Request, res: Response) => {
+	
+	let aircrashes = await aircrashService.getAll();
+
+	res.status(200).send(aircrashes);
 });
