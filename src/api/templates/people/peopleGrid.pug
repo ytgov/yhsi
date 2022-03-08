@@ -1,0 +1,30 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+div.divided-row
+  div.right
+    div People information
+  div.left
+    img(src="./yukon.svg", alt="")
+
+div.grid
+  table.grid-table
+    thead
+      tr 
+        td 
+          strong.underline Given Name 
+        td 
+          strong.underline Surname
+        td 
+          strong.underline Birth Year
+        td 
+          strong.underline Death Year
+    tbody 
+      each val in data
+        tr 
+          td #{val.GivenName} 
+          td #{val.Surname} 
+          td #{val.BirthYeaar} 
+          td #{val.DeathYear} 
