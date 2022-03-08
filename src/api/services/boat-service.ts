@@ -50,4 +50,46 @@ export class BoatService {
         return boat;
     }
 
+    async doSearch(textToMatch: string, page: number, limit: number, offset: number, sortBy: string, sort: string){
+		let counter = [{ count: 0 }];
+		let boats = [];
+
+        if (textToMatch) {
+			counter = await db
+				.from('boat.boat')
+				.where('name', 'like', `%${textToMatch}%`)
+				.count('Id', { as: 'count' });
+
+			boats = await db
+				.select('*')
+				.from('boat.boat')
+				.where('name', 'like', `%${textToMatch}%`)
+				//.orderBy('boat.boat.id', 'asc')
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		} else {
+			counter = await db.from('boat.boat').count('Id', { as: 'count' });
+
+			boats = await db
+				.select('*')
+				.from('boat.boat')
+				//.orderBy('boat.boat.id', 'asc')
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		}
+
+		for (const boat of boats) {
+			boat.owners = await db
+				.select('boat.boatowner.currentowner', 'boat.Owner.OwnerName')
+				.from('boat.boatowner')
+				.join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
+				.where('boat.boatowner.boatid', boat.Id);
+		}
+
+        return { count: counter[0].count, body: boats };
+
+    }
+
 }

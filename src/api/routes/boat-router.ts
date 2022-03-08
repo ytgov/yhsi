@@ -21,44 +21,10 @@ boatsRouter.get(
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
-		let counter = [{ count: 0 }];
-		let boats = [];
+		
+		const data = await boatService.doSearch(textToMatch, page, limit, offset, sortBy, sort);
 
-		if (textToMatch) {
-			counter = await db
-				.from('boat.boat')
-				.where('name', 'like', `%${textToMatch}%`)
-				.count('Id', { as: 'count' });
-
-			boats = await db
-				.select('*')
-				.from('boat.boat')
-				.where('name', 'like', `%${textToMatch}%`)
-				//.orderBy('boat.boat.id', 'asc')
-				.orderBy(`${sortBy}`, `${sort}`)
-				.limit(limit)
-				.offset(offset);
-		} else {
-			counter = await db.from('boat.boat').count('Id', { as: 'count' });
-
-			boats = await db
-				.select('*')
-				.from('boat.boat')
-				//.orderBy('boat.boat.id', 'asc')
-				.orderBy(`${sortBy}`, `${sort}`)
-				.limit(limit)
-				.offset(offset);
-		}
-
-		for (const boat of boats) {
-			boat.owners = await db
-				.select('boat.boatowner.currentowner', 'boat.Owner.OwnerName')
-				.from('boat.boatowner')
-				.join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-				.where('boat.boatowner.boatid', boat.Id);
-		}
-
-		res.status(200).send({ count: counter[0].count, body: boats });
+		res.status(200).send(data);
 	}
 );
 
@@ -68,41 +34,13 @@ boatsRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { boatId } = req.params;
-		/*   const db = req.app.get('db');
-    
-      const permissions = req.decodedToken['yg-claims'].permissions;
-      if (!permissions.includes('view')) res.sendStatus(403);
-     */
-		const boat = await db
-			.select('*')
-			.from('boat.boat')
-			.where('boat.boat.id', boatId)
-			.first();
 
-		if (!boat) {
-			res.status(403).send('Boat id not found');
+		const boat = await boatService.getById(boatId);
+
+		if(!boat){
+			res.status(404).send({message: "Data not found"});
 			return;
 		}
-
-		boat.pastNames = await db
-			.select('*')
-			.from('boat.pastnames')
-			.where('boat.pastnames.boatid', boatId);
-
-		boat.owners = await db
-			.select(
-				'boat.boatowner.currentowner',
-				'boat.Owner.OwnerName',
-				'boat.owner.id'
-			) //added boat.owner.id to the query (I need this for the details button)
-			.from('boat.boatowner')
-			.join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-			.where('boat.boatowner.boatid', boatId);
-
-		boat.histories = await db
-			.select('*')
-			.from('boat.history')
-			.where('boat.history.uid', boatId);
 
 		res.status(200).send(boat);
 	}
@@ -226,6 +164,8 @@ boatsRouter.put('/:boatId', async (req: Request, res: Response) => {
 	res.status(200).send({ message: 'success' });
 });
 
+
+//PDF AND EXPORTS
 boatsRouter.get(
 	'/pdf/:boatId',
 	[param('boatId').notEmpty()],
@@ -235,7 +175,6 @@ boatsRouter.get(
 
 		const boat = await boatService.getById(boatId);
 
-		// Compile template.pug, and render a set of data
 		let data = pug.renderFile('./templates/boats/boatView.pug', {
 			data: boat
 		});
@@ -246,7 +185,6 @@ boatsRouter.post('/pdf', async (req: Request, res: Response) => {
 		
 		let boats = await boatService.getAll();
 
-		// Compile template.pug, and render a set of data
 		let data = pug.renderFile('./templates/boats/boatGrid.pug', {
 			data: boats
 		});
@@ -258,7 +196,6 @@ boatsRouter.post('/export', async (req: Request, res: Response) => {
 		
 	let boats = await boatService.getAll();
 
-	// Compile template.pug, and render a set of data
 	let data = pug.renderFile('./templates/boats/boatGrid.pug', {
 		data: boats
 	});
