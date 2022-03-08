@@ -1,14 +1,14 @@
 //- template.pug
 
 style
-     include styles.css
+     include ../styles.css
     
 div.divided-row
   div.right
     div Burial information
     div.item-name #{data.LastName}, #{data.FirstName}  
   div.left
-    img(src="./yukon.svg", alt="")
+    img(src="../yukon.svg", alt="")
 
 div.section-title Personal information
 div.divided-row 
@@ -28,7 +28,7 @@ div.table-display.general
     thead 
       tr 
         td 
-          strong.underline Occupation
+          strong.underline Occupations
     tbody 
       each val in data.Occupations
         tr 

@@ -263,5 +263,4 @@ aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
 		data: aircrashes
 	});
 	res.status(200).send(data);
-}
-);
+});
