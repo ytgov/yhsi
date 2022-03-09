@@ -19,17 +19,18 @@ burialsRouter.get(
 			textToMatch = '', 
 			sortBy = 'LastName', 
 			sort = 'asc', 
-			BirthYear,
-			//BirthMonth,
-			//BirthDay,
-			DeathYear,
-			//DeathMonth,
-			//DeathDay,
-			Gender,
-			Cause,
-			Manner,
-			Cemetary,
-			OriginCountry  } = req.query;
+			BirthYear = '',
+			//BirthMonth = '',
+			//BirthDay = '',
+			DeathYear = '',
+			//DeathMonth = '',
+			//DeathDay = '',
+			Gender = '',
+			Cause = '',
+			Manner = '',
+			Cemetary = '',
+			OriginCountry = ''
+		} = req.query;
 
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
@@ -38,38 +39,10 @@ burialsRouter.get(
 		let burials = [];
 // filter by names, birth and death dates, gender, cause and manner of death, cemetery, other location, country of origin
 		//if (textToMatch) {
+			console.log(req.query)
 			counter = await db
-					.select(
-						'BUR.BurialID',
-						'BUR.LastName',
-						'BUR.FirstName',
-						'BUR.Gender',
-						'BUR.GenderOther',
-						'BUR.BirthYear',
-						'BUR.BirthMonth',
-						'BUR.BirthDay',
-						'BUR.BirthDateNotes',
-						'BUR.DeathYear',
-						'BUR.DeathMonth',
-						'BUR.DeathDay',
-						'BUR.DeathDateNotes',
-						'BUR.Age',
-						'BUR.Manner',
-						'CL.Cause',
-						'CE.Cemetary',
-						'BUR.OtherCemetaryDesc',
-						'BUR.PlotDescription',
-						'BUR.ShippedIndicator',
-						'BUR.DestinationShipped',
-						'BUR.FuneralPaidBy',
-						'BUR.OriginCity',
-						'BUR.OriginState',
-						'BUR.OriginCountry',
-						'BUR.OtherCountry',
-						'BUR.PersonNotes',
-						'RE.Religion'
-						)
-					.from('Burial.Burial as BUR')
+					.select('*')
+					.from(ç BUR')
 					.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
 					.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
 					.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
@@ -86,7 +59,8 @@ burialsRouter.get(
 					//.orWhere('BUR.OriginState', 'like', `%${OriginState}%`)
 					.orWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
 					//.orWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
-					.count('BurialID', { as: 'count' });
+					// .groupBy('BUR.BurialID');
+					// .count('BUR.BurialID', { as: 'count' });
 
 			burials = await db
 					.select(
