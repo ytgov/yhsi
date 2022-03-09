@@ -54,6 +54,30 @@ export default {
     }).catch(error =>{
       return error;
     });
+  },
+  async getExport(){
+    return await api.post('aircrash/export')
+    .then( res => {
+      return res.data;
+    }).catch( err => {
+      return err;
+    })
+  },
+  async getGridPdf(){
+    return await api.post('aircrash/pdf')
+    .then( res => {
+      return res.data;
+    }).catch( err => {
+      return err;
+    })
+  },
+  async getPdf(id){
+    return await api.post(`aircrash/pdf/${id}`)
+    .then( res => {
+      return res.data;
+    }).catch( err => {
+      return err;
+    })
   }
 }
 

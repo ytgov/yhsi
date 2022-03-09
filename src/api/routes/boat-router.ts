@@ -4,6 +4,7 @@ import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { BoatService } from "../services";
+const pdf = require('html-pdf');
 const pug = require('pug');
 export const boatsRouter = express.Router();
 const db = knex(DB_CONFIG);
@@ -188,7 +189,20 @@ boatsRouter.post('/pdf', async (req: Request, res: Response) => {
 		let data = pug.renderFile('./templates/boats/boatGrid.pug', {
 			data: boats
 		});
-		res.status(200).send(data);
+
+		res.setHeader('Content-disposition', 'attachment; filename="boats.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		pdf.create(data, {
+			format: 'letter',
+			orientation: 'landscape'
+		}).toBuffer(function(err: any, buffer: any){
+			console.log(err);
+			console.log('This is a buffer:', Buffer.isBuffer(buffer));
+
+			res.send(buffer);
+		});
+
+		//res.status(200).send(data);
 	}
 );
 
@@ -196,9 +210,6 @@ boatsRouter.post('/export', async (req: Request, res: Response) => {
 		
 	let boats = await boatService.getAll();
 
-	let data = pug.renderFile('./templates/boats/boatGrid.pug', {
-		data: boats
-	});
-	res.status(200).send(data);
+	res.status(200).send(boats);
 }
 );
