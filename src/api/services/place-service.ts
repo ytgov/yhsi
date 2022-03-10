@@ -1,4 +1,5 @@
-import knex, { Knex } from 'knex';
+import knex from 'knex';
+import Knex from 'knex';
 import { QueryStatement, SortStatement } from './';
 import {
 	Association,
@@ -51,7 +52,7 @@ export class PlaceService {
 			.select<Place>(PLACE_FIELDS)
 			.where({ id: id })
 			.first()
-			.catch((err) => {
+			.catch((err: any) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});
@@ -64,7 +65,7 @@ export class PlaceService {
 			.where({ 'place.id': id })
 			.where({ showInRegister: true })
 			.first()
-			.catch((err) => {
+			.catch((err: any) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});
@@ -555,7 +556,7 @@ export class PlaceService {
 			}
 
 			let fullData = await selectStmt;
-			let uniqIds = _.uniq(fullData.map((i) => i.id));
+			let uniqIds = _.uniq(fullData.map((i: any) => i.id));
 			let count = uniqIds.length;
 			let page_count = Math.ceil(count / page_size);
 
