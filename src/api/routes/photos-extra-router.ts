@@ -1,3 +1,4 @@
+
 import express, { Request, Response } from 'express';
 import { DB_CONFIG } from '../config';
 import { createThumbnail } from '../utils/image';
@@ -88,7 +89,7 @@ photosExtraRouter.get(
 				.limit(limit)
 				.offset(offset);
 		}
-
+		console.log("PHOTOS HERE", photos);
 		res.status(200).send({ count: counter[0].count, body: photos });
 	}
 );
@@ -246,6 +247,37 @@ photosExtraRouter.get(
 			.limit(limit)
 			.offset(offset);
 
+		res.status(200).send(photos);
+	}
+);
+/*
+SELECT
+    BP.*,
+    PH.*
+FROM
+    Burial.Photo AS BP
+    INNER JOIN dbo.Photo AS PH ON BP.Photo_RowID = PH.RowId*/
+
+// GET BURIAL PHOTOS
+photosExtraRouter.get(
+	'/burial/:burialId',
+	[param('burialId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { burialId } = req.params;
+
+		const page = parseInt(req.query.page as string);
+		const limit = parseInt(req.query.limit as string);
+		const offset = page * limit || 0;
+
+		const photos = await db
+			.select('*')
+			.from('Burial.Photo as BP')
+			.join('dbo.photo AS PH', 'BP.Photo_RowID', '=', 'PH.RowID')
+			.where('BP.BurialID', burialId)
+			.limit(limit)
+			.offset(offset);
+			
 		res.status(200).send(photos);
 	}
 );
@@ -795,3 +827,136 @@ photosExtraRouter.post(
 		res.status(200).send({ message: 'Upload Success' });
 	}
 );
+
+
+//LINK BURIAL PHOTOS
+photosExtraRouter.post(
+	'/burial/link/:burialId',
+	[param('burialId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+
+		const { burialId } = req.params;
+		const { linkPhotos } = req.body;
+		let currentPhotos = await db
+			.select('Photo_RowID')
+			.from('Burial.Photo')
+			.where('BurialID', burialId);
+		let filteredLinkPhotos = _.difference(
+			linkPhotos,
+			currentPhotos.map((x) => {
+				return x.Photo_RowID;
+			})
+		);
+
+		for (const rowId of filteredLinkPhotos)
+			await db
+				.insert({ BurialID: burialId, Photo_RowID: rowId })
+				.into('Burial.Photo')
+				.returning('*')
+				.then((rows) => {
+					return rows;
+				});
+
+		res.status(200).send({ message: 'Successfully linked the photos' });
+	}
+);
+
+// ADD NEW BURIAL PHOTO
+photosExtraRouter.post(
+	'/burial',
+	[upload.single('file')],
+	async (req: Request, res: Response) => {
+
+		const { burialID, ...restBody } = req.body;
+		const ThumbFile = await createThumbnail(req.file.buffer);
+
+		const body = { File: req.file.buffer, ThumbFile, ...restBody };
+
+		const response = await db
+			.insert(body)
+			.into('dbo.photo')
+			.returning('*')
+			.then(async (rows) => {
+				const newBurialPhoto = rows[0];
+
+				await db
+					.insert({ BurialID: burialID, Photo_RowID: newBurialPhoto.RowId })
+					.into('Burial.Photo')
+					.returning('*')
+					.then((rows) => {
+						return rows;
+					});
+
+				return newBurialPhoto;
+			});
+		res.status(200).send({ message: 'Upload Success' });
+	}
+);
+
+
+// ADD NEW BOAT PHOTO
+photosExtraRouter.post(
+	'/boat',
+	[upload.single('file')],
+	async (req: Request, res: Response) => {
+
+		const { burialId, ...restBody } = req.body;
+		const ThumbFile = await createThumbnail(req.file.buffer);
+
+		const body = { File: req.file.buffer, ThumbFile, ...restBody };
+
+		const response = await db
+			.insert(body)
+			.into('dbo.photo')
+			.returning('*')
+			.then(async (rows) => {
+				const newBurialPhoto = rows[0];
+
+				await db
+					.insert({ burialId, Photo_RowID: newBurialPhoto.RowId })
+					.into('Burial.Photo')
+					.returning('*')
+					.then((rows) => {
+						return rows;
+					});
+
+				return newBurialPhoto;
+			});
+		res.status(200).send({ message: 'Upload Success' });
+	}
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

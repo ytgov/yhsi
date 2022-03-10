@@ -4,7 +4,9 @@ export * from "./place-service";
 export * from "./static-service";
 export * from "./user-service";
 export * from "./ytplace-service";
-
+export * from "./burial-service";
+export * from "./boat-service";
+export * from "./aircrash-service";
 export interface QueryStatement {
     field: string;
     operator: string;

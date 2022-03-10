@@ -51,6 +51,34 @@ export default {
     }).catch(error =>{
       return error;
     });
+  },
+  async getExport(){
+    return await api.post('boats/export')
+    .then( res => {
+      return res.data;
+    }).catch( err => {
+      return err;
+    })
+  },
+  async getGridPdf(){
+    return await api({
+      url: 'boats/pdf',
+      method: 'POST',
+      responseType: 'blob',
+    })
+    .then( res => {
+      return res.data;
+    }).catch( err => {
+      return err;
+    })
+  },
+  async getPdf(id){
+    return await api.post(`boats/pdf/${id}`)
+    .then( res => {
+      return res.data;
+    }).catch( err => {
+      return err;
+    })
   }
 }
 

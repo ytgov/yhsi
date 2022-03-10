@@ -1,0 +1,44 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+div.divided-row
+  div.right
+    div Boats information
+  div.left
+    img(src="./yukon.svg", alt="")
+
+div.grid
+  table.grid-table
+    thead
+      tr 
+        td 
+          strong.underline Name 
+        td 
+          strong.underline Owner
+        td 
+          strong.underline Gender
+        td 
+          strong.underline VesselType
+        td 
+          strong.underline ConstructionDate
+        td 
+          strong.underline ServiceStart
+        td 
+          strong.underline ServiceEnd
+        td 
+          strong.underline CurrentLocation
+        td 
+          strong.underline RegistrationNumber
+    tbody 
+      each val in data
+        tr 
+          td #{val.Name} 
+          td #{val.Owner} 
+          td #{val.VesselType} 
+          td #{val.ConstructionDate} 
+          td #{val.ServiceStart} 
+          td #{val.ServiceEnd} 
+          td #{val.CurrentLocation} 
+          td #{val.RegistrationNumber} 
