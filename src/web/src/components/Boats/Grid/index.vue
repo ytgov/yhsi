@@ -142,6 +142,7 @@ import Breadcrumbs from "../../Breadcrumbs";
 import PrintButton from "./PrintButton";
 import _ from "lodash";
 import boats from "../../../controllers/boats";
+//import jsPDF from "jspdf";
 export default {
   name: "boatsgrid-index",
   components: { Breadcrumbs, JsonCSV, PrintButton },
@@ -204,15 +205,17 @@ export default {
     async downloadPdf(){
       this.loadingPdf = true;
       let res = await boats.getGridPdf();
-      let fileURL = window.URL.createObjectURL(new Blob([res]));
-      let fileLink = document.createElement('a');
-      fileLink.setAttribute("target","_blank");
-      fileLink.href = fileURL;
-      //fileLink.setAttribute('download', 'boats.pdf');
-      document.body.appendChild(fileLink);
-      fileLink.click();
+      let blob = new Blob([res], { type: "application/octetstream" });
+      let url = window.URL || window.webkitURL;
+      let link = url.createObjectURL(blob);
+      let a = document.createElement("a");
+      a.setAttribute("download", "Boats.pdf");
+      a.setAttribute("href", link);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
       this.loadingPdf = false;
-    }
+    },
   },
   computed: {
     /*

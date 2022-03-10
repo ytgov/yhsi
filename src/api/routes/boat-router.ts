@@ -179,7 +179,18 @@ boatsRouter.get(
 		let data = pug.renderFile('./templates/boats/boatView.pug', {
 			data: boat
 		});
-		res.status(200).send(data);
+
+		res.setHeader('Content-disposition', 'attachment; filename="boats.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		pdf.create(data, {
+			format: 'A3',
+			orientation: 'landscape'
+		}).toBuffer(function(err: any, buffer: any){
+			console.log(err);
+			console.log('This is a buffer:', Buffer.isBuffer(buffer));
+
+			res.send(buffer);
+		});
 });
 
 boatsRouter.post('/pdf', async (req: Request, res: Response) => {
@@ -193,7 +204,7 @@ boatsRouter.post('/pdf', async (req: Request, res: Response) => {
 		res.setHeader('Content-disposition', 'attachment; filename="boats.html"');
 		res.setHeader('Content-type', 'application/pdf');
 		pdf.create(data, {
-			format: 'letter',
+			format: 'A3',
 			orientation: 'landscape'
 		}).toBuffer(function(err: any, buffer: any){
 			console.log(err);
@@ -211,5 +222,4 @@ boatsRouter.post('/export', async (req: Request, res: Response) => {
 	let boats = await boatService.getAll();
 
 	res.status(200).send(boats);
-}
-);
+});
