@@ -1,0 +1,51 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+div.divided-row
+  div.right
+    div Burials information
+  div.left
+    img(src="./yukon.svg", alt="")
+
+div.grid
+  table.grid-table
+    thead
+      tr 
+        td 
+          strong.underline Last Name 
+        td 
+          strong.underline First Name
+        td 
+          strong.underline Gender
+        td 
+          strong.underline BirthYear
+        td 
+          strong.underline DeathYear
+        td 
+          strong.underline Manner
+        td 
+          strong.underline Cause
+        td 
+          strong.underline Cemetary
+        td 
+          strong.underline OriginCity
+        td 
+          strong.underline OriginState
+        td 
+          strong.underline OriginCountry
+    tbody 
+      each val in data
+        tr 
+          td #{val.FirstName} 
+          td #{val.LastName} 
+          td #{val.Gender} 
+          td #{val.BirthYear} 
+          td #{val.DeathYear} 
+          td #{val.Manner} 
+          td #{val.Cause} 
+          td #{val.Cemetary} 
+          td #{val.OriginCity} 
+          td #{val.OriginState} 
+          td #{val.OriginCountry}

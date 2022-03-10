@@ -394,13 +394,13 @@ const routes = [
 		props: true,
 	},
 	{
-		path: '/burials/view/:name',
+		path: '/burials/view/:id',
 		name: 'BurialsViewForm',
 		component: BurialsForm,
 		props: true,
 	},
 	{
-		path: '/burials/edit/:name',
+		path: '/burials/edit/:id',
 		name: 'BurialsEditForm',
 		component: BurialsForm,
 		props: true,

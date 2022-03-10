@@ -1,7 +1,23 @@
 import { api } from './config';
 
 export default {
-  async get(page, limit, textToMatch, sortBy, sort, filters){
+  async get(
+      page, 
+      limit,  
+      textToMatch, 
+      sortBy, 
+      sort,
+      BirthYear,
+      BirthMonth,
+      BirthDay,
+      DeathYear,
+      DeathMonth,
+      DeathDay,
+      Gender,
+      Cause,
+      Manner,
+      Cemetary,
+      OriginCountry ){
       return await api.get(`burials/`, {
         crossdomain: true,
         params: {
@@ -10,7 +26,17 @@ export default {
           textToMatch,
           sortBy,
           sort,
-          filters
+          BirthYear,
+          BirthMonth,
+          BirthDay,
+          DeathYear,
+          DeathMonth,
+          DeathDay,
+          Gender,
+          Cause,
+          Manner,
+          Cemetary,
+          OriginCountry
         }
       })
       .then(res => {
@@ -30,7 +56,7 @@ export default {
       });
   },
   async put(id, data){
-    return await api.put(`boats/${id}`, data)
+    return await api.put(`burials/${id}`, data)
     .then(res => {
       return res.data;
     }).catch(error =>{
@@ -38,7 +64,7 @@ export default {
     });
   },
   async post(data){
-    return await api.post(`boats/new`, data)
+    return await api.post(`burials`, data)
     .then(res => {
       return res.data;
     }).catch(error =>{
@@ -46,12 +72,44 @@ export default {
     });
   },
   async getAvailableRegNumber(data){
-    return await api.get(`boats/available_number/${data}`)
+    return await api.get(`burials/available_number/${data}`)
     .then(res => {
       return res.data;
     }).catch(error =>{
       return error;
     });
-  }
+  },
+  async getPdf(data){
+    return await api.get(`burials/${data}/pdf`)
+    .then(res => {
+      return res.data;
+    }).catch(error =>{
+      return error;
+    });
+  },
+  async getExport(){
+    return await api.post('burials/export')
+    .then( res => {
+      return res.data;
+    }).catch( err => {
+      return err;
+    })
+  },
+  async getGridPdf(){
+    return await api.post('burials/pdf')
+    .then( res => {
+      return res.data;
+    }).catch( err => {
+      return err;
+    })
+  },
+  async getPdf(id){
+    return await api.post(`burials/pdf/${id}`)
+    .then( res => {
+      return res.data;
+    }).catch( err => {
+      return err;
+    })
+  },
 }
 

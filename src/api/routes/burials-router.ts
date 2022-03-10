@@ -3,9 +3,12 @@ import { DB_CONFIG } from '../config';
 import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
-
+import { BurialService }  from "../services";
+const pug = require('pug');
 export const burialsRouter = express.Router();
 const db = knex(DB_CONFIG);
+const burialService = new BurialService();
+
 
 burialsRouter.get(
 	'/',
@@ -20,146 +23,40 @@ burialsRouter.get(
 			sortBy = 'LastName', 
 			sort = 'asc', 
 			BirthYear = '',
-			//BirthMonth = '',
-			//BirthDay = '',
+			BirthMonth = '',
+			BirthDay = '',
 			DeathYear = '',
-			//DeathMonth = '',
-			//DeathDay = '',
+			DeathMonth = '',
+			DeathDay = '',
 			Gender = '',
 			Cause = '',
 			Manner = '',
 			Cemetary = '',
-			OriginCountry = ''
-		} = req.query;
+			OriginCountry = ''  } = req.query;
 
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
-		let counter = [{ count: 0 }];
-		let burials = [];
-// filter by names, birth and death dates, gender, cause and manner of death, cemetery, other location, country of origin
-		//if (textToMatch) {
-			console.log(req.query)
-			counter = await db
-					.select('*')
-					.from('BUR')
-					.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
-					.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
-					.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
-					.where('BUR.FirstName', 'like', `%${textToMatch}%`)
-					.orWhere('BUR.LastName', 'like', `%${textToMatch}%`)
-					.orWhere('BUR.Gender', 'like', `%${Gender}%`)
-					.orWhere('BUR.BirthYear', 'like', `%${BirthYear}%`)
-					.orWhere('BUR.DeathYear', 'like', `%${DeathYear}%`)
-					.orWhere('BUR.Manner', 'like', `%${Manner}%`)
-					.orWhere('CL.Cause', 'like', `%${Cause}%`)
-					.orWhere('CE.Cemetary', 'like', `%${Cemetary}%`)
-					//.orWhere('BUR.OtherCemetaryDesc', 'like', `%${OtherCemetaryDesc}%`)
-					//.orWhere('BUR.OriginCity', 'like', `%${OriginCity}%`)
-					//.orWhere('BUR.OriginState', 'like', `%${OriginState}%`)
-					.orWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
-					//.orWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
-					// .groupBy('BUR.BurialID');
-					// .count('BUR.BurialID', { as: 'count' });
 
-			burials = await db
-					.select(
-						'BUR.BurialID',
-						'BUR.LastName',
-						'BUR.FirstName',
-						'BUR.Gender',
-						'BUR.GenderOther',
-						'BUR.BirthYear',
-						'BUR.BirthMonth',
-						'BUR.BirthDay',
-						'BUR.BirthDateNotes',
-						'BUR.DeathYear',
-						'BUR.DeathMonth',
-						'BUR.DeathDay',
-						'BUR.DeathDateNotes',
-						'BUR.Age',
-						'BUR.Manner',
-						'CL.Cause',
-						'CE.Cemetary',
-						'BUR.OtherCemetaryDesc',
-						'BUR.PlotDescription',
-						'BUR.ShippedIndicator',
-						'BUR.DestinationShipped',
-						'BUR.FuneralPaidBy',
-						'BUR.OriginCity',
-						'BUR.OriginState',
-						'BUR.OriginCountry',
-						'BUR.OtherCountry',
-						'BUR.PersonNotes',
-						'RE.Religion'
-						)
-					.from('Burial.Burial as BUR')
-					
-					.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
-					.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
-					.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
-					//.orderBy(`${sortBy}`, `${sort}`)
-					//.groupBy('BUR.BurialID')
-					.where('BUR.FirstName', 'like', `%${textToMatch}%`)
-					.orWhere('BUR.LastName', 'like', `%${textToMatch}%`)
-					.orWhere('BUR.Gender', 'like', `%${Gender}%`)
-					.orWhere('BUR.BirthYear', 'like', `%${BirthYear}%`)
-					.orWhere('BUR.DeathYear', 'like', `%${DeathYear}%`)
-					.orWhere('BUR.Manner', 'like', `%${Manner}%`)
-					.orWhere('CL.Cause', 'like', `%${Cause}%`)
-					.orWhere('CE.Cemetary', 'like', `%${Cemetary}%`)
-					//.orWhere('BUR.OtherCemetaryDesc', 'like', `%${OtherCemetaryDesc}%`)
-					//.orWhere('BUR.OriginCity', 'like', `%${OriginCity}%`)
-					//.orWhere('BUR.OriginState', 'like', `%${OriginState}%`)
-					.orWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
-					//.orWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
-					.limit(limit)
-					.offset(offset);
-		//} else {
-			
-			// counter = await db.from('Burial.Burial').count('BurialID', { as: 'count' });
+		const data = await burialService.doSearch(page, limit, offset, 
+		{
+			textToMatch, 
+			sortBy, 
+			sort, 
+			BirthYear,
+			BirthMonth,
+			BirthDay,
+			DeathYear,
+			DeathMonth,
+			DeathDay,
+			Gender,
+			Cause,
+			Manner,
+			Cemetary,
+			OriginCountry
+		});
 
-			// burials = await db
-			// 		.select(
-			// 			'BUR.BurialID',
-			// 			'BUR.LastName',
-			// 			'BUR.FirstName',
-			// 			'BUR.Gender',
-			// 			'BUR.GenderOther',
-			// 			'BUR.BirthYear',
-			// 			'BUR.BirthMonth',
-			// 			'BUR.BirthDay',
-			// 			'BUR.BirthDateNotes',
-			// 			'BUR.DeathYear',
-			// 			'BUR.DeathMonth',
-			// 			'BUR.DeathDay',
-			// 			'BUR.DeathDateNotes',
-			// 			'BUR.Age',
-			// 			'BUR.Manner',
-			// 			'CL.Cause',
-			// 			'CE.Cemetary',
-			// 			'BUR.OtherCemetaryDesc',
-			// 			'BUR.PlotDescription',
-			// 			'BUR.ShippedIndicator',
-			// 			'BUR.DestinationShipped',
-			// 			'BUR.FuneralPaidBy',
-			// 			'BUR.OriginCity',
-			// 			'BUR.OriginState',
-			// 			'BUR.OriginCountry',
-			// 			'BUR.OtherCountry',
-			// 			'BUR.PersonNotes',
-			// 			'RE.Religion'
-			// 			)
-			// 		.from('Burial.Burial as BUR')
-			// 		.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
-			// 		.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
-			// 		.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
-			// 		.orderBy(`${sortBy}`, `${sort}`)
-			// 		.limit(limit)
-			// 		.offset(offset);
-		//}
-
-		res.status(200).send({ count: counter[0].count, body: burials });
+		res.status(200).send(data);
 	}
 );
 
@@ -169,219 +66,244 @@ burialsRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { burialId } = req.params;
-		const burial = await db
-			.select("BUR.*")
-			.from('Burial.Burial as BUR')
-			.where('BUR.BurialID', burialId)
-			.first();
-			/*
-			.select(
-				'BUR.BurialID',
-				'BUR.LastName',
-				'BUR.FirstName',
-				'BUR.Gender',
-				'BUR.GenderOther',
-				'BUR.BirthYear',
-				'BUR.BirthMonth',
-				'BUR.BirthDay',
-				'BUR.BirthDateNotes',
-				'BUR.DeathYear',
-				'BUR.DeathMonth',
-				'BUR.DeathDay',
-				'BUR.DeathDateNotes',
-				'BUR.Age',
-				'BUR.Manner',
-				'CL.Cause',
-				'CE.Cemetary',
-				'BUR.OtherCemetaryDesc',
-				'BUR.PlotDescription',
-				'BUR.ShippedIndicator',
-				'BUR.DestinationShipped',
-				'BUR.FuneralPaidBy',
-				'BUR.OriginCity',
-				'BUR.OriginState',
-				'BUR.OriginCountry',
-				'BUR.OtherCountry',
-				'BUR.PersonNotes',
-				'RE.Religion'
-				)
-			.from('Burial.Burial as BUR')
-			.where('BUR.BurialID', burialId)
-			.join('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
-			.join('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
-			.join('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
-			.first();
-			*/
+		const burial = await burialService.getById(burialId);
 
 		if (!burial) {
-			res.status(403).send('Burial not found');
+			res.status(404).send('Burial not found');
 			return;
 		}
 
-		burial.Causes = await db
-			.select('CL.Cause').from('Burial.Burial as BUR')
-			.join('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID').first();
-
-		burial.Cemetaries = await db
-			.select('CL.Cemetary').from('Burial.Burial as BUR')
-			.join('Burial.CemetaryLookup as CL', 'CL.CemetaryLUpID', '=', 'BUR.CemetaryID').first();
-
-		burial.Religions = await db
-			.select('CL.Religion').from('Burial.Burial as BUR')
-			.join('Burial.ReligionLookup as CL', 'CL.ReligionLUpID', '=', 'BUR.ReligionID').first();
-
-		burial.Occupations = await db
-			.select('OC.*').from('Burial.Occupation AS BOC')
-			.where('BOC.BurialID', burialId)
-			.join('Burial.OccupationLookup as OC', 'OC.OccupationLUpID', '=', 'BOC.OccupationID');
-
-		burial.Memberships = await db
-			.select('ML.*', 'MEM.Chapter', 'MEM.Notes', 'MEM.ID').from('Burial.Membership AS MEM')
-			.where('MEM.BurialID', burialId)
-			.join('Burial.MembershipLookup as ML', 'ML.MembershipLUpID', '=', 'MEM.MembershipID');
-
-		burial.SiteVisits = await db
-			.select('*').from('Burial.SiteVisit')
-			.where('Burial.SiteVisit.BurialID', burialId);
-
-		burial.Kinships = await db
-			.select('KIN.*', 'REL.*').from('Burial.NOKin AS KIN')
-			.where('KIN.BurialID', burialId)
-			.join('Burial.RelationLookup as REL', 'REL.RelationLUpID', '=', 'KIN.RelationshipID');
-
-
 		res.status(200).send(burial);
-	}
-);
-/*
-    [CemetaryID] smallint,
-    [OtherCemetaryDesc] varchar,
-    [PlotDescription] varchar,
-    [ShippedIndicator] varchar,
-    [DestinationShipped] varchar,
-    [FuneralPaidBy] varchar,
-    [OriginCity] varchar,
-    [OriginState] varchar,
-    [OriginCountry] varchar,
-    [OtherCountry] varchar,
-    [PersonNotes] varchar,
-    [ReligionID] smallint,
-	*/
+});
+
 
 // changed this route from "/new" to "/" to follow RESTFUL conventions
 burialsRouter.post('/', async (req: Request, res: Response) => {
-	/*   const db = req.app.get('db');
-  
-    const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('create')) res.sendStatus(403);
-   */
 	const {
 		burial = {},
+		Memberships, 
+		SiteVisits, 
+		Kinships,
+		Occupations,
+		Sources
 	} = req.body;
 
-	const { Cemetaries, Causes, Religions, Occupations, Memberships, SiteVisits, Kinships } = burial;
-
-	//let 
 	const response = await db
 		.insert(burial)
 		.into('Burial.Burial')
 		.returning('*')
 		.then(async (rows: any) => {
 			const newBurial = rows[0];
-/*
-			if(ownerNewArray.length) {
-				const newOwners = ownerNewArray.map((owner: any) => ({
-					...owner,
-					BoatId: newBoat.Id,
-				}));
-
-				await db
-					.insert(newOwners)
-					.into('boat.boatowner')
-					.returning('*')
-					.then((rows: any) => {
-						return rows;
-					});
-			}
-
-			//Add the new past names (done)
+			
+			//OCCUPATIONS
 			await db
-				.insert(
-					pastNamesNewArray.map((name: any) => ({
-						BoatId: newBoat.Id,
-						...name,
-					}))
-				)
-				.into('boat.pastnames')
+				.insert(Occupations.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ BurialID: newBurial.BurialID, OccupationID: x.OccupationLupID })))
+				.into('Burial.Occupation')
 				.then((rows: any) => {
 					return rows;
 				});
-
-			if (histories.length) {
-				const newHistories = histories.map((history: any) => ({
-					...history,
-					UID: newBoat.Id,
-				}));
-				await db
-					.insert(newHistories)
-					.into('boat.history')
-					.returning('*')
-					.then((rows: any) => {
-						return rows;
-					});
-			}
-*/
+			//MEMBERSHIPS
+			await db
+				.insert(Memberships.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: newBurial.BurialID, MembershipID: x.MembershipLUpID, Chapter: x.Chapter, Notes: x.Notes })))
+				.into('Burial.Membership')
+				.then((rows: any) => {
+					return rows;
+				});
+			//KINSHIPS
+			await db
+				.insert(Kinships.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: newBurial.BurialID, RelationshipID: x.RelationshipID, Quantity: x.Quantity, Name: x.Name, Location: x.Location })))
+				.into('Burial.NOKin')
+				.then((rows: any) => {
+					return rows;
+				});
+			//SITE VISITS
+			await db
+				.insert(SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: newBurial.BurialID, VisitYear: x.VisitYear, Condition: x.Condition, MarkerDescription: x.MarkerDescription, Inscription: x.Inscription, RecordedBy: x.RecordedBy })))
+				.into('Burial.SiteVisit')
+				.then((rows: any) => {
+					return rows;
+				});
+			//SOURCES
+			await db
+				.insert(Sources.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: newBurial.BurialID, Source: x.Source })))
+				.into('Burial.Source')
+				.then((rows: any) => {
+					return rows;
+				});
+			
 			return newBurial;
 		});
 
+	
 	res.send(response);
 });
 
-burialsRouter.put('/:boatId', async (req: Request, res: Response) => {
-	/*  const db = req.app.get('db');
-   const permissions = req.decodedToken['yg-claims'].permissions;
-   if (!permissions.includes('edit')) res.sendStatus(403);
-  */
+burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
+
 	const {
-		boat = {},
-		ownerNewArray = [],
-		ownerRemovedArray = [],
-		pastNamesNewArray = [],
-		pastNamesEditArray = [],
+		burial = {},
+		Memberships, 
+		SiteVisits, 
+		Kinships,
+		Occupations,
+		Sources
 	} = req.body;
-	const { boatId } = req.params;
-	//make the update
+	const { burialId } = req.params;
 
-	await db('boat.boat').update(boat).where('boat.boat.id', boatId);
+	let resp = await db('Burial.Burial').update(burial).where('Burial.Burial.BurialID', burialId);
+	if(!resp){
+		res.status(404).send({ message: 'Burial not found'})
+	}
 
-	//Add the new owners (done)
+	//OCCUPATIONS
 	await db
-		.insert(ownerNewArray.map((owner: any) => ({ BoatId: boatId, ...owner })))
-		.into('boat.boatowner')
+		.insert(Occupations.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationLupID })))
+		.into('Burial.Occupation')
 		.then((rows: any) => {
 			return rows;
 		});
 
-	//remove the previous owners (done)
-	for (const obj of ownerRemovedArray) {
-		await db('boat.boatowner').where('boat.boatowner.ownerid', obj.id).del();
+	const deletedOccupations = Occupations.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
+	for( const item of deletedOccupations ){
+		await db('Burial.Occupation')
+		.where('Burial.Occupation.ID', item.ID).del();
 	}
 
-	//update the past names (seems to work!)
-	for (const obj of pastNamesEditArray) {
-		await db('boat.pastnames')
-			.update({ BoatName: obj.BoatName })
-			.where('boat.pastnames.Id', obj.Id)
-			.andWhere('boat.pastnames.BoatId', boatId);
-	}
+	const editOccupations = Occupations.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
+	//console.log("occupations to edit",editOccupations);
+	for( const item of editOccupations ){
+		await db('Burial.Occupation')
+		.update({ BurialID: burialId, OccupationID: item.OccupationID })
+		.where('Burial.Occupation.ID', item.ID);
+	}	
+	
 
-	//Add the new past names (done)
+	//MEMBERSHIPS
 	await db
-		.insert(pastNamesNewArray.map((name: any) => ({ BoatId: boatId, ...name })))
-		.into('boat.pastnames')
+		.insert(Memberships.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, MembershipID: x.MembershipLUpID, Chapter: x.Chapter, Notes: x.Notes })))
+		.into('Burial.Membership')
 		.then((rows: any) => {
 			return rows;
 		});
+	
+	const deletedMemberships = Memberships.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, ID: x.ID }));
+	for( const item of deletedMemberships ){
+		await db('Burial.Membership')
+		.where('Burial.Membership.ID', item.ID).del();
+	}
+
+	const editMemberships = Memberships.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, MembershipID: x.MembershipLUpID, Chapter: x.Chapter, Notes: x.Notes, ID: x.ID }));
+	for( const item of editMemberships ){
+		await db('Burial.Membership')
+		.update({ BurialID: burialId, MembershipID: item.MembershipLUpID, Chapter: item.Chapter, Notes: item.Notes })
+		.where('Burial.Membership.ID', item.ID);
+	}
+	
+	//KINSHIPS
+	await db
+		.insert(Kinships.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, RelationshipID: x.RelationshipID, Quantity: x.Quantity, Name: x.Name, Location: x.Location })))
+		.into('Burial.NOKin')
+		.then((rows: any) => {
+			return rows;
+		});
+
+	const deletedKinships = Kinships.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, ID: x.NOKID }));
+	for( const item of deletedKinships ){
+		await db('Burial.NOKin')
+		.where('Burial.NOKin.NOKID', item.ID).del();
+	}
+
+	const editKinships = Kinships.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, RelationshipID: x.RelationshipID, Quantity: x.Quantity, Name: x.Name, Location: x.Location, ID: x.NOKID }));
+	for( const item of editKinships ){
+		await db('Burial.NOKin')
+		.update({ BurialID: burialId, RelationshipID: item.RelationshipID, Quantity: item.Quantity, Name: item.Name, Location: item.Location })
+		.where('Burial.NOKin.NOKID', item.ID);
+	}
+
+
+
+	//SITE VISITS
+	await db
+		.insert(SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, VisitYear: x.VisitYear, Condition: x.Condition, MarkerDescription: x.MarkerDescription, Inscription: x.Inscription, RecordedBy: x.RecordedBy })))
+		.into('Burial.SiteVisit')
+		.then((rows: any) => {
+			return rows;
+		});
+	
+	const deletedSiteVisits = SiteVisits.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, ID: x.SiteVisitID }));
+	for( const item of deletedSiteVisits ){
+		await db('Burial.SiteVisit')
+		.where('Burial.SiteVisit.SiteVisitID', item.ID).del();
+	}
+
+	const editSiteVisits = SiteVisits.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, VisitYear: x.VisitYear, Condition: x.Condition, MarkerDescription: x.MarkerDescription, Inscription: x.Inscription, RecordedBy: x.RecordedBy , ID: x.SiteVisitID }));
+	for( const item of editSiteVisits ){
+		await db('Burial.SiteVisit')
+		.update({ BurialID: burialId, VisitYear: item.VisitYear, Condition: item.Condition, MarkerDescription: item.MarkerDescription, Inscription: item.Inscription, RecordedBy: item.RecordedBy  })
+		.where('Burial.SiteVisit.SiteVisitID', item.ID);
+	}
+	
+	//SOURCES
+	await db
+		.insert(Sources.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, Source: x.Source })))
+		.into('Burial.Source')
+		.then((rows: any) => {
+			return rows;
+		});
+
+	const deletedSources = Sources.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, Source: x.Source, ID: x.SourceID }));
+	for( const item of deletedSources ){
+		await db('Burial.Source')
+		.where('Burial.Source.SourceID', item.ID).del();
+	}
+
+	const editSources = Sources.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, Source: x.Source, ID: x.SourceID }));
+	for( const item of editSources ){
+		await db('Burial.Source')
+		.update({ BurialID: burialId, Source: item.Source })
+		.where('Burial.Source.SourceID', item.ID);
+	}
 
 	res.status(200).send({ message: 'success' });
 });
+
+
+//PDFS 
+burialsRouter.post(
+	'/pdf/:burialId',
+	[param('burialId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { burialId } = req.params;
+
+		let burial = await burialService.getById(burialId);
+		
+		if(!burial) {
+			res.status(404).send({ message: "Data not found"});
+			return;
+		}
+		// Compile template.pug, and render a set of data
+		let data = pug.renderFile('./templates/burials/burialView.pug', {
+			data: burial
+		});
+		res.status(200).send(data);
+});
+
+
+burialsRouter.post('/pdf', async (req: Request, res: Response) => {
+		let burials = await burialService.getAll();
+
+		// Compile template.pug, and render a set of data
+		let data = pug.renderFile('./templates/burials/burialGrid.pug', {
+			data: burials
+		});
+		res.status(200).send(data);
+	}
+);
+
+burialsRouter.post('/export', async (req: Request, res: Response) => {
+	let burials = await burialService.getAll();
+
+	res.status(200).send(burials);
+}
+);
