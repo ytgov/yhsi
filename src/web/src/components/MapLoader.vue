@@ -25,7 +25,7 @@
               item-text="name"
               label="Projection"
               @change="changedDatum"
-              v-model="selectedProjection"
+              v-model="selectedProjection"          
               dense
               outlined
               background-color="white"
@@ -44,7 +44,7 @@
               @change="changedLocation"
               v-model="dd.lat"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
               dense
               outlined
               background-color="white"
@@ -61,7 +61,7 @@
               @change="changedLocation"
               v-model="dd.lng"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
               dense
               outlined
               background-color="white"
@@ -77,7 +77,7 @@
               @change="changedLocation"
               v-model="utm.Easting"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
               dense
               outlined
               background-color="white"
@@ -90,7 +90,7 @@
               @change="changedLocation"
               v-model="utm.Northing"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
               dense
               outlined
               background-color="white"
@@ -103,8 +103,8 @@
               @change="changedLocation"
               v-model="utm.ZoneLetter"
               :readonly="mode == 'view'"
-              :items="hemispheres"
-              :class="{ 'read-only-form-item': mode == 'view' }"
+              :items="hemispheres"    
+              :class="{ 'read-only-form-item': mode == 'view' } "   
               dense
               outlined
               background-color="white"
@@ -117,7 +117,7 @@
               @change="changedLocation"
               v-model="utm.ZoneNumber"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
               dense
               outlined
               background-color="white"
@@ -137,7 +137,7 @@
               @change="changedLocation"
               v-model="dms.lat.deg"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
               dense
               outlined
               background-color="white"
@@ -150,7 +150,7 @@
               @change="changedLocation"
               v-model="dms.lat.min"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
               dense
               outlined
               background-color="white"
@@ -163,7 +163,7 @@
               @change="changedLocation"
               v-model="dms.lat.sec"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
               dense
               outlined
               background-color="white"
@@ -175,7 +175,7 @@
             <v-text-field
               @change="changedLocation"
               v-model="dms.lat.dir"
-              :readonly="mode == 'view'"
+              :readonly="mode == 'view'"       
               dense
               outlined
               background-color="white"
@@ -192,7 +192,7 @@
               @change="changedLocation"
               v-model="dms.lng.deg"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
               dense
               outlined
               background-color="white"
@@ -204,7 +204,7 @@
               @change="changedLocation"
               v-model="dms.lng.min"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
               dense
               outlined
               background-color="white"
@@ -216,7 +216,7 @@
               @change="changedLocation"
               v-model="dms.lng.sec"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
               dense
               outlined
               background-color="white"
@@ -227,7 +227,7 @@
             <v-text-field
               @change="changedLocation"
               v-model="dms.lng.dir"
-              :readonly="mode == 'view'"
+              :readonly="mode == 'view'"       
               dense
               outlined
               background-color="white"
@@ -245,7 +245,7 @@
               @change="changedLocation"
               v-model="nad83.x"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
               dense
               outlined
               background-color="white"
@@ -262,7 +262,7 @@
               @change="changedLocation"
               v-model="nad83.y"
               :readonly="mode == 'view'"
-              type="number"
+              type="number"       
               dense
               outlined
               background-color="white"
@@ -303,33 +303,29 @@
         :items="locationAccuracyOptions"
         :readonly="mode == 'view'"
         class="mb-5"
-        :class="{ 'read-only-form-item': mode == 'view' }"
+        :class="{ 'read-only-form-item': mode == 'view' } "
         dense
         outlined
         background-color="white"
         hide-details
       ></v-select>
-      <label
-        for="mapSheetDropdown"
-        :style="{ fontSize: '15px', color: '#666666' }"
-        >Mapsheet</label
-      >
-      <Dropdown
-        :options="mapSheetOptions"
-        v-on:selected="handleMapSheetSelected"
-        :disabled="mode == 'view'"
-        name="mapSheetDropdown"
-        :maxItem="10"
-        :placeholder="modifiableFields.mapSheet"
-        class="mapsheet"
+      <v-autocomplete
+        @click="getMapSheetLookup"
+        v-model="modifiableFields.mapSheet"
+        :items="mapSheetOptions"
+        :loading="isLoadingMapsheetOptions"
+        :readonly="mode == 'view'"
+        :class="{ 'read-only-form-item': mode == 'view' }"
+        clearable
+        label="Mapsheet"
+        item-text="name"
+        item-value="id"
         dense
         outlined
         background-color="white"
         hide-details
-      >
-      </Dropdown>
-      <v-checkbox
-        v-if="mapType == 'planeCrash'"
+      ></v-autocomplete>
+      <v-checkbox v-if="mapType == 'planeCrash'"
         :value="!isOutsideYukon"
         :readonly="true"
         label="Crash site within Yukon"
@@ -384,7 +380,6 @@
 /* eslint-disable */
 import { latLng, Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import Dropdown from "vue-simple-search-dropdown";
 import {
   LMap,
   LTileLayer,
@@ -449,7 +444,7 @@ export default {
     //Selection vars
     selectedSystem: { id: 1, text: "Decimal Degrees" },
     selectedProjection: { id: 1, name: "WSG 84" },
-    locationAccuracyOptions: ["Approximate", "Actual"],
+    locationAccuracyOptions: ["Approximate","Actual"],
     mapSheetOptions: [],
     isLoadingMapsheetOptions: false,
     projectionOptions: [
@@ -538,12 +533,7 @@ export default {
       this.modifiableFields = this.fields;
       // If there is a mapsheet already prepopulate the options array with it so it shows on page load
       if (this.modifiableFields.mapSheet) {
-        this.mapSheetOptions = [
-          {
-            id: this.modifiableFields.mapSheet,
-            name: this.modifiableFields.mapSheet,
-          },
-        ];
+        this.mapSheetOptions = [ { id: this.modifiableFields.mapSheet, name: this.modifiableFields.mapSheet }];
       }
       this.dd = {
         lat: this.modifiableFields.lat,
@@ -572,15 +562,9 @@ export default {
     },
     // Determine any shared verbage based on mapType
     setSharedVerbage() {
-      this.mapTypeNoun =
-        this.mapType == "planeCrash"
-          ? "Site Crash"
-          : this.mapType == "ytPlace"
-          ? "Place"
-          : "";
-      this.marker.tooltip = "Selected " + this.mapTypeNoun;
+        this.mapTypeNoun = (this.mapType == 'planeCrash') ? 'Site Crash' : (this.mapType == 'ytPlace') ? 'Place' : '';
+        this.marker.tooltip = "Selected "+this.mapTypeNoun;
     },
-
     setCenter(lat, lng) {
       //This method sets the center focus of the map
       if (isNaN(lat) || isNaN(lng)) return;
@@ -750,16 +734,16 @@ export default {
       return dd;
     },
     async getMapSheetLookup() {
+      this.isLoadingMapsheetOptions = true;
       axios.get(`${STATIC_URL}/mapsheet`).then((resp) => {
         this.mapSheetOptions = resp.data.data;
-        this.mapSheetOptions = this.mapSheetOptions.map(
-          (x) => (x = { id: x.map50k, name: x.map50k })
-        );
-      });
-    },
-    handleMapSheetSelected(item) {
-      this.modifiableFields.mapSheet = item.id;
-    },
+        this.mapSheetOptions = this.mapSheetOptions.map((x) => (x = {id: x.map50k, name: x.map50k}));
+        this.mapSheetOptions = this.mapSheetOptions       
+          .slice()
+          .sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+        this.isLoadingMapsheetOptions = false;
+      })
+    }
   },
 
   computed: {

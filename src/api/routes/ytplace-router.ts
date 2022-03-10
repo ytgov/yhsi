@@ -7,7 +7,6 @@ import {
 	SortDirection,
 	SortStatement,
 	StaticService,
-	PlaceService,
 } from '../services';
 import {
 	AlternateName,
@@ -33,14 +32,16 @@ import {
 	YtPlace,
 } from '../data';
 import { ReturnValidationErrors } from '../middleware';
+import moment from 'moment';
+import knex from 'knex';
 
 const ytPlaceService = new YtPlaceService(DB_CONFIG);
-const placeService = new PlaceService(DB_CONFIG);
 const staticService = new StaticService(DB_CONFIG);
 const photoService = new PhotoService(DB_CONFIG);
 const PAGE_SIZE = 10;
 
 export const ytPlaceRouter = express.Router();
+const db = knex(DB_CONFIG);
 
 ytPlaceRouter.get(
 	'/',
@@ -129,24 +130,6 @@ ytPlaceRouter.post(
 	}
 );
 
-ytPlaceRouter.post(
-	'/generate-id',
-	[body('nTSMapSheet').isString().bail().notEmpty().trim()],
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
-
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
-
-		let { nTSMapSheet } = req.body;
-
-		let newId = await placeService.generateIdFor(nTSMapSheet);
-
-		res.json({ data: { yHSIId: newId, nTSMapSheet } });
-	}
-);
-
 ytPlaceRouter.get(
 	'/:id',
 	[check('id').notEmpty()],
@@ -171,11 +154,6 @@ ytPlaceRouter.get(
 					let fnNames = await ytPlaceService.getFirstNationNamesFor(place.id);
 					let altNames = await ytPlaceService.getAlternateNamesFor(place.id);
 					let histories = await ytPlaceService.getPlaceHistoriesFor(place.id);
-
-					// TODO: add function photoService to fetch all photos given an array of rowids (or something)
-					//let photos = await photoService.getAllForPlace(place.id);
-					//let placePhotos = await ytPlaceService.getPlacePhotosFor(place.id);
-					//let photos = combine(getPhotos, placePhotos, "rowId", "photoRowId", Photo);
 
 					let fnAssociations = await ytPlaceService.getFNAssociationsFor(
 						place.id
@@ -203,12 +181,7 @@ ytPlaceRouter.get(
 						altNames: { data: altNames },
 						histories: { data: histories },
 						fnAssociations: { data: fnAssociations },
-						// TODO
-						// photos: { data: photos },
 					};
-
-					//console.log(place);
-					//console.log(relationships);
 
 					return res.send({
 						data: place,
@@ -227,39 +200,85 @@ ytPlaceRouter.get(
 
 ytPlaceRouter.post(
 	'/',
-	[
-		body('primaryName').isString().bail().notEmpty().trim(),
-		body('yHSIId').isString().bail().notEmpty().trim(),
-		body('jurisdiction').isInt().bail().notEmpty(),
-		body('statuteId').isInt().bail().notEmpty(),
-		body('statute2Id').isInt().bail().notEmpty(),
-		body('ownerConsent').isInt().bail().notEmpty(),
-		body('category').isInt().bail().notEmpty(),
-		body('isPubliclyAccessible').isBoolean().bail().notEmpty(),
-		body('communityId').isInt().bail().notEmpty(),
-		body('siteStatus').isInt().bail().notEmpty(),
-		body('floorCondition').isInt().bail().notEmpty(),
-		body('wallCondition').isInt().bail().notEmpty(),
-		body('doorCondition').isInt().bail().notEmpty(),
-		body('roofCondition').isInt().bail().notEmpty(),
-		body('coordinateDetermination').isInt().bail().notEmpty(),
-		body('showInRegister').isBoolean().bail().notEmpty(),
-	],
+	[body('place.name').isString().bail().notEmpty().trim()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
+		const {
+			place = {},
+			altNames = [],
+			fnNames = [],
+			fnAssociations = [],
+			placeTypes = [],
+		} = req.body;
 
 		if (!errors.isEmpty()) {
+			console.log('Validation error');
+			console.log(errors.array());
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let result = await ytPlaceService
-			.addPlace(req.body as YtPlace)
-			.then((item) => item)
+		// YtPlaceService returning a YtPlace object was causing errors so using the same structure as boat-router
+		delete place.id;
+		const response = await db
+			.insert(place)
+			.into('place.place')
+			.returning('*')
+			.then(async (rows) => {
+				const newPlace = rows[0];
+
+				if (altNames.length) {
+					const newAltNames = altNames.map((x: any) => ({
+						...x,
+						placeId: newPlace.Id,
+					}));
+					for (let on of newAltNames) {
+						delete on.id;
+						await ytPlaceService.addAlternateName(on);
+					}
+				}
+
+				if (fnNames.length) {
+					const newFnNames = fnNames.map((x: any) => ({
+						...x,
+						placeId: newPlace.Id,
+					}));
+					for (let on of newFnNames) {
+						delete on.id;
+						await ytPlaceService.addFirstNationName(on);
+					}
+				}
+
+				if (fnAssociations.length) {
+					const newFnAssocations = fnAssociations.map((x: any) => ({
+						...x,
+						placeId: newPlace.Id,
+					}));
+					for (let on of newFnAssocations) {
+						await ytPlaceService.addFNAssociation(on);
+					}
+				}
+
+				if (placeTypes.length) {
+					const newPlaceTypes = placeTypes.map((x: any) => ({
+						placeTypeLookupId: x,
+						placeId: newPlace.Id,
+					}));
+					for (let on of newPlaceTypes) {
+						await ytPlaceService.addPlaceType(on);
+					}
+				}
+
+				return { id: newPlace.Id };
+			})
 			.catch((err) => {
-				return res.json({ errors: [err.originalError.info.message] });
+				console.error('Database Error', err);
+				return res.status(400).json({ errors: err });
 			});
 
-		return res.json({ data: result });
+		return res.json({
+			messages: [{ variant: 'success', text: 'Place added' }],
+			data: response,
+		});
 	}
 );
 
@@ -282,9 +301,6 @@ ytPlaceRouter.put(
 		delete updater.histories;
 		delete updater.fnAssociations;
 
-		console.log(updater);
-		console.log(fnAssociations);
-
 		await ytPlaceService.updatePlace(parseInt(id), updater);
 
 		// Update alternate names
@@ -293,19 +309,23 @@ ytPlaceRouter.put(
 			Object.assign(n, { alternateName: n.alternateName.trim() })
 		);
 
-		/*for (let on of oldNames) {
-            let match = altNames.filter((n: AlternateName) => n.alternateName == on.alternateName);
-            if (match.length == 0) {
-                await ytPlaceService.removeAlternateName(on.id);
-            }
-        }
-        for (let on of altNames) {
-            let match = oldNames.filter((n: AlternateName) => n.alternateName == on.alternateName);
-            if (match.length == 0) {
-                delete on.id;
-                await ytPlaceService.addAlternateName(on);
-            }
-        }*/
+		for (let on of oldNames) {
+			let match = altNames.filter(
+				(n: AlternateName) => n.alternateName == on.alternateName
+			);
+			if (match.length == 0) {
+				await ytPlaceService.removeAlternateName(on.id);
+			}
+		}
+		for (let on of altNames) {
+			let match = oldNames.filter(
+				(n: AlternateName) => n.alternateName == on.alternateName
+			);
+			if (match.length == 0) {
+				delete on.id;
+				await ytPlaceService.addAlternateName(on);
+			}
+		}
 
 		// Update place types - note that placeTypes is just an array of placeTypeLookupIds
 		let oldPlaceTypes = await ytPlaceService.getPlaceTypesFor(parseInt(id));
@@ -364,64 +384,37 @@ ytPlaceRouter.put(
 		}
 
 		// FnNames
-		/*let oldFnNames = await ytPlaceService.getFirstNationNamesFor(parseInt(id));
-        for (let on of oldFnNames) {
-            let match = fnNames.filter((n: FirstNationName) => n.fnName == on.fnName && n.fnDescription == on.fnDescription && n.fnLanguage == on.fnLanguage);
-            if (match.length == 0) {
-                await ytPlaceService.removeFirstNationName(on.id);
-            }
-        }
-        for (let on of fnNames) {
-            let match = oldFnNames.filter((n: FirstNationName) => n.fnName == on.fnName && n.fnDescription == on.fnDescription && n.fnLanguage == on.fnLanguage);
-            if (match.length == 0) {
-                on.placeId = parseInt(id);
-                delete on.id;
-                await ytPlaceService.addFirstNationName(on);
-            }
-        }*/
+		let oldFnNames = await ytPlaceService.getFirstNationNamesFor(parseInt(id));
+		for (let on of oldFnNames) {
+			let match = fnNames.filter(
+				(n: FirstNationName) =>
+					n.fnName == on.fnName &&
+					n.fnDesription == on.fnDesription &&
+					n.fnLanguage == on.fnLanguage
+			);
+			if (match.length == 0) {
+				await ytPlaceService.removeFirstNationName(on.id);
+			}
+		}
+		for (let on of fnNames) {
+			let match = oldFnNames.filter(
+				(n: FirstNationName) =>
+					n.fnName == on.fnName &&
+					n.fnDesription == on.fnDesription &&
+					n.fnLanguage == on.fnLanguage
+			);
+			if (match.length == 0) {
+				on.placeId = parseInt(id);
+				delete on.id;
+				await ytPlaceService.addFirstNationName(on);
+			}
+		}
 
 		return res.json({
 			messages: [{ variant: 'success', text: 'Place updated' }],
 		});
 	}
 );
-
-/*ytPlaceRouter.put("/:id/all",
-    [
-        check("id").isInt().bail().notEmpty(),
-        body("primaryName").isString().bail().notEmpty().trim(),
-        body("yHSIId").isString().bail().notEmpty().trim(),
-        body("jurisdiction").isInt().bail().notEmpty(),
-        body("statuteId").isInt().bail().notEmpty(),
-        body("statute2Id").isInt().bail().notEmpty(),
-        body("ownerConsent").isInt().bail().notEmpty(),
-        body("category").isInt().bail().notEmpty(),
-        body("isPubliclyAccessible").isBoolean().bail().notEmpty(),
-        body("communityId").isInt().bail().notEmpty(),
-        body("siteStatus").isInt().bail().notEmpty(),
-        body("floorCondition").isInt().bail().notEmpty(),
-        body("wallCondition").isInt().bail().notEmpty(),
-        body("doorCondition").isInt().bail().notEmpty(),
-        body("roofCondition").isInt().bail().notEmpty(),
-        body("coordinateDetermination").isInt().bail().notEmpty(),
-        body("showInRegister").isBoolean().bail().notEmpty()
-    ],
-    async (req: Request, res: Response) => {
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
-        const id = req.params.id as string;
-        let result = await ytPlaceService.updatePlace(parseInt(id), req.body as YtPlace).then(item => item)
-            .catch(err => {
-                return res.json({ errors: [err.originalError.info.message] });
-            });
-
-        return res.json({ data: result });
-    });
-*/
 
 function combine(
 	list1: Array<any>,

@@ -44,7 +44,7 @@
       <v-container class="scroll">
         <v-row>
           <v-col>
-            <v-text-field v-model="searchPhotos" label="Search"> </v-text-field>
+            <v-text-field v-model="searchPhotos" outlined dense label="Search"> </v-text-field>
           </v-col>
         </v-row>
         <v-row v-if="photos.length < 1">
@@ -63,8 +63,8 @@
           >
             <v-card outlined hover>
               <v-img
-                :src="item.File.base64"
-                :lazy-src="item.File.base64"
+                :src="item.ThumbFile.base64"
+                :lazy-src="item.ThumbFile.base64"
                 aspect-ratio="1"
                 class="grey lighten-2"
               >

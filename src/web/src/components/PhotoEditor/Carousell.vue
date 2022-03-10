@@ -8,8 +8,8 @@
     <v-carousel-item
       v-for="(item, i) in photos"
       :key="i"
-      :src="item.File.base64"
-      :lazy-src="item.File.base64"
+      :src="item.ThumbFile.base64"
+      :lazy-src="item.ThumbFile.base64" 
     ></v-carousel-item>
   </v-carousel>
 </template>

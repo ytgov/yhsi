@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialog" persistent max-width="600px">
+    <v-dialog v-model="dialog" persistent max-width="600px" @click:outside="reset()">
       <template v-slot:activator="{ on, attrs }">
         <v-btn v-bind="attrs" v-on="on" class="black--text mx-1">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
@@ -70,6 +70,7 @@ export default {
       this.$refs.addPlaceTypeForm.validate();
     },
     reset() {
+      this.dialog = false;
       this.$refs.addPlaceTypeForm.reset();
     },
     resetValidation() {
