@@ -2,7 +2,7 @@
 
   <div>
     <v-app-bar color="primary" flat dark>
-      <v-toolbar-title class="mr-2"> Photos {{this.filterText}}</v-toolbar-title>
+      <v-toolbar-title class="mr-2"> Photos {{this.filterText}} {{this.photoCountText}}</v-toolbar-title>
       <v-menu transition="slide-y-transition" bottom>
         <template v-slot:activator="{ on, attrs }">
           <v-btn color="primary" dark v-bind="attrs" v-on="on">
@@ -29,7 +29,7 @@
     <v-container>
       <v-card class="mt-5" color="#fff2d5">
           <v-card-text style="font-size:15px;">
-            <a @click="showHideFilters()"><span>Show Filters </span></a>
+            <a @click="showHideFilters()"><span>{{showFiltersText}} </span></a>
             <span>to refine results or choose from </span>
             <v-menu transition="slide-y-transition" offset-y class="ml-0">
               <template v-slot:activator="{ on, attrs }">
@@ -73,6 +73,12 @@
             <v-icon>mdi-magnify</v-icon>
             <div class="ml-2">
               View Results
+            </div>
+          </v-btn>    
+          <v-btn color="secondary" class="mr-2" @click="clearFilters()">
+            <v-icon>mdi-refresh</v-icon>
+            <div class="ml-2">
+              Clear Filters
             </div>
           </v-btn>    
             <SaveDialog @saveDialog="saveDialog" :isDisabled="queryBuilderEmpty" :itemType="`filter`" />
@@ -186,10 +192,7 @@ export default {
     totalLength: 0,
     page_size: 12,
     loading: true,
-    queryRules: [{ type: "text",
-        id: "legacyBatchInfo",
-        label: "Legacy Batch",
-        operators: ['includes','excludes'] }],
+    queryRules: [],
     queryBuilder: { children: []},
     queryLabels: {
       "matchType": null,
@@ -472,6 +475,12 @@ export default {
           });
         })(),
       });
+
+      this.queryRules.push({ type: "text",
+        id: "legacyBatchInfo",
+        label: "Legacy Batch",
+        operators: ['includes','excludes'] 
+      });
     }, 
 
   loadSavedFilter(filters) {
@@ -552,20 +561,29 @@ export default {
     }
   },
 
+  clearFilters() {
+    this.queryBuilder.children = [];
+    this.getDataFromApi();
+  }
+
   },
   computed: {
     sortByName: function () {
       return this.photos
         .slice()
         //.filter((a) => a.featureName.toLowerCase().includes(this.search.toLowerCase()))
-        .sort((a, b) => (a.featureName.toLowerCase() > b.featureName.toLowerCase() ? 1 : b.featureName.toLowerCase() > a.featureName.toLowerCase() ? -1 : 0));
+        .sort((a, b) => (!a.featureName || !b.featureName ? 0
+          : a.featureName.toLowerCase() > b.featureName.toLowerCase() ? 1 
+          : b.featureName.toLowerCase() > a.featureName.toLowerCase() ? -1 
+          : 0));
     },
     sortByRating: function () {
       return this.photos
         //.filter((a) => a.featureName.toLowerCase().includes(this.search.toLowerCase()))
         .slice()
         .sort((a, b) =>
-          a.rating > b.rating ? 1 : b.rating > a.rating ? -1 : 0
+          !a.rating || !b.rating ? 0
+          : a.rating > b.rating ? 1 : b.rating > a.rating ? -1 : 0
         );
     },
     sortByAge: function () {
@@ -574,11 +592,18 @@ export default {
         //.filter((a) => a.featureName.toLowerCase().includes(this.search.toLowerCase()))
         .slice()
         .sort((a, b) =>
-          a.dateCreated > b.dateCreated ? 1 : b.dateCreated > a.dateCreated ? -1 : 0
+          !a.dateCreated || !b.dateCreated ? 0
+          : a.dateCreated > b.dateCreated ? 1 : b.dateCreated > a.dateCreated ? -1 : 0
         );
     },
     queryBuilderEmpty: function () {
       return !this.queryBuilder.children || this.queryBuilder.children.length === 0;
+    },
+    photoCountText: function () {
+      return this.totalLength ? '('+this.totalLength+')' : '(0)' ;
+    },
+    showFiltersText: function () {
+      return this.showFilterSection ? 'Hide Filters' : 'Show Filters';
     }
   },
 };

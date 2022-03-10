@@ -40,7 +40,7 @@
                     :options.sync="options"
                     :server-items-length="totalLength"
                     @click:row="handleClick"
-                    :footer-props="{'items-per-page-options': [10, 30, 100]}"
+                    :footer-props="{'items-per-page-options': [1000]}"
                   >
                     <template v-slot:item.Status="{ item }">
                         <div v-if="item.Status == 1">
@@ -113,11 +113,11 @@ export default {
         let { page, itemsPerPage, sortBy, sortDesc } = this.options;
         if (!sortBy[0]) sortBy[0] = 'Name'; 
         page = page > 0 ? page-1 : 0;
-        itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
+        console.log(itemsPerPage);
+        itemsPerPage = itemsPerPage === undefined ? 1000 : itemsPerPage;
         let textToMatch = this.search;
         let data = await catalogs.getCommunities(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
         this.communities = _.get(data, 'body', []);
-        console.log(this.communities);
         this.totalLength = _.get(data, 'count', 0);
         this.loading = false;
     },

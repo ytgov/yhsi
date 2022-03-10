@@ -272,6 +272,27 @@ photoRouter.put(
 	}
 );
 
+photoRouter.put(
+	'/:id/file',
+	multer().single('file'),
+	[check('id').notEmpty().isUUID()],
+	async (req: Request, res: Response) => {
+		const errors = validationResult(req);
+
+		let result = await photoService
+			.updateFile(req.params.id, req.file.buffer)
+			.then((item) => item)
+			.catch((err) => {
+				console.log(err);
+				return res.json({ errors: [err.originalError.info.message] });
+			});
+		let thumbnail = await createThumbnail(req.file.buffer);
+		result = await photoService.updateThumbFile(req.params.id, thumbnail);
+
+		return res.json({ data: result });
+	}
+);
+
 photoRouter.post(
 	'/saved-filter',
 	[

@@ -40,7 +40,7 @@
                     :options.sync="options"
                     :server-items-length="totalLength"
                     @click:row="handleClick"
-                    :footer-props="{'items-per-page-options': [10, 30, 100]}"
+                    :footer-props="{'items-per-page-options': [1000]}"
                   >
                     <template v-slot:item.Status="{ item }">
                         <div v-if="item.Status == 1">
@@ -107,7 +107,6 @@ export default {
     },
     removeItem(item){ //removes one element from the users array
       const index = this.owners.findIndex(a=> a.id == item.id);
-      console.log(index);
       if (index > -1) {
         this.owners.splice(index, 1);
       }
@@ -121,7 +120,6 @@ export default {
         let textToMatch = this.search;
         let data = await catalogs.getPhotoOwners(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
         this.owners = _.get(data, 'body', []);
-        console.log(this.owners);
         this.totalLength = _.get(data, 'count', 0);
         this.loading = false;
     },
