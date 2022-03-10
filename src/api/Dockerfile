@@ -12,6 +12,7 @@ RUN yum install -y gcc-c++ make libaio
 RUN curl -sL https://rpm.nodesource.com/setup_13.x | bash -
 RUN yum install -y nodejs
 RUN npm install -g pm2@latest
+RUN npm install -g html-pdf
 
 WORKDIR /usr/src/app
 COPY package.json /usr/src/app/package.json
