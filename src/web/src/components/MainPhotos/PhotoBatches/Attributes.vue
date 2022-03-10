@@ -46,7 +46,7 @@
 				</v-btn>
 				<v-btn
 					color="primary"
-					:disabled="!valid"
+					:disabled="changesMade == 0"
 					v-if="mode == 'edit'"
 					@click="saveChanges"
 					class="form-header"
@@ -93,6 +93,7 @@
 				:itemType="'batch'"
 				@featureChange="featureChange"
 				@featureValidChange="featureValidChange"
+				ref="feature"
 			/>
 		</div>
 		<div ref="siteRecord">
@@ -102,6 +103,7 @@
 				:mode="mode"
 				:itemType="'batch'"
 				@siteRecordChange="siteRecordChange"
+				ref="siteRecord"
 			/>
 		</div>
 		<div ref="historicSites">
@@ -112,6 +114,7 @@
 				:itemType="'batch'"
 				@historicSiteChange="historicSiteChange"
 				@siteValidChange="siteValidChange"
+				ref="historicSites"
 			/>
 		</div>
 		<div ref="photo">
@@ -122,6 +125,7 @@
 				:itemType="'batch'"
 				@photoChange="photoChange"
 				@photoValidChange="photoValidChange"
+				ref="photo"
 			/>
 		</div>
 	</div>
@@ -289,6 +293,14 @@
 				};
 			},
 			saveChanges() {
+				if (!this.valid) {
+					this.runFormValidations();
+					this.$store.commit("alerts/setText",'Fill in all required fields');
+					this.$store.commit("alerts/setType", "warning");
+					this.$store.commit("alerts/setTimeout", 5000);
+					this.$store.commit("alerts/setAlert", true);
+					return null;
+				}
 				//this.imagesLoaded = false;
 				this.infoLoaded = false;
 				this.setBody();
@@ -322,6 +334,12 @@
 				this.$router.push(`/photobatches/attributes/view`);
 				this.loadBatch();
 				//this.loadPhotos();
+			},
+			runFormValidations() {
+				this.$refs.feature.validate();
+				this.$refs.siteRecord.validate();
+				this.$refs.historicSites.validate();
+				this.$refs.photo.validate();
 			},
 			async processBatch() {
 				// Use community to check that fields have been filled in (user can't save without filling out all required fields)

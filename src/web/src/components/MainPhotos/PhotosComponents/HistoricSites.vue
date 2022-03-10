@@ -1,10 +1,14 @@
 <template>
   <div>
-          <v-card-title primary-title>
-            Historic Sites 
-          </v-card-title>
-          <v-divider inset></v-divider>
-          <v-form v-model="valid">
+  <Accordion>
+    <template v-slot:title>
+      <v-card-title primary-title style="display:inline-block">
+        Historic Sites
+      </v-card-title>
+    </template>
+    <template v-slot:content>
+          <v-form v-model="valid"
+            ref="historicSiteForm">
               <v-container>
                 <v-row>
                   <v-col
@@ -18,8 +22,6 @@
                         dense
                         outlined
                         background-color="white"
-                        hide-details
-                        class="default mb-5" 
                         :readonly="mode == 'view'"
                         :class="{ 'read-only-form-item': mode == 'view' }"
                     ></v-select>
@@ -34,8 +36,6 @@
                         dense
                         outlined
                         background-color="white"
-                        hide-details
-                        class="default mb-5" 
                         :readonly="mode == 'view'"
                       :class="{ 'read-only-form-item': mode == 'view' }"
                     ></v-select>
@@ -47,8 +47,6 @@
                       dense
                       outlined
                       background-color="white"
-                      hide-details
-                      class="default mb-5" 
                       :readonly="mode == 'view'"
                     ></v-text-field>
 
@@ -72,7 +70,6 @@
                           dense
                           outlined
                           background-color="white"
-                          hide-details
                         ></v-text-field>
                         </template>
                         <v-date-picker
@@ -85,7 +82,6 @@
                         dense
                         outlined
                         background-color="white"
-                        hide-details
                         ></v-date-picker>
                     </v-menu>
                     
@@ -97,7 +93,6 @@
                       dense
                       outlined
                       background-color="white"
-                      hide-details
                     ></v-text-field>
                   </v-col>
 
@@ -112,8 +107,6 @@
                         dense
                         outlined
                         background-color="white"
-                        hide-details
-                        class="default mb-5" 
                         :readonly="mode == 'view'"
                         :class="{ 'read-only-form-item': mode == 'view' }"
                     ></v-select>
@@ -128,8 +121,6 @@
                         dense
                         outlined
                         background-color="white"
-                        hide-details
-                        class="default mb-5" 
                         :readonly="mode == 'view'"   
                         :class="{ 'read-only-form-item': mode == 'view' }"                   
                     ></v-select>
@@ -142,27 +133,30 @@
                       dense
                       outlined
                       background-color="white"
-                      hide-details
                       :readonly="mode == 'view'"
                     ></v-textarea>
                   </v-col>
                 </v-row>
               </v-container>
-            </v-form>
-        </div> 
+            </v-form>    
+      </template>
+    </Accordion>
+  </div> 
 </template>
 
 <script>
 
+import Accordion from "../Accordion"
 import axios from "axios";
 import { STATIC_URL } from "../../../urls";
 
 export default {
   name: "historicSites",
+  components: { Accordion },
   props: [ 'fields', 'mode' ,'itemType' ],
   data: () =>({
     valid: false,
-    generalRules: [ v => !!v || 'This input is required' ],
+    generalRules: [ v => !!v || 'This field is required' ],
     date: null,
     menu: false,
     programOptions: [],
@@ -195,6 +189,9 @@ export default {
   methods:{
     save (date) {
         this.$refs.menu.save(date)
+    },
+    validate() {
+      this.$refs.historicSiteForm.validate();
     },
   },
   watch: {

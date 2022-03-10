@@ -40,7 +40,7 @@
                     :options.sync="options"
                     :server-items-length="totalLength"
                     @click:row="handleClick"
-                    :footer-props="{'items-per-page-options': [10, 30, 100]}"
+                    :footer-props="{'items-per-page-options': [1000]}"
                   >
                     <template v-slot:item.Status="{ item }">
                         <div v-if="item.Status == 1">
