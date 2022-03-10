@@ -394,13 +394,19 @@ const routes = [
 		component: BurialsGrid,
 	},
 	{
-		path: '/burials/view/:name',
+		path: '/burials/new',
+		name: 'BurialsNewForm',
+		component: BurialsForm,
+		props: true,
+	},
+	{
+		path: '/burials/view/:id',
 		name: 'BurialsViewForm',
 		component: BurialsForm,
 		props: true,
 	},
 	{
-		path: '/burials/edit/:name',
+		path: '/burials/edit/:id',
 		name: 'BurialsEditForm',
 		component: BurialsForm,
 		props: true,

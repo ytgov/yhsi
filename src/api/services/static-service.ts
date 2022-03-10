@@ -1,4 +1,5 @@
-import knex, { Knex } from 'knex';
+import knex from 'knex';
+import Knex from 'knex';
 import {
 	Community,
 	FirstNation,

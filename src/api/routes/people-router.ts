@@ -3,7 +3,7 @@ import { DB_CONFIG } from '../config';
 import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
-
+const pug = require('pug');
 export const peopleRouter = express.Router();
 const db = knex(DB_CONFIG);
 
@@ -72,8 +72,8 @@ peopleRouter.get(
   ReturnValidationErrors,
   async (req: Request, res: Response) => {
 		const { personId } = req.params;
-
-		const person = await db
+	console.log(personId);
+	const person = await db
 			.from('Person.Person')
 			.where('Person.PersonID', personId)
 			.first();
@@ -210,3 +210,21 @@ peopleRouter.post(
 		res.status(200).send({ message: 'success' });
 	}
 );
+
+peopleRouter.post('/pdf',  
+ReturnValidationErrors,
+async (req: Request, res: Response) => {
+	const sortBy = 'GivenName';
+	const sort = 'asc';
+	let people = [];
+
+	people = await db
+	.from('Person.Person')
+	.orderBy(`${sortBy}`, `${sort}`);
+
+	// Compile template.pug, and render a set of data
+	let data = pug.renderFile('./templates/people/peopleGrid.pug', {
+		data: people
+	});
+	res.status(200).send(data);
+});

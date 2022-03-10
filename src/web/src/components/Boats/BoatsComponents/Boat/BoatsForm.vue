@@ -42,6 +42,8 @@
                 </v-btn>
             </v-col>
         </v-row>
+        <v-row>
+            <v-col cols="6">
                 <v-row >
                     <v-col cols="6">
                         <v-text-field outlined dense
@@ -356,6 +358,8 @@
                         </v-row>
                     </v-col>
                 </v-row> 
+            </v-col>
+            <v-col cols="6">
                 <v-row>
                     <v-col cols="4">
                         <v-select outlined dense
@@ -374,25 +378,24 @@
                             :readonly="mode == 'view'"
                         ></v-textarea>
 
-            <v-textarea
-              label="Notes"
-              v-model="fields.Notes"
-              :readonly="mode == 'view'"
-            ></v-textarea>
-          </v-col>
-          <v-col cols="8">
-            <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-            <Photos
-              v-if="infoLoaded"
-              :showDefault="mode == 'new'"
-              :mode="mode"
-              :photoType="'boat'"
-              :itemId="getBoatID"
-              @updateSelectedImage="selectedImageChanged"
-              :selectedImage="selectedImage"
-            />
-            
-          </v-col>
+                        <v-textarea outlined dense
+                            label="Notes"
+                            v-model="fields.Notes"
+                            :readonly="mode == 'view'"
+                        ></v-textarea>
+                    </v-col>
+                    <v-col cols="8">
+<!-- Photos component, it includes a carousel and some dialogs for the button actions -->
+                            <Photos 
+                            v-if="infoLoaded" 
+                            :showDefault="mode == 'new'" 
+                            :boatID="getBoatID"
+                            @updateSelectedImage="selectedImageChanged" 
+                            :selectedImage="selectedImage"
+                            @loadingPhotosChange="loadingPhotosChange"/>
+                    </v-col>
+                </v-row>
+            </v-col>
         </v-row>
         <v-divider class="my-5"></v-divider> 
 <!-- Historic Record component -->
@@ -412,403 +415,384 @@
 </template>
 
 <script>
-import Breadcrumbs from "../../../Breadcrumbs.vue";
+import Breadcrumbs from '../../../Breadcrumbs.vue';
 import Photos from "../../../PhotoEditor/Photos";
 import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
 import boats from "../../../../controllers/boats";
 import owners from "../../../../controllers/owners";
-import catalogs from "../../../../controllers/catalogs";
-import _ from "lodash";
+import catalogs from "../../../../controllers/catalogs"
+import _ from 'lodash';
 export default {
-  name: "boatsForm",
-  components: { Photos, Breadcrumbs, HistoricRecord, PrintButton },
-  data: () => ({
-    overlay: false,
-    infoLoaded: false,
+    name: "boatsForm",
+    components: { Photos, Breadcrumbs, HistoricRecord, PrintButton },
+    data: ()=> ({
+        overlay: false,
+        infoLoaded: false,
     //helper vars used for the name list functions
-    editTableNames: -1, // tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
-    addingName: false, // tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
-    helperName: null,
-    validName: false,
-    nameRules: [(v) => !!v || "Name is required"],
+        editTableNames: -1,// tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
+        addingName: false,// tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
+        helperName: null,
+        validName: false,
+        nameRules: [
+            v => !!v || 'Name is required',
+        ],
     //helper vars used for the name list functions
-    isLoadingOwner: false,
-    editTableOwners: -1, // tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
-    addingOwner: false, // tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
-    helperOwner: null,
-    validOwner: false,
-    ownerRules: [(v) => !!v || "Owner Name is required"],
+        isLoadingOwner: false,
+        editTableOwners: -1,// tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
+        addingOwner: false,// tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
+        helperOwner: null,
+        validOwner: false,
+        ownerRules: [
+            v => !!v || 'Owner Name is required',
+        ],
 
     //helper vars, they are used to determine if the component is in an edit, view or add new state
-    mode: "",
-    edit: false,
-    showSave: 0,
+        mode: "",
+        edit: false,
+        showSave: 0,
     //input fields, datatable, etc
-    menu1: "",
-    menu2: "",
-    menu3: "",
-    activePicker: null,
-    search: "",
-    fields: {},
-    fieldsHistory: null,
-    owners: [],
+        menu1: "",
+        menu2: "",
+        menu3: "",
+        activePicker: null,
+        search: "",
+        fields: {},
+        fieldsHistory: null,
+        owners: [],
     // select vars
-    selectedImage: null,
+        selectedImage: null,
     // vessel typle select options
-    vesselTypeOptions: [],
-    dateFormatted: "",
-    isLoadingVessels: false,
-    regNumberWarning: [],
-    loadingPhotos: false,
-    loadingHistories: false,
-  }),
-  mounted() {
-    if (this.checkPath("edit")) {
-      this.mode = "edit";
-      //after this, the fields get filled with the info obtained from the api
-      this.getDataFromApi();
-    } else if (this.checkPath("new")) {
-      this.mode = "new";
-      //inputs remain empty
-      this.noData();
-    } else if (this.checkPath("view")) {
-      this.mode = "view";
-      //after this, the fields get filled with the info obtained from the api
-      this.getDataFromApi();
-    }
-  },
-  methods: {
-    /*this function checks if the current path contains a specific word, this can be done with a simple includes but 
+        vesselTypeOptions: [],
+        dateFormatted: "",
+        isLoadingVessels: false,
+        regNumberWarning: [],
+        loadingPhotos: false,
+        loadingHistories: false
+    }),
+    mounted(){
+        if(this.checkPath("edit")){
+            this.mode= "edit";
+            //after this, the fields get filled with the info obtained from the api
+            this.getDataFromApi();
+        }
+        else if(this.checkPath("new")){
+            this.mode="new";
+            //inputs remain empty
+            this.noData();
+        }
+        else if(this.checkPath("view")){
+            this.mode="view";
+            //after this, the fields get filled with the info obtained from the api
+            this.getDataFromApi();
+        }
+    },
+    methods:{
+        /*this function checks if the current path contains a specific word, this can be done with a simple includes but 
         //it causes confusion when a boat or owner has 'new' in its name, leading the component to think it should use the 'new' mode,
         this problem is solved by using this funtion.*/
-    checkPath(word) {
-      let path = this.$route.path.split("/");
-      if (path[2] == word) {
-        return true;
-      }
-      return false;
-    },
-    noData() {
-      this.fields = {
-        Name: "",
-        pastNames: [],
-        ConstructionDate: "",
-        ServiceStart: "",
-        ServiceEnd: "",
-        RegistrationNumber: "",
-        VesselType: "",
-        CurrentLocation: "",
-        Notes: "",
-        photos: [],
-        owners: [],
-        histories: [],
-      };
-      this.infoLoaded = true;
-    },
-    async validateRegNumber() {
-      //console.log("original ", this.fieldsHistory.yacsinumber, "new",this.fields.yacsinumber);
-      if (this.fieldsHistory) {
-        if (
-          this.fieldsHistory.RegistrationNumber ==
-          this.fields.RegistrationNumber
-        ) {
-          this.regNumberWarning = [];
-          return;
-        }
-      }
-
-      let resp = await boats.getAvailableRegNumber(
-        this.fields.RegistrationNumber
-      );
-      if (resp.available) {
-        this.regNumberWarning = [];
-      } else {
-        this.regNumberWarning = ["The Registration Number must be unique."];
-      }
-    },
-    saveCurrentBoat() {
-      localStorage.currentBoatID = this.$route.params.id;
-    },
-    async getDataFromApi() {
-      this.overlay = true;
-      if (this.$route.params.id) {
-        this.saveCurrentBoat();
-      }
-      this.fields = await boats.getById(localStorage.currentBoatID);
-
-      this.fields.owners = this.fields.owners.map((x) => ({
-        ...x,
-        isEdited: false,
-      }));
-      this.fields.ConstructionDate = this.fields.ConstructionDate
-        ? this.fields.ConstructionDate.substr(0, 10)
-        : "";
-      this.fields.ServiceStart = this.fields.ServiceStart
-        ? this.fields.ServiceStart.substr(0, 10)
-        : "";
-      this.fields.ServiceEnd = this.fields.ServiceEnd
-        ? this.fields.ServiceEnd.substr(0, 10)
-        : "";
-      this.fields.deletedOwners = [];
-      this.fields.ownerRemovedArray = [];
-      this.fields.originalOwners = JSON.parse(
-        JSON.stringify(this.fields.owners)
-      );
-      this.infoLoaded = true;
-      this.overlay = false;
-      //console.log(this.fields);
-    },
-    goToOwner(value) {
-      this.$router.push({
-        name: "ownerView",
-        params: { name: value.OwnerName, id: value.id },
-      });
-    },
-    //Functions dedicated to handle the edit, add, view modes
-    cancelEdit() { 
-      if (this.fieldsHistory) {
-        this.fields = { ...this.fieldsHistory };
-      }
-      this.mode = "view";
-      this.resetListVariables();
-      this.$router.push(`/boats/view/${this.fields.Name}`);
-    },
-    cancelNew() {
-      this.$router.push(`/boats/`);
-    },
-    viewMode() {
-      this.mode = "view";
-      this.$router.push(`/boats/view/${this.fields.Name}`);
-    },
-    editMode() {
-      this.fieldsHistory = { ...this.fields };
-      this.mode = "edit";
-      this.$router.push(`/boats/edit/${this.fields.Name}`);
-      this.showSave = 0;
-      this.resetListVariables();
-    },
-    async saveChanges() {
-      this.overlay = true;
-      let removedOwners = _.intersectionBy(
-        this.fields.originalOwners,
-        this.fields.deletedOwners,
-        "id"
-      );
-      let newOwners = this.fields.owners
-        .filter((x) => x.isNew == true)
-        .map((x) => ({
-          OwnerID: x.ownerid ? x.ownerid : x.id,
-          CurrentOwner: x.currentowner,
-        }));
-      let newNames = this.fields.pastNames
-        .filter((x) => x.isNew == true)
-        .map((x) => ({ BoatName: x.BoatName }));
-      let editedNames = this.fields.pastNames.filter((x) => x.isEdited == true);
-      let data = {
-        boat: {
-          Name: this.fields.Name,
-          ConstructionDate: this.fields.ConstructionDate,
-          ServiceStart: this.fields.ServiceStart,
-          ServiceEnd: this.fields.ServiceEnd,
-          RegistrationNumber: this.fields.RegistrationNumber,
-          VesselType: this.fields.VesselType,
-          CurrentLocation: this.fields.CurrentLocation,
-          Notes: this.fields.Notes,
+        checkPath(word){
+            let path = this.$route.path.split("/");
+            if(path[2] == word){
+                return true;
+            }
+            return false;
         },
-        ownerNewArray: newOwners,
-        ownerRemovedArray: removedOwners,
-        pastNamesNewArray: newNames,
-        pastNamesEditArray: editedNames,
-      };
-      //console.log(data);
+        noData(){
+            this.fields = {
+                Name: "",
+                pastNames: [],
+                ConstructionDate: "",
+                ServiceStart: "",
+                ServiceEnd: "",
+                RegistrationNumber: "",
+                VesselType: "",
+                CurrentLocation: "",
+                Notes: "",
+                photos: [],
+                owners: [],
+                histories: []
+            };
+            this.infoLoaded = true;
+        },
+        async validateRegNumber(){
+            //console.log("original ", this.fieldsHistory.yacsinumber, "new",this.fields.yacsinumber);
+            if(this.fieldsHistory){
+                if(this.fieldsHistory.RegistrationNumber == this.fields.RegistrationNumber){
+                    this.regNumberWarning = [];
+                    return;
+                }
+            }
+            
 
-      let currentBoat = {};
-      console.log(data);
-
-      if (this.mode == "new") {
-        let resp = await boats.post(data);
-        if (resp.response) {
-          if (resp.response.status == 409) {
-            this.$store.commit(
-              "alerts/setText",
-              "The registration number already exists."
-            );
-            this.$store.commit("alerts/setType", "warning");
-            this.$store.commit("alerts/setTimeout", 5000);
-            this.$store.commit("alerts/setAlert", true);
+            let resp = await boats.getAvailableRegNumber(this.fields.RegistrationNumber);
+            if(resp.available){
+                this.regNumberWarning = [];
+            }
+            else{
+                this.regNumberWarning = ["The Registration Number must be unique."]
+            }
+            
+        },
+        saveCurrentBoat(){
+            localStorage.currentBoatID = this.$route.params.id;
+        },
+        async getDataFromApi(){
+            this.overlay = true;
+            if(this.$route.params.id){
+                this.saveCurrentBoat();
+            }
+            this.fields = await boats.getById(localStorage.currentBoatID);
+            
+            this.fields.owners = this.fields.owners.map(x =>({ ...x, isEdited:false}));
+            this.fields.ConstructionDate = this.fields.ConstructionDate ? this.fields.ConstructionDate.substr(0, 10) : "";
+            this.fields.ServiceStart = this.fields.ServiceStart ? this.fields.ServiceStart.substr(0, 10) : "";
+            this.fields.ServiceEnd = this.fields.ServiceEnd ? this.fields.ServiceEnd.substr(0, 10) : "";
+            this.fields.deletedOwners = [];
+            this.fields.ownerRemovedArray = [];
+            this.fields.originalOwners = JSON.parse(JSON.stringify(this.fields.owners));
+            this.infoLoaded = true;
             this.overlay = false;
-          }
-        } else {
-          this.$router.push(`/boats/`);
-        }
-      } else {
-        await boats.put(localStorage.currentBoatID, data);
-        currentBoat.id = localStorage.currentBoatID;
-        currentBoat.name = this.fields.Name;
-        this.mode = "view";
-        this.$router.push({
-          name: "boatView",
-          params: { name: currentBoat.name, id: currentBoat.id },
-        });
-        this.$router.go();
-      }
-    },
-    editHistoricRecord(newVal) {
-      this.historiRecordHelper = newVal;
-    },
-    editReference(newVal) {
-      this.referenceHelper = newVal;
-    },
-    resetListVariables() {
-      this.addingOwner = false;
-      this.editTableOwners = -1;
-      this.addingName = false;
-      this.editTableNames = -1;
-    },
+            //console.log(this.fields);
+        },
+        goToOwner(value){
+            this.$router.push({name: 'ownerView', params: { name: value.OwnerName, id: value.id}});
+        },
+    //Functions dedicated to handle the edit, add, view modes
+        cancelEdit(){
+            if(this.fieldsHistory){
+                this.fields = {...this.fieldsHistory};
+            }
+            this.mode="view";
+            this.resetListVariables();
+            this.$router.push(`/boats/view/${this.fields.Name}`);
+        },
+        cancelNew(){
+            this.$router.push(`/boats/`);
+        },
+        viewMode(){
+            this.mode="view";
+            this.$router.push(`/boats/view/${this.fields.Name}`);
+        },
+        editMode(){
+            this.fieldsHistory = {...this.fields};
+            this.mode="edit";
+            this.$router.push(`/boats/edit/${this.fields.Name}`);
+            this.showSave = 0;
+            this.resetListVariables();
+        },
+        async saveChanges(){
+            this.overlay = true; 
+            let removedOwners = _.intersectionBy(this.fields.originalOwners, this.fields.deletedOwners, 'id');
+            let newOwners = this.fields.owners.filter(x => x.isNew == true)
+                .map(x => ({ OwnerID: x.ownerid ? x.ownerid : x.id, CurrentOwner: x.currentowner }));
+            let newNames = this.fields.pastNames.filter(x => x.isNew == true).map(x => ({BoatName: x.BoatName}));
+            let editedNames = this.fields.pastNames.filter(x => x.isEdited == true);
+             let data = {
+                    boat: {
+                        Name: this.fields.Name,
+                        ConstructionDate: this.fields.ConstructionDate,
+                        ServiceStart:this.fields.ServiceStart,
+                        ServiceEnd: this.fields.ServiceEnd,
+                        RegistrationNumber: this.fields.RegistrationNumber,
+                        VesselType: this.fields.VesselType,
+                        CurrentLocation: this.fields.CurrentLocation,
+                        Notes: this.fields.Notes,
+                    },
+                    ownerNewArray: newOwners,
+                    ownerRemovedArray: removedOwners,
+                    pastNamesNewArray: newNames,
+                    pastNamesEditArray: editedNames
+                };
+                //console.log(data);
+                
+            let currentBoat= {};
+            console.log(data);
+            
+            if(this.mode == 'new'){
+                let resp = await boats.post(data);
+                if(resp.response){
+                    if(resp.response.status == 409){
+                        this.$store.commit('alerts/setText', "The registration number already exists.");
+                        this.$store.commit('alerts/setType', "warning");
+                        this.$store.commit('alerts/setTimeout', 5000);
+                        this.$store.commit('alerts/setAlert', true);
+                        this.overlay = false;
+                    }
+                }
+                else{
+                    this.$router.push(`/boats/`);
+                }
+               
+            }
+            else{
+                await boats.put(localStorage.currentBoatID,data);
+                currentBoat.id = localStorage.currentBoatID;
+                currentBoat.name = this.fields.Name; 
+                this.mode = 'view';
+                this.$router.push({name: 'boatView', params: { name: currentBoat.name, id: currentBoat.id}});   
+                this.$router.go();   
+               
+            } 
+            
+        },
+        editHistoricRecord(newVal){
+            this.historiRecordHelper = newVal;
+        },
+        editReference(newVal){
+            this.referenceHelper = newVal;
+        },
+        resetListVariables(){
+            this.addingOwner = false;  
+            this.editTableOwners = -1;
+            this.addingName = false;
+            this.editTableNames = -1;
+        },
     //functions for editing the table "Names" values
-    changeEditTableNames(item, index) {
-      this.editTableNames = index;
-      this.helperName = item.BoatName;
-    },
-    cancelEditTableNames() {
-      if (this.addingName) {
-        this.fields.pastNames.pop();
-        this.addingName = false;
-        this.editTableNames = -1;
-      } else {
-        this.editTableNames = -1;
-      }
-    },
-    saveTableNames(index) {
-      if (this.addingName)
-        this.fields.pastNames[index] = {
-          BoatName: this.helperName,
-          isNew: true,
-        };
-      else {
-        this.fields.pastNames[index].BoatName = this.helperName;
-        this.fields.pastNames[index].isEdited = true;
-      }
-      this.showSave = this.showSave + 1;
-      this.addingName = false;
-      this.editTableNames = -1;
-    },
-    addName() {
-      this.helperName = "";
-      this.fields.pastNames.push("");
-      this.addingName = true;
-      this.editTableNames = this.fields.pastNames.length - 1;
-    },
+        changeEditTableNames(item,index){
+            this.editTableNames = index;
+            this.helperName = item.BoatName;
+        },
+        cancelEditTableNames(){
+            if(this.addingName){
+                this.fields.pastNames.pop();
+                this.addingName = false;
+                this.editTableNames = -1;
+            }
+            else{
+                this.editTableNames = -1;
+            }
+                
+        },
+        saveTableNames(index){
+            if(this.addingName)
+                this.fields.pastNames[index] = {BoatName: this.helperName, isNew: true};
+            else{
+                this.fields.pastNames[index].BoatName = this.helperName;
+                this.fields.pastNames[index].isEdited = true;
+            }
+            this.showSave = this.showSave+1;
+            this.addingName = false;  
+            this.editTableNames = -1;     
+        },
+        addName(){
+            this.helperName="";
+            this.fields.pastNames.push(""); 
+            this.addingName = true;
+            this.editTableNames = this.fields.pastNames.length-1;
+        },
     //functions for editing the table "Owners" values
-    deleteOwner(item, index) {
-      //console.log(this.fields.owners[index]);
-      if (index > -1) {
-        this.fields.owners.splice(index, 1);
-        this.fields.deletedOwners.push(item);
-
-        //console.log(this.fields.deletedOwners);
-        //console.log(this.fields.originalOwners);
-      }
+        deleteOwner(item,index){
+            //console.log(this.fields.owners[index]);
+            if (index > -1) {
+                this.fields.owners.splice(index, 1);
+                this.fields.deletedOwners.push(item);
+                
+                //console.log(this.fields.deletedOwners);
+                //console.log(this.fields.originalOwners);
+            }
+            
+        },
+        cancelEditTableOwners(){
+            if(this.addingOwner){
+                this.fields.owners.pop();
+                this.addingOwner = false;  
+                this.editTableOwners = -1;
+            }
+            else{
+                this.editTableOwners = -1;
+            }
+                
+        },
+        saveTableOwners(index){
+            if(this.addingOwner)
+                this.fields.owners[index] = { ...this.helperOwner, isNew: true};
+            else{
+                this.fields.ownerRemovedArray.push(this.fields.owners[index]);
+                this.fields.owners[index] = { ...this.helperOwner, isNew: true};
+            }
+            this.showSave = this.showSave+1;
+            this.addingOwner = false;  
+            this.editTableOwners = -1;    
+        },
+        addOwner(){
+            this.helperOwner="";
+            this.fields.owners.push(""); 
+            this.addingOwner = true;  
+            this.editTableOwners = this.fields.owners.length-1;
+        },
+        async getOwners(){
+            this.isLoadingOwner = true;
+            let data = await owners.get();
+            let arr = data.body;
+            this.owners = _.differenceBy(arr, this.fields.owners, 'OwnerName');
+            this.isLoadingOwner = false;
+        },
+        async getVesselTypes(){
+            this.isLoadingVessels = true;
+            let data = await catalogs.getVesselTypes();
+            let arr = data.body;
+            this.vesselTypeOptions = arr;
+            this.isLoadingVessels = false;
+        },
+        //handles the new values added to the historic records
+        historicRecordChange(val){
+            this.fields.histories = val;
+        },
+        formatDate (date) {
+            if (!date) return null
+            //date = date.substr(0, 10);
+            const [year, month, day] = date.split('-')
+            return `${month}/${day}/${year}`
+        },
+        selectedImageChanged(val){
+            this.selectedImage = val;
+        },
+        loadingPhotosChange(val){
+            this.loadingPhotos = val;
+        },
+        loadingHistoriesChange(val){
+            this.loadingHistories = val;
+        }
+    },   
+    computed:{
+        getBoatID(){
+            if(this.$route.params.id){
+                return  this.$route.params.id;
+            }
+            else return localStorage.currentBoatID;
+        },
+        constructionDate () {
+            return this.formatDate(this.fields.ConstructionDate);
+        },
+        serviceStart(){
+            return this.formatDate(this.fields.ServiceStart);
+        },
+        serviceEnd(){
+            return this.formatDate(this.fields.ServiceEnd);
+        }
     },
-    cancelEditTableOwners() {
-      if (this.addingOwner) {
-        this.fields.owners.pop();
-        this.addingOwner = false;
-        this.editTableOwners = -1;
-      } else {
-        this.editTableOwners = -1;
-      }
+    watch: {
+        fields: {/* eslint-disable */
+            handler(newval){
+                this.showSave = this.showSave+1;
+                //console.log(this.fields);
+            },/* eslint-enable */
+            deep: true
+        },
+        menu1 (val) {
+            val && setTimeout(() => (this.activePicker  = 'YEAR'))
+        },
+        menu2 (val) {
+            val && setTimeout(() => (this.activePicker  = 'YEAR'))
+        },
+        menu3 (val) {
+            val && setTimeout(() => (this.activePicker  = 'YEAR'))
+        },
+        /* eslint-disable */
+        'fields.ConstructionDate': function  (val) {
+        this.dateFormatted = this.formatDate(this.date)
+        },/* eslint-enable */
     },
-    saveTableOwners(index) {
-      if (this.addingOwner)
-        this.fields.owners[index] = { ...this.helperOwner, isNew: true };
-      else {
-        this.fields.ownerRemovedArray.push(this.fields.owners[index]);
-        this.fields.owners[index] = { ...this.helperOwner, isNew: true };
-      }
-      this.showSave = this.showSave + 1;
-      this.addingOwner = false;
-      this.editTableOwners = -1;
-    },
-    addOwner() {
-      this.helperOwner = "";
-      this.fields.owners.push("");
-      this.addingOwner = true;
-      this.editTableOwners = this.fields.owners.length - 1;
-    },
-    async getOwners() {
-      this.isLoadingOwner = true;
-      let data = await owners.get();
-      let arr = data.body;
-      this.owners = _.differenceBy(arr, this.fields.owners, "OwnerName");
-      this.isLoadingOwner = false;
-    },
-    async getVesselTypes() {
-      this.isLoadingVessels = true;
-      let data = await catalogs.getVesselTypes();
-      let arr = data.body;
-      this.vesselTypeOptions = arr;
-      this.isLoadingVessels = false;
-    },
-    //handles the new values added to the historic records
-    historicRecordChange(val) {
-      this.fields.histories = val;
-    },
-    formatDate(date) {
-      if (!date) return null;
-      //date = date.substr(0, 10);
-      const [year, month, day] = date.split("-");
-      return `${month}/${day}/${year}`;
-    },
-    selectedImageChanged(val) {
-      this.selectedImage = val;
-    },
-    loadingPhotosChange(val) {
-      this.loadingPhotos = val;
-    },
-    loadingHistoriesChange(val) {
-      this.loadingHistories = val;
-    },
-  },
-  computed: {
-    getBoatID() {
-      if (this.$route.params.id) {
-        return this.$route.params.id;
-      } else return localStorage.currentBoatID;
-    },
-    constructionDate() {
-      return this.formatDate(this.fields.ConstructionDate);
-    },
-    serviceStart() {
-      return this.formatDate(this.fields.ServiceStart);
-    },
-    serviceEnd() {
-      return this.formatDate(this.fields.ServiceEnd);
-    },
-  },
-  watch: {
-    fields: {
-      /* eslint-disable */
-      handler(newval) {
-        this.showSave = this.showSave + 1;
-        //console.log(this.fields);
-      } /* eslint-enable */,
-      deep: true,
-    },
-    menu1(val) {
-      val && setTimeout(() => (this.activePicker = "YEAR"));
-    },
-    menu2(val) {
-      val && setTimeout(() => (this.activePicker = "YEAR"));
-    },
-    menu3(val) {
-      val && setTimeout(() => (this.activePicker = "YEAR"));
-    },
-    /* eslint-disable */
-    "fields.ConstructionDate": function (val) {
-      this.dateFormatted = this.formatDate(this.date);
-    } /* eslint-enable */,
-  },
-};
+}
 </script>

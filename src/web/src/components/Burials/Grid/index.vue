@@ -9,9 +9,9 @@
           prepend-icon="mdi-magnify"
           class="mx-4"
           hide-details
-          label="Search"
+          label="Search by name"
           v-model="search"
-          v-on:input="crashsiteSearchChange()"
+          v-on:input="searchChange()"
         ></v-text-field>
 
         <v-menu
@@ -37,7 +37,8 @@
               <v-text-field
                 clearable
                 v-model="item.value"
-                :label="item.name"
+                :label="item.text"
+                @change="searchChange()"
               ></v-text-field>
             </v-list-item>
           </v-list>
@@ -45,13 +46,13 @@
       </v-col>
       <v-spacer></v-spacer>
       <v-col cols="auto" class="d-flex">
-        <v-btn class="black--text mx-1" @click="addNewBoat">
+        <v-btn class="black--text mx-1" @click="addNew">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
           Add Burial
         </v-btn>
 
-        <JsonCSV :data="crashsites">
-          <v-btn class="black--text mx-1" :disabled="crashsites.length == 0">
+        <JsonCSV :data="burials">
+          <v-btn class="black--text mx-1" :disabled="burials.length == 0">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
           </v-btn>
@@ -59,8 +60,8 @@
 
         <PrintButton
           key="prt-2"
-          :data="{ crashsites }"
-          :disabled="crashsites.length == 0"
+          :data="{ burials }"
+          :disabled="burials.length == 0"
         />
       </v-col>
     </v-row>
@@ -69,7 +70,7 @@
         <v-container fluid>
           <v-row>
             <v-col cols="12">
-              <h2 v-if="crashsites" class="ma-2">
+              <h2 v-if="burials" class="ma-2">
                 {{ filteredData.length }} results out of {{ totalLength }}
               </h2>
             </v-col>
@@ -87,11 +88,6 @@
                 @click:row="handleClick"
                 :footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
               >
-                <template v-slot:item.crashlocation="{ item }">
-                  <div style="width: 200px">
-                    {{ item.crashlocation }}
-                  </div>
-                </template>
               </v-data-table>
             </v-col>
           </v-row>
@@ -106,44 +102,49 @@ import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
 import PrintButton from "./PrintButton";
 import _ from "lodash";
-import aircrash from "../../../controllers/aircrash";
+import burials from "../../../controllers/burials";
 export default {
   name: "boatsgrid-index",
   components: { Breadcrumbs, JsonCSV, PrintButton },
   data: () => ({
     route: "",
     loading: false,
-    crashsites: [],
+    burials: [],
     search: "",
     headers: [
-      { text: "YACSI Number", value: "yacsinumber" },
-      { text: "Crash Date", value: "crashdate" },
-      { text: "Aircraft Type", value: "aircrafttype" },
-      { text: "Aircraft Registration", value: "aircraftregistration" },
-      { text: "Country of Registration", value: "nation" },
-      { text: "Registration Type", value: "militarycivilian" },
-      { text: "Location Description", value: "crashlocation" },
-      { text: "Pilot First Name", value: "pilotfirstname" },
-      { text: "Pilot Last Name", value: "pilotlastname" },
-      { text: "Souls Onboard", value: "soulsonboard" },
-      { text: "Injuries", value: "injuries" },
-      { text: "Fatalities", value: "fatalities" },
+      { text: "LastName", value: "LastName" },
+      { text: "FirstName", value: "FirstName" },
+      { text: "Gender", value: "Gender" },
+      { text: "BirthYear", value: "BirthYear" },
+      { text: "DeathYear", value: "DeathYear" },
+      { text: "Manner", value: "Manner" },
+      { text: "Cause", value: "Cause" },
+      { text: "Cementary", value: "Cemetary" },
+      { text: "OtherCemetaryDesc", value: "OtherCemetaryDesc" },
+      { text: "OriginCity", value: "OriginCity" },
+      { text: "OriginState", value: "OriginState" },
+      { text: "OriginCountry", value: "OriginCountry" },
+      { text: "OtherCountry", value: "OtherCountry" },
+
     ],
     //table options
     page: 0,
     pageCount: 6,
     totalLength: 0,
     options: { itemsPerPage: 50 },
+    // filter by names, birth and death dates, gender, cause and manner of death, cemetery, other location, country of origin
     filterOptions: [
-      { name: "Crash Date", value: "" },
-      { name: "Maker", value: "" },
-      { name: "Aircraft Registration", value: "" },
-      { name: "Country of Registration", value: "" },
-      { name: "Registration Type", value: "" },
-      { name: "Pilot", value: "" },
-      { name: "Souls Onboard", value: "" },
-      { name: "Injuries", value: "" },
-      { name: "Fatalities", value: "" },
+          { text: "Birth Year", value: "", dataAccess: "BirthYear"},
+          { text: "Birth Month", value: "", dataAccess: "BirthMonth"},
+          { text: "Birth Day", value: "", dataAccess: "BirthDay"},
+          { text: "Death Year", value: "",  dataAccess: "DeathYear"},
+          { text: "Death Month", value: "", dataAccess: "DeathMonth"},
+          { text: "Death Day", value: "", dataAccess:  "DeathDay" },
+          { text: "Gender", value: "", dataAccess: "Gender"},
+          { text: "Cause", value: "", dataAccess:  "Cause"},
+          { text: "Manner", value: "", dataAccess:  "Manner"},
+          { text: "Cemetary", value: "", dataAccess:  "Cemetary"},
+          { text: "Origin Country", value: "", dataAccess:  "OriginCountry"},
     ],
     selectedItem: 1,
     items: [
@@ -156,17 +157,17 @@ export default {
     this.getDataFromApi();
   },
   methods: {
-    addNewBoat() {
-      this.$router.push(`/airplane/new`);
+    addNew() {
+      this.$router.push(`/burials/new`);
     },
-    crashsiteSearchChange: _.debounce(function () {
+    searchChange: _.debounce(function () {
       this.getDataFromApi();
     }, 400),
     handleClick(value) {
       //Redirects the user to the airplane form component
       this.$router.push({
         name: "BurialsViewForm",
-        params: { name: value.yacsinumber, id: value.yacsinumber },
+        params: { name: value.BurialID, id: value.BurialID },
       });
     },
     async getDataFromApi() {
@@ -175,16 +176,34 @@ export default {
       page = page > 0 ? page - 1 : 0;
       itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
       let textToMatch = this.search;
-      let data = await aircrash.get(
+      const prefilters = {};
+      this.filterOptions.map( x => {
+        prefilters[x.dataAccess] = x.value;
+      })
+      //console.log("TEST",JSON.stringify(prefilters));
+      let data = await burials.get(
         page,
         itemsPerPage,
         textToMatch,
         sortBy[0],
-        sortDesc[0] ? "desc" : "asc"
+        sortDesc[0] ? "desc" : "asc",
+        prefilters.BirthYear,
+        prefilters.BirthMonth,
+        prefilters.BirthDay,
+        prefilters.DeathYear,
+        prefilters.DeathMonth,
+        prefilters.DeathDay,
+        prefilters.Gender,
+        prefilters.Cause,
+        prefilters.Manner,
+        prefilters.Cemetary,
+        prefilters.OriginCountry
       );
-      this.crashsites = data.body;
+
+     // {"BirthYear":"","BirthMonth":"","BirthDay":"","DeathYear":"","DeathMonth":"","DeathDay":"","Gender":"","Cause":"","Manner":"","Cemetary":"","OriginCountry":""}
+      this.burials = data.body;
       this.totalLength = data.count;
-      this.crashsites.map((x) => {
+      this.burials.map((x) => {
         x.crashdate = this.formatDate(x.crashdate);
       });
       this.loading = false;
@@ -195,112 +214,12 @@ export default {
       const [year, month, day] = date.split("-");
       return `${month}/${day}/${year}`;
     },
-    //if its needed
-    getPilot(name, lastname) {
-      if (!name || !lastname) return "";
 
-      return `${name}, ${lastname}`;
-    },
-    filterPilot(data, filter) {
-      let { pilotfirstname, pilotlastname } = data;
-      if (!pilotfirstname && !pilotlastname) return false;
-
-      if (pilotfirstname.toLowerCase().includes(filter.toLowerCase()))
-        return true;
-
-      if (pilotlastname.toLowerCase().includes(filter.toLowerCase()))
-        return true;
-
-      return false;
-    },
   },
   computed: {
-    selectedFilters() {
-      return this.$store.getters["boats/selectedFilters"];
-    },
-    filteredData() {
-      // returns a filtered users array depending on the selected filters
-      if (this.filterOptions) {
-        //the name should actually be 'filters'
-        let sorters = JSON.parse(JSON.stringify(this.filterOptions));
-        let data = JSON.parse(JSON.stringify(this.crashsites));
-        data =
-          sorters[0].value == null || sorters[0].value == ""
-            ? data
-            : data.filter((x) =>
-                x.crashdate
-                  ? x.crashdate
-                      .toLowerCase()
-                      .includes(sorters[0].value.toLowerCase())
-                  : false
-              );
-        data =
-          sorters[1].value === null || sorters[1].value === ""
-            ? data
-            : data.filter((x) =>
-                x.aircrafttype
-                  ? x.aircrafttype
-                      .toLowerCase()
-                      .includes(sorters[1].value.toLowerCase())
-                  : false
-              );
-        data =
-          sorters[2].value === null || sorters[2].value === ""
-            ? data
-            : data.filter((x) =>
-                x.aircraftregistration
-                  ? x.aircraftregistration
-                      .toLowerCase()
-                      .includes(sorters[2].value.toLowerCase())
-                  : false
-              );
-        data =
-          sorters[3].value === null || sorters[3].value === ""
-            ? data
-            : data.filter((x) =>
-                x.nation
-                  ? x.nation
-                      .toLowerCase()
-                      .includes(sorters[3].value.toLowerCase())
-                  : false
-              );
-        data =
-          sorters[4].value === null || sorters[4].value === ""
-            ? data
-            : data.filter((x) =>
-                x.militarycivilian
-                  ? x.militarycivilian
-                      .toLowerCase()
-                      .includes(sorters[4].value.toLowerCase())
-                  : false
-              );
-        data =
-          sorters[5].value === null || sorters[5].value === ""
-            ? data
-            : data.filter((x) => this.filterPilot(x, sorters[5].value));
-        data =
-          sorters[6].value === null || sorters[6].value === ""
-            ? data
-            : data.filter((x) =>
-                x.soulsonboard ? x.soulsonboard == sorters[6].value : false
-              );
-        data =
-          sorters[7].value === null || sorters[7].value === ""
-            ? data
-            : data.filter((x) =>
-                x.injuries ? x.injuries == sorters[7].value : false
-              );
-        data =
-          sorters[8].value === null || sorters[8].value === ""
-            ? data
-            : data.filter((x) =>
-                x.fatalities ? x.fatalities == sorters[8].value : false
-              );
-        return data;
-      } else {
-        return this.crashsites;
-      }
-    },
+    filteredData(){
+      return this.burials;
+    }
   },
   watch: {
     /* eslint-disable */

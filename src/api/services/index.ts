@@ -1,10 +1,13 @@
-export * from './photo-service';
-export * from './photo-batch-service';
-export * from './place-service';
-export * from './static-service';
-export * from './user-service';
-export * from './ytplace-service';
 
+export * from "./photo-service";
+export * from "./place-service";
+export * from "./static-service";
+export * from "./user-service";
+export * from "./ytplace-service";
+export * from "./burial-service";
+export * from "./boat-service";
+export * from "./aircrash-service";
+export * from "./photo-batch-service";
 export interface QueryStatement {
 	field: string;
 	operator: string;

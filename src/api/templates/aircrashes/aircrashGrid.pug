@@ -1,0 +1,57 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+div.divided-row
+  div.right
+    div Airplane crashes information
+  div.left
+    img(src="./yukon.svg", alt="")
+
+div.grid
+  table.grid-table
+    thead
+      tr 
+        td 
+          strong.underline YACSI Number 
+        td 
+          strong.underline Crash Date
+        td 
+          strong.underline Aircraft Type
+        td 
+          strong.underline Aircraft Registration
+        td 
+          strong.underline Country of Registration
+        td 
+          strong.underline Registration Type
+        td 
+          strong.underline Location
+        td 
+          strong.underline Remains on Site
+        td 
+          strong.underline Pilot Last Name
+        td 
+          strong.underline Pilot First Name
+        td 
+          strong.underline Souls on Board
+        td 
+          strong.underline Injuries
+        td 
+          strong.underline Fatalities
+    tbody 
+      each val in data
+        tr 
+          td #{val.yacsinumber} 
+          td #{val.crashdate} 
+          td #{val.aircrafttype} 
+          td #{val.aircraftregistration} 
+          td #{val.nation} 
+          td #{val.militarycivilian} 
+          td #{val.crashlocation} 
+          td #{val.remainsonsite} 
+          td #{val.pilotfirstname} 
+          td #{val.pilotlastname} 
+          td #{val.soulsonBoard}
+          td #{val.injuries}
+          td #{val.fatalities}

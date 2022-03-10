@@ -55,8 +55,8 @@ export default {
         console.log(error);
       });
   },
-  async postPhotoOwner(data) { 
-    return await api.post(`photo-owner`, data)
+  async getCauses() {
+    return await api.get(`catalogs/cause`)
       .then(res => {
         return res.data;
       }).catch(error => {
@@ -64,8 +64,8 @@ export default {
         console.log(error);
       });
   },
-  async putPhotoOwner(id, data) {   
-    return await api.put(`photo-owner/${id}`, data)
+  async getReligions() {
+    return await api.get(`catalogs/religion`)
       .then(res => {
         return res.data;
       }).catch(error => {
@@ -73,18 +73,8 @@ export default {
         console.log(error);
       });
   },
-  
-  async getPhotoProjects(page, limit, textToMatch, sortBy, sort) {
-    return await api.get(`catalogs/photo-project`, {
-      crossdomain: true,
-      params: {
-        page,
-        limit,
-        textToMatch,
-        sortBy,
-        sort
-      }
-    })
+  async getCemetaries() {
+    return await api.get(`catalogs/cemetary`)
       .then(res => {
         return res.data;
       }).catch(error => {
@@ -92,8 +82,8 @@ export default {
         console.log(error);
       });
   },
-  async postPhotoProject(data) { 
-    return await api.post(`photo-project`, data)
+  async getOccupations() {
+    return await api.get(`catalogs/occupation`)
       .then(res => {
         return res.data;
       }).catch(error => {
@@ -101,8 +91,8 @@ export default {
         console.log(error);
       });
   },
-  async putPhotoProject(id, data) {   
-    return await api.put(`photo-project/${id}`, data)
+  async getMemberships() {
+    return await api.get(`catalogs/membership`)
       .then(res => {
         return res.data;
       }).catch(error => {
@@ -110,18 +100,8 @@ export default {
         console.log(error);
       });
   },
-
-  async getPhotoSubjects(page, limit, textToMatch, sortBy, sort) {
-    return await api.get(`catalogs/photo-subject`, {
-      crossdomain: true,
-      params: {
-        page,
-        limit,
-        textToMatch,
-        sortBy,
-        sort
-      }
-    })
+  async getRelationships() {
+    return await api.get(`catalogs/relationship`)
       .then(res => {
         return res.data;
       }).catch(error => {
@@ -129,25 +109,6 @@ export default {
         console.log(error);
       });
   },
-  async postPhotoSubject(data) { 
-    return await api.post(`photo-subject`, data)
-      .then(res => {
-        return res.data;
-      }).catch(error => {
-        // handle error
-        console.log(error);
-      });
-  },
-  async putPhotoSubject(id, data) {   
-    return await api.put(`photo-subject/${id}`, data)
-      .then(res => {
-        return res.data;
-      }).catch(error => {
-        // handle error
-        console.log(error);
-      });
-  },
-
   async getOriginalMedia() {
     return await api.get(`catalogs/originalmedia`)
       .then(res => {
