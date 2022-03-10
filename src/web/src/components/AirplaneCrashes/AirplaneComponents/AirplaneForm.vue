@@ -224,30 +224,20 @@
                 </v-row>
             </v-col>
             <v-col cols="5">
-                    <v-col cols="12">
-<!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-                        <Photos 
-                        v-if="infoLoaded" 
-                        :showDefault="isNewCrash" 
-                        :yacsiNumber="getYACSINumber"
-                        @updateSelectedImage="selectedImageChanged"
-                        @loadingPhotosChange="loadingPhotosChange"/>
-                    </v-col>
+              <v-col cols="12">
+                <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
+                <Photos
+                  v-if="infoLoaded"
+                  :showDefault="isNewCrash"
+                  :mode="mode"
+                  :photoType="'aircrash'"
+                  :itemId="getYACSINumber"
+                  @updateSelectedImage="selectedImageChanged"
+                  :selectedImage="selectedImage"
+                />
+              </v-col>
             </v-col>
         </v-row>
-      <v-col cols="5">
-        <v-col cols="12">
-          <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-          <Photos
-            v-if="infoLoaded"
-            :showDefault="isNewCrash"
-            :photoType="'aircrash'"
-            :itemId="getYACSINumber"
-            @updateSelectedImage="selectedImageChanged"
-            :selectedImage="selectedImage"
-          />
-        </v-col>
-      </v-col>
     <MapLoader
       v-if="infoLoaded"
       :mode="mode"
@@ -264,8 +254,6 @@
       }"
     />
     <v-row>
-      <v-col col="6">
-        <v-row>
             <v-col col="6">
                 <v-row>
                     <v-col>

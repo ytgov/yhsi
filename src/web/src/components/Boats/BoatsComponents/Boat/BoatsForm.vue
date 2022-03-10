@@ -42,8 +42,6 @@
                 </v-btn>
             </v-col>
         </v-row>
-        <v-row >
-            <v-col cols="5">
                 <v-row >
                     <v-col cols="6">
                         <v-text-field outlined dense
@@ -358,8 +356,6 @@
                         </v-row>
                     </v-col>
                 </v-row> 
-            </v-col>
-            <v-col cols="7">
                 <v-row>
                     <v-col cols="4">
                         <v-select outlined dense
@@ -389,6 +385,7 @@
             <Photos
               v-if="infoLoaded"
               :showDefault="mode == 'new'"
+              :mode="mode"
               :photoType="'boat'"
               :itemId="getBoatID"
               @updateSelectedImage="selectedImageChanged"
@@ -569,7 +566,7 @@ export default {
       });
     },
     //Functions dedicated to handle the edit, add, view modes
-    cancelEdit() {
+    cancelEdit() { 
       if (this.fieldsHistory) {
         this.fields = { ...this.fieldsHistory };
       }
