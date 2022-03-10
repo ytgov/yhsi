@@ -79,14 +79,6 @@ export default {
       return error;
     });
   },
-  async getPdf(data){
-    return await api.get(`burials/${data}/pdf`)
-    .then(res => {
-      return res.data;
-    }).catch(error =>{
-      return error;
-    });
-  },
   async getExport(){
     return await api.post('burials/export')
     .then( res => {

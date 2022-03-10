@@ -224,6 +224,7 @@ export default {
       .get(`${PLACE_URL}/${this.loadedId}`)
       .then((resp) => {
         this.fields = resp.data.data;
+        this.fields.communityId = 29;
 
         store.dispatch("addSiteHistory", resp.data.data);
         this.$parent.siteName = this.fields.primaryName;

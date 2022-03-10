@@ -1,3 +1,4 @@
+import knex from 'knex';
 import Knex from 'knex';
 import { QueryStatement, SortStatement } from './';
 import {
@@ -26,7 +27,7 @@ export class PlaceService {
 	private knex: Knex;
 
 	constructor(config: Knex.Config<any>) {
-		this.knex = Knex(config);
+		this.knex = knex(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Place>> {
@@ -51,7 +52,7 @@ export class PlaceService {
 			.select<Place>(PLACE_FIELDS)
 			.where({ id: id })
 			.first()
-			.catch((err: Error) => {
+			.catch((err: any) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});
@@ -64,7 +65,7 @@ export class PlaceService {
 			.where({ 'place.id': id })
 			.where({ showInRegister: true })
 			.first()
-			.catch((err: Error) => {
+			.catch((err: any) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});

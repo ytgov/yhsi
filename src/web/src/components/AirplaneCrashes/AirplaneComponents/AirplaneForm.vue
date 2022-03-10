@@ -224,27 +224,36 @@
                 </v-row>
             </v-col>
             <v-col cols="5">
-                    <v-col cols="12">
-<!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-                        <Photos 
-                        v-if="infoLoaded" 
-                        :showDefault="isNewCrash" 
-                        :yacsiNumber="getYACSINumber"
-                        @updateSelectedImage="selectedImageChanged"
-                        @loadingPhotosChange="loadingPhotosChange"/>
-                    </v-col>
+              <v-col cols="12">
+                <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
+                <Photos
+                  v-if="infoLoaded"
+                  :showDefault="isNewCrash"
+                  :mode="mode"
+                  :photoType="'aircrash'"
+                  :itemId="getYACSINumber"
+                  @updateSelectedImage="selectedImageChanged"
+                  :selectedImage="selectedImage"
+                />
+              </v-col>
             </v-col>
         </v-row>
-        <MapLoader v-if="infoLoaded"
-            :mode="mode"
-            @modifiedDataCoordinates="modifiedDataCoordinates"
-            :fields="{  accuracy: fields.accuracy,
-                        inyukon: fields.inyukon,
-                        crashlocation: fields.crashlocation,
-                        lat: fields.lat,
-                        long: fields.long,
-                        Location: fields.Location } "/>
-        <v-row>
+    <MapLoader
+      v-if="infoLoaded"
+      :mode="mode"
+      :mapType="'planeCrash'"
+      @modifiedDataCoordinates="modifiedDataCoordinates"
+      :fields="{
+        accuracy: fields.accuracy,
+        inyukon: fields.inyukon,
+        locationDesc: fields.crashlocation,
+        lat: fields.lat,
+        long: fields.long,
+        Location: fields.Location,
+        mapsheet: null,
+      }"
+    />
+    <v-row>
             <v-col col="6">
                 <v-row>
                     <v-col>
@@ -446,10 +455,10 @@
 
 <script>
 import Breadcrumbs from '../../Breadcrumbs.vue';
-import Photos from "./Photos/Photos";
+import Photos from "../../PhotoEditor/Photos";
 import PrintButton from "./PrintButton";
 import aircrash from "../../../controllers/aircrash";
-import MapLoader from "./MapLoader";
+import MapLoader from "../../MapLoader";
 import _ from 'lodash';
 export default {
     name: "crashForm",
