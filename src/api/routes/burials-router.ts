@@ -42,7 +42,7 @@ burialsRouter.get(
 			console.log(req.query)
 			counter = await db
 					.select('*')
-					.from(ç BUR')
+					.from('BUR')
 					.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
 					.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
 					.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
