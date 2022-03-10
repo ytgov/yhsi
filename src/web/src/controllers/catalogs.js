@@ -1,8 +1,53 @@
 import { api } from './config';
 
 export default {
-  async getCommunities() {
-    return await api.get(`catalogs/community`)
+  async getCommunities(page, limit, textToMatch, sortBy, sort) {
+    return await api.get(`catalogs/community`, {
+      crossdomain: true,
+      params: {
+        page,
+        limit,
+        textToMatch,
+        sortBy,
+        sort
+      }
+    })
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  async postCommunity(data) {
+    return await api.post(`catalogs/community`, data)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  async putCommunity(id, data) {
+    return await api.put(`catalogs/community/${id}`, data)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.log(error);
+      });
+  },
+  async getPhotoOwners(page, limit, textToMatch, sortBy, sort) {
+    return await api.get(`catalogs/photo-owner`, {
+      crossdomain: true,
+      params: {
+        page,
+        limit,
+        textToMatch,
+        sortBy,
+        sort
+      }
+    })
       .then(res => {
         return res.data;
       }).catch(error => {

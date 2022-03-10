@@ -139,16 +139,6 @@ export const sections = [
 			return `/admin`;
 		},
 	},
-	// {
-	//     name: "Basic Form",
-	//     url: "/form",
-	//     icon: "mdi-newspaper-variant-multiple"
-	// },
-	// {
-	//     name: "Data grid",
-	//     url: "/grid",
-	//     icon: "mdi-table-large"
-	// }
 ];
 export const environment = process.env.NODE_ENV;
 export const apiBaseUrl =

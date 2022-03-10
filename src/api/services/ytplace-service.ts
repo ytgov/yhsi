@@ -1,3 +1,4 @@
+import knex from 'knex';
 import Knex from 'knex';
 import { QueryStatement, SortStatement } from './';
 import {
@@ -34,7 +35,7 @@ export class YtPlaceService {
 	private knex: Knex;
 
 	constructor(config: Knex.Config<any>) {
-		this.knex = Knex(config);
+		this.knex = knex(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<YtPlace>> {
@@ -50,7 +51,7 @@ export class YtPlaceService {
 			.select<YtPlace>(YTPLACE_FIELDS)
 			.where({ id: id })
 			.first()
-			.catch((err) => {
+			.catch((err: any) => {
 				console.log('BOMBED', err);
 				return undefined;
 			});
@@ -262,7 +263,7 @@ export class YtPlaceService {
 			}
 
 			let fullData = await selectStmt;
-			let uniqIds = _.uniq(fullData.map((i) => i.id));
+			let uniqIds = _.uniq(fullData.map((i: any) => i.id));
 			let count = uniqIds.length;
 			let page_count = Math.ceil(count / page_size);
 

@@ -6,6 +6,7 @@ import { param, query } from "express-validator";
 
 export const catalogsRouter = express.Router();
 const db = knex(DB_CONFIG);
+//const staticService = new StaticService(DB_CONFIG);
 
 catalogsRouter.get("/community", async (req: Request, res: Response) => {
   const community = await db("Community").orderBy("Community.id", "asc");

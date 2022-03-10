@@ -7,18 +7,19 @@ export * from "./ytplace-service";
 export * from "./burial-service";
 export * from "./boat-service";
 export * from "./aircrash-service";
+export * from "./photo-batch-service";
 export interface QueryStatement {
-    field: string;
-    operator: string;
-    value: any;
+	field: string;
+	operator: string;
+	value: any;
 }
 
 export interface SortStatement {
-    field: string;
-    direction: SortDirection;
+	field: string;
+	direction: SortDirection;
 }
 
 export enum SortDirection {
-    ASCENDING = "asc",
-    DESCENDING = "desc"
+	ASCENDING = 'asc',
+	DESCENDING = 'desc',
 }

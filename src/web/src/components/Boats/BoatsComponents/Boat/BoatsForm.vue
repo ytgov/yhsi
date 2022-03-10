@@ -42,8 +42,8 @@
                 </v-btn>
             </v-col>
         </v-row>
-        <v-row >
-            <v-col cols="5">
+        <v-row>
+            <v-col cols="6">
                 <v-row >
                     <v-col cols="6">
                         <v-text-field outlined dense
@@ -359,7 +359,7 @@
                     </v-col>
                 </v-row> 
             </v-col>
-            <v-col cols="7">
+            <v-col cols="6">
                 <v-row>
                     <v-col cols="4">
                         <v-select outlined dense
@@ -416,7 +416,7 @@
 
 <script>
 import Breadcrumbs from '../../../Breadcrumbs.vue';
-import Photos from "./Photos/Photos";
+import Photos from "../../../PhotoEditor/Photos";
 import HistoricRecord from "../HistoricRecord";
 import PrintButton from "./PrintButton";
 import boats from "../../../../controllers/boats";

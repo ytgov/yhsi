@@ -7,10 +7,13 @@ import {
 	userRouter,
 	placeRouter,
 	photoRouter,
+	photoBatchRouter,
 	registerRouter,
 	staticRouter,
 	ytPlaceHistoryRouter,
 	ytPlaceRouter,
+} from './routes';
+import {
 	boatsRouter,
 	ownerRouter,
 	aircrashRouter,
@@ -90,11 +93,13 @@ app.use('/api/place', RequiresAuthentication, placeRouter);
 app.use('/api/ytplace', RequiresAuthentication, ytPlaceRouter);
 app.use('/api/ytplacehistory', RequiresAuthentication, ytPlaceHistoryRouter);
 app.use('/api/photo', RequiresAuthentication, photoRouter);
+app.use('/api/photobatch', RequiresAuthentication, photoBatchRouter);
 app.use('/api/register', registerRouter);
 
 //console.log("B", boats)
 
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
+app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/owners', RequiresAuthentication, ownerRouter);
 app.use('/api/aircrash', RequiresAuthentication, aircrashRouter);
 app.use('/api/histories', RequiresAuthentication, historiesRouter);
