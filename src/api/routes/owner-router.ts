@@ -118,7 +118,7 @@ ownerRouter.post('/pdf', async (req: Request, res: Response) => {
 		
 	let owners = await boatOwnerService.getAll();
 
-	console.log(owners);
+	//console.log(owners);
 	let data = pug.renderFile('./templates/boat-owners/boatOwnerGrid.pug', {
 		data: owners
 	});
@@ -129,8 +129,8 @@ ownerRouter.post('/pdf', async (req: Request, res: Response) => {
 		format: 'A3',
 		orientation: 'portrait'
 	}).toBuffer(function(err: any, buffer: any){
-		console.log(err);
-		console.log('This is a buffer:', Buffer.isBuffer(buffer));
+		//console.log(err);
+		//console.log('This is a buffer:', Buffer.isBuffer(buffer));
 
 		res.send(buffer);
 	});

@@ -205,7 +205,7 @@ placeRouter.put("/:id/summary",
 
         updater.siteCategories = (updater.siteCategories as string[]).join(',')
 
-        console.log(updater)
+        //console.log(updater)
 
         await placeService.updatePlace(parseInt(id), updater);
         let oldNames = await placeService.getNamesFor(parseInt(id));
@@ -413,7 +413,7 @@ placeRouter.put("/:id/associations",
             let match = oldFunctions.filter((n: FirstNationAssociation) => n.firstNationAssociationType == on.firstNationAssociationType && n.firstNationId == on.firstNationId && n.comments == on.comments);
 
             if (match.length == 0) {
-                console.log(on)
+                //console.log(on)
                 delete on.id;
                 delete on.typeText;
                 await placeService.addFNAssociation(on);

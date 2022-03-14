@@ -51,7 +51,7 @@ export function configureAuthentication(app: Express) {
 			let user = AuthUser.fromOpenId(req.oidc.user);
 			req.user = user;
 
-			//console.log("GET/", user)
+			////console.log("GET/", user)
 			/* let dbUser = await db.getByEmail(req.user.email);
 
             if (!dbUser) {

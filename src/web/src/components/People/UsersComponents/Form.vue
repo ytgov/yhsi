@@ -162,7 +162,7 @@ export default {
         }
         else if(this.checkPath("new")){
             this.mode="new";
-            console.log(this.mode);
+            //console.log(this.mode);
             //inputs remain empty
             this.noData();
         }
@@ -208,7 +208,7 @@ export default {
 
             this.infoLoaded = true;
             this.overlay = false;
-            //console.log(this.fields);
+            ////console.log(this.fields);
         },
     //Functions dedicated to handle the edit, add, view modes
         cancelEdit(){
@@ -262,8 +262,8 @@ export default {
                         DeathAccuracy: ""
                     }
                 };
-                //console.log(data);
-            console.log(data);
+                ////console.log(data);
+            //console.log(data);
             let currentPerson = {};
             if(this.mode == 'new'){
                 let resp = await people.post(data);
@@ -326,7 +326,7 @@ export default {
         fields: {/* eslint-disable */
             handler(newval){
                 this.showSave = this.showSave+1;
-                //console.log(this.fields);
+                ////console.log(this.fields);
             },/* eslint-enable */
             deep: true
         },

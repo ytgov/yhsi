@@ -18,7 +18,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				console.log(error);
+				//console.log(error);
 			});
 	},
 	async getById(id) {
@@ -29,7 +29,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				console.log(error);
+				//console.log(error);
 			});
 	},
 	async put(id, data) {
@@ -79,7 +79,7 @@ export default {
 		return await api
 			.get(`people/${id}/histories`)
 			.then((res) => {
-				console.log(res);
+				//console.log(res);
 				return res.data;
 			})
 			.catch((error) => {

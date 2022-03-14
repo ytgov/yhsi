@@ -524,8 +524,8 @@ export default {
             this.getDataFromApi();
         }
         /*
-        console.log('regex');
-        console.log(/^[0-9]*$/.test('12'));*/
+        //console.log('regex');
+        //console.log(/^[0-9]*$/.test('12'));*/
     },
     methods:{
         /*this function checks if the current path contains a specific word, this can be done with a simple includes but 
@@ -542,7 +542,7 @@ export default {
             this.fields.nation = "";
         },
         async validateYACSI(){
-            //console.log("original ", this.fieldsHistory.yacsinumber, "new",this.fields.yacsinumber);
+            ////console.log("original ", this.fieldsHistory.yacsinumber, "new",this.fields.yacsinumber);
             if(this.fieldsHistory){
                 if(this.fieldsHistory.yacsinumber == this.fields.yacsinumber){
                     this.yacsiWarning = [];
@@ -610,7 +610,7 @@ export default {
             //this.fields.infoSources = this.fields.sources.includes(";") ? this.fields.sources.split(";") : [];
             if(this.fields.nation != 'Canadian' && this.fields.nation != 'American')    
                 this.otherNation = true;
-            //console.log(this.fields);
+            ////console.log(this.fields);
             this.infoLoaded = true;
             this.overlay = false;
         },
@@ -644,7 +644,7 @@ export default {
         },
         async saveChanges(){
             this.overlay = true;
-            //console.log(this.fields);
+            ////console.log(this.fields);
         //Mapping coordinate data
             let { lat, long, inyukon, crashlocation, accuracy } = this.modifiedMapFields;
             this.fields.lat = lat;
@@ -677,7 +677,7 @@ export default {
                 };
             
             if(this.mode == 'new'){
-                console.log("api call");
+                //console.log("api call");
                 let resp = await aircrash.post(data);
                 if(resp.response){
                     if(resp.status == 409){
@@ -759,7 +759,7 @@ export default {
         },
         selectedImageChanged(val){
             this.selectedImage = val;
-            //console.log(val);
+            ////console.log(val);
         },
         loadingPhotosChange(val){
             this.loadingPhotos = val;

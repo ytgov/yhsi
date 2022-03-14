@@ -96,7 +96,7 @@ app.use('/api/photo', RequiresAuthentication, photoRouter);
 app.use('/api/photobatch', RequiresAuthentication, photoBatchRouter);
 app.use('/api/register', registerRouter);
 
-//console.log("B", boats)
+////console.log("B", boats)
 
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
@@ -124,5 +124,5 @@ app.use((req: Request, res: Response) => {
 });
 
 app.listen(config.API_PORT, () => {
-	console.log(`API listening on port ${config.API_PORT}`);
+	//console.log(`API listening on port ${config.API_PORT}`);
 });

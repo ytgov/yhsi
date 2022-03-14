@@ -171,7 +171,7 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 	}
 
 	const editOccupations = Occupations.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
-	//console.log("occupations to edit",editOccupations);
+	////console.log("occupations to edit",editOccupations);
 	for( const item of editOccupations ){
 		await db('Burial.Occupation')
 		.update({ BurialID: burialId, OccupationID: item.OccupationID })
@@ -294,8 +294,8 @@ burialsRouter.post(
 			format: 'A3',
 			orientation: 'landscape'
 		}).toBuffer(function(err: any, buffer: any){
-			console.log(err);
-			console.log('This is a buffer:', Buffer.isBuffer(buffer));
+			//console.log(err);
+			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
 
 			res.send(buffer);
 		});
@@ -317,8 +317,8 @@ burialsRouter.post('/pdf', async (req: Request, res: Response) => {
 			format: 'A3',
 			orientation: 'landscape'
 		}).toBuffer(function(err: any, buffer: any){
-			console.log(err);
-			console.log('This is a buffer:', Buffer.isBuffer(buffer));
+			//console.log(err);
+			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
 
 			res.send(buffer);
 		});

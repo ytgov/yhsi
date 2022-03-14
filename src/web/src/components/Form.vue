@@ -134,12 +134,12 @@ export default {
     saveForm() {
       this.showError = false;
 
-      console.log("SAVING " + this.team);
+      //console.log("SAVING " + this.team);
 
       if (this.team == "Seahawks") {
         this.snackbar = true;
         this.apiSuccess = "This message came from the API";
-        console.log("CORRECT!@");
+        //console.log("CORRECT!@");
       } else {
         this.showError = true;
       }

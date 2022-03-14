@@ -100,7 +100,7 @@ photosExtraRouter.get(
 				.limit(limit)
 				.offset(offset);
 		}
-		console.log("PHOTOS HERE", photos);
+		//console.log("PHOTOS HERE", photos);
 		res.status(200).send({ count: counter[0].count, body: photos });
 	}
 );
@@ -513,7 +513,7 @@ photosExtraRouter.get(
 				'community.name as communityName',
 			])
 			.catch((err) => {
-				console.log('BOMBED', err);
+				//console.log('BOMBED', err);
 				return undefined;
 			});
 
@@ -534,7 +534,7 @@ photosExtraRouter.delete(
 			.where({ RowID: id })
 			.update({ placeId: null })
 			.catch((err) => {
-				console.log('BOMBED', err);
+				//console.log('BOMBED', err);
 				return undefined;
 			});
 

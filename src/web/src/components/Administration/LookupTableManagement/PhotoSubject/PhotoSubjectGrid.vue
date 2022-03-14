@@ -103,7 +103,7 @@ export default {
     },
     removeItem(item){ //removes one element from the users array
       const index = this.subjects.findIndex(a=> a.id == item.id);
-      console.log(index);
+      //console.log(index);
       if (index > -1) {
         this.subjects.splice(index, 1);
       }
@@ -117,7 +117,7 @@ export default {
         let textToMatch = this.search;
         let data = await catalogs.getPhotoSubjects(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
         this.subjects = _.get(data, 'body', []);
-        console.log(this.subjects);
+        //console.log(this.subjects);
         this.totalLength = _.get(data, 'count', 0);
         this.loading = false;
     },

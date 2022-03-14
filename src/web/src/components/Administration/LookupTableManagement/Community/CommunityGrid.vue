@@ -103,7 +103,7 @@ export default {
     },
     removeItem(item){ //removes one element from the users array
       const index = this.communities.findIndex(a=> a.id == item.id);
-      console.log(index);
+      //console.log(index);
       if (index > -1) {
         this.communities.splice(index, 1);
       }
@@ -113,7 +113,7 @@ export default {
         let { page, itemsPerPage, sortBy, sortDesc } = this.options;
         if (!sortBy[0]) sortBy[0] = 'Name'; 
         page = page > 0 ? page-1 : 0;
-        console.log(itemsPerPage);
+        //console.log(itemsPerPage);
         itemsPerPage = itemsPerPage === undefined ? 1000 : itemsPerPage;
         let textToMatch = this.search;
         let data = await catalogs.getCommunities(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
