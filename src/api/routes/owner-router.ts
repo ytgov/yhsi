@@ -3,8 +3,11 @@ import { DB_CONFIG } from '../config';
 import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
-
+import { BoatOwnerService } from "../services";
+const pdf = require('html-pdf');
+const pug = require('pug');
 export const ownerRouter = express.Router();
+const boatOwnerService = new BoatOwnerService();
 const db = knex(DB_CONFIG);
 
 ownerRouter.get(
@@ -15,59 +18,14 @@ ownerRouter.get(
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		/*  const permissions = req.decodedToken['yg-claims'].permissions;
-	 if (!permissions.includes('view')) res.sendStatus(403);
-	*/
+
 		const { textToMatch = '', sortBy = 'ownerid', sort = 'asc' } = req.query;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
-		let counter = [{ count: 0 }];
-		let owners = [];
+		let data = await boatOwnerService.doSearch(page, limit, offset, {textToMatch, sortBy, sort});
 
-		if (textToMatch) {
-			counter = await db
-				.from('boat.Owner AS BO')
-				.join('boat.boatowner AS CO', 'CO.ownerid', '=', 'BO.Id')
-				.where('BO.OwnerName', 'like', `%${textToMatch}%`)
-				.countDistinct('BO.id', { as: 'count' });
-
-			owners = await db
-				.select(
-					'boat.boatowner.currentowner',
-					'boat.Owner.OwnerName',
-					'boat.owner.id'
-				)
-				.distinct('boat.boatowner.ownerid')
-				.from('boat.boatowner')
-				.join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-				//.orderBy('boat.boatowner.ownerid', 'asc')
-				.orderBy(`${sortBy}`, `${sort}`)
-				.where('boat.Owner.OwnerName', 'like', `%${textToMatch}%`)
-				.limit(limit)
-				.offset(offset);
-		} else {
-			counter = await db
-				.from('boat.Owner AS BO')
-				.join('boat.boatowner AS CO', 'CO.ownerid', '=', 'BO.Id')
-				.countDistinct('BO.id', { as: 'count' });
-
-			owners = await db
-				.select(
-					'boat.boatowner.currentowner',
-					'boat.Owner.OwnerName',
-					'boat.owner.id'
-				)
-				.distinct('boat.boatowner.ownerid')
-				.from('boat.boatowner')
-				.join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-				//.orderBy('boat.boatowner.ownerid', 'asc')
-				.orderBy(`${sortBy}`, `${sort}`)
-				.limit(limit)
-				.offset(offset);
-		}
-
-		res.status(200).send({ count: counter[0].count, body: owners });
+		res.status(200).send(data);
 	}
 );
 
@@ -76,34 +34,9 @@ ownerRouter.get(
 	[param('ownerId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		/*  const permissions = req.decodedToken['yg-claims'].permissions;
-	 if (!permissions.includes('view')) res.sendStatus(403);
-   
-	 const db = req.app.get('db'); */
+
 		const { ownerId } = req.params;
-		const owner = await db
-			.select('*')
-			.distinct('boat.boatowner.ownerid')
-			.from('boat.boatowner')
-			.join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-			.where('boat.boatowner.ownerid', ownerId)
-			.first();
-
-		owner.boats = await db
-			.select('*')
-			.from('boat.boat')
-			.join('boat.BoatOwner', 'boat.BoatOwner.boatid', '=', 'boat.boat.id')
-			.where('boat.boatowner.ownerid', ownerId);
-
-		owner.histories = await db
-			.select('*')
-			.from('boat.OwnerHistory')
-			.where('boat.OwnerHistory.OwnerId', ownerId);
-
-		owner.alias = await db
-			.select('*')
-			.from('boat.owneralias')
-			.where('boat.owneralias.ownerid', ownerId);
+		const owner = await boatOwnerService.getById(ownerId);
 
 		res.status(200).send(owner);
 	}
@@ -114,10 +47,7 @@ ownerRouter.put(
 	[param('ownerId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		/*   const db = req.app.get('db');
-	  const permissions = req.decodedToken['yg-claims'].permissions;
-	  if (!permissions.includes('edit')) res.sendStatus(403);
-	 */
+
 		const { ownerId } = req.params;
 		const { owner = {}, newOwnerAlias = [], editOwnerAlias = [] } = req.body;
 		const { OwnerName } = owner;
@@ -153,10 +83,6 @@ ownerRouter.put(
 
 // changed this route from "/new" to "/" to follow RESTFUL conventions
 ownerRouter.post('/', async (req: Request, res: Response) => {
-	/*   const db = req.app.get('db');
-  
-	const permissions = req.decodedToken['yg-claims'].permissions;
-	if (!permissions.includes('create')) res.sendStatus(403); */
 
 	const { owner = {}, ownerAlias = [] } = req.body;
 
@@ -186,4 +112,34 @@ ownerRouter.post('/', async (req: Request, res: Response) => {
 		});
 
 	res.status(200).send(response);
+});
+
+ownerRouter.post('/pdf', async (req: Request, res: Response) => {
+		
+	let owners = await boatOwnerService.getAll();
+
+	console.log(owners);
+	let data = pug.renderFile('./templates/boat-owners/boatOwnerGrid.pug', {
+		data: owners
+	});
+
+	res.setHeader('Content-disposition', 'attachment; filename="owners.html"');
+	res.setHeader('Content-type', 'application/pdf');
+	pdf.create(data, {
+		format: 'A3',
+		orientation: 'portrait'
+	}).toBuffer(function(err: any, buffer: any){
+		console.log(err);
+		console.log('This is a buffer:', Buffer.isBuffer(buffer));
+
+		res.send(buffer);
+	});
+}
+);
+
+ownerRouter.post('/export', async (req: Request, res: Response) => {
+	
+	let data = await boatOwnerService.getAll();
+
+	res.status(200).send(data);
 });

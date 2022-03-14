@@ -1,0 +1,21 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+div.divided-row
+  div.right
+    div Boat Owners information
+  div.left
+    img(src="./yukon.svg", alt="")
+
+div.grid
+  table.grid-table
+    thead
+      tr 
+        td 
+          strong.underline Owner Name
+    tbody 
+      each val in data
+        tr 
+          td #{val.OwnerName} 

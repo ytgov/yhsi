@@ -8,6 +8,7 @@ export * from "./burial-service";
 export * from "./boat-service";
 export * from "./aircrash-service";
 export * from "./photo-batch-service";
+export * from "./boat-owner-service";
 export interface QueryStatement {
 	field: string;
 	operator: string;

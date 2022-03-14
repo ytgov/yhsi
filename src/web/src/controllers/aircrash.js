@@ -64,7 +64,11 @@ export default {
     })
   },
   async getGridPdf(){
-    return await api.post('aircrash/pdf')
+    return await api({
+      url: 'aircrash/pdf',
+      method: 'POST',
+      responseType: 'blob',
+    })
     .then( res => {
       return res.data;
     }).catch( err => {
