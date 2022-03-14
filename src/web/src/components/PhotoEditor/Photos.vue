@@ -644,7 +644,7 @@ export default {
       reader.onload = function () {
       };
       reader.onerror = function (error) {
-        console.log("Error: ", error);
+        //console.log("Error: ", error);
       };
     },
     validate() {

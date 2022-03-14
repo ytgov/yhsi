@@ -124,7 +124,7 @@ photoBatchRouter.post(
 		const errors = validationResult(req);
 
 		if (!errors.isEmpty()) {
-			console.log(errors);
+			//console.log(errors);
 			return res.status(400).json({ errors: errors.array() });
 		}
 
@@ -135,7 +135,7 @@ photoBatchRouter.post(
 			.addBatch(req.body as PhotoBatch)
 			.then((item) => item)
 			.catch((err) => {
-				console.log(err);
+				//console.log(err);
 				return res.json({ errors: [err.originalError.info.message] });
 			});
 
@@ -205,7 +205,7 @@ photoBatchRouter.put(
 		const errors = validationResult(req);
 
 		if (!errors.isEmpty()) {
-			console.log(errors);
+			//console.log(errors);
 			return res.status(400).json({ errors: errors.array() });
 		}
 
@@ -213,7 +213,7 @@ photoBatchRouter.put(
 			.updateBatch(req.params.id, req.body as PhotoBatch)
 			.then((item) => item)
 			.catch((err) => {
-				console.log(err);
+				//console.log(err);
 				return res.json({ errors: [err.originalError.info.message] });
 			});
 
@@ -247,7 +247,7 @@ photoBatchRouter.post(
 		req.body.photoFileName = req.file.originalname;
 
 		if (!errors.isEmpty()) {
-			console.log(errors);
+			//console.log(errors);
 			return res.status(400).json({ errors: errors.array() });
 		}
 
@@ -255,7 +255,7 @@ photoBatchRouter.post(
 			.addPhoto(req.body as PhotoBatchPhoto)
 			.then((item) => item)
 			.catch((err) => {
-				console.log(err);
+				//console.log(err);
 				return res.json({ errors: [err.originalError.info.message] });
 			});
 
@@ -270,7 +270,7 @@ photoBatchRouter.put(
 		const errors = validationResult(req);
 
 		if (!errors.isEmpty()) {
-			console.log(errors);
+			//console.log(errors);
 			return res.status(400).json({ errors: errors.array() });
 		}
 
@@ -278,7 +278,7 @@ photoBatchRouter.put(
 			.processBatch(req.params.id)
 			.then((item) => item)
 			.catch((err) => {
-				console.log(err);
+				//console.log(err);
 				return res.json({ errors: [err.originalError.info.message] });
 			});
 

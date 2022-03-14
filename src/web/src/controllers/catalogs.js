@@ -16,7 +16,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async postCommunity(data) {
@@ -25,7 +25,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async putCommunity(id, data) {
@@ -34,7 +34,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getPhotoOwners(page, limit, textToMatch, sortBy, sort) {
@@ -52,7 +52,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getCauses() {
@@ -61,7 +61,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getReligions() {
@@ -70,7 +70,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getCemetaries() {
@@ -79,7 +79,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getOccupations() {
@@ -88,7 +88,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getMemberships() {
@@ -97,7 +97,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getRelationships() {
@@ -106,7 +106,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getOriginalMedia() {
@@ -115,7 +115,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getVesselTypes(page, limit, textToMatch, sortBy, sort) {
@@ -133,7 +133,7 @@ export default {
       return res.data;
     }).catch(error => {
       // handle error
-      console.log(error);
+      //console.log(error);
     });
   },
   async postVesselType(data) {
@@ -142,7 +142,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async postPlaceType(data) {
@@ -151,7 +151,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async putVesselType(id, data) {
@@ -160,7 +160,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getPlaceTypes(page, limit, textToMatch, sortBy, sort) {
@@ -178,7 +178,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
 
@@ -188,7 +188,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   }
 

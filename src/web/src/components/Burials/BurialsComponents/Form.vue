@@ -668,7 +668,7 @@ export default {
           this.mode="new";
           this.noData();
       }      
-      console.log(countries);
+      //console.log(countries);
   },
   methods: {
     /*this function checks if the current path contains a specific word, this can be done with a simple includes but 
@@ -676,7 +676,7 @@ export default {
     this problem is solved by using this funtion.*/
     checkPath(word){
         let path = this.$route.path.split("/");
-       // console.log(path);
+       // //console.log(path);
         if(path[2] == word){
             return true;
         }
@@ -735,7 +735,7 @@ export default {
         this.occupations = await catalogs.getOccupations();
         this.memberships = await catalogs.getMemberships();
         this.relationships = await catalogs.getRelationships();
-        console.log(this.fields);
+        //console.log(this.fields);
         this.overlay = false;
     },
     viewMode(){
@@ -764,7 +764,7 @@ export default {
     },
     async saveChanges(){
             this.overlay = true;
-            console.log(this.fields);
+            //console.log(this.fields);
             let { 
               Age,
               BirthDateNotes,
@@ -830,7 +830,7 @@ export default {
               CemetaryID: Cemetary.CemetaryLUpID, 
               ReligionID: Religion.ReligionLUpID,  
             };
-            //console.log(data);
+            ////console.log(data);
             const data = {
               burial,
               Memberships, 
@@ -839,7 +839,7 @@ export default {
               Sources,
               Occupations
             }
-            console.log(JSON.stringify(data));
+            //console.log(JSON.stringify(data));
             
             if(this.isNew){
               await burials.post(data);
@@ -864,7 +864,7 @@ export default {
       }
     },
     editOccupation(val,index){
-      //console.log(val, index);
+      ////console.log(val, index);
       if(this.isNew){
         delete val.edit;
         val.new = true;
@@ -875,7 +875,7 @@ export default {
       this.fields.Kinships.push(val);
     },
     editKinship(val,index){
-      //console.log(val, index);
+      ////console.log(val, index);
       if(this.isNew){
         delete val.edit;
         val.new = true;
@@ -890,11 +890,11 @@ export default {
       }
     },
     newMembership(val){
-      //console.log(val);
+      ////console.log(val);
       this.fields.Memberships.push(val);
     },
     editMembership(val,index){
-     // console.log(val, index);
+     // //console.log(val, index);
       if(this.isNew){
         delete val.edited;
         val.new = true;
@@ -902,7 +902,7 @@ export default {
       this.$set(this.fields.Memberships, index, val);
     },
     deleteMembership(index){
-      console.log(index);
+      //console.log(index);
       if(index > -1){
         let val = this.fields.Memberships[index];
         val.deleted = true;
@@ -913,7 +913,7 @@ export default {
       this.fields.SiteVisits.push(val);
     },
     editSiteVisit(val,index){
-      //console.log(val, index);
+      ////console.log(val, index);
       if(this.isNew){
         delete val.edit;
         val.new = true;
@@ -931,7 +931,7 @@ export default {
       this.fields.Sources.push(val);
     },
     editSource(val,index){
-      //console.log(val, index);
+      ////console.log(val, index);
       if(this.isNew){
         delete val.edit;
         val.new = true;
@@ -955,9 +955,9 @@ export default {
         return `${month}/${day}/${year}`
     },
     async getPdf(){
-      console.log("GETTING DATA");
+      //console.log("GETTING DATA");
       const data = await burials.getPdf(parseInt(localStorage.currentBurialID));
-      console.log(data);
+      //console.log(data);
     }
   },
   computed: {

@@ -70,7 +70,7 @@ export default {
       this.loading = true;
       let { page, itemsPerPage, sortBy, sortDesc } = this.options;
       page = page > 0 ? page - 1 : 0;
-      //console.log(this.options);
+      ////console.log(this.options);
       itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
       let textToMatch = this.search;
       let data = await boats.get(
@@ -99,7 +99,7 @@ export default {
     getCurrentOwner(owners) {
       if (!owners) return null;
       //let owner = owners.filter( x => x.currentowner === true);
-      //console.log(owner);
+      ////console.log(owner);
       return owners[0].OwnerName;
     },
   },
@@ -178,7 +178,7 @@ export default {
       deep: true,
     },
     selectedFilters(newv) {
-      //console.log(newv);
+      ////console.log(newv);
       this.filterOptions = newv;
     },
     search() {

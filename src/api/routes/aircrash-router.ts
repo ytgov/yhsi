@@ -80,7 +80,7 @@ aircrashRouter.put(
 			.where('AirCrash.AirCrash.yacsinumber', aircrashId);
 
 		//Add the new info sources (in progress)
-		console.log(newInfoSources);
+		//console.log(newInfoSources);
 		await db
 			.insert(
 				newInfoSources.map((source: any) => ({
@@ -208,8 +208,8 @@ aircrashRouter.post(
 			format: 'A3',
 			orientation: 'landscape'
 		}).toBuffer(function(err: any, buffer: any){
-			console.log(err);
-			console.log('This is a buffer:', Buffer.isBuffer(buffer));
+			//console.log(err);
+			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
 
 			res.send(buffer);
 		});
@@ -233,8 +233,8 @@ aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
 		format: 'A3',
 		orientation: 'landscape'
 	}).toBuffer(function(err: any, buffer: any){
-		console.log(err);
-		console.log('This is a buffer:', Buffer.isBuffer(buffer));
+		//console.log(err);
+		//console.log('This is a buffer:', Buffer.isBuffer(buffer));
 
 		res.send(buffer);
 	});

@@ -75,7 +75,7 @@ peopleRouter.get(
   ReturnValidationErrors,
   async (req: Request, res: Response) => {
 		const { personId } = req.params;
-	console.log(personId);
+	////console.log(personId);
 	const person = await db
 			.from('Person.Person')
 			.where('Person.PersonID', personId)
@@ -232,8 +232,8 @@ async (req: Request, res: Response) => {
 		format: 'A3',
 		orientation: 'portrait'
 	}).toBuffer(function(err: any, buffer: any){
-		console.log(err);
-		console.log('This is a buffer:', Buffer.isBuffer(buffer));
+		////console.log(err);
+		////console.log('This is a buffer:', Buffer.isBuffer(buffer));
 
 		res.send(buffer);
 	});

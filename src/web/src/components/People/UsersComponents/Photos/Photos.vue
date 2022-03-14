@@ -514,7 +514,7 @@ export default {
         x.selected = false;
         return x;
       });
-      console.log(this.availablePhotos);
+      //console.log(this.availablePhotos);
       this.numberOfPages = Math.round(data.count / 6);
       this.showSkeletons = false;
     },
@@ -574,7 +574,7 @@ export default {
         .map((x) => {
           return x.RowId;
         });
-        //console.log("person id", this.PersonID);
+        ////console.log("person id", this.PersonID);
         
         await photos.linkPersonPhotos(Number(this.PersonID), {
         linkPhotos: photosToLink,
@@ -595,10 +595,10 @@ export default {
       var reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = function () {
-        //console.log(reader.result);
+        ////console.log(reader.result);
       };
       reader.onerror = function (error) {
-        console.log("Error: ", error);
+        //console.log("Error: ", error);
       };
     },
     validate() {

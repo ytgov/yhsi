@@ -37,7 +37,7 @@ function createInterceptor(instance) {
   }, (error) => {
     let { response } = error;
     if (response.status != 409) {
-      console.log("test", error);
+      //console.log("test", error);
       store.commit('alerts/setText', "A problem has ocurred, please check your internet connection!");
       store.commit('alerts/setType', "warning");
       store.commit('alerts/setTimeout', 5000);

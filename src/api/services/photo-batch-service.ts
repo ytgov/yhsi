@@ -106,7 +106,7 @@ export class PhotoBatchService {
 							break;
 						}
 						case 'lte': {
-							//console.log(`Testing ${stmt.field} for IN on ${stmt.value}`)
+							////console.log(`Testing ${stmt.field} for IN on ${stmt.value}`)
 							selectStmt.orWhere(stmt.field, '<=', stmt.value);
 							break;
 						}
@@ -117,7 +117,7 @@ export class PhotoBatchService {
 							break;
 						}
 						default: {
-							console.log(`IGNORING ${stmt.field} on ${stmt.value}`);
+							//console.log(`IGNORING ${stmt.field} on ${stmt.value}`);
 						}
 					}
 				});
@@ -152,7 +152,7 @@ export class PhotoBatchService {
 			.where({ id: id })
 			.first()
 			.catch((err: any) => {
-				console.log('BOMBED', err);
+				//console.log('BOMBED', err);
 				return undefined;
 			});
 	}
@@ -174,7 +174,7 @@ export class PhotoBatchService {
 			])
 			.where({ photoBatchId: id })
 			.catch((err: any) => {
-				console.log('BOMBED', err);
+				//console.log('BOMBED', err);
 				return undefined;
 			});
 	}

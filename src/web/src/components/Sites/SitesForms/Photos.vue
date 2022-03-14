@@ -221,7 +221,7 @@ export default {
     },
     altImg(i) {
       // this function returns the src if
-      console.log("", i);
+      //console.log("", i);
     },
   },
 };

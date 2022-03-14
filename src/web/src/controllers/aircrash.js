@@ -16,7 +16,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getById(aircrashId){
@@ -25,7 +25,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async put(aircrashId, data){
@@ -34,7 +34,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async post(data){
@@ -43,7 +43,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error.response);
+        //console.log(error.response);
         return error;
       });
   },

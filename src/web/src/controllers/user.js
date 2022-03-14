@@ -16,7 +16,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getById(aircrashId) {
@@ -25,7 +25,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async put(aircrashId, data) {
@@ -34,7 +34,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async putAccess(userID, data) {
@@ -43,7 +43,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getAccess(userID) {
@@ -52,7 +52,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getSections() {
@@ -61,7 +61,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
 }

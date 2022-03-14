@@ -184,7 +184,7 @@ export default {
       this.filterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
       })
-      //console.log("TEST",JSON.stringify(prefilters));
+      ////console.log("TEST",JSON.stringify(prefilters));
       let data = await burials.get(
         page,
         itemsPerPage,
