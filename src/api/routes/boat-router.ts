@@ -190,7 +190,7 @@ boatsRouter.get(
 			console.log('This is a buffer:', Buffer.isBuffer(buffer));
 
 			res.send(buffer);
-		});
+		}); 
 });
 
 boatsRouter.post('/pdf', async (req: Request, res: Response) => {
