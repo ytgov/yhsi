@@ -14,6 +14,10 @@
     padding: 12px 12px;
 }
 
+.hide-element{
+    display: none;
+}
+
 /* Djpratt CSS Classes */
 .read-only-form-item .v-select__selection.v-select__selection--comma.v-select__selection--disabled {
     color: #000000de;

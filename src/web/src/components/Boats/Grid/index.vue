@@ -97,9 +97,12 @@
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
           Add Boat
         </v-btn>
-
-        <JsonCSV :data="boats"  name="boat_data.csv">
-          <v-btn class="black--text mx-1" :disabled="boats.length == 0">
+        <v-btn class="black--text mx-1" :loading="true" v-if="loadingExport">
+            <v-icon class="mr-1"> mdi-export </v-icon>
+            Export
+          </v-btn>
+        <JsonCSV v-else :data="boatsData"  name="boat_data.csv" ref="csvBtn">
+          <v-btn class="black--text mx-1">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
           </v-btn>
@@ -165,11 +168,10 @@ export default {
       { text: "Conversions", icon: "mdi-flag" },
     ],
     boats: [],
-    boatsPdf: [],
-    loadingPdf: false
+    loadingPdf: false,
+    loadingExport: false
   }),
   async mounted() {
-    await this.getExports();
     if (this.$route.path.includes("owner")) {
       //shows the buttons for owner
       
@@ -178,6 +180,9 @@ export default {
       //shows the buttons for boats
       this.route = "boats";
     }
+    this.loadingExport = true;
+    this.boats = await boats.getExport();
+    this.loadingExport = false;
   },
   methods: {
     addNewBoat() {
@@ -200,7 +205,12 @@ export default {
       return route.includes("owner") ? "notActive" : "";
     },
     async getExports(){
+      this.loadingExport = true;
       this.boats = await boats.getExport();
+      this.boats.push(0);
+      this.boats.pop();
+      this.$refs.csvBtn.$el.click();
+      this.loadingExport = false;
     },
     async downloadPdf(){
       this.loadingPdf = true;
@@ -218,13 +228,12 @@ export default {
     },
   },
   computed: {
-    /*
-    boats() {
-      return this.$store.getters["boats/boats"];
+    boatsData() {
+      return this.boats;
     },
     owners() {
       return this.$store.getters["boats/owners"];
-    },*/
+    },
   },
 };
 </script>

@@ -260,7 +260,6 @@ const routes = [
 			}
 		]
 	},
-	
 	{
 	path: "/photos/add",
 	name: "PhotosFormAdd",
