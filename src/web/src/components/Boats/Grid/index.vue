@@ -79,18 +79,26 @@
           Add Owner
         </v-btn>
 
-        <JsonCSV :data="owners"  name="owner_data.csv">
+
+
+        <v-btn class="black--text mx-1" :loading="true" v-if="loadingExport">
+            <v-icon class="mr-1"> mdi-export </v-icon>
+            Export
+        </v-btn>
+        <JsonCSV v-else :data="ownersData"  name="owner_data.csv">
           <v-btn class="black--text mx-1" :disabled="owners.length == 0">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
           </v-btn>
         </JsonCSV>
 
-        <PrintButton
-          key="prt-1"
-          :data="{ owners }"
-          :disabled="owners.length == 0"
-        />
+        <v-btn @click="downloadPdfOwners()" class="black--text mx-1" :loading="loadingPdf">
+            <v-icon class="mr-1">
+              mdi-printer
+            </v-icon>
+            Print
+        </v-btn>
+
       </v-col>
       <v-col cols="auto" v-else class="d-flex">
         <v-btn class="black--text mx-1" @click="addNewBoat">
@@ -145,6 +153,7 @@ import Breadcrumbs from "../../Breadcrumbs";
 import PrintButton from "./PrintButton";
 import _ from "lodash";
 import boats from "../../../controllers/boats";
+import owners from "../../../controllers/owners";
 //import jsPDF from "jspdf";
 export default {
   name: "boatsgrid-index",
@@ -168,6 +177,7 @@ export default {
       { text: "Conversions", icon: "mdi-flag" },
     ],
     boats: [],
+    ownersData: [],
     loadingPdf: false,
     loadingExport: false
   }),
@@ -180,9 +190,7 @@ export default {
       //shows the buttons for boats
       this.route = "boats";
     }
-    this.loadingExport = true;
-    this.boats = await boats.getExport();
-    this.loadingExport = false;
+    this.getExports();
   },
   methods: {
     addNewBoat() {
@@ -207,9 +215,7 @@ export default {
     async getExports(){
       this.loadingExport = true;
       this.boats = await boats.getExport();
-      this.boats.push(0);
-      this.boats.pop();
-      this.$refs.csvBtn.$el.click();
+      this.ownersData = await owners.getExport();
       this.loadingExport = false;
     },
     async downloadPdf(){
@@ -220,6 +226,20 @@ export default {
       let link = url.createObjectURL(blob);
       let a = document.createElement("a");
       a.setAttribute("download", "Boats.pdf");
+      a.setAttribute("href", link);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      this.loadingPdf = false;
+    },
+    async downloadPdfOwners(){
+      this.loadingPdf = true;
+      let res = await owners.getGridPdf();
+      let blob = new Blob([res], { type: "application/octetstream" });
+      let url = window.URL || window.webkitURL;
+      let link = url.createObjectURL(blob);
+      let a = document.createElement("a");
+      a.setAttribute("download", "Owners.pdf");
       a.setAttribute("href", link);
       document.body.appendChild(a);
       a.click();

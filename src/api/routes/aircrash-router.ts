@@ -225,8 +225,9 @@ aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
 	let data = pug.renderFile('./templates/aircrashes/aircrashGrid.pug', {
 		data: aircrashes
 	});
-
-	res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+	//res.status(200).send(data);
+	
+	res.setHeader('Content-disposition', 'attachment; filename="aircrashes.html"');
 	res.setHeader('Content-type', 'application/pdf');
 	pdf.create(data, {
 		format: 'A3',
@@ -238,7 +239,7 @@ aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
 		res.send(buffer);
 	});
 
-	res.status(200).send(data);
+	//res.status(200).send(data);
 });
 
 aircrashRouter.post('/export', async (req: Request, res: Response) => {
