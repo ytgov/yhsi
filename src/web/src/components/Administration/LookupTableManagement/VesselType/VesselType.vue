@@ -106,7 +106,7 @@ export default {
     removeItem(item) {
       //removes one element from the users array
       const index = this.vesseltypes.findIndex((a) => a.id == item.id);
-      console.log(index);
+      //console.log(index);
       if (index > -1) {
         this.vesseltypes.splice(index, 1);
       }
@@ -125,7 +125,7 @@ export default {
         sortDesc[0] ? "desc" : "asc"
       );
       this.vesseltypes = _.get(data, "body", []);
-      console.log(this.vesseltypes);
+      //console.log(this.vesseltypes);
       this.totalLength = _.get(data, "count", 0);
       this.loading = false;
     },

@@ -99,7 +99,7 @@ export default {
 
             let owners = this.toPrint.general.owners;
             this.toPrint.general.owners =  owners.map(x =>{ return [x.OwnerName] });
-            //console.log(this.toPrint.general.owners);
+            ////console.log(this.toPrint.general.owners);
 */
     },
     exportPDF() {
@@ -130,13 +130,13 @@ export default {
       for (let i = 0; i < this.textFields.length; i++) {
         this.addTitle(this.textFields[i].title);
         this.addText(`${this.toPrint.general[this.textFields[i].key]}`);
-        //console.log(`{ title: "", key: "${keys[i]}"},`);
+        ////console.log(`{ title: "", key: "${keys[i]}"},`);
       }
     },
     addText(text) {
       let rText = "Empty";
       if (!text.includes("null")) {
-        //console.log("null");
+        ////console.log("null");
         rText = text;
       }
       let strArr = this.doc.splitTextToSize(rText, 550);
@@ -166,7 +166,7 @@ export default {
       for (let i = 0; i < this.photoFields.length; i++) {
         this.addTitle(this.photoFields[i].title);
         this.addText(`${this.selectedImage[this.photoFields[i].key]}`);
-        //console.log(`{ title: "", key: "${keys[i]}"},`);
+        ////console.log(`{ title: "", key: "${keys[i]}"},`);
       }
     },
     printInfoSources() {

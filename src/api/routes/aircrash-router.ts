@@ -5,6 +5,7 @@ import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { AircrashService } from '../services';
 const pug = require('pug');
+const pdf = require('html-pdf');
 export const aircrashRouter = express.Router();
 const db = knex(DB_CONFIG);
 const aircrashService = new AircrashService();
@@ -79,7 +80,7 @@ aircrashRouter.put(
 			.where('AirCrash.AirCrash.yacsinumber', aircrashId);
 
 		//Add the new info sources (in progress)
-		console.log(newInfoSources);
+		//console.log(newInfoSources);
 		await db
 			.insert(
 				newInfoSources.map((source: any) => ({
@@ -182,6 +183,40 @@ aircrashRouter.get(
 );
 
 
+//PDFS 
+aircrashRouter.post(
+	'/pdf/:aircrashId',
+	[param('aircrashId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { aircrashId } = req.params;
+
+		let aircrash = await aircrashService.getById(aircrashId);
+		
+		if(!aircrash) {
+			res.status(404).send({ message: "Data not found"});
+			return;
+		}
+		// Compile template.pug, and render a set of data
+		let data = pug.renderFile('./templates/aircrashes/aircrashView.pug', {
+			data: aircrash
+		});
+
+		res.setHeader('Content-disposition', 'attachment; filename="burial.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		pdf.create(data, {
+			format: 'A3',
+			orientation: 'landscape'
+		}).toBuffer(function(err: any, buffer: any){
+			//console.log(err);
+			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
+
+			res.send(buffer);
+		});
+
+		//res.status(200).send(data);
+});
+
 aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
 
 	let aircrashes = await aircrashService.getAll();
@@ -190,7 +225,21 @@ aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
 	let data = pug.renderFile('./templates/aircrashes/aircrashGrid.pug', {
 		data: aircrashes
 	});
-	res.status(200).send(data);
+	//res.status(200).send(data);
+	
+	res.setHeader('Content-disposition', 'attachment; filename="aircrashes.html"');
+	res.setHeader('Content-type', 'application/pdf');
+	pdf.create(data, {
+		format: 'A3',
+		orientation: 'landscape'
+	}).toBuffer(function(err: any, buffer: any){
+		//console.log(err);
+		//console.log('This is a buffer:', Buffer.isBuffer(buffer));
+
+		res.send(buffer);
+	});
+
+	//res.status(200).send(data);
 });
 
 aircrashRouter.post('/export', async (req: Request, res: Response) => {

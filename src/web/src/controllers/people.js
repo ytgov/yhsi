@@ -18,7 +18,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				console.log(error);
+				//console.log(error);
 			});
 	},
 	async getById(id) {
@@ -29,7 +29,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				console.log(error);
+				//console.log(error);
 			});
 	},
 	async put(id, data) {
@@ -79,11 +79,39 @@ export default {
 		return await api
 			.get(`people/${id}/histories`)
 			.then((res) => {
-				console.log(res);
+				//console.log(res);
 				return res.data;
 			})
 			.catch((error) => {
 				return error;
 			});
 	},
+	async getGridPdf(){
+		return await api({
+			url: 'people/pdf',
+			method: 'POST',
+			responseType: 'blob',
+		})
+		.then( res => {
+			return res.data;
+		}).catch( err => {
+			return err;
+		})
+	},
+	async getExport(){
+		return await api.post('aircrash/export')
+		.then( res => {
+		  return res.data;
+		}).catch( err => {
+		  return err;
+		})
+	},
+	async getPdf(id){
+		return await api.post(`aircrash/pdf/${id}`)
+		.then( res => {
+			return res.data;
+		}).catch( err => {
+			return err;
+		})
+	}
 };

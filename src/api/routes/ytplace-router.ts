@@ -212,8 +212,8 @@ ytPlaceRouter.post(
 		} = req.body;
 
 		if (!errors.isEmpty()) {
-			console.log('Validation error');
-			console.log(errors.array());
+			//console.log('Validation error');
+			//console.log(errors.array());
 			return res.status(400).json({ errors: errors.array() });
 		}
 

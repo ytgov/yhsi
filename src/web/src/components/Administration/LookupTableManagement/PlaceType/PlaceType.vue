@@ -103,7 +103,7 @@ export default {
     },
     removeItem(item){ //removes one element from the users array
       const index = this.placetypes.findIndex(a=> a.id == item.id);
-      console.log(index);
+      //console.log(index);
       if (index > -1) {
         this.placetypes.splice(index, 1);
       }
@@ -117,7 +117,7 @@ export default {
         let textToMatch = this.search;
         let data = await catalogs.getPlaceTypes(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
         this.placetypes = _.get(data, 'body', []);
-        console.log(this.placetypes);
+        //console.log(this.placetypes);
         this.totalLength = _.get(data, 'count', 0);
         this.loading = false;
     },

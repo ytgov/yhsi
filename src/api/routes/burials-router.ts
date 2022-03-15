@@ -5,6 +5,7 @@ import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { BurialService }  from "../services";
 const pug = require('pug');
+const pdf = require('html-pdf');
 export const burialsRouter = express.Router();
 const db = knex(DB_CONFIG);
 const burialService = new BurialService();
@@ -170,7 +171,7 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 	}
 
 	const editOccupations = Occupations.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
-	//console.log("occupations to edit",editOccupations);
+	////console.log("occupations to edit",editOccupations);
 	for( const item of editOccupations ){
 		await db('Burial.Occupation')
 		.update({ BurialID: burialId, OccupationID: item.OccupationID })
@@ -286,18 +287,42 @@ burialsRouter.post(
 		let data = pug.renderFile('./templates/burials/burialView.pug', {
 			data: burial
 		});
-		res.status(200).send(data);
+
+		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		pdf.create(data, {
+			format: 'A3',
+			orientation: 'landscape'
+		}).toBuffer(function(err: any, buffer: any){
+			//console.log(err);
+			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
+
+			res.send(buffer);
+		});
+
+		//res.status(200).send(data);
 });
 
 
 burialsRouter.post('/pdf', async (req: Request, res: Response) => {
 		let burials = await burialService.getAll();
 
-		// Compile template.pug, and render a set of data
 		let data = pug.renderFile('./templates/burials/burialGrid.pug', {
 			data: burials
 		});
-		res.status(200).send(data);
+
+		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		pdf.create(data, {
+			format: 'A3',
+			orientation: 'landscape'
+		}).toBuffer(function(err: any, buffer: any){
+			//console.log(err);
+			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
+
+			res.send(buffer);
+		});
+		//res.status(200).send(data);
 	}
 );
 

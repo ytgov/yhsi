@@ -225,7 +225,7 @@ router.delete('/history/:historyId', RequiresAuthentication, async (req, res) =>
         .del()
         .returning('*');
 
-    console.log(res);
+    //console.log(res);
     if(!resp){
       res.status(404).send({ message: `Couldn't find the desired history record`});
       return;

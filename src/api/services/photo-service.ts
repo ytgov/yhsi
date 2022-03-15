@@ -26,7 +26,7 @@ export class PhotoService {
 			.where({ rowId: id })
 			.first()
 			.catch((err: any) => {
-				console.log('BOMBED', err);
+				//console.log('BOMBED', err);
 				return undefined;
 			});
 	}
@@ -36,7 +36,7 @@ export class PhotoService {
 			.select<Photo[]>(PHOTO_FIELDS)
 			.where({ placeId: id })
 			.catch((err: any) => {
-				console.log('BOMBED', err);
+				//console.log('BOMBED', err);
 				return new Array<Photo>();
 			});
 	}
@@ -47,7 +47,7 @@ export class PhotoService {
 			.where({ rowId: id })
 			.first()
 			.catch((err: any) => {
-				console.log('BOMBED', err);
+				//console.log('BOMBED', err);
 				return undefined;
 			});
 	}
@@ -58,7 +58,7 @@ export class PhotoService {
 			.where({ rowId: id })
 			.first()
 			.catch((err: any) => {
-				console.log('BOMBED', err);
+				//console.log('BOMBED', err);
 				return undefined;
 			});
 	}
@@ -101,7 +101,7 @@ export class PhotoService {
 			let selectStmt = this.knex('photo');
 			let countStmt = this.knex('photo');
 
-			//console.log(query);
+			////console.log(query);
 
 			if (query && query.length > 0) {
 				query.forEach((stmt) => {
@@ -142,7 +142,7 @@ export class PhotoService {
 							break;
 						}
 						case 'lte': {
-							console.log(`Testing ${stmt.field} for IN on ${stmt.value}`);
+							//console.log(`Testing ${stmt.field} for IN on ${stmt.value}`);
 							selectStmt.where(stmt.field, '<=', stmt.value);
 							countStmt.where(stmt.field, '<=', stmt.value);
 							break;
@@ -166,7 +166,7 @@ export class PhotoService {
 							break;
 						}
 						default: {
-							console.log(`IGNORING ${stmt.field} on ${stmt.value}`);
+							//console.log(`IGNORING ${stmt.field} on ${stmt.value}`);
 						}
 					}
 				});
@@ -184,8 +184,8 @@ export class PhotoService {
 				.count('*', { as: 'counter' })
 				.then((t: any) => t)
 				.catch((err: any) => {
-					console.log('COUNT Query Error');
-					console.log(err);
+					//console.log('COUNT Query Error');
+					//console.log(err);
 					return reject(err.originalError.info.message);
 				});
 
@@ -229,7 +229,7 @@ export class PhotoService {
 			.where({ id: id })
 			.first()
 			.catch((err: any) => {
-				console.log('BOMBED', err);
+				//console.log('BOMBED', err);
 				return undefined;
 			});
 	}
@@ -240,7 +240,7 @@ export class PhotoService {
 			.where({ userId: id })
 			.where({ resultType: 'Photo' })
 			.catch((err: any) => {
-				console.log('BOMBED', err);
+				//console.log('BOMBED', err);
 				return undefined;
 			});
 	}

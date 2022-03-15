@@ -51,18 +51,21 @@
           Add Burial
         </v-btn>
 
-        <JsonCSV :data="burials">
-          <v-btn class="black--text mx-1" :disabled="burials.length == 0">
+        <v-btn class="black--text mx-1" v-if="loading" :loading="loading">
+            <v-icon class="mr-1"> mdi-export </v-icon>
+            Export
+        </v-btn>
+        <JsonCSV v-else :data="burialsData">
+          <v-btn class="black--text mx-1" :disabled="burialsData.length == 0">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
           </v-btn>
         </JsonCSV>
 
-        <PrintButton
-          key="prt-2"
-          :data="{ burials }"
-          :disabled="burials.length == 0"
-        />
+        <v-btn class="black--text mx-1" @click="downloadPdf" :loading="loadingPdf">
+            <v-icon class="mr-1"> mdi-printer </v-icon>
+            Print
+        </v-btn>
       </v-col>
     </v-row>
     <div class="mt-2">
@@ -100,12 +103,11 @@
 <script>
 import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
-import PrintButton from "./PrintButton";
 import _ from "lodash";
 import burials from "../../../controllers/burials";
 export default {
   name: "boatsgrid-index",
-  components: { Breadcrumbs, JsonCSV, PrintButton },
+  components: { Breadcrumbs, JsonCSV },
   data: () => ({
     route: "",
     loading: false,
@@ -152,6 +154,8 @@ export default {
       { text: "Audience", icon: "mdi-account" },
       { text: "Conversions", icon: "mdi-flag" },
     ],
+    burialsData: [],
+    loadingPdf: false
   }),
   mounted() {
     this.getDataFromApi();
@@ -180,7 +184,7 @@ export default {
       this.filterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
       })
-      //console.log("TEST",JSON.stringify(prefilters));
+      ////console.log("TEST",JSON.stringify(prefilters));
       let data = await burials.get(
         page,
         itemsPerPage,
@@ -206,7 +210,22 @@ export default {
       this.burials.map((x) => {
         x.crashdate = this.formatDate(x.crashdate);
       });
+      this.burialsData = await burials.getExport();
       this.loading = false;
+    },
+    async downloadPdf(){
+      this.loadingPdf = true;
+      let res = await burials.getGridPdf();
+      let blob = new Blob([res], { type: "application/octetstream" });
+      let url = window.URL || window.webkitURL;
+      let link = url.createObjectURL(blob);
+      let a = document.createElement("a");
+      a.setAttribute("download", "Burials.pdf");
+      a.setAttribute("href", link);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      this.loadingPdf = false;
     },
     formatDate(date) {
       if (!date) return null;

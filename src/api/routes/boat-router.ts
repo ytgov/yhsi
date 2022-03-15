@@ -186,11 +186,11 @@ boatsRouter.get(
 			format: 'A3',
 			orientation: 'landscape'
 		}).toBuffer(function(err: any, buffer: any){
-			console.log(err);
-			console.log('This is a buffer:', Buffer.isBuffer(buffer));
+			//console.log(err);
+			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
 
 			res.send(buffer);
-		});
+		}); 
 });
 
 boatsRouter.post('/pdf', async (req: Request, res: Response) => {
@@ -207,8 +207,8 @@ boatsRouter.post('/pdf', async (req: Request, res: Response) => {
 			format: 'A3',
 			orientation: 'landscape'
 		}).toBuffer(function(err: any, buffer: any){
-			console.log(err);
-			console.log('This is a buffer:', Buffer.isBuffer(buffer));
+			//console.log(err);
+			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
 
 			res.send(buffer);
 		});

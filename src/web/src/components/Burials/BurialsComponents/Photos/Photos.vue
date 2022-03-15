@@ -509,14 +509,14 @@ export default {
     async getAll() {
       this.showSkeletons = true;
       let data = await photos.getAll(this.page - 1, this.searchPhotos);
-      console.log("look here", data);
+      //console.log("look here", data);
       
       this.availablePhotos = data.body.map((x) => {
         x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
         x.selected = false;
         return x;
       });
-      console.log(this.availablePhotos);
+      //console.log(this.availablePhotos);
       this.numberOfPages = Math.round(data.count / 6);
       this.showSkeletons = false;
     },
@@ -524,7 +524,7 @@ export default {
       this.loadingData = true;
       this.loadingPhotosChange(this.loadingData);
       let data = await photos.getByBurialId(Number(this.BurialID));
-      console.log(data);
+      //console.log(data);
       this.photos = data.map((x) => {
         x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
         x.selected = false;
@@ -577,7 +577,7 @@ export default {
         .map((x) => {
           return x.RowId;
         });
-        //console.log("person id", this.PersonID);
+        ////console.log("person id", this.PersonID);
         
         await photos.linkBurialPhotos(Number(this.BurialID), {
         linkPhotos: photosToLink,
@@ -598,10 +598,10 @@ export default {
       var reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = function () {
-        //console.log(reader.result);
+        ////console.log(reader.result);
       };
       reader.onerror = function (error) {
-        console.log("Error: ", error);
+        //console.log("Error: ", error);
       };
     },
     validate() {
