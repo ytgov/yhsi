@@ -4,6 +4,39 @@ html,body{
     font-family: 'Montserrat', sans-serif;
 
 }
+/*@media print
+{*/
+
+@media print {
+    thead {
+        display: table-header-group;
+    }
+    tr { 
+        page-break-inside:avoid;
+        page-break-after: always;
+    }
+    td{ 
+        page-break-inside:avoid;
+        page-break-after: always;
+    }
+}
+
+
+thead {
+    display: table-header-group;
+}
+tr { 
+    page-break-inside:avoid;
+    page-break-after: always;
+}
+td{ 
+    page-break-inside:avoid;
+    page-break-after: always;
+}
+table {
+    -fs-table-paginate: paginate;
+}
+
 
 table, th, td {
     border: 1px solid;

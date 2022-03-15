@@ -198,14 +198,14 @@ export default {
         const { ChapterEdit, NotesEdit } = this;
 
         const { Membership, MembershipLUpID } = this.MembershipEdit;
-        console.log({ Membership, MembershipLUpID, Chapter:ChapterEdit, Notes: NotesEdit, edited: true });
+        //console.log({ Membership, MembershipLUpID, Chapter:ChapterEdit, Notes: NotesEdit, edited: true });
         this.$emit("editMembership",{ Membership, MembershipLUpID, Chapter:ChapterEdit, Notes: NotesEdit, edited: true, ID: this.membershipToEdit.Membership.ID }, this.membershipToEdit.index);
         this.$refs.membershipEditDialog.reset();
         this.editDialog = false;
       },
       openEditDialog(){
         const { Chapter, Notes, Membership, MembershipLUpID } = this.membershipToEdit.Membership;
-        console.log( this.membershipToEdit.Membership);
+        //console.log( this.membershipToEdit.Membership);
         this.MembershipEdit = {Membership, MembershipLUpID};
         this.ChapterEdit = Chapter;
         this.NotesEdit = Notes;

@@ -260,7 +260,6 @@ const routes = [
 			}
 		]
 	},
-	
 	{
 	path: "/photos/add",
 	name: "PhotosFormAdd",
@@ -502,7 +501,7 @@ router.beforeEach(async (to, from, next) => {
 	var isAuthenticated = store.getters.isAuthenticated;
 
 	if (requiresAuth && !isAuthenticated) {
-		console.log("You aren't authenticatd, redirecting to sign-in");
+		//console.log("You aren't authenticatd, redirecting to sign-in");
 		next('/sign-in');
 		return;
 	}

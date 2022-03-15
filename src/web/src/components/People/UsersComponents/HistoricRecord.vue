@@ -203,7 +203,7 @@ export default {
                     SeqID: this.data[index].SeqID
                 }  
             };
-            console.log(index,this.data[index].PersonHistID, data);
+            //console.log(index,this.data[index].PersonHistID, data);
 
             let resp = await people.putHistory(this.data[index].PersonHistID, data);
             if(resp.message == "success"){
@@ -232,11 +232,11 @@ export default {
                 }  
             };
             let resp = await people.postHistory(this.personID, data);
-    console.log(resp);
+    //console.log(resp);
             if(resp.message == 'success'){
                 this.data.push(data.history);
-                console.log("DATA PUSHED");
-                console.log(this.data);
+                //console.log("DATA PUSHED");
+                //console.log(this.data);
             }
                 
             this.overlay = false;

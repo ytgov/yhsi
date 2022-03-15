@@ -43,7 +43,7 @@ export default {
         return res.data;
       }).catch(error =>{
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async getById(id) {
@@ -52,7 +52,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        //console.log(error);
       });
   },
   async put(id, data){
@@ -88,7 +88,11 @@ export default {
     })
   },
   async getGridPdf(){
-    return await api.post('burials/pdf')
+    return await api({
+      url: 'burials/pdf',
+      method: 'POST',
+      responseType: 'blob',
+    })
     .then( res => {
       return res.data;
     }).catch( err => {
@@ -96,7 +100,11 @@ export default {
     })
   },
   async getPdf(id){
-    return await api.post(`burials/pdf/${id}`)
+    return await api({
+      url: `burials/pdf/${id}`,
+      method: 'POST',
+      responseType: 'blob',
+    })
     .then( res => {
       return res.data;
     }).catch( err => {

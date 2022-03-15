@@ -205,7 +205,7 @@ photoRouter.post(
 		req.body.originalFileName = req.file.originalname;
 
 		if (!errors.isEmpty()) {
-			console.log(errors);
+			//console.log(errors);
 			return res.status(400).json({ errors: errors.array() });
 		}
 
@@ -213,7 +213,7 @@ photoRouter.post(
 			.addPhoto(req.body as Photo)
 			.then((item) => item)
 			.catch((err) => {
-				console.log(err);
+				//console.log(err);
 				return res.json({ errors: [err.originalError.info.message] });
 			});
 
@@ -256,7 +256,7 @@ photoRouter.put(
 		}
 
 		if (!errors.isEmpty()) {
-			console.log(errors);
+			//console.log(errors);
 			return res.status(400).json({ errors: errors.array() });
 		}
 
@@ -264,7 +264,7 @@ photoRouter.put(
 			.updatePhoto(req.params.id, updater as Photo)
 			.then((item) => item)
 			.catch((err) => {
-				console.log(err);
+				//console.log(err);
 				return res.json({ errors: [err.originalError.info.message] });
 			});
 
@@ -283,7 +283,7 @@ photoRouter.put(
 			.updateFile(req.params.id, req.file.buffer)
 			.then((item) => item)
 			.catch((err) => {
-				console.log(err);
+				//console.log(err);
 				return res.json({ errors: [err.originalError.info.message] });
 			});
 		let thumbnail = await createThumbnail(req.file.buffer);
@@ -305,7 +305,7 @@ photoRouter.post(
 		const errors = validationResult(req);
 
 		if (!errors.isEmpty()) {
-			console.log(errors);
+			//console.log(errors);
 			return res.status(400).json({ errors: errors.array() });
 		}
 
@@ -313,7 +313,7 @@ photoRouter.post(
 			.addSavedFilter(req.body as SavedFilter)
 			.then((item) => item)
 			.catch((err) => {
-				console.log(err);
+				//console.log(err);
 				return res.json({ errors: [err.originalError.info.message] });
 			});
 
@@ -344,7 +344,7 @@ photoRouter.get(
 		const errors = validationResult(req);
 
 		if (!errors.isEmpty()) {
-			console.log(errors);
+			//console.log(errors);
 			return res.status(400).json({ errors: errors.array() });
 		}
 
@@ -369,7 +369,7 @@ photoRouter.get(
 		const errors = validationResult(req);
 
 		if (!errors.isEmpty()) {
-			console.log(errors);
+			//console.log(errors);
 			return res.status(400).json({ errors: errors.array() });
 		}
 

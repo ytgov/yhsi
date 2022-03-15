@@ -151,7 +151,7 @@ export default {
         this.dialog = false;
       },
       saveEdit(){
-        console.log(this.occupationEdit);
+        //console.log(this.occupationEdit);
         this.occupationEdit.edited = true;
         this.$emit("editOccupation", this.occupationEdit, this.occupationToEdit.index);
         this.$refs.occupationEditDialog.reset();

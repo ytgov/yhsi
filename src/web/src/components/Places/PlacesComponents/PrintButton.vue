@@ -133,7 +133,7 @@ export default {
       for (let i = 0; i < this.photoFields.length; i++) {
         this.addTitle(this.photoFields[i].title);
         this.addText(`${this.selectedImage[this.photoFields[i].key]}`);
-        //console.log(`{ title: "", key: "${keys[i]}"},`);
+        ////console.log(`{ title: "", key: "${keys[i]}"},`);
       }
     },
     printHistoricalRecord() {

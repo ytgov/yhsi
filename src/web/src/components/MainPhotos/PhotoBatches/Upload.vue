@@ -170,7 +170,7 @@ export default {
           }
         }
         formData.append("file", this.uploadFile);
-        console.log(this.uploadFile);
+        //console.log(this.uploadFile);
         axios
           .post(`${PHOTO_BATCH_URL}/photo/`, formData)
           .then((resp) => {
