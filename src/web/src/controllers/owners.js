@@ -65,5 +65,17 @@ export default {
         // handle error
         //console.log(error);
       });
-  }
+  },
+  async getPdf(id){
+    return await api({
+      url: `owners/pdf/${id}`,
+      method: 'POST',
+      responseType: 'blob',
+    })
+    .then( res => {
+      return res.data;
+    }).catch( err => {
+      return err;
+    })
+  },
 }

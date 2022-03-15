@@ -6,80 +6,61 @@ style
 div.divided-row
   div.right
     div Boats information
-    div.item-name #{data.LastName}, #{data.FirstName}  
+    div.item-name #{data.Name} 
   div.left
-    img(src="./yukon.svg", alt="")
+    img(src="../yukon.svg", alt="")
 
-div.section-title Boat information
-div.divided-row 
-  div.row-container 
-    div First Name: #{data.Name}
-    div Last Name: #{data.LastName}
-    div Alternate Name/Spelling: #{data.Manner}
-    div Gender: #{data.Gender}
-  div.row-container 
-    div Origin: #{data.OriginCity}, #{data.OriginCountry}
-    div Birth Date: #{data.BirthDay}/#{data.BirthMonth}/#{data.BirthYear}
-    div Death Date: #{data.DeathDay}/#{data.DeathMonth}/#{data.DeathYear}
+div.section-title General information
+ 
+table.divided-row
+  tbody 
+    tr 
+      td
+        div Name: #{data.Name}
+        div Registration Number: #{data.RegistrationNumber}
+        div Vessel Type: #{data.VesselType}
+        div Current Location Description: #{data.CurrentLocation}
+      td
+        div Construction Date: #{data.ConstructionDate}
+        div Service Start Date: #{data.ServiceStart}
+        div Service End Date: #{data.ServiceEnd}
+        div Notes: #{data.Notes}
+
+
+div.section-title Owners/Names
+table.divided-row 
+  tbody 
+    tr 
+      td 
+        table.table-full-width 
+          thead 
+            tr 
+              td Owners 
+          tbody 
+            each val in data.owners
+              tr 
+                td #{val.OwnerName}
+      td 
+        table.table-full-width 
+          thead 
+            tr 
+              td Names 
+          tbody 
+            each val in data.pastNames
+              tr 
+                td #{val.BoatName}
 
 div.section-title History
-div.table-display.general
-  table
-    thead 
-      tr 
-        td 
-          strong.underline Occupation
-    tbody 
-      each val in data.Occupations
-        tr 
-          td #{val.Occupation}
-  table.religion-table 
-    thead 
-      tr 
-        td 
-          strong.underline Religion
-    tbody 
-        tr 
-          td #{data.Religion.Religion}
-  table.membership-table
-    thead 
-      tr 
-        td
-          strong.underline Memberships
-        td 
-    tbody 
-      each val in data.Memberships
-        tr
-          td #{val.Membership}
-          td  #{val.Chapter}
-      
 
-div.section-title Death 
-div.divided-row 
-  div Manner: #{data.Manner}
-  div Cause: #{data.Cause.Cause}
-
-div.section-title Funeral/Obituary
-div.divided-row 
-  div.row-container 
-    div Funneral Paid By: #{data.FunneralPaidBy}
-    table.table-full-width
-      thead 
-        tr 
-          td
-            strong.underline Sources
-      tbody 
-        each val in data.Sources
-          tr
-            td #{val.Source}
-  div.row-container 
-    table.table-full-width
-      thead 
-        tr 
-          td
-            strong.underline Next of Kin
-      tbody 
-        each val in data.Kinships
-          tr
-            td #{val.Name} - #{val.Relationship} - #{val.Location}
-
+table.table-full-width.center
+  thead 
+    tr 
+      td
+        strong.underline Historic Record 
+      td
+        strong.underline Reference 
+  tbody
+    each val in data.histories
+      tr 
+        td #{val.HistoryText}
+        td #{val.Reference}
