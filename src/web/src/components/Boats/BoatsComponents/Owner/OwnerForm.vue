@@ -13,11 +13,11 @@
           <v-icon class="mr-1">mdi-pencil</v-icon>
           Edit
         </v-btn>
-        <PrintButton
-          v-if="mode == 'view'"
-          :name="fields.OwnerName"
-          :data="fields"
-        />
+
+        <v-btn class="black--text mx-1" @click="downloadPdf" v-if="mode == 'view'" :loading="loadingPdf">
+          <v-icon class="mr-1">mdi-printer</v-icon>
+          Print
+        </v-btn>
         <!-- buttons for the edit state -->
         <v-btn
           class="black--text mx-1"
@@ -224,11 +224,10 @@
 <script>
 import Breadcrumbs from "../../../Breadcrumbs";
 import HistoricRecord from "../HistoricRecord";
-import PrintButton from "./PrintButton";
 import owners from "../../../../controllers/owners";
 export default {
   name: "ownerForm",
-  components: { Breadcrumbs, PrintButton, HistoricRecord },
+  components: { Breadcrumbs, HistoricRecord },
   data: () => ({
     overlay: false,
     //helper vars, they are used to determine if the component is in an edit, view or add new state
@@ -251,6 +250,7 @@ export default {
     search: "",
     fields: {},
     fieldsHistory: null,
+    loadingPdf: false,
   }),
   mounted() {
     if (this.checkPath("edit")) {
@@ -424,6 +424,20 @@ export default {
       this.addingAlias = true;
       this.fields.alias.push({ Alias: "", isNew: true });
       this.editTableAlias = this.fields.alias.length - 1;
+    },
+    async downloadPdf(){
+        this.loadingPdf = true;
+        let res = await owners.getPdf(parseInt(localStorage.currentOwnerID));
+        let blob = new Blob([res], { type: "application/octetstream" });
+        let url = window.URL || window.webkitURL;
+        let link = url.createObjectURL(blob);
+        let a = document.createElement("a");
+        a.setAttribute("download", `Owner.pdf`);//`Boat-${this.fields.Name}.pdf`
+        a.setAttribute("href", link);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        this.loadingPdf = false;
     },
   },
   computed: {

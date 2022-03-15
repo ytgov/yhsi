@@ -1,0 +1,47 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+div.divided-row
+  div.right
+    div Owner information
+    div.item-name #{data.Name} 
+  div.left
+    img(src="../yukon.svg", alt="")
+
+div.section-title General information
+table.table-full-width.center
+  thead 
+    tr 
+      td 
+        strong.underline Alias 
+  tbody 
+    each val in data.alias
+      tr 
+        td #{val.Alias}
+
+table.table-full-width.center
+  thead 
+    tr 
+      td 
+        strong.underline Boats Owned 
+  tbody 
+    each val in data.boats
+      tr 
+        td #{val.Name}
+
+div.section-title History
+
+table.table-full-width.center
+  thead 
+    tr 
+      td
+        strong.underline Historic Record 
+      td
+        strong.underline Reference 
+  tbody
+    each val in data.histories
+      tr 
+        td #{val.HistoryText}
+        td #{val.Reference}
