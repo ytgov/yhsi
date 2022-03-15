@@ -13,7 +13,7 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <v-btn class="black--text mx-1" @click="getPdf">  
+                <v-btn class="black--text mx-1" @click="downloadPdf" :loading="loadingPdf">  
                     <v-icon class="mr-1">mdi-printer</v-icon>
                     Print
                 </v-btn>
@@ -515,7 +515,7 @@
                             :readonly="isView"
                           ></v-text-field>
                           <v-text-field
-                            name="PlodDescription"
+                            name="PlotDescription"
                             label="Plot description"
                             v-model="fields.PlotDescription"
                             outlined dense
@@ -651,7 +651,8 @@ export default {
     //photos
     selectedImage: null,
     loadingPhotos: false,
-    infoLoaded: false
+    infoLoaded: false,
+    loadingPdf: false
   }),
   mounted(){
       if(this.checkPath("edit")){
@@ -954,11 +955,20 @@ export default {
         const [year, month, day] = date.split('-')
         return `${month}/${day}/${year}`
     },
-    async getPdf(){
-      //console.log("GETTING DATA");
-      const data = await burials.getPdf(parseInt(localStorage.currentBurialID));
-      //console.log(data);
-    }
+    async downloadPdf(){
+      this.loadingPdf = true;
+      let res = await burials.getPdf(parseInt(localStorage.currentBurialID));
+      let blob = new Blob([res], { type: "application/octetstream" });
+      let url = window.URL || window.webkitURL;
+      let link = url.createObjectURL(blob);
+      let a = document.createElement("a");
+      a.setAttribute("download", "Burials.pdf");
+      a.setAttribute("href", link);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      this.loadingPdf = false;
+    },
   },
   computed: {
     isEditable(){

@@ -291,7 +291,7 @@ burialsRouter.post(
 		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 		res.setHeader('Content-type', 'application/pdf');
 		pdf.create(data, {
-			format: 'A3',
+			format: '	letter',
 			orientation: 'landscape'
 		}).toBuffer(function(err: any, buffer: any){
 			//console.log(err);
@@ -299,7 +299,7 @@ burialsRouter.post(
 
 			res.send(buffer);
 		});
-
+		// console.log(data);
 		//res.status(200).send(data);
 });
 
@@ -310,13 +310,14 @@ burialsRouter.post('/pdf', async (req: Request, res: Response) => {
 		let data = pug.renderFile('./templates/burials/burialGrid.pug', {
 			data: burials
 		});
-
+		//res.status(200).send(data);
 		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 		res.setHeader('Content-type', 'application/pdf');
+		
 		pdf.create(data, {
 			format: 'A3',
 			orientation: 'landscape'
-		}).toBuffer(function(err: any, buffer: any){
+		}).toBuffer(function(err: any, buffer: any){ 
 			//console.log(err);
 			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
 
