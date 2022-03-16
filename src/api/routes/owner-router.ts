@@ -114,6 +114,35 @@ ownerRouter.post('/', async (req: Request, res: Response) => {
 	res.status(200).send(response);
 });
 
+
+//PDF EXPORTS
+
+ownerRouter.post(
+	'/pdf/:ownerId',
+	[param('ownerId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { ownerId } = req.params;
+
+		const owner = await boatOwnerService.getById(ownerId);
+
+		let data = pug.renderFile('./templates/boat-owners/boatOwnerView.pug', {
+			data: owner
+		});
+		res.setHeader('Content-disposition', 'attachment; filename="owner.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		pdf.create(data, {
+			format: 'A3',
+			orientation: 'landscape'
+		}).toBuffer(function(err: any, buffer: any){
+			//console.log(err);
+			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
+
+			res.send(buffer);
+		}); 
+});
+
+
 ownerRouter.post('/pdf', async (req: Request, res: Response) => {
 		
 	let owners = await boatOwnerService.getAll();
@@ -143,3 +172,5 @@ ownerRouter.post('/export', async (req: Request, res: Response) => {
 
 	res.status(200).send(data);
 });
+
+

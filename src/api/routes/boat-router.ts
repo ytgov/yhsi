@@ -167,7 +167,7 @@ boatsRouter.put('/:boatId', async (req: Request, res: Response) => {
 
 
 //PDF AND EXPORTS
-boatsRouter.get(
+boatsRouter.post(
 	'/pdf/:boatId',
 	[param('boatId').notEmpty()],
 	ReturnValidationErrors,
@@ -179,8 +179,7 @@ boatsRouter.get(
 		let data = pug.renderFile('./templates/boats/boatView.pug', {
 			data: boat
 		});
-
-		res.setHeader('Content-disposition', 'attachment; filename="boats.html"');
+		res.setHeader('Content-disposition', 'attachment; filename="boat.html"');
 		res.setHeader('Content-type', 'application/pdf');
 		pdf.create(data, {
 			format: 'A3',

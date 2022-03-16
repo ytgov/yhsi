@@ -16,12 +16,12 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  
-                    v-if="mode == 'view'" :data="fields" 
-                    :name="fields.Name" 
-                    :selectedImage="selectedImage"
-                    :loadingPhotos="loadingPhotos"
-                    :loadingHistories="loadingHistories" />
+                <v-btn class="black--text mx-1" v-if="mode == 'view'" @click="downloadPdf" :loading="loadingPdf">
+                    <v-icon class="mr-1">
+                        mdi-printer
+                    </v-icon>
+                    Print
+                </v-btn>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
                     <v-icon>mdi-close</v-icon>
@@ -418,14 +418,13 @@
 import Breadcrumbs from '../../../Breadcrumbs.vue';
 import Photos from "../../../PhotoEditor/Photos";
 import HistoricRecord from "../HistoricRecord";
-import PrintButton from "./PrintButton";
 import boats from "../../../../controllers/boats";
 import owners from "../../../../controllers/owners";
 import catalogs from "../../../../controllers/catalogs"
 import _ from 'lodash';
 export default {
     name: "boatsForm",
-    components: { Photos, Breadcrumbs, HistoricRecord, PrintButton },
+    components: { Photos, Breadcrumbs, HistoricRecord },
     data: ()=> ({
         overlay: false,
         infoLoaded: false,
@@ -468,7 +467,8 @@ export default {
         isLoadingVessels: false,
         regNumberWarning: [],
         loadingPhotos: false,
-        loadingHistories: false
+        loadingHistories: false,
+        loadingPdf: false
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -753,7 +753,21 @@ export default {
         },
         loadingHistoriesChange(val){
             this.loadingHistories = val;
-        }
+        },
+        async downloadPdf(){
+            this.loadingPdf = true;
+            let res = await boats.getPdf(parseInt(localStorage.currentBoatID));
+            let blob = new Blob([res], { type: "application/octetstream" });
+            let url = window.URL || window.webkitURL;
+            let link = url.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.setAttribute("download", `Boat.pdf`);//`Boat-${this.fields.Name}.pdf`
+            a.setAttribute("href", link);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            this.loadingPdf = false;
+        },
     },   
     computed:{
         getBoatID(){

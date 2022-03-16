@@ -3,83 +3,135 @@
 style
      include ../styles.css
     
-div.divided-row
-  div.right
-    div Burial information
-    div.item-name #{data.LastName}, #{data.FirstName}  
-  div.left
-    img(src="../yukon.svg", alt="")
+table.title-row
+  tbody 
+    tr 
+      td
+        div Burial information
+        div.item-name #{data.LastName}, #{data.FirstName} 
+      td
+        img(style='width:200px; height:100px;' src="https://firebasestorage.googleapis.com/v0/b/yg-historic-sites.appspot.com/o/yukon.svg?alt=media&token=41e6cd68-0efd-438f-aef0-44bec1e15b55", alt="")
+
 
 div.section-title Personal information
-div.divided-row 
-  div.row-container 
-    div First Name: #{data.FirstName}
-    div Last Name: #{data.LastName}
-    div Alternate Name/Spelling: #{data.Manner}
-    div Gender: #{data.Gender}
-  div.row-container 
-    div Origin: #{data.OriginCity}, #{data.OriginCountry}
-    div Birth Date: #{data.BirthDay}/#{data.BirthMonth}/#{data.BirthYear}
-    div Death Date: #{data.DeathDay}/#{data.DeathMonth}/#{data.DeathYear}
+ 
+table.divided-row
+  tbody 
+    tr 
+      td
+        div First Name: #{data.FirstName}
+        div Last Name: #{data.LastName}
+        div Alternate Name/Spelling: #{data.Manner}
+        div Gender: #{data.Gender}
+      td
+        div Origin: #{data.OriginCity}, #{data.OriginCountry}
+        div Birth Date: #{data.BirthDay}/#{data.BirthMonth}/#{data.BirthYear}
+        div Death Date: #{data.DeathDay}/#{data.DeathMonth}/#{data.DeathYear}
 
 div.section-title History
-div.table-display.general
-  table
-    thead 
-      tr 
-        td 
-          strong.underline Occupations
-    tbody 
-      each val in data.Occupations
-        tr 
-          td #{val.Occupation}
-  table.religion-table 
-    thead 
-      tr 
-        td 
-          strong.underline Religion
-    tbody 
-        tr 
-          td #{data.Religion.Religion}
-  table.membership-table
-    thead 
+table.full-width.table-display.general
+  tbody
       tr 
         td
-          strong.underline Memberships
-        td 
-    tbody 
-      each val in data.Memberships
-        tr
-          td #{val.Membership}
-          td  #{val.Chapter}
+          table.religion-table.table-full-width 
+            thead 
+              tr 
+                td 
+                  strong.underline Religion
+            tbody 
+                tr 
+                  td #{data.Religion.Religion}
+        td
+          table.table-full-width
+            thead 
+              tr 
+                td 
+                  strong.underline Occupations
+            tbody 
+              each val in data.Occupations
+                tr 
+                  td #{val.Occupation}
+        td
+          table.membership-table.table-full-width
+            thead 
+              tr 
+                td
+                  strong.underline Memberships
+                td 
+            tbody 
+              each val in data.Memberships
+                tr
+                  td #{val.Membership}
+                  td  #{val.Chapter}
       
 
 div.section-title Death 
-div.divided-row 
-  div Manner: #{data.Manner}
-  div Cause: #{data.Cause.Cause}
+table.divided-row 
+  tbody
+      tr 
+        td
+          div Manner: #{data.Manner}
+        td
+          div Cause: #{data.Cause.Cause}
 
 div.section-title Funeral/Obituary
-div.divided-row 
-  div.row-container 
-    div Funneral Paid By: #{data.FunneralPaidBy}
-    table.table-full-width
-      thead 
-        tr 
-          td
-            strong.underline Sources
-      tbody 
-        each val in data.Sources
-          tr
-            td #{val.Source}
-  div.row-container 
-    table.table-full-width
-      thead 
-        tr 
-          td
-            strong.underline Next of Kin
-      tbody 
-        each val in data.Kinships
-          tr
-            td #{val.Name} - #{val.Relationship} - #{val.Location}
+div.row-container Funneral Paid By: #{data.FunneralPaidBy}
+table.divided-row 
+  tbody
+    tr 
+      td 
+        table.table-full-width
+          thead 
+            tr 
+              td
+                strong.underline Sources
+          tbody 
+            each val in data.Sources
+              tr
+                td #{val.Source}
+      td 
+        table.table-full-width
+          thead 
+            tr 
+              td
+                strong.underline Next of Kin
+          tbody 
+            each val in data.Kinships
+              tr
+                td #{val.Name} - #{val.Relationship} - #{val.Location}
+div.section-title Burial Location
+
+table.table-full-width.center
+  tbody 
+    tr 
+      td Burial Location: 
+      td #{data.OtherCemetaryDesc}  
+    tr 
+      td Plot Description:
+      td #{data.PlotDescription} 
+
+div.section-title Marker/Site Visit
+
+table.table-full-width.center
+  thead 
+    tr 
+      td
+        strong.underline Marker Description
+      td
+        strong.underline Inscription
+      td
+        strong.underline Condition
+      td
+        strong.underline Date Visited
+      td
+        strong.underline Visited By
+  tbody 
+    each val in data.SiteVisits
+      tr
+        td #{val.MarkerDescription} 
+        td #{val.Inscription} 
+        td #{val.Condition} 
+        td #{val.VisitYear} 
+        td #{val.RecordedBy} 
+        
 
