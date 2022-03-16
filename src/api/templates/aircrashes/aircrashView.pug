@@ -3,83 +3,73 @@
 style
      include ../styles.css
     
-div.divided-row
-  div.right
-    div Boats information
-    div.item-name #{data.LastName}, #{data.FirstName}  
-  div.left
-    img(src="./yukon.svg", alt="")
+table.title-row
+  tbody 
+    tr 
+      td
+        div Aircrash information
+        div.item-name #{data.yacsinumber} #{data.aircrafttype}  (#{data.aircraftregistration})
+      td
+        img(style='width:200px; height:100px;' src="https://firebasestorage.googleapis.com/v0/b/yg-historic-sites.appspot.com/o/yukon.svg?alt=media&token=41e6cd68-0efd-438f-aef0-44bec1e15b55", alt="")
 
-div.section-title Boat information
-div.divided-row 
-  div.row-container 
-    div First Name: #{data.Name}
-    div Last Name: #{data.LastName}
-    div Alternate Name/Spelling: #{data.Manner}
-    div Gender: #{data.Gender}
-  div.row-container 
-    div Origin: #{data.OriginCity}, #{data.OriginCountry}
-    div Birth Date: #{data.BirthDay}/#{data.BirthMonth}/#{data.BirthYear}
-    div Death Date: #{data.DeathDay}/#{data.DeathMonth}/#{data.DeathYear}
+div.section-title General information
 
-div.section-title History
-div.table-display.general
-  table
-    thead 
-      tr 
-        td 
-          strong.underline Occupation
-    tbody 
-      each val in data.Occupations
-        tr 
-          td #{val.Occupation}
-  table.religion-table 
-    thead 
-      tr 
-        td 
-          strong.underline Religion
-    tbody 
-        tr 
-          td #{data.Religion.Religion}
-  table.membership-table
-    thead 
-      tr 
-        td
-          strong.underline Memberships
-        td 
-    tbody 
-      each val in data.Memberships
-        tr
-          td #{val.Membership}
-          td  #{val.Chapter}
-      
+table.divided-row
+  tbody 
+    tr 
+      td
+        div YACSI Number: #{data.yacsinumber}
+        div Aircraft Maker/Model: #{data.aircrafttype}
+        div Crash Date: #{data.crashdate}
+        div Pilot: #{data.pilotrank} #{data.pilotfirstname} #{data.pilotlastname}
+      td
+        div Aircraft Registration: #{data.aircraftregistration}
+        div Country of Registration: #{data.nation}
+        div Registration Type: #{data.militarycivilian}
 
-div.section-title Death 
-div.divided-row 
-  div Manner: #{data.Manner}
-  div Cause: #{data.Cause.Cause}
+div.section-title Location Details
+table.divided-row
+  tbody 
+    tr 
+      td
+        div Latitude: #{data.lat}
+        div Longitude Maker/Model: #{data.long}
+        div Accuracy: #{data.accuracy}
+        div Crash site within Yukon?: #{data.inyukon}
+      td
+        div Location Description: #{data.crashlocation}
 
-div.section-title Funeral/Obituary
-div.divided-row 
-  div.row-container 
-    div Funneral Paid By: #{data.FunneralPaidBy}
-    table.table-full-width
-      thead 
-        tr 
-          td
-            strong.underline Sources
-      tbody 
-        each val in data.Sources
-          tr
-            td #{val.Source}
-  div.row-container 
-    table.table-full-width
-      thead 
-        tr 
-          td
-            strong.underline Next of Kin
-      tbody 
-        each val in data.Kinships
-          tr
-            td #{val.Name} - #{val.Relationship} - #{val.Location}
+div.section-title Crash Details
+table.divided-row
+  tbody 
+    tr 
+      td
+        div Remains on site: #{data.yacsinumber}
+        div Extent of remains on site: #{data.aircrafttype}
+        div Other location of remains: #{data.crashdate}
+        div Description of crash event: #{data.descriptionofcrashevent}
+      td
+        div Souls on board: #{data.soulsonboard}
+        div Injuries: #{data.injuries}
+        div Fatalities: #{data.fatalities}
+        div Additional Info: #{data.comments}
+        
+div.section-title Crash Sources 
+table.divided-row
+  tbody 
+    tr 
+      td
+        div Remains on site: #{data.significanceofaircraft}
+      td
+        table.table-full-width
+          thead 
+            tr 
+              td Source
+          tbody
+            each val in data.infoSources
+              tr 
+                td #{val.Source}
 
+        
+        
+        

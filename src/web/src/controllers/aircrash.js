@@ -16,7 +16,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   },
   async getById(aircrashId){
@@ -25,7 +25,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   },
   async put(aircrashId, data){
@@ -34,7 +34,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   },
   async post(data){
@@ -43,7 +43,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error.response);
+        console.error(error.response);
         return error;
       });
   },
@@ -76,12 +76,17 @@ export default {
     })
   },
   async getPdf(id){
-    return await api.post(`aircrash/pdf/${id}`)
+    return await api({
+      url: `aircrash/pdf/${id}`,
+      method: 'POST',
+      responseType: 'blob',
+    })
     .then( res => {
       return res.data;
     }).catch( err => {
       return err;
     })
-  }
+  },
+
 }
 

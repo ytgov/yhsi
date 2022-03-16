@@ -232,13 +232,38 @@ async (req: Request, res: Response) => {
 		format: 'A3',
 		orientation: 'portrait'
 	}).toBuffer(function(err: any, buffer: any){
-		////console.log(err);
+		console.error(err);
 		////console.log('This is a buffer:', Buffer.isBuffer(buffer));
-
 		res.send(buffer);
 	});
 	//res.status(200).send(data);
 });
+
+peopleRouter.post(
+	'/pdf/:personId',
+	[param('personId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { personId } = req.params;
+
+		const person = await peopleService.getById(personId);
+
+		let data = pug.renderFile('./templates/people/peopleView.pug', {
+			data: person
+		});
+		res.setHeader('Content-disposition', 'attachment; filename="Person.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		pdf.create(data, {
+			format: 'A3',
+			orientation: 'landscape'
+		}).toBuffer(function(err: any, buffer: any){
+			//console.log(err);
+			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
+
+			res.send(buffer);
+		}); 
+});
+
 
 peopleRouter.post('/export', async (req: Request, res: Response) => {
 	

@@ -13,12 +13,11 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  
-                    v-if="isViewingCrash" 
-                    :data="fields" 
-                    :yacsinumber="fields.yacsinumber" 
-                    :selectedImage="selectedImage"
-                    :loadingPhotos="loadingPhotos"/>
+                
+                <v-btn class="black--text mx-1" @click="downloadPdf" v-if="isViewingCrash" :loading="loadingPdf">
+                    <v-icon class="mr-1">mdi-printer</v-icon>
+                    Print
+                </v-btn>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="isEditingCrash">
                     <v-icon>mdi-close</v-icon>
@@ -456,13 +455,12 @@
 <script>
 import Breadcrumbs from '../../Breadcrumbs.vue';
 import Photos from "../../PhotoEditor/Photos";
-import PrintButton from "./PrintButton";
 import aircrash from "../../../controllers/aircrash";
 import MapLoader from "../../MapLoader";
 import _ from 'lodash';
 export default {
     name: "crashForm",
-    components: { Photos, Breadcrumbs, PrintButton, MapLoader },
+    components: { Photos, Breadcrumbs, MapLoader },
     data: ()=> ({
         overlay: false,
     //helper vars used for the name list functions
@@ -504,7 +502,8 @@ export default {
             return /^[0-9]*$/.test(v) || 'A number is required';
         }],
 
-        loadingPhotos: false
+        loadingPhotos: false,
+        loadingPdf: false
     }),
     async mounted(){
         if(this.checkPath("edit")){
@@ -763,7 +762,21 @@ export default {
         },
         loadingPhotosChange(val){
             this.loadingPhotos = val;
-        }
+        },
+        async downloadPdf(){
+            this.loadingPdf = true;
+            let res = await aircrash.getPdf(parseInt(localStorage.currentCrashNumber));
+            let blob = new Blob([res], { type: "application/octetstream" });
+            let url = window.URL || window.webkitURL;
+            let link = url.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.setAttribute("download", `Aircrash.pdf`);//`Boat-${this.fields.Name}.pdf`
+            a.setAttribute("href", link);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            this.loadingPdf = false;
+        },
         
     },   
     computed:{
