@@ -1,0 +1,41 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+div.divided-row
+  div.right
+    div Person information
+    div.item-name #{data.Surname}, #{data.GivenName}  
+  div.left
+    img(src="../yukon.svg", alt="")
+
+div.section-title Personal information
+ 
+table.divided-row
+  tbody 
+    tr 
+      td
+        div Sur Name: #{data.Surname}
+        div Given Name: #{data.GivenName}
+        div Notes: #{data.Notes}
+      td
+        div Birth Year: #{data.BirthYear}
+        div Death Year: #{data.DeathYear}
+
+div.section-title History
+
+table.table-full-width.center
+  thead 
+    tr 
+      td
+        strong.underline Historic Record 
+      td
+        strong.underline Reference 
+  tbody
+    each val in data.histories
+      tr 
+        td #{val.HistoryText}
+        td #{val.Reference}
+        
+
