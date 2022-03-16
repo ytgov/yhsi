@@ -99,7 +99,7 @@ export default {
 		})
 	},
 	async getExport(){
-		return await api.post('aircrash/export')
+		return await api.post('people/export')
 		.then( res => {
 			return res.data;
 		}).catch( err => {
