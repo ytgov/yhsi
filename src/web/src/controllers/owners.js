@@ -15,7 +15,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   },
   async getById(id) {
@@ -24,7 +24,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   },
   async put(id, data) {
@@ -33,7 +33,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   },
   async post(data) {
@@ -42,7 +42,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   },
   async getGridPdf(){
@@ -63,7 +63,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   },
   async getPdf(id){

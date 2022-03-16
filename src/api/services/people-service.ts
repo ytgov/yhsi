@@ -14,23 +14,15 @@ export class PeopleService {
         .orderBy(`${sortBy}`, `${sort}`);
 	}
 
-	async getById(aircrashId: string) {	
-		const aircrash = await db
-			.select('*')
-			.from('dbo.vAircrash')
-			.where('dbo.vAircrash.yacsinumber', aircrashId)
-			.first();
-
-        if (!aircrash) {
-            return null;
-        }
-
-		aircrash.infoSources = await db
-			.select('*')
-			.from('AirCrash.InfoSource')
-			.where('AirCrash.InfoSource.YACSINumber', aircrashId);
-
-        return aircrash;
+	async getById(personId: string) {	
+		const person = await db
+            .from('Person.Person')
+            .where('Person.PersonID', personId)
+            .first();
+        person.histories = await db
+			.from('Person.History')
+			.where('History.PersonID', personId);
+        return person;
     }
 
     async doSearch( page: number, limit: number, offset: number, filters: any){
