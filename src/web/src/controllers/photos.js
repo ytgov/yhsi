@@ -19,7 +19,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 	// Boats
@@ -31,7 +31,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 	async postBoatPhoto(data) {
@@ -42,7 +42,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 	// Aircrashes
@@ -54,7 +54,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 	async postAirCrashPhoto(data) {
@@ -65,7 +65,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 	async linkAirCrashPhotos(yacsinumber, data) {
@@ -76,7 +76,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 	async linkBoatPhotos(id, data) {
@@ -87,7 +87,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 
@@ -110,7 +110,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 		// Yt Places
 	},
@@ -122,7 +122,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 	async postPlacePhoto(data) {
@@ -133,7 +133,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 	async linkPlacePhotos(id, data) {
@@ -144,7 +144,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 	async postPersonPhoto(data) {
@@ -155,7 +155,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 	//BURIALS
@@ -167,7 +167,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 	async postBurialPhoto(data) {
@@ -178,7 +178,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 	async linkBurialPhotos(id, data) {
@@ -189,7 +189,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
-				//console.log(error);
+				console.error(error);
 			});
 	},
 	

@@ -43,7 +43,7 @@ export default {
         return res.data;
       }).catch(error =>{
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   },
   async getById(id) {
@@ -52,7 +52,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   },
   async put(id, data){
