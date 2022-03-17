@@ -13,12 +13,14 @@ const boatService = new BoatService();
 boatsRouter.get(
 	'/',
 	[
-		query('page').default(0).isInt(),
+		query('textToMatch').default('').isString(),
+		query('page').default(0).isInt(), 
 		query('limit').default(10).isInt({ gt: 0 }),
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { textToMatch = '', sortBy = 'Id', sort = 'asc' } = req.query;
+		const { sortBy = 'Id', sort = 'asc' } = req.query;
+		const textToMatch = req.query.textToMatch as string;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
