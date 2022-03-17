@@ -14,17 +14,18 @@ boatsRouter.get(
 	'/',
 	[
 		query('textToMatch').default('').isString(),
+		query('sortBy').default('Id').isString(),
+		query('sort').default('asc').isString(),
 		query('page').default(0).isInt(), 
 		query('limit').default(10).isInt({ gt: 0 }),
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		// const { sort = 'asc' } = req.query;
 		const textToMatch = req.query.textToMatch as string;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
-		const sortBy = req.query.page as string;
-		const sort = req.query.page as string;
+		const sortBy = req.query.sortBy as string;
+		const sort = req.query.sort as string;
 		const offset = page * limit || 0;
 		
 		const data = await boatService.doSearch(textToMatch, page, limit, offset, sortBy, sort);
@@ -39,8 +40,7 @@ boatsRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { boatId } = req.params;
-
-		const boat = await boatService.getById(boatId);
+		const boat = await boatService.getById(parseInt(boatId));
 
 		if(!boat){
 			res.status(404).send({message: "Data not found"});
@@ -178,7 +178,7 @@ boatsRouter.post(
 	async (req: Request, res: Response) => {
 		const { boatId } = req.params;
 
-		const boat = await boatService.getById(boatId);
+		const boat = await boatService.getById(parseInt(boatId));
 
 		let data = pug.renderFile('./templates/boats/boatView.pug', {
 			data: boat
