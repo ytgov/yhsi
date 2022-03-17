@@ -16,7 +16,7 @@ export class BoatService {
         .orderBy(`${sortBy}`, `${sort}`);
 	}
 
-	async getById(boatId: string) {	
+	async getById(boatId: number) {	
         const boat = await db
 			.select('*')
 			.from('boat.boat')
@@ -50,7 +50,7 @@ export class BoatService {
         return boat;
     }
 
-    async doSearch(textToMatch: string, page: number, limit: number, offset: number, sortBy: string, sort: string){
+    async doSearch(textToMatch: any, page: number, limit: number, offset: number, sortBy: string, sort: string){
 		let counter = [{ count: 0 }];
 		let boats = [];
 
