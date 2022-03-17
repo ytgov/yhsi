@@ -43,7 +43,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.error(error.response);
+        console.error(error);
         return error;
       });
   },
