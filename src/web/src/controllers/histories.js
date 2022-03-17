@@ -7,7 +7,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   },
   async put(historyId, data) {
@@ -16,7 +16,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   },
   async postOwner(data) {
@@ -25,7 +25,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   },
   async putOwner(historyId, data) {
@@ -34,7 +34,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        //console.log(error);
+        console.error(error);
       });
   }
 
