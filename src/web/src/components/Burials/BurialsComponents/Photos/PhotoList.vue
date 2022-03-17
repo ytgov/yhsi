@@ -50,7 +50,7 @@
         <v-row v-if="photos.length < 1">
           <v-col cols="12">
             <v-alert dense prominent border="top" type="info" text>
-              You can view all the <strong>linked</strong> boat photos here.
+              You can view all the <strong>linked</strong> burial photos here.
             </v-alert>
           </v-col>
         </v-row>
