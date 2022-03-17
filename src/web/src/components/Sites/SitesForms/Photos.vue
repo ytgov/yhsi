@@ -77,8 +77,8 @@
 
         <div
           class="col-md-6"
-          v-for="(item, i) in photos"
-          :key="`theme-${i + 1}`"
+          v-for="(item, index) in photos"
+          :key="`theme-${index + 1}`"
         >
           <v-card class="default">
             <v-card-text
@@ -88,10 +88,10 @@
                 fab
                 title="Remove"
                 class="my-0 float-right"
-                @click="removePhoto(i)"
+                @click="removePhoto(index)"
                 ><v-icon>mdi-close</v-icon></v-btn
               >
-              <h3>Photo {{ i + 1 }}</h3>
+              <h3>Photo {{ index + 1 }}</h3>
 
               <v-row>
                 <v-col cols="12">
@@ -151,14 +151,14 @@
                 background-color="white"
               ></v-text-field>
               <v-file-input
-                :id="`fi-${i}`"
+                :id="`fi-${index}`"
                 label="Upload image"
                 prepend-icon="mdi-camera"
                 accept="image/*"
                 dense
                 outlined
                 background-color="white"
-                @change="onFileSelection($event, i)"
+                @change="onFileSelection($event, index)"
               ></v-file-input>
             </v-card-text>
           </v-card>
@@ -218,10 +218,6 @@ export default {
       } else {
         this.fields.photos[i].img = null;
       }
-    },
-    altImg(i) {
-      // this function returns the src if
-      //console.log("", i);
     },
   },
 };

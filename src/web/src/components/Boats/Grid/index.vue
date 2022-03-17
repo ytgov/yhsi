@@ -150,14 +150,14 @@
 <script>
 import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
-import PrintButton from "./PrintButton";
+//import PrintButton from "./PrintButton";
 import _ from "lodash";
 import boats from "../../../controllers/boats";
 import owners from "../../../controllers/owners";
 //import jsPDF from "jspdf";
 export default {
   name: "boatsgrid-index",
-  components: { Breadcrumbs, JsonCSV, PrintButton },
+  components: { Breadcrumbs, JsonCSV },
   data: () => ({
     route: "",
     active_tab: "",
