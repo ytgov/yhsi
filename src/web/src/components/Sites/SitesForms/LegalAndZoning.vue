@@ -1,11 +1,9 @@
 <template>
   <div>
-    <v-card-title style="width: 100%; display: block">
-      Legal & Zoning
-      <div class="float-right">
-        <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
-      </div>
-    </v-card-title>
+    <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
+      <span class="mt-2">Legal & Zoning</span>
+      <v-btn class="my-0" color="primary" @click="saveChanges">Save</v-btn>
+    </h2>
     <v-divider class="mb-5"></v-divider>
     <v-form v-model="valid">
       <div class="row mx-1">
