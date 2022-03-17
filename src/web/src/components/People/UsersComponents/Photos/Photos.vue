@@ -22,7 +22,7 @@
     <v-row v-if="showDefault">
       <v-col cols="12">
         <p class="text-center font-weight-bold pt-3">
-          Once you upload your new Boat data, you will be able to attach photos
+          Once you upload your new Person data, you will be able to attach photos
         </p>
       </v-col>
     </v-row>
