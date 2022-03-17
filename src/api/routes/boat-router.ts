@@ -25,6 +25,8 @@ boatsRouter.get(
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
 		
+
+		console.log("text to match: ",textToMatch);
 		const data = await boatService.doSearch(textToMatch, page, limit, offset, sortBy, sort);
 
 		res.status(200).send(data);
@@ -37,8 +39,7 @@ boatsRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { boatId } = req.params;
-
-		const boat = await boatService.getById(boatId);
+		const boat = await boatService.getById(parseInt(boatId));
 
 		if(!boat){
 			res.status(404).send({message: "Data not found"});
@@ -176,7 +177,7 @@ boatsRouter.post(
 	async (req: Request, res: Response) => {
 		const { boatId } = req.params;
 
-		const boat = await boatService.getById(boatId);
+		const boat = await boatService.getById(parseInt(boatId));
 
 		let data = pug.renderFile('./templates/boats/boatView.pug', {
 			data: boat
