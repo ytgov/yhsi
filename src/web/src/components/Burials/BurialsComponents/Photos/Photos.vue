@@ -585,7 +585,7 @@ export default {
       this.$router.go();
     },
     toBase64(arr) {
-      console.log(arr);
+      //console.log(arr);
       return btoa(
         arr.reduce((data, byte) => data + String.fromCharCode(byte), "")
       );
