@@ -1,11 +1,8 @@
 <template>
   <div>
-    <v-card-title style="width: 100%; display: block">
+    <h2 class="mt-4 mb-0 ml-4 d-flex justify-space-between">
       Photos
-      <div class="float-right">
-        <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
-      </div>
-    </v-card-title>
+    </h2>
     <v-divider class="mb-5"></v-divider>
     <v-form v-model="valid">
       <div class="row mx-1">
@@ -122,7 +119,7 @@ import store from "../../../store";
 import { PLACE_URL } from "../../../urls";
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
-  name: "formPhotos",
+  name: "Photos",
   data: () => ({
     valid: false,
     generalRules: [
