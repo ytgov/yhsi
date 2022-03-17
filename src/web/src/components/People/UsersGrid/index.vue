@@ -118,11 +118,11 @@
 import people from "../../../controllers/people";
 import Breadcrumbs from "../../Breadcrumbs";
 import JsonCSV from "vue-json-csv";
-import PrintButton from "./PrintButton";
+//import PrintButton from "./PrintButton";
 import _ from "lodash";
 export default {
   name: "usersgrid",
-  components: { Breadcrumbs, JsonCSV, PrintButton },
+  components: { Breadcrumbs, JsonCSV },
   data: () => ({
     loading: false,
     people: [],

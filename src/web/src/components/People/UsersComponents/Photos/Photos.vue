@@ -598,7 +598,7 @@ export default {
         ////console.log(reader.result);
       };
       reader.onerror = function (error) {
-        //console.log("Error: ", error);
+        console.error(error);
       };
     },
     validate() {
