@@ -262,8 +262,8 @@
                         <template v-slot:default="{ hover }">
                           <v-card outlined hover>
                             <v-img
-                              :src="item.File.base64"
-                              :lazy-src="item.File.base64"
+                              :src="item.File.base64" 
+                              
                               aspect-ratio="1"
                               class="grey lighten-2"
                             ></v-img>
@@ -509,14 +509,13 @@ export default {
     async getAll() {
       this.showSkeletons = true;
       let data = await photos.getAll(this.page - 1, this.searchPhotos);
-      //console.log("look here", data);
       
-      this.availablePhotos = data.body.map((x) => {
-        x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
-        x.selected = false;
-        return x;
+      this.availablePhotos = data.body.map((photo) => {
+        photo.File = {};
+        photo.File.base64 = `data:image/png;base64,${this.toBase64(photo.ThumbFile.data)}`;
+        photo.selected = false;
+        return photo;
       });
-      //console.log(this.availablePhotos);
       this.numberOfPages = Math.round(data.count / 6);
       this.showSkeletons = false;
     },
@@ -586,6 +585,7 @@ export default {
       this.$router.go();
     },
     toBase64(arr) {
+      console.log(arr);
       return btoa(
         arr.reduce((data, byte) => data + String.fromCharCode(byte), "")
       );

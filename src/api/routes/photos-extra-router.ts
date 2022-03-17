@@ -23,17 +23,14 @@ photosExtraRouter.get(
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		/* const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('view')) res.sendStatus(403);
-  
-    const db = req.app.get('db'); */
+		
 		const { textToMatch } = req.query;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
 		let counter = [{ count: 0 }];
 		let photos = [];
-
+		console.log("started SEARCHING FOR ALL PHOTOSS ", textToMatch);
 		if (textToMatch) {
 			counter = await db
 				.from('dbo.photo as PH')
@@ -75,6 +72,7 @@ photosExtraRouter.get(
 				.orderBy('PH.RowId', 'asc')
 				.limit(limit)
 				.offset(offset);
+			console.log("PHOTOS", photos);
 		} else {
 			counter = await db.from('dbo.photo').count('RowId', { as: 'count' });
 
@@ -99,8 +97,9 @@ photosExtraRouter.get(
 				.orderBy('PH.RowId', 'asc')
 				.limit(limit)
 				.offset(offset);
+				console.log("ALL PHOTOS", photos);
 		}
-		//console.log("PHOTOS HERE", photos);
+		console.log("COUNTER HERE", counter);
 		res.status(200).send({ count: counter[0].count, body: photos });
 	}
 );
@@ -269,13 +268,6 @@ photosExtraRouter.get(
 		res.status(200).send(photos);
 	}
 );
-/*
-SELECT
-    BP.*,
-    PH.*
-FROM
-    Burial.Photo AS BP
-    INNER JOIN dbo.Photo AS PH ON BP.Photo_RowID = PH.RowId*/
 
 // GET BURIAL PHOTOS
 photosExtraRouter.get(
@@ -283,6 +275,7 @@ photosExtraRouter.get(
 	[param('burialId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
+		console.log("started searching for the burial photos");
 		const { burialId } = req.params;
 
 		const page = parseInt(req.query.page as string);
@@ -296,7 +289,8 @@ photosExtraRouter.get(
 			.where('BP.BurialID', burialId)
 			.limit(limit)
 			.offset(offset);
-			
+		
+		console.log("finished looking");
 		res.status(200).send(photos);
 	}
 );
