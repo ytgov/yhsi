@@ -19,10 +19,12 @@ boatsRouter.get(
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { sortBy = 'Id', sort = 'asc' } = req.query;
+		// const { sort = 'asc' } = req.query;
 		const textToMatch = req.query.textToMatch as string;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
+		const sortBy = req.query.page as string;
+		const sort = req.query.page as string;
 		const offset = page * limit || 0;
 		
 		const data = await boatService.doSearch(textToMatch, page, limit, offset, sortBy, sort);
