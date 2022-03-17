@@ -99,7 +99,7 @@ export default {
 				return res.data;
 			})
 			.catch((err) => {
-				//console.log(err);
+				console.error(err);
 			});
 	},
 	async getByPersonId(id) {
