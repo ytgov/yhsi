@@ -158,6 +158,31 @@ catalogsRouter.get("/religion", async (req: Request, res: Response) => {
   res.send(data);
 });
 
+catalogsRouter.put(
+  "/religion/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    await db("Burial.ReligionLookup").update(data).where("Burial.ReligionLookup.ReligionLupID", id);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+catalogsRouter.post("/religion", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await db
+    .insert(data)
+    .into("Burial.ReligionLookup")
+    .returning("*");
+
+  res.status(200).send(response);
+});
+
 //CAUSES
 catalogsRouter.get("/cause", async (req: Request, res: Response) => {
   const data = await db("Burial.CauseLookup").orderBy(
@@ -166,6 +191,31 @@ catalogsRouter.get("/cause", async (req: Request, res: Response) => {
   );
 
   res.send(data);
+});
+
+catalogsRouter.put(
+  "/cause/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    await db("Burial.CauseLookup").update(data).where("Burial.CauseLookup.CauseLUpID", id);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+catalogsRouter.post("/cause", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await db
+    .insert(data)
+    .into("Burial.CauseLookup")
+    .returning("*");
+
+  res.status(200).send(response);
 });
 
 //CEMETARIES
@@ -178,6 +228,31 @@ catalogsRouter.get("/cemetary", async (req: Request, res: Response) => {
   res.send(data);
 });
 
+catalogsRouter.put(
+  "/cemetary/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    await db("Burial.CemetaryLookup").update(data).where("Burial.CemetaryLookup.CemetaryLUpID", id);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+catalogsRouter.post("/cemetary", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await db
+    .insert(data)
+    .into("Burial.CemetaryLookup")
+    .returning("*");
+
+  res.status(200).send(response);
+});
+
 //OCCUPATIONS
 catalogsRouter.get("/occupation", async (req: Request, res: Response) => {
   const data = await db("Burial.OccupationLookup").orderBy(
@@ -186,6 +261,31 @@ catalogsRouter.get("/occupation", async (req: Request, res: Response) => {
   );
 
   res.send(data);
+});
+
+catalogsRouter.put(
+  "/occupation/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    await db("Burial.OccupationLookup").update(data).where("Burial.OccupationLookup.OccupationLupID", id);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+catalogsRouter.post("/occupation", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await db
+    .insert(data)
+    .into("Burial.OccupationLookup")
+    .returning("*");
+
+  res.status(200).send(response);
 });
 
 //MEMBERSHIPS
@@ -198,6 +298,31 @@ catalogsRouter.get("/membership", async (req: Request, res: Response) => {
   res.send(data);
 });
 
+catalogsRouter.put(
+  "/membership/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    await db("Burial.MembershipLookup").update(data).where("Burial.MembershipLookup.MembershipLupID", id);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+catalogsRouter.post("/membership", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await db
+    .insert(data)
+    .into("Burial.MembershipLookup")
+    .returning("*");
+
+  res.status(200).send(response);
+});
+
 //RELATIONSHIPS
 catalogsRouter.get("/relationship", async (req: Request, res: Response) => {
   const data = await db("Burial.RelationLookup").orderBy(
@@ -206,4 +331,29 @@ catalogsRouter.get("/relationship", async (req: Request, res: Response) => {
   );
 
   res.send(data);
+});
+
+catalogsRouter.put(
+  "/relationship/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    await db("Burial.RelationLookup").update(data).where("Burial.RelationLookup.RelationLupID", id);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+catalogsRouter.post("/relationship", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await db
+    .insert(data)
+    .into("Burial.RelationLookup")
+    .returning("*");
+
+  res.status(200).send(response);
 });
