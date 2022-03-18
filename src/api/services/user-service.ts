@@ -4,8 +4,6 @@ export class UserService {
 	private knex: Knex;
 
 	constructor(config: Knex.Config<any>) {
-		console.log(config)
-
 		this.knex = knex(config);
 	}
 
