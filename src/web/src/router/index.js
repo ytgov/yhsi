@@ -11,7 +11,7 @@ import LoginComplete from "../views/LoginComplete";
 import Profile from "../views/Profile";
 import Maps from "../views/Maps";
 import store from "../store";
-import SiteForms from "../components/Sites/index";
+import SiteForms from "@/components/Sites/SiteForms";
 import MainPhotos from "../components/MainPhotos";
 import SitesGrid from "../components/Sites/SitesGrid";
 import PhotosGrid from "../components/MainPhotos/PhotosGrid";
