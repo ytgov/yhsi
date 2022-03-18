@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
-      <span class="mt-2">Dates & Condition</span>
+      <span class="mt-2">Dates &amp; Condition</span>
       <v-btn class="my-0" color="primary" @click="saveChanges">Save</v-btn>
     </h2>
     <v-divider class="mb-5"></v-divider>
