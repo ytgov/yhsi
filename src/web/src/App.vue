@@ -9,7 +9,7 @@
     >
       <!-- <v-icon color="#f3b228" class="mr-5">{{ applicationIcon }}</v-icon> -->
       <img src="/yukon.svg" style="margin: -8px 85px 0 0" height="44" />
-      <v-toolbar-title>
+      <v-toolbar-title tag="h1" class="mb-0">
         <span style="font-weight: 700">{{ applicationName }}</span>
 
         <v-progress-circular
@@ -113,12 +113,9 @@
       <div v-else>
         <router-link to="/sign-in">Sign in</router-link>
       </div>
-
-      <!-- <v-app-bar-nav-icon @click.stop="drawerRight = !drawerRight"></v-app-bar-nav-icon> -->
     </v-app-bar>
 
-    <v-main v-bind:style="{ 'padding-left: 33px !important': !hasSidebar }">
-      <!-- Provides the application the proper gutter -->
+    <v-main>
       <v-container fluid :class="`${isSites($route.path, true)}`">
         <v-row>
           <v-col :class="`${isSites($route.path, false)}`">
@@ -142,32 +139,17 @@
 </template>
 
 <script>
-import router from "./router";
+import { mapGetters } from "vuex";
+
 import store from "./store";
 import * as config from "./config";
-import { mapState } from "vuex";
-import RequestAlert from "./components/RequestAlert.vue";
 import { LOGOUT_URL } from "./urls";
+
+import RequestAlert from "./components/RequestAlert.vue";
 
 export default {
   name: "App",
   components: { RequestAlert },
-  computed: {
-    ...mapState(["isAuthenticated", "user", "showAppSidebar"]),
-    username() {
-      return store.getters.fullName;
-    },
-    isAuthenticated() {
-      //return true; // until we get auth process to show sidebar
-      return store.getters.isAuthenticated;
-    },
-    user() {
-      return store.getters.user;
-    },
-    showAppSidebar() {
-      return store.getters.showAppSidebar;
-    },
-  },
   data: () => ({
     dialog: false,
     drawer: null,
@@ -177,41 +159,15 @@ export default {
     loadingClass: "d-none",
     applicationName: config.applicationName,
     applicationIcon: config.applicationIcon,
-    sections: config.sections,
-    hasSidebar: false,
-    hasSidebarClosable: false,
-    currentId: 0,
   }),
-  created: async function () {
-    store.dispatch("setAppSidebar", this.$route.path.startsWith("/sites/"));
-    this.hasSidebar = this.$route.path.startsWith("/sites/");
-    this.currentId = this.$route.params.id;
-
+  computed: {
+    ...mapGetters(["isAuthenticated"]),
+    ...mapGetters({ username: "fullName" })
+  },
+  async mounted() {
     await store.dispatch("checkAuthentication");
   },
-  watch: {
-    isAuthenticated: function (val) {
-      if (!val) this.hasSidebar = false;
-      else this.hasSidebar = store.getters.showAppSidebar;
-    },
-    showAppSidebar: function (val) {
-      if (val) {
-        this.currentId = this.$route.params.id;
-      }
-
-      this.hasSidebar = val && this.isAuthenticated;
-    },
-  },
   methods: {
-    nav: function (location) {
-      router.push(location);
-    },
-    toggleHeader: function () {
-      this.headerShow = !this.headerShow;
-    },
-    toggleMenu: function () {
-      this.menuShow = !this.menuShow;
-    },
     signOut: function () {
       window.location = LOGOUT_URL;
     },
