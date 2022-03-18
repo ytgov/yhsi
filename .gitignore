@@ -71,7 +71,7 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+src/api/.env
 .env.development
 .env.test
 .env.production

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-btn color="secondary" class="float-right mb-0 mt-2 pl-2" to="/admin/users" exact style="height: auto; font-size: .8rem; padding: 6px 10px;"
+    <!-- <v-btn color="secondary" class="float-right mb-0 mt-2 pl-2" to="/admin/users" exact style="height: auto; font-size: .8rem; padding: 6px 10px;"
       ><v-icon class="mr-2" small>mdi-arrow-left</v-icon> Back to User Management</v-btn
-    >
+    > -->
     <v-breadcrumbs
       :items="[
         { text: 'Adminstration', to: '/admin', exact: true },
@@ -10,8 +10,18 @@
         { text: `${user.FirstName}  ${user.LastName}` },
       ]"
     ></v-breadcrumbs>
+    <h1>
+      User Editor:
+      <small
+        >{{ user.FirstName }} {{ user.LastName }}
 
-<hr class="mb-4"/>
+        <small class="text-error" v-if="user.Status != 'Active'"
+          >({{ user.Status }})</small
+        >
+      </small>
+    </h1>
+
+    <hr class="mb-4" />
     <v-row>
       <v-col cols="12" md="6">
         <v-card class="default">
@@ -102,7 +112,7 @@
                     :items="roles"
                     outlined
                     multiple
-                    chips
+                    small-chips
                     clearable
                     item-value="RoleId"
                     item-text="RoleName"
@@ -146,6 +156,7 @@
               :items="user.SiteAccess"
               hide-default-footer
               @click:row="openAccess"
+              class="clickable-row"
             ></v-data-table>
 
             <v-row>
@@ -167,8 +178,8 @@
 
     <v-dialog v-model="showAccessDialog" persistent max-width="600px">
       <v-card>
-        <v-card-title></v-card-title>
-        <v-card-text>
+        <v-card-title>Add site access</v-card-title>
+        <v-card-text class="pt-5">
           <v-select
             dense
             outlined
@@ -215,7 +226,7 @@
               @click="showAccessDialog = false"
               color="secondary"
               class="my-0"
-              >Close</v-btn
+              >Cancel</v-btn
             >
             <v-spacer></v-spacer>
             <v-btn
@@ -246,9 +257,9 @@ export default {
   data: () => ({
     overlay: false,
     accessOptions: [
-      { text: "Map sheet number", value: 1 },
-      { text: "Community name", value: 3 },
-      { text: "First Nation name", value: 2 },
+      { text: "Map sheet", value: 1 },
+      { text: "Community", value: 3 },
+      { text: "First Nation", value: 2 },
     ],
     accessItem: { AccessType: 1, AccessText: 1 },
     /* VALIDATION*/

@@ -29,8 +29,10 @@ export class UserService {
 
 	async getAll(): Promise<any[]> {
 		let list = await this.knex("Ibbit_User").join("HSUser", "HSUser.UserId", "Ibbit_User.UserId").select("Ibbit_User.*", "HSUser.ExpirationDate")
-		for (let item of list) {
-			item.SiteAccess = await this.knex("HSUserAccess").where({ UserId: item.UserId });
+
+		for (let user of list) {
+			user.SiteAccess = await this.knex("HSUserAccess").where({ UserId: user.UserId });
+			user.Roles = (await this.getRolesForUser(user.UserId)).map(r => r.RoleId);		
 		}
 
 		return list;
@@ -60,11 +62,10 @@ export class UserService {
 					access.AccessTypeDescription = "Community";
 					let cm = allCommunities.filter(c => c.Id == access.AccessText)
 					if (cm.length > 0)
-						access.AccessTextDescription = cm[0].Description;
+						access.AccessTextDescription = cm[0].Name;
 					break;
 			}
 		}
-
 
 		return user;
 	}

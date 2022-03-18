@@ -1,7 +1,9 @@
 <template>
-  <v-container>
+  <div>
+    <v-breadcrumbs
+      :items="[{ text: 'Adminstration', to: '/admin', exact: true }]"
+    ></v-breadcrumbs>
     <h1>Administration</h1>
-    <Breadcrumbs />
     <v-row>
       <v-col cols="6">
         <v-card elevation="1">
@@ -50,15 +52,11 @@
         </v-card>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>
-import Breadcrumbs from "../Breadcrumbs";
 export default {
-  components: {
-    Breadcrumbs,
-  },
   data: () => ({
     icon: null,
     usermodel: null,
@@ -95,9 +93,14 @@ export default {
         url: "/admin/burials/causes",
       },
       {
-        icon: 'mdi-map-marker-multiple-outline',
-        text: 'Community',
-        url: "/admin/community"
+        icon: "mdi-camera",
+        text: "Photos - Owner",
+        url: "",
+      },
+      {
+        icon: "mdi-map-marker-multiple",
+        text: "Community",
+        url: "",
       },
       {
         icon: "mdi-run",
@@ -105,35 +108,18 @@ export default {
         url: "",
       },
       {
-          icon: 'mdi-camera-outline',
-          text: 'Photo Owner',
-          url: "/admin/photo-owner"
-      },
-      {
-        icon: 'mdi-image-album',
-        text: 'Photo Project',
-        url: "/admin/photo-project"
-      },
-      {
-        icon: 'mdi-image',
-        text: 'Photo Subject',
-        url: "/admin/photo-subject"
-      },
-      {
-        icon: "mdi-home",
+        icon: "mdi-map",
         text: "Place Type",
         url: "/admin/placetype",
       },
     ],
     model: 1,
   }),
-  methods:{
-      goTo(url){
-          if(url == "")
-              return;
-          this.$router.push(url);
-      }
-  }
+  methods: {
+    goTo(url) {
+      if (url == "") return;
+      this.$router.push(url);
+    },
+  },
 };
-
 </script>

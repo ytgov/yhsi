@@ -6,10 +6,6 @@ const state = {
     roles: [],
     communities: [],
     firstNations: [],
-
-    //Authorize Access to: Map Sheet Number, Community Name, First Nation Name
-    // Map Sheet is free text the other two are dropdowns
-
 };
 const getters = {
     roles: state => state.roles,

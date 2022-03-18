@@ -10,13 +10,25 @@ export const userRouter = express.Router();
 const db = new UserService(DB_CONFIG);
 
 
+
 userRouter.get("/",
     async (req: Request, res: Response) => {
         let users = await db.getAll();
 
         for (let user of users) {
+            user.Status = "Inactive";
+
             if (user.LastLogin)
-                user.LastLogin = moment(user.LastLogin).format("YYYY-MM-DD @ h:mm A")
+                user.LastLogin = moment(user.LastLogin).format("YYYY-MM-DD @ h:mm A");
+
+            if (user.ExpirationDate) {
+                let isExpired = moment().isAfter(moment(user.ExpirationDate))
+                if (isExpired)
+                    user.Status = "Expired";
+            }
+
+            if (user.Roles && user.Roles.indexOf(1) >= 0 && user.Status != "Expired")
+                user.Status = "Active";
         }
 
         res.json({ data: users });
@@ -41,9 +53,20 @@ userRouter.get("/:id",
         const { id } = req.params;
         let user = await db.getOne({ "Ibbit_User.UserId": id });
 
+        user.Status = "Inactive";
+
         if (user.ExpirationDate) {
+            let isExpired = moment().isAfter(moment(user.ExpirationDate))
+            if (isExpired)
+                user.Status = "Expired";
+
             user.ExpirationDate = moment(user.ExpirationDate).utc(false).format("YYYY-MM-DD");
         }
+
+        if (user.Roles && user.Roles.indexOf(1) >= 0 && user.Status != "Expired")
+            user.Status = "Active";
+
+
         res.json({ data: user });
     });
 
@@ -68,11 +91,7 @@ userRouter.post("/:id/access",
     [param("id").notEmpty(),], ReturnValidationErrors,
     async (req: Request, res: Response) => {
         const { id } = req.params;
-
-        console.log(req.body)
-
         let { AccessType, AccessText, UserId } = req.body;
-        //let user = await db.getOne({ "Ibbit_User.UserId": id });
         let item = { AccessType, AccessText, UserId }
 
         await db.createAccess(item);
@@ -84,7 +103,6 @@ userRouter.put("/:id/access/:accessId",
     [param("id").notEmpty(), param("accessId").notEmpty()], ReturnValidationErrors,
     async (req: Request, res: Response) => {
         const { id, accessId } = req.params;
-
         let { AccessType, AccessText } = req.body;
         let item = { AccessType, AccessText };
 

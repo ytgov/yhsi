@@ -1,8 +1,8 @@
 <template>
   <div class="">
-    <v-btn color="secondary" class="float-right mb-0 mt-2 pl-2" to="/admin" exact style="height: auto; font-size: .8rem; padding: 6px 10px;"
+    <!-- <v-btn color="secondary" class="float-right mb-0 mt-2 pl-2" to="/admin" exact style="height: auto; font-size: .8rem; padding: 6px 10px;"
       ><v-icon class="mr-2" small>mdi-arrow-left</v-icon> Back to Administration</v-btn
-    >
+    > -->
     <v-breadcrumbs
       :items="[
         { text: 'Adminstration', to: '/admin', exact: true },
@@ -16,58 +16,29 @@
       <v-card class="default px-3 py-3">
         <v-card-text>
           <v-row>
-            <v-col cols="6" class="d-flex">
+            <v-col cols="8" class="d-flex">
               <v-text-field
                 prepend-inner-icon="mdi-magnify"
-                class="mx-4"
                 background-color="white"
                 outlined
-                hide-details
                 dense
                 label="Search"
                 v-model="search"
+                hide-details
               ></v-text-field>
-
-              <v-menu
-                transition="slide-y-transition"
-                bottom
-                :close-on-content-click="false"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    color="transparent"
-                    class="black--text"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    <v-icon>mdi-filter</v-icon>
-                    Filter
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item-group
-                    v-model="selectedFilter"
-                    color="primary"
-                    multiple
-                  >
-                    <v-list-item
-                      v-for="(item, i) in filterOptions"
-                      :key="i"
-                      link
-                    >
-                      <template v-slot:default="{ active }">
-                        <v-list-item-action>
-                          <v-icon v-if="!active">
-                            mdi-checkbox-blank-outline
-                          </v-icon>
-                          <v-icon v-else> mdi-checkbox-marked-outline </v-icon>
-                        </v-list-item-action>
-                        <v-list-item-title>{{ item.name }}</v-list-item-title>
-                      </template>
-                    </v-list-item>
-                  </v-list-item-group>
-                </v-list>
-              </v-menu>
+            </v-col>
+            <v-col cols="4" class="d-flex">
+              <v-select
+                small-chips
+                multiple
+                :items="filterOptions"
+                v-model="selectedFilter"
+                label="Status filter"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              ></v-select>
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="auto"> </v-col>
@@ -80,19 +51,10 @@
             :search="search"
             @click:row="handleClick"
             :footer-props="{ 'items-per-page-options': [10, 30, 100] }"
+            class="clickable-row"
           >
-            <template v-slot:item.Status="{ item }">
-              <div v-if="item.Status == 1">Active</div>
-              <div v-else>Expired</div>
-            </template>
-            <template v-slot:item.actions="{ item }">
-              <v-btn color="success" outlined @click="removeItem(item)">
-                <v-icon class="mr-1">mdi-delete</v-icon>
-                Remove
-              </v-btn>
-            </template>
-          </v-data-table></v-card-text
-        >
+          </v-data-table
+        ></v-card-text>
       </v-card>
     </div>
   </div>
@@ -119,12 +81,8 @@ export default {
     page: 1,
     pageCount: 0,
     iteamsPerPage: 10,
-    selectedFilter: [1],
-    filterOptions: [
-      { name: "Expired Users" },
-      { name: "Active Users" },
-      { name: "Pending Users" },
-    ],
+    selectedFilter: ["Active"],
+    filterOptions: ["Active", "Expired", "Inactive"],
   }),
   async mounted() {
     //this.getDataFromApi();
@@ -138,29 +96,18 @@ export default {
       this.$router.push(`/admin/users/${value.UserId}`);
     },
   },
-  watch: {
-    selectedFilter(val) {
-      console.log("SITLER CHAGNE", val);
-    },
-  },
   computed: {
     filteredData() {
-      // returns a filtered users array depending on the selected filters
-      let sorters = JSON.parse(JSON.stringify(this.selectedFilter));
-      let data = JSON.parse(JSON.stringify(this.users));
-      for (let i = 0; i < sorters.length; i++) {
-        switch (sorters[i]) {
-          case 0: // expired
-            data = data.filter((x) => x.Status == 0);
-            break;
-          case 1: // active
-            data = data.filter((x) => x.Status == 1);
-            break;
-          case 2: // pending
-            data = data.filter((x) => x.Status == 2);
-            break;
+      if (this.selectedFilter.length == 0) return this.users;
+
+      let data = [];
+
+      for (let usr of this.users) {
+        if (this.selectedFilter.indexOf(usr.Status) >= 0) {
+          data.push(usr);
         }
       }
+
       return data;
     },
   },
