@@ -37,7 +37,7 @@
             :options.sync="options"
             :loading="loading"
             :server-items-length="totalLength"
-            @click:row="handleClick"
+            @click:row="goToSiteDetails"
             :footer-props="{ 'items-per-page-options': items_per_page }"
           ></v-data-table>
         </v-col>
@@ -96,10 +96,9 @@ export default {
     }, */
   },
   methods: {
-    handleClick(value) {
-      //Redirects the user to the site form
+    goToSiteDetails(value) {
       //store.dispatch("addSiteHistory", value);
-      this.$router.push(`/sites/${value.id}/summary`);
+      this.$router.push(`/sites/${value.id}`);
     },
 
     keyUp(event) {

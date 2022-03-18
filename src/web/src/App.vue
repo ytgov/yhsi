@@ -1,32 +1,5 @@
 <template>
   <v-app>
-    <v-navigation-drawer
-      v-bind:app="hasSidebar"
-      permanent
-      :expand-on-hover="hasSidebarClosable"
-      clipped
-      color="#f1f1f1"
-      v-bind:class="{ 'd-none': !hasSidebar }"
-    >
-      <v-list dense nav style="" class="mt-4">
-        <v-list-item
-          link
-          nav
-          v-for="section in sections"
-          :title="section.name"
-          :to="section.makeUrl(currentId)"
-          :key="section.name"
-        >
-          <v-list-item-icon>
-            <v-icon>{{ section.icon }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>{{ section.name }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-
     <v-app-bar
       app
       color="#fff"
