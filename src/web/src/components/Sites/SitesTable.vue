@@ -8,7 +8,7 @@
       </v-row>
       <v-divider class="mb-5" />
       <v-row>
-        <v-col cols="12">
+        <v-col cols="9">
           <v-text-field
             v-model="searchTerm"
             label="Search"
@@ -19,6 +19,37 @@
             @click:append="doSearch"
             @keyup="keyUp"
           />
+        </v-col>
+        <v-col cols="3">
+          <v-btn
+            class="my-0"
+            color="secondary"
+            :aria-controls="advancedSearchId"
+            @click="toggleAdvancedSearch"
+          >
+            Advanced search
+            <v-icon
+              v-if="isShowingAdvancedSearch"
+              class="chevron"
+            >
+              mdi-chevron-up
+            </v-icon>
+            <v-icon
+              v-else
+              class="chevron"
+            >
+              mdi-chevron-down
+            </v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-row
+        v-show="isShowingAdvancedSearch"
+        :id="advancedSearchId"
+        class="mt-0"
+      >
+        <v-col cols="6">
+          <CommunitiesFilter />
         </v-col>
       </v-row>
       <v-row>
@@ -49,23 +80,30 @@
 </template>
 
 <script>
-import { cloneDeep } from 'lodash';
+import { cloneDeep, uniqueId } from 'lodash';
 
 import api from '@/apis/places-api';
 
+import CommunitiesFilter from '@/components/Sites/sites-table/CommunitiesFilter';
+
 export default {
   name: 'SitesTable',
+  components: { CommunitiesFilter },
   data: () => ({
-    loading: false,
+    iteamsPerPage: 10,
     items: [],
-    searchTerm: '',
+    loading: false,
     options: {},
-    totalLength: 0,
     page: 1,
     pageCount: 0,
-    iteamsPerPage: 10,
+    searchTerm: '',
+    isShowingAdvancedSearch: false,
+    totalLength: 0,
   }),
   computed: {
+    advancedSearchId() {
+      return uniqueId('advanced-search-');
+    },
     headers() {
       return [
         { text: 'YHSI ID', value: 'yHSIId' },
@@ -124,6 +162,11 @@ export default {
           this.loading = false;
         });
     },
+    toggleAdvancedSearch() {
+      this.isShowingAdvancedSearch = !this.isShowingAdvancedSearch;
+    },
   },
 };
 </script>
+
+<style scoped></style>
