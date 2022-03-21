@@ -29,20 +29,6 @@ import { doHealthCheck } from './utils/healthCheck';
 import { configureAuthentication } from './routes/auth';
 import { RequiresAuthentication } from './middleware';
 
-
-/*
-var ownersRouter = require('./controllers/owners');
-var historiesRouter = require('./controllers/histories');
-var aircrashRouter = require('./controllers/aircrash');
-var catalogsRouter = require('./controllers/catalogs');
-var usersRouter = require('./controllers/users');
-var peopleRouter = require('./controllers/people');
-var photoOwners = require('./controllers/photoOwners');
-var boatsRouter = require('./controllers/boats');
-var photosRouter = require('./controllers/photos');*/
-
-var knex = require('knex');
-
 const app = express();
 
 app.use(express.json()); // for parsing application/json
