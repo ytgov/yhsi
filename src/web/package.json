@@ -52,13 +52,16 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
+      "eslint:recommended",
+      "plugin:vue/recommended",
+      "prettier"
     ],
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "vue/html-indent": "off"
+    }
   },
   "browserslist": [
     "> 1%",
