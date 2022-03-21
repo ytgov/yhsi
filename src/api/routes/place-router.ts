@@ -3,7 +3,7 @@ import { body, check, param, query, validationResult } from "express-validator";
 import moment from "moment";
 
 import { DB_CONFIG } from "../config"
-import { PhotoService, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
+import { buildDatabaseSort, PhotoService, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
 import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership, WebLink, RevisionLog, Contact, Description } from "../data";
 import { ReturnValidationErrors } from "../middleware";
 
@@ -43,16 +43,7 @@ placeRouter.post(
 	[body('page').isInt().default(1)],
 	async (req: Request, res: Response, next: NextFunction) => {
 		let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
-		let sort = new Array<SortStatement>();
-
-		sortBy.forEach((s: string, i: number) => {
-			sort.push({
-				field: s,
-				direction: sortDesc[i]
-					? SortDirection.ASCENDING
-					: SortDirection.DESCENDING,
-			});
-		});
+		const sort = buildDatabaseSort(sortBy, sortDesc)
 
 		let skip = (page - 1) * itemsPerPage;
 		let take = itemsPerPage;
