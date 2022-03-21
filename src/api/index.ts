@@ -8,6 +8,7 @@ import {
 	boatsRouter,
 	burialsRouter,
 	catalogsRouter,
+	communitiesRouter,
 	historiesRouter,
 	ownerRouter,
 	peopleRouter,
@@ -83,6 +84,7 @@ app.use('/api/register', registerRouter);
 ////console.log("B", boats)
 
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
+app.use('/api/communities', RequiresAuthentication, communitiesRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/owners', RequiresAuthentication, ownerRouter);
 app.use('/api/aircrash', RequiresAuthentication, aircrashRouter);
