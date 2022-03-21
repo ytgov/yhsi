@@ -2,6 +2,7 @@ export * from './burials-router';
 export * from './aircrash-router';
 export * from './boat-router';
 export * from './catalogs-router';
+export * from './communities-router';
 export * from './histories-router';
 export * from './owner-router';
 export * from './people-router';
