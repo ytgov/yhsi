@@ -475,7 +475,7 @@ export class PlaceService {
 		query: Array<QueryStatement>,
 		sort: Array<SortStatement>,
 		page: number,
-		page_size: number,
+		itemsPerPage: number,
 		skip: number,
 		take: number
 	): Promise<any> {
@@ -561,12 +561,12 @@ export class PlaceService {
 
 			let uniqIds = _.uniq(fullData.map((i: any) => i.id));
 			let count = uniqIds.length;
-			let page_count = Math.ceil(count / page_size);
+			let pageCount = Math.ceil(count / itemsPerPage);
 
 			let data = await selectStmt.offset(skip).limit(take).catch(reject);
 			let results = {
 				data,
-				meta: { page, page_size, item_count: count, page_count },
+				meta: { page, itemsPerPage, itemCount: count, pageCount },
 			};
 
 			resolve(results);
