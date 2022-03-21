@@ -554,12 +554,16 @@ export class PlaceService {
 				selectStmt.orderBy('place.primaryName');
 			}
 
-			let fullData = await selectStmt;
+			let fullData = await selectStmt.catch(error => {
+				reject(error)
+				return []
+			});
+
 			let uniqIds = _.uniq(fullData.map((i: any) => i.id));
 			let count = uniqIds.length;
 			let page_count = Math.ceil(count / page_size);
 
-			let data = await selectStmt.offset(skip).limit(take);
+			let data = await selectStmt.offset(skip).limit(take).catch(reject);
 			let results = {
 				data,
 				meta: { page, page_size, item_count: count, page_count },
