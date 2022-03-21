@@ -4,26 +4,24 @@ import path from 'path';
 import helmet from 'helmet';
 
 import {
-	userRouter,
-	placeRouter,
-	photoRouter,
+	aircrashRouter,
+	boatsRouter,
+	burialsRouter,
+	catalogsRouter,
+	historiesRouter,
+	ownerRouter,
+	peopleRouter,
 	photoBatchRouter,
+	photoOwnersRouter,
+	photoRouter,
+	photosExtraRouter,
+	placeRouter,
 	registerRouter,
 	staticRouter,
+	userRouter,
+	usersExtraRouter,
 	ytPlaceHistoryRouter,
 	ytPlaceRouter,
-} from './routes';
-import {
-	boatsRouter,
-	ownerRouter,
-	aircrashRouter,
-	historiesRouter,
-	catalogsRouter,
-	usersExtraRouter,
-	photosExtraRouter,
-	peopleRouter,
-	photoOwnersRouter,
-	burialsRouter
 } from './routes';
 
 import * as config from './config';
