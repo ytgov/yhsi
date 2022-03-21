@@ -173,7 +173,7 @@ catalogsRouter.put(
 );
 
 catalogsRouter.post("/religion", async (req: Request, res: Response) => {
-  const { data = {} } = req.body;
+  const { data = {} } = req.body;                   
 
   const response = await db
     .insert(data)
