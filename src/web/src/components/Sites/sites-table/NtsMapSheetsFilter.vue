@@ -3,7 +3,7 @@
 		v-model="nstMapSheetValue"
 		:items="ntsMapSheets"
 		:loading="loading"
-		label="NTS Map Sheet"
+		label="NTS Map Sheet Name"
 		item-text="name"
 		item-value="name"
 		:prepend-icon="filterTypeIcon"
@@ -61,6 +61,7 @@ export default {
 	methods: {
 		toggleFilterType() {
 			this.includeFilter = !this.includeFilter;
+			this.$emit('input', this.ntsMapSheetsFilter)
 		},
 	},
 };
