@@ -61,6 +61,7 @@ export default {
 	methods: {
 		toggleFilterType() {
 			this.includeFilter = !this.includeFilter
+			this.$emit('input', this.communitiesFilter)
 		},
 	},
 };
