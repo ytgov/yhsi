@@ -227,7 +227,7 @@ catalogsRouter.put(
 
 catalogsRouter.post("/cause", async (req: Request, res: Response) => {
   const { data = {} } = req.body;
-
+    console.log(data);
   const response = await db
     .insert(data)
     .into("Burial.CauseLookup")

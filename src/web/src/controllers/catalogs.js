@@ -156,8 +156,8 @@ export default {
         console.error(error);
       });
   },
-  async postCauses(id, data) {
-    return await api.post(`catalogs/cause/${id}`, data)
+  async postCauses(data) {
+    return await api.post(`catalogs/cause`, data)
       .then(res => {
         return res.data;
       }).catch(error => {
@@ -201,8 +201,8 @@ export default {
         console.error(error);
       });
   },
-  async postReligion(id, data) {
-    return await api.post(`catalogs/religion/${id}`, data)
+  async postReligion( data) {
+    return await api.post(`catalogs/religion`, data)
       .then(res => {
         return res.data;
       }).catch(error => {
@@ -246,8 +246,8 @@ export default {
         console.error(error);
       });
   },
-  async postCemetary(id, data) {
-    return await api.post(`catalogs/cemetary/${id}`, data)
+  async postCemetary( data) {
+    return await api.post(`catalogs/cemetary`, data)
       .then(res => {
         return res.data;
       }).catch(error => {
@@ -291,8 +291,8 @@ export default {
         console.error(error);
       });
   },
-  async postOccupation(id, data) {
-    return await api.post(`catalogs/occupation/${id}`, data)
+  async postOccupation(data) {
+    return await api.post(`catalogs/occupation`, data)
       .then(res => {
         return res.data;
       }).catch(error => {
@@ -336,8 +336,8 @@ export default {
         console.error(error);
       });
   },
-  async postMembership(id, data) {
-    return await api.post(`catalogs/membership/${id}`, data)
+  async postMembership(data) {
+    return await api.post(`catalogs/membership`, data)
       .then(res => {
         return res.data;
       }).catch(error => {
@@ -381,8 +381,8 @@ export default {
         console.error(error);
       });
   },
-  async postRelationship(id, data) {
-    return await api.post(`catalogs/relationship/${id}`, data)
+  async postRelationship(data) {
+    return await api.post(`catalogs/relationship`, data)
       .then(res => {
         return res.data;
       }).catch(error => {
