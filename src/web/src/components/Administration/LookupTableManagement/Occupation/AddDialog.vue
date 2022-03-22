@@ -63,7 +63,7 @@ export default {
     },
     async save() {
       let data = {
-        vesselType: { Type: this.input },
+        data: { Occupation: this.input },
       };
       await catalogs.postOccupation(data);
       this.$router.go();
