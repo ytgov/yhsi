@@ -45,7 +45,7 @@
 		<AdvancedSearchForm
 			v-show="isShowingAdvancedSearch"
 			:id="advancedSearchId"
-			@search="doSearch"
+			@search="doAdvancedSearch"
 		/>
 		<v-row>
 			<v-col cols="12">
@@ -84,6 +84,7 @@ export default {
 	name: 'SitesTable',
 	components: { AdvancedSearchForm },
 	data: () => ({
+		advancedSearchQuery: [],
 		items: [],
 		loading: false,
 		options: {},
@@ -140,9 +141,13 @@ export default {
 		keyUp(event) {
 			if (event.key == 'Enter') this.doSearch();
 		},
-		doSearch(query = []) {
+		doAdvancedSearch(query) {
+			this.advancedSearchQuery = query;
+			this.doSearch();
+		},
+		doSearch() {
 			const data = cloneDeep(this.options);
-			data.query = [...query, ...this.searchQuery];
+			data.query = [...this.searchQuery, ...this.advancedSearchQuery];
 
 			this.loading = true;
 			api
@@ -157,6 +162,7 @@ export default {
 		},
 		toggleAdvancedSearch() {
 			this.isShowingAdvancedSearch = !this.isShowingAdvancedSearch;
+			this.advancedSearchQuery = [];
 		},
 	},
 };
