@@ -3,6 +3,7 @@ export * from './aircrash-router';
 export * from './boat-router';
 export * from './catalogs-router';
 export * from './communities-router';
+export * from './construction-periods-router'
 export * from './histories-router';
 export * from './nts-map-sheets-router';
 export * from './owner-router';
