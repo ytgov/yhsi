@@ -243,7 +243,6 @@ catalogsRouter.get("/cemetary/search", async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string);
   const limit = parseInt(req.query.limit as string);
   const offset = page * limit || 0;
-  let counter = [{ count: 0 }];
   const data = await catalogService.doCemetarySearch(page, limit, offset, { textToMatch, sortBy, sort });
 
   res.send(data);
@@ -287,7 +286,6 @@ catalogsRouter.get("/occupation/search", async (req: Request, res: Response) => 
   const page = parseInt(req.query.page as string);
   const limit = parseInt(req.query.limit as string);
   const offset = page * limit || 0;
-  let counter = [{ count: 0 }];
   const data = await catalogService.doOccupationSearch(page, limit, offset, { textToMatch, sortBy, sort });
 
   res.send(data);
@@ -331,7 +329,6 @@ catalogsRouter.get("/membership/search", async (req: Request, res: Response) => 
   const page = parseInt(req.query.page as string);
   const limit = parseInt(req.query.limit as string);
   const offset = page * limit || 0;
-  let counter = [{ count: 0 }];
   const data = await catalogService.doMembershipSearch(page, limit, offset, { textToMatch, sortBy, sort });
 
   res.send(data);
@@ -376,7 +373,6 @@ catalogsRouter.get("/relationship/search", async (req: Request, res: Response) =
   const page = parseInt(req.query.page as string);
   const limit = parseInt(req.query.limit as string);
   const offset = page * limit || 0;
-  let counter = [{ count: 0 }];
   const data = await catalogService.doRelationshipSearch(page, limit, offset, { textToMatch, sortBy, sort });
 
   res.send(data);
