@@ -13,6 +13,7 @@
 					label="Search"
 					dense
 					outlined
+					clearable
 					append-icon="mdi-magnify"
 					hint="Enter criteria and press enter"
 					@click:append="doSearch"
@@ -88,7 +89,7 @@ export default {
 	name: 'SitesTable',
 	components: { AdvancedSearchForm },
 	data: () => ({
-		advancedSearchQuery: [],
+		advancedSearchQuery: {},
 		items: [],
 		loading: false,
 		options: {},
@@ -112,12 +113,11 @@ export default {
 			];
 		},
 		searchQuery() {
-			if (!this.searchTerm) return []
+			if (!this.searchTerm) return {}
 
-			return [
-				{ field: 'primaryName', operator: 'contains', value: this.searchTerm },
-				{ field: 'yhsiid', operator: 'contains', value: this.searchTerm },
-			];
+			// query format is operation: value
+			// operation is a custom operation defined in the back-end
+			return { search: this.searchTerm };
 		},
 	},
 	watch: {
@@ -153,7 +153,7 @@ export default {
 		},
 		doSearch() {
 			const data = cloneDeep(this.options);
-			data.query = [...this.searchQuery, ...this.advancedSearchQuery];
+			data.query = {...this.searchQuery, ...this.advancedSearchQuery};
 
 			this.loading = true;
 			api
@@ -168,7 +168,7 @@ export default {
 		},
 		toggleAdvancedSearch() {
 			if (this.isShowingAdvancedSearch) {
-				this.advancedSearchQuery = [];
+				this.advancedSearchQuery = {};
 				this.doSearch()
 			}
 			this.isShowingAdvancedSearch = !this.isShowingAdvancedSearch;

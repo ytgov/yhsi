@@ -22,8 +22,6 @@
 </template>
 
 <script>
-import { isEmpty } from 'lodash';
-
 import CommunitiesFilter from '@/components/Sites/sites-table/CommunitiesFilter';
 import NtsMapSheetsFilter from '@/components/Sites/sites-table/NtsMapSheetsFilter';
 
@@ -36,9 +34,7 @@ export default {
 	}),
 	computed: {
 		advancedSearchFilter() {
-			return [this.communitiesFilter, this.ntsMapSheetsFilter].filter(
-				(v) => !isEmpty(v)
-			);
+			return { ...this.communitiesFilter, ...this.ntsMapSheetsFilter };
 		},
 	},
 	methods: {

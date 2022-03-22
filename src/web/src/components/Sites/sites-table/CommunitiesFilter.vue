@@ -37,13 +37,11 @@ export default {
 			if (isEmpty(this.communityIds)) return {}
 
 			return {
-				field: 'CommunityId',
-				operator: this.filterOperator,
-				value: this.communityIds,
+				[this.queryName]: this.communityIds,
 			};
 		},
-		filterOperator () {
-			return this.includeFilter ? 'in' : 'notin'
+		queryName () {
+			return this.includeFilter ? 'includingCommunityIds' : 'excludingCommunityIds'
 		},
 		filterTypeIcon() {
 			return this.includeFilter

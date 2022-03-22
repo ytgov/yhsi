@@ -472,7 +472,7 @@ export class PlaceService {
 	}
 
 	async doSearch(
-		query: Array<QueryStatement>,
+		query: { [key: string]: any },
 		sort: Array<SortStatement>,
 		page: number,
 		itemsPerPage: number,
@@ -480,7 +480,7 @@ export class PlaceService {
 		take: number
 	): Promise<any> {
 		return new Promise(async (resolve, reject) => {
-			let selectStmt = this.knex('place')
+			const selectStatement = this.knex('place')
 				.distinct()
 				.select(PLACE_FIELDS)
 				.leftOuterJoin(
@@ -492,69 +492,48 @@ export class PlaceService {
 					'constructionPeriod',
 					'place.id',
 					'constructionPeriod.placeid'
-				);
-			//.leftOuterJoin("revisionLog", "place.id", "revisionLog.placeid")
-			//.leftOuterJoin("description", "place.id", "description.placeid");
+				)
 
-			if (query && query.length > 0) {
-				query.forEach((stmt: any) => {
-					switch (stmt.operator) {
-						case 'eq': {
-							let p = {};
-							let m = `{"${stmt.field}": "${stmt.value}"}`;
-							Object.assign(p, JSON.parse(m));
-							selectStmt.orWhere(p);
-							break;
-						}
-						case 'in': {
-							let items = stmt.value.split(',');
-							selectStmt.orWhereIn(stmt.field, items);
-							break;
-						}
-						case 'notin': {
-							let items = stmt.value.split(',');
-							selectStmt.whereNotIn(stmt.field, items);
-							break;
-						}
-						case 'gt': {
-							selectStmt.orWhere(stmt.field, '>', stmt.value);
-							break;
-						}
-						case 'gte': {
-							selectStmt.orWhere(stmt.field, '>=', stmt.value);
-							break;
-						}
-						case 'lt': {
-							selectStmt.orWhere(stmt.field, '<', stmt.value);
-							break;
-						}
-						case 'lte': {
-							//console.log(`Testing ${stmt.field} for IN on ${stmt.value}`);
-							selectStmt.orWhere(stmt.field, '<=', stmt.value);
-							break;
-						}
-						case 'contains': {
-							selectStmt.orWhereRaw(
-								`LOWER(${stmt.field}) like '%${stmt.value.toLowerCase()}%'`
-							);
-							break;
-						}
-						default: {
-							//console.log(`IGNORING ${stmt.field} on ${stmt.value}`);
-						}
-					}
-				});
-			}
+			const SUPPORTED_QUERIES: { [key: string]: Function } = Object.freeze({
+				search (base: any, value: any) {
+					return base.where((builder: any) =>
+						builder
+							.whereILike('PrimaryName', `%${value}%`)
+							.orWhereILike('YHSIId', `%${value}%`)
+					);
+				},
+				includingCommunityIds (base: any, value: any) {
+					return base.whereIn('CommunityId', value)
+				},
+				excludingCommunityIds (base: any, value: any) {
+					return base.whereNotIn('CommunityId', value)
+				},
+				includingNtsMapSheets (base: any, value: any) {
+					return base.whereIn('NTSMapSheet', value)
+				},
+				excludingNtsMapSheets (base: any, value: any) {
+					return base.whereNotIn('NTSMapSheet', value)
+				},
+			})
+
+			Object.entries(query).forEach(([name, value]) => {
+				const queryResolver = SUPPORTED_QUERIES[name]
+				if (queryResolver) {
+					queryResolver(selectStatement, value)
+				} else {
+					console.error(`Query ${name} is not supported`)
+				}
+			})
 
 			if (sort && sort.length > 0) {
-				sort.forEach((stmt) => {
-					selectStmt.orderBy(stmt.field, stmt.direction);
+				sort.forEach((statement) => {
+					selectStatement.orderBy(statement.field, statement.direction);
 				});
 			} else {
-				selectStmt.orderBy('place.primaryName');
+				selectStatement.orderBy('place.primaryName');
 			}
 
-			let fullData = await selectStmt.catch(error => {
+			let fullData = await selectStatement.catch(error => {
 				reject(error)
 				return []
 			});
@@ -563,7 +542,7 @@ export class PlaceService {
 			let count = uniqIds.length;
 			let pageCount = Math.ceil(count / itemsPerPage);
 
-			let data = await selectStmt.offset(skip).limit(take).catch(reject);
+			let data = await selectStatement.offset(skip).limit(take).catch(reject);
 			let results = {
 				data,
 				meta: { page, itemsPerPage, itemCount: count, pageCount },
