@@ -112,6 +112,8 @@ export default {
 			];
 		},
 		searchQuery() {
+			if (!this.searchTerm) return []
+
 			return [
 				{ field: 'primaryName', operator: 'contains', value: this.searchTerm },
 				{ field: 'yhsiid', operator: 'contains', value: this.searchTerm },
@@ -165,8 +167,11 @@ export default {
 				});
 		},
 		toggleAdvancedSearch() {
+			if (this.isShowingAdvancedSearch) {
+				this.advancedSearchQuery = [];
+				this.doSearch()
+			}
 			this.isShowingAdvancedSearch = !this.isShowingAdvancedSearch;
-			this.advancedSearchQuery = [];
 		},
 	},
 };
