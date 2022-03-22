@@ -62,7 +62,7 @@ export default {
     },
     async save() {
       let data = {
-        vesselType: { Type: this.input },
+        data: { Religion: this.input },
       };
       await catalogs.postReligion(data);
       this.$router.go();

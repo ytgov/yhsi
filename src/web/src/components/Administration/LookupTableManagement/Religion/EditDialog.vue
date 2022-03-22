@@ -18,7 +18,7 @@
                       <v-text-field
                         ref="editInput"
                         label="Religion"
-                        v-model="input"
+                        v-model="data.Religion"
                         :rules="generalRules"
                       ></v-text-field>
                     </v-col>
@@ -55,9 +55,9 @@ export default {
     },
     async save() {
       let data = {
-        vesselType: { Type: this.input },
+        data: { Religion: this.data.Religion },
       };
-      await catalogs.putReligion(this.data.Id, data);
+      await catalogs.putReligion(this.data.ReligionLUpID, data);
       this.$router.go();
     },
     //not needed

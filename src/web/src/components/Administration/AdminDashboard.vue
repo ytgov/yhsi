@@ -85,6 +85,11 @@ export default {
         url: "/admin/cemetary",
       },
       {
+        icon: "mdi-account-switch",
+        text: "Burials - Relationships",
+        url: "/admin/relationship",
+      },
+      {
         icon: "mdi-shape",
         text: "Burials - Religions",
         url: "/admin/religion",
