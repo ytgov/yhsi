@@ -513,6 +513,12 @@ export class PlaceService {
 				excludingNtsMapSheets (base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('NTSMapSheet', value)
 				},
+				includingConstructionPeriodValues (base: Knex.QueryInterface, value: any) {
+					return base.whereIn('[ConstructionPeriod].[Type]', value)
+				},
+				excludingConstructionPeriodValues (base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('[ConstructionPeriod].[Type]', value)
+				},
 			})
 
 			Object.entries(query).forEach(([name, value]) => {
