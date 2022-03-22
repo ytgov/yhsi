@@ -6,7 +6,6 @@
           <span class="text-h5">Edit Vessel Type</span>
         </v-card-title>
         <v-card-text>
-          <v-container>
             <v-row>
               <v-col cols="12">
                 <v-form
@@ -14,19 +13,22 @@
                   :lazy-validation="false"
                   v-model="valid"
                 >
-                  <v-text-field
-                    ref="editInput"
-                    label="Vessel Name"
-                    v-model="input"
-                    :rules="generalRules"
-                  ></v-text-field>
+                  <v-row class="mt-2">
+                    <v-col cols="12">
+                      <v-text-field outlined dense
+                        ref="editInput"
+                        label="Vessel Name"
+                        v-model="input"
+                        :rules="generalRules"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
                 </v-form>
               </v-col>
             </v-row>
-          </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-btn text @click="closeDialog"> Close </v-btn>
+          <v-btn text @click="closeDialog" class="black--text"> Close </v-btn>
           <v-spacer></v-spacer>
           <v-btn color="success" text :disabled="!valid" @click="save">
             Save
