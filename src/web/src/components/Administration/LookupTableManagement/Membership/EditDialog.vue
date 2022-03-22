@@ -18,7 +18,7 @@
                       <v-text-field outlined dense
                         ref="editInput"
                         label="Membership"
-                        v-model="input"
+                        v-model="data.Membership"
                         :rules="generalRules"
                       ></v-text-field>
                     </v-col>
@@ -54,9 +54,9 @@ export default {
     },
     async save() {
       let data = {
-        vesselType: { Type: this.input },
+        data: { Membership: this.data.Membership },
       };
-      await catalogs.putVesselType(this.data.Id, data);
+      await catalogs.putMembership(this.data.MembershipLUpID, data);
       this.$router.go();
     },
     //not needed
