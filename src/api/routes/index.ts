@@ -4,6 +4,7 @@ export * from './boat-router';
 export * from './catalogs-router';
 export * from './communities-router';
 export * from './histories-router';
+export * from './nts-map-sheets-router';
 export * from './owner-router';
 export * from './people-router';
 export * from './photo-batch-router';
