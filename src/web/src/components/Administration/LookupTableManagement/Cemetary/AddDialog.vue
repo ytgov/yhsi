@@ -108,8 +108,9 @@ export default {
       this.resetValidation();
     },
     async save() {
+      let { Cemetary, Community, Address, Notes, Latitude, Longitude } = this;
       let data = {
-        vesselType: { Type: this.input },
+        data: { Cemetary, Community, Address, Notes, Latitude, Longitude },
       };
       await catalogs.postCemetary(data);
       this.$router.go();

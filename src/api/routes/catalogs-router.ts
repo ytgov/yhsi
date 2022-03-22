@@ -270,7 +270,7 @@ catalogsRouter.put(
 
 catalogsRouter.post("/cemetary", async (req: Request, res: Response) => {
   const { data = {} } = req.body;
-
+  
   const response = await db
     .insert(data)
     .into("Burial.CemetaryLookup")

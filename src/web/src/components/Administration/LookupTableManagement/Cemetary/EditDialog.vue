@@ -3,7 +3,7 @@
     <v-dialog v-model="dialog" persistent max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="text-h5">Edit Vessel Type</span>
+          <span class="text-h5">Edit Cemetary</span>
         </v-card-title>
         <v-card-text>
             <v-row>
@@ -13,17 +13,55 @@
                   :lazy-validation="false"
                   v-model="valid"
                 >
-                  <v-row class="mt-2">
-                    <v-col cols="12">
-                      <v-text-field outlined dense
-                        ref="editInput"
-                        label="Cemetary Name"
-                        v-model="input"
-                        :rules="generalRules"
-                      ></v-text-field>
+                    <v-row class="mt-2">
+                        <v-col class="pa-0" cols="6">
+                          <v-text-field class="mr-2" outlined dense
+                            label="Cemetary Name"
+                            v-model="data.Cemetary"
+                            :rules="generalRules"
+                          ></v-text-field>
+                          
+                        </v-col>
+                        <v-col class="pa-0" cols="6">
+                          <v-text-field class="ml-2" outlined dense
+                            label="Community"
+                            v-model="data.Community"
+                    
+                          ></v-text-field>
+                        
+                        </v-col>  
+                    </v-row>
+                  <v-row>
+                    <v-col class="pa-0 " cols="6">
+                      <v-text-field class="mr-2" outlined dense
+                          label="Latitude"
+                          v-model="data.Latitude"
+                    
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="pa-0" cols="6">
+                      <v-text-field class="ml-2" outlined dense
+                          label="Longitude"
+                          v-model="data.Longitude"
+                     
+                        ></v-text-field>
                     </v-col>
                   </v-row>
-                  
+                  <v-row>
+                    <v-col class="pa-0" cols="12">
+                      <v-text-field outlined dense
+                          label="Address"
+                          v-model="data.Address"
+      
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="pa-0" cols="12">
+                      <v-text-field outlined dense
+                          label="Notes"
+                          v-model="data.Notes"
+                        ></v-text-field>
+                    </v-col>
+                  </v-row>
                 </v-form>
               </v-col>
             </v-row>
@@ -47,6 +85,12 @@ export default {
   data: () => ({
     input: null,
     valid: false,
+    Cemetary: "",
+    Community: "",
+    Address: "",
+    Notes: "",
+    Latitude: "",
+    Longitude: "",
     generalRules: [(v) => !!v || "This field is required"],
   }),
   methods: {
@@ -54,10 +98,11 @@ export default {
       this.$emit("closeEditDialog");
     },
     async save() {
+      let { Cemetary, Community, Address, Notes, Latitude, Longitude } = this.data;
       let data = {
-        vesselType: { Type: this.input },
+        data: { Cemetary, Community, Address, Notes, Latitude, Longitude },
       };
-      await catalogs.putVesselType(this.data.Id, data);
+      await catalogs.putCemetary(this.data.CemetaryLUpID, data);
       this.$router.go();
     },
     //not needed
