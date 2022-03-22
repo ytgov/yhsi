@@ -18,7 +18,7 @@
                     <v-text-field outlined dense
                       ref="editInput"
                       label="Relationship"
-                      v-model="input"
+                      v-model="data.Relationship"
                       :rules="generalRules"
                     ></v-text-field>
                   </v-col>
@@ -55,9 +55,9 @@ export default {
     },
     async save() {
       let data = {
-        vesselType: { Type: this.input },
+        data: { Relationship: this.data.Relationship },
       };
-      await catalogs.putRelationship(this.data.Id, data);
+      await catalogs.putRelationship(this.data.RelationLUpID, data);
       this.$router.go();
     },
     //not needed
