@@ -62,7 +62,7 @@ export default {
     },
     async save() {
       let data = {
-        vesselType: { Type: this.input },
+        data: { Membership: this.input },
       };
       await catalogs.postMembership(data);
       this.$router.go();
