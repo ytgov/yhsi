@@ -207,7 +207,7 @@
             outlined
             background-color="white"
             label="Community"
-            v-if="accessItem.AccessType == 3"
+            v-if="accessItem.AccessType == 2"
           ></v-select>
           <v-select
             v-model="accessItem.AccessText"
@@ -218,7 +218,7 @@
             outlined
             background-color="white"
             label="First Nation"
-            v-if="accessItem.AccessType == 2"
+            v-if="accessItem.AccessType == 3"
           ></v-select>
 
           <div class="d-flex">
@@ -258,8 +258,8 @@ export default {
     overlay: false,
     accessOptions: [
       { text: "Map sheet", value: 1 },
-      { text: "Community", value: 3 },
-      { text: "First Nation", value: 2 },
+      { text: "Community", value: 2 },
+      { text: "First Nation", value: 3 },
     ],
     accessItem: { AccessType: 1, AccessText: 1 },
     /* VALIDATION*/

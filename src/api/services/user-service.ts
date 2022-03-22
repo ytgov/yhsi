@@ -26,10 +26,10 @@ export class UserService {
 	}
 
 	async getAll(): Promise<any[]> {
-		let list = await this.knex("Ibbit_User").join("HSUser", "HSUser.UserId", "Ibbit_User.UserId").select("Ibbit_User.*", "HSUser.ExpirationDate")
+		let list = await this.knex("Ibbit_User").join("HSUser", "HSUser.UserId", "Ibbit_User.UserId").select("Ibbit_User.*", "HSUser.ExpirationDate", "HSUser.Id as hsid")
 
 		for (let user of list) {
-			user.SiteAccess = await this.knex("HSUserAccess").where({ UserId: user.UserId });
+			user.SiteAccess = await this.knex("HSUserAccess").where({ UserId: user.hsid });
 			user.Roles = (await this.getRolesForUser(user.UserId)).map(r => r.RoleId);		
 		}
 
@@ -37,9 +37,9 @@ export class UserService {
 	}
 
 	async getOne(filter: any): Promise<any> {
-		let user = await this.knex("Ibbit_User").join("HSUser", "HSUser.UserId", "Ibbit_User.UserId").select("Ibbit_User.*", "HSUser.ExpirationDate").where(filter).first();
+		let user = await this.knex("Ibbit_User").join("HSUser", "HSUser.UserId", "Ibbit_User.UserId").select("Ibbit_User.*", "HSUser.ExpirationDate", "HSUser.Id as hsid").where(filter).first();
 		user.Roles = (await this.getRolesForUser(user.UserId)).map(r => r.RoleId);
-		user.SiteAccess = await this.knex("HSUserAccess").where({ UserId: user.UserId }).orderBy("AccessType").orderBy("AccessText");
+		user.SiteAccess = await this.knex("HSUserAccess").where({ UserId: user.hsid }).orderBy("AccessType").orderBy("AccessText");
 
 		let allCommunities = await this.knex("Community");
 		let allFirstNations = await this.knex("FirstNation")
@@ -51,16 +51,17 @@ export class UserService {
 					access.AccessTextDescription = access.AccessText;
 					break;
 				case 2:
-					access.AccessTypeDescription = "First Nation";
-					let fn = allFirstNations.filter(c => c.Id == access.AccessText)
-					if (fn.length > 0)
-						access.AccessTextDescription = fn[0].Description;
-					break;
-				case 3:
 					access.AccessTypeDescription = "Community";
 					let cm = allCommunities.filter(c => c.Id == access.AccessText)
 					if (cm.length > 0)
 						access.AccessTextDescription = cm[0].Name;
+					break;
+				case 3:
+					access.AccessTypeDescription = "First Nation";
+					access.AccessText = parseInt(access.AccessText);
+					let fn = allFirstNations.filter(c => c.Id == access.AccessText)
+					if (fn.length > 0)
+						access.AccessTextDescription = fn[0].Description;
 					break;
 			}
 		}
