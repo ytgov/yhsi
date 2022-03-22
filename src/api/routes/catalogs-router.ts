@@ -3,7 +3,8 @@ import { DB_CONFIG } from "../config";
 import knex from "knex";
 import { ReturnValidationErrors } from "../middleware";
 import { param, query } from "express-validator";
-
+import { CatalogService } from "../services";
+const catalogService = new CatalogService();
 export const catalogsRouter = express.Router();
 const db = knex(DB_CONFIG);
 //const staticService = new StaticService(DB_CONFIG);
@@ -149,11 +150,19 @@ catalogsRouter.put(
 
 //RELIGION
 
+catalogsRouter.get("/religion/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Religion", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  let counter = [{ count: 0 }];
+  const data = await catalogService.doReligionSearch(page, limit, offset, { textToMatch, sortBy, sort });
+
+  res.send(data);
+});
+
 catalogsRouter.get("/religion", async (req: Request, res: Response) => {
-  const data = await db("Burial.ReligionLookup").orderBy(
-    "Burial.ReligionLookup.Religion",
-    "asc"
-  );
+  const data = await catalogService.getAllReligions();
 
   res.send(data);
 });
@@ -184,11 +193,20 @@ catalogsRouter.post("/religion", async (req: Request, res: Response) => {
 });
 
 //CAUSES
+
+catalogsRouter.get("/cause/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Cause", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  let counter = [{ count: 0 }];
+  const data = await catalogService.doCauseSearch(page, limit, offset, { textToMatch, sortBy, sort });
+
+  res.send(data);
+});
+
 catalogsRouter.get("/cause", async (req: Request, res: Response) => {
-  const data = await db("Burial.CauseLookup").orderBy(
-    "Burial.CauseLookup.Cause",
-    "asc"
-  );
+  const data = await catalogService.getAllCauses();
 
   res.send(data);
 });
@@ -219,11 +237,20 @@ catalogsRouter.post("/cause", async (req: Request, res: Response) => {
 });
 
 //CEMETARIES
+
+catalogsRouter.get("/cemetary/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Cemetary", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  let counter = [{ count: 0 }];
+  const data = await catalogService.doCemetarySearch(page, limit, offset, { textToMatch, sortBy, sort });
+
+  res.send(data);
+});
+
 catalogsRouter.get("/cemetary", async (req: Request, res: Response) => {
-  const data = await db("Burial.CemetaryLookup").orderBy(
-    "Burial.CemetaryLookup.Cemetary",
-    "asc"
-  );
+  const data = await catalogService.getAllCemetaries();
 
   res.send(data);
 });
@@ -234,7 +261,7 @@ catalogsRouter.put(
   ReturnValidationErrors,
   async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { data = {} } = req.body;
+    const { data = {} } = req.body; 
 
     await db("Burial.CemetaryLookup").update(data).where("Burial.CemetaryLookup.CemetaryLUpID", id);
 
@@ -254,11 +281,20 @@ catalogsRouter.post("/cemetary", async (req: Request, res: Response) => {
 });
 
 //OCCUPATIONS
+
+catalogsRouter.get("/occupation/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Occupation", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  let counter = [{ count: 0 }];
+  const data = await catalogService.doOccupationSearch(page, limit, offset, { textToMatch, sortBy, sort });
+
+  res.send(data);
+});
+
 catalogsRouter.get("/occupation", async (req: Request, res: Response) => {
-  const data = await db("Burial.OccupationLookup").orderBy(
-    "Burial.OccupationLookup.Occupation",
-    "asc"
-  );
+  const data = await catalogService.getAllOcupations();
 
   res.send(data);
 });
@@ -289,11 +325,20 @@ catalogsRouter.post("/occupation", async (req: Request, res: Response) => {
 });
 
 //MEMBERSHIPS
+
+catalogsRouter.get("/membership/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Membership", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  let counter = [{ count: 0 }];
+  const data = await catalogService.doMembershipSearch(page, limit, offset, { textToMatch, sortBy, sort });
+
+  res.send(data);
+});
+
 catalogsRouter.get("/membership", async (req: Request, res: Response) => {
-  const data = await db("Burial.MembershipLookup").orderBy(
-    "Burial.MembershipLookup.Membership",
-    "asc"
-  );
+  const data = await catalogService.getAllMemberships();
 
   res.send(data);
 });
@@ -324,11 +369,22 @@ catalogsRouter.post("/membership", async (req: Request, res: Response) => {
 });
 
 //RELATIONSHIPS
+
+
+catalogsRouter.get("/relationship/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Relationship", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  let counter = [{ count: 0 }];
+  const data = await catalogService.doRelationshipSearch(page, limit, offset, { textToMatch, sortBy, sort });
+
+  res.send(data);
+});
+
 catalogsRouter.get("/relationship", async (req: Request, res: Response) => {
-  const data = await db("Burial.RelationLookup").orderBy(
-    "Burial.RelationLookup.Relationship",
-    "asc"
-  );
+
+  const data = await catalogService.getAllRelationships();
 
   res.send(data);
 });

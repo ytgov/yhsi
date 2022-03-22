@@ -72,27 +72,27 @@ export default {
       {
         icon: "mdi-wrench",
         text: "Burials - Occupations",
-        url: "/admin/burials/occupations",
+        url: "/admin/occupation",
       },
       {
         icon: "mdi-wallet-membership",
         text: "Burials - Memberships",
-        url: "/admin/burials/memberships",
+        url: "/admin/membership",
       },
       {
         icon: "mdi-database",
         text: "Burials - Cementeries",
-        url: "/admin/burials/cementeries",
+        url: "/admin/cemetary",
       },
       {
         icon: "mdi-shape",
         text: "Burials - Religions",
-        url: "/admin/burials/religions",
+        url: "/admin/religion",
       },
       {
         icon: "mdi-bug",
         text: "Burials - Causes",
-        url: "/admin/burials/causes",
+        url: "/admin/cause",
       },
       {
         icon: 'mdi-map-marker-multiple-outline',
