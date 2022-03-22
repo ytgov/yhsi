@@ -3,7 +3,7 @@
 		v-model="ntsMapSheetValues"
 		:items="ntsMapSheets"
 		:loading="loading"
-		label="NTS Map Sheet Name"
+		label="NTS Map Sheet"
 		item-text="name"
 		item-value="name"
 		:prepend-icon="filterTypeIcon"
