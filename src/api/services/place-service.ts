@@ -494,32 +494,36 @@ export class PlaceService {
 					'constructionPeriod.placeid'
 				)
 
-			const SUPPORTED_QUERIES: { [key: string]: Function } = Object.freeze({
-				search (base: any, value: any) {
-					return base.where((builder: any) =>
+			type QueryBuilder = {
+			  (base: Knex.QueryInterface, value: any): Knex.QueryInterface;
+			};
+
+			const SUPPORTED_QUERIES: { [key: string]: QueryBuilder } = Object.freeze({
+				search (base: Knex.QueryInterface, value: any) {
+					return base.where((builder) =>
 						builder
 							.whereILike('PrimaryName', `%${value}%`)
 							.orWhereILike('YHSIId', `%${value}%`)
 					);
 				},
-				includingCommunityIds (base: any, value: any) {
+				includingCommunityIds (base: Knex.QueryInterface, value: any) {
 					return base.whereIn('CommunityId', value)
 				},
-				excludingCommunityIds (base: any, value: any) {
+				excludingCommunityIds (base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('CommunityId', value)
 				},
-				includingNtsMapSheets (base: any, value: any) {
+				includingNtsMapSheets (base: Knex.QueryInterface, value: any) {
 					return base.whereIn('NTSMapSheet', value)
 				},
-				excludingNtsMapSheets (base: any, value: any) {
+				excludingNtsMapSheets (base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('NTSMapSheet', value)
 				},
 			})
 
 			Object.entries(query).forEach(([name, value]) => {
-				const queryResolver = SUPPORTED_QUERIES[name]
-				if (queryResolver) {
-					queryResolver(selectStatement, value)
+				const queryBuilder = SUPPORTED_QUERIES[name]
+				if (queryBuilder) {
+					queryBuilder(selectStatement, value)
 				} else {
 					console.error(`Query ${name} is not supported`)
 				}
