@@ -6,12 +6,16 @@
 		label="Communities"
 		item-text="name"
 		item-value="id"
+		:prepend-icon="filterTypeIcon"
 		clearable
 		dense
 		outlined
 		small-chips
+		deletable-chips
 		multiple
 		background-color="white"
+		@click:prepend="toggleFilterType"
+		@change="$emit('input', communitiesFilter)"
 	/>
 </template>
 
@@ -23,8 +27,26 @@ export default {
 	data: () => ({
 		communities: [],
 		communityIds: [],
+		includeFilter: true,
 		loading: false,
 	}),
+	computed: {
+		communitiesFilter() {
+			return {
+				field: 'CommunityId',
+				operator: this.filterOperator,
+				value: this.communityIds,
+			};
+		},
+		filterOperator () {
+			return this.includeFilter ? 'in' : 'notin'
+		},
+		filterTypeIcon() {
+			return this.includeFilter
+				? 'mdi-filter-plus-outline'
+				: 'mdi-filter-minus-outline';
+		},
+	},
 	mounted() {
 		this.loading = true;
 		api
@@ -35,6 +57,11 @@ export default {
 			.finally(() => {
 				this.loading = false;
 			});
+	},
+	methods: {
+		toggleFilterType() {
+			this.includeFilter = !this.includeFilter
+		},
 	},
 };
 </script>
