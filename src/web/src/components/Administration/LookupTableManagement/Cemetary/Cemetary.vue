@@ -25,7 +25,7 @@
         <v-card class="px-3 py-3">
           <v-row>
             <v-col cols="12">
-              <h2>{{ filteredData.length }} Results</h2>
+              <h2>{{ filteredData.length }} results out of {{ totalLength }}</h2>
               <!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
             </v-col>
           </v-row>
@@ -82,7 +82,12 @@ export default {
     options: {},
     totalLength: 10,
     headers: [
-      { text: "Type", value: "Type" },
+      { text: "Cemetary", value: "Cemetary" },
+      { text: "Community", value: "Community" },
+      { text: "Address", value: "Address" },
+      { text: "Notes", value: "Notes" },
+      { text: "Latitude", value: "Latitude" },
+      { text: "Longitude", value: "Longitude" },
       //      { text: "Actions", value: "actions"}
     ],
     page: 1,
@@ -117,7 +122,7 @@ export default {
       page = page > 0 ? page - 1 : 0;
       itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
       let textToMatch = this.search;
-      let data = await catalogs.getVesselTypes(
+      let data = await catalogs.searchCemetaries(
         page,
         itemsPerPage,
         textToMatch,
