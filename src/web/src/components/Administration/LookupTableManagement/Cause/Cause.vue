@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <v-container fluid>
-      <h1>Vessel Type</h1>
+      <h1>Causes</h1>
       <Breadcrumbs />
       <v-row class="mb-2">
         <v-col cols="6" class="d-flex">
@@ -77,7 +77,7 @@ export default {
   components: { Breadcrumbs, EditDialog, AddDialog },
   data: () => ({
     loading: false,
-    vesseltypes: [],
+    list: [],
     search: "",
     options: {},
     totalLength: 10,
@@ -105,10 +105,10 @@ export default {
     },
     removeItem(item) {
       //removes one element from the users array
-      const index = this.vesseltypes.findIndex((a) => a.id == item.id);
+      const index = this.list.findIndex((a) => a.id == item.id);
       //console.log(index);
       if (index > -1) {
-        this.vesseltypes.splice(index, 1);
+        this.list.splice(index, 1);
       }
     },
     async getDataFromApi() {
@@ -124,7 +124,7 @@ export default {
         sortBy[0],
         sortDesc[0] ? "desc" : "asc"
       );
-      this.vesseltypes = _.get(data, "body", []);
+      this.list = _.get(data, "body", []);
       //console.log(this.vesseltypes);
       this.totalLength = _.get(data, "count", 0);
       this.loading = false;
@@ -142,7 +142,7 @@ export default {
   computed: {
     filteredData() {
       // returns a filtered users array depending on the selected filters
-      let data = JSON.parse(JSON.stringify(this.vesseltypes));
+      let data = JSON.parse(JSON.stringify(this.list));
       return data;
     },
   },

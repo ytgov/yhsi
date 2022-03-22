@@ -165,6 +165,23 @@ export default {
         console.error(error);
       });
   },
+  async searchCauses(page, limit, textToMatch, sortBy, sort) {
+    return await api.get(`catalogs/cause/search`,{
+      params: {
+        page,
+        limit,
+        textToMatch,
+        sortBy,
+        sort
+      }
+    })
+    .then(res => {
+      return res.data;
+    }).catch(error => {
+      // handle error
+      console.error(error);
+    });
+  },
   //RELIGIONS
   async getReligions() {
     return await api.get(`catalogs/religion`)
@@ -184,7 +201,7 @@ export default {
         console.error(error);
       });
   },
-  async postCemetary(id, data) {
+  async postReligion(id, data) {
     return await api.post(`catalogs/religion/${id}`, data)
       .then(res => {
         return res.data;
@@ -192,6 +209,23 @@ export default {
         // handle error
         console.error(error);
       });
+  },
+  async searchReligions(page, limit, textToMatch, sortBy, sort) {
+    return await api.get(`catalogs/religion/search`,{
+      params: {
+        page,
+        limit,
+        textToMatch,
+        sortBy,
+        sort
+      }
+    })
+    .then(res => {
+      return res.data;
+    }).catch(error => {
+      // handle error
+      console.error(error);
+    });
   },
   //CEMETARIES
   async getCemetaries() {
@@ -221,6 +255,23 @@ export default {
         console.error(error);
       });
   },
+  async searchCemetaries(page, limit, textToMatch, sortBy, sort) {
+    return await api.get(`catalogs/cemetary/search`,{
+      params: {
+        page,
+        limit,
+        textToMatch,
+        sortBy,
+        sort
+      }
+    })
+    .then(res => {
+      return res.data;
+    }).catch(error => {
+      // handle error
+      console.error(error);
+    });
+  },
   //OCCUPATIONS
   async getOccupations() {
     return await api.get(`catalogs/occupation`)
@@ -248,6 +299,23 @@ export default {
         // handle error
         console.error(error);
       });
+  },
+  async searchOccupations(page, limit, textToMatch, sortBy, sort) {
+    return await api.get(`catalogs/occupation/search`,{
+      params: {
+        page,
+        limit,
+        textToMatch,
+        sortBy,
+        sort
+      }
+    })
+    .then(res => {
+      return res.data;
+    }).catch(error => {
+      // handle error
+      console.error(error);
+    });
   },
 //MEMBERSHIPS
   async getMemberships() {
@@ -277,6 +345,23 @@ export default {
         console.error(error);
       });
   },
+  async searchMemberships(page, limit, textToMatch, sortBy, sort) {
+    return await api.get(`catalogs/membership/search`,{
+      params: {
+        page,
+        limit,
+        textToMatch,
+        sortBy,
+        sort
+      }
+    })
+    .then(res => {
+      return res.data;
+    }).catch(error => {
+      // handle error
+      console.error(error);
+    });
+  },
   //RELATIONSHIPS
   async getRelationships() {
     return await api.get(`catalogs/relationship`)
@@ -305,6 +390,22 @@ export default {
         console.error(error);
       });
   },
-  
+  async searchRelationships(page, limit, textToMatch, sortBy, sort) {
+    return await api.get(`catalogs/relationship/search`,{
+      params: {
+        page,
+        limit,
+        textToMatch,
+        sortBy,
+        sort
+      }
+    })
+    .then(res => {
+      return res.data;
+    }).catch(error => {
+      // handle error
+      console.error(error);
+    });
+  }
 
 } 
