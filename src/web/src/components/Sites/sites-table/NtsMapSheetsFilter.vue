@@ -1,6 +1,6 @@
 <template>
 	<v-autocomplete
-		v-model="nstMapSheetValues"
+		v-model="ntsMapSheetValues"
 		:items="ntsMapSheets"
 		:loading="loading"
 		label="NTS Map Sheet Name"
@@ -28,22 +28,20 @@ export default {
 	name: 'NtsMapSheetsFilter',
 	data: () => ({
 		ntsMapSheets: [],
-		nstMapSheetValues: [],
+		ntsMapSheetValues: [],
 		includeFilter: true,
 		loading: false,
 	}),
 	computed: {
 		ntsMapSheetsFilter() {
-			if (isEmpty(this.nstMapSheetValues)) return {}
+			if (isEmpty(this.ntsMapSheetValues)) return {}
 
 			return {
-				field: 'NTSMapSheet',
-				operator: this.filterOperator,
-				value: this.nstMapSheetValues,
+				[this.queryName]: this.ntsMapSheetValues,
 			};
 		},
-		filterOperator() {
-			return this.includeFilter ? 'in' : 'notin';
+		queryName() {
+			return this.includeFilter ? 'includingNtsMapSheets' : 'excludingNtsMapSheets';
 		},
 		filterTypeIcon() {
 			return this.includeFilter
