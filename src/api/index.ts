@@ -10,6 +10,7 @@ import {
 	catalogsRouter,
 	communitiesRouter,
 	historiesRouter,
+	ntsMapSheetsRouter,
 	ownerRouter,
 	peopleRouter,
 	photoBatchRouter,
@@ -85,6 +86,7 @@ app.use('/api/register', registerRouter);
 
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
 app.use('/api/communities', RequiresAuthentication, communitiesRouter);
+app.use('/api/nts-map-sheets', RequiresAuthentication, ntsMapSheetsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/owners', RequiresAuthentication, ownerRouter);
 app.use('/api/aircrash', RequiresAuthentication, aircrashRouter);
