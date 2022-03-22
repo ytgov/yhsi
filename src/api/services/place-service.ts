@@ -527,7 +527,7 @@ export class PlaceService {
 					queryBuilder(selectStatement, value)
 				} else {
 					const avaiableQueries = Object.keys(SUPPORTED_QUERIES).join(', ')
-					reject(new Error(`Query "${name}" is not supported; use any of: ${avaiableQueries}`))
+					reject(new Error(`Query "${name}" with "${value}" is not supported; use any of: ${avaiableQueries}`))
 				}
 			})
 
