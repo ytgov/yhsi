@@ -45,11 +45,15 @@
 		<AdvancedSearchForm
 			v-show="isShowingAdvancedSearch"
 			:id="advancedSearchId"
+			class="mb-4"
 			@search="doAdvancedSearch"
 		/>
 		<v-row>
-			<v-col cols="12">
-				<h2>{{ items.length }} Results</h2>
+			<v-col
+				cols="12"
+				class="d-flex justify-end"
+			>
+				{{ totalLength }} Results
 			</v-col>
 		</v-row>
 		<v-divider

@@ -7,13 +7,15 @@
 			<v-card-text>
 				<CommunitiesFilter @input="updateCommunitiesFilter" />
 				<CommunitiesFilter @input="updateCommunitiesFilter" />
+				<div class="d-flex justify-end">
 				<v-btn
-					class="mb-0"
+					class="my-0"
 					color="primary"
 					@click="$emit('search', advancedSearchFilter)"
 				>
 					Search
 				</v-btn>
+			</div>
 			</v-card-text>
 		</v-card>
 	</v-form>
