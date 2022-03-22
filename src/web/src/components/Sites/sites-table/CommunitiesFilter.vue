@@ -20,6 +20,8 @@
 </template>
 
 <script>
+import { isEmpty } from 'lodash'
+
 import api from '@/apis/communities-api';
 
 export default {
@@ -32,6 +34,8 @@ export default {
 	}),
 	computed: {
 		communitiesFilter() {
+			if (isEmpty(this.communityIds)) return {}
+
 			return {
 				field: 'CommunityId',
 				operator: this.filterOperator,
