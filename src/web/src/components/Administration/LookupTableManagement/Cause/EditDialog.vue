@@ -18,7 +18,7 @@
                       <v-text-field outlined dense
                         ref="editInput"
                         label="Cause Name"
-                        v-model="input"
+                        v-model="data.Cause"
                         :rules="generalRules"
                       ></v-text-field>
                     </v-col>
@@ -55,9 +55,9 @@ export default {
     },
     async save() {
       let data = {
-        vesselType: { Type: this.input },
+        data: { Cause: this.data.Cause },
       };
-      await catalogs.putCauses(this.data.Id, data);
+      await catalogs.putCauses(this.data.CauseLUpID, data);
       this.$router.go();
     },
     //not needed
