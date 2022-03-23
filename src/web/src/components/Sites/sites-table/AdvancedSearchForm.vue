@@ -18,6 +18,7 @@
 				<RevisedDateContainsFilter @input="updateRevisedDateContainsFilter" />
 				<AddressContainsFilter @input="updateAddressContainsFilter" />
 				<ConstructionStyleContainsFilter @input="updateConstructionStyleContainsFilter" />
+				<CulturalHistoryContainsFilter @input="updateCulturalHistoryContainsFilter" />
 				<div class="d-flex justify-end">
 					<v-btn
 						class="my-0"
@@ -37,6 +38,7 @@ import AddressContainsFilter from '@/components/Sites/sites-table/AddressContain
 import CommunitiesFilter from '@/components/Sites/sites-table/CommunitiesFilter';
 import ConstructionPeriodsFilter from '@/components/Sites/sites-table/ConstructionPeriodsFilter';
 import ConstructionStyleContainsFilter from '@/components/Sites/sites-table/ConstructionStyleContainsFilter';
+import CulturalHistoryContainsFilter from '@/components/Sites/sites-table/CulturalHistoryContainsFilter';
 import FirstNationAssociationTypesFilter from '@/components/Sites/sites-table/FirstNationAssociationTypesFilter';
 import FirstNationsFilter from '@/components/Sites/sites-table/FirstNationsFilter';
 import NtsMapSheetsFilter from '@/components/Sites/sites-table/NtsMapSheetsFilter';
@@ -52,6 +54,7 @@ export default {
 		CommunitiesFilter,
 		ConstructionPeriodsFilter,
 		ConstructionStyleContainsFilter,
+		CulturalHistoryContainsFilter,
 		FirstNationAssociationTypesFilter,
 		FirstNationsFilter,
 		NtsMapSheetsFilter,
@@ -65,6 +68,7 @@ export default {
 		communitiesFilter: {},
 		constructionPeriodsFilter: {},
 		constructionStyleContainsFilter: {},
+		cultureHistoryContainsFilter: {},
 		firstNationAssociationTypesFilter: {},
 		firstNationsFilter: {},
 		ntsMapSheetsFilter: {},
@@ -80,6 +84,7 @@ export default {
 				...this.communitiesFilter,
 				...this.constructionPeriodsFilter,
 				...this.constructionStyleContainsFilter,
+				...this.cultureHistoryContainsFilter,
 				...this.firstNationAssociationTypesFilter,
 				...this.firstNationsFilter,
 				...this.ntsMapSheetsFilter,
@@ -102,6 +107,9 @@ export default {
 		},
 		updateConstructionStyleContainsFilter(value) {
 			this.constructionStyleContainsFilter = value;
+		},
+		updateCulturalHistoryContainsFilter(value) {
+			this.cultureHistoryContainsFilter = value;
 		},
 		updateFirstNationAssociationTypesFilter(value) {
 			this.firstNationAssociationTypesFilter = value;

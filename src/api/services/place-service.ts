@@ -565,6 +565,14 @@ export class PlaceService {
 							DESCRIPTION_TYPE_ENUMS.CONSTRUCTION_STYLE
 						);
 				},
+				culturalHistoryContains(base: Knex.QueryInterface, value: any) {
+					return base
+						.whereILike('[Description].[DescriptionText]', `%${value}%`)
+						.where(
+							'[Description].[Type]',
+							DESCRIPTION_TYPE_ENUMS.CULTURAL_HISTORY
+						);
+				},
 			});
 
 			Object.entries(query).forEach(([name, value]) => {
