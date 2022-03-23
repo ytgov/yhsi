@@ -7,6 +7,8 @@ import {
 	Contact,
 	Dates,
 	Description,
+	DESCRIPTION_TYPES,
+	DESCRIPTION_TYPE_ENUMS,
 	FIRST_NATION_ASSOCIATION_TYPES,
 	FirstNationAssociation,
 	FunctionalUse,
@@ -440,23 +442,7 @@ export class PlaceService {
 	}
 
 	getDescriptionTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Additional Information' },
-			{ value: 2, text: 'Character Defining Elements' },
-			{ value: 3, text: 'Cultural Period' },
-			{ value: 4, text: 'Heritage Value' },
-			{ value: 5, text: 'Place Description' },
-			{ value: 6, text: 'Description of Boundaries' },
-			{ value: 8, text: 'Historical Sources Location' },
-			{ value: 9, text: 'Renovation Information' },
-			{ value: 10, text: 'Construction Style' },
-			{ value: 11, text: 'Demolition Information' },
-			{ value: 12, text: 'Cultural History' },
-			{ value: 13, text: 'Documentation Location' },
-			{ value: 27, text: 'Archaeological Collections' },
-			{ value: 29, text: 'Building Style' },
-			{ value: 30, text: 'YRHP Additional Information' },
-		];
+		return DESCRIPTION_TYPES;
 	}
 
 	async doSearch(
@@ -472,16 +458,17 @@ export class PlaceService {
 				.distinct()
 				.select(PLACE_FIELDS)
 				.leftOuterJoin(
-					'firstnationassociation',
-					'place.id',
-					'firstnationassociation.placeid'
+					'FirstNationAssociation',
+					'Place.Id',
+					'FirstNationAssociation.PlaceId'
 				)
 				.leftOuterJoin(
-					'constructionPeriod',
-					'place.id',
-					'constructionPeriod.placeid'
+					'ConstructionPeriod',
+					'Place.Id',
+					'ConstructionPeriod.PlaceId'
 				)
-				.leftOuterJoin('RevisionLog', 'Place.id', 'RevisionLog.PlaceId');
+				.leftOuterJoin('RevisionLog', 'Place.id', 'RevisionLog.PlaceId')
+				.leftOuterJoin('Description', 'Place.id', 'Description.PlaceId');
 
 			type QueryBuilder = {
 			  (base: Knex.QueryInterface, value: any): Knex.QueryInterface;
@@ -552,7 +539,12 @@ export class PlaceService {
 				addressContains(base: Knex.QueryInterface, value: any) {
 					return base.whereILike('[Place].[PhysicalAddress]', `%${value}%`);
 				},
-			})
+				constructionStyleContains(base: Knex.QueryInterface, value: any) {
+					return base
+						.whereILike('[Description].[DescriptionText]', `%${value}%`)
+						.where('[Description].[Type]', DESCRIPTION_TYPE_ENUMS.CONSTRUCTION_STYLE);
+				},
+			});
 
 			Object.entries(query).forEach(([name, value]) => {
 				const queryBuilder = SUPPORTED_QUERIES[name]
