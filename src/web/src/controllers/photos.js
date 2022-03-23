@@ -170,9 +170,9 @@ export default {
 				console.error(error);
 			});
 	},
-	async postBurialPhoto(data) {
+	async postBurialPhoto(id,data) {
 		return await apiP
-			.post(`photos/burial`, data)
+			.post(`photos/burial/${id}`, data)
 			.then((res) => {
 				return res.data;
 			})

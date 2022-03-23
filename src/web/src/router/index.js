@@ -56,6 +56,14 @@ import PhotoOwnerGrid from "../components/Administration/LookupTableManagement/P
 import PhotoProjectGrid from "../components/Administration/LookupTableManagement/PhotoProject/PhotoProjectGrid";
 import PhotoSubjectGrid from "../components/Administration/LookupTableManagement/PhotoSubject/PhotoSubjectGrid";
 
+import Cause from "../components/Administration/LookupTableManagement/Cause/Cause";
+import Cemetary from "../components/Administration/LookupTableManagement/Cemetary/Cemetary";
+import Membership from "../components/Administration/LookupTableManagement/Membership/Membership";
+import Occupation from "../components/Administration/LookupTableManagement/Occupation/Occupation";
+import Relationship from "../components/Administration/LookupTableManagement/Relationship/Relationship";
+import Religion from "../components/Administration/LookupTableManagement/Religion/Religion";
+
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -386,6 +394,36 @@ const routes = [
 		path: '/admin/vessel_type',
 		name: 'VesselTypeGrid',
 		component: VesselTypeGrid,
+	},
+	{
+		path: '/admin/cause',
+		name: 'CauseGrid',
+		component: Cause,
+	},
+	{
+		path: '/admin/cemetary',
+		name: 'CemetaryGrid',
+		component: Cemetary,
+	},
+	{
+		path: '/admin/membership',
+		name: 'MembershipGrid',
+		component: Membership,
+	},
+	{
+		path: '/admin/occupation',
+		name: 'OccupationGrid',
+		component: Occupation,
+	},
+	{
+		path: '/admin/relationship',
+		name: 'RelationsihpGrid',
+		component: Relationship,
+	},
+	{
+		path: '/admin/religion',
+		name: 'ReligionGrid',
+		component: Religion,
 	},
 	{
 		path: '/burials',

@@ -3,13 +3,13 @@
     <v-dialog v-model="dialog" persistent max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="text-h5">Edit Vessel Type</span>
+          <span class="text-h5">Edit Membership</span>
         </v-card-title>
         <v-card-text>
             <v-row>
               <v-col cols="12">
                 <v-form
-                  ref="editVesselTypeForm"
+                  ref="editMemebershipForm"
                   :lazy-validation="false"
                   v-model="valid"
                 >
@@ -17,8 +17,8 @@
                     <v-col cols="12">
                       <v-text-field outlined dense
                         ref="editInput"
-                        label="Vessel Name"
-                        v-model="input"
+                        label="Membership"
+                        v-model="data.Membership"
                         :rules="generalRules"
                       ></v-text-field>
                     </v-col>
@@ -54,20 +54,20 @@ export default {
     },
     async save() {
       let data = {
-        vesselType: { Type: this.input },
+        data: { Membership: this.data.Membership },
       };
-      await catalogs.putVesselType(this.data.Id, data);
+      await catalogs.putMembership(this.data.MembershipLUpID, data);
       this.$router.go();
     },
     //not needed
     validate() {
-      this.$refs.editVesselTypeForm.validate();
+      this.$refs.editMemebershipForm.validate();
     },
     reset() {
-      this.$refs.editVesselTypeForm.reset();
+      this.$refs.editMemebershipForm.reset();
     },
     resetValidation() {
-      this.$refs.editVesselTypeForm.resetValidation();
+      this.$refs.editMemebershipForm.resetValidation();
     },
   },
   watch: {

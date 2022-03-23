@@ -3,26 +3,27 @@
     <v-dialog v-model="dialog" persistent max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="text-h5">Edit Vessel Type</span>
+          <span class="text-h5">Edit Religion</span>
         </v-card-title>
         <v-card-text>
             <v-row>
               <v-col cols="12">
                 <v-form
-                  ref="editVesselTypeForm"
+                  ref="editReligionForm"
                   :lazy-validation="false"
                   v-model="valid"
                 >
                   <v-row class="mt-2">
                     <v-col cols="12">
-                      <v-text-field outlined dense
+                      <v-text-field
                         ref="editInput"
-                        label="Vessel Name"
-                        v-model="input"
+                        label="Religion"
+                        v-model="data.Religion"
                         :rules="generalRules"
                       ></v-text-field>
                     </v-col>
                   </v-row>
+                  
                 </v-form>
               </v-col>
             </v-row>
@@ -54,20 +55,20 @@ export default {
     },
     async save() {
       let data = {
-        vesselType: { Type: this.input },
+        data: { Religion: this.data.Religion },
       };
-      await catalogs.putVesselType(this.data.Id, data);
+      await catalogs.putReligion(this.data.ReligionLUpID, data);
       this.$router.go();
     },
     //not needed
     validate() {
-      this.$refs.editVesselTypeForm.validate();
+      this.$refs.editReligionForm.validate();
     },
     reset() {
-      this.$refs.editVesselTypeForm.reset();
+      this.$refs.editReligionForm.reset();
     },
     resetValidation() {
-      this.$refs.editVesselTypeForm.resetValidation();
+      this.$refs.editReligionForm.resetValidation();
     },
   },
   watch: {

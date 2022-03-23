@@ -3,7 +3,8 @@ import { DB_CONFIG } from "../config";
 import knex from "knex";
 import { ReturnValidationErrors } from "../middleware";
 import { param, query } from "express-validator";
-
+import { CatalogService } from "../services";
+const catalogService = new CatalogService();
 export const catalogsRouter = express.Router();
 const db = knex(DB_CONFIG);
 //const staticService = new StaticService(DB_CONFIG);
@@ -149,61 +150,262 @@ catalogsRouter.put(
 
 //RELIGION
 
-catalogsRouter.get("/religion", async (req: Request, res: Response) => {
-  const data = await db("Burial.ReligionLookup").orderBy(
-    "Burial.ReligionLookup.Religion",
-    "asc"
-  );
+catalogsRouter.get("/religion/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Religion", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  let counter = [{ count: 0 }];
+  const data = await catalogService.doReligionSearch(page, limit, offset, { textToMatch, sortBy, sort });
 
   res.send(data);
+});
+
+catalogsRouter.get("/religion", async (req: Request, res: Response) => {
+  const data = await catalogService.getAllReligions();
+
+  res.send(data);
+});
+
+catalogsRouter.put(
+  "/religion/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    await db("Burial.ReligionLookup").update(data).where("Burial.ReligionLookup.ReligionLupID", id);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+catalogsRouter.post("/religion", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;                   
+
+  const response = await db
+    .insert(data)
+    .into("Burial.ReligionLookup")
+    .returning("*");
+
+  res.status(200).send(response);
 });
 
 //CAUSES
-catalogsRouter.get("/cause", async (req: Request, res: Response) => {
-  const data = await db("Burial.CauseLookup").orderBy(
-    "Burial.CauseLookup.Cause",
-    "asc"
-  );
+
+catalogsRouter.get("/cause/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Cause", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  let counter = [{ count: 0 }];
+  const data = await catalogService.doCauseSearch(page, limit, offset, { textToMatch, sortBy, sort });
 
   res.send(data);
+});
+
+catalogsRouter.get("/cause", async (req: Request, res: Response) => {
+  const data = await catalogService.getAllCauses();
+
+  res.send(data);
+});
+
+catalogsRouter.put(
+  "/cause/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    await db("Burial.CauseLookup").update(data).where("Burial.CauseLookup.CauseLUpID", id);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+catalogsRouter.post("/cause", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+    console.log(data);
+  const response = await db
+    .insert(data)
+    .into("Burial.CauseLookup")
+    .returning("*");
+
+  res.status(200).send(response);
 });
 
 //CEMETARIES
-catalogsRouter.get("/cemetary", async (req: Request, res: Response) => {
-  const data = await db("Burial.CemetaryLookup").orderBy(
-    "Burial.CemetaryLookup.Cemetary",
-    "asc"
-  );
+
+catalogsRouter.get("/cemetary/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Cemetary", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  const data = await catalogService.doCemetarySearch(page, limit, offset, { textToMatch, sortBy, sort });
 
   res.send(data);
+});
+
+catalogsRouter.get("/cemetary", async (req: Request, res: Response) => {
+  const data = await catalogService.getAllCemetaries();
+
+  res.send(data);
+});
+
+catalogsRouter.put(
+  "/cemetary/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body; 
+
+    await db("Burial.CemetaryLookup").update(data).where("Burial.CemetaryLookup.CemetaryLUpID", id);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+catalogsRouter.post("/cemetary", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+  
+  const response = await db
+    .insert(data)
+    .into("Burial.CemetaryLookup")
+    .returning("*");
+
+  res.status(200).send(response);
 });
 
 //OCCUPATIONS
-catalogsRouter.get("/occupation", async (req: Request, res: Response) => {
-  const data = await db("Burial.OccupationLookup").orderBy(
-    "Burial.OccupationLookup.Occupation",
-    "asc"
-  );
+
+catalogsRouter.get("/occupation/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Occupation", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  const data = await catalogService.doOccupationSearch(page, limit, offset, { textToMatch, sortBy, sort });
 
   res.send(data);
+});
+
+catalogsRouter.get("/occupation", async (req: Request, res: Response) => {
+  const data = await catalogService.getAllOcupations();
+
+  res.send(data);
+});
+
+catalogsRouter.put(
+  "/occupation/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    await db("Burial.OccupationLookup").update(data).where("Burial.OccupationLookup.OccupationLupID", id);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+catalogsRouter.post("/occupation", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await db
+    .insert(data)
+    .into("Burial.OccupationLookup")
+    .returning("*");
+
+  res.status(200).send(response);
 });
 
 //MEMBERSHIPS
-catalogsRouter.get("/membership", async (req: Request, res: Response) => {
-  const data = await db("Burial.MembershipLookup").orderBy(
-    "Burial.MembershipLookup.Membership",
-    "asc"
-  );
+
+catalogsRouter.get("/membership/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Membership", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  const data = await catalogService.doMembershipSearch(page, limit, offset, { textToMatch, sortBy, sort });
 
   res.send(data);
 });
 
-//RELATIONSHIPS
-catalogsRouter.get("/relationship", async (req: Request, res: Response) => {
-  const data = await db("Burial.RelationLookup").orderBy(
-    "Burial.RelationLookup.Relationship",
-    "asc"
-  );
+catalogsRouter.get("/membership", async (req: Request, res: Response) => {
+  const data = await catalogService.getAllMemberships();
 
   res.send(data);
+});
+
+catalogsRouter.put(
+  "/membership/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    await db("Burial.MembershipLookup").update(data).where("Burial.MembershipLookup.MembershipLupID", id);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+catalogsRouter.post("/membership", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await db
+    .insert(data)
+    .into("Burial.MembershipLookup")
+    .returning("*");
+
+  res.status(200).send(response);
+});
+
+//RELATIONSHIPS
+
+
+catalogsRouter.get("/relationship/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Relationship", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  const data = await catalogService.doRelationshipSearch(page, limit, offset, { textToMatch, sortBy, sort });
+
+  res.send(data);
+});
+
+catalogsRouter.get("/relationship", async (req: Request, res: Response) => {
+
+  const data = await catalogService.getAllRelationships();
+
+  res.send(data);
+});
+
+catalogsRouter.put(
+  "/relationship/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    await db("Burial.RelationLookup").update(data).where("Burial.RelationLookup.RelationLupID", id);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+catalogsRouter.post("/relationship", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await db
+    .insert(data)
+    .into("Burial.RelationLookup")
+    .returning("*");
+
+  res.status(200).send(response);
 });
