@@ -9,6 +9,7 @@ export * from './first-nations-router';
 export * from './histories-router';
 export * from './nts-map-sheets-router';
 export * from './owner-router';
+export * from './ownership-types-router';
 export * from './people-router';
 export * from './photo-batch-router';
 export * from './photo-owners-router';

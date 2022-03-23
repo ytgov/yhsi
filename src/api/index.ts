@@ -15,6 +15,7 @@ import {
 	historiesRouter,
 	ntsMapSheetsRouter,
 	ownerRouter,
+	ownershipTypesRouter,
 	peopleRouter,
 	photoBatchRouter,
 	photoOwnersRouter,
@@ -97,6 +98,7 @@ app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);
 app.use('/api/nts-map-sheets', RequiresAuthentication, ntsMapSheetsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/owners', RequiresAuthentication, ownerRouter);
+app.use('/api/ownership-types', RequiresAuthentication, ownershipTypesRouter);
 app.use('/api/aircrash', RequiresAuthentication, aircrashRouter);
 app.use('/api/histories', RequiresAuthentication, historiesRouter);
 app.use('/api/catalogs', RequiresAuthentication, catalogsRouter);

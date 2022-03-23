@@ -15,6 +15,7 @@ import {
 	HistoricalPattern,
 	Name,
 	Ownership,
+	OWNERSHIP_TYPES,
 	Place,
 	PLACE_FIELDS,
 	PreviousOwnership,
@@ -404,19 +405,7 @@ export class PlaceService {
 	}
 
 	getOwnershipTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Private' },
-			{ value: 2, text: 'Public Local' },
-			{ value: 3, text: 'Public Territorial' },
-			{ value: 4, text: 'Settlement Lands' },
-			{ value: 5, text: 'Public Federal' },
-			{ value: 6, text: 'Not For Profit' },
-			{ value: 7, text: 'Crown' },
-			{ value: 8, text: 'Unknown' },
-			{ value: 17, text: 'Gov Yukon' },
-			{ value: 18, text: 'First Nations Reserve' },
-			{ value: 19, text: 'Aboriginal Public Lands' },
-		];
+		return OWNERSHIP_TYPES;
 	}
 
 	getContactTypes(): GenericEnum[] {
@@ -468,7 +457,8 @@ export class PlaceService {
 					'ConstructionPeriod.PlaceId'
 				)
 				.leftOuterJoin('RevisionLog', 'Place.id', 'RevisionLog.PlaceId')
-				.leftOuterJoin('Description', 'Place.id', 'Description.PlaceId');
+				.leftOuterJoin('Description', 'Place.id', 'Description.PlaceId')
+				.leftOuterJoin('Ownership', 'Place.id', 'Ownership.PlaceId');
 
 			type QueryBuilder = {
 				(base: Knex.QueryInterface, value: any): Knex.QueryInterface;
@@ -572,6 +562,12 @@ export class PlaceService {
 							'[Description].[Type]',
 							DESCRIPTION_TYPE_ENUMS.CULTURAL_HISTORY
 						);
+				},
+				includingOwnershipTypes(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('[Ownership].[OwnershipType]', value);
+				},
+				excludingOwnershipTypes(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('[Ownership].[OwnershipType]', value);
 				},
 			});
 
