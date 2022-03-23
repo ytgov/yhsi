@@ -17,6 +17,7 @@ export * from './photo-router';
 export * from './photos-extra-router';
 export * from './place-router';
 export * from './register-router';
+export * from './revision-log-types-router';
 export * from './site-statuses-router';
 export * from './static-router';
 export * from './user-router';

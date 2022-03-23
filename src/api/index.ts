@@ -22,6 +22,7 @@ import {
 	photosExtraRouter,
 	placeRouter,
 	registerRouter,
+	revisionLogTypesRouter,
 	siteStatusesRouter,
 	staticRouter,
 	userRouter,
@@ -102,7 +103,8 @@ app.use('/api/catalogs', RequiresAuthentication, catalogsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
 app.use('/api/photos', photosExtraRouter);
-app.use('/api/site-statuses', siteStatusesRouter);
+app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
+app.use('/api/site-statuses', RequiresAuthentication, siteStatusesRouter);
 app.use('/api/users', usersExtraRouter);
 app.use('/api/people', peopleRouter);
 app.use('/api/burials', burialsRouter);

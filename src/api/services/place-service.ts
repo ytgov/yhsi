@@ -17,6 +17,7 @@ import {
 	PLACE_FIELDS,
 	PreviousOwnership,
 	REGISTER_FIELDS,
+	REVISION_LOG_TYPES,
 	RevisionLog,
 	Theme,
 	WebLink,
@@ -426,13 +427,7 @@ export class PlaceService {
 	}
 
 	getRevisionLogTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Initial Recording' },
-			{ value: 2, text: 'Monitoring Visit' },
-			{ value: 3, text: 'Research' },
-			{ value: 4, text: 'Designation Assessment' },
-			{ value: 5, text: 'Record Update' },
-		];
+		return REVISION_LOG_TYPES;
 	}
 
 	getWebLinkTypes(): GenericEnum[] {
@@ -486,6 +481,7 @@ export class PlaceService {
 					'place.id',
 					'constructionPeriod.placeid'
 				)
+				.leftOuterJoin('RevisionLog', 'Place.id', 'RevisionLog.PlaceId');
 
 			type QueryBuilder = {
 			  (base: Knex.QueryInterface, value: any): Knex.QueryInterface;
@@ -534,6 +530,12 @@ export class PlaceService {
 				},
 				excludingFirstNationAssociationTypes (base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('[FirstNationAssociation].[FirstNationAssociationType]', value)
+				},
+				includingRevisionTypes (base: Knex.QueryInterface, value: any) {
+					return base.whereIn('[RevisionLog].[RevisionLogType]', value)
+				},
+				excludingRevisionTypes (base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('[RevisionLog].[RevisionLogType]', value)
 				},
 			})
 
