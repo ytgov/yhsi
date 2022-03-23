@@ -537,6 +537,9 @@ export class PlaceService {
 				excludingRevisionTypes (base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('[RevisionLog].[RevisionLogType]', value)
 				},
+				revisedByContains (base: Knex.QueryInterface, value: any) {
+					return base.whereILike('[RevisionLog].[RevisedBy]', `%${value}%`)
+				},
 			})
 
 			Object.entries(query).forEach(([name, value]) => {
