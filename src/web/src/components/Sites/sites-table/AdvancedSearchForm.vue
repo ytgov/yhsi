@@ -19,6 +19,7 @@
 				<AddressContainsFilter @input="updateAddressContainsFilter" />
 				<ConstructionStyleContainsFilter @input="updateConstructionStyleContainsFilter" />
 				<CulturalHistoryContainsFilter @input="updateCulturalHistoryContainsFilter" />
+				<OwnershipTypesFilter @input="updateOwnershipTypesFilter" />
 				<div class="d-flex justify-end">
 					<v-btn
 						class="my-0"
@@ -42,6 +43,7 @@ import CulturalHistoryContainsFilter from '@/components/Sites/sites-table/Cultur
 import FirstNationAssociationTypesFilter from '@/components/Sites/sites-table/FirstNationAssociationTypesFilter';
 import FirstNationsFilter from '@/components/Sites/sites-table/FirstNationsFilter';
 import NtsMapSheetsFilter from '@/components/Sites/sites-table/NtsMapSheetsFilter';
+import OwnershipTypesFilter from '@/components/Sites/sites-table/OwnershipTypesFilter';
 import RevisedByContainsFilter from '@/components/Sites/sites-table/RevisedByContainsFilter';
 import RevisedDateContainsFilter from '@/components/Sites/sites-table/RevisedDateContainsFilter';
 import RevisionTypesFilter from '@/components/Sites/sites-table/RevisionTypesFilter';
@@ -58,6 +60,7 @@ export default {
 		FirstNationAssociationTypesFilter,
 		FirstNationsFilter,
 		NtsMapSheetsFilter,
+		OwnershipTypesFilter,
 		RevisedByContainsFilter,
 		RevisedDateContainsFilter,
 		RevisionTypesFilter,
@@ -72,6 +75,7 @@ export default {
 		firstNationAssociationTypesFilter: {},
 		firstNationsFilter: {},
 		ntsMapSheetsFilter: {},
+		ownershipTypesFilter: {},
 		revisedByContainsFilter: {},
 		revisedDateContainsFilter: {},
 		revisionTypesFilter: {},
@@ -88,6 +92,7 @@ export default {
 				...this.firstNationAssociationTypesFilter,
 				...this.firstNationsFilter,
 				...this.ntsMapSheetsFilter,
+				...this.ownershipTypesFilter,
 				...this.revisedByContainsFilter,
 				...this.revisedDateContainsFilter,
 				...this.revisionTypesFilter,
@@ -119,6 +124,9 @@ export default {
 		},
 		updateNtsMapSheetsFilter(value) {
 			this.ntsMapSheetsFilter = value;
+		},
+		updateOwnershipTypesFilter(value) {
+			this.ownershipTypesFilter = value;
 		},
 		updateRevisedByContainsFilter(value) {
 			this.revisedByContainsFilter = value;
