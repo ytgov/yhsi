@@ -18,11 +18,6 @@ class DevHelper
 
   def dc(*args)
     puts "Running: docker-compose -f docker-compose.dev.yml #{args.join(' ')}"
-    # puts `docker-compose -f docker-compose.dev.yml #{args.join(' ')}`
-    # require 'open3'
-    # Open3.popen3("docker-compose -f docker-compose.dev.yml #{args.join(' ')}") do |stdout, stderr, status, thread|
-    #   puts stdout.read
-    # end
     exec("docker-compose -f docker-compose.dev.yml #{args.join(' ')}")
   end
 
