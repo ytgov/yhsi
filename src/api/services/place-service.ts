@@ -525,6 +525,12 @@ export class PlaceService {
 				excludingSiteStatusIds (base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('SiteStatus', value)
 				},
+				includingFirstNationIds (base: Knex.QueryInterface, value: any) {
+					return base.whereIn('[FirstNationAssociation].[FirstNationId]', value)
+				},
+				excludingFirstNationIds (base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('[FirstNationAssociation].[FirstNationId]', value)
+				},
 			})
 
 			Object.entries(query).forEach(([name, value]) => {
