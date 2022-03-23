@@ -7,6 +7,7 @@ import boats from "./boats";
 import alerts from "./alerts";
 import photos from "./photos";
 import users from "./users";
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -14,7 +15,6 @@ export default new Vuex.Store({
     loadingClass: "d-none",
     siteHistory: [],
     search: "",
-    showAppSidebar: false
   },
   mutations: {
     SET_LOADING(state, value) {
@@ -28,7 +28,7 @@ export default new Vuex.Store({
     },
     SET_SEARCH(state, value) {
       state.search = value;
-    }
+    },
   },
   actions: {
     load({ commit }) {
@@ -41,14 +41,10 @@ export default new Vuex.Store({
     setSearch({ commit }, value) {
       commit("SET_SEARCH", value)
     },
-    setAppSidebar(state, value) {
-      state.state.showAppSidebar = value;
-    }
   },
   getters: {
     siteHistory: state => state.siteHistory,
     search: state => state.search,
-    showAppSidebar: state => state.showAppSidebar,
   },
   modules: { auth, profile, boats, alerts, photos, users }
 });

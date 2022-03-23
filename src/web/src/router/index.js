@@ -1,5 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import goTo from 'vuetify/lib/services/goto';
+
 import Home from "../components/Home.vue";
 import Dashboard from "../components/Dashboard.vue";
 import NotFound from "../views/NotFound.vue";
@@ -9,18 +11,8 @@ import LoginComplete from "../views/LoginComplete";
 import Profile from "../views/Profile";
 import Maps from "../views/Maps";
 import store from "../store";
-import SitesForm from "../components/Sites";
-
-import Summary from "../components/Sites/SitesForms/Summary";
-import Location from "../components/Sites/SitesForms/Location";
-import Dates from "../components/Sites/SitesForms/Dates";
-import Themes from "../components/Sites/SitesForms/Themes";
-import Associations from "../components/Sites/SitesForms/Associations";
-import LegalAndZoning from "../components/Sites/SitesForms/LegalAndZoning";
-import Photos from "../components/Sites/SitesForms/Photos";
+import SiteForms from "@/components/Sites/SiteForms";
 import MainPhotos from "../components/MainPhotos";
-import Management from "../components/Sites/SitesForms/Management";
-import Description from "../components/Sites/SitesForms/Description";
 import SitesGrid from "../components/Sites/SitesGrid";
 import PhotosGrid from "../components/MainPhotos/PhotosGrid";
 import Feature from "../components/MainPhotos/PhotosComponents/Feature";
@@ -190,50 +182,10 @@ const routes = [
     }
   },
   {
-    path: "/sites/:id",
-    name: "SitesForm",
-    component: SitesForm,
-    meta: {
-      requiresAuth: false
-    },
-    children: [
-      {
-        path: "summary",
-        component: Summary
-      },
-      {
-        path: "location",
-        component: Location
-      },
-      {
-        path: "dates_&_condition",
-        component: Dates
-      },
-      {
-        path: "themes_&_function",
-        component: Themes
-      },
-      {
-        path: "associations",
-        component: Associations
-      },
-      {
-        path: "legal_&_zoning",
-        component: LegalAndZoning
-      },
-      {
-        path: "photos",
-        component: Photos
-      },
-      {
-        path: "management",
-        component: Management
-      },
-      {
-        path: "description",
-        component: Description
-      }
-    ]
+	path: '/sites/:id',
+	name: 'SiteForms',
+	component: SiteForms,
+	props: true,
   },
   {
     path: "/photos/edit/:id",
@@ -411,12 +363,21 @@ const router = new VueRouter({
 	mode: 'history',
 	base: process.env.BASE_URL,
 	routes,
+	scrollBehavior(to, from, savedPosition) {
+		if (savedPosition) {
+			return goTo(savedPosition.y);
+		}
+
+		if (to.hash) {
+			return goTo(to.hash, { offset: 75 });
+		}
+
+		return goTo(0);
+	},
 });
 
 router.beforeEach(async (to, from, next) => {
 	var requiresAuth = to.meta.requiresAuth || false;
-
-	store.dispatch('setAppSidebar', to.path.startsWith('/sites/'));
 
 	if (!requiresAuth) {
 		return next();
@@ -426,7 +387,7 @@ router.beforeEach(async (to, from, next) => {
 	var isAuthenticated = store.getters.isAuthenticated;
 
 	if (requiresAuth && !isAuthenticated) {
-		//console.log("You aren't authenticatd, redirecting to sign-in");
+		console.log("You aren't authenticatd, redirecting to sign-in");
 		next('/sign-in');
 		return;
 	}
