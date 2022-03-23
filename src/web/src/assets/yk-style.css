@@ -76,6 +76,10 @@ a {
     color: #323232 !important;
 }
 
+.text-error{
+    color: #9b1b27 !important;
+}
+
 .v-banner.problem {
     background-color: #EA848D99 !important;
     border-bottom: 1px #9b1b27 solid !important;
@@ -125,4 +129,8 @@ ul.v-breadcrumbs {
     padding: 0 16px;
     font-size: 1.0rem;
     line-height: 1.4rem;
+}
+
+.clickable-row tbody tr {
+    cursor: pointer;
 }
