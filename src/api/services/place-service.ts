@@ -393,7 +393,7 @@ export class PlaceService {
 	}
 
 	getConstructionPeriodTypes(): GenericEnum[] {
-		return CONSTRUCTION_PERIODS
+		return CONSTRUCTION_PERIODS;
 	}
 
 	getFunctionalUseTypes(): GenericEnum[] {
@@ -471,7 +471,7 @@ export class PlaceService {
 				.leftOuterJoin('Description', 'Place.id', 'Description.PlaceId');
 
 			type QueryBuilder = {
-			  (base: Knex.QueryInterface, value: any): Knex.QueryInterface;
+				(base: Knex.QueryInterface, value: any): Knex.QueryInterface;
 			};
 
 			const SUPPORTED_QUERIES: { [key: string]: QueryBuilder } = Object.freeze({
@@ -494,10 +494,16 @@ export class PlaceService {
 				excludingNtsMapSheets(base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('NTSMapSheet', value);
 				},
-				includingConstructionPeriodValues(base: Knex.QueryInterface, value: any) {
+				includingConstructionPeriodValues(
+					base: Knex.QueryInterface,
+					value: any
+				) {
 					return base.whereIn('[ConstructionPeriod].[Type]', value);
 				},
-				excludingConstructionPeriodValues(base: Knex.QueryInterface, value: any) {
+				excludingConstructionPeriodValues(
+					base: Knex.QueryInterface,
+					value: any
+				) {
 					return base.whereNotIn('[ConstructionPeriod].[Type]', value);
 				},
 				includingSiteStatusIds(base: Knex.QueryInterface, value: any) {
@@ -507,18 +513,30 @@ export class PlaceService {
 					return base.whereNotIn('SiteStatus', value);
 				},
 				includingFirstNationIds(base: Knex.QueryInterface, value: any) {
-					return base.whereIn('[FirstNationAssociation].[FirstNationId]', value);
+					return base.whereIn(
+						'[FirstNationAssociation].[FirstNationId]',
+						value
+					);
 				},
 				excludingFirstNationIds(base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('[FirstNationAssociation].[FirstNationId]', value);
+					return base.whereNotIn(
+						'[FirstNationAssociation].[FirstNationId]',
+						value
+					);
 				},
-				includingFirstNationAssociationTypes(base: Knex.QueryInterface, value: any) {
+				includingFirstNationAssociationTypes(
+					base: Knex.QueryInterface,
+					value: any
+				) {
 					return base.whereIn(
 						'[FirstNationAssociation].[FirstNationAssociationType]',
 						value
 					);
 				},
-				excludingFirstNationAssociationTypes(base: Knex.QueryInterface, value: any) {
+				excludingFirstNationAssociationTypes(
+					base: Knex.QueryInterface,
+					value: any
+				) {
 					return base.whereNotIn(
 						'[FirstNationAssociation].[FirstNationAssociationType]',
 						value
@@ -542,19 +560,26 @@ export class PlaceService {
 				constructionStyleContains(base: Knex.QueryInterface, value: any) {
 					return base
 						.whereILike('[Description].[DescriptionText]', `%${value}%`)
-						.where('[Description].[Type]', DESCRIPTION_TYPE_ENUMS.CONSTRUCTION_STYLE);
+						.where(
+							'[Description].[Type]',
+							DESCRIPTION_TYPE_ENUMS.CONSTRUCTION_STYLE
+						);
 				},
 			});
 
 			Object.entries(query).forEach(([name, value]) => {
-				const queryBuilder = SUPPORTED_QUERIES[name]
+				const queryBuilder = SUPPORTED_QUERIES[name];
 				if (queryBuilder) {
-					queryBuilder(selectStatement, value)
+					queryBuilder(selectStatement, value);
 				} else {
-					const avaiableQueries = Object.keys(SUPPORTED_QUERIES).join(', ')
-					reject(new Error(`Query "${name}" with "${value}" is not supported; use any of: ${avaiableQueries}`))
+					const avaiableQueries = Object.keys(SUPPORTED_QUERIES).join(', ');
+					reject(
+						new Error(
+							`Query "${name}" with "${value}" is not supported; use any of: ${avaiableQueries}`
+						)
+					);
 				}
-			})
+			});
 
 			if (sort && sort.length > 0) {
 				sort.forEach((statement) => {
@@ -564,9 +589,9 @@ export class PlaceService {
 				selectStatement.orderBy('place.primaryName');
 			}
 
-			let fullData = await selectStatement.catch(error => {
-				reject(error)
-				return []
+			let fullData = await selectStatement.catch((error) => {
+				reject(error);
+				return [];
 			});
 
 			let uniqIds = _.uniq(fullData.map((i: any) => i.id));
