@@ -1,4 +1,4 @@
-import Knex from 'knex';
+import { Knex } from 'knex';
 
 const NEW_ROLES = ["Airplane Crash Editor", "Boats Editor", "Places Editor", "Burials Editor", "People Editor", "YRHP Editor"]
 
