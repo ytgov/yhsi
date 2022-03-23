@@ -543,6 +543,9 @@ export class PlaceService {
 				revisedDateContains (base: Knex.QueryInterface, value: any) {
 					return base.whereILike('[RevisionLog].[RevisionDate]', `%${value}%`)
 				},
+				addressContains (base: Knex.QueryInterface, value: any) {
+					return base.whereILike('[Place].[PhysicalAddress]', `%${value}%`)
+				},
 			})
 
 			Object.entries(query).forEach(([name, value]) => {
