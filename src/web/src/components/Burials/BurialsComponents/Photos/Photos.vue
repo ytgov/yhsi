@@ -73,7 +73,7 @@
                         >
                         </v-text-field>
 
-                        <v-autocomplete
+                        <v-autocomplete outlined dense
                           @click="getOwners"
                           v-model="fields.OwnerId"
                           :items="owners"
@@ -84,7 +84,7 @@
                           item-text="Name"
                           item-value="Id"
                         ></v-autocomplete>
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.CommunityId"
                           @click="getCommunities"
                           :items="availableCommunities"
@@ -96,7 +96,7 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.OriginalMediaId"
                           @click="getOriginalMedia"
                           :items="availableOriginalMedia"
@@ -108,7 +108,7 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.Copyright"
                           :items="copyrightOptions"
                           item-value="id"
@@ -117,7 +117,7 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
-                        <v-combobox
+                        <v-combobox outlined dense
                           v-model="fields.UsageRights"
                           :items="usageRightOptions"
                           ritem-value="id"
@@ -552,7 +552,7 @@ export default {
         OriginalMediaId,
         UsageRights,
       } = this.sendObj;
-      this.sendObj.BurialID = Number(this.BurialID);
+      //this.sendObj.BurialID = Number(this.BurialID);
       this.sendObj.IsComplete = IsComplete ? 1 : 0;
       this.sendObj.Program = Program.value;
       this.sendObj.CommunityId = CommunityId.Id;
@@ -565,9 +565,9 @@ export default {
         formData.append(prevFields[i][0], prevFields[i][1]);
       }
       formData.append("file", this.file);
-      await photos.postBurialPhoto(formData);
-      this.reset();
-      this.$router.go();
+      await photos.postBurialPhoto(this.BurialID, formData);
+      //this.reset();
+      //this.$router.go();
       this.overlay = false;
     },
     async saveAndLink() {
