@@ -7,6 +7,7 @@ import {
 	Contact,
 	Dates,
 	Description,
+	FIRST_NATION_ASSOCIATION_TYPES,
 	FirstNationAssociation,
 	FunctionalUse,
 	HistoricalPattern,
@@ -368,10 +369,7 @@ export class PlaceService {
 	}
 
 	getFNAssociationTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Settlement Lands' },
-			{ value: 2, text: 'Traditional Territory' },
-		];
+		return FIRST_NATION_ASSOCIATION_TYPES;
 	}
 
 	getHistoricalPatterns(): GenericEnum[] {
