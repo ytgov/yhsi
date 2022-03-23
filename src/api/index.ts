@@ -20,6 +20,7 @@ import {
 	photosExtraRouter,
 	placeRouter,
 	registerRouter,
+	siteStatusesRouter,
 	staticRouter,
 	userRouter,
 	usersExtraRouter,
@@ -97,6 +98,7 @@ app.use('/api/catalogs', RequiresAuthentication, catalogsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
 app.use('/api/photos', photosExtraRouter);
+app.use('/api/site-statuses', siteStatusesRouter);
 app.use('/api/users', usersExtraRouter);
 app.use('/api/people', peopleRouter);
 app.use('/api/burials', burialsRouter);
