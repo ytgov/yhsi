@@ -8,6 +8,7 @@
 				<CommunitiesFilter @input="updateCommunitiesFilter" />
 				<NtsMapSheetsFilter @input="updateNtsMapSheetsFilter" />
 				<ConstructionPeriodsFilter @input="updateConstructionPeriodsFilter" />
+				<SiteStatusesFilter @input="updateSiteStatusesFilter" />
 				<div class="d-flex justify-end">
 					<v-btn
 						class="my-0"
@@ -26,6 +27,7 @@
 import CommunitiesFilter from '@/components/Sites/sites-table/CommunitiesFilter';
 import ConstructionPeriodsFilter from '@/components/Sites/sites-table/ConstructionPeriodsFilter';
 import NtsMapSheetsFilter from '@/components/Sites/sites-table/NtsMapSheetsFilter';
+import SiteStatusesFilter from '@/components/Sites/sites-table/SiteStatusesFilter';
 
 export default {
 	name: 'AdvancedSearchForm',
@@ -33,11 +35,13 @@ export default {
 		CommunitiesFilter,
 		ConstructionPeriodsFilter,
 		NtsMapSheetsFilter,
+		SiteStatusesFilter,
 	},
 	data: () => ({
 		communitiesFilter: {},
 		constructionPeriodsFilter: {},
 		ntsMapSheetsFilter: {},
+		siteStatusesFilter: {},
 	}),
 	computed: {
 		advancedSearchFilter() {
@@ -45,6 +49,7 @@ export default {
 				...this.communitiesFilter,
 				...this.ntsMapSheetsFilter,
 				...this.constructionPeriodsFilter,
+				...this.siteStatusesFilter,
 			};
 		},
 	},
@@ -58,6 +63,9 @@ export default {
 		updateConstructionPeriodsFilter(value) {
 			this.constructionPeriodsFilter = value;
 		},
+		updateSiteStatusesFilter(value) {
+			this.siteStatusesFilter = value
+		}
 	},
 };
 </script>
