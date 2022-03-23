@@ -529,6 +529,12 @@ export class PlaceService {
 				excludingFirstNationIds (base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('[FirstNationAssociation].[FirstNationId]', value)
 				},
+				includingFirstNationAssociationTypes (base: Knex.QueryInterface, value: any) {
+					return base.whereIn('[FirstNationAssociation].[FirstNationAssociationType]', value)
+				},
+				excludingFirstNationAssociationTypes (base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('[FirstNationAssociation].[FirstNationAssociationType]', value)
+				},
 			})
 
 			Object.entries(query).forEach(([name, value]) => {
