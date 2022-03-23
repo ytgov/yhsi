@@ -16,6 +16,7 @@
 				<RevisionTypesFilter @input="updateRevisionTypesFilter" />
 				<RevisedByContainsFilter @input="updateRevisedByContainsFilter" />
 				<RevisedDateContainsFilter @input="updateRevisedDateContainsFilter" />
+				<AddressContainsFilter @input="updateAddressContainsFilter" />
 				<div class="d-flex justify-end">
 					<v-btn
 						class="my-0"
@@ -31,6 +32,7 @@
 </template>
 
 <script>
+import AddressContainsFilter from '@/components/Sites/sites-table/AddressContainsFilter';
 import CommunitiesFilter from '@/components/Sites/sites-table/CommunitiesFilter';
 import ConstructionPeriodsFilter from '@/components/Sites/sites-table/ConstructionPeriodsFilter';
 import FirstNationAssociationTypesFilter from '@/components/Sites/sites-table/FirstNationAssociationTypesFilter';
@@ -44,6 +46,7 @@ import SiteStatusesFilter from '@/components/Sites/sites-table/SiteStatusesFilte
 export default {
 	name: 'AdvancedSearchForm',
 	components: {
+		AddressContainsFilter,
 		CommunitiesFilter,
 		ConstructionPeriodsFilter,
 		FirstNationAssociationTypesFilter,
@@ -55,6 +58,7 @@ export default {
 		SiteStatusesFilter,
 	},
 	data: () => ({
+		addressContainsFilter: {},
 		communitiesFilter: {},
 		constructionPeriodsFilter: {},
 		firstNationAssociationTypesFilter: {},
@@ -68,6 +72,7 @@ export default {
 	computed: {
 		advancedSearchFilter() {
 			return {
+				...this.addressContainsFilter,
 				...this.communitiesFilter,
 				...this.constructionPeriodsFilter,
 				...this.firstNationAssociationTypesFilter,
@@ -81,6 +86,9 @@ export default {
 		},
 	},
 	methods: {
+		updateAddressContainsFilter(value) {
+			this.addressContainsFilter = value;
+		},
 		updateCommunitiesFilter(value) {
 			this.communitiesFilter = value;
 		},
