@@ -519,6 +519,12 @@ export class PlaceService {
 				excludingConstructionPeriodValues (base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('[ConstructionPeriod].[Type]', value)
 				},
+				includingSiteStatusIds (base: Knex.QueryInterface, value: any) {
+					return base.whereIn('SiteStatus', value)
+				},
+				excludingSiteStatusIds (base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('SiteStatus', value)
+				},
 			})
 
 			Object.entries(query).forEach(([name, value]) => {
