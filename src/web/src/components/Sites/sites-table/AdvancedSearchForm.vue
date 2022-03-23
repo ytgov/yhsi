@@ -14,6 +14,7 @@
 					@input="updateFirstNationAssociationTypesFilter"
 				/>
 				<RevisionTypesFilter @input="updateRevisionTypesFilter" />
+				<RevisedByContainsFilter @input="updateRevisedByContainsFilter" />
 				<div class="d-flex justify-end">
 					<v-btn
 						class="my-0"
@@ -34,6 +35,7 @@ import ConstructionPeriodsFilter from '@/components/Sites/sites-table/Constructi
 import FirstNationAssociationTypesFilter from '@/components/Sites/sites-table/FirstNationAssociationTypesFilter';
 import FirstNationsFilter from '@/components/Sites/sites-table/FirstNationsFilter';
 import NtsMapSheetsFilter from '@/components/Sites/sites-table/NtsMapSheetsFilter';
+import RevisedByContainsFilter from '@/components/Sites/sites-table/RevisedByContainsFilter';
 import RevisionTypesFilter from '@/components/Sites/sites-table/RevisionTypesFilter';
 import SiteStatusesFilter from '@/components/Sites/sites-table/SiteStatusesFilter';
 
@@ -45,6 +47,7 @@ export default {
 		FirstNationAssociationTypesFilter,
 		FirstNationsFilter,
 		NtsMapSheetsFilter,
+		RevisedByContainsFilter,
 		RevisionTypesFilter,
 		SiteStatusesFilter,
 	},
@@ -54,6 +57,7 @@ export default {
 		firstNationAssociationTypesFilter: {},
 		firstNationsFilter: {},
 		ntsMapSheetsFilter: {},
+		revisedByContainsFilter: {},
 		revisionTypesFilter: {},
 		siteStatusesFilter: {},
 	}),
@@ -65,6 +69,7 @@ export default {
 				...this.firstNationAssociationTypesFilter,
 				...this.firstNationsFilter,
 				...this.ntsMapSheetsFilter,
+				...this.revisedByContainsFilter,
 				...this.revisionTypesFilter,
 				...this.siteStatusesFilter,
 			};
@@ -85,6 +90,9 @@ export default {
 		},
 		updateNtsMapSheetsFilter(value) {
 			this.ntsMapSheetsFilter = value;
+		},
+		updateRevisedByContainsFilter(value) {
+			this.revisedByContainsFilter = value;
 		},
 		updateRevisionTypesFilter(value) {
 			this.revisionTypesFilter = value;
