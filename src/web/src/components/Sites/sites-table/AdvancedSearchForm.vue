@@ -17,6 +17,7 @@
 				<RevisedByContainsFilter @input="updateRevisedByContainsFilter" />
 				<RevisedDateContainsFilter @input="updateRevisedDateContainsFilter" />
 				<AddressContainsFilter @input="updateAddressContainsFilter" />
+				<ConstructionStyleContainsFilter @input="updateConstructionStyleContainsFilter" />
 				<div class="d-flex justify-end">
 					<v-btn
 						class="my-0"
@@ -35,6 +36,7 @@
 import AddressContainsFilter from '@/components/Sites/sites-table/AddressContainsFilter';
 import CommunitiesFilter from '@/components/Sites/sites-table/CommunitiesFilter';
 import ConstructionPeriodsFilter from '@/components/Sites/sites-table/ConstructionPeriodsFilter';
+import ConstructionStyleContainsFilter from '@/components/Sites/sites-table/ConstructionStyleContainsFilter';
 import FirstNationAssociationTypesFilter from '@/components/Sites/sites-table/FirstNationAssociationTypesFilter';
 import FirstNationsFilter from '@/components/Sites/sites-table/FirstNationsFilter';
 import NtsMapSheetsFilter from '@/components/Sites/sites-table/NtsMapSheetsFilter';
@@ -49,6 +51,7 @@ export default {
 		AddressContainsFilter,
 		CommunitiesFilter,
 		ConstructionPeriodsFilter,
+		ConstructionStyleContainsFilter,
 		FirstNationAssociationTypesFilter,
 		FirstNationsFilter,
 		NtsMapSheetsFilter,
@@ -61,6 +64,7 @@ export default {
 		addressContainsFilter: {},
 		communitiesFilter: {},
 		constructionPeriodsFilter: {},
+		constructionStyleContainsFilter: {},
 		firstNationAssociationTypesFilter: {},
 		firstNationsFilter: {},
 		ntsMapSheetsFilter: {},
@@ -75,6 +79,7 @@ export default {
 				...this.addressContainsFilter,
 				...this.communitiesFilter,
 				...this.constructionPeriodsFilter,
+				...this.constructionStyleContainsFilter,
 				...this.firstNationAssociationTypesFilter,
 				...this.firstNationsFilter,
 				...this.ntsMapSheetsFilter,
@@ -95,6 +100,9 @@ export default {
 		updateConstructionPeriodsFilter(value) {
 			this.constructionPeriodsFilter = value;
 		},
+		updateConstructionStyleContainsFilter(value) {
+			this.constructionStyleContainsFilter = value;
+		},
 		updateFirstNationAssociationTypesFilter(value) {
 			this.firstNationAssociationTypesFilter = value;
 		},
@@ -108,7 +116,7 @@ export default {
 			this.revisedByContainsFilter = value;
 		},
 		updateRevisedDateContainsFilter(value) {
-			this.revisedDateContainsFilter = value
+			this.revisedDateContainsFilter = value;
 		},
 		updateRevisionTypesFilter(value) {
 			this.revisionTypesFilter = value;
