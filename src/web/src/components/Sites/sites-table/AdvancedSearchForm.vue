@@ -9,6 +9,7 @@
 				<NtsMapSheetsFilter @input="updateNtsMapSheetsFilter" />
 				<ConstructionPeriodsFilter @input="updateConstructionPeriodsFilter" />
 				<SiteStatusesFilter @input="updateSiteStatusesFilter" />
+				<FirstNationsFilter @input="updateFirstNationsFilter" />
 				<div class="d-flex justify-end">
 					<v-btn
 						class="my-0"
@@ -26,6 +27,7 @@
 <script>
 import CommunitiesFilter from '@/components/Sites/sites-table/CommunitiesFilter';
 import ConstructionPeriodsFilter from '@/components/Sites/sites-table/ConstructionPeriodsFilter';
+import FirstNationsFilter from '@/components/Sites/sites-table/FirstNationsFilter';
 import NtsMapSheetsFilter from '@/components/Sites/sites-table/NtsMapSheetsFilter';
 import SiteStatusesFilter from '@/components/Sites/sites-table/SiteStatusesFilter';
 
@@ -34,6 +36,7 @@ export default {
 	components: {
 		CommunitiesFilter,
 		ConstructionPeriodsFilter,
+		FirstNationsFilter,
 		NtsMapSheetsFilter,
 		SiteStatusesFilter,
 	},
@@ -47,8 +50,9 @@ export default {
 		advancedSearchFilter() {
 			return {
 				...this.communitiesFilter,
-				...this.ntsMapSheetsFilter,
 				...this.constructionPeriodsFilter,
+				...this.firstNationsFilter,
+				...this.ntsMapSheetsFilter,
 				...this.siteStatusesFilter,
 			};
 		},
@@ -57,11 +61,14 @@ export default {
 		updateCommunitiesFilter(value) {
 			this.communitiesFilter = value;
 		},
-		updateNtsMapSheetsFilter(value) {
-			this.ntsMapSheetsFilter = value;
-		},
 		updateConstructionPeriodsFilter(value) {
 			this.constructionPeriodsFilter = value;
+		},
+		updateFirstNationsFilter(value) {
+			this.firstNationsFilter = value;
+		},
+		updateNtsMapSheetsFilter(value) {
+			this.ntsMapSheetsFilter = value;
 		},
 		updateSiteStatusesFilter(value) {
 			this.siteStatusesFilter = value
