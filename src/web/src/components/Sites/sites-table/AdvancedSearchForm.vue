@@ -10,6 +10,9 @@
 				<ConstructionPeriodsFilter @input="updateConstructionPeriodsFilter" />
 				<SiteStatusesFilter @input="updateSiteStatusesFilter" />
 				<FirstNationsFilter @input="updateFirstNationsFilter" />
+				<FirstNationAssociationTypesFilter
+					@input="updateFirstNationAssociationTypesFilter"
+				/>
 				<div class="d-flex justify-end">
 					<v-btn
 						class="my-0"
@@ -27,6 +30,7 @@
 <script>
 import CommunitiesFilter from '@/components/Sites/sites-table/CommunitiesFilter';
 import ConstructionPeriodsFilter from '@/components/Sites/sites-table/ConstructionPeriodsFilter';
+import FirstNationAssociationTypesFilter from '@/components/Sites/sites-table/FirstNationAssociationTypesFilter';
 import FirstNationsFilter from '@/components/Sites/sites-table/FirstNationsFilter';
 import NtsMapSheetsFilter from '@/components/Sites/sites-table/NtsMapSheetsFilter';
 import SiteStatusesFilter from '@/components/Sites/sites-table/SiteStatusesFilter';
@@ -36,6 +40,7 @@ export default {
 	components: {
 		CommunitiesFilter,
 		ConstructionPeriodsFilter,
+		FirstNationAssociationTypesFilter,
 		FirstNationsFilter,
 		NtsMapSheetsFilter,
 		SiteStatusesFilter,
@@ -43,6 +48,8 @@ export default {
 	data: () => ({
 		communitiesFilter: {},
 		constructionPeriodsFilter: {},
+		firstNationAssociationTypesFilter: {},
+		firstNationsFilter: {},
 		ntsMapSheetsFilter: {},
 		siteStatusesFilter: {},
 	}),
@@ -51,6 +58,7 @@ export default {
 			return {
 				...this.communitiesFilter,
 				...this.constructionPeriodsFilter,
+				...this.firstNationAssociationTypesFilter,
 				...this.firstNationsFilter,
 				...this.ntsMapSheetsFilter,
 				...this.siteStatusesFilter,
@@ -64,6 +72,9 @@ export default {
 		updateConstructionPeriodsFilter(value) {
 			this.constructionPeriodsFilter = value;
 		},
+		updateFirstNationAssociationTypesFilter(value) {
+			this.firstNationAssociationTypesFilter = value;
+		},
 		updateFirstNationsFilter(value) {
 			this.firstNationsFilter = value;
 		},
@@ -71,8 +82,8 @@ export default {
 			this.ntsMapSheetsFilter = value;
 		},
 		updateSiteStatusesFilter(value) {
-			this.siteStatusesFilter = value
-		}
+			this.siteStatusesFilter = value;
+		},
 	},
 };
 </script>
