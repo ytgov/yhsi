@@ -7,6 +7,7 @@
 			<v-card-text>
 				<CommunitiesFilter @input="updateCommunitiesFilter" />
 				<NtsMapSheetsFilter @input="updateNtsMapSheetsFilter" />
+				<ConstructionPeriodsFilter @input="updateConstructionPeriodsFilter" />
 				<div class="d-flex justify-end">
 					<v-btn
 						class="my-0"
@@ -23,18 +24,28 @@
 
 <script>
 import CommunitiesFilter from '@/components/Sites/sites-table/CommunitiesFilter';
+import ConstructionPeriodsFilter from '@/components/Sites/sites-table/ConstructionPeriodsFilter';
 import NtsMapSheetsFilter from '@/components/Sites/sites-table/NtsMapSheetsFilter';
 
 export default {
 	name: 'AdvancedSearchForm',
-	components: { CommunitiesFilter, NtsMapSheetsFilter },
+	components: {
+		CommunitiesFilter,
+		ConstructionPeriodsFilter,
+		NtsMapSheetsFilter,
+	},
 	data: () => ({
 		communitiesFilter: {},
+		constructionPeriodsFilter: {},
 		ntsMapSheetsFilter: {},
 	}),
 	computed: {
 		advancedSearchFilter() {
-			return { ...this.communitiesFilter, ...this.ntsMapSheetsFilter };
+			return {
+				...this.communitiesFilter,
+				...this.ntsMapSheetsFilter,
+				...this.constructionPeriodsFilter,
+			};
 		},
 	},
 	methods: {
@@ -43,6 +54,9 @@ export default {
 		},
 		updateNtsMapSheetsFilter(value) {
 			this.ntsMapSheetsFilter = value;
+		},
+		updateConstructionPeriodsFilter(value) {
+			this.constructionPeriodsFilter = value;
 		},
 	},
 };
