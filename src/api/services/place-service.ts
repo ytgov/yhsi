@@ -488,63 +488,69 @@ export class PlaceService {
 			};
 
 			const SUPPORTED_QUERIES: { [key: string]: QueryBuilder } = Object.freeze({
-				search (base: Knex.QueryInterface, value: any) {
+				search(base: Knex.QueryInterface, value: any) {
 					return base.where((builder) =>
 						builder
 							.whereILike('PrimaryName', `%${value}%`)
 							.orWhereILike('YHSIId', `%${value}%`)
 					);
 				},
-				includingCommunityIds (base: Knex.QueryInterface, value: any) {
-					return base.whereIn('CommunityId', value)
+				includingCommunityIds(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('CommunityId', value);
 				},
-				excludingCommunityIds (base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('CommunityId', value)
+				excludingCommunityIds(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('CommunityId', value);
 				},
-				includingNtsMapSheets (base: Knex.QueryInterface, value: any) {
-					return base.whereIn('NTSMapSheet', value)
+				includingNtsMapSheets(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('NTSMapSheet', value);
 				},
-				excludingNtsMapSheets (base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('NTSMapSheet', value)
+				excludingNtsMapSheets(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('NTSMapSheet', value);
 				},
-				includingConstructionPeriodValues (base: Knex.QueryInterface, value: any) {
-					return base.whereIn('[ConstructionPeriod].[Type]', value)
+				includingConstructionPeriodValues(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('[ConstructionPeriod].[Type]', value);
 				},
-				excludingConstructionPeriodValues (base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('[ConstructionPeriod].[Type]', value)
+				excludingConstructionPeriodValues(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('[ConstructionPeriod].[Type]', value);
 				},
-				includingSiteStatusIds (base: Knex.QueryInterface, value: any) {
-					return base.whereIn('SiteStatus', value)
+				includingSiteStatusIds(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('SiteStatus', value);
 				},
-				excludingSiteStatusIds (base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('SiteStatus', value)
+				excludingSiteStatusIds(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('SiteStatus', value);
 				},
-				includingFirstNationIds (base: Knex.QueryInterface, value: any) {
-					return base.whereIn('[FirstNationAssociation].[FirstNationId]', value)
+				includingFirstNationIds(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('[FirstNationAssociation].[FirstNationId]', value);
 				},
-				excludingFirstNationIds (base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('[FirstNationAssociation].[FirstNationId]', value)
+				excludingFirstNationIds(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('[FirstNationAssociation].[FirstNationId]', value);
 				},
-				includingFirstNationAssociationTypes (base: Knex.QueryInterface, value: any) {
-					return base.whereIn('[FirstNationAssociation].[FirstNationAssociationType]', value)
+				includingFirstNationAssociationTypes(base: Knex.QueryInterface, value: any) {
+					return base.whereIn(
+						'[FirstNationAssociation].[FirstNationAssociationType]',
+						value
+					);
 				},
-				excludingFirstNationAssociationTypes (base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('[FirstNationAssociation].[FirstNationAssociationType]', value)
+				excludingFirstNationAssociationTypes(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn(
+						'[FirstNationAssociation].[FirstNationAssociationType]',
+						value
+					);
 				},
-				includingRevisionTypes (base: Knex.QueryInterface, value: any) {
-					return base.whereIn('[RevisionLog].[RevisionLogType]', value)
+				includingRevisionTypes(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('[RevisionLog].[RevisionLogType]', value);
 				},
-				excludingRevisionTypes (base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('[RevisionLog].[RevisionLogType]', value)
+				excludingRevisionTypes(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('[RevisionLog].[RevisionLogType]', value);
 				},
-				revisedByContains (base: Knex.QueryInterface, value: any) {
-					return base.whereILike('[RevisionLog].[RevisedBy]', `%${value}%`)
+				revisedByContains(base: Knex.QueryInterface, value: any) {
+					return base.whereILike('[RevisionLog].[RevisedBy]', `%${value}%`);
 				},
-				revisedDateContains (base: Knex.QueryInterface, value: any) {
-					return base.whereILike('[RevisionLog].[RevisionDate]', `%${value}%`)
+				revisedDateContains(base: Knex.QueryInterface, value: any) {
+					return base.whereILike('[RevisionLog].[RevisionDate]', `%${value}%`);
 				},
-				addressContains (base: Knex.QueryInterface, value: any) {
-					return base.whereILike('[Place].[PhysicalAddress]', `%${value}%`)
+				addressContains(base: Knex.QueryInterface, value: any) {
+					return base.whereILike('[Place].[PhysicalAddress]', `%${value}%`);
 				},
 			})
 
