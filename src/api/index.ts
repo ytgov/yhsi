@@ -4,46 +4,38 @@ import path from 'path';
 import helmet from 'helmet';
 
 import {
-	userRouter,
-	placeRouter,
-	photoRouter,
+	aircrashRouter,
+	boatsRouter,
+	burialsRouter,
+	catalogsRouter,
+	communitiesRouter,
+	constructionPeriodsRouter,
+	firstNationAssociationTypesRouter,
+	firstNationsRouter,
+	historiesRouter,
+	ntsMapSheetsRouter,
+	ownerRouter,
+	ownershipTypesRouter,
+	peopleRouter,
 	photoBatchRouter,
+	photoOwnersRouter,
+	photoRouter,
+	photosExtraRouter,
+	placeRouter,
 	registerRouter,
+	revisionLogTypesRouter,
+	siteStatusesRouter,
 	staticRouter,
+	userRouter,
+	usersExtraRouter,
 	ytPlaceHistoryRouter,
 	ytPlaceRouter,
-} from './routes';
-import {
-	boatsRouter,
-	ownerRouter,
-	aircrashRouter,
-	historiesRouter,
-	catalogsRouter,
-	usersExtraRouter,
-	photosExtraRouter,
-	peopleRouter,
-	photoOwnersRouter,
-	burialsRouter
 } from './routes';
 
 import * as config from './config';
 import { doHealthCheck } from './utils/healthCheck';
 import { configureAuthentication } from './routes/auth';
 import { RequiresAuthentication } from './middleware';
-
-
-/*
-var ownersRouter = require('./controllers/owners');
-var historiesRouter = require('./controllers/histories');
-var aircrashRouter = require('./controllers/aircrash');
-var catalogsRouter = require('./controllers/catalogs');
-var usersRouter = require('./controllers/users');
-var peopleRouter = require('./controllers/people');
-var photoOwners = require('./controllers/photoOwners');
-var boatsRouter = require('./controllers/boats');
-var photosRouter = require('./controllers/photos');*/
-
-var knex = require('knex');
 
 const app = express();
 
@@ -99,14 +91,22 @@ app.use('/api/register', registerRouter);
 ////console.log("B", boats)
 
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
+app.use('/api/communities', RequiresAuthentication, communitiesRouter);
+app.use('/api/construction-periods', RequiresAuthentication, constructionPeriodsRouter);
+app.use('/api/first-nation-association-types', RequiresAuthentication, firstNationAssociationTypesRouter);
+app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);
+app.use('/api/nts-map-sheets', RequiresAuthentication, ntsMapSheetsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/owners', RequiresAuthentication, ownerRouter);
+app.use('/api/ownership-types', RequiresAuthentication, ownershipTypesRouter);
 app.use('/api/aircrash', RequiresAuthentication, aircrashRouter);
 app.use('/api/histories', RequiresAuthentication, historiesRouter);
 app.use('/api/catalogs', RequiresAuthentication, catalogsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
 app.use('/api/photos', photosExtraRouter);
+app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
+app.use('/api/site-statuses', RequiresAuthentication, siteStatusesRouter);
 app.use('/api/users', usersExtraRouter);
 app.use('/api/people', peopleRouter);
 app.use('/api/burials', burialsRouter);

@@ -13,7 +13,7 @@ import Maps from "../views/Maps";
 import store from "../store";
 import SiteForms from "@/components/Sites/SiteForms";
 import MainPhotos from "../components/MainPhotos";
-import SitesGrid from "../components/Sites/SitesGrid";
+import SitesTable from "@/components/Sites/SitesTable";
 import PhotosGrid from "../components/MainPhotos/PhotosGrid";
 import Feature from "../components/MainPhotos/PhotosComponents/Feature";
 import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
@@ -81,11 +81,8 @@ const routes = [
   },
   {
     path: "/sites",
-    name: "SitesGrid",
-    component: SitesGrid,
-    meta: {
-      requiresAuth: false
-    },
+    name: "SitesTable",
+    component: SitesTable,
   },
   {
     path: "/maps",
