@@ -43,7 +43,7 @@
     "eslint": "^6.7.2",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-vue": "^6.2.2",
-    "prettier": "^1.19.1",
+    "prettier": "^2.6.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
@@ -52,13 +52,16 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
+      "eslint:recommended",
+      "plugin:vue/recommended",
+      "prettier"
     ],
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "vue/html-indent": "off"
+    }
   },
   "browserslist": [
     "> 1%",

@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
-const express = require("express");
-import { DB_CONFIG } from "../config"
+import express, { Request, Response, NextFunction } from "express";
 import { body, check, param, query, validationResult } from "express-validator";
-import { PhotoService, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
+import moment from "moment";
+
+import { DB_CONFIG } from "../config"
+import { buildDatabaseSort, PhotoService, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
 import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership, WebLink, RevisionLog, Contact, Description } from "../data";
 import { ReturnValidationErrors } from "../middleware";
-const moment = require("moment");
 
 const placeService = new PlaceService(DB_CONFIG);
 const staticService = new StaticService(DB_CONFIG);
@@ -38,31 +38,28 @@ placeRouter.get("/",
         return res.status(500).send("Error")
     });
 
-placeRouter.post("/search", [body("page").isInt().default(1)],
-    async (req: Request, res: Response) => {
-        let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
-        let sort = new Array<SortStatement>();
+placeRouter.post(
+	'/search',
+	[body('page').isInt().default(1)],
+	async (req: Request, res: Response, next: NextFunction) => {
+		let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
+		const sort = buildDatabaseSort(sortBy, sortDesc)
 
-        sortBy.forEach((s: string, i: number) => {
-            sort.push({ field: s, direction: sortDesc[i] ? SortDirection.ASCENDING : SortDirection.DESCENDING })
-        })
+		let skip = (page - 1) * itemsPerPage;
+		let take = itemsPerPage;
 
-        let skip = (page - 1) * itemsPerPage;
-        let take = itemsPerPage;
-        let results = await placeService.doSearch(query, sort, page, itemsPerPage, skip, take);
-
-        /*let communities = await staticService.getCommunities();
-        let categories = await staticService.getCategories();
-        let statuses = await staticService.getSiteStatuses();
-
-        for (let place of results.data) {
-            place.community = communities.filter(c => c.id == place.communityId)[0];
-            place.category = categories.filter(c => c.value == place.category)[0];
-            place.status = statuses.filter(c => c.value == place.siteStatus)[0];
-        }*/
-
-        res.json(results);
-    });
+		return placeService
+			.doSearch(query, sort, page, itemsPerPage, skip, take)
+			.then((results) => {
+				return res.json(results);
+			})
+			.catch((error) => {
+				return res.status(422).json({
+					messages: [{ variant: 'error', text: error.message }],
+				});
+			});
+	}
+);
 
 placeRouter.post("/generate-id",
     [
