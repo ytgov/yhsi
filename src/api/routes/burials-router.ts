@@ -5,7 +5,7 @@ import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { BurialService } from "../services";
 import { renderFile } from "pug";
-import puppeteer from "puppeteer";
+import { generatePDF } from "../utils/pdf-generator";
 export const burialsRouter = express.Router();
 const db = knex(DB_CONFIG);
 const burialService = new BurialService();
@@ -288,11 +288,7 @@ burialsRouter.post(
 			data: burial
 		});
 
-		const browser = await puppeteer.launch();
-		const page = await browser.newPage();
-		await page.setContent(data);
-		const pdf = await page.pdf({ format: "letter", landscape: true });
-
+		let pdf = await generatePDF(data)
 		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 		res.setHeader('Content-type', 'application/pdf');
 		res.send(pdf);
@@ -306,11 +302,7 @@ burialsRouter.post('/pdf', async (req: Request, res: Response) => {
 		data: burials
 	});
 
-	const browser = await puppeteer.launch();
-	const page = await browser.newPage();
-	await page.setContent(data);
-	const pdf = await page.pdf({ format: "a3", landscape: true });
-
+	let pdf = await generatePDF(data, "a3")
 	res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 	res.setHeader('Content-type', 'application/pdf');
 	res.send(pdf);
