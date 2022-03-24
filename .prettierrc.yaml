@@ -2,6 +2,7 @@
 embeddedLanguageFormatting: "auto"
 jsxSingleQuote: true
 semi: true
+singleAttributePerLine: true
 singleQuote: true
 tabWidth: 2
 trailingComma: "es5"
