@@ -57,11 +57,6 @@ staticRouter.get(
 	}
 );
 
-staticRouter.get('/ownership-types', async (req: Request, res: Response) => {
-	let list = await placeService.getOwnershipTypes();
-	return res.json({ data: list });
-});
-
 staticRouter.get('/contact-type', async (req: Request, res: Response) => {
 	let list = await placeService.getContactTypes();
 	return res.json({ data: list });
