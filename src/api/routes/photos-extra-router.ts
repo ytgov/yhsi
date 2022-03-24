@@ -284,6 +284,30 @@ photosExtraRouter.get(
 	}
 );
 
+// GET PEOPLE PHOTOS
+photosExtraRouter.get(
+	'/person/:personID',
+	[param('personID').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { personID } = req.params;
+
+		const page = parseInt(req.query.page as string);
+		const limit = parseInt(req.query.limit as string);
+		const offset = page * limit || 0;
+
+		const photos = await db
+			.select('*')
+			.from('Person.Photo as PP')
+			.join('dbo.photo AS PH', 'PP.PhotoID', '=', 'PH.RowID')
+			.where('PP.PersonID', personID)
+			.limit(limit)
+			.offset(offset);
+		
+		res.status(200).send(photos);
+	}
+);
+
 // Get yt place photos
 photosExtraRouter.get(
 	'/ytplace/:placeId',
@@ -591,6 +615,71 @@ photosExtraRouter.post(
 	}
 );
 
+
+// ADD NEW PERSON PHOTO
+photosExtraRouter.post(
+	'/people/:personID',
+	[param('personID').notEmpty()],
+	[upload.single('file')],
+	async (req: Request, res: Response) => {
+		const personID = req.params.personID;
+		const { ...restBody } = req.body;
+		const ThumbFile = await createThumbnail(req.file.buffer);
+		const body = { File: req.file.buffer, ThumbFile, ...restBody };
+		delete body.personID;
+		const response = await db
+			.insert(body)
+			.into('dbo.photo')
+			.returning('*')
+			.then(async (rows) => {
+				const newPhoto = rows[0];
+
+				await db
+					.insert({ PersonID: personID, PhotoID: newPhoto.RowId })
+					.into('Person.Photo')
+					.returning('*')
+					.then((rows) => {
+						return rows;
+					});
+
+				return newPhoto;
+			});
+		res.status(200).send({ message: 'Upload Success' });
+	}
+);
+
+//LINK PERSON PHOTOS
+photosExtraRouter.post(
+	'/people/link/:personID',
+	[param('burialId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+
+		const { personID } = req.params;
+		const { linkPhotos } = req.body;
+		let currentPhotos = await db
+			.select('PhotoID')
+			.from('Person.Photo')
+			.where('PersonID', personID);
+		let filteredLinkPhotos = _.difference(
+			linkPhotos,
+			currentPhotos.map((x) => {
+				return x.Photo_RowID;
+			})
+		);
+
+		for (const rowId of filteredLinkPhotos)
+			await db
+				.insert({ PersonID: personID, PhotoID: rowId })
+				.into('Person.Photo')
+				.returning('*')
+				.then((rows) => {
+					return rows;
+				});
+
+		res.status(200).send({ message: 'Successfully linked the photos' });
+	}
+);
 
 // ADD NEW BOAT PHOTO
 photosExtraRouter.post(
