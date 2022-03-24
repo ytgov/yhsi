@@ -1,14 +1,15 @@
 @startuml
 
 entity "Place" as place {
-  Id : int <<generated>>
+  * Id : int <<generated>>
   --
-  PrimaryName: nvarchar
-  YHSIId : nvarchar
+  * PrimaryName: nvarchar
+  * YHSIId : nvarchar
+  * Category: int
+  * ShowInRegister: bit
   Designations: nvarchar
-  Category: int
   Records: nvarchar
-  ShowInRegister: bit
+  ContributingResources: nvarchar
 }
 
 enum "Designations" as designations {
@@ -32,8 +33,33 @@ enum "Records" as records {
   WHBR : 2
 }
 
-place }o--|| designations
-place }o--|| category
-place }o--|| records
+entity "Name" as name {
+  * Id : int <<generated>>
+  --
+  * PlaceId: int
+  Description: nvarchar
+}
+
+entity "HistoricalPattern" as historical_pattern {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * HistoricalPatternType: int
+  Comments : nvarchar
+}
+
+enum "HistoricalPatternType" as historical_pattern_type {
+  1 : Political
+  2 : Economic
+  3 : Social
+  4 : Geographic
+}
+
+place }o--o| designations
+place }|--o| category
+place }o--o| records
+place }o--|| name
+place }o--historical_pattern
+historical_pattern }|--|| historical_pattern_type
 
 @enduml
