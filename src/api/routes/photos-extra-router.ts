@@ -95,14 +95,12 @@ photosExtraRouter.get(
 				.orderBy('PH.RowId', 'asc')
 				.limit(limit)
 				.offset(offset);
-				console.log("ALL PHOTOS", photos);
 		}
-		console.log("COUNTER HERE", counter);
 		res.status(200).send({ count: counter[0].count, body: photos });
 	}
 );
 
-//LINK BOAT PHOTOS
+// LINK BOAT PHOTOS
 photosExtraRouter.post(
 	'/boat/link/:BoatId',
 	[param('BoatId').notEmpty()],
@@ -137,7 +135,7 @@ photosExtraRouter.post(
 	}
 );
 
-//LINK AIRCRASH PHOTOS
+// LINK AIRCRASH PHOTOS
 photosExtraRouter.post(
 	'/aircrash/link/:AirCrashId',
 	[param('AirCrashId').notEmpty()],
@@ -286,7 +284,7 @@ photosExtraRouter.get(
 
 // GET PEOPLE PHOTOS
 photosExtraRouter.get(
-	'/person/:personID',
+	'/people/:personID',
 	[param('personID').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
@@ -295,7 +293,6 @@ photosExtraRouter.get(
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
-
 		const photos = await db
 			.select('*')
 			.from('Person.Photo as PP')
@@ -303,7 +300,6 @@ photosExtraRouter.get(
 			.where('PP.PersonID', personID)
 			.limit(limit)
 			.offset(offset);
-		
 		res.status(200).send(photos);
 	}
 );
@@ -550,7 +546,7 @@ photosExtraRouter.delete(
 );
 
 
-//LINK BURIAL PHOTOS
+// LINK BURIAL PHOTOS
 photosExtraRouter.post(
 	'/burial/link/:burialId',
 	[param('burialId').notEmpty()],
@@ -648,13 +644,13 @@ photosExtraRouter.post(
 	}
 );
 
-//LINK PERSON PHOTOS
+// LINK PERSON PHOTOS
 photosExtraRouter.post(
 	'/people/link/:personID',
-	[param('burialId').notEmpty()],
+	[param('personID').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-
+		
 		const { personID } = req.params;
 		const { linkPhotos } = req.body;
 		let currentPhotos = await db
@@ -676,7 +672,6 @@ photosExtraRouter.post(
 				.then((rows) => {
 					return rows;
 				});
-
 		res.status(200).send({ message: 'Successfully linked the photos' });
 	}
 );
