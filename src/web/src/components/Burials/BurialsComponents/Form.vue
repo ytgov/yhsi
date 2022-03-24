@@ -999,6 +999,8 @@ export default {
       return this.mode == 'new';
     },
     currentBurialID(){
+      if(this.mode == 'new') return false;
+
       return localStorage.currentBurialID;
     },
     getCountries(){
