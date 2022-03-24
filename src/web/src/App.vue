@@ -59,9 +59,6 @@
             <v-list-item to="/places">
               <v-list-item-title>Places</v-list-item-title>
             </v-list-item>
-            <v-list-item to="/burials">
-              <v-list-item-title>Burials</v-list-item-title>
-            </v-list-item>
             <v-list-item to="/people">
               <v-list-item-title>People</v-list-item-title>
             </v-list-item>
