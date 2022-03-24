@@ -13,6 +13,7 @@ entity "Place" as place {
 }
 
 enum "Designations" as designations {
+  <only string used>
   4 : Federal
   2 : Municipal
   3 : Territorial
@@ -21,16 +22,17 @@ enum "Designations" as designations {
 }
 
 enum "Category" as category {
-  None Selected : 0
-  Building : 1
-  District : 2
-  Place : 3
-  Structure : 4
+  0 : None Selected
+  1 : Building
+  2 : District
+  3 : Place
+  4 : Structure
 }
 
 enum "Records" as records {
-  CRHP : 1
-  WHBR : 2
+  <only string used>
+  1: CRHP
+  2: WHBR
 }
 
 entity "Name" as name {
