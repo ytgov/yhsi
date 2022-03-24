@@ -501,9 +501,9 @@ export default {
     loadingData: false
   }),
   mounted() {
+    console.log(this.showDefault, this.BurialID);
     if (this.showDefault) return;
-
-    if (this.BurialID) this.getDataFromAPI();
+    else if (this.BurialID) this.getDataFromAPI();
   },
   methods: {
     async getAll() {

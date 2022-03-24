@@ -30,7 +30,6 @@ photosExtraRouter.get(
 		const offset = page * limit || 0;
 		let counter = [{ count: 0 }];
 		let photos = [];
-		console.log("started SEARCHING FOR ALL PHOTOSS ", textToMatch);
 		if (textToMatch) {
 			counter = await db
 				.from('dbo.photo as PH')
@@ -72,7 +71,6 @@ photosExtraRouter.get(
 				.orderBy('PH.RowId', 'asc')
 				.limit(limit)
 				.offset(offset);
-			console.log("PHOTOS", photos);
 		} else {
 			counter = await db.from('dbo.photo').count('RowId', { as: 'count' });
 
@@ -111,10 +109,6 @@ photosExtraRouter.post(
 	ReturnValidationErrors,
 	[upload.single('file')],
 	async (req: Request, res: Response) => {
-		/* const db = req.app.get('db');
-  
-    const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('create')) res.sendStatus(403); */
 
 		const { BoatId } = req.params;
 		const { linkPhotos } = req.body;
@@ -220,9 +214,6 @@ photosExtraRouter.get(
 	[param('boatId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		/* const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('view')) res.sendStatus(403);
-    const db = req.app.get('db'); */
 
 		const { boatId } = req.params;
 
@@ -275,7 +266,6 @@ photosExtraRouter.get(
 	[param('burialId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		console.log("started searching for the burial photos");
 		const { burialId } = req.params;
 
 		const page = parseInt(req.query.page as string);
@@ -290,7 +280,6 @@ photosExtraRouter.get(
 			.limit(limit)
 			.offset(offset);
 		
-		console.log("finished looking");
 		res.status(200).send(photos);
 	}
 );
