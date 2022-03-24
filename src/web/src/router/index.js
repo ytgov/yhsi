@@ -1,5 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import goTo from 'vuetify/lib/services/goto';
+
 import Home from "../components/Home.vue";
 import Dashboard from "../components/Dashboard.vue";
 import NotFound from "../views/NotFound.vue";
@@ -9,19 +11,9 @@ import LoginComplete from "../views/LoginComplete";
 import Profile from "../views/Profile";
 import Maps from "../views/Maps";
 import store from "../store";
-import SitesForm from "../components/Sites";
-
-import Summary from "../components/Sites/SitesForms/Summary";
-import Location from "../components/Sites/SitesForms/Location";
-import Dates from "../components/Sites/SitesForms/Dates";
-import Themes from "../components/Sites/SitesForms/Themes";
-import Associations from "../components/Sites/SitesForms/Associations";
-import LegalAndZoning from "../components/Sites/SitesForms/LegalAndZoning";
-import Photos from "../components/Sites/SitesForms/Photos";
+import SiteForms from "@/components/Sites/SiteForms";
 import MainPhotos from "../components/MainPhotos";
-import Management from "../components/Sites/SitesForms/Management";
-import Description from "../components/Sites/SitesForms/Description";
-import SitesGrid from "../components/Sites/SitesGrid";
+import SitesTable from "@/components/Sites/SitesTable";
 import PhotosGrid from "../components/MainPhotos/PhotosGrid";
 import Feature from "../components/MainPhotos/PhotosComponents/Feature";
 import SiteRecord from "../components/MainPhotos/PhotosComponents/SiteRecord";
@@ -47,6 +39,17 @@ import AdminUserForm from "../components/Administration/UserManagement/UserCompo
 import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
 import BurialsGrid from "../components/Burials/Grid";
 import BurialsForm from "../components/Burials/BurialsComponents/Form";
+import PlacesGrid from '../components/Places/PlacesGrid';
+import PlaceTypeGrid from '../components/Administration/LookupTableManagement/PlaceType/PlaceType';
+import PlacesForm from '../components/Places/PlacesComponents/PlacesForm';
+import PhotoBatchGrid from "../components/MainPhotos/PhotoBatches/Grid";
+import PhotoBatchUpload from "../components/MainPhotos/PhotoBatches/Upload";
+import PhotoBatchAttributes from "../components/MainPhotos/PhotoBatches/Attributes";
+import CommunityGrid from "../components/Administration/LookupTableManagement/Community/CommunityGrid";
+import PhotoOwnerGrid from "../components/Administration/LookupTableManagement/PhotoOwner/PhotoOwnerGrid";
+import PhotoProjectGrid from "../components/Administration/LookupTableManagement/PhotoProject/PhotoProjectGrid";
+import PhotoSubjectGrid from "../components/Administration/LookupTableManagement/PhotoSubject/PhotoSubjectGrid";
+
 
 Vue.use(VueRouter);
 
@@ -89,11 +92,8 @@ const routes = [
   },
   {
     path: "/sites",
-    name: "SitesGrid",
-    component: SitesGrid,
-    meta: {
-      requiresAuth: false
-    },
+    name: "SitesTable",
+    component: SitesTable,
   },
   {
     path: "/maps",
@@ -136,13 +136,13 @@ const routes = [
     }
   },
   {
-      path: "/people/edit/:name",
-      name: "personEditView",
-      component: UserForm,
-      props: true,
-      meta: {
-        requiresAuth: false
-      }
+    path: "/people/edit/:name",
+    name: "personEditView",
+    component: UserForm,
+    props: true,
+    meta: {
+      requiresAuth: false
+    }
   },
   {
     path: "/people/view/:name",
@@ -190,50 +190,10 @@ const routes = [
     }
   },
   {
-    path: "/sites/:id",
-    name: "SitesForm",
-    component: SitesForm,
-    meta: {
-      requiresAuth: false
-    },
-    children: [
-      {
-        path: "summary",
-        component: Summary
-      },
-      {
-        path: "location",
-        component: Location
-      },
-      {
-        path: "dates_&_condition",
-        component: Dates
-      },
-      {
-        path: "themes_&_function",
-        component: Themes
-      },
-      {
-        path: "associations",
-        component: Associations
-      },
-      {
-        path: "legal_&_zoning",
-        component: LegalAndZoning
-      },
-      {
-        path: "photos",
-        component: Photos
-      },
-      {
-        path: "management",
-        component: Management
-      },
-      {
-        path: "description",
-        component: Description
-      }
-    ]
+    path: '/sites/:id',
+    name: 'SiteForms',
+    component: SiteForms,
+    props: true,
   },
   {
     path: "/photos/edit/:id",
@@ -270,7 +230,7 @@ const routes = [
     },
     children: [
       {
-        path: "feature", 
+        path: "feature",
         component: Feature
       },
       {
@@ -282,14 +242,14 @@ const routes = [
         component: HistoricSites
       },
       {
-        path: "photo", 
+        path: "photo",
         component: Photo
       }
     ]
   },
   {
     path: "/boats",
-    
+
     component: Boats,
     meta: {
       requiresAuth: false
@@ -401,6 +361,79 @@ const routes = [
     props: true
   },
   {
+    path: "/places",
+    name: "PlacesGrid",
+    component: PlacesGrid,
+    meta: {
+      requiresAuth: false
+    },
+  },
+  {
+    path: "/places/view/:name",
+    name: "placeView",
+    component: PlacesForm,
+    props: true
+  },
+  {
+    path: "/places/edit/:name",
+    name: "placeEditView",
+    component: PlacesForm,
+    props: true
+  },
+  {
+    path: "/places/new",
+    name: "placeAddView",
+    component: PlacesForm
+  },
+  {
+    path: '/admin/placetype',
+    name: 'PlaceTypeGrid',
+    component: PlaceTypeGrid,
+  },
+  {
+    path: '/places',
+    name: 'PlacesGrid',
+    component: PlacesGrid,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/admin/community",
+    name: "CommunityGrid",
+    component: CommunityGrid
+  },
+  {
+    path: "/admin/photo-owner",
+    name: "PhotoOwnerGrid",
+    component: PhotoOwnerGrid
+  },
+  {
+    path: "/admin/photo-project",
+    name: "PhotoProjectGrid",
+    component: PhotoProjectGrid
+  },
+  {
+    path: "/admin/photo-subject",
+    name: "PhotoSubjectGrid",
+    component: PhotoSubjectGrid
+  },
+  {
+    path: "/photobatches",
+    name: "PhotoBatchGrid",
+    component: PhotoBatchGrid
+  },
+  {
+    path: "/photobatches/upload",
+    name: "PhotoBatchUpload",
+    component: PhotoBatchUpload
+  },
+  {
+    path: "/photobatches/attributes/:mode",
+    name: "PhotoBatchAttributes",
+    component: PhotoBatchAttributes
+  },
+  {
     path: "*",
     name: "Not Found",
     component: NotFound
@@ -408,30 +441,39 @@ const routes = [
 ];
 
 const router = new VueRouter({
-	mode: 'history',
-	base: process.env.BASE_URL,
-	routes,
+  mode: 'history',
+  base: process.env.BASE_URL,
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return goTo(savedPosition.y);
+    }
+
+    if (to.hash) {
+      return goTo(to.hash, { offset: 75 });
+    }
+
+    return goTo(0);
+  },
 });
 
 router.beforeEach(async (to, from, next) => {
-	var requiresAuth = to.meta.requiresAuth || false;
+  var requiresAuth = to.meta.requiresAuth || false;
 
-	store.dispatch('setAppSidebar', to.path.startsWith('/sites/'));
+  if (!requiresAuth) {
+    return next();
+  }
 
-	if (!requiresAuth) {
-		return next();
-	}
+  await store.dispatch('checkAuthentication');
+  var isAuthenticated = store.getters.isAuthenticated;
 
-	await store.dispatch('checkAuthentication');
-	var isAuthenticated = store.getters.isAuthenticated;
+  if (requiresAuth && !isAuthenticated) {
+    console.log("You aren't authenticatd, redirecting to sign-in");
+    next('/sign-in');
+    return;
+  }
 
-	if (requiresAuth && !isAuthenticated) {
-		//console.log("You aren't authenticatd, redirecting to sign-in");
-		next('/sign-in');
-		return;
-	}
-
-	return next();
+  return next();
 });
 
 export default router;
