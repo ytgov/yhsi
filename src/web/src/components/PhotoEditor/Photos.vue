@@ -577,10 +577,10 @@ export default {
         .map((x) => {
           return x.RowId;
         });
-      
+      console.log(photosToLink);
       await photos.linkGeneral(this.photoType, this.itemId, { linkPhotos: photosToLink });
-      this.reset();
-      this.$router.go();
+      //this.reset();
+      //this.$router.go();
       
       // axios
       //   .post(`${EXTRA_PHOTOS_URL}/${this.photoType}/link/${this.itemId}`, { linkPhotos: photosToLink })
