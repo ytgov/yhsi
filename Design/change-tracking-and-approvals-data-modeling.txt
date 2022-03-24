@@ -1,0 +1,39 @@
+@startuml
+
+entity "Place" as place {
+  Id : int <<generated>>
+  --
+  PrimaryName: nvarchar
+  YHSIId : nvarchar
+  Designations: nvarchar
+  Category: int
+  Records: nvarchar
+  ShowInRegister: bit
+}
+
+enum "Designations" as designations {
+  4 : Federal
+  2 : Municipal
+  3 : Territorial
+  5 : World
+  0 : Not Designated
+}
+
+enum "Category" as category {
+  None Selected : 0
+  Building : 1
+  District : 2
+  Place : 3
+  Structure : 4
+}
+
+enum "Records" as records {
+  CRHP : 1
+  WHBR : 2
+}
+
+place }o--|| designations
+place }o--|| category
+place }o--|| records
+
+@enduml
