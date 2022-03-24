@@ -6,6 +6,9 @@ RUN mkdir /home/node/web && chown -R node:node /home/node/web
 COPY --chown=node:node src/web/package*.json /home/node/web/
 COPY --chown=node:node src/api/package*.json /home/node/app/
 
+RUN npm install -g npm@8.5.5
+RUN npm install -g phantomjs-prebuilt
+# --unsafe-perm
 USER node
 
 WORKDIR /home/node/app
@@ -13,9 +16,8 @@ RUN npm install && npm cache clean --force --loglevel=error
 COPY --chown=node:node src/api/.env* ./
 
 WORKDIR /home/node/web
-RUN npm install && npm cache clean --force --loglevel=error
-RUN npm install -g phantomjs --unsafe-perm
 
+RUN npm install && npm cache clean --force --loglevel=error
 COPY --chown=node:node src/api /home/node/app/
 COPY --chown=node:node src/web /home/node/web/
 
