@@ -458,7 +458,6 @@ export default {
     loadingData: false
   }),
   mounted() {
-    console.log("photo component mounted");
     if (this.showDefault) return;
 
     if (this.itemId) this.getDataFromAPI();
@@ -548,7 +547,7 @@ export default {
           this.sendObj.yacsiNumber = String(this.itemId);
           break;  
         case "burial":
-          this.sendObj.yacsiNumber = String(this.itemId);
+          this.sendObj.burialID = String(this.itemId);
           break;         
       }
       delete this.sendObj.itemId;
