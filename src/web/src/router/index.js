@@ -39,6 +39,17 @@ import AdminUserForm from "../components/Administration/UserManagement/UserCompo
 import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
 import BurialsGrid from "../components/Burials/Grid";
 import BurialsForm from "../components/Burials/BurialsComponents/Form";
+import PlacesGrid from '../components/Places/PlacesGrid';
+import PlaceTypeGrid from '../components/Administration/LookupTableManagement/PlaceType/PlaceType';
+import PlacesForm from '../components/Places/PlacesComponents/PlacesForm';
+import PhotoBatchGrid from "../components/MainPhotos/PhotoBatches/Grid";
+import PhotoBatchUpload from "../components/MainPhotos/PhotoBatches/Upload";
+import PhotoBatchAttributes from "../components/MainPhotos/PhotoBatches/Attributes";
+import CommunityGrid from "../components/Administration/LookupTableManagement/Community/CommunityGrid";
+import PhotoOwnerGrid from "../components/Administration/LookupTableManagement/PhotoOwner/PhotoOwnerGrid";
+import PhotoProjectGrid from "../components/Administration/LookupTableManagement/PhotoProject/PhotoProjectGrid";
+import PhotoSubjectGrid from "../components/Administration/LookupTableManagement/PhotoSubject/PhotoSubjectGrid";
+
 
 Vue.use(VueRouter);
 
@@ -125,13 +136,13 @@ const routes = [
     }
   },
   {
-      path: "/people/edit/:name",
-      name: "personEditView",
-      component: UserForm,
-      props: true,
-      meta: {
-        requiresAuth: false
-      }
+    path: "/people/edit/:name",
+    name: "personEditView",
+    component: UserForm,
+    props: true,
+    meta: {
+      requiresAuth: false
+    }
   },
   {
     path: "/people/view/:name",
@@ -179,10 +190,10 @@ const routes = [
     }
   },
   {
-	path: '/sites/:id',
-	name: 'SiteForms',
-	component: SiteForms,
-	props: true,
+    path: '/sites/:id',
+    name: 'SiteForms',
+    component: SiteForms,
+    props: true,
   },
   {
     path: "/photos/edit/:id",
@@ -219,7 +230,7 @@ const routes = [
     },
     children: [
       {
-        path: "feature", 
+        path: "feature",
         component: Feature
       },
       {
@@ -231,14 +242,14 @@ const routes = [
         component: HistoricSites
       },
       {
-        path: "photo", 
+        path: "photo",
         component: Photo
       }
     ]
   },
   {
     path: "/boats",
-    
+
     component: Boats,
     meta: {
       requiresAuth: false
@@ -350,6 +361,79 @@ const routes = [
     props: true
   },
   {
+    path: "/places",
+    name: "PlacesGrid",
+    component: PlacesGrid,
+    meta: {
+      requiresAuth: false
+    },
+  },
+  {
+    path: "/places/view/:name",
+    name: "placeView",
+    component: PlacesForm,
+    props: true
+  },
+  {
+    path: "/places/edit/:name",
+    name: "placeEditView",
+    component: PlacesForm,
+    props: true
+  },
+  {
+    path: "/places/new",
+    name: "placeAddView",
+    component: PlacesForm
+  },
+  {
+    path: '/admin/placetype',
+    name: 'PlaceTypeGrid',
+    component: PlaceTypeGrid,
+  },
+  {
+    path: '/places',
+    name: 'PlacesGrid',
+    component: PlacesGrid,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/admin/community",
+    name: "CommunityGrid",
+    component: CommunityGrid
+  },
+  {
+    path: "/admin/photo-owner",
+    name: "PhotoOwnerGrid",
+    component: PhotoOwnerGrid
+  },
+  {
+    path: "/admin/photo-project",
+    name: "PhotoProjectGrid",
+    component: PhotoProjectGrid
+  },
+  {
+    path: "/admin/photo-subject",
+    name: "PhotoSubjectGrid",
+    component: PhotoSubjectGrid
+  },
+  {
+    path: "/photobatches",
+    name: "PhotoBatchGrid",
+    component: PhotoBatchGrid
+  },
+  {
+    path: "/photobatches/upload",
+    name: "PhotoBatchUpload",
+    component: PhotoBatchUpload
+  },
+  {
+    path: "/photobatches/attributes/:mode",
+    name: "PhotoBatchAttributes",
+    component: PhotoBatchAttributes
+  },
+  {
     path: "*",
     name: "Not Found",
     component: NotFound
@@ -357,39 +441,39 @@ const routes = [
 ];
 
 const router = new VueRouter({
-	mode: 'history',
-	base: process.env.BASE_URL,
-	routes,
-	scrollBehavior(to, from, savedPosition) {
-		if (savedPosition) {
-			return goTo(savedPosition.y);
-		}
+  mode: 'history',
+  base: process.env.BASE_URL,
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return goTo(savedPosition.y);
+    }
 
-		if (to.hash) {
-			return goTo(to.hash, { offset: 75 });
-		}
+    if (to.hash) {
+      return goTo(to.hash, { offset: 75 });
+    }
 
-		return goTo(0);
-	},
+    return goTo(0);
+  },
 });
 
 router.beforeEach(async (to, from, next) => {
-	var requiresAuth = to.meta.requiresAuth || false;
+  var requiresAuth = to.meta.requiresAuth || false;
 
-	if (!requiresAuth) {
-		return next();
-	}
+  if (!requiresAuth) {
+    return next();
+  }
 
-	await store.dispatch('checkAuthentication');
-	var isAuthenticated = store.getters.isAuthenticated;
+  await store.dispatch('checkAuthentication');
+  var isAuthenticated = store.getters.isAuthenticated;
 
-	if (requiresAuth && !isAuthenticated) {
-		console.log("You aren't authenticatd, redirecting to sign-in");
-		next('/sign-in');
-		return;
-	}
+  if (requiresAuth && !isAuthenticated) {
+    console.log("You aren't authenticatd, redirecting to sign-in");
+    next('/sign-in');
+    return;
+  }
 
-	return next();
+  return next();
 });
 
 export default router;
