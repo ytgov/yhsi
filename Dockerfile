@@ -7,8 +7,6 @@ COPY --chown=node:node src/web/package*.json /home/node/web/
 COPY --chown=node:node src/api/package*.json /home/node/app/
 
 RUN npm install -g npm@8.5.5
-RUN npm install -g phantomjs-prebuilt
-# --unsafe-perm
 USER node
 
 WORKDIR /home/node/app

@@ -4,8 +4,9 @@ import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { BoatService } from "../services";
-const pdf = require('html-pdf');
-const pug = require('pug');
+import { renderFile } from "pug";
+import puppeteer from "puppeteer";
+
 export const boatsRouter = express.Router();
 const db = knex(DB_CONFIG);
 const boatService = new BoatService();
@@ -180,43 +181,36 @@ boatsRouter.post(
 
 		const boat = await boatService.getById(parseInt(boatId));
 
-		let data = pug.renderFile('./templates/boats/boatView.pug', {
+		let data = renderFile('./templates/boats/boatView.pug', {
 			data: boat
 		});
-		res.setHeader('Content-disposition', 'attachment; filename="boat.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		pdf.create(data, {
-			format: 'A3',
-			orientation: 'landscape'
-		}).toBuffer(function(err: any, buffer: any){
-			//console.log(err);
-			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
 
-			res.send(buffer);
-		}); 
+		const browser = await puppeteer.launch();
+		const page = await browser.newPage();
+		await page.setContent(data);
+		const pdf = await page.pdf({ format: "a3", landscape: true });
+	
+		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		res.send(pdf);
 });
 
 boatsRouter.post('/pdf', async (req: Request, res: Response) => {
 		
 		let boats = await boatService.getAll();
 
-		let data = pug.renderFile('./templates/boats/boatGrid.pug', {
+		let data = renderFile('./templates/boats/boatGrid.pug', {
 			data: boats
 		});
 
-		res.setHeader('Content-disposition', 'attachment; filename="boats.html"');
+		const browser = await puppeteer.launch();
+		const page = await browser.newPage();
+		await page.setContent(data);
+		const pdf = await page.pdf({ format: "a3", landscape: true });
+	
+		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 		res.setHeader('Content-type', 'application/pdf');
-		pdf.create(data, {
-			format: 'A3',
-			orientation: 'landscape'
-		}).toBuffer(function(err: any, buffer: any){
-			//console.log(err);
-			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
-
-			res.send(buffer);
-		});
-
-		//res.status(200).send(data);
+		res.send(pdf);
 	}
 );
 
