@@ -108,7 +108,7 @@ export default {
 				{ text: 'YHSI ID', value: 'yHSIId' },
 				{ text: 'Primary name', value: 'primaryName' },
 				{ text: 'Community', value: 'community.name' },
-				{ text: 'Category', value: 'category.text' },
+				{ text: 'Category', value: 'siteCategories' },
 				{ text: 'Status', value: 'status.text' },
 			];
 		},
