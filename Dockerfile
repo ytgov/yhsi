@@ -14,6 +14,7 @@ COPY --chown=node:node src/api/.env* ./
 
 WORKDIR /home/node/web
 RUN npm install && npm cache clean --force --loglevel=error
+RUN npm install -g phantomjs --unsafe-perm
 
 COPY --chown=node:node src/api /home/node/app/
 COPY --chown=node:node src/web /home/node/web/
