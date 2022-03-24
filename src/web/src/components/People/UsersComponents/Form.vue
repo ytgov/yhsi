@@ -126,8 +126,6 @@
 
 <script>
 import Breadcrumbs from '../../Breadcrumbs.vue';
-//import Photos from "./Photos/Photos";
-
 import Photos from "../../PhotoEditor/Photos.vue";
 import HistoricRecord from "./HistoricRecord";
 import people from "../../../controllers/people";
