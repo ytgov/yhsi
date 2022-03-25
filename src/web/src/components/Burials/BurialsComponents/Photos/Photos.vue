@@ -73,7 +73,11 @@
                         >
                         </v-text-field>
 
+<<<<<<< HEAD
                         <v-autocomplete outlined dense
+=======
+                        <v-autocomplete
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
                           @click="getOwners"
                           v-model="fields.OwnerId"
                           :items="owners"
@@ -84,7 +88,11 @@
                           item-text="Name"
                           item-value="Id"
                         ></v-autocomplete>
+<<<<<<< HEAD
                         <v-combobox outlined dense
+=======
+                        <v-combobox
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
                           v-model="fields.CommunityId"
                           @click="getCommunities"
                           :items="availableCommunities"
@@ -96,7 +104,11 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
+<<<<<<< HEAD
                         <v-combobox outlined dense
+=======
+                        <v-combobox
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
                           v-model="fields.OriginalMediaId"
                           @click="getOriginalMedia"
                           :items="availableOriginalMedia"
@@ -108,7 +120,11 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
+<<<<<<< HEAD
                         <v-combobox outlined dense
+=======
+                        <v-combobox
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
                           v-model="fields.Copyright"
                           :items="copyrightOptions"
                           item-value="id"
@@ -117,7 +133,11 @@
                           :rules="generalRules"
                         >
                         </v-combobox>
+<<<<<<< HEAD
                         <v-combobox outlined dense
+=======
+                        <v-combobox
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
                           v-model="fields.UsageRights"
                           :items="usageRightOptions"
                           ritem-value="id"
@@ -552,7 +572,11 @@ export default {
         OriginalMediaId,
         UsageRights,
       } = this.sendObj;
+<<<<<<< HEAD
       //this.sendObj.BurialID = Number(this.BurialID);
+=======
+      this.sendObj.BurialID = Number(this.BurialID);
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
       this.sendObj.IsComplete = IsComplete ? 1 : 0;
       this.sendObj.Program = Program.value;
       this.sendObj.CommunityId = CommunityId.Id;
@@ -565,9 +589,15 @@ export default {
         formData.append(prevFields[i][0], prevFields[i][1]);
       }
       formData.append("file", this.file);
+<<<<<<< HEAD
       await photos.postBurialPhoto(this.BurialID, formData);
       //this.reset();
       //this.$router.go();
+=======
+      await photos.postBurialPhoto(formData);
+      this.reset();
+      this.$router.go();
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
       this.overlay = false;
     },
     async saveAndLink() {

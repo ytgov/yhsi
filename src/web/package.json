@@ -33,17 +33,29 @@
     "vuex": "^3.4.0"
   },
   "devDependencies": {
+<<<<<<< HEAD
     "@vue/cli-plugin-babel": "^4.5.13",
     "@vue/cli-plugin-eslint": "^4.5.13",
     "@vue/cli-plugin-router": "^4.5.13",
     "@vue/cli-plugin-vuex": "^4.5.13",
     "@vue/cli-service": "^4.5.13",
+=======
+    "@vue/cli-plugin-babel": "^4.5.0",
+    "@vue/cli-plugin-eslint": "^4.5.0",
+    "@vue/cli-plugin-router": "^4.5.0",
+    "@vue/cli-plugin-vuex": "^4.5.0",
+    "@vue/cli-service": "^4.5.0",
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-vue": "^6.2.2",
+<<<<<<< HEAD
     "prettier": "^1.19.1",
+=======
+    "prettier": "^2.6.0",
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
@@ -52,13 +64,25 @@
       "node": true
     },
     "extends": [
+<<<<<<< HEAD
       "plugin:vue/essential",
       "eslint:recommended"
+=======
+      "eslint:recommended",
+      "plugin:vue/recommended",
+      "prettier"
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
     ],
     "parserOptions": {
       "parser": "babel-eslint"
     },
+<<<<<<< HEAD
     "rules": {}
+=======
+    "rules": {
+      "vue/html-indent": "off"
+    }
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
   },
   "browserslist": [
     "> 1%",

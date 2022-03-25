@@ -12,6 +12,10 @@
           <span class="text-h5">New Vessel Type</span>
         </v-card-title>
         <v-card-text>
+<<<<<<< HEAD
+=======
+          <v-container>
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
             <v-row>
               <v-col cols="12">
                 <v-form
@@ -19,6 +23,7 @@
                   :lazy-validation="false"
                   v-model="valid"
                 >
+<<<<<<< HEAD
                   <v-row class="mt-2">
                     <v-col cols="12">
                       <v-text-field outlined dense
@@ -34,6 +39,20 @@
         </v-card-text>
         <v-card-actions>
           <v-btn text @click="closeDialog" class="black--text"> Close </v-btn>
+=======
+                  <v-text-field
+                    label="Vessel Name"
+                    v-model="input"
+                    :rules="generalRules"
+                  ></v-text-field>
+                </v-form>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn text @click="closeDialog"> Close </v-btn>
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
           <v-spacer></v-spacer>
           <v-btn color="success" text :disabled="!valid" @click="save">
             Save

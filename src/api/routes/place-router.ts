@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Request, Response } from "express";
 const express = require("express");
 import { DB_CONFIG } from "../config"
@@ -6,6 +7,16 @@ import { PhotoService, PlaceService, SortDirection, SortStatement, StaticService
 import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership, WebLink, RevisionLog, Contact, Description } from "../data";
 import { ReturnValidationErrors } from "../middleware";
 const moment = require("moment");
+=======
+import express, { Request, Response, NextFunction } from "express";
+import { body, check, param, query, validationResult } from "express-validator";
+import moment from "moment";
+
+import { DB_CONFIG } from "../config"
+import { buildDatabaseSort, PhotoService, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
+import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership, WebLink, RevisionLog, Contact, Description } from "../data";
+import { ReturnValidationErrors } from "../middleware";
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
 const placeService = new PlaceService(DB_CONFIG);
 const staticService = new StaticService(DB_CONFIG);
@@ -38,6 +49,7 @@ placeRouter.get("/",
         return res.status(500).send("Error")
     });
 
+<<<<<<< HEAD
 placeRouter.post("/search", [body("page").isInt().default(1)],
     async (req: Request, res: Response) => {
         let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
@@ -63,6 +75,30 @@ placeRouter.post("/search", [body("page").isInt().default(1)],
 
         res.json(results);
     });
+=======
+placeRouter.post(
+	'/search',
+	[body('page').isInt().default(1)],
+	async (req: Request, res: Response, next: NextFunction) => {
+		let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
+		const sort = buildDatabaseSort(sortBy, sortDesc)
+
+		let skip = (page - 1) * itemsPerPage;
+		let take = itemsPerPage;
+
+		return placeService
+			.doSearch(query, sort, page, itemsPerPage, skip, take)
+			.then((results) => {
+				return res.json(results);
+			})
+			.catch((error) => {
+				return res.status(422).json({
+					messages: [{ variant: 'error', text: error.message }],
+				});
+			});
+	}
+);
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
 placeRouter.post("/generate-id",
     [

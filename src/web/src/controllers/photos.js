@@ -170,9 +170,15 @@ export default {
 				console.error(error);
 			});
 	},
+<<<<<<< HEAD
 	async postBurialPhoto(id,data) {
 		return await apiP
 			.post(`photos/burial/${id}`, data)
+=======
+	async postBurialPhoto(data) {
+		return await apiP
+			.post(`photos/burial`, data)
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 			.then((res) => {
 				return res.data;
 			})

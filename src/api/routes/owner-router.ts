@@ -4,8 +4,14 @@ import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { BoatOwnerService } from "../services";
+<<<<<<< HEAD
 const pdf = require('html-pdf');
 const pug = require('pug');
+=======
+import { renderFile } from "pug";
+import { generatePDF } from "../utils/pdf-generator";
+
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 export const ownerRouter = express.Router();
 const boatOwnerService = new BoatOwnerService();
 const db = knex(DB_CONFIG);
@@ -126,6 +132,7 @@ ownerRouter.post(
 
 		const owner = await boatOwnerService.getById(ownerId);
 
+<<<<<<< HEAD
 		let data = pug.renderFile('./templates/boat-owners/boatOwnerView.pug', {
 			data: owner
 		});
@@ -140,6 +147,16 @@ ownerRouter.post(
 
 			res.send(buffer);
 		}); 
+=======
+		let data = renderFile('./templates/boat-owners/boatOwnerView.pug', {
+			data: owner
+		});
+
+		let pdf = await generatePDF(data)
+		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		res.send(pdf);
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 });
 
 
@@ -148,6 +165,7 @@ ownerRouter.post('/pdf', async (req: Request, res: Response) => {
 	let owners = await boatOwnerService.getAll();
 
 	//console.log(owners);
+<<<<<<< HEAD
 	let data = pug.renderFile('./templates/boat-owners/boatOwnerGrid.pug', {
 		data: owners
 	});
@@ -163,6 +181,16 @@ ownerRouter.post('/pdf', async (req: Request, res: Response) => {
 
 		res.send(buffer);
 	});
+=======
+	let data = renderFile('./templates/boat-owners/boatOwnerGrid.pug', {
+		data: owners
+	});
+
+	let pdf = await generatePDF(data)
+	res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+	res.setHeader('Content-type', 'application/pdf');
+	res.send(pdf);
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 }
 );
 

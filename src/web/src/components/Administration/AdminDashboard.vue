@@ -1,7 +1,15 @@
 <template>
+<<<<<<< HEAD
   <v-container>
     <h1>Administration</h1>
     <Breadcrumbs />
+=======
+  <div>
+    <v-breadcrumbs
+      :items="[{ text: 'Adminstration', to: '/admin', exact: true }]"
+    ></v-breadcrumbs>
+    <h1>Administration</h1>
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
     <v-row>
       <v-col cols="6">
         <v-card elevation="1">
@@ -50,6 +58,7 @@
         </v-card>
       </v-col>
     </v-row>
+<<<<<<< HEAD
   </v-container>
 </template>
 
@@ -59,6 +68,13 @@ export default {
   components: {
     Breadcrumbs,
   },
+=======
+  </div>
+</template>
+
+<script>
+export default {
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
   data: () => ({
     icon: null,
     usermodel: null,
@@ -72,31 +88,48 @@ export default {
       {
         icon: "mdi-wrench",
         text: "Burials - Occupations",
+<<<<<<< HEAD
         url: "/admin/occupation",
+=======
+        url: "/admin/burials/occupations",
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
       },
       {
         icon: "mdi-wallet-membership",
         text: "Burials - Memberships",
+<<<<<<< HEAD
         url: "/admin/membership",
+=======
+        url: "/admin/burials/memberships",
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
       },
       {
         icon: "mdi-database",
         text: "Burials - Cementeries",
+<<<<<<< HEAD
         url: "/admin/cemetary",
       },
       {
         icon: "mdi-account-switch",
         text: "Burials - Relationships",
         url: "/admin/relationship",
+=======
+        url: "/admin/burials/cementeries",
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
       },
       {
         icon: "mdi-shape",
         text: "Burials - Religions",
+<<<<<<< HEAD
         url: "/admin/religion",
+=======
+        url: "/admin/burials/religions",
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
       },
       {
         icon: "mdi-bug",
         text: "Burials - Causes",
+<<<<<<< HEAD
         url: "/admin/cause",
       },
       {
@@ -126,12 +159,34 @@ export default {
       },
       {
         icon: "mdi-home",
+=======
+        url: "/admin/burials/causes",
+      },
+      {
+        icon: "mdi-camera",
+        text: "Photos - Owner",
+        url: "",
+      },
+      {
+        icon: "mdi-map-marker-multiple",
+        text: "Community",
+        url: "",
+      },
+      {
+        icon: "mdi-run",
+        text: "Contributing Resources",
+        url: "",
+      },
+      {
+        icon: "mdi-map",
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
         text: "Place Type",
         url: "/admin/placetype",
       },
     ],
     model: 1,
   }),
+<<<<<<< HEAD
   methods:{
       goTo(url){
           if(url == "")
@@ -141,4 +196,13 @@ export default {
   }
 };
 
+=======
+  methods: {
+    goTo(url) {
+      if (url == "") return;
+      this.$router.push(url);
+    },
+  },
+};
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 </script>

@@ -4,6 +4,7 @@ import path from 'path';
 import helmet from 'helmet';
 
 import {
+<<<<<<< HEAD
 	userRouter,
 	placeRouter,
 	photoRouter,
@@ -25,12 +26,42 @@ import {
 	photoOwnersRouter,
 	burialsRouter
 } from './routes';
+=======
+	aircrashRouter,
+	boatsRouter,
+	burialsRouter,
+	catalogsRouter,
+	communitiesRouter,
+	constructionPeriodsRouter,
+	firstNationAssociationTypesRouter,
+	firstNationsRouter,
+	historiesRouter,
+	ntsMapSheetsRouter,
+	ownerRouter,
+	ownershipTypesRouter,
+	peopleRouter,
+	photoBatchRouter,
+	photoOwnersRouter,
+	photoRouter,
+	photosExtraRouter,
+	placeRouter,
+	registerRouter,
+	revisionLogTypesRouter,
+	siteStatusesRouter,
+	staticRouter,
+	userRouter,
+	usersExtraRouter,
+	ytPlaceHistoryRouter,
+	ytPlaceRouter,
+} from './routes';
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
 import * as config from './config';
 import { doHealthCheck } from './utils/healthCheck';
 import { configureAuthentication } from './routes/auth';
 import { RequiresAuthentication } from './middleware';
 
+<<<<<<< HEAD
 
 /*
 var ownersRouter = require('./controllers/owners');
@@ -45,6 +76,8 @@ var photosRouter = require('./controllers/photos');*/
 
 var knex = require('knex');
 
+=======
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 const app = express();
 
 app.use(express.json()); // for parsing application/json
@@ -99,14 +132,30 @@ app.use('/api/register', registerRouter);
 ////console.log("B", boats)
 
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
+<<<<<<< HEAD
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/owners', RequiresAuthentication, ownerRouter);
+=======
+app.use('/api/communities', RequiresAuthentication, communitiesRouter);
+app.use('/api/construction-periods', RequiresAuthentication, constructionPeriodsRouter);
+app.use('/api/first-nation-association-types', RequiresAuthentication, firstNationAssociationTypesRouter);
+app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);
+app.use('/api/nts-map-sheets', RequiresAuthentication, ntsMapSheetsRouter);
+app.use('/api/people', RequiresAuthentication, peopleRouter);
+app.use('/api/owners', RequiresAuthentication, ownerRouter);
+app.use('/api/ownership-types', RequiresAuthentication, ownershipTypesRouter);
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 app.use('/api/aircrash', RequiresAuthentication, aircrashRouter);
 app.use('/api/histories', RequiresAuthentication, historiesRouter);
 app.use('/api/catalogs', RequiresAuthentication, catalogsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
 app.use('/api/photos', photosExtraRouter);
+<<<<<<< HEAD
+=======
+app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
+app.use('/api/site-statuses', RequiresAuthentication, siteStatusesRouter);
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 app.use('/api/users', usersExtraRouter);
 app.use('/api/people', peopleRouter);
 app.use('/api/burials', burialsRouter);
