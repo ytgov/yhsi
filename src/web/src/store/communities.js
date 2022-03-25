@@ -8,12 +8,14 @@ const state = {
 };
 
 const getters = {
+	communities: (state) => state.communities,
 	communitiesKeyedById() {
 		return keyBy(state.communities, 'id');
 	},
 	getById: (state, getters) => (id) => {
 		return getters.communitiesKeyedById[id];
 	},
+	loading: (state) => state.loading,
 };
 
 const mutations = {

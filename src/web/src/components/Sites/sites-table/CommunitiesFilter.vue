@@ -20,28 +20,28 @@
 </template>
 
 <script>
-import { isEmpty } from 'lodash'
-
-import api from '@/apis/communities-api';
+import { isEmpty } from 'lodash';
+import { mapGetters } from 'vuex';
 
 export default {
 	name: 'CommunitiesFilter',
 	data: () => ({
-		communities: [],
 		communityIds: [],
 		includeFilter: true,
-		loading: false,
 	}),
 	computed: {
+		...mapGetters('communities', ['communities', 'loading']),
 		communitiesFilter() {
-			if (isEmpty(this.communityIds)) return {}
+			if (isEmpty(this.communityIds)) return {};
 
 			return {
 				[this.queryName]: this.communityIds,
 			};
 		},
-		queryName () {
-			return this.includeFilter ? 'includingCommunityIds' : 'excludingCommunityIds'
+		queryName() {
+			return this.includeFilter
+				? 'includingCommunityIds'
+				: 'excludingCommunityIds';
 		},
 		filterTypeIcon() {
 			return this.includeFilter
@@ -49,21 +49,10 @@ export default {
 				: 'mdi-filter-minus-outline';
 		},
 	},
-	mounted() {
-		this.loading = true;
-		api
-			.getAll()
-			.then(({ data }) => {
-				this.communities = data;
-			})
-			.finally(() => {
-				this.loading = false;
-			});
-	},
 	methods: {
 		toggleFilterType() {
-			this.includeFilter = !this.includeFilter
-			this.$emit('input', this.communitiesFilter)
+			this.includeFilter = !this.includeFilter;
+			this.$emit('input', this.communitiesFilter);
 		},
 	},
 };
