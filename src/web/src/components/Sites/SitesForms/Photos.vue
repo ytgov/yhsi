@@ -1,67 +1,8 @@
 <template>
-    <!-- <div>
-          <v-card-title primary-title>
-            Photos
-          </v-card-title>
-          <v-divider inset></v-divider>
-          <v-form v-model="valid">
-              <v-container>
-                <v-row>
-                    <v-col
-                        cols="12"
-                    >
-                        <v-text-field 
-                        v-model="categoryOfProperty"
-                        label="Category of Property"
-                        required
-                        ></v-text-field>
-                    </v-col>
-                </v-row>
-                <v-row>  
-                    <v-col cols="6" v-for="(item, i) in fields.photos" :key="`theme-${i+1}`">
-                        <v-alert 
-                            outlined
-                            color="primary"
-                        >
-                            <div class="sub-title">
-                                Photo {{ i+1 }}
-                            </div>
-                            <v-btn
-                                icon
-                                color="primary"
-                                class="top-right-button"
-                                @click="removeItem('photos', i)"
-                            >
-                                <v-icon dark>mdi-close-circle</v-icon>
-                            </v-btn>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-img v-if="item.img == null"
-                                    class="center-img"
-                                    max-width="128"
-                                    :src="require('../../../assets/add_photo.png')">
-                                    </v-img>
-                                    <v-img v-else
-                                    class="center-img"
-                                    max-width="128"
-                                    :src="item.img">
-                                    </v-img>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-text-field 
-                                    v-model="item.name"
-                                    label="Feature Name"
-                                    required
-                                    ></v-text-field> -->
   <div>
-    <v-card-title style="width: 100%; display: block">
+    <h2 class="mt-4 mb-0 ml-4 d-flex justify-space-between">
       Photos
-      <div class="float-right">
-        <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
-      </div>
-    </v-card-title>
+    </h2>
     <v-divider class="mb-5"></v-divider>
     <v-form v-model="valid">
       <div class="row mx-1">
@@ -178,7 +119,7 @@ import store from "../../../store";
 import { PLACE_URL } from "../../../urls";
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
-  name: "formPhotos",
+  name: "Photos",
   data: () => ({
     valid: false,
     generalRules: [

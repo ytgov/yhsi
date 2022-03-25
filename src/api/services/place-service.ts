@@ -1,21 +1,28 @@
-import knex from 'knex';
-import Knex from 'knex';
+import knex, { Knex } from 'knex';
+// import knex from 'knex';
+// import Knex from 'knex';
 import { QueryStatement, SortStatement } from './';
 import {
 	Association,
+	CONSTRUCTION_PERIODS,
 	ConstructionPeriod,
 	Contact,
 	Dates,
 	Description,
+	DESCRIPTION_TYPES,
+	DESCRIPTION_TYPE_ENUMS,
+	FIRST_NATION_ASSOCIATION_TYPES,
 	FirstNationAssociation,
 	FunctionalUse,
 	HistoricalPattern,
 	Name,
 	Ownership,
+	OWNERSHIP_TYPES,
 	Place,
 	PLACE_FIELDS,
 	PreviousOwnership,
 	REGISTER_FIELDS,
+	REVISION_LOG_TYPES,
 	RevisionLog,
 	Theme,
 	WebLink,
@@ -368,10 +375,7 @@ export class PlaceService {
 	}
 
 	getFNAssociationTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Settlement Lands' },
-			{ value: 2, text: 'Traditional Territory' },
-		];
+		return FIRST_NATION_ASSOCIATION_TYPES;
 	}
 
 	getHistoricalPatterns(): GenericEnum[] {
@@ -392,13 +396,7 @@ export class PlaceService {
 	}
 
 	getConstructionPeriodTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Pre 1895' },
-			{ value: 2, text: 'From 1896 to 1905' },
-			{ value: 3, text: 'From 1906 to 1939' },
-			{ value: 4, text: 'From 1940 to 1965' },
-			{ value: 5, text: 'Post 1965' },
-		];
+		return CONSTRUCTION_PERIODS;
 	}
 
 	getFunctionalUseTypes(): GenericEnum[] {
@@ -409,19 +407,7 @@ export class PlaceService {
 	}
 
 	getOwnershipTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Private' },
-			{ value: 2, text: 'Public Local' },
-			{ value: 3, text: 'Public Territorial' },
-			{ value: 4, text: 'Settlement Lands' },
-			{ value: 5, text: 'Public Federal' },
-			{ value: 6, text: 'Not For Profit' },
-			{ value: 7, text: 'Crown' },
-			{ value: 8, text: 'Unknown' },
-			{ value: 17, text: 'Gov Yukon' },
-			{ value: 18, text: 'First Nations Reserve' },
-			{ value: 19, text: 'Aboriginal Public Lands' },
-		];
+		return OWNERSHIP_TYPES;
 	}
 
 	getContactTypes(): GenericEnum[] {
@@ -434,13 +420,7 @@ export class PlaceService {
 	}
 
 	getRevisionLogTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Initial Recording' },
-			{ value: 2, text: 'Monitoring Visit' },
-			{ value: 3, text: 'Research' },
-			{ value: 4, text: 'Designation Assessment' },
-			{ value: 5, text: 'Record Update' },
-		];
+		return REVISION_LOG_TYPES;
 	}
 
 	getWebLinkTypes(): GenericEnum[] {
@@ -453,117 +433,181 @@ export class PlaceService {
 	}
 
 	getDescriptionTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Additional Information' },
-			{ value: 2, text: 'Character Defining Elements' },
-			{ value: 3, text: 'Cultural Period' },
-			{ value: 4, text: 'Heritage Value' },
-			{ value: 5, text: 'Place Description' },
-			{ value: 6, text: 'Description of Boundaries' },
-			{ value: 8, text: 'Historical Sources Location' },
-			{ value: 9, text: 'Renovation Information' },
-			{ value: 10, text: 'Construction Style' },
-			{ value: 11, text: 'Demolition Information' },
-			{ value: 12, text: 'Cultural History' },
-			{ value: 13, text: 'Documentation Location' },
-			{ value: 27, text: 'Archaeological Collections' },
-			{ value: 29, text: 'Building Style' },
-			{ value: 30, text: 'YRHP Additional Information' },
-		];
+		return DESCRIPTION_TYPES;
 	}
 
 	async doSearch(
-		query: Array<QueryStatement>,
+		query: { [key: string]: any },
 		sort: Array<SortStatement>,
 		page: number,
-		page_size: number,
+		itemsPerPage: number,
 		skip: number,
 		take: number
 	): Promise<any> {
 		return new Promise(async (resolve, reject) => {
-			let selectStmt = this.knex('place')
+			const selectStatement = this.knex('place')
 				.distinct()
 				.select(PLACE_FIELDS)
 				.leftOuterJoin(
-					'firstnationassociation',
-					'place.id',
-					'firstnationassociation.placeid'
+					'FirstNationAssociation',
+					'Place.Id',
+					'FirstNationAssociation.PlaceId'
 				)
 				.leftOuterJoin(
-					'constructionPeriod',
-					'place.id',
-					'constructionPeriod.placeid'
-				);
-			//.leftOuterJoin("revisionLog", "place.id", "revisionLog.placeid")
-			//.leftOuterJoin("description", "place.id", "description.placeid");
+					'ConstructionPeriod',
+					'Place.Id',
+					'ConstructionPeriod.PlaceId'
+				)
+				.leftOuterJoin('RevisionLog', 'Place.id', 'RevisionLog.PlaceId')
+				.leftOuterJoin('Description', 'Place.id', 'Description.PlaceId')
+				.leftOuterJoin('Ownership', 'Place.id', 'Ownership.PlaceId');
 
-			if (query && query.length > 0) {
-				query.forEach((stmt: any) => {
-					switch (stmt.operator) {
-						case 'eq': {
-							let p = {};
-							let m = `{"${stmt.field}": "${stmt.value}"}`;
-							Object.assign(p, JSON.parse(m));
-							selectStmt.orWhere(p);
-							break;
-						}
-						case 'in': {
-							let items = stmt.value.split(',');
-							selectStmt.orWhereIn(stmt.field, items);
-							break;
-						}
-						case 'notin': {
-							let items = stmt.value.split(',');
-							selectStmt.whereNotIn(stmt.field, items);
-							break;
-						}
-						case 'gt': {
-							selectStmt.orWhere(stmt.field, '>', stmt.value);
-							break;
-						}
-						case 'gte': {
-							selectStmt.orWhere(stmt.field, '>=', stmt.value);
-							break;
-						}
-						case 'lt': {
-							selectStmt.orWhere(stmt.field, '<', stmt.value);
-							break;
-						}
-						case 'lte': {
-							//console.log(`Testing ${stmt.field} for IN on ${stmt.value}`);
-							selectStmt.orWhere(stmt.field, '<=', stmt.value);
-							break;
-						}
-						case 'contains': {
-							selectStmt.orWhereRaw(
-								`LOWER(${stmt.field}) like '%${stmt.value.toLowerCase()}%'`
-							);
-							break;
-						}
-						default: {
-							//console.log(`IGNORING ${stmt.field} on ${stmt.value}`);
-						}
-					}
-				});
-			}
+			type QueryBuilder = {
+				(base: Knex.QueryInterface, value: any): Knex.QueryInterface;
+			};
+
+			const SUPPORTED_QUERIES: { [key: string]: QueryBuilder } = Object.freeze({
+				search(base: Knex.QueryInterface, value: any) {
+					return base.where((builder: any) =>
+						builder
+							.whereILike('PrimaryName', `%${value}%`)
+							.orWhereILike('YHSIId', `%${value}%`)
+					);
+				},
+				includingCommunityIds(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('CommunityId', value);
+				},
+				excludingCommunityIds(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('CommunityId', value);
+				},
+				includingNtsMapSheets(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('NTSMapSheet', value);
+				},
+				excludingNtsMapSheets(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('NTSMapSheet', value);
+				},
+				includingConstructionPeriodValues(
+					base: Knex.QueryInterface,
+					value: any
+				) {
+					return base.whereIn('[ConstructionPeriod].[Type]', value);
+				},
+				excludingConstructionPeriodValues(
+					base: Knex.QueryInterface,
+					value: any
+				) {
+					return base.whereNotIn('[ConstructionPeriod].[Type]', value);
+				},
+				includingSiteStatusIds(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('SiteStatus', value);
+				},
+				excludingSiteStatusIds(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('SiteStatus', value);
+				},
+				includingFirstNationIds(base: Knex.QueryInterface, value: any) {
+					return base.whereIn(
+						'[FirstNationAssociation].[FirstNationId]',
+						value
+					);
+				},
+				excludingFirstNationIds(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn(
+						'[FirstNationAssociation].[FirstNationId]',
+						value
+					);
+				},
+				includingFirstNationAssociationTypes(
+					base: Knex.QueryInterface,
+					value: any
+				) {
+					return base.whereIn(
+						'[FirstNationAssociation].[FirstNationAssociationType]',
+						value
+					);
+				},
+				excludingFirstNationAssociationTypes(
+					base: Knex.QueryInterface,
+					value: any
+				) {
+					return base.whereNotIn(
+						'[FirstNationAssociation].[FirstNationAssociationType]',
+						value
+					);
+				},
+				includingRevisionTypes(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('[RevisionLog].[RevisionLogType]', value);
+				},
+				excludingRevisionTypes(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('[RevisionLog].[RevisionLogType]', value);
+				},
+				revisedByContains(base: Knex.QueryInterface, value: any) {
+					return base.whereILike('[RevisionLog].[RevisedBy]', `%${value}%`);
+				},
+				revisedDateContains(base: Knex.QueryInterface, value: any) {
+					return base.whereILike('[RevisionLog].[RevisionDate]', `%${value}%`);
+				},
+				addressContains(base: Knex.QueryInterface, value: any) {
+					return base.whereILike('[Place].[PhysicalAddress]', `%${value}%`);
+				},
+				constructionStyleContains(base: Knex.QueryInterface, value: any) {
+					return base
+						.whereILike('[Description].[DescriptionText]', `%${value}%`)
+						.where(
+							'[Description].[Type]',
+							DESCRIPTION_TYPE_ENUMS.CONSTRUCTION_STYLE
+						);
+				},
+				culturalHistoryContains(base: Knex.QueryInterface, value: any) {
+					return base
+						.whereILike('[Description].[DescriptionText]', `%${value}%`)
+						.where(
+							'[Description].[Type]',
+							DESCRIPTION_TYPE_ENUMS.CULTURAL_HISTORY
+						);
+				},
+				includingOwnershipTypes(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('[Ownership].[OwnershipType]', value);
+				},
+				excludingOwnershipTypes(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('[Ownership].[OwnershipType]', value);
+				},
+			});
+
+			Object.entries(query).forEach(([name, value]) => {
+				const queryBuilder = SUPPORTED_QUERIES[name];
+				if (queryBuilder) {
+					queryBuilder(selectStatement, value);
+				} else {
+					const avaiableQueries = Object.keys(SUPPORTED_QUERIES).join(', ');
+					reject(
+						new Error(
+							`Query "${name}" with "${value}" is not supported; use any of: ${avaiableQueries}`
+						)
+					);
+				}
+			});
 
 			if (sort && sort.length > 0) {
-				sort.forEach((stmt) => {
-					selectStmt.orderBy(stmt.field, stmt.direction);
+				sort.forEach((statement) => {
+					selectStatement.orderBy(statement.field, statement.direction);
 				});
 			} else {
-				selectStmt.orderBy('place.primaryName');
+				selectStatement.orderBy('place.primaryName');
 			}
 
-			let fullData = await selectStmt;
+			let fullData = await selectStatement.catch((error: any) => {
+				reject(error);
+				return [];
+			});
+
 			let uniqIds = _.uniq(fullData.map((i: any) => i.id));
 			let count = uniqIds.length;
-			let page_count = Math.ceil(count / page_size);
+			let pageCount = Math.ceil(count / itemsPerPage);
 
-			let data = await selectStmt.offset(skip).limit(take);
+			let data = await selectStatement.offset(skip).limit(take).catch(reject);
 			let results = {
 				data,
-				meta: { page, page_size, item_count: count, page_count },
+				meta: { page, itemsPerPage, itemCount: count, pageCount },
 			};
 
 			resolve(results);

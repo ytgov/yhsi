@@ -4,8 +4,9 @@ import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { PeopleService } from "../services";
-const pdf = require('html-pdf');
-const pug = require('pug');
+import { renderFile } from "pug";
+import { generatePDF } from "../utils/pdf-generator";
+
 const peopleService = new PeopleService();
 export const peopleRouter = express.Router();
 const db = knex(DB_CONFIG);
@@ -222,21 +223,14 @@ async (req: Request, res: Response) => {
 	people = await peopleService.getAll();
 
 	// Compile template.pug, and render a set of data
-	let data = pug.renderFile('./templates/people/peopleGrid.pug', {
+	let data = renderFile('./templates/people/peopleGrid.pug', {
 		data: people
 	});
 
-	res.setHeader('Content-disposition', 'attachment; filename="owners.html"');
+	let pdf = await generatePDF(data)
+	res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 	res.setHeader('Content-type', 'application/pdf');
-	pdf.create(data, {
-		format: 'A3',
-		orientation: 'portrait'
-	}).toBuffer(function(err: any, buffer: any){
-		console.error(err);
-		////console.log('This is a buffer:', Buffer.isBuffer(buffer));
-		res.send(buffer);
-	});
-	//res.status(200).send(data);
+	res.send(pdf);
 });
 
 peopleRouter.post(
@@ -248,20 +242,14 @@ peopleRouter.post(
 
 		const person = await peopleService.getById(personId);
 
-		let data = pug.renderFile('./templates/people/peopleView.pug', {
+		let data = renderFile('./templates/people/peopleView.pug', {
 			data: person
 		});
-		res.setHeader('Content-disposition', 'attachment; filename="Person.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		pdf.create(data, {
-			format: 'A3',
-			orientation: 'landscape'
-		}).toBuffer(function(err: any, buffer: any){
-			//console.log(err);
-			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
 
-			res.send(buffer);
-		}); 
+		let pdf = await generatePDF(data)
+		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		res.send(pdf);
 });
 
 

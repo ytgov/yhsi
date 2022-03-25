@@ -1,0 +1,9 @@
+# .prettierrc or .prettierrc.yaml
+embeddedLanguageFormatting: "auto"
+jsxSingleQuote: true
+semi: true
+singleAttributePerLine: true
+singleQuote: true
+tabWidth: 2
+trailingComma: "es5"
+useTabs: true

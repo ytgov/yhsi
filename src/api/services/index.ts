@@ -26,3 +26,15 @@ export enum SortDirection {
 	ASCENDING = 'asc',
 	DESCENDING = 'desc',
 }
+
+export function buildDatabaseSort(
+	sortBy: Array<string>,
+	sortDesc: Array<boolean>
+): Array<SortStatement> {
+	return sortBy.map((field: string, index: number) => ({
+		field,
+		direction: sortDesc[index]
+			? SortDirection.ASCENDING
+			: SortDirection.DESCENDING,
+	}));
+}

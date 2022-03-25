@@ -1,122 +1,9 @@
 <template>
-    <!-- <div>
-          <v-card-title primary-title>
-            Associations
-          </v-card-title>
-          <v-divider inset></v-divider>
-          <v-form v-model="valid">
-              <v-container>
-                <v-row>
-                    <v-col
-                        cols="12"
-                    >
-                        <div class="mb-2">Associations</div>
-                        <v-alert v-for="(item, i) in fields.associations" :key="`theme-${i+1}`"
-                          outlined
-                          color="primary"
-                        >
-                            <div class="sub-title">
-                                Association {{ i+1 }}
-                            </div>
-                            <v-btn
-                                icon
-                                color="primary"
-                                class="top-right-button"
-                                @click="removeItem('associations', i)"
-                            >
-                                <v-icon dark>mdi-close-circle</v-icon>
-                            </v-btn>
-                            <v-row>
-                                <v-col cols="6">
-                                    <v-combobox
-                                    v-model="item.type_name"
-                                    label="Association Type"
-                                    ></v-combobox>
-                                </v-col>
-                                <v-col cols="6">
-                                    <v-text-field 
-                                    v-model="item.name"
-                                    label="Association Name"
-                                    required
-                                    ></v-text-field>
-                                </v-col>
-                            </v-row>
-                        </v-alert>
-                        <v-btn
-                        outlined
-                        color="primary"
-                        @click="addItem('associations')"
-                        >
-                            Add New
-                        </v-btn>
-                    </v-col>
-                </v-row>
-                <v-divider class="mt-2 mb-2"></v-divider>
-                <v-row>
-                    <v-col
-                        cols="12"
-                    >
-                        <div class="mb-2">First Nation Associations</div>
-                        <v-alert v-for="(item, i) in fields.firstNationAssociations" :key="`theme-${i+1}`"
-                          outlined
-                          color="primary"
-                        >
-                            <div class="sub-title">
-                                First Nation Association {{ i+1 }}
-                            </div>
-                            <v-btn
-                                icon
-                                color="primary"
-                                class="top-right-button"
-                                @click="removeItem('firstNationAssociations', i)"
-                            >
-                                <v-icon dark>mdi-close-circle</v-icon>
-                            </v-btn>
-                            <v-row>
-                                <v-col cols="6">
-                                    <v-combobox
-                                    v-model="item.association"
-                                    label="Association"
-                                    ></v-combobox>
-                                </v-col>
-                                <v-col cols="6">
-                                    <v-combobox
-                                    v-model="item.firstNation"
-                                    label="First Nation"
-                                    ></v-combobox>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-text-field 
-                                    v-model="item.comments"
-                                    label="Comments"
-                                    required
-                                    ></v-text-field>      
-                                </v-col>
-                            </v-row>
-                        </v-alert>
-                        <v-btn
-                        outlined
-                        color="primary"
-                        @click="addItem('firstNationAssociations')"
-                        >
-                            Add New
-                        </v-btn>
-                    </v-col>
-                </v-row>
-                <v-divider class="mt-2 mb-2"></v-divider>
-                <v-btn color="success">Save Changes</v-btn>
-              </v-container>
-            </v-form>
-        </div> -->
   <div>
-    <v-card-title style="width: 100%; display: block">
-      Associations
-      <div class="float-right">
-        <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
-      </div>
-    </v-card-title>
+    <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
+      <span class="mt-2">Associations</span>
+      <v-btn class="my-0" color="primary" @click="saveChanges">Save</v-btn>
+    </h2>
     <v-divider class="mb-5"></v-divider>
     <v-form v-model="valid">
       <div class="row mx-1">
@@ -256,7 +143,7 @@ import store from "../../../store";
 import { PLACE_URL, STATIC_URL } from "../../../urls";
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
-  name: "formAssociation",
+  name: "Associations",
   data: () => ({
     /* input-fields */
     valid: false,
