@@ -136,16 +136,6 @@ export default {
 	},
 	mounted() {
 		this.initializeCommunities();
-		this.loading = true;
-		api
-			.getAll()
-			.then(({ data, meta }) => {
-				this.items = data;
-				this.totalLength = meta.itemCount;
-			})
-			.finally(() => {
-				this.loading = false;
-			});
 	},
 	methods: {
 		...mapActions({ initializeCommunities: 'communities/initialize' }),
