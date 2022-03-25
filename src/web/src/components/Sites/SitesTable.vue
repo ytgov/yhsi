@@ -72,7 +72,11 @@
 					:server-items-length="totalLength"
 					:footer-props="{ 'items-per-page-options': [20, 50, 100] }"
 					@click:row="goToSiteDetails"
-				/>
+				>
+					<template #item.communityId="{ value }">
+						<CommunityCell :community-id="value" />
+					</template>
+				</v-data-table>
 			</v-col>
 		</v-row>
 	</v-container>
@@ -80,14 +84,16 @@
 
 <script>
 import { cloneDeep, uniqueId } from 'lodash';
+import { mapActions } from 'vuex';
 
 import api from '@/apis/places-api';
 
 import AdvancedSearchForm from '@/components/Sites/sites-table/AdvancedSearchForm';
+import CommunityCell from '@/components/Sites/sites-table/CommunityCell';
 
 export default {
 	name: 'SitesTable',
-	components: { AdvancedSearchForm },
+	components: { AdvancedSearchForm, CommunityCell },
 	data: () => ({
 		advancedSearchQuery: {},
 		items: [],
@@ -107,13 +113,13 @@ export default {
 			return [
 				{ text: 'YHSI ID', value: 'yHSIId' },
 				{ text: 'Primary name', value: 'primaryName' },
-				{ text: 'Community', value: 'community.name' },
+				{ text: 'Community', value: 'communityId' },
 				{ text: 'Category', value: 'siteCategories' },
 				{ text: 'Status', value: 'status.text' },
 			];
 		},
 		searchQuery() {
-			if (!this.searchTerm) return {}
+			if (!this.searchTerm) return {};
 
 			// query format is operation: value
 			// operation is a custom operation defined in the back-end
@@ -129,6 +135,7 @@ export default {
 		},
 	},
 	mounted() {
+		this.initializeCommunities();
 		this.loading = true;
 		api
 			.getAll()
@@ -141,6 +148,7 @@ export default {
 			});
 	},
 	methods: {
+		...mapActions({ initializeCommunities: 'communities/initialize' }),
 		goToSiteDetails(value) {
 			this.$router.push(`/sites/${value.id}`);
 		},
@@ -153,7 +161,7 @@ export default {
 		},
 		doSearch() {
 			const data = cloneDeep(this.options);
-			data.query = {...this.searchQuery, ...this.advancedSearchQuery};
+			data.query = { ...this.searchQuery, ...this.advancedSearchQuery };
 
 			this.loading = true;
 			api
@@ -169,7 +177,7 @@ export default {
 		toggleAdvancedSearch() {
 			if (this.isShowingAdvancedSearch) {
 				this.advancedSearchQuery = {};
-				this.doSearch()
+				this.doSearch();
 			}
 			this.isShowingAdvancedSearch = !this.isShowingAdvancedSearch;
 		},
