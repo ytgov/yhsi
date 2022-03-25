@@ -115,7 +115,7 @@ export default {
 				{ text: 'Primary name', value: 'primaryName' },
 				{ text: 'Community', value: 'communityId' },
 				{ text: 'Category', value: 'siteCategories' },
-				{ text: 'Status', value: 'status.text' },
+				{ text: 'Status', value: 'status' },
 			];
 		},
 		searchQuery() {
