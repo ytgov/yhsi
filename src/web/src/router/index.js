@@ -361,14 +361,6 @@ const routes = [
     props: true
   },
   {
-    path: "/places",
-    name: "PlacesGrid",
-    component: PlacesGrid,
-    meta: {
-      requiresAuth: false
-    },
-  },
-  {
     path: "/places/view/:name",
     name: "placeView",
     component: PlacesForm,
