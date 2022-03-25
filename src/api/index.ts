@@ -36,6 +36,7 @@ import * as config from './config';
 import { doHealthCheck } from './utils/healthCheck';
 import { configureAuthentication } from './routes/auth';
 import { RequiresAuthentication } from './middleware';
+import { CreateMigrationRoutes } from './data/migrator';
 
 const app = express();
 
@@ -73,6 +74,9 @@ app.use(
 		credentials: true,
 	})
 );
+
+
+CreateMigrationRoutes(app);
 
 configureAuthentication(app);
 
