@@ -1,7 +1,5 @@
 FROM node:16-alpine3.15
 
-RUN npm install -g @vue/cli
-
 RUN mkdir -p /usr/src/web
 WORKDIR /usr/src/web
 
