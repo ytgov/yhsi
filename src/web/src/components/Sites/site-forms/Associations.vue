@@ -1,156 +1,184 @@
 <template>
-  <div>
-    <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
-      <span class="mt-2">Associations</span>
-      <v-btn class="my-0" color="primary" @click="saveChanges">Save</v-btn>
-    </h2>
-    <v-divider class="mb-5"></v-divider>
-    <v-form v-model="valid">
-      <div class="row mx-1">
-        <div class="col-md-12">
-          <v-card class="default mb-5">
-            <v-card-text>
-              <h3>Associations</h3>
-              <div class="row" v-for="(item, i) of associations" :key="i">
-                <div class="col-md-5">
-                  <v-select
-                    v-model="item.type"
-                    label="Association type"
-                    :items="associationTypeOptions"
-                    dense
-                    outlined
-                    hide-details
-                    background-color="white"
-                  ></v-select>
-                </div>
+  <v-card
+    v-model="valid"
+    tag="form"
+    outlined
+    tile
+  >
+    <v-card-title
+      tag="h2"
+      class="mb-0"
+    >
+      Associations
+    </v-card-title>
+    <v-card-text>
+      <v-card class="default mb-5">
+        <v-card-title
+          tag="h3"
+          class="mb-0"
+        >
+          Associations
+        </v-card-title>
+        <v-card-text>
+          <v-row
+            v-for="(item, i) in associations"
+            :key="i"
+          >
+            <v-col md="5">
+              <v-select
+                v-model="item.type"
+                label="Association type"
+                :items="associationTypeOptions"
+                dense
+                outlined
+                hide-details
+                background-color="white"
+              />
+            </v-col>
 
-                <div class="col-md-5">
-                  <v-text-field
-                    v-model="item.description"
-                    label="Association name"
-                    dense
-                    outlined
-                    hide-details
-                    background-color="white"
-                    required
-                  ></v-text-field>
-                </div>
+            <v-col md="5">
+              <v-text-field
+                v-model="item.description"
+                label="Association name"
+                dense
+                outlined
+                hide-details
+                background-color="white"
+                required
+              />
+            </v-col>
 
-                <div class="col-md-2">
-                  <v-btn
-                    color="warning"
-                    x-small
-                    fab
-                    title="Remove"
-                    class="my-0 float-right"
-                    @click="removeAssociation(i)"
-                    ><v-icon>mdi-close</v-icon></v-btn
-                  >
-                </div>
-              </div>
-              <v-btn class="mt-5" color="info" @click="addAssociation()">
-                Add Association
-              </v-btn>
-            </v-card-text>
-          </v-card>
-        </div>
-
-        <div class="col-md-12">
-          <v-card class="default mb-5">
-            <v-card-text>
-              <h3>First Nation Associations</h3>
-              <div
-                class="row"
-                v-for="(item, i) of firstNationAssociations"
-                :key="i"
+            <v-col md="2">
+              <v-btn
+                color="warning"
+                x-small
+                fab
+                title="Remove"
+                class="my-0 float-right"
+                @click="removeAssociation(i)"
               >
-                <div class="col-md-10">
-                  <v-row>
-                    <v-col cols="6">
-                      <v-select
-                        v-model="item.firstNationAssociationType"
-                        label="Association"
-                        :items="firstNationAssociationTypeOptions"
-                        item-text="text"
-                        item-value="value"
-                        dense
-                        outlined
-                        hide-details
-                        background-color="white"
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="6">
-                      <v-select
-                        v-model="item.firstNationId"
-                        label="First Nation"
-                        :items="firstNationOptions"
-                        item-value="id"
-                        item-text="description"
-                        dense
-                        outlined
-                        hide-details
-                        background-color="white"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12">
-                      <v-text-field
-                        v-model="item.comments"
-                        label="Comments"
-                        dense
-                        outlined
-                        hide-details
-                        background-color="white"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </div>
-
-                <div class="col-md-2">
-                  <v-btn
-                    color="warning"
-                    x-small
-                    fab
-                    title="Remove"
-                    class="my-0 float-right"
-                    @click="removeFNAssociation(i)"
-                    ><v-icon>mdi-close</v-icon></v-btn
-                  >
-                </div>
-
-                <div
-                  v-if="i < firstNationAssociations.length - 1"
-                  class="col-md-12"
-                >
-                  <hr />
-                </div>
-              </div>
-              <v-btn class="mt-5" color="info" @click="addFNAssociation()">
-                Add Association
+                <v-icon>mdi-close</v-icon>
               </v-btn>
-            </v-card-text>
-          </v-card>
-        </div>
-      </div>
-    </v-form>
-  </div>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            class="my-0"
+            color="info"
+            @click="addAssociation()"
+          >
+            Add Association
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+      <v-card class="default mb-0">
+        <v-card-title
+          tag="h3"
+          class="mb-0"
+        >
+          First Nation Associations
+        </v-card-title>
+        <v-card-text>
+          <v-row
+            v-for="(item, i) in firstNationAssociations"
+            :key="i"
+          >
+            <v-col md="5">
+              <v-select
+                v-model="item.firstNationAssociationType"
+                label="Association"
+                :items="firstNationAssociationTypeOptions"
+                item-text="text"
+                item-value="value"
+                dense
+                outlined
+                hide-details
+                background-color="white"
+              />
+            </v-col>
+            <v-col md="5">
+              <v-select
+                v-model="item.firstNationId"
+                label="First Nation"
+                :items="firstNationOptions"
+                item-value="id"
+                item-text="description"
+                dense
+                outlined
+                hide-details
+                background-color="white"
+              />
+            </v-col>
+            <v-col md="2">
+              <v-btn
+                color="warning"
+                x-small
+                fab
+                title="Remove"
+                class="my-0 float-right"
+                @click="removeFNAssociation(i)"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-col>
+            <v-col md="10">
+              <v-text-field
+                v-model="item.comments"
+                label="Comments"
+                dense
+                outlined
+                hide-details
+                background-color="white"
+              />
+            </v-col>
+
+            <v-col
+              v-if="i < firstNationAssociations.length - 1"
+              cols="12"
+            >
+              <hr />
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            class="my-0"
+            color="info"
+            @click="addFNAssociation()"
+          >
+            Add Association
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer />
+      <v-btn
+        class="my-0"
+        color="primary"
+        @click="saveChanges"
+      >
+        Save
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
-import axios from "axios";
-import store from "../../../store";
-import { PLACE_URL, STATIC_URL } from "../../../urls";
+import axios from 'axios';
+import store from '../../../store';
+import { PLACE_URL, STATIC_URL } from '../../../urls';
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
-  name: "Associations",
+  name: 'Associations',
   data: () => ({
     /* input-fields */
     valid: false,
     loadedId: -1,
     generalRules: [
-      (v) => !!v || "This input is required",
-      (v) => v.length <= 20 || "This input must be less than 20 characters",
+      (v) => !!v || 'This input is required',
+      (v) => v.length <= 20 || 'This input must be less than 20 characters',
     ],
     associations: [],
     firstNationAssociations: [],
@@ -170,7 +198,7 @@ export default {
         this.associations = resp.data.relationships.associations.data;
         this.firstNationAssociations =
           resp.data.relationships.firstNationAssociations.data;
-        store.dispatch("addSiteHistory", resp.data.data);
+        store.dispatch('addSiteHistory', resp.data.data);
         this.$parent.siteName = resp.data.data.primaryName;
       })
       .catch((error) => console.error(error));
@@ -193,7 +221,11 @@ export default {
       this.associations.splice(index, 1);
     },
     addFNAssociation() {
-      this.firstNationAssociations.push({ placeId: this.loadedId,firstNationAssociationType: 1, firstNationId: 1  });
+      this.firstNationAssociations.push({
+        placeId: this.loadedId,
+        firstNationAssociationType: 1,
+        firstNationId: 1,
+      });
     },
     removeFNAssociation(index) {
       this.firstNationAssociations.splice(index, 1);
@@ -207,10 +239,10 @@ export default {
       axios
         .put(`${PLACE_URL}/${this.loadedId}/associations`, body)
         .then((resp) => {
-          this.$emit("showAPIMessages", resp.data);
+          this.$emit('showAPIMessages', resp.data);
         })
         .catch((err) => {
-          this.$emit("showError", err);
+          this.$emit('showError', err);
         });
     },
   },
