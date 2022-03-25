@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 import knex from 'knex';
 import Knex from 'knex';
-=======
-import knex, { Knex } from 'knex';
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
 export class UserService {
 	private knex: Knex;
@@ -29,8 +25,6 @@ export class UserService {
 				});
 		});
 	}
-<<<<<<< HEAD
-=======
 
 	async getAll(): Promise<any[]> {
 		let list = await this.knex("Ibbit_User").join("HSUser", "HSUser.UserId", "Ibbit_User.UserId").select("Ibbit_User.*", "HSUser.ExpirationDate", "HSUser.Id as hsid")
@@ -111,5 +105,4 @@ export class UserService {
 	getAllRoles(): Promise<any[]> {
 		return this.knex("webpages_Roles");
 	}
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 }

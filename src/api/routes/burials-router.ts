@@ -3,15 +3,9 @@ import { DB_CONFIG } from '../config';
 import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
-<<<<<<< HEAD
-import { BurialService }  from "../services";
-const pug = require('pug');
-const pdf = require('html-pdf');
-=======
 import { BurialService } from "../services";
 import { renderFile } from "pug";
 import { generatePDF } from "../utils/pdf-generator";
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 export const burialsRouter = express.Router();
 const db = knex(DB_CONFIG);
 const burialService = new BurialService();
@@ -25,17 +19,10 @@ burialsRouter.get(
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-<<<<<<< HEAD
-		const { 
-			textToMatch = '', 
-			sortBy = 'LastName', 
-			sort = 'asc', 
-=======
 		const {
 			textToMatch = '',
 			sortBy = 'LastName',
 			sort = 'asc',
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 			BirthYear = '',
 			BirthMonth = '',
 			BirthDay = '',
@@ -46,35 +33,12 @@ burialsRouter.get(
 			Cause = '',
 			Manner = '',
 			Cemetary = '',
-<<<<<<< HEAD
-			OriginCountry = ''  } = req.query;
-=======
 			OriginCountry = '' } = req.query;
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
 
-<<<<<<< HEAD
-		const data = await burialService.doSearch(page, limit, offset, 
-		{
-			textToMatch, 
-			sortBy, 
-			sort, 
-			BirthYear,
-			BirthMonth,
-			BirthDay,
-			DeathYear,
-			DeathMonth,
-			DeathDay,
-			Gender,
-			Cause,
-			Manner,
-			Cemetary,
-			OriginCountry
-		});
-=======
 		const data = await burialService.doSearch(page, limit, offset,
 			{
 				textToMatch,
@@ -92,7 +56,6 @@ burialsRouter.get(
 				Cemetary,
 				OriginCountry
 			});
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
 		res.status(200).send(data);
 	}
@@ -112,24 +75,15 @@ burialsRouter.get(
 		}
 
 		res.status(200).send(burial);
-<<<<<<< HEAD
-});
-=======
 	});
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
 
 // changed this route from "/new" to "/" to follow RESTFUL conventions
 burialsRouter.post('/', async (req: Request, res: Response) => {
 	const {
 		burial = {},
-<<<<<<< HEAD
-		Memberships, 
-		SiteVisits, 
-=======
 		Memberships,
 		SiteVisits,
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 		Kinships,
 		Occupations,
 		Sources
@@ -141,11 +95,6 @@ burialsRouter.post('/', async (req: Request, res: Response) => {
 		.returning('*')
 		.then(async (rows: any) => {
 			const newBurial = rows[0];
-<<<<<<< HEAD
-			
-=======
-
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 			//OCCUPATIONS
 			await db
 				.insert(Occupations.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ BurialID: newBurial.BurialID, OccupationID: x.OccupationLupID })))
@@ -181,19 +130,11 @@ burialsRouter.post('/', async (req: Request, res: Response) => {
 				.then((rows: any) => {
 					return rows;
 				});
-<<<<<<< HEAD
-			
-			return newBurial;
-		});
-
-	
-=======
 
 			return newBurial;
 		});
 
 
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 	res.send(response);
 });
 
@@ -201,13 +142,8 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 
 	const {
 		burial = {},
-<<<<<<< HEAD
-		Memberships, 
-		SiteVisits, 
-=======
 		Memberships,
 		SiteVisits,
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 		Kinships,
 		Occupations,
 		Sources
@@ -215,13 +151,8 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 	const { burialId } = req.params;
 
 	let resp = await db('Burial.Burial').update(burial).where('Burial.Burial.BurialID', burialId);
-<<<<<<< HEAD
-	if(!resp){
-		res.status(404).send({ message: 'Burial not found'})
-=======
 	if (!resp) {
 		res.status(404).send({ message: 'Burial not found' })
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 	}
 
 	//OCCUPATIONS
@@ -233,34 +164,19 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 		});
 
 	const deletedOccupations = Occupations.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
-<<<<<<< HEAD
-	for( const item of deletedOccupations ){
-		await db('Burial.Occupation')
-		.where('Burial.Occupation.ID', item.ID).del();
-=======
 	for (const item of deletedOccupations) {
 		await db('Burial.Occupation')
 			.where('Burial.Occupation.ID', item.ID).del();
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 	}
 
 	const editOccupations = Occupations.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
 	////console.log("occupations to edit",editOccupations);
-<<<<<<< HEAD
-	for( const item of editOccupations ){
-		await db('Burial.Occupation')
-		.update({ BurialID: burialId, OccupationID: item.OccupationID })
-		.where('Burial.Occupation.ID', item.ID);
-	}	
-	
-=======
 	for (const item of editOccupations) {
 		await db('Burial.Occupation')
 			.update({ BurialID: burialId, OccupationID: item.OccupationID })
 			.where('Burial.Occupation.ID', item.ID);
 	}
 
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
 	//MEMBERSHIPS
 	await db
@@ -269,22 +185,6 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 		.then((rows: any) => {
 			return rows;
 		});
-<<<<<<< HEAD
-	
-	const deletedMemberships = Memberships.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, ID: x.ID }));
-	for( const item of deletedMemberships ){
-		await db('Burial.Membership')
-		.where('Burial.Membership.ID', item.ID).del();
-	}
-
-	const editMemberships = Memberships.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, MembershipID: x.MembershipLUpID, Chapter: x.Chapter, Notes: x.Notes, ID: x.ID }));
-	for( const item of editMemberships ){
-		await db('Burial.Membership')
-		.update({ BurialID: burialId, MembershipID: item.MembershipLUpID, Chapter: item.Chapter, Notes: item.Notes })
-		.where('Burial.Membership.ID', item.ID);
-	}
-	
-=======
 
 	const deletedMemberships = Memberships.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, ID: x.ID }));
 	for (const item of deletedMemberships) {
@@ -299,7 +199,6 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 			.where('Burial.Membership.ID', item.ID);
 	}
 
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 	//KINSHIPS
 	await db
 		.insert(Kinships.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, RelationshipID: x.RelationshipID, Quantity: x.Quantity, Name: x.Name, Location: x.Location })))
@@ -309,18 +208,6 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 		});
 
 	const deletedKinships = Kinships.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, ID: x.NOKID }));
-<<<<<<< HEAD
-	for( const item of deletedKinships ){
-		await db('Burial.NOKin')
-		.where('Burial.NOKin.NOKID', item.ID).del();
-	}
-
-	const editKinships = Kinships.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, RelationshipID: x.RelationshipID, Quantity: x.Quantity, Name: x.Name, Location: x.Location, ID: x.NOKID }));
-	for( const item of editKinships ){
-		await db('Burial.NOKin')
-		.update({ BurialID: burialId, RelationshipID: item.RelationshipID, Quantity: item.Quantity, Name: item.Name, Location: item.Location })
-		.where('Burial.NOKin.NOKID', item.ID);
-=======
 	for (const item of deletedKinships) {
 		await db('Burial.NOKin')
 			.where('Burial.NOKin.NOKID', item.ID).del();
@@ -331,7 +218,6 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 		await db('Burial.NOKin')
 			.update({ BurialID: burialId, RelationshipID: item.RelationshipID, Quantity: item.Quantity, Name: item.Name, Location: item.Location })
 			.where('Burial.NOKin.NOKID', item.ID);
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 	}
 
 
@@ -343,22 +229,6 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 		.then((rows: any) => {
 			return rows;
 		});
-<<<<<<< HEAD
-	
-	const deletedSiteVisits = SiteVisits.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, ID: x.SiteVisitID }));
-	for( const item of deletedSiteVisits ){
-		await db('Burial.SiteVisit')
-		.where('Burial.SiteVisit.SiteVisitID', item.ID).del();
-	}
-
-	const editSiteVisits = SiteVisits.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, VisitYear: x.VisitYear, Condition: x.Condition, MarkerDescription: x.MarkerDescription, Inscription: x.Inscription, RecordedBy: x.RecordedBy , ID: x.SiteVisitID }));
-	for( const item of editSiteVisits ){
-		await db('Burial.SiteVisit')
-		.update({ BurialID: burialId, VisitYear: item.VisitYear, Condition: item.Condition, MarkerDescription: item.MarkerDescription, Inscription: item.Inscription, RecordedBy: item.RecordedBy  })
-		.where('Burial.SiteVisit.SiteVisitID', item.ID);
-	}
-	
-=======
 
 	const deletedSiteVisits = SiteVisits.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, ID: x.SiteVisitID }));
 	for (const item of deletedSiteVisits) {
@@ -373,7 +243,6 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 			.where('Burial.SiteVisit.SiteVisitID', item.ID);
 	}
 
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 	//SOURCES
 	await db
 		.insert(Sources.filter((x: any) => x.new == true).map((x: any) => ({ BurialID: burialId, Source: x.Source })))
@@ -383,18 +252,6 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 		});
 
 	const deletedSources = Sources.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, Source: x.Source, ID: x.SourceID }));
-<<<<<<< HEAD
-	for( const item of deletedSources ){
-		await db('Burial.Source')
-		.where('Burial.Source.SourceID', item.ID).del();
-	}
-
-	const editSources = Sources.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, Source: x.Source, ID: x.SourceID }));
-	for( const item of editSources ){
-		await db('Burial.Source')
-		.update({ BurialID: burialId, Source: item.Source })
-		.where('Burial.Source.SourceID', item.ID);
-=======
 	for (const item of deletedSources) {
 		await db('Burial.Source')
 			.where('Burial.Source.SourceID', item.ID).del();
@@ -405,7 +262,6 @@ burialsRouter.put('/:burialId', async (req: Request, res: Response) => {
 		await db('Burial.Source')
 			.update({ BurialID: burialId, Source: item.Source })
 			.where('Burial.Source.SourceID', item.ID);
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 	}
 
 	res.status(200).send({ message: 'success' });
@@ -421,56 +277,6 @@ burialsRouter.post(
 		const { burialId } = req.params;
 
 		let burial = await burialService.getById(burialId);
-<<<<<<< HEAD
-		
-		if(!burial) {
-			res.status(404).send({ message: "Data not found"});
-			return;
-		}
-		// Compile template.pug, and render a set of data
-		let data = pug.renderFile('./templates/burials/burialView.pug', {
-			data: burial
-		});
-
-		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		pdf.create(data, {
-			format: '	letter',
-			orientation: 'landscape'
-		}).toBuffer(function(err: any, buffer: any){
-			//console.log(err);
-			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
-
-			res.send(buffer);
-		});
-		// console.log(data);
-		//res.status(200).send(data);
-});
-
-
-burialsRouter.post('/pdf', async (req: Request, res: Response) => {
-		let burials = await burialService.getAll();
-
-		let data = pug.renderFile('./templates/burials/burialGrid.pug', {
-			data: burials
-		});
-		//res.status(200).send(data);
-		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		
-		pdf.create(data, {
-			format: 'A3',
-			orientation: 'landscape'
-		}).toBuffer(function(err: any, buffer: any){ 
-			//console.log(err);
-			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
-
-			res.send(buffer);
-		});
-		//res.status(200).send(data);
-	}
-);
-=======
 
 		if (!burial) {
 			res.status(404).send({ message: "Data not found" });
@@ -500,7 +306,6 @@ burialsRouter.post('/pdf', async (req: Request, res: Response) => {
 	res.setHeader('Content-type', 'application/pdf');
 	res.send(pdf);
 });
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
 burialsRouter.post('/export', async (req: Request, res: Response) => {
 	let burials = await burialService.getAll();

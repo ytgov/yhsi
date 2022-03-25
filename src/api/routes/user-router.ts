@@ -1,28 +1,14 @@
-<<<<<<< HEAD
-import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
-import { validationResult } from 'express-validator';
-import { UserService } from '../services';
-=======
 import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
 import { body, param, query } from "express-validator";
 import { UserService } from "../services";
 import { ReturnValidationErrors } from "../middleware";
 import moment from "moment";
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
 export const userRouter = express.Router();
 
 const db = new UserService(DB_CONFIG);
 
-<<<<<<< HEAD
-userRouter.get('/me', async (req: Request, res: Response) => {
-	let person = req.user;
-
-	if (person) return res.json({ data: await makeDTO(person) });
-});
-=======
 
 
 userRouter.get("/",
@@ -132,7 +118,6 @@ userRouter.delete("/:id/access/:accessId",
         await db.deleteAccess(accessId);
         res.json({ data: {} });
     });
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
 async function makeDTO(userRaw: any) {
 	let dto = userRaw;

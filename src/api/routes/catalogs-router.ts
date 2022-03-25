@@ -3,12 +3,8 @@ import { DB_CONFIG } from "../config";
 import knex from "knex";
 import { ReturnValidationErrors } from "../middleware";
 import { param, query } from "express-validator";
-<<<<<<< HEAD
 import { CatalogService } from "../services";
 const catalogService = new CatalogService();
-=======
-
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 export const catalogsRouter = express.Router();
 const db = knex(DB_CONFIG);
 //const staticService = new StaticService(DB_CONFIG);
@@ -154,7 +150,6 @@ catalogsRouter.put(
 
 //RELIGION
 
-<<<<<<< HEAD
 catalogsRouter.get("/religion/search", async (req: Request, res: Response) => {
   const { textToMatch = "", sortBy = "Religion", sort = "asc" } = req.query;
   const page = parseInt(req.query.page as string);
@@ -168,18 +163,10 @@ catalogsRouter.get("/religion/search", async (req: Request, res: Response) => {
 
 catalogsRouter.get("/religion", async (req: Request, res: Response) => {
   const data = await catalogService.getAllReligions();
-=======
-catalogsRouter.get("/religion", async (req: Request, res: Response) => {
-  const data = await db("Burial.ReligionLookup").orderBy(
-    "Burial.ReligionLookup.Religion",
-    "asc"
-  );
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
   res.send(data);
 });
 
-<<<<<<< HEAD
 catalogsRouter.put(
   "/religion/:id",
   [param("id").notEmpty()],
@@ -220,19 +207,10 @@ catalogsRouter.get("/cause/search", async (req: Request, res: Response) => {
 
 catalogsRouter.get("/cause", async (req: Request, res: Response) => {
   const data = await catalogService.getAllCauses();
-=======
-//CAUSES
-catalogsRouter.get("/cause", async (req: Request, res: Response) => {
-  const data = await db("Burial.CauseLookup").orderBy(
-    "Burial.CauseLookup.Cause",
-    "asc"
-  );
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
   res.send(data);
 });
 
-<<<<<<< HEAD
 catalogsRouter.put(
   "/cause/:id",
   [param("id").notEmpty()],
@@ -272,19 +250,10 @@ catalogsRouter.get("/cemetary/search", async (req: Request, res: Response) => {
 
 catalogsRouter.get("/cemetary", async (req: Request, res: Response) => {
   const data = await catalogService.getAllCemetaries();
-=======
-//CEMETARIES
-catalogsRouter.get("/cemetary", async (req: Request, res: Response) => {
-  const data = await db("Burial.CemetaryLookup").orderBy(
-    "Burial.CemetaryLookup.Cemetary",
-    "asc"
-  );
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
   res.send(data);
 });
 
-<<<<<<< HEAD
 catalogsRouter.put(
   "/cemetary/:id",
   [param("id").notEmpty()],
@@ -324,19 +293,10 @@ catalogsRouter.get("/occupation/search", async (req: Request, res: Response) => 
 
 catalogsRouter.get("/occupation", async (req: Request, res: Response) => {
   const data = await catalogService.getAllOcupations();
-=======
-//OCCUPATIONS
-catalogsRouter.get("/occupation", async (req: Request, res: Response) => {
-  const data = await db("Burial.OccupationLookup").orderBy(
-    "Burial.OccupationLookup.Occupation",
-    "asc"
-  );
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
   res.send(data);
 });
 
-<<<<<<< HEAD
 catalogsRouter.put(
   "/occupation/:id",
   [param("id").notEmpty()],
@@ -376,19 +336,10 @@ catalogsRouter.get("/membership/search", async (req: Request, res: Response) => 
 
 catalogsRouter.get("/membership", async (req: Request, res: Response) => {
   const data = await catalogService.getAllMemberships();
-=======
-//MEMBERSHIPS
-catalogsRouter.get("/membership", async (req: Request, res: Response) => {
-  const data = await db("Burial.MembershipLookup").orderBy(
-    "Burial.MembershipLookup.Membership",
-    "asc"
-  );
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
   res.send(data);
 });
 
-<<<<<<< HEAD
 catalogsRouter.put(
   "/membership/:id",
   [param("id").notEmpty()],
@@ -458,14 +409,3 @@ catalogsRouter.post("/relationship", async (req: Request, res: Response) => {
 
   res.status(200).send(response);
 });
-=======
-//RELATIONSHIPS
-catalogsRouter.get("/relationship", async (req: Request, res: Response) => {
-  const data = await db("Burial.RelationLookup").orderBy(
-    "Burial.RelationLookup.Relationship",
-    "asc"
-  );
-
-  res.send(data);
-});
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf

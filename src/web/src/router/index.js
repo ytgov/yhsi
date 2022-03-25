@@ -1,6 +1,6 @@
-<<<<<<< HEAD
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+/*
 import Home from '../components/Home.vue';
 import Dashboard from '../components/Dashboard.vue';
 import NotFound from '../views/NotFound.vue';
@@ -46,9 +46,9 @@ import AdminUserForm from '../components/Administration/UserManagement/UserCompo
 import VesselTypeGrid from '../components/Administration/LookupTableManagement/VesselType/VesselType';
 import BurialsGrid from '../components/Burials/Grid';
 import BurialsForm from '../components/Burials/BurialsComponents/Form';
-=======
+
 import Vue from "vue";
-import VueRouter from "vue-router";
+import VueRouter from "vue-router";*/
 import goTo from 'vuetify/lib/services/goto';
 
 import Home from "../components/Home.vue";
@@ -88,7 +88,6 @@ import AdminUserForm from "../components/Administration/UserManagement/UserCompo
 import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
 import BurialsGrid from "../components/Burials/Grid";
 import BurialsForm from "../components/Burials/BurialsComponents/Form";
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 import PlacesGrid from '../components/Places/PlacesGrid';
 import PlaceTypeGrid from '../components/Administration/LookupTableManagement/PlaceType/PlaceType';
 import PlacesForm from '../components/Places/PlacesComponents/PlacesForm';
@@ -100,7 +99,6 @@ import PhotoOwnerGrid from "../components/Administration/LookupTableManagement/P
 import PhotoProjectGrid from "../components/Administration/LookupTableManagement/PhotoProject/PhotoProjectGrid";
 import PhotoSubjectGrid from "../components/Administration/LookupTableManagement/PhotoSubject/PhotoSubjectGrid";
 
-<<<<<<< HEAD
 import Cause from "../components/Administration/LookupTableManagement/Cause/Cause";
 import Cemetary from "../components/Administration/LookupTableManagement/Cemetary/Cemetary";
 import Membership from "../components/Administration/LookupTableManagement/Membership/Membership";
@@ -108,14 +106,11 @@ import Occupation from "../components/Administration/LookupTableManagement/Occup
 import Relationship from "../components/Administration/LookupTableManagement/Relationship/Relationship";
 import Religion from "../components/Administration/LookupTableManagement/Religion/Religion";
 
-=======
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
 Vue.use(VueRouter);
 
 const routes = [
-<<<<<<< HEAD
-	{
+	/*{
 		path: '/',
 		name: 'Home',
 		component: Home,
@@ -566,34 +561,8 @@ const routes = [
 		name: 'Not Found',
 		component: NotFound,
 	},
-];
+];*/
 
-const router = new VueRouter({
-	mode: 'history',
-	base: process.env.BASE_URL,
-	routes,
-});
-
-router.beforeEach(async (to, from, next) => {
-	var requiresAuth = to.meta.requiresAuth || false;
-
-	store.dispatch('setAppSidebar', to.path.startsWith('/sites/'));
-
-	if (!requiresAuth) {
-		return next();
-	}
-
-	await store.dispatch('checkAuthentication');
-	var isAuthenticated = store.getters.isAuthenticated;
-
-	if (requiresAuth && !isAuthenticated) {
-		//console.log("You aren't authenticatd, redirecting to sign-in");
-		next('/sign-in');
-		return;
-	}
-
-	return next();
-=======
   {
     path: "/",
     name: "Home",
@@ -884,6 +853,59 @@ router.beforeEach(async (to, from, next) => {
     component: VesselTypeGrid
   },
   {
+	path: '/admin/cause',
+	name: 'CauseGrid',
+	component: Cause,
+},
+{
+	path: '/admin/cemetary',
+	name: 'CemetaryGrid',
+	component: Cemetary,
+},
+{
+	path: '/admin/membership',
+	name: 'MembershipGrid',
+	component: Membership,
+},
+{
+	path: '/admin/occupation',
+	name: 'OccupationGrid',
+	component: Occupation,
+},
+{
+	path: '/admin/relationship',
+	name: 'RelationsihpGrid',
+	component: Relationship,
+},
+{
+	path: '/admin/religion',
+	name: 'ReligionGrid',
+	component: Religion,
+},
+{
+	path: '/burials',
+	name: 'BurialsGrid',
+	component: BurialsGrid,
+},
+{
+	path: '/burials/new',
+	name: 'BurialsNewForm',
+	component: BurialsForm,
+	props: true,
+},
+{
+	path: '/burials/view/:id',
+	name: 'BurialsViewForm',
+	component: BurialsForm,
+	props: true,
+},
+{
+	path: '/burials/edit/:id',
+	name: 'BurialsEditForm',
+	component: BurialsForm,
+	props: true,
+},
+  {
     path: "/burials",
     name: "BurialsGrid",
     component: BurialsGrid
@@ -1014,7 +1036,6 @@ router.beforeEach(async (to, from, next) => {
   }
 
   return next();
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 });
 
 export default router;

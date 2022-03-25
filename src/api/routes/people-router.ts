@@ -4,14 +4,9 @@ import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { PeopleService } from "../services";
-<<<<<<< HEAD
-const pdf = require('html-pdf');
-const pug = require('pug');
-=======
 import { renderFile } from "pug";
 import { generatePDF } from "../utils/pdf-generator";
 
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 const peopleService = new PeopleService();
 export const peopleRouter = express.Router();
 const db = knex(DB_CONFIG);
@@ -228,23 +223,6 @@ async (req: Request, res: Response) => {
 	people = await peopleService.getAll();
 
 	// Compile template.pug, and render a set of data
-<<<<<<< HEAD
-	let data = pug.renderFile('./templates/people/peopleGrid.pug', {
-		data: people
-	});
-
-	res.setHeader('Content-disposition', 'attachment; filename="owners.html"');
-	res.setHeader('Content-type', 'application/pdf');
-	pdf.create(data, {
-		format: 'A3',
-		orientation: 'portrait'
-	}).toBuffer(function(err: any, buffer: any){
-		console.error(err);
-		////console.log('This is a buffer:', Buffer.isBuffer(buffer));
-		res.send(buffer);
-	});
-	//res.status(200).send(data);
-=======
 	let data = renderFile('./templates/people/peopleGrid.pug', {
 		data: people
 	});
@@ -253,7 +231,6 @@ async (req: Request, res: Response) => {
 	res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 	res.setHeader('Content-type', 'application/pdf');
 	res.send(pdf);
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 });
 
 peopleRouter.post(
@@ -265,22 +242,6 @@ peopleRouter.post(
 
 		const person = await peopleService.getById(personId);
 
-<<<<<<< HEAD
-		let data = pug.renderFile('./templates/people/peopleView.pug', {
-			data: person
-		});
-		res.setHeader('Content-disposition', 'attachment; filename="Person.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		pdf.create(data, {
-			format: 'A3',
-			orientation: 'landscape'
-		}).toBuffer(function(err: any, buffer: any){
-			//console.log(err);
-			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
-
-			res.send(buffer);
-		}); 
-=======
 		let data = renderFile('./templates/people/peopleView.pug', {
 			data: person
 		});
@@ -289,7 +250,6 @@ peopleRouter.post(
 		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 		res.setHeader('Content-type', 'application/pdf');
 		res.send(pdf);
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 });
 
 

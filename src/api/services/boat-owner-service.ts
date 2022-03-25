@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import knex from 'knex';
-=======
-import knex, { Knex } from 'knex';
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 import { QueryStatement, SortStatement } from './';
 import { DB_CONFIG } from '../config';
 const db = knex(DB_CONFIG);

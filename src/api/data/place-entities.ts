@@ -73,8 +73,6 @@ export const REGISTER_FIELDS = [
 	'designations',
 ];
 
-<<<<<<< HEAD
-=======
 export const CONSTRUCTION_PERIODS = [
 	{ value: 1, text: 'Pre 1895' },
 	{ value: 2, text: 'From 1896 to 1905' },
@@ -83,7 +81,6 @@ export const CONSTRUCTION_PERIODS = [
 	{ value: 5, text: 'Post 1965' },
 ];
 
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 export class Place {
 	id!: number;
 	primaryName!: string;

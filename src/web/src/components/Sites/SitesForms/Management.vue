@@ -1,18 +1,10 @@
 <template>
-<<<<<<< HEAD
-   <div>
-          <v-card-title primary-title>
-            Management
-          </v-card-title>
-          <v-divider inset></v-divider>
-=======
   <div>
     <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
       <span class="mt-2">Management</span>
       <v-btn class="my-0" color="primary" @click="saveChanges">Save</v-btn>
     </h2>
     <v-divider class="mb-5" />
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
           <v-form v-model="valid">
               <v-container>
                 <v-row>
@@ -307,11 +299,7 @@ import store from "../../../store";
 import { PLACE_URL, STATIC_URL } from "../../../urls";
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
-<<<<<<< HEAD
-  name: "formManagement",
-=======
   name: "Management",
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
   data: () => ({
     valid: false,
     loadedId: -1,
@@ -450,8 +438,4 @@ export default {
     },
   },
 };
-<<<<<<< HEAD
 </script>
-=======
-</script>
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
