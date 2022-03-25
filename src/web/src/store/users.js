@@ -26,11 +26,13 @@ const mutations = {
 const actions = {
     loadUsers() {
         return axios.get(`${USER_URL}`)
-            .then(resp => resp.data.data)
+            .then(resp => resp.data)
+            .catch((err) => { return { error: err.response.data } })
     },
     loadUser(state, id) {
         return axios.get(`${USER_URL}/${id}`)
-            .then(resp => resp.data.data)
+            .then(resp => resp.data)
+            .catch((err) => { return { error: err.response.data } })
     },
     loadRoles(state) {
         if (state.state.roles.length == 0) {
@@ -58,28 +60,28 @@ const actions = {
         }
     },
     updateUser(state, user) {
-        let body = { FirstName: user.FirstName, LastName: user.LastName, Email: user.Email, ExpirationDate: user.ExpirationDate, Roles: user.Roles };
+        let body = { first_name: user.first_name, last_name: user.last_name, expire_date_display: user.expire_date_display, role_list: user.role_list, status: user.status };
 
-        return axios.put(`${USER_URL}/${user.UserId}`, body)
-            .then(resp => resp.data)
+        return axios.put(`${USER_URL}/${user.id}`, body)
+            .then(resp => resp)
     },
     saveUserAccess(state, item) {
         //let body = { FirstName: user.FirstName, LastName: user.LastName, Email: user.Email, ExpirationDate: user.ExpirationDate, Roles: user.Roles };
 
         console.log("SAVE", item);
 
-        if (item.Id) {
-            return axios.put(`${USER_URL}/${item.UserId}/access/${item.Id}`, item)
-                .then(resp => resp.data)
+        if (item.id) {
+            return axios.put(`${USER_URL}/${item.user_id}/access/${item.id}`, item)
+                .then(resp => resp)
         }
         else {
-            return axios.post(`${USER_URL}/${item.UserId}/access`, item)
-                .then(resp => resp.data)
+            return axios.post(`${USER_URL}/${item.user_id}/access`, item)
+                .then(resp => resp)
         }
     },
     removeUserAccess(state, item) {
-        return axios.delete(`${USER_URL}/${item.UserId}/access/${item.Id}`)
-            .then(resp => resp.data)
+        return axios.delete(`${USER_URL}/${item.user_id}/access/${item.id}`)
+            .then(resp => resp)
     }
 };
 
