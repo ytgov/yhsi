@@ -30,7 +30,6 @@ photosExtraRouter.get(
 		const offset = page * limit || 0;
 		let counter = [{ count: 0 }];
 		let photos = [];
-		console.log("started SEARCHING FOR ALL PHOTOSS ", textToMatch);
 		if (textToMatch) {
 			counter = await db
 				.from('dbo.photo as PH')
@@ -72,7 +71,6 @@ photosExtraRouter.get(
 				.orderBy('PH.RowId', 'asc')
 				.limit(limit)
 				.offset(offset);
-			console.log("PHOTOS", photos);
 		} else {
 			counter = await db.from('dbo.photo').count('RowId', { as: 'count' });
 
@@ -97,24 +95,18 @@ photosExtraRouter.get(
 				.orderBy('PH.RowId', 'asc')
 				.limit(limit)
 				.offset(offset);
-				console.log("ALL PHOTOS", photos);
 		}
-		console.log("COUNTER HERE", counter);
 		res.status(200).send({ count: counter[0].count, body: photos });
 	}
 );
 
-//LINK BOAT PHOTOS
+// LINK BOAT PHOTOS
 photosExtraRouter.post(
 	'/boat/link/:BoatId',
 	[param('BoatId').notEmpty()],
 	ReturnValidationErrors,
 	[upload.single('file')],
 	async (req: Request, res: Response) => {
-		/* const db = req.app.get('db');
-  
-    const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('create')) res.sendStatus(403); */
 
 		const { BoatId } = req.params;
 		const { linkPhotos } = req.body;
@@ -143,7 +135,7 @@ photosExtraRouter.post(
 	}
 );
 
-//LINK AIRCRASH PHOTOS
+// LINK AIRCRASH PHOTOS
 photosExtraRouter.post(
 	'/aircrash/link/:AirCrashId',
 	[param('AirCrashId').notEmpty()],
@@ -220,9 +212,6 @@ photosExtraRouter.get(
 	[param('boatId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		/* const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('view')) res.sendStatus(403);
-    const db = req.app.get('db'); */
 
 		const { boatId } = req.params;
 
@@ -275,7 +264,6 @@ photosExtraRouter.get(
 	[param('burialId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		console.log("started searching for the burial photos");
 		const { burialId } = req.params;
 
 		const page = parseInt(req.query.page as string);
@@ -290,7 +278,28 @@ photosExtraRouter.get(
 			.limit(limit)
 			.offset(offset);
 		
-		console.log("finished looking");
+		res.status(200).send(photos);
+	}
+);
+
+// GET PEOPLE PHOTOS
+photosExtraRouter.get(
+	'/people/:personID',
+	[param('personID').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { personID } = req.params;
+
+		const page = parseInt(req.query.page as string);
+		const limit = parseInt(req.query.limit as string);
+		const offset = page * limit || 0;
+		const photos = await db
+			.select('*')
+			.from('Person.Photo as PP')
+			.join('dbo.photo AS PH', 'PP.PhotoID', '=', 'PH.RowID')
+			.where('PP.PersonID', personID)
+			.limit(limit)
+			.offset(offset);
 		res.status(200).send(photos);
 	}
 );
@@ -537,7 +546,7 @@ photosExtraRouter.delete(
 );
 
 
-//LINK BURIAL PHOTOS
+// LINK BURIAL PHOTOS
 photosExtraRouter.post(
 	'/burial/link/:burialId',
 	[param('burialId').notEmpty()],
@@ -602,6 +611,70 @@ photosExtraRouter.post(
 	}
 );
 
+
+// ADD NEW PERSON PHOTO
+photosExtraRouter.post(
+	'/people/:personID',
+	[param('personID').notEmpty()],
+	[upload.single('file')],
+	async (req: Request, res: Response) => {
+		const personID = req.params.personID;
+		const { ...restBody } = req.body;
+		const ThumbFile = await createThumbnail(req.file.buffer);
+		const body = { File: req.file.buffer, ThumbFile, ...restBody };
+		delete body.personID;
+		const response = await db
+			.insert(body)
+			.into('dbo.photo')
+			.returning('*')
+			.then(async (rows) => {
+				const newPhoto = rows[0];
+
+				await db
+					.insert({ PersonID: personID, PhotoID: newPhoto.RowId })
+					.into('Person.Photo')
+					.returning('*')
+					.then((rows) => {
+						return rows;
+					});
+
+				return newPhoto;
+			});
+		res.status(200).send({ message: 'Upload Success' });
+	}
+);
+
+// LINK PERSON PHOTOS
+photosExtraRouter.post(
+	'/people/link/:personID',
+	[param('personID').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		
+		const { personID } = req.params;
+		const { linkPhotos } = req.body;
+		let currentPhotos = await db
+			.select('PhotoID')
+			.from('Person.Photo')
+			.where('PersonID', personID);
+		let filteredLinkPhotos = _.difference(
+			linkPhotos,
+			currentPhotos.map((x) => {
+				return x.Photo_RowID;
+			})
+		);
+
+		for (const rowId of filteredLinkPhotos)
+			await db
+				.insert({ PersonID: personID, PhotoID: rowId })
+				.into('Person.Photo')
+				.returning('*')
+				.then((rows) => {
+					return rows;
+				});
+		res.status(200).send({ message: 'Successfully linked the photos' });
+	}
+);
 
 // ADD NEW BOAT PHOTO
 photosExtraRouter.post(

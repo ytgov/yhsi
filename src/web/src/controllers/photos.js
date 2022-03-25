@@ -22,6 +22,38 @@ export default {
 				console.error(error);
 			});
 	},
+	async getGeneral(photoType, itemId){
+		return await api 
+        .get(`photos/${photoType}/${itemId}`)
+        .then((resp) => {
+			console.log("data",resp);
+			return resp;     
+        })
+        .catch((error) => console.error(error))
+        ;  
+	},
+	async postGeneral(photoType, data){
+		return await apiP
+			.post(`photos/${photoType}`, data)
+			.then((res) => {
+				return res;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async linkGeneral(photoType, itemId, data){
+		return await api
+			.post(`photos/${photoType}/link/${itemId}`, data)
+			.then((res) => {
+				return res;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
 	// Boats
 	async getByBoatId(id) {
 		return await api
