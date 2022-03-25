@@ -162,6 +162,7 @@ export default {
   },
   methods: {
     addNew() {
+      this.removeCurrentBurial();
       this.$router.push(`/burials/new`);
     },
     searchChange: _.debounce(function () {
@@ -212,6 +213,9 @@ export default {
       });
       this.burialsData = await burials.getExport();
       this.loading = false;
+    },
+    removeCurrentBurial(){
+      localStorage.currentBurialID = null;
     },
     async downloadPdf(){
       this.loadingPdf = true;
