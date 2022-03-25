@@ -4,8 +4,14 @@ import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { BoatService } from "../services";
+<<<<<<< HEAD
 const pdf = require('html-pdf');
 const pug = require('pug');
+=======
+import { renderFile } from "pug";
+import { generatePDF } from "../utils/pdf-generator";
+
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 export const boatsRouter = express.Router();
 const db = knex(DB_CONFIG);
 const boatService = new BoatService();
@@ -180,6 +186,7 @@ boatsRouter.post(
 
 		const boat = await boatService.getById(parseInt(boatId));
 
+<<<<<<< HEAD
 		let data = pug.renderFile('./templates/boats/boatView.pug', {
 			data: boat
 		});
@@ -194,12 +201,23 @@ boatsRouter.post(
 
 			res.send(buffer);
 		}); 
+=======
+		let data = renderFile('./templates/boats/boatView.pug', {
+			data: boat
+		});
+
+		let pdf = await generatePDF(data);
+		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		res.send(pdf);
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 });
 
 boatsRouter.post('/pdf', async (req: Request, res: Response) => {
 		
 		let boats = await boatService.getAll();
 
+<<<<<<< HEAD
 		let data = pug.renderFile('./templates/boats/boatGrid.pug', {
 			data: boats
 		});
@@ -217,6 +235,16 @@ boatsRouter.post('/pdf', async (req: Request, res: Response) => {
 		});
 
 		//res.status(200).send(data);
+=======
+		let data = renderFile('./templates/boats/boatGrid.pug', {
+			data: boats
+		});
+
+		let pdf = await generatePDF(data);
+		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		res.send(pdf);
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 	}
 );
 

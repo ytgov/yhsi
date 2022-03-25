@@ -4,8 +4,14 @@ import knex from 'knex';
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { AircrashService } from '../services';
+<<<<<<< HEAD
 const pug = require('pug');
 const pdf = require('html-pdf');
+=======
+import { renderFile } from "pug";
+import { generatePDF } from "../utils/pdf-generator";
+
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 export const aircrashRouter = express.Router();
 const db = knex(DB_CONFIG);
 const aircrashService = new AircrashService();
@@ -198,6 +204,7 @@ aircrashRouter.post(
 			return;
 		}
 		// Compile template.pug, and render a set of data
+<<<<<<< HEAD
 		let data = pug.renderFile('./templates/aircrashes/aircrashView.pug', {
 			data: aircrash
 		});
@@ -215,6 +222,16 @@ aircrashRouter.post(
 		});
 
 		//res.status(200).send(data);
+=======
+		let data = renderFile('./templates/aircrashes/aircrashView.pug', {
+			data: aircrash
+		});
+
+		let pdf = await generatePDF(data);
+		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		res.send(pdf);
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 });
 
 aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
@@ -222,6 +239,7 @@ aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
 	let aircrashes = await aircrashService.getAll();
 
 	// Compile template.pug, and render a set of data
+<<<<<<< HEAD
 	let data = pug.renderFile('./templates/aircrashes/aircrashGrid.pug', {
 		data: aircrashes
 	});
@@ -240,6 +258,16 @@ aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
 	});
 
 	//res.status(200).send(data);
+=======
+	let data = renderFile('./templates/aircrashes/aircrashGrid.pug', {
+		data: aircrashes
+	});
+
+	let pdf = await generatePDF(data);
+	res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+	res.setHeader('Content-type', 'application/pdf');
+	res.send(pdf);
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 });
 
 aircrashRouter.post('/export', async (req: Request, res: Response) => {
