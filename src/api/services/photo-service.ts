@@ -1,5 +1,4 @@
-import knex from 'knex';
-import Knex from 'knex';
+import knex, { Knex } from 'knex';
 import { QueryStatement, SortStatement } from './';
 import { Photo, PHOTO_FIELDS, SavedFilter } from '../data';
 import _ from 'lodash';

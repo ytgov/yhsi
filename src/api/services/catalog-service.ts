@@ -1,4 +1,4 @@
-import knex from 'knex';
+import knex, { Knex } from 'knex';
 import { QueryStatement, SortStatement } from './';
 import { Photo, PHOTO_FIELDS } from '../data';
 import { DB_CONFIG } from '../config';

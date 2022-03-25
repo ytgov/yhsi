@@ -1,5 +1,4 @@
-import knex from 'knex';
-import Knex from 'knex';
+import knex, { Knex } from 'knex';
 
 export class UserService {
 	private knex: Knex;
