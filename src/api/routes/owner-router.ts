@@ -4,8 +4,9 @@ import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { BoatOwnerService } from "../services";
-const pdf = require('html-pdf');
-const pug = require('pug');
+import { renderFile } from "pug";
+import { generatePDF } from "../utils/pdf-generator";
+
 export const ownerRouter = express.Router();
 const boatOwnerService = new BoatOwnerService();
 const db = knex(DB_CONFIG);
@@ -126,20 +127,14 @@ ownerRouter.post(
 
 		const owner = await boatOwnerService.getById(ownerId);
 
-		let data = pug.renderFile('./templates/boat-owners/boatOwnerView.pug', {
+		let data = renderFile('./templates/boat-owners/boatOwnerView.pug', {
 			data: owner
 		});
-		res.setHeader('Content-disposition', 'attachment; filename="owner.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		pdf.create(data, {
-			format: 'A3',
-			orientation: 'landscape'
-		}).toBuffer(function(err: any, buffer: any){
-			//console.log(err);
-			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
 
-			res.send(buffer);
-		}); 
+		let pdf = await generatePDF(data)
+		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		res.send(pdf);
 });
 
 
@@ -148,21 +143,14 @@ ownerRouter.post('/pdf', async (req: Request, res: Response) => {
 	let owners = await boatOwnerService.getAll();
 
 	//console.log(owners);
-	let data = pug.renderFile('./templates/boat-owners/boatOwnerGrid.pug', {
+	let data = renderFile('./templates/boat-owners/boatOwnerGrid.pug', {
 		data: owners
 	});
 
-	res.setHeader('Content-disposition', 'attachment; filename="owners.html"');
+	let pdf = await generatePDF(data)
+	res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 	res.setHeader('Content-type', 'application/pdf');
-	pdf.create(data, {
-		format: 'A3',
-		orientation: 'portrait'
-	}).toBuffer(function(err: any, buffer: any){
-		//console.log(err);
-		//console.log('This is a buffer:', Buffer.isBuffer(buffer));
-
-		res.send(buffer);
-	});
+	res.send(pdf);
 }
 );
 

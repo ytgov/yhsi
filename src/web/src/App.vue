@@ -1,32 +1,5 @@
 <template>
   <v-app>
-    <v-navigation-drawer
-      v-bind:app="hasSidebar"
-      permanent
-      :expand-on-hover="hasSidebarClosable"
-      clipped
-      color="#f1f1f1"
-      v-bind:class="{ 'd-none': !hasSidebar }"
-    >
-      <v-list dense nav style="" class="mt-4">
-        <v-list-item
-          link
-          nav
-          v-for="section in sections"
-          :title="section.name"
-          :to="section.makeUrl(currentId)"
-          :key="section.name"
-        >
-          <v-list-item-icon>
-            <v-icon>{{ section.icon }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>{{ section.name }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-
     <v-app-bar
       app
       color="#fff"
@@ -35,8 +8,8 @@
       style="left: 0; border-bottom: 3px #f3b228 solid"
     >
       <!-- <v-icon color="#f3b228" class="mr-5">{{ applicationIcon }}</v-icon> -->
-      <img src="/yukon.svg" style="margin: -8px 155px 0 0" height="44" />
-      <v-toolbar-title>
+      <img src="/yukon.svg" style="margin: -8px 85px 0 0" height="44" />
+      <v-toolbar-title tag="h1" class="mb-0">
         <span style="font-weight: 700">{{ applicationName }}</span>
 
         <v-progress-circular
@@ -137,12 +110,9 @@
       <div v-else>
         <router-link to="/sign-in">Sign in</router-link>
       </div>
-
-      <!-- <v-app-bar-nav-icon @click.stop="drawerRight = !drawerRight"></v-app-bar-nav-icon> -->
     </v-app-bar>
 
-    <v-main v-bind:style="{ 'padding-left: 33px !important': !hasSidebar }">
-      <!-- Provides the application the proper gutter -->
+    <v-main>
       <v-container fluid :class="`${isSites($route.path, true)}`">
         <v-row>
           <v-col :class="`${isSites($route.path, false)}`">
@@ -155,10 +125,9 @@
               <notifier ref="notifier"></notifier>
             -->
             <router-view></router-view>
-            <RequestAlert/>
+            <RequestAlert />
           </v-col>
         </v-row>
-        
       </v-container>
     </v-main>
 
@@ -167,32 +136,17 @@
 </template>
 
 <script>
-import router from "./router";
+import { mapGetters } from "vuex";
+
 import store from "./store";
 import * as config from "./config";
-import { mapState } from "vuex";
-import RequestAlert from "./components/RequestAlert.vue";
 import { LOGOUT_URL } from "./urls";
+
+import RequestAlert from "./components/RequestAlert.vue";
 
 export default {
   name: "App",
   components: { RequestAlert },
-  computed: {
-    ...mapState(["isAuthenticated", "user", "showAppSidebar"]),
-    username() {
-      return store.getters.fullName;
-    },
-    isAuthenticated() {
-      //return true; // until we get auth process to show sidebar
-      return store.getters.isAuthenticated;
-    },
-    user() {
-      return store.getters.user;
-    },
-    showAppSidebar() {
-      return store.getters.showAppSidebar;
-    },
-  },
   data: () => ({
     dialog: false,
     drawer: null,
@@ -202,55 +156,19 @@ export default {
     loadingClass: "d-none",
     applicationName: config.applicationName,
     applicationIcon: config.applicationIcon,
-    sections: config.sections,
-    hasSidebar: config.hasSidebar,
-    hasSidebarClosable: config.hasSidebarClosable,
-    currentId: 0,
   }),
-  created: async function () {
-    store.dispatch("setAppSidebar", this.$route.path.startsWith("/sites/"));
-    this.hasSidebar = this.$route.path.startsWith("/sites/");
-    this.currentId = this.$route.params.id;
-
-    //this.hasSidebar = true;
+  computed: {
+    ...mapGetters(["isAuthenticated"]),
+    ...mapGetters({ username: "fullName" })
+  },
+  async mounted() {
     await store.dispatch("checkAuthentication");
   },
-  watch: {
-
-    isAuthenticated: function (val) {
-      if (!val) this.hasSidebar = false;
-      else this.hasSidebar = store.getters.showAppSidebar;
-    },
-    showAppSidebar: function (val) {
-      if (val) {
-        this.currentId = this.$route.params.id;
-      }
-
-      this.hasSidebar = val && this.isAuthenticated;
-    },
-  },
   methods: {
-    nav: function (location) {
-      router.push(location);
-    },
-    toggleHeader: function () {
-      this.headerShow = !this.headerShow;
-    },
-    toggleMenu: function () {
-      this.menuShow = !this.menuShow;
-    },
     signOut: function () {
       window.location = LOGOUT_URL;
     },
     isSites(route, chooser) {
-       if(chooser)
-         return (route.includes('sites') || route.includes('photos') || route.includes('users') 
-               || route.includes('photo-owners') || route.includes('communities')) ? 'siteslp' :  '';
-       else
-         return (route.includes('sites') || route.includes('photos') || route.includes('users') 
-               || route.includes('photo-owners') || route.includes('communities')) ? 'sitesnp' :  '';
-      //this function helps to show certain classes depending on the route
-      /*
       if (chooser)
         return route.includes("sites/") || route.includes("photos")
           ? "siteslp"
@@ -259,7 +177,6 @@ export default {
         return route.includes("sites/") || route.includes("photos")
           ? "sitesnp"
           : "";
-          */
     },
     showHistory() {
       this.$refs.historySidebar.show();

@@ -1,7 +1,9 @@
 <template>
-  <v-container>
+  <div>
+    <v-breadcrumbs
+      :items="[{ text: 'Adminstration', to: '/admin', exact: true }]"
+    ></v-breadcrumbs>
     <h1>Administration</h1>
-    <Breadcrumbs />
     <v-row>
       <v-col cols="6">
         <v-card elevation="1">
@@ -50,15 +52,11 @@
         </v-card>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>
-import Breadcrumbs from "../Breadcrumbs";
 export default {
-  components: {
-    Breadcrumbs,
-  },
   data: () => ({
     icon: null,
     usermodel: null,
@@ -132,13 +130,11 @@ export default {
     ],
     model: 1,
   }),
-  methods:{
-      goTo(url){
-          if(url == "")
-              return;
-          this.$router.push(url);
-      }
-  }
+  methods: {
+    goTo(url) {
+      if (url == "") return;
+      this.$router.push(url);
+    },
+  },
 };
-
 </script>

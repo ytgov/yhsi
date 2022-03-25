@@ -1,0 +1,65 @@
+#!/usr/bin/env ruby
+
+class DevHelper
+  def self.call(*args)
+    self.new.call(*args)
+  end
+
+  # Core logic
+  def call(*args)
+    if args.length.zero?
+      dc(*args)
+    elsif respond_to?(args[0])
+      public_send(args[0], args.drop(1))
+    else
+      dc(*args)
+    end
+  end
+
+  def dc(*args)
+    puts "Running: docker-compose -f docker-compose.dev-full.yml #{args.join(' ')}"
+    exec("docker-compose -f docker-compose.dev-full.yml #{args.join(' ')}")
+  end
+
+  def build(*args)
+    dc(%w[build], *args)
+  end
+
+  def up(*args)
+    dc(*%w[up --remove-orphans], *args)
+  end
+
+  def down(*args)
+    dc(*%w[down --remove-orphans], *args)
+  end
+
+  def logs(*args)
+    dc(*%w[logs -f], *args)
+  end
+
+  # Custom helpers
+  def refresh
+    down
+    up
+  end
+
+  def sqlcmd(*args)
+    db_host = ENV.fetch('DB_HOST', 'localhost')
+    db_user = ENV.fetch('DB_USER', 'sa')
+    db_pass = ENV.fetch('DB_PASS', '1m5ecure!')
+    db_name = ENV.fetch('DB_NAME', 'YHSI')
+    dc(
+      *%w[exec db /opt/mssql-tools/bin/sqlcmd],
+      *%W[-U #{db_user}],
+      *%W[-P #{db_pass}],
+      *%W[-H #{db_host}],
+      *%W[-d #{db_name}],
+      *args,
+    )
+  end
+end
+
+# Only execute main function when file is executed
+if $PROGRAM_NAME == __FILE__
+  DevHelper.call(*ARGV)
+end
