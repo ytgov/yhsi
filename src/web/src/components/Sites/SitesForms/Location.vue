@@ -1,18 +1,9 @@
 <template>
   <div>
-<<<<<<< HEAD
-    <v-card-title style="width: 100%; display: block">
-      Location
-      <div class="float-right">
-        <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
-      </div>
-    </v-card-title>
-=======
     <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
       <span class="mt-2">Location</span>
       <v-btn class="my-0" color="primary" @click="saveChanges">Save</v-btn>
     </h2>
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 
     <v-divider class="mb-5"></v-divider>
 
@@ -185,11 +176,7 @@ import store from "../../../store";
 import { COMMUNITY_URL, PLACE_URL, STATIC_URL } from "../../../urls";
 /* Important, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created */
 export default {
-<<<<<<< HEAD
-  name: "formLocation",
-=======
   name: "Location",
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
   data: () => ({
     valid: false,
     loadedId: -1,
@@ -285,8 +272,4 @@ export default {
     },
   },
 };
-<<<<<<< HEAD
 </script>
-=======
-</script>
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf

@@ -4,14 +4,9 @@ import knex from 'knex';
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { AircrashService } from '../services';
-<<<<<<< HEAD
-const pug = require('pug');
-const pdf = require('html-pdf');
-=======
 import { renderFile } from "pug";
 import { generatePDF } from "../utils/pdf-generator";
 
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 export const aircrashRouter = express.Router();
 const db = knex(DB_CONFIG);
 const aircrashService = new AircrashService();
@@ -204,25 +199,6 @@ aircrashRouter.post(
 			return;
 		}
 		// Compile template.pug, and render a set of data
-<<<<<<< HEAD
-		let data = pug.renderFile('./templates/aircrashes/aircrashView.pug', {
-			data: aircrash
-		});
-
-		res.setHeader('Content-disposition', 'attachment; filename="burial.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		pdf.create(data, {
-			format: 'A3',
-			orientation: 'landscape'
-		}).toBuffer(function(err: any, buffer: any){
-			//console.log(err);
-			//console.log('This is a buffer:', Buffer.isBuffer(buffer));
-
-			res.send(buffer);
-		});
-
-		//res.status(200).send(data);
-=======
 		let data = renderFile('./templates/aircrashes/aircrashView.pug', {
 			data: aircrash
 		});
@@ -231,7 +207,6 @@ aircrashRouter.post(
 		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 		res.setHeader('Content-type', 'application/pdf');
 		res.send(pdf);
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 });
 
 aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
@@ -239,26 +214,6 @@ aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
 	let aircrashes = await aircrashService.getAll();
 
 	// Compile template.pug, and render a set of data
-<<<<<<< HEAD
-	let data = pug.renderFile('./templates/aircrashes/aircrashGrid.pug', {
-		data: aircrashes
-	});
-	//res.status(200).send(data);
-	
-	res.setHeader('Content-disposition', 'attachment; filename="aircrashes.html"');
-	res.setHeader('Content-type', 'application/pdf');
-	pdf.create(data, {
-		format: 'A3',
-		orientation: 'landscape'
-	}).toBuffer(function(err: any, buffer: any){
-		//console.log(err);
-		//console.log('This is a buffer:', Buffer.isBuffer(buffer));
-
-		res.send(buffer);
-	});
-
-	//res.status(200).send(data);
-=======
 	let data = renderFile('./templates/aircrashes/aircrashGrid.pug', {
 		data: aircrashes
 	});
@@ -267,7 +222,6 @@ aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
 	res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 	res.setHeader('Content-type', 'application/pdf');
 	res.send(pdf);
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 });
 
 aircrashRouter.post('/export', async (req: Request, res: Response) => {

@@ -1,6 +1,5 @@
 export const applicationName = 'Yukon Historic Sites';
 export const applicationIcon = 'mdi-cash-register';
-<<<<<<< HEAD
 export const hasSidebar = true;
 export const hasSidebarClosable = false;
 
@@ -141,8 +140,6 @@ export const sections = [
 		},
 	},
 ];
-=======
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 export const environment = process.env.NODE_ENV;
 export const apiBaseUrl =
 	process.env.NODE_ENV == 'production' || process.env.NODE_ENV == 'test'

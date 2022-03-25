@@ -572,7 +572,6 @@ photosExtraRouter.post(
 
 // ADD NEW BURIAL PHOTO
 photosExtraRouter.post(
-<<<<<<< HEAD
 	'/burial/:burialID',
 	[param('burialID').notEmpty()],
 	[upload.single('file')],
@@ -582,17 +581,6 @@ photosExtraRouter.post(
 		const ThumbFile = await createThumbnail(req.file.buffer);
 		const body = { File: req.file.buffer, ThumbFile, ...restBody };
 		delete body.BurialID;
-=======
-	'/burial',
-	[upload.single('file')],
-	async (req: Request, res: Response) => {
-
-		const { burialID, ...restBody } = req.body;
-		const ThumbFile = await createThumbnail(req.file.buffer);
-
-		const body = { File: req.file.buffer, ThumbFile, ...restBody };
-
->>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 		const response = await db
 			.insert(body)
 			.into('dbo.photo')
