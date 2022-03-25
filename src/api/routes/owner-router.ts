@@ -20,7 +20,7 @@ ownerRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 
-		const { textToMatch = '', sortBy = 'ownerid', sort = 'asc' } = req.query;
+		const { textToMatch = '', sortBy = 'OwnerName', sort = 'asc' } = req.query;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;

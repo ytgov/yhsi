@@ -70,8 +70,7 @@
                           v-model="fields.FeatureName"
                           label="Feature Name"
                           :rules="generalRules"
-                        >
-                        </v-text-field>
+                        ></v-text-field>
 
                         <v-autocomplete outlined dense
                           @click="getOwners"
@@ -297,52 +296,6 @@
                         </template>
                       </v-hover>
                     </v-col>
-                    <!--
-                                        <v-col
-                                        v-for="(item,i) in availablePhotos"
-                                        :key="`ph-${i}`"
-                                        class="d-flex child-flex"
-                                        cols="6"
-                                        >
-                                        <v-card
-                                        outlined
-                                        @click="selectImage(item)"
-                                        hover
-                                        >
-                                            <v-img
-                                                :src="item.ThumbFile.base64"
-                                                :lazy-src="item.ThumbFile.base64"
-                                                aspect-ratio="1"
-                                                class="grey lighten-2"
-                                            >
-                                                <template v-slot:placeholder>
-                                                <v-row
-                                                    class="fill-height ma-0"
-                                                    align="center"
-                                                    justify="center"
-                                                >
-                                                    <v-progress-circular
-                                                    indeterminate
-                                                    color="grey lighten-5"
-                                                    ></v-progress-circular>
-                                                </v-row>
-                                                </template>
-                                            </v-img>
-                                            <v-row>
-                                                <v-col cols="12" class="d-flex">
-                                                    <v-card-text>
-                                                        Feature name: {{item.FeatureName}} 
-                                                        Community: {{item.CommunityName}}
-                                                        Place: {{item.PlaceName}}
-                                                    </v-card-text>
-                                                    <v-checkbox
-                                                    v-model="item.selected"
-                                                    ></v-checkbox>
-                                                </v-col>
-                                            </v-row>     
-                                        </v-card>
-                                        
-                                        </v-col>-->
                   </v-row>
                 </v-container>
                 <v-row class="mb-2" v-if="availablePhotos">
@@ -388,8 +341,11 @@
 import catalogs from "../../controllers/catalogs";
 import Carousell from "./Carousell";
 import PhotoList from "./PhotoList";
-import { EXTRA_PHOTOS_URL, STATIC_URL } from "../../urls";
+import { 
+  //EXTRA_PHOTOS_URL, 
+  STATIC_URL } from "../../urls";
 import axios from "axios";
+import photos from "../../controllers/photos";
 
 export default {
   name: "photos",
@@ -509,33 +465,34 @@ export default {
   methods: {
     async getAll() {
       this.showSkeletons = true;
-      axios
-        .get(`${EXTRA_PHOTOS_URL}`, {
-          crossdomain: true,
-          params: {
-            page: this.page - 1,
-            limit: 6,
-            textToMatch: this.searchPhotos
-          }
-        })
-        .then((resp) => {
-          if (resp) {
-            this.availablePhotos = resp.data.body.map((x) => {
-              x.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(x.ThumbFile.data)}`;
-              x.selected = false;
-              return x;
-            });
-            this.numberOfPages = Math.round(resp.count / 6);
-            this.showSkeletons = false;
-          }      
-        })
-        .catch((error) => console.error(error))
-        ;  
+
+      let resp = await photos.getAll(this.page, this.searchPhotos);
+      if (resp) {
+        this.availablePhotos = resp.body.map((x) => {
+          x.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(x.ThumbFile.data)}`;
+          x.selected = false;
+          return x;
+        });
+        this.numberOfPages = Math.round(resp.count / 6);
+        this.showSkeletons = false;
+      } 
     },
     async getDataFromAPI() {  
-      axios
-        .get(`${EXTRA_PHOTOS_URL}/${this.photoType}/${this.itemId}`)
+      //console.log("getting photos", `photos/${this.photoType}/${this.itemId}`);
+      let resp  = await photos.getGeneral(this.photoType, this.itemId);
+      if (resp) {
+        this.photos = resp.data.map((x) => {
+          x.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(x.ThumbFile.data)}`;
+          //x.File.base64 = `data:image/png;base64,${this.toBase64(x.File.data)}`;
+          x.selected = false;
+          return x;
+        });
+        this.updateSelectedImage(0);
+      }   
+      /*axios //${EXTRA_PHOTOS_URL}
+        .get(`/api/photos/${this.photoType}/${this.itemId}`)
         .then((resp) => {
+          console.log("photos",resp.data);
           if (resp) {
             this.photos = resp.data.map((x) => {
               x.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(x.ThumbFile.data)}`;
@@ -547,7 +504,7 @@ export default {
           }     
         })
         .catch((error) => console.error(error))
-        ;  
+        ; */
     },
     async getOwners() {
       this.isLoadingOwner = true;
@@ -585,6 +542,12 @@ export default {
           break;
         case "aircrash":
           this.sendObj.yacsiNumber = String(this.itemId);
+          break;
+        case "people":
+          this.sendObj.personID = String(this.itemId);
+          break;  
+        case "burial":
+          this.sendObj.burialID = String(this.itemId);
           break;         
       }
       delete this.sendObj.itemId;
@@ -602,15 +565,10 @@ export default {
       }
       formData.append("file", this.file);
 
-      axios
-        .post(`${EXTRA_PHOTOS_URL}/${this.photoType}`, formData)
-        .then(() => {
-          this.reset();
-          this.$router.go();
-          this.overlay = false;  
-        })
-        .catch((error) => console.error(error))
-        ;  
+      await photos.postGeneral(this.photoType, formData);
+      this.reset();
+      this.$router.go();
+      this.overlay = false;  
 
     },
     async saveAndLink() {
@@ -619,15 +577,18 @@ export default {
         .map((x) => {
           return x.RowId;
         });
+      await photos.linkGeneral(this.photoType, this.itemId, { linkPhotos: photosToLink });
+      this.reset();
+      this.$router.go();
       
-      axios
-        .post(`${EXTRA_PHOTOS_URL}/${this.photoType}/link/${this.itemId}`, { linkPhotos: photosToLink })
-        .then(() => {
-          this.reset();
-          this.$router.go();     
-        })
-        .catch((error) => console.error(error))
-        ;  
+      // axios
+      //   .post(`${EXTRA_PHOTOS_URL}/${this.photoType}/link/${this.itemId}`, { linkPhotos: photosToLink })
+      //   .then(() => {
+      //     this.reset();
+      //     this.$router.go();     
+      //   })
+      //   .catch((error) => console.error(error))
+      //   ;  
     },
     toBase64(arr) {
       return btoa(
