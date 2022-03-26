@@ -15,7 +15,7 @@ boatsRouter.get(
 	'/',
 	[
 		query('textToMatch').default('').isString(),
-		query('sortBy').default('Id').isString(),
+		query('sortBy').default('Name').isString(),
 		query('sort').default('asc').isString(),
 		query('page').default(0).isInt(), 
 		query('limit').default(10).isInt({ gt: 0 }),

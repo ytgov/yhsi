@@ -181,14 +181,13 @@
                             <v-col cols="4"></v-col>
                         </v-row>
                       </v-col>
-                      
-                        
                         <v-col cols="4">
                           <h4>Photos</h4>
                           <Photos 
                           v-if="true" 
                           :showDefault="isNew" 
-                          :BurialID="currentBurialID"
+                          :photoType="'burial'"
+                          :itemId="currentBurialID"
                           @updateSelectedImage="selectedImageChanged" 
                           :selectedImage="selectedImage" 
                           @loadingPhotosChange="loadingPhotosChange"/>   
@@ -588,7 +587,7 @@ import OccupationDialog from "./Dialogs/OccupationDialog.vue";
 import SourceDialog from "./Dialogs/SourceDialog.vue";
 import KinDialog from "./Dialogs/KinDialog.vue";
 import SiteVisitDialog from "./Dialogs/SiteVisitDialog.vue";
-import Photos from "./Photos/Photos";
+import Photos from "../../PhotoEditor/Photos";
 import countries from "../../../misc/countries";
 export default {
   name: "BurialComponent",
@@ -999,6 +998,8 @@ export default {
       return this.mode == 'new';
     },
     currentBurialID(){
+      if(this.mode == 'new') return false;
+
       return localStorage.currentBurialID;
     },
     getCountries(){

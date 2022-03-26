@@ -482,7 +482,7 @@ export class PlaceService {
 
 			const SUPPORTED_QUERIES: { [key: string]: QueryBuilder } = Object.freeze({
 				search(base: Knex.QueryInterface, value: any) {
-					return base.where((builder) =>
+					return base.where((builder: any) =>
 						builder
 							.whereILike('PrimaryName', `%${value}%`)
 							.orWhereILike('YHSIId', `%${value}%`)
@@ -609,7 +609,7 @@ export class PlaceService {
 				selectStatement.orderBy('place.primaryName');
 			}
 
-			let fullData = await selectStatement.catch((error) => {
+			let fullData = await selectStatement.catch((error: any) => {
 				reject(error);
 				return [];
 			});
