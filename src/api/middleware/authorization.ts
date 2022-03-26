@@ -45,8 +45,6 @@ export function authorize(roles: string[] = [], allowPending: boolean = false) {
         if (!req.oidc.isAuthenticated() || !currentUser)
             return res.status(401).send('Not authenticated');
 
-        console.log(currentUser.status, allowPending)
-
         if (currentUser.status != USER_ACTIVE_STATUS && !allowPending)
             return res.status(401).json({ message: "Unauthorized - User inactive" });
 
