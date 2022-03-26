@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { isUndefined } from "lodash";
 import { User } from "../models";
 
 const USER_ACTIVE_STATUS = "Active";
@@ -37,11 +38,16 @@ export const UserRoleOptions = [
     UserRoles.YRHP_EDITOR
 ]
 
-export function authorize(roles: string[] = []) {
+export function authorize(roles: string[] = [], allowPending: boolean = false) {
     return (req: Request, res: Response, next: NextFunction) => {
         let currentUser = req.user as User;
 
-        if (currentUser.status != USER_ACTIVE_STATUS)
+        if (!req.oidc.isAuthenticated() || !currentUser)
+            return res.status(401).send('Not authenticated');
+
+        console.log(currentUser.status, allowPending)
+
+        if (currentUser.status != USER_ACTIVE_STATUS && !allowPending)
             return res.status(401).json({ message: "Unauthorized - User inactive" });
 
         // if route only requires an active user
