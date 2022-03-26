@@ -388,8 +388,9 @@
 <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
                             <Photos 
                             v-if="infoLoaded" 
+                            :photoType="'boat'"
                             :showDefault="mode == 'new'" 
-                            :boatID="getBoatID"
+                            :itemId="getBoatID"
                             @updateSelectedImage="selectedImageChanged" 
                             :selectedImage="selectedImage"
                             @loadingPhotosChange="loadingPhotosChange"/>

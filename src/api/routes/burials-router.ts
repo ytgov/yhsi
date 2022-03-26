@@ -95,7 +95,6 @@ burialsRouter.post('/', async (req: Request, res: Response) => {
 		.returning('*')
 		.then(async (rows: any) => {
 			const newBurial = rows[0];
-
 			//OCCUPATIONS
 			await db
 				.insert(Occupations.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ BurialID: newBurial.BurialID, OccupationID: x.OccupationLupID })))

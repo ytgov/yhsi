@@ -10,7 +10,7 @@ export * from "./aircrash-service";
 export * from "./photo-batch-service";
 export * from "./boat-owner-service";
 export * from "./people-service";
-
+export * from "./catalog-service";
 export interface QueryStatement {
 	field: string;
 	operator: string;
