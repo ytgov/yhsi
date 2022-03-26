@@ -1,7 +1,6 @@
 import axios from "axios";
 import { COMMUNITY_URL, FIRST_NATION_URL, USER_URL } from "../urls";
 
-
 const state = {
     roles: [],
     communities: [],
@@ -66,10 +65,6 @@ const actions = {
             .then(resp => resp)
     },
     saveUserAccess(state, item) {
-        //let body = { FirstName: user.FirstName, LastName: user.LastName, Email: user.Email, ExpirationDate: user.ExpirationDate, Roles: user.Roles };
-
-        console.log("SAVE", item);
-
         if (item.id) {
             return axios.put(`${USER_URL}/${item.user_id}/access/${item.id}`, item)
                 .then(resp => resp)
@@ -82,6 +77,11 @@ const actions = {
     removeUserAccess(state, item) {
         return axios.delete(`${USER_URL}/${item.user_id}/access/${item.id}`)
             .then(resp => resp)
+    },
+    createAccount(state, item) {
+        return axios.post(`${USER_URL}/sign-up-external`, item)
+            .then(resp => resp)
+            .catch((err) => { return { error: err.response.data } })
     }
 };
 
