@@ -1,11 +1,12 @@
 import { Express, NextFunction, Request, Response } from 'express';
 import * as ExpressSession from 'express-session';
-import { AUTH_REDIRECT, FRONTEND_URL } from '../config';
+import { AUTH_REDIRECT, DB_CONFIG, FRONTEND_URL } from '../config';
 
 import { auth } from 'express-openid-connect';
 import { AuthUser } from "../models";
+import { UserService } from '../services';
 
-//const db = new UserService();
+const db = new UserService(DB_CONFIG);
 
 export function configureAuthentication(app: Express) {
 	app.use(
@@ -19,7 +20,7 @@ export function configureAuthentication(app: Express) {
 	app.use(
 		auth({
 			authRequired: false,
-			auth0Logout: false,
+			auth0Logout: true,
 			authorizationParams: {
 				response_type: 'code',
 				audience: '',
@@ -35,12 +36,12 @@ export function configureAuthentication(app: Express) {
 
 	app.use('/', async (req: Request, res: Response, next: NextFunction) => {
 		if (req.oidc.isAuthenticated()) {
-			let oidcUser = AuthUser.fromOpenId(req.oidc.user);
-			(req.session as any).user = oidcUser;
-			req.user = oidcUser;
+			let user = AuthUser.fromOpenId(req.oidc.user);
+			(req.session as any).user = user;
+			req.user = user;
 
-			//let dbUser = await db.getByEmail(oidcUser.email);
-			//req.user = await db.makeDTO(Object.assign(oidcUser, dbUser));
+			let dbUser = await db.getByEmail(user.email);
+			req.user = dbUser;// Object.assign(user, dbUser);
 		}
 
 		next();
@@ -51,12 +52,14 @@ export function configureAuthentication(app: Express) {
 			let user = AuthUser.fromOpenId(req.oidc.user);
 			req.user = user;
 
-			////console.log("GET/", user)
-			/* let dbUser = await db.getByEmail(req.user.email);
+			let dbUser = await db.getByEmail(user.email);
 
-            if (!dbUser) {
-                await db.create(user.email, user.first_name, user.last_name, "Active", "");
-            } */
+			if (!dbUser) {
+				await db.create(user.email, user.first_name, user.last_name);
+			}
+			else {
+				await db.updateLoginDate(dbUser);
+			}
 
 			res.redirect(AUTH_REDIRECT);
 		} else {

@@ -445,7 +445,7 @@ export class PlaceService {
 		return new Promise(async (resolve, reject) => {
 			const selectStatement = this.knex('place')
 				.distinct()
-				.select(PLACE_FIELDS)
+				.select(...PLACE_FIELDS, { status: 'StatusTable.Status' })
 				.leftOuterJoin(
 					'FirstNationAssociation',
 					'Place.Id',
@@ -458,7 +458,23 @@ export class PlaceService {
 				)
 				.leftOuterJoin('RevisionLog', 'Place.id', 'RevisionLog.PlaceId')
 				.leftOuterJoin('Description', 'Place.id', 'Description.PlaceId')
-				.leftOuterJoin('Ownership', 'Place.id', 'Ownership.PlaceId');
+				.leftOuterJoin('Ownership', 'Place.id', 'Ownership.PlaceId')
+				.leftOuterJoin(
+					this.knex('Place')
+						.select({
+							PlaceId: 'Place.Id',
+							Status: this.knex.raw(`
+								CASE
+									WHEN PlaceEdit.PlaceId IS NULL THEN ''
+									ELSE 'Editing'
+								END
+							`),
+						})
+						.as('StatusTable')
+						.innerJoin('PlaceEdit', 'PlaceEdit.PlaceId', 'Place.Id'),
+					'Place.Id',
+					'StatusTable.PlaceId'
+				);
 
 			type QueryBuilder = {
 				(base: Knex.QueryInterface, value: any): Knex.QueryInterface;

@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 import auth from "./auth";
+import communities from "@/store/communities"
 import profile from "./profile";
 import boats from "./boats";
 import alerts from "./alerts";
@@ -46,5 +47,5 @@ export default new Vuex.Store({
     siteHistory: state => state.siteHistory,
     search: state => state.search,
   },
-  modules: { auth, profile, boats, alerts, photos, users }
+  modules: { auth, communities, profile, boats, alerts, photos, users }
 });
