@@ -2,11 +2,8 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import goTo from 'vuetify/lib/services/goto';
 
-import Home from "../components/Home.vue";
 import Dashboard from "../components/Dashboard.vue";
 import NotFound from "../views/NotFound.vue";
-import Login from "../views/Login";
-import LoginComplete from "../views/LoginComplete";
 import Profile from "../views/Profile";
 import Maps from "../views/Maps";
 import store from "../store";
@@ -57,7 +54,7 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    component: () => import("../components/Home.vue"),
   },
   {
     path: "/dashboard",
@@ -66,14 +63,19 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: "/sign-up",
+    name: "SignUp",
+    component: () => import("../views/Signup.vue"),
+  },
+  {
     path: "/sign-in",
     name: "Login",
-    component: Login
+    component: () => import("../views/Login.vue"),
   },
   {
     path: "/login-complete",
     name: "LoginComplete",
-    component: LoginComplete
+    component: () => import("../views/LoginComplete.vue"),
   },
   {
     path: "/profile",
@@ -450,8 +452,7 @@ router.beforeEach(async (to, from, next) => {
 
   if (requiresAuth && !isAuthenticated) {
     console.log("You aren't authenticatd, redirecting to sign-in");
-    next('/sign-in');
-    return;
+    return next('/sign-in');
   }
 
   let authorize = to.meta.authorize || [];
