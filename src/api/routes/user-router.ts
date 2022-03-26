@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
-import { DB_CONFIG } from "../config"
+import axios from "axios";
+import { DB_CONFIG, ISSUER_BASE_URL, CLIENT_ID, AUTH_DB_CONNECTION } from "../config"
 import { body, param } from "express-validator";
 import { UserService } from "../services";
 import { ReturnValidationErrors } from "../middleware";
@@ -31,7 +32,7 @@ userRouter.get("/roles", authorize(),
         return res.json({ data: UserRoleOptions });
     });
 
-userRouter.get("/me", authorize(),
+userRouter.get("/me", authorize([], true),
     async (req: Request, res: Response) => {
         let person = req.user;
 
@@ -66,6 +67,36 @@ userRouter.put("/:id", authorize([UserRoles.ADMINISTRATOR]),
         await db.update(id, item);
 
         res.json({ messages: [{ variant: "success", text: "User saved" }] });
+    });
+
+userRouter.post("/sign-up-external",
+    [body("email").isEmail().normalizeEmail().withMessage("This email appears invalid"),
+    body("first_name").notEmpty(),
+    body("last_name").notEmpty(),
+    body("password").notEmpty().isStrongPassword().withMessage("Your password needs to be more complex")], ReturnValidationErrors,
+    async (req: Request, res: Response) => {
+        let { email, first_name, last_name, password } = req.body;
+        let existingEmail = await db.getByEmail(email);
+
+        if (existingEmail) {
+            return res.status(400).json({ errors: [{ msg: "A user with that email already exists, try to sign in" }] });
+        }
+
+        let body = {
+            email, username: email, given_name: first_name,
+            family_name: last_name, password,
+            client_id: CLIENT_ID, connection: AUTH_DB_CONNECTION,
+            name: `${first_name} ${last_name}`,
+            nickname: first_name
+        }
+
+        axios.post(`${ISSUER_BASE_URL}dbconnections/signup`, body)
+            .then(resp => {
+                return res.json({ messages: [{ variant: "success", text: "User account created" }] });
+            })
+            .catch(err => {
+                return res.status(400).json({ errors: [{ msg: err.response.data.description }] });
+            })
     });
 
 userRouter.post("/:id/access", authorize([UserRoles.ADMINISTRATOR]),
@@ -105,7 +136,8 @@ async function makeDTO(userRaw: any) {
     dto.display_name = `${userRaw.first_name} ${userRaw.last_name}`;
 
     if (userRaw.expire_date)
-        dto.expire_date_display = moment(userRaw.expire_date).utc(false).format("YYYY-MM-DD")
+        dto.expire_date_display = moment(userRaw.expire_date).utc(false).format("YYYY-MM-DD");
+
     //dto.roles = _.split(userRaw.roles, ",").filter(r => r.length > 0);
     //dto.access = await db.getAccessFor(userRaw.email);
     //dto.display_access = _.join(dto.access.map((a: any) => a.level), ", ")
