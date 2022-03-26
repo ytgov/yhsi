@@ -5,7 +5,7 @@ const state = {
     user: null,
 };
 const getters = {
-    isAuthenticated: state => !!state.user,
+    isAuthenticated: state => { return !!state.user },
     fullName: state => { return state.user.display_name },
     user: state => { return state.user },
     roles: state => { return state.user.role_list },
@@ -13,6 +13,7 @@ const getters = {
     userInRole: state => {
         return (roles) => {
             if (typeof roles === 'string') roles = [roles];
+            if (roles.length == 0) return true;
 
             if (state.user.role_list.indexOf('Administrator') > -1) return true;
 
