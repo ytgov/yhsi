@@ -51,12 +51,8 @@ import Vue from "vue";
 import VueRouter from "vue-router";*/
 import goTo from 'vuetify/lib/services/goto';
 
-import Home from "../components/Home.vue";
 import Dashboard from "../components/Dashboard.vue";
 import NotFound from "../views/NotFound.vue";
-import Form from "../components/Form";
-import Login from "../views/Login";
-import LoginComplete from "../views/LoginComplete";
 import Profile from "../views/Profile";
 import Maps from "../views/Maps";
 import store from "../store";
@@ -98,6 +94,7 @@ import CommunityGrid from "../components/Administration/LookupTableManagement/Co
 import PhotoOwnerGrid from "../components/Administration/LookupTableManagement/PhotoOwner/PhotoOwnerGrid";
 import PhotoProjectGrid from "../components/Administration/LookupTableManagement/PhotoProject/PhotoProjectGrid";
 import PhotoSubjectGrid from "../components/Administration/LookupTableManagement/PhotoSubject/PhotoSubjectGrid";
+import { UserRoles } from "../authorization";
 
 import Cause from "../components/Administration/LookupTableManagement/Cause/Cause";
 import Cemetary from "../components/Administration/LookupTableManagement/Cemetary/Cemetary";
@@ -566,151 +563,123 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    component: () => import("../components/Home.vue"),
   },
   {
     path: "/dashboard",
     name: "Dashboard",
-    component: Dashboard
+    component: Dashboard,
+    meta: { requiresAuth: true }
   },
   {
-    path: "/form",
-    name: "Basic Form",
-    component: Form,
-    meta: {
-      requiresAuth: false
-    }
+    path: "/sign-up",
+    name: "SignUp",
+    component: () => import("../views/Signup.vue"),
   },
   {
     path: "/sign-in",
     name: "Login",
-    component: Login
+    component: () => import("../views/Login.vue"),
   },
   {
     path: "/login-complete",
     name: "LoginComplete",
-    component: LoginComplete
+    component: () => import("../views/LoginComplete.vue"),
   },
   {
     path: "/profile",
     name: "Profile",
     component: Profile,
-    meta: {
-      requiresAuth: false
-    }
+    meta: { requiresAuth: true }
   },
   {
     path: "/sites",
     name: "SitesTable",
     component: SitesTable,
+    meta: { requiresAuth: true, authorize: [UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.SITE_VIEWER, UserRoles.SITE_VIEWER_LIMITED] }
   },
   {
     path: "/maps",
     name: "Maps",
     component: Maps,
-    meta: {
-      requiresAuth: true
-    },
+    meta: { requiresAuth: true },
   },
   {
     path: "/photos",
     name: "Photos",
     component: PhotosGrid,
-    meta: {
-      requiresAuth: false
-    },
+    meta: { requiresAuth: true, authorize: [UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR, UserRoles.PHOTO_VIEWER] }
   },
   {
     path: "/people",
     name: "People",
     component: Users,
-    meta: {
-      requiresAuth: false
-    }
+    meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] }
   },
   {
     path: "/photo-owners",
     name: "PhotoOwners",
     component: OwnersGrid,
-    meta: {
-      requiresAuth: false
-    }
+    meta: { requiresAuth: true, authorize: [UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR] }
   },
   {
     path: "/communities",
     name: "Communities",
     component: Communities,
-    meta: {
-      requiresAuth: false
-    }
+    meta: { requiresAuth: true }
   },
   {
     path: "/people/edit/:name",
     name: "personEditView",
     component: UserForm,
     props: true,
-    meta: {
-      requiresAuth: false
-    }
+    meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] }
   },
   {
     path: "/people/view/:name",
     component: UserForm,
     name: "personView",
     props: true,
-    meta: {
-      requiresAuth: false
-    }
+    meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] }
   },
   {
     path: "/people/new",
     component: UserForm,
     name: "personAddView",
-    meta: {
-      requiresAuth: false
-    }
+    meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] }
   },
   {
     path: "/photo-owners/edit/:id",
     component: OwnerForm,
-    meta: {
-      requiresAuth: false
-    }
+    meta: { requiresAuth: true, authorize: [UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR] }
   },
   {
     path: "/photo-owners/add",
     component: OwnerForm,
-    meta: {
-      requiresAuth: false
-    }
+    meta: { requiresAuth: true, authorize: [UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR] }
   },
   {
     path: "/communities/edit/:id",
     component: CommunitiesForm,
-    meta: {
-      requiresAuth: false
-    }
+    meta: { requiresAuth: true }
   },
   {
     path: "/communities/add",
     component: CommunitiesForm,
-    meta: {
-      requiresAuth: false
-    }
+    meta: { requiresAuth: true }
   },
   {
     path: '/sites/:id',
     name: 'SiteForms',
     component: SiteForms,
     props: true,
+    meta: { requiresAuth: true, authorize: [UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.SITE_VIEWER, UserRoles.SITE_VIEWER_LIMITED] }
   },
   {
     path: "/photos/edit/:id",
     name: "PhotosFormEdit",
     component: MainPhotos,
-    meta: {
-      requiresAuth: false
-    },
+    meta: { requiresAuth: true, authorize: [UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR] },
     children: [
       {
         path: "feature",
@@ -734,9 +703,7 @@ const routes = [
     path: "/photos/add",
     name: "PhotosFormAdd",
     component: MainPhotos,
-    meta: {
-      requiresAuth: false
-    },
+    meta: { requiresAuth: true, authorize: [UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR] },
     children: [
       {
         path: "feature",
@@ -758,11 +725,8 @@ const routes = [
   },
   {
     path: "/boats",
-
     component: Boats,
-    meta: {
-      requiresAuth: false
-    },
+    meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] },
     children: [
       {
         path: "",
@@ -779,78 +743,92 @@ const routes = [
     path: "/boats/view/:name",
     name: "boatView",
     component: BoatsForm,
-    props: true
+    props: true,
+    meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] }
   },
   {
     path: "/boats/edit/:name",
     name: "boatEditView",
     component: BoatsForm,
-    props: true
+    props: true,
+    meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] }
   },
   {
     path: "/boats/new",
     name: "boatAddView",
-    component: BoatsForm
+    component: BoatsForm,
+    meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] }
   },
   {
     path: "/boats/owner/view/:name",
     name: "ownerView",
     component: BoatsOwnerForm,
-    props: true
+    props: true,
+    meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] }
   },
   {
     path: "/boats/owner/edit/:name",
     name: "ownerEditView",
     component: BoatsOwnerForm,
-    props: true
+    props: true,
+    meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] }
   },
   {
     path: "/boats/owner/new",
     name: "ownerAddView",
-    component: BoatsOwnerForm
+    component: BoatsOwnerForm,
+    meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] }
   },
   {
     path: "/airplane",
     name: "airplane",
-    component: AirplaneGrid
+    component: AirplaneGrid,
+    meta: { requiresAuth: true, authorize: [UserRoles.AIRPLANE_CRASH_EDITOR] }
   },
   {
     path: "/airplane/view/:name",
     name: "airplaneView",
     component: AirplaneViewForm,
-    props: true
+    props: true,
+    meta: { requiresAuth: true, authorize: [UserRoles.AIRPLANE_CRASH_EDITOR] }
   },
   {
     path: "/airplane/edit/:name",
     name: "airplaneEditView",
     component: AirplaneEditForm,
-    props: true
+    props: true,
+    meta: { requiresAuth: true, authorize: [UserRoles.AIRPLANE_CRASH_EDITOR] }
   },
   {
     path: "/airplane/New",
     name: "airplaneAddView",
     component: AirplaneEditForm,
-    props: true
+    props: true,
+    meta: { requiresAuth: true, authorize: [UserRoles.AIRPLANE_CRASH_EDITOR] }
   },
   {
     path: "/admin",
     name: "AdminDashboard",
     component: AdminDashboard,
+    meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] }
   },
   {
     path: "/admin/users",
     name: "AdminUserGrid",
-    component: AdminUserGrid
+    component: AdminUserGrid,
+    meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] }
   },
   {
     path: "/admin/users/:id",
     name: "AdminUserView",
-    component: AdminUserForm
+    component: AdminUserForm,
+    meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] }
   },
   {
     path: "/admin/vessel_type",
     name: "VesselTypeGrid",
-    component: VesselTypeGrid
+    component: VesselTypeGrid,
+    meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] }
   },
   {
 	path: '/admin/cause',
@@ -908,92 +886,96 @@ const routes = [
   {
     path: "/burials",
     name: "BurialsGrid",
-    component: BurialsGrid
+    component: BurialsGrid,
+    meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
   },
   {
     path: "/burials/view/:name",
     name: "BurialsViewForm",
     component: BurialsForm,
-    props: true
+    props: true,
+    meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
   },
   {
     path: "/burials/edit/:name",
     name: "BurialsEditForm",
     component: BurialsForm,
-    props: true
+    props: true,
+    meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
   },
   {
     path: "/places",
     name: "PlacesGrid",
     component: PlacesGrid,
-    meta: {
-      requiresAuth: false
-    },
+    meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] }
   },
   {
     path: "/places/view/:name",
     name: "placeView",
     component: PlacesForm,
-    props: true
+    props: true,
+    meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] }
   },
   {
     path: "/places/edit/:name",
     name: "placeEditView",
     component: PlacesForm,
-    props: true
+    props: true,
+    meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] }
   },
   {
     path: "/places/new",
     name: "placeAddView",
-    component: PlacesForm
+    component: PlacesForm,
+    meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] }
   },
   {
     path: '/admin/placetype',
     name: 'PlaceTypeGrid',
     component: PlaceTypeGrid,
-  },
-  {
-    path: '/places',
-    name: 'PlacesGrid',
-    component: PlacesGrid,
-    meta: {
-      requiresAuth: false,
-    },
+    meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] }
   },
   {
     path: "/admin/community",
     name: "CommunityGrid",
-    component: CommunityGrid
+    component: CommunityGrid,
+    meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] }
   },
   {
     path: "/admin/photo-owner",
     name: "PhotoOwnerGrid",
-    component: PhotoOwnerGrid
+    component: PhotoOwnerGrid,
+    meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] }
   },
   {
     path: "/admin/photo-project",
     name: "PhotoProjectGrid",
-    component: PhotoProjectGrid
+    component: PhotoProjectGrid,
+    meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] }
   },
   {
     path: "/admin/photo-subject",
     name: "PhotoSubjectGrid",
-    component: PhotoSubjectGrid
+    component: PhotoSubjectGrid,
+    meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] }
   },
   {
     path: "/photobatches",
     name: "PhotoBatchGrid",
-    component: PhotoBatchGrid
+    component: PhotoBatchGrid,
+    meta: { requiresAuth: true, authorize: [UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR] },
   },
   {
     path: "/photobatches/upload",
     name: "PhotoBatchUpload",
-    component: PhotoBatchUpload
+    component: PhotoBatchUpload,
+    meta: { requiresAuth: true, authorize: [UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR] },
   },
   {
     path: "/photobatches/attributes/:mode",
     name: "PhotoBatchAttributes",
-    component: PhotoBatchAttributes
+    component: PhotoBatchAttributes,
+    meta: { requiresAuth: true, authorize: [UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR] },
   },
   {
     path: "*",
@@ -1020,22 +1002,30 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  var requiresAuth = to.meta.requiresAuth || false;
+  let requiresAuth = to.meta.requiresAuth || false;
 
   if (!requiresAuth) {
     return next();
   }
 
   await store.dispatch('checkAuthentication');
-  var isAuthenticated = store.getters.isAuthenticated;
+
+  let isAuthenticated = store.getters.isAuthenticated;
 
   if (requiresAuth && !isAuthenticated) {
     console.log("You aren't authenticatd, redirecting to sign-in");
-    next('/sign-in');
-    return;
+    return next('/sign-in');
   }
 
-  return next();
+  let authorize = to.meta.authorize || [];
+  let isAuthorized = store.getters.userInRole(authorize);
+
+  if (!isAuthorized) {
+    console.log("You aren't authorized, redirecting to dashboard");
+    next('/dashboard');
+  }
+
+  next();
 });
 
 export default router;

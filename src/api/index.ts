@@ -36,6 +36,7 @@ import * as config from './config';
 import { doHealthCheck } from './utils/healthCheck';
 import { configureAuthentication } from './routes/auth';
 import { RequiresAuthentication } from './middleware';
+import { CreateMigrationRoutes } from './data/migrator';
 
 const app = express();
 
@@ -74,13 +75,16 @@ app.use(
 	})
 );
 
+
+CreateMigrationRoutes(app);
+
 configureAuthentication(app);
 
 app.get('/api/healthCheck', (req: Request, res: Response) => {
 	doHealthCheck(res);
 });
 
-app.use('/api/user', RequiresAuthentication, userRouter);
+app.use('/api/user', userRouter);
 app.use('/api/place', RequiresAuthentication, placeRouter);
 app.use('/api/ytplace', RequiresAuthentication, ytPlaceRouter);
 app.use('/api/ytplacehistory', RequiresAuthentication, ytPlaceHistoryRouter);
@@ -124,5 +128,5 @@ app.use((req: Request, res: Response) => {
 });
 
 app.listen(config.API_PORT, () => {
-	//console.log(`API listening on port ${config.API_PORT}`);
+	console.log(`API listening on port ${config.API_PORT}`);
 });
