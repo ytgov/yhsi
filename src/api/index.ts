@@ -84,7 +84,7 @@ app.get('/api/healthCheck', (req: Request, res: Response) => {
 	doHealthCheck(res);
 });
 
-app.use('/api/user', RequiresAuthentication, userRouter);
+app.use('/api/user', userRouter);
 app.use('/api/place', RequiresAuthentication, placeRouter);
 app.use('/api/ytplace', RequiresAuthentication, ytPlaceRouter);
 app.use('/api/ytplacehistory', RequiresAuthentication, ytPlaceHistoryRouter);
@@ -128,5 +128,5 @@ app.use((req: Request, res: Response) => {
 });
 
 app.listen(config.API_PORT, () => {
-	//console.log(`API listening on port ${config.API_PORT}`);
+	console.log(`API listening on port ${config.API_PORT}`);
 });
