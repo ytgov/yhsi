@@ -2,9 +2,15 @@
   <div>
     <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
       <span class="mt-2">Description</span>
-      <v-btn class="my-0" color="primary" @click="saveChanges">Save</v-btn>
+      <v-btn
+        class="my-0"
+        color="primary"
+        @click="saveChanges"
+      >
+        Save
+      </v-btn>
     </h2>
-    <v-divider class="mb-5"></v-divider>
+    <v-divider class="mb-5" />
     <v-form v-model="valid">
       <div class="row mx-1">
         <div class="col-md-12">
@@ -21,7 +27,7 @@
                 class="top-right-button"
                 @click="removeDescription(i)"
               >
-                <v-icon dark>mdi-minus-circle</v-icon>
+                <v-icon dark> mdi-minus-circle </v-icon>
               </v-btn>
               <v-row>
                 <v-col cols="6">
@@ -33,7 +39,7 @@
                     outlined
                     background-color="white"
                     hide-details
-                  ></v-select>
+                  />
                 </v-col>
               </v-row>
               <v-row>
@@ -45,12 +51,15 @@
                     outlined
                     background-color="white"
                     hide-details
-                  ></v-textarea>
+                  />
                 </v-col>
               </v-row>
             </v-card-text>
           </v-card>
-          <v-btn color="primary" @click="addDescription()">
+          <v-btn
+            color="primary"
+            @click="addDescription()"
+          >
             Add Description
           </v-btn>
         </div>
@@ -60,12 +69,12 @@
 </template>
 
 <script>
-import axios from "axios";
-import store from "../../../store";
-import { PLACE_URL, STATIC_URL } from "../../../urls";
+import axios from 'axios';
+import store from '@/store';
+import { PLACE_URL, STATIC_URL } from '@/urls';
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
-  name: "Description",
+  name: 'Description',
   data: () => ({
     valid: false,
     loadedId: -1,
@@ -81,7 +90,7 @@ export default {
       .then((resp) => {
         this.fields = resp.data.data;
         this.descriptions = resp.data.relationships.descriptions.data;
-        store.dispatch("addSiteHistory", resp.data.data);
+        store.dispatch('addSiteHistory', resp.data.data);
         this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
@@ -92,7 +101,7 @@ export default {
   },
   methods: {
     addDescription() {
-      this.descriptions.push({placeId: this.loadedId, type: 1});
+      this.descriptions.push({ placeId: this.loadedId, type: 1 });
     },
     removeDescription(index) {
       this.descriptions.splice(index, 1);
@@ -105,10 +114,10 @@ export default {
       axios
         .put(`${PLACE_URL}/${this.loadedId}/description`, body)
         .then((resp) => {
-          this.$emit("showAPIMessages", resp.data);
+          this.$emit('showAPIMessages', resp.data);
         })
         .catch((err) => {
-          this.$emit("showError", err);
+          this.$emit('showError', err);
         });
     },
   },
