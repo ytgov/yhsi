@@ -1,7 +1,174 @@
 <template>
-  <div>
-    <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
-      <span class="mt-2">Themes &amp; Function</span>
+  <v-card
+    class="mb-0"
+    tag="section"
+    outlined
+    tile
+  >
+    <v-card-title
+      class="mb-0 text-h4"
+      tag="h2"
+    >
+      Themes &amp; Function
+    </v-card-title>
+    <v-card-text tag="section">
+      <v-col cols="12">
+        <v-textarea
+          v-model="fields.yHSThemes"
+          label="YHS Themes"
+          dense
+          rows="4"
+          outlined
+          hide-details
+          background-color="white"
+        />
+      </v-col>
+
+      <v-col cols="12">
+        <v-card
+          class="default mb-0"
+          tag="section"
+        >
+          <v-card-title
+            tag="h3"
+            class="mb-0 text-h6"
+          >
+            Themes
+          </v-card-title>
+          <v-card-text
+            v-model="valid"
+            tag="form"
+          >
+            <v-row
+              v-for="(item, i) in themes"
+              :key="i"
+            >
+              <v-col cols="10">
+                <v-select
+                  v-model="item.placeThemeId"
+                  :items="themeCategoryOptions"
+                  item-text="display"
+                  item-value="id"
+                  label="Category / Type"
+                  dense
+                  hide-details
+                  outlined
+                  background-color="white"
+                />
+              </v-col>
+
+              <v-col cols="2">
+                <v-btn
+                  color="warning"
+                  x-small
+                  fab
+                  title="Remove"
+                  class="my-0 float-right"
+                  @click="removeTheme(i)"
+                >
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              class="my-0"
+              color="info"
+              @click="addTheme"
+            >
+              Add Theme
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+
+      <div class="col-md-12">
+        <v-card class="default mb-0">
+          <v-card-text>
+            <h3>Functional Uses</h3>
+            <div
+              v-for="(item, i) of functionalUses"
+              :key="i"
+              class="row"
+            >
+              <div class="col-md-10">
+                <v-row>
+                  <v-col cols="4">
+                    <v-select
+                      v-model="item.functionalUseType"
+                      label="Use type"
+                      :items="useTypeOptions"
+                      item-text="text"
+                      item-value="value"
+                      dense
+                      outlined
+                      hide-details
+                      background-color="white"
+                    />
+                  </v-col>
+                  <v-col cols="8">
+                    <v-autocomplete
+                      v-model="item.functionalTypeId"
+                      :items="functionalCategoryOptions"
+                      item-text="description"
+                      item-value="id"
+                      label="Functional Category / Type"
+                      dense
+                      outlined
+                      hide-details
+                      background-color="white"
+                    />
+                  </v-col>
+                </v-row>
+              </div>
+
+              <div class="col-md-2">
+                <v-btn
+                  color="warning"
+                  x-small
+                  fab
+                  title="Remove"
+                  class="my-0 float-right"
+                  @click="removeUse(i)"
+                >
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </div>
+            </div>
+            <v-btn
+              class="mt-5"
+              color="info"
+              @click="addUse()"
+            >
+              Add Functional Use
+            </v-btn>
+          </v-card-text>
+        </v-card>
+      </div>
+      <div class="col-md-6">
+        <v-textarea
+          v-model="fields.currentUseComment"
+          label="YHS Current Use"
+          dense
+          outlined
+          background-color="white"
+          hide-details
+        />
+      </div>
+      <div class="col-md-6">
+        <v-textarea
+          v-model="fields.yHSPastUse"
+          label="YHS Past Use"
+          dense
+          outlined
+          hide-details
+          background-color="white"
+        />
+      </div>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer />
       <v-btn
         class="my-0"
         color="primary"
@@ -9,155 +176,8 @@
       >
         Save
       </v-btn>
-    </h2>
-    <v-divider class="mb-5" />
-    <v-form v-model="valid">
-      <div class="row mx-1">
-        <div class="col-md-12">
-          <v-textarea
-            v-model="fields.yHSThemes"
-            label="YHS Themes"
-            dense
-            rows="4"
-            outlined
-            hide-details
-            background-color="white"
-          />
-        </div>
-
-        <div class="col-md-12">
-          <v-card class="default mb-0">
-            <v-card-text>
-              <h3>Themes</h3>
-              <div
-                v-for="(item, i) of themes"
-                :key="i"
-                class="row"
-              >
-                <div class="col-md-10">
-                  <v-select
-                    v-model="item.placeThemeId"
-                    :items="themeCategoryOptions"
-                    item-text="display"
-                    item-value="id"
-                    label="Category / Type"
-                    dense
-                    hide-details
-                    outlined
-                    background-color="white"
-                  />
-                </div>
-
-                <div class="col-md-2">
-                  <v-btn
-                    color="warning"
-                    x-small
-                    fab
-                    title="Remove"
-                    class="my-0 float-right"
-                    @click="removeTheme(i)"
-                  >
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                </div>
-              </div>
-              <v-btn
-                class="mt-5"
-                color="info"
-                @click="addTheme()"
-              >
-                Add Theme
-              </v-btn>
-            </v-card-text>
-          </v-card>
-        </div>
-
-        <div class="col-md-12">
-          <v-card class="default mb-0">
-            <v-card-text>
-              <h3>Functional Uses</h3>
-              <div
-                v-for="(item, i) of functionalUses"
-                :key="i"
-                class="row"
-              >
-                <div class="col-md-10">
-                  <v-row>
-                    <v-col cols="4">
-                      <v-select
-                        v-model="item.functionalUseType"
-                        label="Use type"
-                        :items="useTypeOptions"
-                        item-text="text"
-                        item-value="value"
-                        dense
-                        outlined
-                        hide-details
-                        background-color="white"
-                      />
-                    </v-col>
-                    <v-col cols="8">
-                      <v-autocomplete
-                        v-model="item.functionalTypeId"
-                        :items="functionalCategoryOptions"
-                        item-text="description"
-                        item-value="id"
-                        label="Functional Category / Type"
-                        dense
-                        outlined
-                        hide-details
-                        background-color="white"
-                      />
-                    </v-col>
-                  </v-row>
-                </div>
-
-                <div class="col-md-2">
-                  <v-btn
-                    color="warning"
-                    x-small
-                    fab
-                    title="Remove"
-                    class="my-0 float-right"
-                    @click="removeUse(i)"
-                  >
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                </div>
-              </div>
-              <v-btn
-                class="mt-5"
-                color="info"
-                @click="addUse()"
-              >
-                Add Functional Use
-              </v-btn>
-            </v-card-text>
-          </v-card>
-        </div>
-        <div class="col-md-6">
-          <v-textarea
-            v-model="fields.currentUseComment"
-            label="YHS Current Use"
-            dense
-            outlined
-            background-color="white"
-            hide-details
-          />
-        </div>
-        <div class="col-md-6">
-          <v-textarea
-            v-model="fields.yHSPastUse"
-            label="YHS Past Use"
-            dense
-            outlined
-            hide-details
-            background-color="white"
-          />
-        </div>
-      </div>
-    </v-form>
-  </div>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
