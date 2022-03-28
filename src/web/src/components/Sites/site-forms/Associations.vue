@@ -1,30 +1,33 @@
 <template>
   <v-card
-    v-model="valid"
-    tag="form"
+    class="mb-0"
+    tag="section"
     outlined
     tile
   >
     <v-card-title
+      class="mb-0 text-h4"
       tag="h2"
-      class="mb-0"
     >
       Associations
     </v-card-title>
     <v-card-text>
-      <v-card class="default mb-5">
+      <v-card
+        class="default mb-5"
+        tag="section"
+      >
         <v-card-title
           tag="h3"
-          class="mb-0"
+          class="mb-0 text-h6"
         >
           Associations
         </v-card-title>
-        <v-card-text>
+        <v-card-text tag="form">
           <v-row
             v-for="(item, i) in associations"
             :key="i"
           >
-            <v-col md="5">
+            <v-col cols="5">
               <v-select
                 v-model="item.type"
                 label="Association type"
@@ -36,7 +39,7 @@
               />
             </v-col>
 
-            <v-col md="5">
+            <v-col cols="5">
               <v-text-field
                 v-model="item.description"
                 label="Association name"
@@ -48,7 +51,7 @@
               />
             </v-col>
 
-            <v-col md="2">
+            <v-col cols="2">
               <v-btn
                 color="warning"
                 x-small
@@ -72,19 +75,22 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-      <v-card class="default mb-0">
+      <v-card
+        class="default mb-0"
+        tag="section"
+      >
         <v-card-title
           tag="h3"
-          class="mb-0"
+          class="mb-0 text-h6"
         >
           First Nation Associations
         </v-card-title>
-        <v-card-text>
+        <v-card-text tag="form">
           <v-row
             v-for="(item, i) in firstNationAssociations"
             :key="i"
           >
-            <v-col md="5">
+            <v-col cols="5">
               <v-select
                 v-model="item.firstNationAssociationType"
                 label="Association"
@@ -97,7 +103,7 @@
                 background-color="white"
               />
             </v-col>
-            <v-col md="5">
+            <v-col cols="5">
               <v-select
                 v-model="item.firstNationId"
                 label="First Nation"
@@ -110,7 +116,7 @@
                 background-color="white"
               />
             </v-col>
-            <v-col md="2">
+            <v-col cols="2">
               <v-btn
                 color="warning"
                 x-small
@@ -122,7 +128,7 @@
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-col>
-            <v-col md="10">
+            <v-col cols="10">
               <v-text-field
                 v-model="item.comments"
                 label="Comments"
