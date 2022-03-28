@@ -1,8 +1,6 @@
 <template>
   <div>
-    <h2 class="mt-4 mb-0 ml-4 d-flex justify-space-between">
-      Photos
-    </h2>
+    <h2 class="mt-4 mb-0 ml-4 d-flex justify-space-between">Photos</h2>
     <v-divider class="mb-5"></v-divider>
     <v-form v-model="valid">
       <div class="row mx-1">
@@ -13,25 +11,26 @@
             dense
             outlined
             background-color="white"
-          ></v-text-field>
+          />
         </div>
 
         <div
-          class="col-md-6"
           v-for="(item, index) in photos"
           :key="`theme-${index + 1}`"
+          class="col-md-6"
         >
           <v-card class="default">
-            <v-card-text
-              ><v-btn
+            <v-card-text>
+              <v-btn
                 color="warning"
                 x-small
                 fab
                 title="Remove"
                 class="my-0 float-right"
                 @click="removePhoto(index)"
-                ><v-icon>mdi-close</v-icon></v-btn
               >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
               <h3>Photo {{ index + 1 }}</h3>
 
               <v-row>
@@ -41,15 +40,13 @@
                     class="center-img"
                     max-width="128"
                     :src="require('../../../assets/add_photo.png')"
-                  >
-                  </v-img>
+                  />
                   <v-img
                     v-else
                     class="center-img"
                     max-width="128"
                     :src="item.img"
-                  >
-                  </v-img>
+                  />
                 </v-col>
               </v-row>
               <v-text-field
@@ -58,7 +55,7 @@
                 dense
                 outlined
                 background-color="white"
-              ></v-text-field>
+              />
 
               <v-text-field
                 v-model="item.caption"
@@ -66,7 +63,7 @@
                 dense
                 outlined
                 background-color="white"
-              ></v-text-field>
+              />
 
               <v-text-field
                 v-model="item.comments"
@@ -74,7 +71,7 @@
                 dense
                 outlined
                 background-color="white"
-              ></v-text-field>
+              />
 
               <v-text-field
                 v-model="item.creditLine"
@@ -82,7 +79,7 @@
                 dense
                 outlined
                 background-color="white"
-              ></v-text-field>
+              />
 
               <v-text-field
                 v-model="item.location"
@@ -90,7 +87,7 @@
                 dense
                 outlined
                 background-color="white"
-              ></v-text-field>
+              />
               <v-file-input
                 :id="`fi-${index}`"
                 label="Upload image"
@@ -100,13 +97,17 @@
                 outlined
                 background-color="white"
                 @change="onFileSelection($event, index)"
-              ></v-file-input>
+              />
             </v-card-text>
           </v-card>
         </div>
 
         <v-col cols="12">
-          <v-btn color="primary" @click="addPhoto()">Add Photo</v-btn>
+          <v-btn
+            color="primary"
+            @click="addPhoto"
+            >Add Photo
+          </v-btn>
         </v-col>
       </div>
     </v-form>
@@ -114,23 +115,25 @@
 </template>
 
 <script>
-import axios from "axios";
-import store from "../../../store";
-import { PLACE_URL } from "../../../urls";
+import axios from 'axios';
+
+import store from '@/store';
+import { PLACE_URL } from '@/urls';
+
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
-  name: "Photos",
+  name: 'Photos',
   data: () => ({
     valid: false,
     generalRules: [
-      (v) => !!v || "This input is required",
-      (v) => v.length <= 20 || "This input must be less than 20 characters",
+      (v) => !!v || 'This input is required',
+      (v) => v.length <= 20 || 'This input must be less than 20 characters',
     ],
 
     photos: [],
 
     /* Placeholder variables below this line **Read above** */
-    categoryOfProperty: "",
+    categoryOfProperty: '',
   }),
   created: function () {
     let id = this.$route.params.id;
@@ -140,7 +143,7 @@ export default {
       .then((resp) => {
         this.fields = resp.data.data;
         this.photos = resp.data.relationships.photos.data;
-        store.dispatch("addSiteHistory", resp.data.data);
+        store.dispatch('addSiteHistory', resp.data.data);
         this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
@@ -166,7 +169,7 @@ export default {
 
 <style scoped>
 #backgroundimgsw {
-  background-image: "../../assets/greyimg.jpg";
+  background-image: '../../assets/greyimg.jpg';
 }
 .center-img {
   display: block;
@@ -175,7 +178,7 @@ export default {
   width: 50%;
 }
 .divback {
-  background-image: url("../../../assets/add_photo.png");
+  background-image: url('../../../assets/add_photo.png');
   width: 100px;
   height: 100px;
 }
