@@ -48,7 +48,7 @@ import LegalAndZoning from '@/components/Sites/site-forms/LegalAndZoning';
 import Location from '@/components/Sites/site-forms/Location';
 import Management from '@/components/Sites/site-forms/Management';
 import Photos from '@/components/Sites/site-forms/Photos';
-import PrintDialog from '@/components/Sites/SitesGrid/PrintDialog';
+import PrintDialog from '@/components/Sites/SiteFormsPrintDialog';
 import SiteFormsSidebar from '@/components/Sites/SiteFormsSidebar';
 import Summary from '@/components/Sites/site-forms/Summary';
 import Themes from '@/components/Sites/site-forms/Themes';
