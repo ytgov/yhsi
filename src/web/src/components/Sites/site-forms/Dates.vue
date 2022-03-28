@@ -1,181 +1,190 @@
 <template>
-  <div>
-    <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
-      <span class="mt-2">Dates &amp; Condition</span>
-      <v-btn
-        class="my-0"
-        color="primary"
-        @click="saveChanges"
+  <v-card
+    class="mb-0"
+    tag="section"
+    outlined
+    tile
+  >
+    <v-card-title
+      class="mb-0 text-h4"
+      tag="h2"
+    >
+      Dates &amp; Condition
+    </v-card-title>
+    <v-card-text>
+      <v-card
+        tag="section"
+        class="default mb-4"
       >
-        Save
-      </v-btn>
-    </h2>
-    <v-divider class="mb-5" />
-    <v-form v-model="valid">
-      <div class="row mx-1">
-        <div class="col-md-12">
-          <h3>Dates</h3>
-
-          <v-card
+        <v-card-title
+          tag="h3"
+          class="mb-0 text-h6"
+        >
+          Dates
+        </v-card-title>
+        <v-card-text tag="form">
+          <div
             v-for="(item, i) in dates"
             :key="i"
-            class="default mb-4"
           >
-            <v-card-title>
-              Date {{ 1 + i }}
-              <v-spacer />
+            <v-row>
+              <v-col cols="5">
+                <v-select
+                  v-model="item.type"
+                  label="Date type"
+                  :items="dateTypeOptions"
+                  item-value="value"
+                  item-text="text"
+                  dense
+                  outlined
+                  background-color="white"
+                  hide-details
+                />
+              </v-col>
+              <v-col cols="5">
+                <v-text-field
+                  v-model="item.details"
+                  label="Details"
+                  dense
+                  outlined
+                  background-color="white"
+                  hide-details
+                />
+              </v-col>
+              <v-col cols="2">
+                <v-btn
+                  color="warning"
+                  x-small
+                  fab
+                  class="my-0"
+                  @click="removeDate(i)"
+                >
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="5">
+                <v-menu
+                  v-model="item.from_menu"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  left
+                  nudge-top="26"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="item.fromDate"
+                      label="From date"
+                      append-icon="mdi-calendar"
+                      readonly
+                      outlined
+                      dense
+                      hide-details
+                      background-color="white"
+                      v-bind="attrs"
+                      v-on="on"
+                    />
+                  </template>
+                  <v-date-picker
+                    v-model="item.fromDate"
+                    @input="item.from_menu = false"
+                  />
+                </v-menu>
+              </v-col>
+              <v-col col="5">
+                <v-menu
+                  v-model="item.to_menu"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  left
+                  nudge-top="26"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="item.toDate"
+                      label="To date"
+                      append-icon="mdi-calendar"
+                      readonly
+                      outlined
+                      dense
+                      hide-details
+                      background-color="white"
+                      v-bind="attrs"
+                      v-on="on"
+                    />
+                  </template>
+                  <v-date-picker
+                    v-model="item.toDate"
+                    @input="item.to_menu = false"
+                  />
+                </v-menu>
+              </v-col>
+              <v-col cols="2" />
+            </v-row>
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            class="my-0"
+            color="info"
+            @click="addDate"
+          >
+            Add date
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+      <v-divider class="mt-2 mb-4" />
+      <v-card class="default mb-5">
+        <v-card-text>
+          <h3>Construction Periods</h3>
+
+          <div
+            v-for="(item, i) in constructionPeriods"
+            :key="i"
+            class="row"
+          >
+            <div class="col-md-10">
+              <v-select
+                v-model="item.type"
+                :items="constructionPeriodOptions"
+                item-text="text"
+                item-value="value"
+                label=""
+                dense
+                outlined
+                hide-details
+                background-color="white"
+              />
+            </div>
+
+            <div class="col-md-2">
               <v-btn
                 color="warning"
                 x-small
                 fab
-                class="my-0"
-                @click="removeDate(i)"
+                title="Remove"
+                class="my-0 float-right"
+                @click="removePeriod(i)"
               >
                 <v-icon>mdi-close</v-icon>
               </v-btn>
-            </v-card-title>
+            </div>
+          </div>
 
-            <v-card-text>
-              <div class="row">
-                <div class="col-md-6">
-                  <v-select
-                    v-model="item.type"
-                    label="Date type"
-                    :items="dateTypeOptions"
-                    item-value="value"
-                    item-text="text"
-                    dense
-                    outlined
-                    background-color="white"
-                    hide-details
-                  />
-                </div>
-                <div class="col-md-6">
-                  <v-text-field
-                    v-model="item.details"
-                    label="Details"
-                    dense
-                    outlined
-                    background-color="white"
-                    hide-details
-                  />
-                </div>
-                <div class="col-md-6">
-                  <v-menu
-                    v-model="item.from_menu"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    left
-                    nudge-top="26"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-text-field
-                        v-model="item.fromDate"
-                        label="From date"
-                        append-icon="mdi-calendar"
-                        readonly
-                        outlined
-                        dense
-                        background-color="white"
-                        v-bind="attrs"
-                        v-on="on"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="item.fromDate"
-                      @input="item.from_menu = false"
-                    />
-                  </v-menu>
-                </div>
-                <div class="col-md-6">
-                  <v-menu
-                    v-model="item.to_menu"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    left
-                    nudge-top="26"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-text-field
-                        v-model="item.toDate"
-                        label="To date"
-                        append-icon="mdi-calendar"
-                        readonly
-                        outlined
-                        dense
-                        background-color="white"
-                        v-bind="attrs"
-                        v-on="on"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="item.toDate"
-                      @input="item.to_menu = false"
-                    />
-                  </v-menu>
-                </div>
-              </div>
-            </v-card-text>
-          </v-card>
           <v-btn
             color="info"
-            @click="addDate()"
+            @click="addPeriod()"
           >
-            Add date
+            Add construction period
           </v-btn>
-          <v-divider class="mt-2 mb-4" />
-          <v-card class="default mb-5">
-            <v-card-text>
-              <h3>Construction Periods</h3>
-
-              <div
-                v-for="(item, i) in constructionPeriods"
-                :key="i"
-                class="row"
-              >
-                <div class="col-md-10">
-                  <v-select
-                    v-model="item.type"
-                    :items="constructionPeriodOptions"
-                    item-text="text"
-                    item-value="value"
-                    label=""
-                    dense
-                    outlined
-                    hide-details
-                    background-color="white"
-                  />
-                </div>
-
-                <div class="col-md-2">
-                  <v-btn
-                    color="warning"
-                    x-small
-                    fab
-                    title="Remove"
-                    class="my-0 float-right"
-                    @click="removePeriod(i)"
-                  >
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                </div>
-              </div>
-
-              <v-btn
-                color="info"
-                @click="addPeriod()"
-              >
-                Add construction period
-              </v-btn>
-            </v-card-text>
-          </v-card>
-          <v-divider class="mt-2 mb-2" />
-        </div>
-      </div>
+        </v-card-text>
+      </v-card>
+      <v-divider class="mt-2 mb-2" />
 
       <div class="row mx-1">
         <div class="col-md-6">
@@ -269,8 +278,18 @@
           />
         </div>
       </div>
-    </v-form>
-  </div>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer />
+      <v-btn
+        class="my-0"
+        color="primary"
+        @click="saveChanges"
+      >
+        Save
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
