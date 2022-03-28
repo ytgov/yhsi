@@ -83,16 +83,23 @@
         </v-card>
       </v-col>
 
-      <div class="col-md-12">
-        <v-card class="default mb-0">
-          <v-card-text>
-            <h3>Functional Uses</h3>
-            <div
-              v-for="(item, i) of functionalUses"
+      <v-col cols="12">
+        <v-card
+          class="default mb-0"
+          tag="section"
+        >
+          <v-card-title
+            tag="h3"
+            class="mb-0 text-h6"
+          >
+            Functional Uses
+          </v-card-title>
+          <v-card-text tag="form">
+            <v-row
+              v-for="(item, i) in functionalUses"
               :key="i"
-              class="row"
             >
-              <div class="col-md-10">
+              <v-col cols="10">
                 <v-row>
                   <v-col cols="4">
                     <v-select
@@ -121,9 +128,9 @@
                     />
                   </v-col>
                 </v-row>
-              </div>
+              </v-col>
 
-              <div class="col-md-2">
+              <v-col cols="2">
                 <v-btn
                   color="warning"
                   x-small
@@ -134,19 +141,21 @@
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
-              </div>
-            </div>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
             <v-btn
-              class="mt-5"
+              class="my-0"
               color="info"
-              @click="addUse()"
+              @click="addUse"
             >
               Add Functional Use
             </v-btn>
-          </v-card-text>
+          </v-card-actions>
         </v-card>
-      </div>
-      <div class="col-md-6">
+      </v-col>
+      <v-col cols="6">
         <v-textarea
           v-model="fields.currentUseComment"
           label="YHS Current Use"
@@ -155,8 +164,8 @@
           background-color="white"
           hide-details
         />
-      </div>
-      <div class="col-md-6">
+      </v-col>
+      <v-col cols="6">
         <v-textarea
           v-model="fields.yHSPastUse"
           label="YHS Past Use"
@@ -165,7 +174,7 @@
           hide-details
           background-color="white"
         />
-      </div>
+      </v-col>
     </v-card-text>
     <v-card-actions>
       <v-spacer />
