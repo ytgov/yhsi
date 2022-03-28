@@ -13,7 +13,7 @@
     </v-card-title>
     <v-card-text>
       <v-card
-        class="default mb-5"
+        class="default"
         tag="section"
       >
         <v-card-title
@@ -43,6 +43,7 @@
                   required
                   outlined
                   dense
+                  hide-details
                   background-color="white"
                 />
               </v-col>
@@ -62,6 +63,7 @@
                   required
                   outlined
                   dense
+                  hide-details
                   background-color="white"
                 />
               </v-col>
@@ -80,7 +82,7 @@
             </v-row>
             <hr
               v-if="i < revisionLogs.length - 1"
-              class="mb-5 mt-2"
+              class="my-3"
             />
           </div>
         </v-card-text>
@@ -143,26 +145,27 @@
                   v-model="item.firstName"
                   label="First Name"
                   required
-                  background-color="white"
                   dense
                   outlined
+                  background-color="white"
                 />
 
                 <v-text-field
                   v-model="item.phone"
                   label="Phone"
                   required
-                  background-color="white"
                   dense
                   outlined
+                  background-color="white"
                 />
 
                 <v-textarea
                   v-model="item.mailingAddress"
                   label="Mailing Address"
-                  background-color="white"
                   dense
                   outlined
+                  hide-details
+                  background-color="white"
                 />
               </v-col>
               <v-col cols="6">
@@ -170,32 +173,33 @@
                   v-model="item.lastName"
                   label="Last Name"
                   required
-                  background-color="white"
                   dense
                   outlined
+                  background-color="white"
                 />
 
                 <v-text-field
                   v-model="item.email"
                   label="Email"
                   required
-                  background-color="white"
                   dense
                   outlined
+                  background-color="white"
                 />
 
                 <v-textarea
                   v-model="item.description"
                   label="Description"
-                  background-color="white"
                   dense
                   outlined
+                  hide-details
+                  background-color="white"
                 />
               </v-col>
             </v-row>
             <hr
               v-if="i < contacts.length - 1"
-              class="mb-5 mt-2"
+              class="my-3"
             />
           </div>
         </v-card-text>
@@ -209,64 +213,91 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-      <v-divider class="mt-2 mb-2" />
-      <v-row>
-        <v-col cols="12">
-          <div class="mb-2">Web Links</div>
-          <v-alert
+      <v-divider class="my-3" />
+      <v-card class="default">
+        <v-card-title
+          tag="h3"
+          class="mb-0 text-h6"
+        >
+          Web Links
+        </v-card-title>
+        <v-card-text tag="form">
+          <div
             v-for="(item, i) in links"
-            :key="`theme-${i + 1}`"
-            outlined
-            color="primary"
+            :key="`link-${i + 1}`"
           >
-            <div class="sub-title">Web Link {{ i + 1 }}</div>
-            <v-btn
-              icon
-              color="primary"
-              class="top-right-button"
-              @click="removeLink(i)"
-            >
-              <v-icon dark>mdi-close-circle</v-icon>
-            </v-btn>
             <v-row>
-              <v-col cols="6">
+              <v-col cols="5">
                 <v-combobox
                   v-model="item.type"
                   label="Link Type"
+                  dense
+                  outlined
+                  hide-details
+                  background-color="white"
                 />
               </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="6">
+              <v-col cols="5">
                 <v-text-field
                   v-model="item.webAddress"
                   label="Web Address"
                   required
+                  dense
+                  outlined
+                  hide-details
+                  background-color="white"
                 />
               </v-col>
+              <v-col cols="2">
+                <v-btn
+                  color="warning"
+                  x-small
+                  fab
+                  title="Remove"
+                  class="my-0 float-right"
+                  @click="removeLink(i)"
+                >
+                  <v-icon dark>mdi-close</v-icon>
+                </v-btn>
+              </v-col>
             </v-row>
-          </v-alert>
+            <hr
+              v-if="i < links.length - 1"
+              class="my-4"
+            />
+          </div>
+        </v-card-text>
+        <v-card-actions>
           <v-btn
-            outlined
-            color="primary"
-            @click="addLink()"
+            class="my-0"
+            color="info"
+            @click="addLink"
           >
             Add New
           </v-btn>
-        </v-col>
-      </v-row>
+        </v-card-actions>
+      </v-card>
+      <v-divider class="my-3" />
       <v-row>
         <v-col cols="6">
-          <v-alert
-            outlined
-            color="primary"
+          <v-card
+            class="default mb-0"
+            tag="section"
           >
-            <div class="sub-title">Designation Information</div>
-            <v-row>
+            <v-card-title
+              tag="h3"
+              class="mb-0 text-h6"
+            >
+              Designation Information
+            </v-card-title>
+            <v-card-text>
               <v-col cols="12">
                 <v-combobox
                   v-model="fields.jurisdiction"
                   label="Jurisdiction"
+                  dense
+                  outlined
+                  background-color="white"
                 />
 
                 <v-menu
@@ -283,6 +314,9 @@
                       label="Recognition Date"
                       append-icon="mdi-calendar"
                       readonly
+                      dense
+                      outlined
+                      background-color="white"
                       v-bind="attrs"
                       v-on="on"
                     />
@@ -299,15 +333,25 @@
                 <v-combobox
                   v-model="fields.ownerConsent"
                   label="Owner Consent"
+                  dense
+                  outlined
+                  background-color="white"
                 />
 
-                <v-checkbox
-                  v-model="fields.showInRegister"
-                  label="Publicly Accessible?"
-                />
+                <div class="rounded white px-2 pt-1 pb-2">
+                  <v-checkbox
+                    v-model="fields.showInRegister"
+                    label="Publicly Accessible?"
+                    dense
+                    outlined
+                    hide-details
+                    color="info"
+                    background-color="white"
+                  />
+                </div>
               </v-col>
-            </v-row>
-          </v-alert>
+            </v-card-text>
+          </v-card>
         </v-col>
         <v-col cols="6">
           <v-text-field
@@ -345,6 +389,7 @@
           <v-combobox
             v-model="fields.statute2Id"
             label="Recognition Authority / Recognition Type / Statute 2"
+            hide-details
           />
         </v-col>
       </v-row>
