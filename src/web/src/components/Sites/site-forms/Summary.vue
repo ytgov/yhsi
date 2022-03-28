@@ -1,7 +1,205 @@
 <template>
-  <div>
-    <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
-      <span class="mt-2">Summary</span>
+  <v-card
+    class="mb-0"
+    tag="section"
+    outlined
+    tile
+  >
+    <v-card-title
+      class="mb-0 text-h4"
+      tag="h2"
+    >
+      Summary
+    </v-card-title>
+    <v-card-text>
+      <v-row>
+        <v-col cols="6">
+          <v-text-field
+            v-model="fields.yHSIId"
+            dense
+            outlined
+            label="YHSI ID"
+            required
+            readonly
+            append-icon="mdi-lock"
+          />
+
+          <v-select
+            v-model="fields.designations"
+            dense
+            outlined
+            :items="designationOptions"
+            clearable
+            label="Designations"
+          />
+
+          <v-select
+            v-model="fields.category"
+            dense
+            outlined
+            clearable
+            label="CRHP category"
+            :items="categoryOptions"
+            item-text="text"
+            item-value="id"
+          />
+
+          <v-select
+            v-model="fields.records"
+            dense
+            outlined
+            :items="recordOptions"
+            item-text="text"
+            item-value="value"
+            clearable
+            label="Records"
+          />
+
+          <v-select
+            v-model="fields.records"
+            dense
+            outlined
+            :items="recordOptions"
+            clearable
+            label="Records"
+          />
+
+          <v-text-field
+            v-model="fields.contributingResources"
+            dense
+            outlined
+            label="Contribuiting resources"
+            required
+          />
+
+          <v-checkbox
+            v-model="fields.showInRegister"
+            dense
+            outlined
+            label="Show in Register?"
+          />
+        </v-col>
+        <v-col cols="6">
+          <v-text-field
+            v-model="fields.primaryName"
+            dense
+            outlined
+            label="Primary name"
+            required
+          />
+          <v-card class="default mb-5">
+            <v-card-title
+              tag="h3"
+              class="mb-0 text-h6"
+            >
+              Secondary Names
+            </v-card-title>
+            <v-card-text>
+              <v-row
+                v-for="(item, i) in names"
+                :key="i"
+              >
+                <v-col cols="10">
+                  <v-text-field
+                    v-model="item.description"
+                    dense
+                    outlined
+                    background-color="white"
+                    label="Secondary name"
+                    hide-details
+                  />
+                </v-col>
+                <v-col cols="2">
+                  <v-btn
+                    color="warning"
+                    x-small
+                    fab
+                    title="Remove"
+                    class="my-0 float-right"
+                    @click="removeName(i)"
+                  >
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                class="my-0"
+                color="info"
+                @click="addName"
+              >
+                Add New Secondary Name
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+
+          <v-card class="default mb-5">
+            <v-card-text>
+              <h3>Historical Patterns</h3>
+              <v-row
+                v-for="(item, i) of historicalPatterns"
+                :key="i"
+                class="row"
+              >
+                <v-col cols="10">
+                  <v-select
+                    v-model="item.historicalPatternType"
+                    dense
+                    outlined
+                    :items="historicalPatternOptions"
+                    item-text="text"
+                    item-value="value"
+                    background-color="white"
+                    label="Historical pattern"
+                  />
+                  <v-text-field
+                    v-model="item.comments"
+                    dense
+                    outlined
+                    background-color="white"
+                    label="Comments"
+                    required
+                    hide-details
+                  />
+                </v-col>
+
+                <v-col cols="2">
+                  <v-btn
+                    color="warning"
+                    x-small
+                    fab
+                    title="Remove"
+                    class="my-0 float-right"
+                    @click="removePattern(i)"
+                  >
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
+                </v-col>
+
+                <v-col
+                  v-if="i < historicalPatterns.length - 1"
+                  cols="12"
+                >
+                  <hr />
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                class="my-0"
+                color="info"
+                @click="addPattern()"
+              >
+                Add Historical Pattern
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer />
       <v-btn
         class="my-0"
         color="primary"
@@ -9,190 +207,8 @@
       >
         Save
       </v-btn>
-    </h2>
-    <v-divider class="mb-5" />
-    <v-form v-model="valid">
-      <v-container>
-        <v-row>
-          <v-col cols="6">
-            <v-text-field
-              v-model="fields.yHSIId"
-              dense
-              outlined
-              label="YHSI ID"
-              required
-              readonly
-              append-icon="mdi-lock"
-            />
-
-            <v-select
-              v-model="fields.designations"
-              dense
-              outlined
-              :items="designationOptions"
-              clearable
-              label="Designations"
-            />
-
-            <v-select
-              v-model="fields.category"
-              dense
-              outlined
-              clearable
-              label="CRHP category"
-              :items="categoryOptions"
-              item-text="text"
-              item-value="id"
-            />
-
-            <v-select
-              v-model="fields.records"
-              dense
-              outlined
-              :items="recordOptions"
-              item-text="text"
-              item-value="value"
-              clearable
-              label="Records"
-            />
-
-            <v-select
-              v-model="fields.records"
-              dense
-              outlined
-              :items="recordOptions"
-              clearable
-              label="Records"
-            />
-
-            <v-checkbox
-              v-model="fields.showInRegister"
-              dense
-              outlined
-              label="Show in Register?"
-            />
-          </v-col>
-          <v-col cols="6">
-            <v-text-field
-              v-model="fields.primaryName"
-              dense
-              outlined
-              label="Primary name"
-              required
-            />
-
-            <v-card class="default mb-5">
-              <v-card-text>
-                <h3>Secondary Names</h3>
-                <v-row
-                  v-for="(item, i) of names"
-                  :key="i"
-                >
-                  <v-col cols="10">
-                    <v-text-field
-                      v-model="item.description"
-                      dense
-                      outlined
-                      background-color="white"
-                      label="Secondary name"
-                      hide-details
-                    />
-                  </v-col>
-                  <v-col cols="2">
-                    <v-btn
-                      color="warning"
-                      x-small
-                      fab
-                      title="Remove"
-                      class="my-0 float-right"
-                      @click="removeName(i)"
-                    >
-                      <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-                <v-btn
-                  class="mt-5"
-                  color="info"
-                  @click="addName()"
-                >
-                  Add New Secondary Name
-                </v-btn>
-              </v-card-text>
-            </v-card>
-
-            <v-text-field
-              v-model="fields.contributingResources"
-              dense
-              outlined
-              label="Contribuiting resources"
-              required
-            />
-
-            <v-card class="default mb-5">
-              <v-card-text>
-                <h3>Historical Patterns</h3>
-                <div
-                  v-for="(item, i) of historicalPatterns"
-                  :key="i"
-                  class="row"
-                >
-                  <div class="col-md-10">
-                    <v-select
-                      v-model="item.historicalPatternType"
-                      dense
-                      outlined
-                      :items="historicalPatternOptions"
-                      item-text="text"
-                      item-value="value"
-                      background-color="white"
-                      label="Historical pattern"
-                    />
-                    <v-text-field
-                      v-model="item.comments"
-                      dense
-                      outlined
-                      background-color="white"
-                      label="Comments"
-                      required
-                      hide-details
-                    />
-                  </div>
-
-                  <div class="col-md-2">
-                    <v-btn
-                      color="warning"
-                      x-small
-                      fab
-                      title="Remove"
-                      class="my-0 float-right"
-                      @click="removePattern(i)"
-                    >
-                      <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                  </div>
-
-                  <div
-                    v-if="i < historicalPatterns.length - 1"
-                    class="col-md-12"
-                  >
-                    <hr />
-                  </div>
-                </div>
-                <v-btn
-                  class="mt-5"
-                  color="info"
-                  @click="addPattern()"
-                >
-                  Add Historical Pattern
-                </v-btn>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-form>
-  </div>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
