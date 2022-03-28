@@ -193,11 +193,19 @@
       </v-card>
       <v-divider class="mt-2 mb-2" />
 
-      <div class="row mx-1">
-        <div class="col-md-6">
-          <v-card class="default">
-            <v-card-text>
-              <h3>Conditions</h3>
+      <v-card
+        class="default"
+        tag="section"
+      >
+        <v-card-title
+          tag="h3"
+          class="mb-0 text-h6"
+        >
+          Conditions
+        </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col cols="6">
               <v-select
                 v-model="fields.floorCondition"
                 item-text="text"
@@ -238,53 +246,52 @@
                 outlined
                 background-color="white"
               />
-            </v-card-text>
-          </v-card>
-        </div>
+            </v-col>
+            <v-col cols="6">
+              <v-select
+                v-model="fields.siteStatus"
+                :items="siteStatusOptions"
+                item-text="text"
+                item-value="value"
+                label="Site status"
+                dense
+                outlined
+                background-color="white"
+              />
 
-        <div class="col-md-6">
-          <v-select
-            v-model="fields.siteStatus"
-            :items="siteStatusOptions"
-            item-text="text"
-            item-value="value"
-            label="Site status"
-            dense
-            outlined
-            background-color="white"
-          />
+              <v-text-field
+                v-model="fields.buildingSize"
+                item-text="name"
+                item-value="id"
+                label="Building size"
+                dense
+                outlined
+                background-color="white"
+              />
 
-          <v-text-field
-            v-model="fields.buildingSize"
-            item-text="name"
-            item-value="id"
-            label="Building size"
-            dense
-            outlined
-            background-color="white"
-          />
+              <v-text-field
+                v-model="fields.resourceType"
+                item-text="name"
+                item-value="id"
+                label="All other resource types"
+                dense
+                outlined
+                background-color="white"
+              />
 
-          <v-text-field
-            v-model="fields.resourceType"
-            item-text="name"
-            item-value="id"
-            label="All other resource types"
-            dense
-            outlined
-            background-color="white"
-          />
-
-          <v-textarea
-            v-model="fields.conditionComment"
-            item-text="name"
-            item-value="id"
-            label="Condition notes"
-            dense
-            outlined
-            background-color="white"
-          />
-        </div>
-      </div>
+              <v-textarea
+                v-model="fields.conditionComment"
+                item-text="name"
+                item-value="id"
+                label="Condition notes"
+                dense
+                outlined
+                background-color="white"
+              />
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
     </v-card-text>
     <v-card-actions>
       <v-spacer />
