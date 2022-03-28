@@ -1,21 +1,19 @@
 <template>
-  <div>
-    <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
-      <span class="mt-2">Location</span>
-      <v-btn
-        class="my-0"
-        color="primary"
-        @click="saveChanges"
-      >
-        Save
-      </v-btn>
-    </h2>
-
-    <v-divider class="mb-5" />
-
-    <v-form v-model="valid">
-      <div class="row mx-1">
-        <div class="col-md-3">
+  <v-card
+    class="mb-0"
+    tag="section"
+    outlined
+    tile
+  >
+    <v-card-title
+      class="mb-0 text-h4"
+      tag="h2"
+    >
+      Location
+    </v-card-title>
+    <v-card-text>
+      <v-row>
+        <v-col cols="3">
           <v-select
             v-model="fields.communityId"
             dense
@@ -26,8 +24,8 @@
             item-value="id"
             hide-details
           />
-        </div>
-        <div class="col-md-3">
+        </v-col>
+        <v-col cols="3">
           <v-text-field
             v-model="fields.otherCommunity"
             dense
@@ -35,8 +33,8 @@
             label="Other community"
             hide-details
           />
-        </div>
-        <div class="col-md-6">
+        </v-col>
+        <v-col cols="6">
           <v-text-field
             v-model="fields.otherLocality"
             dense
@@ -44,11 +42,19 @@
             label="Other locality"
             hide-details
           />
-        </div>
-        <div class="col-md-6">
-          <v-card class="default mb-4">
+        </v-col>
+        <v-col cols="6">
+          <v-card
+            class="default mb-4"
+            tag="section"
+          >
+            <v-card-title
+              tag="h3"
+              class="mb-0 text-h6"
+            >
+              Physical Address
+            </v-card-title>
             <v-card-text>
-              <h3>Physical Address</h3>
               <v-textarea
                 v-model="fields.physicalAddress"
                 dense
@@ -88,8 +94,8 @@
               </v-row>
             </v-card-text>
           </v-card>
-        </div>
-        <div class="col-md-6">
+        </v-col>
+        <v-col cols="6">
           <v-textarea
             v-model="fields.previousAddress"
             dense
@@ -102,8 +108,8 @@
             outlined
             label="Context"
           />
-        </div>
-        <div class="col-md-6">
+        </v-col>
+        <v-col cols="6">
           <v-text-field
             v-model="fields.latitude"
             dense
@@ -129,13 +135,13 @@
           <v-btn
             color="secondary"
             :disabled="!showMapButton"
-            @click="showMap()"
+            @click="showMap"
           >
-            <v-icon class="mr-2">mdi-map-marker</v-icon>
+            <v-icon class="mr-2"> mdi-map-marker </v-icon>
             Show on Map
           </v-btn>
-        </div>
-        <div class="col-md-6">
+        </v-col>
+        <v-col cols="6">
           <v-row>
             <v-col cols="6">
               <v-text-field
@@ -166,12 +172,22 @@
             outlined
             label="Misc. info"
           />
-        </div>
-      </div>
-    </v-form>
+        </v-col>
+      </v-row>
+    </v-card-text>
 
+    <v-card-actions>
+      <v-spacer />
+      <v-btn
+        class="my-0"
+        color="primary"
+        @click="saveChanges"
+      >
+        Save
+      </v-btn>
+    </v-card-actions>
     <map-dialog ref="map" />
-  </div>
+  </v-card>
 </template>
 
 <script>
