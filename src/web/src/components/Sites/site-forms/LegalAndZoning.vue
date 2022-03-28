@@ -1,7 +1,259 @@
 <template>
-  <div>
-    <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
-      <span class="mt-2">Legal &amp; Zoning</span>
+  <v-card
+    class="mb-0"
+    tag="section"
+    outlined
+    tile
+  >
+    <v-card-title
+      class="mb-0 text-h4"
+      tag="h2"
+    >
+      Legal &amp; Zoning
+    </v-card-title>
+    <v-card-text tag="section">
+      <v-card
+        class="default mb-0"
+        tag="section"
+      >
+        <v-card-title
+          tag="h3"
+          class="mb-0 text-h6"
+        >
+          Ownerships
+        </v-card-title>
+        <v-card-text tag="form">
+          <v-row
+            v-for="(item, i) in ownerships"
+            :key="i"
+          >
+            <v-col cols="5">
+              <v-select
+                v-model="item.ownershipType"
+                :items="categoryOptions"
+                label="Category of Property"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              />
+            </v-col>
+            <v-col cols="5">
+              <v-text-field
+                v-model="item.comments"
+                label="Comments"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              />
+            </v-col>
+
+            <v-col cols="2">
+              <v-btn
+                color="warning"
+                x-small
+                fab
+                title="Remove"
+                class="my-0 float-right"
+                @click="removeOwner(i)"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            class="my-0"
+            color="info"
+            @click="addOwner"
+          >
+            Add Ownership
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+
+      <v-divider class="my-3" />
+      <v-card
+        tag="section"
+        class="default"
+      >
+        <v-card-text tag="form">
+          <v-row>
+            <v-col cols="6">
+              <v-text-field
+                v-model="fields.zoning"
+                label="Zoning"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              />
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
+                v-model="fields.townSiteMapNumber"
+                label="Town site map number"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="6">
+              <v-text-field
+                v-model="fields.siteDistrictNumber"
+                label="Site district"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              />
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
+                v-model="fields.groupYHSI"
+                label="Group YHSI"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="6">
+              <v-text-field
+                v-model="fields.lAGroup"
+                label="Group"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              />
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
+                v-model="fields.lot"
+                label="Lot"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="6">
+              <v-text-field
+                v-model="fields.block"
+                label="Block"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              />
+            </v-col>
+
+            <v-col cols="6">
+              <v-text-field
+                v-model="fields.planNumber"
+                label="Plan number"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              />
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+
+      <v-divider class="my-3" />
+
+      <v-card
+        class="default mb-0"
+        tag="section"
+      >
+        <v-card-title
+          tag="h3"
+          class="mb-0 text-h6"
+        >
+          Previous Ownerships
+        </v-card-title>
+        <v-card-text tag="form">
+          <v-row
+            v-for="(item, i) in prevOwnerships"
+            :key="i"
+            class="row"
+          >
+            <v-col cols="5">
+              <v-text-field
+                v-model="item.ownershipDate"
+                label="Dates"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              />
+            </v-col>
+            <v-col cols="5">
+              <v-text-field
+                v-model="item.ownershipNumber"
+                label="Title number"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              />
+            </v-col>
+
+            <v-col cols="2">
+              <v-btn
+                color="warning"
+                x-small
+                fab
+                title="Remove"
+                class="my-0 float-right"
+                @click="removePrevOwner(i)"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                v-model="item.ownershipName"
+                label="Names"
+                dense
+                outlined
+                background-color="white"
+                hide-details
+              />
+            </v-col>
+            <v-col
+              v-if="i < prevOwnerships.length - 1"
+              cols="12"
+            >
+              <hr />
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            class="my-0"
+            color="info"
+            @click="addPrevOwner"
+          >
+            Add Previous Ownership
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer />
       <v-btn
         class="my-0"
         color="primary"
@@ -9,219 +261,8 @@
       >
         Save
       </v-btn>
-    </h2>
-    <v-divider class="mb-5" />
-    <v-form v-model="valid">
-      <div class="row mx-1">
-        <div class="col-md-12">
-          <v-card class="default mb-0">
-            <v-card-text>
-              <h3>Ownerships</h3>
-              <div
-                v-for="(item, i) of ownerships"
-                :key="i"
-                class="row"
-              >
-                <div class="col-md-5">
-                  <v-select
-                    v-model="item.ownershipType"
-                    :items="categoryOptions"
-                    label="Category of Property"
-                    dense
-                    outlined
-                    background-color="white"
-                    hide-details
-                  />
-                </div>
-                <div class="col-md-5">
-                  <v-text-field
-                    v-model="item.comments"
-                    label="Comments"
-                    dense
-                    outlined
-                    background-color="white"
-                    hide-details
-                  />
-                </div>
-
-                <div class="col-md-2">
-                  <v-btn
-                    color="warning"
-                    x-small
-                    fab
-                    title="Remove"
-                    class="my-0 float-right"
-                    @click="removeOwner(i)"
-                  >
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                </div>
-              </div>
-              <v-btn
-                class="mt-5"
-                color="info"
-                @click="addOwner()"
-              >
-                Add Ownership
-              </v-btn>
-            </v-card-text>
-          </v-card>
-        </div>
-
-        <div class="col-md-6">
-          <v-text-field
-            v-model="fields.zoning"
-            label="Zoning"
-            dense
-            outlined
-            background-color="white"
-            hide-details
-          />
-        </div>
-        <div class="col-md-6">
-          <v-text-field
-            v-model="fields.townSiteMapNumber"
-            label="Town site map number"
-            dense
-            outlined
-            background-color="white"
-            hide-details
-          />
-        </div>
-        <div class="col-md-6">
-          <v-text-field
-            v-model="fields.siteDistrictNumber"
-            label="Site district"
-            dense
-            outlined
-            background-color="white"
-            hide-details
-          />
-        </div>
-        <div class="col-md-6">
-          <v-text-field
-            v-model="fields.groupYHSI"
-            label="Group YHSI"
-            dense
-            outlined
-            background-color="white"
-            hide-details
-          />
-        </div>
-        <div class="col-md-6">
-          <v-text-field
-            v-model="fields.lAGroup"
-            label="Group"
-            dense
-            outlined
-            background-color="white"
-            hide-details
-          />
-        </div>
-        <div class="col-md-6">
-          <v-text-field
-            v-model="fields.lot"
-            label="Lot"
-            dense
-            outlined
-            background-color="white"
-            hide-details
-          />
-        </div>
-        <div class="col-md-6">
-          <v-text-field
-            v-model="fields.block"
-            label="Block"
-            dense
-            outlined
-            background-color="white"
-            hide-details
-          />
-        </div>
-
-        <div class="col-md-6">
-          <v-text-field
-            v-model="fields.planNumber"
-            label="Plan number"
-            dense
-            outlined
-            background-color="white"
-            hide-details
-          />
-        </div>
-
-        <div class="col-md-12">
-          <v-card class="default mb-0">
-            <v-card-text>
-              <h3>Previous Ownerships</h3>
-              <div
-                v-for="(item, i) of prevOwnerships"
-                :key="i"
-                class="row"
-              >
-                <div class="col-md-5">
-                  <v-text-field
-                    v-model="item.ownershipDate"
-                    label="Dates"
-                    dense
-                    outlined
-                    background-color="white"
-                    hide-details
-                  />
-                </div>
-                <div class="col-md-5">
-                  <v-text-field
-                    v-model="item.ownershipNumber"
-                    label="Title number"
-                    dense
-                    outlined
-                    background-color="white"
-                    hide-details
-                  />
-                </div>
-
-                <div class="col-md-2">
-                  <v-btn
-                    color="warning"
-                    x-small
-                    fab
-                    title="Remove"
-                    class="my-0 float-right"
-                    @click="removePrevOwner(i)"
-                  >
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                </div>
-                <div class="col-md-12">
-                  <v-text-field
-                    v-model="item.ownershipName"
-                    label="Names"
-                    dense
-                    outlined
-                    background-color="white"
-                    hide-details
-                  />
-                </div>
-                <div
-                  v-if="i < prevOwnerships.length - 1"
-                  class="col-md-12"
-                >
-                  <hr />
-                </div>
-              </div>
-              <v-btn
-                class="mt-5"
-                color="info"
-                @click="addPrevOwner()"
-              >
-                Add Previous Ownership
-              </v-btn>
-            </v-card-text>
-          </v-card>
-        </div>
-      </div>
-    </v-form>
-  </div>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
