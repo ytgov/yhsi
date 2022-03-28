@@ -70,7 +70,7 @@
         <v-card-actions>
           <v-btn
             class="my-0"
-            color="primary"
+            color="info"
             @click="addDescription()"
           >
             Add Description
