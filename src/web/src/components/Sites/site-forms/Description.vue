@@ -1,7 +1,85 @@
 <template>
-  <div>
-    <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
-      <span class="mt-2">Description</span>
+  <v-card
+    tag="section"
+    outlined
+    tile
+  >
+    <v-card-title
+      class="mb-0 text-h4"
+      tag="h2"
+    >
+      Description
+    </v-card-title>
+    <v-card-text tag="section">
+      <v-card class="default">
+        <v-card-title
+          tag="h3"
+          class="mb-0 text-h6"
+        >
+          Descriptions
+        </v-card-title>
+        <v-card-text tag="form">
+          <v-div
+            v-for="(item, i) in descriptions"
+            :key="`description-${i + 1}`"
+          >
+            <v-row>
+              <v-col cols="6">
+                <v-select
+                  v-model="item.type"
+                  :items="typeOptions"
+                  label="Decription type"
+                  dense
+                  outlined
+                  background-color="white"
+                  hide-details
+                />
+              </v-col>
+              <v-col cols="6">
+                <v-btn
+                  color="warning"
+                  x-small
+                  fab
+                  title="Remove"
+                  class="my-0 float-right"
+                  @click="removeDescription(i)"
+                >
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="10">
+                <v-textarea
+                  v-model="item.descriptionText"
+                  label=""
+                  dense
+                  outlined
+                  background-color="white"
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <v-row v-if="i < descriptions.length - 1">
+              <v-col cols="12">
+                <hr class="mb-3" />
+              </v-col>
+            </v-row>
+          </v-div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            class="my-0"
+            color="primary"
+            @click="addDescription()"
+          >
+            Add Description
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer />
       <v-btn
         class="my-0"
         color="primary"
@@ -9,63 +87,8 @@
       >
         Save
       </v-btn>
-    </h2>
-    <v-divider class="mb-5" />
-    <v-form v-model="valid">
-      <div class="row mx-1">
-        <div class="col-md-12">
-          <v-card
-            v-for="(item, i) in descriptions"
-            :key="`theme-${i + 1}`"
-            class="default mb-5"
-          >
-            <v-card-text>
-              <h3>Description {{ i + 1 }}</h3>
-              <v-btn
-                icon
-                color="primary"
-                class="top-right-button"
-                @click="removeDescription(i)"
-              >
-                <v-icon dark> mdi-minus-circle </v-icon>
-              </v-btn>
-              <v-row>
-                <v-col cols="6">
-                  <v-select
-                    v-model="item.type"
-                    :items="typeOptions"
-                    label="Decription type"
-                    dense
-                    outlined
-                    background-color="white"
-                    hide-details
-                  />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12">
-                  <v-textarea
-                    v-model="item.descriptionText"
-                    label=""
-                    dense
-                    outlined
-                    background-color="white"
-                    hide-details
-                  />
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-          <v-btn
-            color="primary"
-            @click="addDescription()"
-          >
-            Add Description
-          </v-btn>
-        </div>
-      </div>
-    </v-form>
-  </div>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
