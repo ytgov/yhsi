@@ -1,7 +1,356 @@
 <template>
-  <div>
-    <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
-      <span class="mt-2">Management</span>
+  <v-card
+    class="mb-0"
+    tag="section"
+    outlined
+    tile
+  >
+    <v-card-title
+      class="mb-0 text-h4"
+      tag="h2"
+    >
+      Management
+    </v-card-title>
+    <v-card-text>
+      <v-card
+        class="default mb-5"
+        tag="section"
+      >
+        <v-card-title
+          tag="h3"
+          class="mb-0 text-h6"
+        >
+          Revision Logs
+        </v-card-title>
+        <v-card-text tag="form">
+          <div
+            v-for="(item, i) in revisionLogs"
+            :key="`log-${i + 1}`"
+          >
+            <v-row>
+              <v-col cols="5">
+                <v-combobox
+                  v-model="item.revisionType"
+                  label="Revision Type"
+                  outlined
+                  dense
+                  background-color="white"
+                />
+
+                <v-text-field
+                  v-model="item.revisedBy"
+                  label="Revised By"
+                  required
+                  outlined
+                  dense
+                  background-color="white"
+                />
+              </v-col>
+              <v-col cols="5">
+                <v-text-field
+                  v-model="item.date"
+                  label="Date"
+                  required
+                  outlined
+                  dense
+                  background-color="white"
+                />
+
+                <v-text-field
+                  v-model="item.details"
+                  label="Details"
+                  required
+                  outlined
+                  dense
+                  background-color="white"
+                />
+              </v-col>
+              <v-col cols="2">
+                <v-btn
+                  color="warning"
+                  x-small
+                  fab
+                  title="Remove"
+                  class="my-0 float-right"
+                  @click="removeLog(i)"
+                >
+                  <v-icon dark>mdi-close</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+            <hr
+              v-if="i < revisionLogs.length - 1"
+              class="mb-5 mt-2"
+            />
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            class="my-0"
+            color="info"
+            @click="addLog"
+          >
+            Add New
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+
+      <v-divider class="my-3" />
+
+      <v-card
+        class="default mb-0"
+        tag="section"
+      >
+        <v-card-title
+          tag="h3"
+          class="mb-0 text-h6"
+        >
+          Contacts
+        </v-card-title>
+        <v-card-text tag="form">
+          <div
+            v-for="(item, i) in contacts"
+            :key="`contact-${i + 1}`"
+          >
+            <v-row>
+              <v-col cols="6">
+                <v-combobox
+                  v-model="item.type"
+                  label="Type"
+                  background-color="white"
+                  dense
+                  outlined
+                  hide-details
+                />
+              </v-col>
+              <v-col cols="6">
+                <v-btn
+                  color="warning"
+                  x-small
+                  fab
+                  title="Remove"
+                  class="my-0 float-right"
+                  background-color="white"
+                  @click="removeContact(i)"
+                >
+                  <v-icon dark>mdi-close</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="6">
+                <v-text-field
+                  v-model="item.firstName"
+                  label="First Name"
+                  required
+                  background-color="white"
+                  dense
+                  outlined
+                />
+
+                <v-text-field
+                  v-model="item.phone"
+                  label="Phone"
+                  required
+                  background-color="white"
+                  dense
+                  outlined
+                />
+
+                <v-textarea
+                  v-model="item.mailingAddress"
+                  label="Mailing Address"
+                  background-color="white"
+                  dense
+                  outlined
+                />
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                  v-model="item.lastName"
+                  label="Last Name"
+                  required
+                  background-color="white"
+                  dense
+                  outlined
+                />
+
+                <v-text-field
+                  v-model="item.email"
+                  label="Email"
+                  required
+                  background-color="white"
+                  dense
+                  outlined
+                />
+
+                <v-textarea
+                  v-model="item.description"
+                  label="Description"
+                  background-color="white"
+                  dense
+                  outlined
+                />
+              </v-col>
+            </v-row>
+            <hr
+              v-if="i < contacts.length - 1"
+              class="mb-5 mt-2"
+            />
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            color="info"
+            class="my-0"
+            @click="addContact"
+          >
+            Add New
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+      <v-divider class="mt-2 mb-2" />
+      <v-row>
+        <v-col cols="12">
+          <div class="mb-2">Web Links</div>
+          <v-alert
+            v-for="(item, i) in links"
+            :key="`theme-${i + 1}`"
+            outlined
+            color="primary"
+          >
+            <div class="sub-title">Web Link {{ i + 1 }}</div>
+            <v-btn
+              icon
+              color="primary"
+              class="top-right-button"
+              @click="removeLink(i)"
+            >
+              <v-icon dark>mdi-close-circle</v-icon>
+            </v-btn>
+            <v-row>
+              <v-col cols="6">
+                <v-combobox
+                  v-model="item.type"
+                  label="Link Type"
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="6">
+                <v-text-field
+                  v-model="item.webAddress"
+                  label="Web Address"
+                  required
+                />
+              </v-col>
+            </v-row>
+          </v-alert>
+          <v-btn
+            outlined
+            color="primary"
+            @click="addLink()"
+          >
+            Add New
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="6">
+          <v-alert
+            outlined
+            color="primary"
+          >
+            <div class="sub-title">Designation Information</div>
+            <v-row>
+              <v-col cols="12">
+                <v-combobox
+                  v-model="fields.jurisdiction"
+                  label="Jurisdiction"
+                />
+
+                <v-menu
+                  ref="menu"
+                  v-model="menu"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="fields.recognitionDate"
+                      label="Recognition Date"
+                      append-icon="mdi-calendar"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                    />
+                  </template>
+                  <v-date-picker
+                    ref="picker"
+                    v-model="fields.recognitionDate"
+                    :max="new Date().toISOString().substr(0, 10)"
+                    min="1950-01-01"
+                    @change="save"
+                  />
+                </v-menu>
+
+                <v-combobox
+                  v-model="fields.ownerConsent"
+                  label="Owner Consent"
+                />
+
+                <v-checkbox
+                  v-model="fields.showInRegister"
+                  label="Publicly Accessible?"
+                />
+              </v-col>
+            </v-row>
+          </v-alert>
+        </v-col>
+        <v-col cols="6">
+          <v-text-field
+            v-model="fields.yGBuildingNumber"
+            label="YG Building Number"
+            required
+          />
+
+          <v-text-field
+            v-model="fields.yGReserveNumber"
+            label="YG Reserve Number"
+            required
+          />
+
+          <v-text-field
+            v-model="fields.cIHBNumber"
+            label=" CIHB Number"
+            required
+          />
+
+          <v-text-field
+            v-model="fields.fHBRONumber"
+            label="FHBRO Number"
+            required
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <v-combobox
+            v-model="fields.statuteId"
+            label="Recognition Authority / Recognition Type / Statute"
+          />
+
+          <v-combobox
+            v-model="fields.statute2Id"
+            label="Recognition Authority / Recognition Type / Statute 2"
+          />
+        </v-col>
+      </v-row>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer />
       <v-btn
         class="my-0"
         color="primary"
@@ -9,284 +358,8 @@
       >
         Save
       </v-btn>
-    </h2>
-    <v-divider class="mb-5" />
-    <v-form v-model="valid">
-      <v-container>
-        <v-row>
-          <v-col cols="12">
-            <div class="mb-2">Revision Logs</div>
-            <v-alert
-              v-for="(item, i) in revisionLogs"
-              :key="`theme-${i + 1}`"
-              outlined
-              color="primary"
-            >
-              <div class="sub-title">Revision Log {{ i + 1 }}</div>
-              <v-btn
-                icon
-                color="primary"
-                class="top-right-button"
-                @click="removeLog(i)"
-              >
-                <v-icon dark>mdi-close-circle</v-icon>
-              </v-btn>
-              <v-row>
-                <v-col cols="6">
-                  <v-combobox
-                    v-model="item.revisionType"
-                    label="Revision Type"
-                  />
-
-                  <v-text-field
-                    v-model="item.revisedBy"
-                    label="Revised By"
-                    required
-                  />
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field
-                    v-model="item.date"
-                    label="Date"
-                    required
-                  />
-
-                  <v-text-field
-                    v-model="item.details"
-                    label="Details"
-                    required
-                  />
-                </v-col>
-              </v-row>
-            </v-alert>
-            <v-btn
-              outlined
-              color="primary"
-              @click="addLog()"
-            >
-              Add New
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-divider class="mt-2 mb-2" />
-        <v-row>
-          <v-col cols="12">
-            <div class="mb-2">Contacts</div>
-            <v-alert
-              v-for="(item, i) in contacts"
-              :key="`theme-${i + 1}`"
-              outlined
-              color="primary"
-            >
-              <div class="sub-title">Contact {{ i + 1 }}</div>
-              <v-btn
-                icon
-                color="primary"
-                class="top-right-button"
-                @click="removeContact(i)"
-              >
-                <v-icon dark>mdi-close-circle</v-icon>
-              </v-btn>
-              <v-row>
-                <v-col cols="6">
-                  <v-combobox
-                    v-model="item.type"
-                    label="Type"
-                  />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="6">
-                  <v-text-field
-                    v-model="item.firstName"
-                    label="First Name"
-                    required
-                  />
-
-                  <v-text-field
-                    v-model="item.phone"
-                    label="Phone"
-                    required
-                  />
-
-                  <v-textarea
-                    v-model="item.mailingAddress"
-                    label="Mailing Address"
-                  />
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field
-                    v-model="item.lastName"
-                    label="Last Name"
-                    required
-                  />
-
-                  <v-text-field
-                    v-model="item.email"
-                    label="Email"
-                    required
-                  />
-
-                  <v-textarea
-                    v-model="item.description"
-                    label="Description"
-                  />
-                </v-col>
-              </v-row>
-            </v-alert>
-            <v-btn
-              outlined
-              color="primary"
-              @click="addContact()"
-            >
-              Add New
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-divider class="mt-2 mb-2" />
-        <v-row>
-          <v-col cols="12">
-            <div class="mb-2">Web Links</div>
-            <v-alert
-              v-for="(item, i) in links"
-              :key="`theme-${i + 1}`"
-              outlined
-              color="primary"
-            >
-              <div class="sub-title">Web Link {{ i + 1 }}</div>
-              <v-btn
-                icon
-                color="primary"
-                class="top-right-button"
-                @click="removeLink(i)"
-              >
-                <v-icon dark>mdi-close-circle</v-icon>
-              </v-btn>
-              <v-row>
-                <v-col cols="6">
-                  <v-combobox
-                    v-model="item.type"
-                    label="Link Type"
-                  />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="6">
-                  <v-text-field
-                    v-model="item.webAddress"
-                    label="Web Address"
-                    required
-                  />
-                </v-col>
-              </v-row>
-            </v-alert>
-            <v-btn
-              outlined
-              color="primary"
-              @click="addLink()"
-            >
-              Add New
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="6">
-            <v-alert
-              outlined
-              color="primary"
-            >
-              <div class="sub-title">Designation Information</div>
-              <v-row>
-                <v-col cols="12">
-                  <v-combobox
-                    v-model="fields.jurisdiction"
-                    label="Jurisdiction"
-                  />
-
-                  <v-menu
-                    ref="menu"
-                    v-model="menu"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-text-field
-                        v-model="fields.recognitionDate"
-                        label="Recognition Date"
-                        append-icon="mdi-calendar"
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                      />
-                    </template>
-                    <v-date-picker
-                      ref="picker"
-                      v-model="fields.recognitionDate"
-                      :max="new Date().toISOString().substr(0, 10)"
-                      min="1950-01-01"
-                      @change="save"
-                    />
-                  </v-menu>
-
-                  <v-combobox
-                    v-model="fields.ownerConsent"
-                    label="Owner Consent"
-                  />
-
-                  <v-checkbox
-                    v-model="fields.showInRegister"
-                    label="Publicly Accessible?"
-                  />
-                </v-col>
-              </v-row>
-            </v-alert>
-          </v-col>
-          <v-col cols="6">
-            <v-text-field
-              v-model="fields.yGBuildingNumber"
-              label="YG Building Number"
-              required
-            />
-
-            <v-text-field
-              v-model="fields.yGReserveNumber"
-              label="YG Reserve Number"
-              required
-            />
-
-            <v-text-field
-              v-model="fields.cIHBNumber"
-              label=" CIHB Number"
-              required
-            />
-
-            <v-text-field
-              v-model="fields.fHBRONumber"
-              label="FHBRO Number"
-              required
-            />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-combobox
-              v-model="fields.statuteId"
-              label="Recognition Authority / Recognition Type / Statute"
-            />
-
-            <v-combobox
-              v-model="fields.statute2Id"
-              label="Recognition Authority / Recognition Type / Statute 2"
-            />
-          </v-col>
-        </v-row>
-        <v-divider class="mt-2 mb-2" />
-        <v-btn color="success"> Save Changes </v-btn>
-      </v-container>
-    </v-form>
-  </div>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
