@@ -2,28 +2,38 @@
   <div>
     <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
       <span class="mt-2">Themes &amp; Function</span>
-      <v-btn class="my-0" color="primary" @click="saveChanges">Save</v-btn>
+      <v-btn
+        class="my-0"
+        color="primary"
+        @click="saveChanges"
+      >
+        Save
+      </v-btn>
     </h2>
-    <v-divider class="mb-5"></v-divider>
+    <v-divider class="mb-5" />
     <v-form v-model="valid">
       <div class="row mx-1">
         <div class="col-md-12">
           <v-textarea
-            label="YHS Themes"
             v-model="fields.yHSThemes"
+            label="YHS Themes"
             dense
             rows="4"
             outlined
             hide-details
             background-color="white"
-          ></v-textarea>
+          />
         </div>
 
         <div class="col-md-12">
           <v-card class="default mb-0">
             <v-card-text>
               <h3>Themes</h3>
-              <div class="row" v-for="(item, i) of themes" :key="i">
+              <div
+                v-for="(item, i) of themes"
+                :key="i"
+                class="row"
+              >
                 <div class="col-md-10">
                   <v-select
                     v-model="item.placeThemeId"
@@ -35,7 +45,7 @@
                     hide-details
                     outlined
                     background-color="white"
-                  ></v-select>
+                  />
                 </div>
 
                 <div class="col-md-2">
@@ -46,11 +56,16 @@
                     title="Remove"
                     class="my-0 float-right"
                     @click="removeTheme(i)"
-                    ><v-icon>mdi-close</v-icon></v-btn
                   >
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
                 </div>
               </div>
-              <v-btn class="mt-5" color="info" @click="addTheme()">
+              <v-btn
+                class="mt-5"
+                color="info"
+                @click="addTheme()"
+              >
                 Add Theme
               </v-btn>
             </v-card-text>
@@ -61,21 +76,25 @@
           <v-card class="default mb-0">
             <v-card-text>
               <h3>Functional Uses</h3>
-              <div class="row" v-for="(item, i) of functionalUses" :key="i">
+              <div
+                v-for="(item, i) of functionalUses"
+                :key="i"
+                class="row"
+              >
                 <div class="col-md-10">
                   <v-row>
                     <v-col cols="4">
                       <v-select
+                        v-model="item.functionalUseType"
                         label="Use type"
                         :items="useTypeOptions"
-                        v-model="item.functionalUseType"
                         item-text="text"
                         item-value="value"
                         dense
                         outlined
                         hide-details
                         background-color="white"
-                      ></v-select>
+                      />
                     </v-col>
                     <v-col cols="8">
                       <v-autocomplete
@@ -88,7 +107,7 @@
                         outlined
                         hide-details
                         background-color="white"
-                      ></v-autocomplete>
+                      />
                     </v-col>
                   </v-row>
                 </div>
@@ -101,11 +120,16 @@
                     title="Remove"
                     class="my-0 float-right"
                     @click="removeUse(i)"
-                    ><v-icon>mdi-close</v-icon></v-btn
                   >
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
                 </div>
               </div>
-              <v-btn class="mt-5" color="info" @click="addUse()">
+              <v-btn
+                class="mt-5"
+                color="info"
+                @click="addUse()"
+              >
                 Add Functional Use
               </v-btn>
             </v-card-text>
@@ -113,42 +137,44 @@
         </div>
         <div class="col-md-6">
           <v-textarea
-            label="YHS Current Use"
             v-model="fields.currentUseComment"
+            label="YHS Current Use"
             dense
             outlined
             background-color="white"
             hide-details
-          ></v-textarea>
+          />
         </div>
         <div class="col-md-6">
           <v-textarea
-            label="YHS Past Use"
             v-model="fields.yHSPastUse"
+            label="YHS Past Use"
             dense
             outlined
             hide-details
             background-color="white"
-          ></v-textarea>
+          />
         </div>
       </div>
-    </v-form> -->
+    </v-form>
   </div>
 </template>
 
 <script>
-import axios from "axios";
-import store from "../../../store";
-import { PLACE_URL, STATIC_URL } from "../../../urls";
+import axios from 'axios';
+
+import store from '@/store';
+import { PLACE_URL, STATIC_URL } from '@/urls';
+
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
-  name: "Themes",
+  name: 'Themes',
   data: () => ({
     valid: false,
     loadedId: -1,
     generalRules: [
-      (v) => !!v || "This input is required",
-      (v) => v.length <= 20 || "This input must be less than 20 characters",
+      (v) => !!v || 'This input is required',
+      (v) => v.length <= 20 || 'This input must be less than 20 characters',
     ],
 
     themes: [],
@@ -160,9 +186,9 @@ export default {
 
     fields: {
       /*Field data from the swaggerhub api docs below this line*/
-      currentUseComment: "", //
-      yHSPastUse: "", //
-      yHSThemes: "", //
+      currentUseComment: '', //
+      yHSPastUse: '', //
+      yHSThemes: '', //
     },
   }),
   created: function () {
@@ -175,7 +201,7 @@ export default {
         this.fields = resp.data.data;
         this.themes = resp.data.relationships.themes.data;
         this.functionalUses = resp.data.relationships.functionalUses.data;
-        store.dispatch("addSiteHistory", resp.data.data);
+        store.dispatch('addSiteHistory', resp.data.data);
         this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
@@ -200,7 +226,11 @@ export default {
       this.themes.splice(index, 1);
     },
     addUse() {
-      this.functionalUses.push({ placeId: this.loadedId, functionalUseType: 2, functionalTypeId: 1 });
+      this.functionalUses.push({
+        placeId: this.loadedId,
+        functionalUseType: 2,
+        functionalTypeId: 1,
+      });
     },
     removeUse(index) {
       this.functionalUses.splice(index, 1);
@@ -218,10 +248,10 @@ export default {
         .put(`${PLACE_URL}/${this.loadedId}/themes`, body)
         .then((resp) => {
           //this.setPlace(resp.data);
-          this.$emit("showAPIMessages", resp.data);
+          this.$emit('showAPIMessages', resp.data);
         })
         .catch((err) => {
-          this.$emit("showError", err);
+          this.$emit('showError', err);
         });
     },
   },
