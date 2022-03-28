@@ -75,102 +75,95 @@
       </v-card>
 
       <v-divider class="my-3" />
-      <v-card
-        tag="section"
-        class="default"
-      >
-        <v-card-text tag="form">
-          <v-row>
-            <v-col cols="6">
-              <v-text-field
-                v-model="fields.zoning"
-                label="Zoning"
-                dense
-                outlined
-                background-color="white"
-                hide-details
-              />
-            </v-col>
-            <v-col cols="6">
-              <v-text-field
-                v-model="fields.townSiteMapNumber"
-                label="Town site map number"
-                dense
-                outlined
-                background-color="white"
-                hide-details
-              />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="6">
-              <v-text-field
-                v-model="fields.siteDistrictNumber"
-                label="Site district"
-                dense
-                outlined
-                background-color="white"
-                hide-details
-              />
-            </v-col>
-            <v-col cols="6">
-              <v-text-field
-                v-model="fields.groupYHSI"
-                label="Group YHSI"
-                dense
-                outlined
-                background-color="white"
-                hide-details
-              />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="6">
-              <v-text-field
-                v-model="fields.lAGroup"
-                label="Group"
-                dense
-                outlined
-                background-color="white"
-                hide-details
-              />
-            </v-col>
-            <v-col cols="6">
-              <v-text-field
-                v-model="fields.lot"
-                label="Lot"
-                dense
-                outlined
-                background-color="white"
-                hide-details
-              />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="6">
-              <v-text-field
-                v-model="fields.block"
-                label="Block"
-                dense
-                outlined
-                background-color="white"
-                hide-details
-              />
-            </v-col>
+      <v-row>
+        <v-col cols="6">
+          <v-text-field
+            v-model="fields.zoning"
+            label="Zoning"
+            dense
+            outlined
+            background-color="white"
+            hide-details
+          />
+        </v-col>
+        <v-col cols="6">
+          <v-text-field
+            v-model="fields.townSiteMapNumber"
+            label="Town site map number"
+            dense
+            outlined
+            background-color="white"
+            hide-details
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="6">
+          <v-text-field
+            v-model="fields.siteDistrictNumber"
+            label="Site district"
+            dense
+            outlined
+            background-color="white"
+            hide-details
+          />
+        </v-col>
+        <v-col cols="6">
+          <v-text-field
+            v-model="fields.groupYHSI"
+            label="Group YHSI"
+            dense
+            outlined
+            background-color="white"
+            hide-details
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="6">
+          <v-text-field
+            v-model="fields.lAGroup"
+            label="Group"
+            dense
+            outlined
+            background-color="white"
+            hide-details
+          />
+        </v-col>
+        <v-col cols="6">
+          <v-text-field
+            v-model="fields.lot"
+            label="Lot"
+            dense
+            outlined
+            background-color="white"
+            hide-details
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="6">
+          <v-text-field
+            v-model="fields.block"
+            label="Block"
+            dense
+            outlined
+            background-color="white"
+            hide-details
+          />
+        </v-col>
 
-            <v-col cols="6">
-              <v-text-field
-                v-model="fields.planNumber"
-                label="Plan number"
-                dense
-                outlined
-                background-color="white"
-                hide-details
-              />
-            </v-col>
-          </v-row>
-        </v-card-text>
-      </v-card>
+        <v-col cols="6">
+          <v-text-field
+            v-model="fields.planNumber"
+            label="Plan number"
+            dense
+            outlined
+            background-color="white"
+            hide-details
+          />
+        </v-col>
+      </v-row>
 
       <v-divider class="my-3" />
 
