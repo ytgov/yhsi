@@ -41,6 +41,11 @@ import { CreateMigrationRoutes } from './data/migrator';
 
 const app = express();
 
+// Use qs for query parsing
+// This setting is on by default, so I'm only surfacing it here for clarity.
+// https://expressjs.com/en/api.html#app.settings.table -> query parser
+app.set('query parser', 'extended');
+
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 //app.use(helmet());
