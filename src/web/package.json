@@ -21,6 +21,7 @@
     "point-in-polygon": "^1.1.0",
     "postcss": "^8.2.15",
     "proj4": "^2.7.2",
+    "qs": "^6.10.3",
     "utm-latlng": "^1.0.6",
     "vue": "^2.6.11",
     "vue-affix": "^0.5.2",
