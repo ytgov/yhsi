@@ -278,7 +278,7 @@ export default {
             let resp = await histories.postOwner(data);
             ////console.log(resp);
             if(resp[0].HistoryText);
-                this.data.push(resp[0]);
+                this.data.unshift(resp[0]);
             this.overlay = false;
             this.historicRecordHelper = null;
             this.referenceHelper = null;
@@ -294,7 +294,7 @@ export default {
         }
     },
     watch:{
-        data(val){
+        data(val){ 
             if(val != undefined){
                 this.$emit('historicRecordChange', val);
             }
