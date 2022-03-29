@@ -35,11 +35,13 @@ export class BoatOwnerService {
 		owner.histories = await db
 			.select('*')
 			.from('boat.OwnerHistory')
+			.orderBy('Id', 'desc')
 			.where('boat.OwnerHistory.OwnerId', ownerId);
-
+	
 		owner.alias = await db
 			.select('*')
 			.from('boat.owneralias')
+			.orderBy('Id','desc')
 			.where('boat.owneralias.ownerid', ownerId);
 
         return owner;

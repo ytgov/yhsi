@@ -65,6 +65,17 @@
         </v-row>
         <v-row>
           <v-col cols="8">
+            <v-row>
+              <v-col cols="12" class="d-flex">
+                <v-spacer></v-spacer>
+                <v-btn
+                  class="mx-1 black--text align"
+                  v-if="mode != 'view' && editTableAlias == -1"
+                  @click="addAlias()"
+                  >Add Alias</v-btn
+                >
+              </v-col>
+            </v-row>
             <v-card>
               <v-list class="pa-0">
                 <v-subheader>Alias:</v-subheader>
@@ -150,17 +161,7 @@
                 </div>
               </v-list>
             </v-card>
-            <v-row>
-              <v-col cols="12" class="d-flex">
-                <v-spacer></v-spacer>
-                <v-btn
-                  class="mx-1 black--text align"
-                  v-if="mode != 'view' && editTableAlias == -1"
-                  @click="addAlias()"
-                  >Add Alias</v-btn
-                >
-              </v-col>
-            </v-row>
+            
           </v-col>
         </v-row>
       </v-col>
@@ -422,8 +423,8 @@ export default {
     addAlias() {
       this.helperAlias = "";
       this.addingAlias = true;
-      this.fields.alias.push({ Alias: "", isNew: true });
-      this.editTableAlias = this.fields.alias.length - 1;
+      this.fields.alias.unshift({ Alias: "", isNew: true });
+      this.editTableAlias = 0;
     },
     async downloadPdf(){
         this.loadingPdf = true;
