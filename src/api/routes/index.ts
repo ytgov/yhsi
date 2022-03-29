@@ -15,6 +15,7 @@ export * from './photo-batch-router';
 export * from './photo-owners-router';
 export * from './photo-router';
 export * from './photos-extra-router';
+export * from './place-edits-router';
 export * from './place-router';
 export * from './register-router';
 export * from './revision-log-types-router';

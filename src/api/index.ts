@@ -21,6 +21,7 @@ import {
 	photoOwnersRouter,
 	photoRouter,
 	photosExtraRouter,
+	placeEditsRouter,
 	placeRouter,
 	registerRouter,
 	revisionLogTypesRouter,
@@ -110,6 +111,7 @@ app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
 app.use('/api/photos', photosExtraRouter);
 app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
+app.use('/api/place-edits', RequiresAuthentication, placeEditsRouter);
 app.use('/api/site-statuses', RequiresAuthentication, siteStatusesRouter);
 app.use('/api/users', usersExtraRouter);
 app.use('/api/people', peopleRouter);
