@@ -166,7 +166,6 @@ export default {
 		},
 		toggleAdvancedSearch() {
 			if (this.isShowingAdvancedSearch) {
-				this.advancedSearchQuery = {};
 				this.doSearch();
 			}
 			this.isShowingAdvancedSearch = !this.isShowingAdvancedSearch;
