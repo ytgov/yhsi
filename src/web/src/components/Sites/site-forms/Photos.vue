@@ -1,55 +1,71 @@
 <template>
-  <div>
-    <h2 class="mt-4 mb-0 ml-4 d-flex justify-space-between">
+  <v-card
+    class="mb-0"
+    tag="section"
+    outlined
+    tile
+  >
+    <v-card-title
+      class="mb-0 text-h4"
+      tag="h2"
+    >
       Photos
-    </h2>
-    <v-divider class="mb-5"></v-divider>
-    <v-form v-model="valid">
-      <div class="row mx-1">
-        <div class="col-md-12">
+    </v-card-title>
+    <v-card-text tag="section">
+      <v-row>
+        <v-col cols="12">
           <v-text-field
             v-model="categoryOfProperty"
             label="Category of Property"
             dense
             outlined
             background-color="white"
-          ></v-text-field>
-        </div>
-
-        <div
-          class="col-md-6"
-          v-for="(item, index) in photos"
-          :key="`theme-${index + 1}`"
+          />
+        </v-col>
+      </v-row>
+      <v-card
+        class="default mb-0"
+        tag="section"
+      >
+        <v-card-title
+          tag="h3"
+          class="mb-0 text-h6"
         >
-          <v-card class="default">
-            <v-card-text
-              ><v-btn
-                color="warning"
-                x-small
-                fab
-                title="Remove"
-                class="my-0 float-right"
-                @click="removePhoto(index)"
-                ><v-icon>mdi-close</v-icon></v-btn
-              >
-              <h3>Photo {{ index + 1 }}</h3>
-
+          Photos
+        </v-card-title>
+        <v-card-text tag="form">
+          <v-row>
+            <v-col
+              v-for="(item, index) in photos"
+              :key="`photo-${index + 1}`"
+              cols="6"
+            >
               <v-row>
-                <v-col cols="12">
+                <v-col cols="10">
                   <v-img
                     v-if="item.img == null"
                     class="center-img"
                     max-width="128"
                     :src="require('../../../assets/add_photo.png')"
-                  >
-                  </v-img>
+                  />
                   <v-img
                     v-else
                     class="center-img"
                     max-width="128"
                     :src="item.img"
+                  />
+                </v-col>
+                <v-col cols="2">
+                  <v-btn
+                    color="warning"
+                    x-small
+                    fab
+                    title="Remove"
+                    class="my-0 float-right"
+                    @click="removePhoto(index)"
                   >
-                  </v-img>
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
                 </v-col>
               </v-row>
               <v-text-field
@@ -58,7 +74,7 @@
                 dense
                 outlined
                 background-color="white"
-              ></v-text-field>
+              />
 
               <v-text-field
                 v-model="item.caption"
@@ -66,7 +82,7 @@
                 dense
                 outlined
                 background-color="white"
-              ></v-text-field>
+              />
 
               <v-text-field
                 v-model="item.comments"
@@ -74,7 +90,7 @@
                 dense
                 outlined
                 background-color="white"
-              ></v-text-field>
+              />
 
               <v-text-field
                 v-model="item.creditLine"
@@ -82,7 +98,7 @@
                 dense
                 outlined
                 background-color="white"
-              ></v-text-field>
+              />
 
               <v-text-field
                 v-model="item.location"
@@ -90,7 +106,7 @@
                 dense
                 outlined
                 background-color="white"
-              ></v-text-field>
+              />
               <v-file-input
                 :id="`fi-${index}`"
                 label="Upload image"
@@ -100,37 +116,54 @@
                 outlined
                 background-color="white"
                 @change="onFileSelection($event, index)"
-              ></v-file-input>
-            </v-card-text>
-          </v-card>
-        </div>
-
-        <v-col cols="12">
-          <v-btn color="primary" @click="addPhoto()">Add Photo</v-btn>
-        </v-col>
-      </div>
-    </v-form>
-  </div>
+              />
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            class="my-0"
+            color="info"
+            @click="addPhoto"
+          >
+            Add Photo
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer />
+      <v-btn
+        class="my-0"
+        color="primary"
+        @click="save"
+      >
+        Save
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
-import axios from "axios";
-import store from "../../../store";
-import { PLACE_URL } from "../../../urls";
+import axios from 'axios';
+
+import store from '@/store';
+import { PLACE_URL } from '@/urls';
+
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
-  name: "Photos",
+  name: 'Photos',
   data: () => ({
     valid: false,
     generalRules: [
-      (v) => !!v || "This input is required",
-      (v) => v.length <= 20 || "This input must be less than 20 characters",
+      (v) => !!v || 'This input is required',
+      (v) => v.length <= 20 || 'This input must be less than 20 characters',
     ],
 
     photos: [],
 
     /* Placeholder variables below this line **Read above** */
-    categoryOfProperty: "",
+    categoryOfProperty: '',
   }),
   created: function () {
     let id = this.$route.params.id;
@@ -140,7 +173,7 @@ export default {
       .then((resp) => {
         this.fields = resp.data.data;
         this.photos = resp.data.relationships.photos.data;
-        store.dispatch("addSiteHistory", resp.data.data);
+        store.dispatch('addSiteHistory', resp.data.data);
         this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
@@ -160,13 +193,16 @@ export default {
         this.fields.photos[i].img = null;
       }
     },
+    save() {
+      console.error('Not implemented');
+    },
   },
 };
 </script>
 
 <style scoped>
 #backgroundimgsw {
-  background-image: "../../assets/greyimg.jpg";
+  background-image: '../../assets/greyimg.jpg';
 }
 .center-img {
   display: block;
@@ -175,7 +211,7 @@ export default {
   width: 50%;
 }
 .divback {
-  background-image: url("../../../assets/add_photo.png");
+  background-image: url('../../../assets/add_photo.png');
   width: 100px;
   height: 100px;
 }
