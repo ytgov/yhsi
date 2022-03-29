@@ -212,10 +212,6 @@ export default {
 		},
 		async showHistory() {
 			this.$refs.historySidebar.show();
-
-			let t = this.userInRole(this.UserRoles.PLACE_EDITOR);
-
-			console.log(t);
 		},
 		showError: function (msg) {
 			this.$refs.notifier.showError(msg);
