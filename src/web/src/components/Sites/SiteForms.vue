@@ -41,17 +41,17 @@
 <script>
 import { applicationName } from '@/config';
 
-import Associations from '@/components/Sites/SitesForms/Associations';
-import Dates from '@/components/Sites/SitesForms/Dates';
-import Description from '@/components/Sites/SitesForms/Description';
-import LegalAndZoning from '@/components/Sites/SitesForms/LegalAndZoning';
-import Location from '@/components/Sites/SitesForms/Location';
-import Management from '@/components/Sites/SitesForms/Management';
-import Photos from '@/components/Sites/SitesForms/Photos';
-import PrintDialog from '@/components/Sites/SitesGrid/PrintDialog';
+import Associations from '@/components/Sites/site-forms/Associations';
+import Dates from '@/components/Sites/site-forms/Dates';
+import Description from '@/components/Sites/site-forms/Description';
+import LegalAndZoning from '@/components/Sites/site-forms/LegalAndZoning';
+import Location from '@/components/Sites/site-forms/Location';
+import Management from '@/components/Sites/site-forms/Management';
+import Photos from '@/components/Sites/site-forms/Photos';
+import PrintDialog from '@/components/Sites/SiteFormsPrintDialog';
 import SiteFormsSidebar from '@/components/Sites/SiteFormsSidebar';
-import Summary from '@/components/Sites/SitesForms/Summary';
-import Themes from '@/components/Sites/SitesForms/Themes';
+import Summary from '@/components/Sites/site-forms/Summary';
+import Themes from '@/components/Sites/site-forms/Themes';
 
 export default {
   name: 'SiteForms',
