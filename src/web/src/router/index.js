@@ -98,6 +98,15 @@ const routes = [
     meta: { requiresAuth: true, authorize: [UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.SITE_VIEWER, UserRoles.SITE_VIEWER_LIMITED] }
   },
   {
+		path: '/sites-change-requests',
+		name: 'sitesChangeRequests',
+		component: () => import('@/components/SitesChangeRequestsTable'),
+		meta: {
+			requiresAuth: true,
+			authorize: [UserRoles.SITE_ADMIN]
+		}
+	},
+  {
     path: "/maps",
     name: "Maps",
     component: Maps,
