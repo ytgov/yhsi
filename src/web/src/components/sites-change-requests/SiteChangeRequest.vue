@@ -71,9 +71,13 @@ import { cloneDeep } from 'lodash';
 import placesApi from '@/apis/places-api';
 import placeEditsApi from '@/apis/place-edits-api';
 
+import DesignationTypesSelect from '@/components/sites-change-requests/site-change-request/DesignationTypesSelect';
+
 export default {
 	name: 'SiteChangeRequest',
-	components: {},
+	components: {
+		DesignationTypesSelect,
+	},
 	props: {
 		placeEditId: {
 			type: [Number, String],
@@ -87,16 +91,6 @@ export default {
 		placeEdit: {},
 	}),
 	computed: {
-		designationOptions() {
-			// in the future will retrieve from Vuex store
-			return [
-				{ value: 4, text: 'Federal' },
-				{ value: 2, text: 'Municipal' },
-				{ value: 3, text: 'Territorial' },
-				{ value: 5, text: 'World' },
-				{ value: 0, text: 'Not Designated' },
-			];
-		},
 		headers() {
 			return [
 				{ text: 'New', value: 'new' },
@@ -115,9 +109,8 @@ export default {
 				},
 				{
 					key: 'designations',
-					type: 'v-select',
+					type: DesignationTypesSelect,
 					fieldAttrs: {
-						items: this.designationOptions,
 						label: 'Designations',
 					},
 				},
