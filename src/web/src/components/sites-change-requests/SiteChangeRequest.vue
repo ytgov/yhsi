@@ -86,7 +86,7 @@ export default {
 		fieldTypes() {
 			return [
 				{
-					key: 'yhsiId',
+					key: 'yHSIId',
 					type: 'v-text-field',
 					fieldAttrs: {
 						label: 'YHSI ID',
