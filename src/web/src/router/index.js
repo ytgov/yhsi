@@ -368,29 +368,6 @@ const routes = [
 	name: 'ReligionGrid',
 	component: Religion,
 },
-{
-	path: '/burials',
-	name: 'BurialsGrid',
-	component: BurialsGrid,
-},
-{
-	path: '/burials/new',
-	name: 'BurialsNewForm',
-	component: BurialsForm,
-	props: true,
-},
-{
-	path: '/burials/view/:id',
-	name: 'BurialsViewForm',
-	component: BurialsForm,
-	props: true,
-},
-{
-	path: '/burials/edit/:id',
-	name: 'BurialsEditForm',
-	component: BurialsForm,
-	props: true,
-},
   {
     path: "/burials",
     name: "BurialsGrid",
@@ -405,7 +382,7 @@ const routes = [
     meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
   },
   {
-    path: "/burials/edit/:name",
+    path: "/burials/edit/:id",
     name: "BurialsEditForm",
     component: BurialsForm,
     props: true,
