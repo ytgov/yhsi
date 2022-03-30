@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon index.ts",
     "development": "pm2 start ecosystem.config.js --no-daemon",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --watch --watch-files 'tests/**/*.test.ts' 'tests/**/*.test.ts'",
     "start-yhsif": "nodemon index.ts",
     "build": "tsc"
   },
@@ -40,6 +40,8 @@
     "@types/pug": "^2.0.6",
     "@types/puppeteer": "^5.4.5",
     "@types/sharp": "^0.28.3",
+    "chai": "^4.3.6",
+    "mocha": "^9.2.2",
     "nodemon": "^2.0.12",
     "ts-node": "^9.1.1",
     "typescript": "^4.5.4"
