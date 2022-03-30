@@ -100,7 +100,7 @@ const routes = [
   {
 		path: '/sites-change-requests',
 		name: 'sitesChangeRequestsTable',
-		component: () => import('@/components/sites-change-requests/SitesChangeRequestsTable'),
+		component: () => import('@/components/Sites/SitesChangeRequestsTable'),
 		meta: {
 			requiresAuth: true,
 			authorize: [UserRoles.SITE_ADMIN]
@@ -109,7 +109,7 @@ const routes = [
   {
     path: '/sites-change-requests/:placeEditId',
     name: 'siteChangeRequest',
-    component: () => import('@/components/sites-change-requests/SiteChangeRequest'),
+    component: () => import('@/components/Sites/SiteChangeRequest'),
     props: true,
     meta: {
       requiresAuth: true,
