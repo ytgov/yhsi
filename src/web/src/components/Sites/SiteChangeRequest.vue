@@ -71,7 +71,7 @@ import { cloneDeep } from 'lodash';
 import placesApi from '@/apis/places-api';
 import placeEditsApi from '@/apis/place-edits-api';
 
-import DesignationTypesSelect from '@/components/sites-change-requests/site-change-request/DesignationTypesSelect';
+import DesignationTypesSelect from '@/components/Sites/site-change-request/DesignationTypesSelect';
 
 export default {
 	name: 'SiteChangeRequest',
