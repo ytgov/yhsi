@@ -4,25 +4,12 @@ v-card
 		| Site Change Request from {{ placeEdit['editorEmail'] }}
 	v-card-text
 		v-row
-			v-col.d-flex.justify-end(cols='5')
-				h3.mb-0 Original
-			v-col(cols='2')
 			v-col(cols='5')
 				h3.mb-0 New
+			v-col(cols='5')
+				h3.mb-0 Original
+			v-col(cols='2')
 		v-row(v-for='{ type, key, fieldAttrs } in fieldTypes', :key='key')
-			v-col.d-flex.justify-end(cols='5')
-				component(
-					:is='type',
-					:value='place[key]',
-					readonly,
-					reverse,
-					v-bind='fieldAttrs'
-				)
-			v-col.d-flex.justify-center(cols='2')
-				v-btn(color='success', title='Accept', icon)
-					v-icon mdi-check
-				v-btn.ml-4(color='warning', title='Reject', icon)
-					v-icon mdi-close
 			v-col(cols='5')
 				component(
 					:is='type',
@@ -30,7 +17,15 @@ v-card
 					readonly,
 					v-bind='fieldAttrs'
 				)
+			v-col(cols='5')
+				component(:is='type', :value='place[key]', readonly, v-bind='fieldAttrs')
+			v-col.d-flex.justify-center(cols='2')
+				v-btn(color='success', title='Accept', icon)
+					v-icon mdi-check
+				v-btn.ml-4(color='warning', title='Reject', icon)
+					v-icon mdi-close
 		v-row
+			v-col(cols='5')
 			v-col(cols='5')
 			v-col.d-flex.justify-center(cols='2')
 				v-btn.my-0(color='success', small)
@@ -39,7 +34,6 @@ v-card
 				v-btn.ml-4.my-0(color='warning', small)
 					v-icon mdi-close
 					| All
-			v-col(cols='5')
 	v-card-actions
 		v-btn.my-0(color='primary')
 			| Save
