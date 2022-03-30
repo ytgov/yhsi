@@ -19,6 +19,7 @@ export class PlaceEditService {
 				primaryName: 'PrimaryName',
 				editorId: 'EditorUserId',
 				editorEmail: 'Security.User.Email',
+				editDate: 'EditDate',
 			})
 			.from('PlaceEdit')
 			.leftOuterJoin(

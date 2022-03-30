@@ -12,6 +12,8 @@ v-data-table(
 )
 	template(#item.editorEmail='{ value }')
 		| {{ value || 'Unknown' }}
+	template(#item.editDate='{ value }')
+		| {{ prettyDate(value) }}
 </template>
 
 <script>
@@ -34,6 +36,7 @@ export default {
 				{ text: 'YHSI ID', value: 'yhsiId' },
 				{ text: 'Primary name', value: 'primaryName' },
 				{ text: 'Editor', value: 'editorEmail' },
+				{ text: 'Edit Date', value: 'editDate' },
 			];
 		},
 	},
@@ -44,6 +47,9 @@ export default {
 				this.items = data;
 				this.totalCount = meta.totalCount;
 			});
+		},
+		prettyDate(value) {
+			return new Date(value).toLocaleDateString();
 		},
 		updateOptions(options) {
 			this.options = options;
