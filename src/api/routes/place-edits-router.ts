@@ -1,28 +1,42 @@
 import express, { Request, Response } from 'express';
-import knex from 'knex';
+import { query } from 'express-validator';
 
-import { DB_CONFIG } from '../config';
+import { ReturnValidationErrors } from '../middleware';
+import { PlaceEditService } from '../services';
 
 export const placeEditsRouter = express.Router();
-const db = knex(DB_CONFIG);
+const placeEditService = new PlaceEditService();
 
-placeEditsRouter.get('/', (req: Request, res: Response) => {
-	return db
-		.select({
-			id: 'PlaceEdit.Id',
-			yhsiId: 'YHSIId',
-			primaryName: 'PrimaryName',
-			editorId: 'EditorUserId',
-			editorEmail: 'Security.User.Email',
-		})
-		.from('PlaceEdit')
-		.innerJoin('Security.User', 'Security.User.Id', 'PlaceEdit.EditorUserId')
-		.then((results) => {
-			return res.json({ data: results });
-		})
-		.catch((error) => {
-			return res.status(422).json({
-				messages: [{ variant: 'error', text: error.message }],
+interface ParsedPaginatedQs {
+	page: number;
+	itemsPerPage: number;
+	[key: string]: any;
+}
+
+placeEditsRouter.get(
+	'/',
+	query('page').default(1).toInt().isInt({ gt: 0 }),
+	query('itemsPerPage').default(20).toInt().isInt({ gt: 0 }),
+	ReturnValidationErrors,
+	(req: Request, res: Response) => {
+		const { page, itemsPerPage } = req.query as ParsedPaginatedQs;
+
+		return placeEditService
+			.buildTableView(page, itemsPerPage)
+			.then(({ results, totalCount }) => {
+				return res.json({
+					data: results,
+					meta: {
+						page,
+						itemsPerPage,
+						totalCount,
+					},
+				});
+			})
+			.catch((error) => {
+				return res.status(422).json({
+					messages: [{ variant: 'error', text: error.message }],
+				});
 			});
-		});
-});
+	}
+);
