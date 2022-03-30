@@ -10,6 +10,7 @@ import {
 	catalogsRouter,
 	communitiesRouter,
 	constructionPeriodsRouter,
+	designationTypesRouter,
 	firstNationAssociationTypesRouter,
 	firstNationsRouter,
 	historiesRouter,
@@ -103,6 +104,7 @@ app.use('/api/register', registerRouter);
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
 app.use('/api/communities', RequiresAuthentication, communitiesRouter);
 app.use('/api/construction-periods', RequiresAuthentication, constructionPeriodsRouter);
+app.use('/api/designation-types', RequiresAuthentication, designationTypesRouter);
 app.use('/api/first-nation-association-types', RequiresAuthentication, firstNationAssociationTypesRouter);
 app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);
 app.use('/api/nts-map-sheets', RequiresAuthentication, ntsMapSheetsRouter);
