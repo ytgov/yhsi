@@ -1,7 +1,7 @@
 <template lang="pug">
 v-card
 	v-card-title(tag='h2')
-		| Site Change Request {{ siteId }}
+		| Site Change Request from {{ placeEdit['editorEmail'] }}
 	v-card-text
 		v-row
 			v-col.d-flex.justify-end(cols='5')
@@ -9,14 +9,14 @@ v-card
 			v-col(cols='2')
 			v-col(cols='5')
 				h3.mb-0 New
-		v-row(v-for='{ type, key, attributes } in fieldTypes')
+		v-row(v-for='{ type, key, fieldAttrs } in fieldTypes', :key='key')
 			v-col.d-flex.justify-end(cols='5')
 				component(
 					:is='type',
 					:value='place[key]',
 					readonly,
 					reverse,
-					v-bind='attributes'
+					v-bind='fieldAttrs'
 				)
 			v-col.d-flex.justify-center(cols='2')
 				v-btn(color='success', title='Accept', icon)
@@ -28,8 +28,21 @@ v-card
 					:is='type',
 					:value='placeEdit[key]',
 					readonly,
-					v-bind='attributes'
+					v-bind='fieldAttrs'
 				)
+		v-row
+			v-col(cols='5')
+			v-col.d-flex.justify-center(cols='2')
+				v-btn.my-0(color='success', small)
+					v-icon mdi-check
+					| All
+				v-btn.ml-4.my-0(color='warning', small)
+					v-icon mdi-close
+					| All
+			v-col(cols='5')
+	v-card-actions
+		v-btn.my-0(color='primary')
+			| Save
 </template>
 
 <script>
@@ -50,6 +63,7 @@ export default {
 		placeEdit: {
 			yhsiId: '115J/14/008',
 			designations: 3,
+			editorEmail: 'klondikemarlen@gmail.com',
 		},
 	}),
 	computed: {
@@ -68,12 +82,16 @@ export default {
 				{
 					key: 'yhsiId',
 					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'YHSI ID',
+					},
 				},
 				{
 					key: 'designations',
 					type: 'v-select',
-					attributes: {
+					fieldAttrs: {
 						items: this.designationOptions,
+						label: 'Designations',
 					},
 				},
 			];
