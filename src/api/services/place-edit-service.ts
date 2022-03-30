@@ -15,7 +15,7 @@ export class PlaceEditService {
 		this._defaultScope = this.db
 			.select({
 				id: 'PlaceEdit.Id',
-				yhsiId: 'YHSIId',
+				yHSIId: 'YHSIId',
 				primaryName: 'PrimaryName',
 				editorId: 'EditorUserId',
 				editorEmail: 'Security.User.Email',
