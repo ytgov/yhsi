@@ -1,6 +1,9 @@
 # .prettierrc or .prettierrc.yaml
 embeddedLanguageFormatting: "auto"
 jsxSingleQuote: true
+pugAttributeSeparator: 'as-needed'
+pugSingleQuote: false
+pugWrapAttributesThreshold: 1
 semi: true
 singleAttributePerLine: true
 singleQuote: true
