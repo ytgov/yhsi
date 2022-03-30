@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card
+v-card(:loading='loading')
 	v-card-title(tag='h2')
 		| Site Change Request from {{ placeEdit['editorEmail'] }}
 	v-card-text
@@ -45,6 +45,9 @@ v-card
 </template>
 
 <script>
+import { cloneDeep } from 'lodash';
+
+import placesApi from '@/apis/places-api';
 import placeEditsApi from '@/apis/place-edits-api';
 
 export default {
@@ -58,15 +61,9 @@ export default {
 	},
 	data: () => ({
 		loading: false,
-		place: {
-			yhsiId: '115J/14/007',
-			designations: 4,
-		},
-		placeEdit: {
-			yhsiId: '115J/14/008',
-			designations: 3,
-			editorEmail: 'klondikemarlen@gmail.com',
-		},
+		newPlace: {},
+		place: {},
+		placeEdit: {},
 	}),
 	computed: {
 		designationOptions() {
@@ -108,15 +105,30 @@ export default {
 	},
 	watch: {},
 	mounted() {
-		this.getPlaceEdit(this.placeEditId);
+		this.getPlaceEdit(this.placeEditId).then((placeEdit) => {
+			return this.getPlace(placeEdit.placeId);
+		});
 	},
 	methods: {
+		getPlace(placeId) {
+			this.loading = true;
+			return placesApi
+				.get(placeId)
+				.then(({ data }) => {
+					this.place = data;
+					this.newPlace = cloneDeep(this.place);
+				})
+				.finally(() => {
+					this.loading = false;
+				});
+		},
 		getPlaceEdit(placeEditId) {
 			this.loading = true;
-			placeEditsApi
+			return placeEditsApi
 				.get(placeEditId)
 				.then(({ data }) => {
 					this.placeEdit = data;
+					return this.placeEdit;
 				})
 				.finally(() => {
 					this.loading = false;

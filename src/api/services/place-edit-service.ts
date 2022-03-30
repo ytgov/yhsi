@@ -48,7 +48,7 @@ export class PlaceEditService {
 
 	buildDetailedView(id: number) {
 		return this.defaultScope
-			.select('PlaceId')
+			.select({ placeId: 'PlaceId', designations: 'Designations' })
 			.where({ 'PlaceEdit.Id': id })
 			.first();
 	}
