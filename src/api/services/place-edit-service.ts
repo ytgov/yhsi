@@ -48,6 +48,7 @@ export class PlaceEditService {
 		return this.defaultScope
 			.limit(itemsPerPage)
 			.offset(offset)
+			.orderBy('EditDate', 'desc')
 			.then((results) => {
 				return {
 					results,
