@@ -3,6 +3,41 @@ v-card
 	v-card-title(tag='h2')
 		| Site Change Request from {{ placeEdit['editorEmail'] }}
 	v-card-text
+		v-data-table.mb-5(
+			:headers='headers',
+			:items='fieldTypes',
+			disable-sort,
+			hide-default-footer
+		)
+			template(#item.new='{ item }')
+				component(
+					:is='item.type',
+					:value='placeEdit[item.key]',
+					readonly,
+					v-bind='item.fieldAttrs'
+				)
+			template(#item.original='{ item }')
+				component(
+					:is='item.type',
+					:value='place[item.key]',
+					readonly,
+					v-bind='item.fieldAttrs'
+				)
+			template(#item.actions='{ item }')
+				v-btn(color='success', title='Accept', icon)
+					v-icon mdi-check
+				v-btn.ml-4(color='warning', title='Reject', icon)
+					v-icon mdi-close
+		v-row
+			v-spacer
+			v-col(cols='2')
+				v-btn.my-0(color='success', small)
+					v-icon mdi-check
+					| All
+				v-btn.ml-4.my-0(color='warning', small)
+					v-icon mdi-close
+					| All
+
 		v-row
 			v-col(cols='5')
 				h3.mb-0 New
@@ -19,7 +54,7 @@ v-card
 				)
 			v-col(cols='5')
 				component(:is='type', :value='place[key]', readonly, v-bind='fieldAttrs')
-			v-col.d-flex.justify-center(cols='2')
+			v-col(cols='2')
 				v-btn(color='success', title='Accept', icon)
 					v-icon mdi-check
 				v-btn.ml-4(color='warning', title='Reject', icon)
@@ -27,7 +62,7 @@ v-card
 		v-row
 			v-col(cols='5')
 			v-col(cols='5')
-			v-col.d-flex.justify-center(cols='2')
+			v-col(cols='2')
 				v-btn.my-0(color='success', small)
 					v-icon mdi-check
 					| All
@@ -69,6 +104,13 @@ export default {
 				{ value: 3, text: 'Territorial' },
 				{ value: 5, text: 'World' },
 				{ value: 0, text: 'Not Designated' },
+			];
+		},
+		headers() {
+			return [
+				{ text: 'New', value: 'new' },
+				{ text: 'Original', value: 'original' },
+				{ text: 'Actions', value: 'actions' },
 			];
 		},
 		fieldTypes() {
