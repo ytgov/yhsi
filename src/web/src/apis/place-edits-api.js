@@ -9,4 +9,10 @@ export default {
 			.then((response) => response.data)
 			.catch(console.error);
 	},
+	get(id) {
+		return http
+			.get(`${placeUrl}/${id}`)
+			.then((response) => response.data)
+			.catch(console.error);
+	},
 };

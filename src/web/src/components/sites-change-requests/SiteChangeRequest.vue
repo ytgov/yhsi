@@ -6,6 +6,7 @@ v-card
 		v-data-table.mb-5(
 			:headers='headers',
 			:items='fieldTypes',
+			:loading='loading',
 			disable-sort,
 			hide-default-footer
 		)
@@ -44,16 +45,19 @@ v-card
 </template>
 
 <script>
+import placeEditsApi from '@/apis/place-edits-api';
+
 export default {
 	name: 'SiteChangeRequest',
 	components: {},
 	props: {
-		siteId: {
+		placeEditId: {
 			type: [Number, String],
 			required: true,
 		},
 	},
 	data: () => ({
+		loading: false,
 		place: {
 			yhsiId: '115J/14/007',
 			designations: 4,
@@ -103,8 +107,22 @@ export default {
 		},
 	},
 	watch: {},
-	mounted() {},
-	methods: {},
+	mounted() {
+		this.getPlaceEdit(this.placeEditId);
+	},
+	methods: {
+		getPlaceEdit(placeEditId) {
+			this.loading = true;
+			placeEditsApi
+				.get(placeEditId)
+				.then(({ data }) => {
+					this.placeEdit = data;
+				})
+				.finally(() => {
+					this.loading = false;
+				});
+		},
+	},
 };
 </script>
 

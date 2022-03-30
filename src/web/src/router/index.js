@@ -107,7 +107,7 @@ const routes = [
 		}
 	},
   {
-    path: '/sites-change-requests/:siteId',
+    path: '/sites-change-requests/:placeEditId',
     name: 'siteChangeRequest',
     component: () => import('@/components/sites-change-requests/SiteChangeRequest'),
     props: true,

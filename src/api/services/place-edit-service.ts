@@ -46,6 +46,13 @@ export class PlaceEditService {
 		return (page - 1) * itemsPerPage;
 	}
 
+	buildDetailedView(id: number) {
+		return this.defaultScope
+			.select('PlaceId')
+			.where({ 'PlaceEdit.Id': id })
+			.first();
+	}
+
 	async buildTableView(page: number, itemsPerPage: number) {
 		const offset = this.computeOffset(page, itemsPerPage);
 		const totalCount = await this.count(this.defaultScope);
