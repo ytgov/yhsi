@@ -1,19 +1,19 @@
 <template lang="pug">
 v-data-table(
-	:headers='headers',
-	:items='items',
-	:options='options',
-	:loading='loading',
-	:server-items-length='totalCount',
-	:footer-props='{ "items-per-page-options": [10, 20, 100] }',
-	disable-sort,
-	dense,
-	@update:options='updateOptions',
-	@click:row='goToSiteChangeRequestDetails'
+	:headers="headers",
+	:items="items",
+	:options="options",
+	:loading="loading",
+	:server-items-length="totalCount",
+	:footer-props="{ 'items-per-page-options': [10, 20, 100] }"
+	disable-sort
+	dense
+	@update:options="updateOptions"
+	@click:row="goToSiteChangeRequestDetails"
 )
-	template(#item.editorEmail='{ value }')
+	template(#item.editorEmail="{ value }")
 		| {{ value || 'Unknown' }}
-	template(#item.editDate='{ value }')
+	template(#item.editDate="{ value }")
 		| {{ prettyDate(value) }}
 </template>
 

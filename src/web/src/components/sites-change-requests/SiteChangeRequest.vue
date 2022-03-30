@@ -1,48 +1,67 @@
 <template lang="pug">
-v-card(:loading='loading')
-	v-card-title(tag='h2')
+v-card(:loading="loading")
+	v-card-title(tag="h2")
 		| Site Change Request from
-		v-progress-circular.ml-1(v-if='loading', indeterminate, size='20', width='2')
+		v-progress-circular.ml-1(
+			v-if="loading"
+			indeterminate
+			size="20"
+			width="2"
+		)
 		span.ml-1(v-else) {{ placeEdit['editorEmail'] }}
 	v-card-text
 		v-data-table.mb-5(
-			:headers='headers',
-			:items='fieldTypes',
-			:loading='loading',
-			disable-sort,
+			:headers="headers",
+			:items="fieldTypes",
+			:loading="loading"
+			disable-sort
 			hide-default-footer
 		)
-			template(#item.new='{ item }')
+			template(#item.new="{ item }")
 				component(
-					:is='item.type',
-					:value='placeEdit[item.key]',
-					readonly,
-					v-bind='item.fieldAttrs'
+					:is="item.type",
+					:value="placeEdit[item.key]"
+					readonly
+					v-bind="item.fieldAttrs"
 				)
-			template(#item.original='{ item }')
+			template(#item.original="{ item }")
 				component(
-					:is='item.type',
-					:value='place[item.key]',
-					readonly,
-					v-bind='item.fieldAttrs'
+					:is="item.type",
+					:value="newPlace[item.key]"
+					readonly
+					v-bind="item.fieldAttrs"
 				)
-			template(#item.actions='{ item }')
-				v-btn(color='success', title='Accept', icon)
+			template(#item.actions="{ item }")
+				v-btn(
+					color="success"
+					title="Accept"
+					icon
+				)
 					v-icon mdi-check
-				v-btn.ml-4(color='warning', title='Reject', icon)
+				v-btn.ml-4(
+					color="warning"
+					title="Reject"
+					icon
+				)
 					v-icon mdi-close
 		v-row
 			v-spacer
-			v-col(cols='2')
-				v-btn.my-0(color='success', small)
+			v-col(cols="2")
+				v-btn.my-0(
+					color="success"
+					small
+				)
 					v-icon mdi-check
 					| All
-				v-btn.ml-4.my-0(color='warning', small)
+				v-btn.ml-4.my-0(
+					color="warning"
+					small
+				)
 					v-icon mdi-close
 					| All
 
 	v-card-actions
-		v-btn.my-0(color='primary')
+		v-btn.my-0(color="primary")
 			| Save
 </template>
 
