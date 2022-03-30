@@ -19,7 +19,7 @@
           Descriptions
         </v-card-title>
         <v-card-text tag="form">
-          <v-div
+          <div
             v-for="(item, i) in descriptions"
             :key="`description-${i + 1}`"
           >
@@ -65,7 +65,7 @@
                 <hr class="mb-3" />
               </v-col>
             </v-row>
-          </v-div>
+          </div>
         </v-card-text>
         <v-card-actions>
           <v-btn
