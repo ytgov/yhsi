@@ -99,13 +99,23 @@ const routes = [
   },
   {
 		path: '/sites-change-requests',
-		name: 'sitesChangeRequests',
+		name: 'sitesChangeRequestsTable',
 		component: () => import('@/components/sites-change-requests/SitesChangeRequestsTable'),
 		meta: {
 			requiresAuth: true,
 			authorize: [UserRoles.SITE_ADMIN]
 		}
 	},
+  {
+    path: '/sites-change-requests/:siteId',
+    name: 'siteChangeRequest',
+    component: () => import('@/components/sites-change-requests/SiteChangeRequest'),
+    props: true,
+    meta: {
+      requiresAuth: true,
+      authorize: [UserRoles.SITE_ADMIN]
+    }
+  },
   {
     path: "/maps",
     name: "Maps",

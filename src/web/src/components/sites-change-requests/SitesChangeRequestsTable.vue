@@ -8,7 +8,8 @@ v-data-table(
 	:footer-props='{ "items-per-page-options": [10, 20, 100] }',
 	disable-sort,
 	dense,
-	@update:options='updateOptions'
+	@update:options='updateOptions',
+	@click:row='goToSiteChangeRequestDetails'
 )
 	template(#item.editorEmail='{ value }')
 		| {{ value || 'Unknown' }}
@@ -47,6 +48,9 @@ export default {
 				this.items = data;
 				this.totalCount = meta.totalCount;
 			});
+		},
+		goToSiteChangeRequestDetails(value) {
+			this.$router.push(`/sites-change-requests/${value.id}`);
 		},
 		prettyDate(value) {
 			return new Date(value).toLocaleDateString();
