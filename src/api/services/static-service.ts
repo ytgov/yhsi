@@ -11,6 +11,7 @@ import {
 	Statute,
 	MapSheetLookup,
 } from '../data';
+import { DESIGNATION_TYPES } from '../models';
 
 export class StaticService {
 	private knex: Knex;
@@ -216,13 +217,7 @@ export class StaticService {
 	}
 
 	getDesignationTypes(): GenericEnum[] {
-		return [
-			{ value: 4, text: 'Federal' },
-			{ value: 2, text: 'Municipal' },
-			{ value: 3, text: 'Territorial' },
-			{ value: 5, text: 'World' },
-			{ value: 0, text: 'Not Designated' },
-		];
+		return DESIGNATION_TYPES;
 	}
 
 	getConditions(): GenericEnum[] {

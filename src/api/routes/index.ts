@@ -4,6 +4,7 @@ export * from './burials-router';
 export * from './catalogs-router';
 export * from './communities-router';
 export * from './construction-periods-router';
+export * from './designation-types-router';
 export * from './first-nation-association-types-router';
 export * from './first-nations-router';
 export * from './histories-router';
