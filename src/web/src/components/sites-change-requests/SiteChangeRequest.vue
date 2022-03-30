@@ -1,7 +1,9 @@
 <template lang="pug">
 v-card(:loading='loading')
 	v-card-title(tag='h2')
-		| Site Change Request from {{ placeEdit['editorEmail'] }}
+		| Site Change Request from
+		v-progress-circular.ml-1(v-if='loading', indeterminate, size='20', width='2')
+		span.ml-1(v-else) {{ placeEdit['editorEmail'] }}
 	v-card-text
 		v-data-table.mb-5(
 			:headers='headers',
