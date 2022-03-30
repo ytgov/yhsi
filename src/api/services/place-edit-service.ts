@@ -8,11 +8,11 @@ interface CountQuery {
 
 export class PlaceEditService {
 	private db: Knex;
-	private defaultScope: Knex.QueryInterface;
+	private _defaultScope: Knex.QueryBuilder;
 
 	constructor() {
 		this.db = knex(DB_CONFIG);
-		this.defaultScope = this.db
+		this._defaultScope = this.db
 			.select({
 				id: 'PlaceEdit.Id',
 				yhsiId: 'YHSIId',
@@ -28,7 +28,11 @@ export class PlaceEditService {
 			);
 	}
 
-	count(scope: Knex.QueryInterface): Promise<number> {
+	get defaultScope(): Knex.QueryBuilder {
+		return this._defaultScope.clone();
+	}
+
+	count(scope: Knex.QueryBuilder): Promise<number> {
 		return this.db
 			.count('PlaceEdit.Id', { as: 'count' })
 			.from('PlaceEdit')
