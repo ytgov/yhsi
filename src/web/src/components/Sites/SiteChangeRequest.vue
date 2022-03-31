@@ -170,6 +170,13 @@ export default {
 						label: 'Names',
 					},
 				},
+				{
+					key: 'historicalPatterns',
+					type: 'JsonViewer',
+					fieldAttrs: {
+						label: 'Historical Patterns',
+					},
+				},
 			];
 		},
 	},
