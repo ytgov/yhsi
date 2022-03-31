@@ -260,7 +260,7 @@ export default {
             let resp = await histories.post(data);
 
             if(resp[0].HistoryText);
-                this.data.push(resp[0]);
+                this.data.unshift(resp[0]);
             this.overlay = false;
             this.historicRecordHelper = null;
             this.referenceHelper = null;
