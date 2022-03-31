@@ -74,6 +74,7 @@ import placeEditsApi from '@/apis/place-edits-api';
 import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
 import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
+import RecordTypesSelect from '@/components/Sites/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/SiteCategoryTypesSelect';
 
 export default {
@@ -82,6 +83,7 @@ export default {
 		CategoryTypesSelect,
 		DesignationTypesSelect,
 		JsonViewer,
+		RecordTypesSelect,
 		SiteCategoryTypesSelect,
 	},
 	props: {
@@ -136,7 +138,7 @@ export default {
 				},
 				{
 					key: 'records',
-					type: 'v-text-field', // needs a select component
+					type: RecordTypesSelect,
 					fieldAttrs: {
 						label: 'Records',
 					},
