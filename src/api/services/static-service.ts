@@ -11,7 +11,11 @@ import {
 	Statute,
 	MapSheetLookup,
 } from '../data';
-import { CATEGORY_TYPES, DESIGNATION_TYPES } from '../models';
+import {
+	CATEGORY_TYPES,
+	DESIGNATION_TYPES,
+	GenericStringEnum,
+} from '../models';
 
 export class StaticService {
 	private knex: Knex;
@@ -210,7 +214,7 @@ export class StaticService {
 		return CATEGORY_TYPES;
 	}
 
-	getDesignationTypes(): GenericEnum[] {
+	getDesignationTypes(): readonly GenericStringEnum[] {
 		return DESIGNATION_TYPES;
 	}
 
