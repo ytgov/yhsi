@@ -29,7 +29,8 @@ v-card(:loading="loading")
 				component(
 					:is="item.type",
 					:value="placeEdit[item.key]"
-					readonly
+					readonly,
+					:class="higlightChange(item.key) ? ['green', 'accent-1'] : []"
 					v-bind="item.fieldAttrs"
 				)
 			template(#item.original="{ item }")
@@ -217,6 +218,13 @@ export default {
 			}
 
 			return [];
+		},
+		higlightChange(key) {
+			return (
+				!this.hideUnchanged &&
+				!this.rejectedChanges.has(key) &&
+				!isEqual(this.placeEdit[key], this.newPlace[key])
+			);
 		},
 		// This function can go away when the back-end serves the
 		// relationship data as part of the data directly.
