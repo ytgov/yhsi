@@ -92,6 +92,9 @@ placeRouter.get("/:id",
         await placeService.getById(id)
             .then(async (place) => {
                 if (place) {
+                    place.contributingResources = (place.contributingResources as string).split(',');
+                    place.designations = (place.designations as string).split(',');
+                    place.records = (place.records as string).split(',');
                     place.siteCategories = (place.siteCategories as string).split(',');
 
                     let associations = combine(await placeService.getAssociationsFor(place.id), placeService.getAssociationTypes(), 'value', 'type', 'text');
@@ -200,9 +203,10 @@ placeRouter.put("/:id/summary",
         delete updater.historicalPatterns;
         delete updater.yHSIId;
 
+        updater.contributingResources = (updater.contributingResources as string[]).join(',')
+        updater.designations = (updater.designations as string[]).join(',')
+        updater.records = (updater.records as string[]).join(',')
         updater.siteCategories = (updater.siteCategories as string[]).join(',')
-
-        //console.log(updater)
 
         await placeService.updatePlace(parseInt(id), updater);
         let oldNames = await placeService.getNamesFor(parseInt(id));
