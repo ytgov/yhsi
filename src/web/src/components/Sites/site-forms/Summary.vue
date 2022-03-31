@@ -210,6 +210,12 @@ import categoryTypesApi from '@/apis/category-types-api';
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'Summary',
+  props: {
+    placeId: {
+      type: [Number, String],
+      required: true,
+    },
+  },
   data: () => ({
     valid: false,
     loadedId: 0,
@@ -240,9 +246,8 @@ export default {
       siteCategories: [], //
     },
   }),
-  created: function () {
-    let id = this.$route.params.id;
-    this.loadItem(id);
+  mounted() {
+    this.loadItem(this.placeId);
 
     axios.get(`${STATIC_URL}/designation-type`).then((resp) => {
       this.designationOptions = resp.data.data;
@@ -256,16 +261,6 @@ export default {
     axios.get(`${STATIC_URL}/historical-pattern`).then((resp) => {
       this.historicalPatternOptions = resp.data.data;
     });
-  },
-  watch: {
-    '$route.params.id': {
-      handler: function (id) {
-        this.entity_id = id;
-        this.loadItem(this.entity_id);
-      },
-      deep: true,
-      immediate: true,
-    },
   },
   methods: {
     loadItem(id) {
@@ -290,7 +285,7 @@ export default {
       this.$parent.siteName = this.fields.primaryName;
     },
     addName() {
-      this.names.push({ description: '', placeId: this.entity_id });
+      this.names.push({ description: '', placeId: this.placeId });
     },
     removeName(index) {
       this.names.splice(index, 1);
@@ -299,7 +294,7 @@ export default {
       this.historicalPatterns.push({
         historicalPatternType: 1,
         comments: '',
-        placeId: this.entity_id,
+        placeId: this.placeId,
       });
     },
     removePattern(index) {
