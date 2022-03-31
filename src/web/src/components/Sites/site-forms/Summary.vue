@@ -40,8 +40,6 @@
             clearable
             label="CRHP category"
             :items="categoryOptions"
-            item-text="text"
-            item-value="id"
           />
 
           <v-select
@@ -51,15 +49,6 @@
             :items="recordOptions"
             item-text="text"
             item-value="value"
-            clearable
-            label="Records"
-          />
-
-          <v-select
-            v-model="fields.records"
-            dense
-            outlined
-            :items="recordOptions"
             clearable
             label="Records"
           />
@@ -214,7 +203,9 @@
 <script>
 import axios from 'axios';
 import store from '@/store';
+
 import { PLACE_URL, STATIC_URL } from '@/urls';
+import categoryTypesApi from '@/apis/category-types-api';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
@@ -224,16 +215,8 @@ export default {
     loadedId: 0,
 
     designationOptions: [],
-    crhpCategoryOptions: [],
-    siteCategoryOptions: [],
     recordOptions: [],
-    categoryOptions: [
-      { text: 'None Selected', id: 0 },
-      { text: 'Building', id: 1 },
-      { text: 'District', id: 2 },
-      { text: 'Place', id: 3 },
-      { text: 'Structure', id: 4 },
-    ],
+    categoryOptions: [],
     historicalPatternOptions: [],
 
     generalRules: [
@@ -264,11 +247,8 @@ export default {
     axios.get(`${STATIC_URL}/designation-type`).then((resp) => {
       this.designationOptions = resp.data.data;
     });
-    axios.get(`${STATIC_URL}/designations`).then((resp) => {
-      this.crhpCategoryOptions = resp.data.data;
-    });
-    axios.get(`${STATIC_URL}/site-category`).then((resp) => {
-      this.siteCategoryOptions = resp.data.data;
+    categoryTypesApi.getAll().then(({ data }) => {
+      this.categoryOptions = data;
     });
     axios.get(`${STATIC_URL}/record-type`).then((resp) => {
       this.recordOptions = resp.data.data;
