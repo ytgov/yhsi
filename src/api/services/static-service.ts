@@ -13,6 +13,7 @@ import {
 } from '../data';
 import {
 	CATEGORY_TYPES,
+	CONTRIBUTING_RESOURCE_TYPES,
 	DESIGNATION_TYPES,
 	GenericStringEnum,
 	RECORD_TYPES,
@@ -258,14 +259,8 @@ export class StaticService {
 		return SITE_CATEGORY_TYPES;
 	}
 
-	getContributingResourceTypes(): GenericEnum[] {
-		return [
-			{ value: 4, text: 'Archaeological' },
-			{ value: 2, text: 'Building' },
-			{ value: 9, text: 'Collection' },
-			{ value: 3, text: 'Landscapes' },
-			{ value: 1, text: 'Structure' },
-		];
+	getContributingResourceTypes(): readonly GenericStringEnum[] {
+		return CONTRIBUTING_RESOURCE_TYPES;
 	}
 
 	getPhotoPrograms(): GenericEnum[] {
