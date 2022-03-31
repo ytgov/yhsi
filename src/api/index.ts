@@ -8,6 +8,7 @@ import {
 	boatsRouter,
 	burialsRouter,
 	catalogsRouter,
+	categoryTypesRouter,
 	communitiesRouter,
 	constructionPeriodsRouter,
 	designationTypesRouter,
@@ -102,6 +103,7 @@ app.use('/api/register', registerRouter);
 ////console.log("B", boats)
 
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
+app.use('/api/category-types', RequiresAuthentication, categoryTypesRouter);
 app.use('/api/communities', RequiresAuthentication, communitiesRouter);
 app.use('/api/construction-periods', RequiresAuthentication, constructionPeriodsRouter);
 app.use('/api/designation-types', RequiresAuthentication, designationTypesRouter);
