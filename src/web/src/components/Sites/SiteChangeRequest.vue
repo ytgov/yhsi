@@ -72,6 +72,7 @@ import placesApi from '@/apis/places-api';
 import placeEditsApi from '@/apis/place-edits-api';
 
 import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
+import ContributingResourceTypesSelect from '@/components/Sites/ContributingResourceTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
 import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
 import RecordTypesSelect from '@/components/Sites/RecordTypesSelect';
@@ -81,6 +82,7 @@ export default {
 	name: 'SiteChangeRequest',
 	components: {
 		CategoryTypesSelect,
+		ContributingResourceTypesSelect,
 		DesignationTypesSelect,
 		JsonViewer,
 		RecordTypesSelect,
@@ -144,11 +146,8 @@ export default {
 					},
 				},
 				{
-					key: 'contributingResources', // no clue what the data format is
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Contribuiting resources',
-					},
+					key: 'contributingResources',
+					type: ContributingResourceTypesSelect,
 				},
 				{
 					key: 'showInRegister',

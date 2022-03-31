@@ -59,12 +59,12 @@
             label="Records"
           />
 
-          <v-text-field
+          <ContributingResourceTypesSelect
             v-model="fields.contributingResources"
             dense
             outlined
             multiple
-            label="Contribuiting resources"
+            label="Contributing resources"
             required
           />
 
@@ -216,6 +216,7 @@ import { PLACE_URL, STATIC_URL } from '@/urls';
 import placesApi from '@/apis/places-api';
 
 import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
+import ContributingResourceTypesSelect from '@/components/Sites/ContributingResourceTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
 import RecordTypesSelect from '@/components/Sites/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/SiteCategoryTypesSelect';
@@ -224,6 +225,7 @@ export default {
   name: 'Summary',
   components: {
     CategoryTypesSelect,
+    ContributingResourceTypesSelect,
     DesignationTypesSelect,
     RecordTypesSelect,
     SiteCategoryTypesSelect,
