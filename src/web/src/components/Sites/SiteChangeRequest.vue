@@ -27,7 +27,7 @@ v-card(:loading="loading")
 			template(#item.original="{ item }")
 				component(
 					:is="item.type",
-					:value="get(newPlace, item.placeKey, newPlace[item.key])"
+					:value="newPlace[item.key]"
 					readonly
 					v-bind="item.fieldAttrs"
 				)
@@ -154,11 +154,10 @@ export default {
 					},
 				},
 				{
-					key: 'nameJSON',
-					placeKey: 'names',
+					key: 'names',
 					type: 'JsonViewer',
 					fieldAttrs: {
-						label: 'Primary name',
+						label: 'Names',
 					},
 				},
 			];
@@ -171,7 +170,6 @@ export default {
 		});
 	},
 	methods: {
-		get,
 		// This function can go away when the back-end serves the
 		// relationship data as part of the data directly.
 		// e.g. { data: { names: [{ id: 1, placeId: 1, description: "SomeName" }] } }

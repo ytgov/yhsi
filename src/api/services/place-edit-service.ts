@@ -13,7 +13,9 @@ interface GenericResult {
 function parseJSONColumns(object: GenericResult) {
 	Object.keys(object).forEach((key) => {
 		if (key.endsWith('JSON')) {
-			object[key] = JSON.parse(object[key]);
+			const cleanedKey = key.replace(/JSON$/, '');
+			object[cleanedKey] = JSON.parse(object[key]);
+			delete object[key];
 		}
 	});
 	return object;
@@ -75,7 +77,7 @@ export class PlaceEditService {
 				category: 'Category',
 				contributingResources: 'ContributingResources',
 				designations: 'Designations',
-				nameJSON: 'NameJSON',
+				namesJSON: 'NameJSON',
 				records: 'Records',
 				showInRegister: 'ShowInRegister',
 			})
