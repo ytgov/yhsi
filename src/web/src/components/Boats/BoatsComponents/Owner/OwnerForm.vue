@@ -65,6 +65,17 @@
         </v-row>
         <v-row>
           <v-col cols="8">
+            <v-row>
+              <v-col cols="12" class="d-flex">
+                <v-spacer></v-spacer>
+                <v-btn
+                  class="mx-1 black--text align"
+                  v-if="mode != 'view' && editTableAlias == -1"
+                  @click="addAlias()"
+                  >Add Alias</v-btn
+                >
+              </v-col>
+            </v-row>
             <v-card>
               <v-list class="pa-0">
                 <v-subheader>Alias:</v-subheader>
@@ -150,17 +161,7 @@
                 </div>
               </v-list>
             </v-card>
-            <v-row>
-              <v-col cols="12" class="d-flex">
-                <v-spacer></v-spacer>
-                <v-btn
-                  class="mx-1 black--text align"
-                  v-if="mode != 'view' && editTableAlias == -1"
-                  @click="addAlias()"
-                  >Add Alias</v-btn
-                >
-              </v-col>
-            </v-row>
+            
           </v-col>
         </v-row>
       </v-col>
@@ -168,11 +169,78 @@
         <v-row>
           <v-col cols="5"></v-col>
           <v-col cols="7">
+            <v-row>
+              <v-col cols="12" class="d-flex">
+                <v-spacer></v-spacer>
+                <v-btn
+                  class="mx-1 black--text align"
+                  v-if="mode != 'view' && editTableBoats == -1"
+                  :disabled="addingBoat"
+                  @click="addBoat()"
+                  >Add Boat Owned</v-btn
+                >
+              </v-col>
+            </v-row>
             <v-card>
               <v-list class="pa-0">
                 <v-subheader>Boats Owned:</v-subheader>
                 <v-divider></v-divider>
                 <div class="scrollBoats">
+                  <v-list-item v-if="editTableBoats === -1 && addingBoat">
+                    <v-list-item-content>
+                    <v-form>
+                      <v-autocomplete outlined dense
+                        @click="getBoats"
+                        v-model="helperBoat"
+                        :items="boatArray"
+                        :loading="isLoadingBoats"
+                        clearable
+                        label="Boat Name"
+                        :rules="boatRules"
+                        item-text="Name"
+                        return-object
+                      ></v-autocomplete>
+                    </v-form>
+                    </v-list-item-content>
+                    <v-list-item-action>
+                      <v-tooltip
+                          bottom
+                          v-if="mode != 'view' && addingBoat"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              v-bind="attrs"
+                              v-on="on"
+                              icon
+                              class="grey--text text--darken-2"
+                              color="success"
+                              @click="saveTableBoats()"
+                            >
+                              <v-icon small>mdi-check</v-icon>
+                            </v-btn>
+                          </template>
+                          <span>Save changes</span>
+                        </v-tooltip>
+                      <v-tooltip
+                          bottom
+                          v-if="mode != 'view' && addingBoat"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              v-bind="attrs"
+                              v-on="on"
+                              icon
+                              class="grey--text text--darken-2"
+                              @click="cancelEditTableBoats()"
+                            >
+                              <v-icon small>mdi-close</v-icon>
+                            </v-btn>
+                          </template>
+                          <span>Cancel</span>
+                        </v-tooltip>
+                    </v-list-item-action>
+                  </v-list-item>
+                  <v-divider v-if="editTableBoats === -1 && addingBoat"></v-divider>
                   <template v-for="(item, i) in fields.boats">
                     <v-list-item :key="`nl-${i}`">
                       <v-list-item-content>
@@ -225,6 +293,7 @@
 import Breadcrumbs from "../../../Breadcrumbs";
 import HistoricRecord from "../HistoricRecord";
 import owners from "../../../../controllers/owners";
+import boats from "../../../../controllers/boats";
 export default {
   name: "ownerForm",
   components: { Breadcrumbs, HistoricRecord },
@@ -240,6 +309,14 @@ export default {
     validAlias: false,
     aliasRules: [(v) => !!v || "Alias is required"],
     aliasArray: [],
+    //Boats owned vars
+    editTableBoats: -1, // tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
+    addingBoat: false, // tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
+    helperBoat: null,
+    validBoat: false,
+    boatRules: [(v) => !!v || "Boat is required"],
+    boatArray: [],
+    isLoadingBoats: false,
     //helper vars for when v-model is not an option (inside the datatable)
     historiRecordHelper: "",
     recordHelper: "",
@@ -355,6 +432,10 @@ export default {
       editOwnerAlias.map((x) => {
         delete x.isEdited;
       });
+      let newBoatsOwned = this.fields.boats.filter((x) => x.isNew == true);
+      newBoatsOwned.map((x) => {
+        delete x.isNew;
+      });
 
       let data = {
         owner: {
@@ -362,6 +443,7 @@ export default {
         },
         newOwnerAlias,
         editOwnerAlias,
+        newBoatsOwned
       };
       ////console.log(data);
       let currentOwner = {};
@@ -422,8 +504,43 @@ export default {
     addAlias() {
       this.helperAlias = "";
       this.addingAlias = true;
-      this.fields.alias.push({ Alias: "", isNew: true });
-      this.editTableAlias = this.fields.alias.length - 1;
+      this.fields.alias.unshift({ Alias: "", isNew: true });
+      this.editTableAlias = 0;
+    },
+    //BOATS OWNED
+    cancelEditTableBoats() {
+      if (this.addingAlias) {
+        this.editTableBoats = -1;
+        this.addingBoat = false;
+        this.fields.boats.pop();
+      } else {
+        this.editTableBoats = -1;
+      }
+    },
+    saveTableBoats() {
+      if (this.addingBoat){
+        const { Id, Name } = this.helperBoat;
+        this.fields.boats = [{}, ...this.fields.boats];
+        this.$set(this.fields.boats, 0, { BoatID: Id, Name, isNew: true });
+      }
+        
+      this.addingBoat = false;
+      this.showSave = this.showSave + 1;
+      this.editTableBoats = -1;
+    },
+    addBoat() {
+      this.helperBoat = "";
+      this.addingBoat = true;
+      //this.fields.boats.unshift({ Name: "", , isNew: true });
+      //this.editTableBoats = 0;
+    },
+    async getBoats(){
+        this.isLoadingBoats = true;
+        console.log("loading boats");
+        let data = await boats.get(0,10, this.helperBoat, 'Name', 'asc');
+        let arr = data.body;
+        this.boatArray = arr;
+        this.isLoadingBoats = false;
     },
     async downloadPdf(){
         this.loadingPdf = true;
