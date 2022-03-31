@@ -36,7 +36,8 @@ v-card(:loading="loading")
 				component(
 					:is="item.type",
 					:value="newPlace[item.key]"
-					readonly
+					readonly,
+					:class="buildStateClass(item.key)"
 					v-bind="item.fieldAttrs"
 				)
 			template(#item.actions="{ item }")
@@ -44,12 +45,14 @@ v-card(:loading="loading")
 					color="success"
 					title="Accept"
 					icon
+					@click="acceptChange(item.key)"
 				)
 					v-icon mdi-check
 				v-btn.ml-4(
 					color="warning"
 					title="Reject"
 					icon
+					@click="rejectChange(item.key)"
 				)
 					v-icon mdi-close
 		v-row
@@ -108,6 +111,8 @@ export default {
 		place: {},
 		placeEdit: {},
 		hideUnchanged: false,
+		acceptedChanges: new Set(),
+		rejectedChanges: new Set(),
 	}),
 	computed: {
 		changedFieldTypes() {
@@ -190,6 +195,22 @@ export default {
 		});
 	},
 	methods: {
+		acceptChange(key) {
+			this.newPlace[key] = this.placeEdit[key];
+			this.rejectedChanges.delete(key);
+			this.acceptedChanges.add(key);
+		},
+		buildStateClass(key) {
+			if (this.rejectedChanges.has(key)) {
+				return ['orange', 'accent-1'];
+			}
+
+			if (this.acceptedChanges.has(key)) {
+				return ['green', 'accent-1'];
+			}
+
+			return [];
+		},
 		// This function can go away when the back-end serves the
 		// relationship data as part of the data directly.
 		// e.g. { data: { names: [{ id: 1, placeId: 1, description: "SomeName" }] } }
@@ -228,6 +249,11 @@ export default {
 				.finally(() => {
 					this.loading = false;
 				});
+		},
+		rejectChange(key) {
+			this.newPlace[key] = this.place[key];
+			this.acceptedChanges.delete(key);
+			this.rejectedChanges.add(key);
 		},
 		updateQueryParams(key, value) {
 			this.$router.push({
