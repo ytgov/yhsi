@@ -134,30 +134,18 @@ export default {
 				{
 					key: 'designations',
 					type: DesignationTypesSelect,
-					fieldAttrs: {
-						label: 'Designations',
-					},
 				},
 				{
 					key: 'category',
 					type: CategoryTypesSelect,
-					fieldAttrs: {
-						label: 'CRHP category',
-					},
 				},
 				{
 					key: 'siteCategories',
 					type: SiteCategoryTypesSelect,
-					fieldAttrs: {
-						label: 'Site Categories',
-					},
 				},
 				{
 					key: 'records',
 					type: RecordTypesSelect,
-					fieldAttrs: {
-						label: 'Records',
-					},
 				},
 				{
 					key: 'contributingResources',

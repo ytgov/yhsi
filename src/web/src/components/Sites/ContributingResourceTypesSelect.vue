@@ -1,9 +1,10 @@
 <template lang="pug">
 v-select(
-	label="Contributing resources"
-	v-bind="$attrs",
+	label="Contributing resources",
 	:items="contributingResourceTypeOptions",
 	:loading="loading"
+	multiple
+	v-bind="$attrs"
 	v-on="$listeners"
 )
 	template(
