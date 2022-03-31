@@ -1,7 +1,7 @@
 <template lang="pug">
 v-select(
 	v-bind="$attrs",
-	:items="designationOptions"
+	:items="designationOptions",
 	:loading="loading"
 	v-on="$listeners"
 )
