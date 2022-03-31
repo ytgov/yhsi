@@ -41,14 +41,13 @@
             label="CRHP category"
           />
 
-          <v-select
+          <SiteCategoryTypesSelect
             v-model="fields.siteCategories"
             dense
             outlined
             clearable
             multiple
             label="Site Categories"
-            :items="siteCategoryOptions"
           />
 
           <v-select
@@ -221,12 +220,14 @@ import placesApi from '@/apis/places-api';
 
 import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
+import SiteCategoryTypesSelect from '@/components/Sites/SiteCategoryTypesSelect';
 
 export default {
   name: 'Summary',
   components: {
     CategoryTypesSelect,
     DesignationTypesSelect,
+    SiteCategoryTypesSelect,
   },
   props: {
     placeId: {
@@ -237,7 +238,6 @@ export default {
   data: () => ({
     recordOptions: [],
     historicalPatternOptions: [],
-    siteCategoryOptions: [],
     names: [],
     historicalPatterns: [],
     fields: {
