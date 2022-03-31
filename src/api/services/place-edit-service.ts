@@ -6,12 +6,34 @@ interface CountQuery {
 	count: number;
 }
 
+interface GenericResult {
+	[key: string]: any;
+}
+
+function parseJSONColumns(object: GenericResult) {
+	Object.keys(object).forEach((key) => {
+		if (key.endsWith('JSON')) {
+			object[key] = JSON.parse(object[key]);
+		}
+	});
+	return object;
+}
+
 export class PlaceEditService {
 	private db: Knex;
 	private _defaultScope: Knex.QueryBuilder;
 
 	constructor() {
-		this.db = knex(DB_CONFIG);
+		this.db = knex({
+			...DB_CONFIG,
+			postProcessResponse: (result, queryContext) => {
+				if (Array.isArray(result)) {
+					return result;
+				} else {
+					return parseJSONColumns(result);
+				}
+			},
+		});
 		this._defaultScope = this.db
 			.select({
 				id: 'PlaceEdit.Id',
@@ -50,10 +72,11 @@ export class PlaceEditService {
 		return this.defaultScope
 			.select({
 				placeId: 'PlaceId',
-				designations: 'Designations',
 				category: 'Category',
-				records: 'Records',
 				contributingResources: 'ContributingResources',
+				designations: 'Designations',
+				nameJSON: 'NameJSON',
+				records: 'Records',
 				showInRegister: 'ShowInRegister',
 			})
 			.where({ 'PlaceEdit.Id': id })
