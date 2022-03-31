@@ -15,6 +15,7 @@ import {
 	CATEGORY_TYPES,
 	DESIGNATION_TYPES,
 	GenericStringEnum,
+	RECORD_TYPES,
 	SITE_CATEGORY_TYPES,
 } from '../models';
 
@@ -249,11 +250,8 @@ export class StaticService {
 		];
 	}
 
-	getRecordTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'CRHP' },
-			{ value: 2, text: 'WHBR' },
-		];
+	getRecordTypes(): readonly GenericStringEnum[] {
+		return RECORD_TYPES;
 	}
 
 	getSiteCategories(): readonly GenericStringEnum[] {

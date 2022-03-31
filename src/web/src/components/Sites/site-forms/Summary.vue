@@ -50,14 +50,11 @@
             label="Site Categories"
           />
 
-          <v-select
+          <RecordTypesSelect
             v-model="fields.records"
             dense
             outlined
             multiple
-            :items="recordOptions"
-            item-text="text"
-            item-value="value"
             clearable
             label="Records"
           />
@@ -220,6 +217,7 @@ import placesApi from '@/apis/places-api';
 
 import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
+import RecordTypesSelect from '@/components/Sites/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/SiteCategoryTypesSelect';
 
 export default {
@@ -227,6 +225,7 @@ export default {
   components: {
     CategoryTypesSelect,
     DesignationTypesSelect,
+    RecordTypesSelect,
     SiteCategoryTypesSelect,
   },
   props: {
@@ -236,7 +235,6 @@ export default {
     },
   },
   data: () => ({
-    recordOptions: [],
     historicalPatternOptions: [],
     names: [],
     historicalPatterns: [],
@@ -254,9 +252,6 @@ export default {
   }),
   mounted() {
     this.getPlace(this.placeId);
-    axios.get(`${STATIC_URL}/record-type`).then((resp) => {
-      this.recordOptions = resp.data.data;
-    });
     axios.get(`${STATIC_URL}/historical-pattern`).then((resp) => {
       this.historicalPatternOptions = resp.data.data;
     });

@@ -21,6 +21,7 @@ export * from './place-edits-router';
 export * from './place-router';
 export * from './register-router';
 export * from './revision-log-types-router';
+export * from './record-types-router';
 export * from './site-category-types-router';
 export * from './site-statuses-router';
 export * from './static-router';

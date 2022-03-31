@@ -25,6 +25,7 @@ import {
 	photosExtraRouter,
 	placeEditsRouter,
 	placeRouter,
+	recordTypesRouter,
 	registerRouter,
 	revisionLogTypesRouter,
 	siteCategoryTypesRouter,
@@ -122,6 +123,7 @@ app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
 app.use('/api/photos', photosExtraRouter);
 app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
 app.use('/api/place-edits', RequiresAuthentication, placeEditsRouter);
+app.use('/api/record-types', RequiresAuthentication, recordTypesRouter);
 app.use('/api/site-category-types', RequiresAuthentication, siteCategoryTypesRouter);
 app.use('/api/site-statuses', RequiresAuthentication, siteStatusesRouter);
 app.use('/api/users', usersExtraRouter);
