@@ -27,10 +27,11 @@ export class BoatOwnerService {
 			.first();
 
 		owner.boats = await db
-			.select('*')
-			.from('boat.boat')
-			.join('boat.BoatOwner', 'boat.BoatOwner.boatid', '=', 'boat.boat.id')
-			.where('boat.boatowner.ownerid', ownerId);
+			.select('BOO.BoatID','BO.Name','BOO.OwnerID')
+			.from('boat.boat AS BO')
+			.join('boat.BoatOwner AS BOO', 'BOO.boatid', '=', 'BO.id')
+			.where('BOO.ownerid', ownerId)
+			.orderBy('BOO.BoatID', 'desc');
 
 		owner.histories = await db
 			.select('*')
@@ -97,9 +98,6 @@ export class BoatOwnerService {
 				.limit(limit)
 				.offset(offset);
 		}
-
 		return { count: counter[0].count, body: owners };
-
     }
-
 }
