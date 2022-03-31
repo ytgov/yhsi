@@ -52,6 +52,9 @@ export class PlaceEditService {
 				placeId: 'PlaceId',
 				designations: 'Designations',
 				category: 'Category',
+				records: 'Records',
+				contributingResources: 'ContributingResources',
+				showInRegister: 'ShowInRegister',
 			})
 			.where({ 'PlaceEdit.Id': id })
 			.first();

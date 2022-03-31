@@ -123,6 +123,34 @@ export default {
 						label: 'CRHP category',
 					},
 				},
+				{
+					key: 'records',
+					type: 'v-text-field', // needs a select component
+					fieldAttrs: {
+						label: 'Records',
+					},
+				},
+				{
+					key: 'contributingResources', // no clue what the data format is
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Contribuiting resources',
+					},
+				},
+				{
+					key: 'showInRegister',
+					type: 'v-checkbox',
+					fieldAttrs: {
+						label: 'Show in Register?',
+					},
+				},
+				{
+					key: 'primaryName',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Primary name',
+					},
+				},
 			];
 		},
 	},
