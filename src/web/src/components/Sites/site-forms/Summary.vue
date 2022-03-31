@@ -28,9 +28,7 @@
             v-model="fields.designations"
             dense
             outlined
-            multiple
             clearable
-            label="Designations"
           />
 
           <CategoryTypesSelect
@@ -38,7 +36,6 @@
             dense
             outlined
             clearable
-            label="CRHP category"
           />
 
           <SiteCategoryTypesSelect
@@ -46,25 +43,19 @@
             dense
             outlined
             clearable
-            multiple
-            label="Site Categories"
           />
 
           <RecordTypesSelect
             v-model="fields.records"
             dense
             outlined
-            multiple
             clearable
-            label="Records"
           />
 
           <ContributingResourceTypesSelect
             v-model="fields.contributingResources"
             dense
             outlined
-            multiple
-            label="Contributing resources"
             required
           />
 

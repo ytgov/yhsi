@@ -1,6 +1,10 @@
 import knex, { Knex } from 'knex';
 
 import { DB_CONFIG } from '../config';
+import {
+	decodeCommaDelimitedArray,
+	encodeCommaDelimitedArray,
+} from '../models';
 
 interface CountQuery {
 	count: number;
@@ -81,9 +85,20 @@ export class PlaceEditService {
 				namesJSON: 'NameJSON',
 				records: 'Records',
 				showInRegister: 'ShowInRegister',
+				siteCategories: 'SiteCategories',
 			})
 			.where({ 'PlaceEdit.Id': id })
-			.first();
+			.first()
+			.then((place) => {
+				place.contributingResources = decodeCommaDelimitedArray(
+					place.contributingResources
+				);
+				place.designations = decodeCommaDelimitedArray(place.designations);
+				place.records = decodeCommaDelimitedArray(place.records);
+				place.siteCategories = decodeCommaDelimitedArray(place.siteCategories);
+
+				return place;
+			});
 	}
 
 	async buildTableView(page: number, itemsPerPage: number) {

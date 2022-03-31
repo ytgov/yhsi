@@ -1,8 +1,9 @@
 <template lang="pug">
 v-select(
-	v-bind="$attrs",
+	label="CRHP category",
 	:items="categoryTypeOptions",
 	:loading="loading"
+	v-bind="$attrs"
 	v-on="$listeners"
 )
 	template(
