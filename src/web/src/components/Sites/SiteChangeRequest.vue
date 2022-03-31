@@ -9,10 +9,18 @@ v-card(:loading="loading")
 			width="2"
 		)
 		span.ml-1(v-else) {{ placeEdit['editorEmail'] }}
+		v-spacer
+		v-checkbox(
+			v-model="hideUnchanged"
+			label="Hide unchanged fields?"
+			dense
+			hide-details
+			@change="updateQueryParams('hideUnchanged', $event)"
+		)
 	v-card-text
 		v-data-table.mb-5(
 			:headers="headers",
-			:items="fieldTypes",
+			:items="hideUnchanged ? changedFieldTypes : fieldTypes",
 			:loading="loading"
 			disable-sort
 			hide-default-footer
@@ -66,7 +74,7 @@ v-card(:loading="loading")
 </template>
 
 <script>
-import { cloneDeep, get } from 'lodash';
+import { cloneDeep, isEqual, get } from 'lodash';
 
 import placesApi from '@/apis/places-api';
 import placeEditsApi from '@/apis/place-edits-api';
@@ -99,6 +107,7 @@ export default {
 		newPlace: {},
 		place: {},
 		placeEdit: {},
+		hideUnchanged: false,
 	}),
 	computed: {
 		headers() {
@@ -107,6 +116,11 @@ export default {
 				{ text: 'Original', value: 'original' },
 				{ text: 'Actions', value: 'actions' },
 			];
+		},
+		changedFieldTypes() {
+			return this.fieldTypes.filter(
+				({ key }) => !isEqual(this.placeEdit[key], this.place[key])
+			);
 		},
 		fieldTypes() {
 			return [
@@ -182,6 +196,7 @@ export default {
 	},
 	watch: {},
 	mounted() {
+		this.hideUnchanged = JSON.parse(this.$route.query.hideUnchanged || 'false');
 		this.getPlaceEdit(this.placeEditId).then((placeEdit) => {
 			return this.getPlace(placeEdit.placeId);
 		});
@@ -225,6 +240,15 @@ export default {
 				.finally(() => {
 					this.loading = false;
 				});
+		},
+		updateQueryParams(key, value) {
+			this.$router.push({
+				path: '/sites-change-requests/5336',
+				query: {
+					...this.$route.query,
+					[key]: value,
+				},
+			});
 		},
 	},
 };
