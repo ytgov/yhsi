@@ -61,12 +61,14 @@ v-card(:loading="loading")
 				v-btn.my-0(
 					color="success"
 					small
+					@click="acceptAll"
 				)
 					v-icon mdi-check
 					| All
 				v-btn.ml-4.my-0(
 					color="warning"
 					small
+					@click="rejectAll"
 				)
 					v-icon mdi-close
 					| All
@@ -195,6 +197,11 @@ export default {
 		});
 	},
 	methods: {
+		acceptAll() {
+			this.changedFieldTypes.forEach(({ key }) => {
+				this.acceptChange(key);
+			});
+		},
 		acceptChange(key) {
 			this.newPlace[key] = this.placeEdit[key];
 			this.rejectedChanges.delete(key);
@@ -249,6 +256,11 @@ export default {
 				.finally(() => {
 					this.loading = false;
 				});
+		},
+		rejectAll() {
+			this.changedFieldTypes.forEach(({ key }) => {
+				this.rejectChange(key);
+			});
 		},
 		rejectChange(key) {
 			this.newPlace[key] = this.place[key];
