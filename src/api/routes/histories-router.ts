@@ -33,7 +33,7 @@ historiesRouter.post('/',
   async (req: Request, res: Response) => {
 
     const { history = {} } = req.body;
-
+    //console.log(history);
     const response = await db.insert(history)
       .into('boat.History')
       .returning('*');
@@ -83,7 +83,7 @@ historiesRouter.get('/owner/:id',
     res.status(200).send(histories);
   });
 
-historiesRouter.post('/owner/new',
+historiesRouter.post('/owner',
   async (req: Request, res: Response) => {
 
     const { history = {} } = req.body;

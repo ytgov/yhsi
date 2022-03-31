@@ -2,7 +2,7 @@ import { api } from './config';
 
 export default {
   async post(data) {
-    return await api.post(`histories/new`, data)
+    return await api.post(`histories`, data)
       .then(res => {
         return res.data;
       }).catch(error => {
@@ -20,7 +20,7 @@ export default {
       });
   },
   async postOwner(data) {
-    return await api.post(`histories/owner/new`, data)
+    return await api.post(`histories/owner`, data)
       .then(res => {
         return res.data;
       }).catch(error => {
