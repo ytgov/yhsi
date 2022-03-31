@@ -215,10 +215,11 @@
 
 <script>
 import axios from 'axios';
-import store from '@/store';
 
+import store from '@/store';
 import { PLACE_URL, STATIC_URL } from '@/urls';
 import categoryTypesApi from '@/apis/category-types-api';
+import placesApi from '@/apis/places-api';
 
 export default {
   name: 'Summary',
@@ -229,12 +230,11 @@ export default {
     },
   },
   data: () => ({
-    loadedId: 0,
     designationOptions: [],
     recordOptions: [],
     categoryOptions: [],
     historicalPatternOptions: [],
-    siteCategoriesOptions: [],
+    siteCategoryOptions: [],
     names: [],
     historicalPatterns: [],
     fields: {
@@ -250,7 +250,7 @@ export default {
     },
   }),
   mounted() {
-    this.loadItem(this.placeId);
+    this.getPlace(this.placeId);
 
     axios.get(`${STATIC_URL}/designation-type`).then((resp) => {
       this.designationOptions = resp.data.data;
@@ -266,26 +266,15 @@ export default {
     });
   },
   methods: {
-    loadItem(id) {
-      if (id == this.loadedId) return;
+    getPlace(placeId) {
+      placesApi.get(placeId).then(({ data, relationships }) => {
+        this.fields = data;
+        this.names = relationships.names.data;
+        this.historicalPatterns = relationships.historicalPatterns.data;
 
-      axios
-        .get(`${PLACE_URL}/${id}`)
-        .then((resp) => {
-          this.setPlace(resp.data);
-        })
-        .catch((error) => console.error(error));
-    },
-    setPlace(place) {
-      this.loadedId = place.data.id;
-      this.fields = place.data;
-      this.names = place.relationships.names.data;
-      this.historicalPatterns = place.relationships.historicalPatterns.data;
-      this.fields.designations = parseInt(place.data.designations);
-      this.fields.records = parseInt(place.data.records);
-
-      store.dispatch('addSiteHistory', place.data);
-      this.$parent.siteName = this.fields.primaryName;
+        store.dispatch('addSiteHistory', data);
+        this.$parent.siteName = this.fields.primaryName;
+      });
     },
     addName() {
       this.names.push({ description: '', placeId: this.placeId });
@@ -318,7 +307,7 @@ export default {
       };
 
       axios
-        .put(`${PLACE_URL}/${this.loadedId}/summary`, body)
+        .put(`${PLACE_URL}/${this.placeId}/summary`, body)
         .then((resp) => {
           //this.setPlace(resp.data);
           this.$emit('showAPIMessages', resp.data);
