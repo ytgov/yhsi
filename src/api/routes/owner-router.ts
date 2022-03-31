@@ -100,8 +100,8 @@ ownerRouter.put(
 // changed this route from "/new" to "/" to follow RESTFUL conventions
 ownerRouter.post('/', async (req: Request, res: Response) => {
 
-	const { owner = {}, ownerAlias = [] } = req.body;
-
+	const { owner = {}, newOwnerAlias = [], newBoatsOwned = [] } = req.body;
+		// const editArray = [];
 	const response = await db
 		.insert(owner)
 		.into('boat.owner')
@@ -109,19 +109,29 @@ ownerRouter.post('/', async (req: Request, res: Response) => {
 		.then(async (rows: any) => {
 			const newOwner = rows[0];
 
-			if (ownerAlias.length) {
-				const newOwnerAlias = ownerAlias.map((alias: any) => ({
+			if (newOwnerAlias.length) {
+				const newArray = newOwnerAlias.map((alias: any) => ({
 					...alias,
 					OwnerId: newOwner.Id,
 				}));
 
 				await db
-					.insert(newOwnerAlias)
+					.insert(newArray)
 					.into('boat.OwnerAlias')
 					.returning('*')
 					.then((rows: any) => {
 						return rows;
 					});
+			}
+			if(newBoatsOwned.length){
+				let newBoats = newBoatsOwned.map((boatOwned: any) => { return { OwnerId: newOwner.Id, BoatID: boatOwned.BoatID, CurrentOwner: 0 } });
+				await db
+				.insert(newBoats)
+				.into('boat.BoatOwner')
+				.returning('*')
+				.then((rows: any) => {
+					return rows;
+				});
 			}
 
 			return newOwner;
