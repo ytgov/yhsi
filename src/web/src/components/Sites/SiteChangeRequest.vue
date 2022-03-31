@@ -71,11 +71,13 @@ import { cloneDeep } from 'lodash';
 import placesApi from '@/apis/places-api';
 import placeEditsApi from '@/apis/place-edits-api';
 
+import CategoryTypesSelect from '@/components/Sites/site-change-request/CategoryTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/site-change-request/DesignationTypesSelect';
 
 export default {
 	name: 'SiteChangeRequest',
 	components: {
+		CategoryTypesSelect,
 		DesignationTypesSelect,
 	},
 	props: {
@@ -112,6 +114,13 @@ export default {
 					type: DesignationTypesSelect,
 					fieldAttrs: {
 						label: 'Designations',
+					},
+				},
+				{
+					key: 'category',
+					type: CategoryTypesSelect,
+					fieldAttrs: {
+						label: 'CRHP category',
 					},
 				},
 			];
