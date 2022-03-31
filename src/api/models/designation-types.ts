@@ -1,7 +1,9 @@
-export const DESIGNATION_TYPES = [
-	{ value: 4, text: 'Federal' },
-	{ value: 2, text: 'Municipal' },
-	{ value: 3, text: 'Territorial' },
-	{ value: 5, text: 'World' },
-	{ value: 0, text: 'Not Designated' },
-];
+import { GenericStringEnum } from './simple-types'
+
+export const DESIGNATION_TYPES: ReadonlyArray<GenericStringEnum> = Object.freeze([
+	{ value: 'Federal', text: 'Federal' },
+	{ value: 'Municipal', text: 'Municipal' },
+	{ value: 'Territorial', text: 'Territorial' },
+	{ value: 'World', text: 'World' },
+	{ value: 'NotDesignated', text: 'Not Designated' },
+]);
