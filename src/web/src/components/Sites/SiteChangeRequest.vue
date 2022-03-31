@@ -27,7 +27,7 @@ v-card(:loading="loading")
 			template(#item.original="{ item }")
 				component(
 					:is="item.type",
-					:value="newPlace[item.key]"
+					:value="get(newPlace, item.placeKey, newPlace[item.key])"
 					readonly
 					v-bind="item.fieldAttrs"
 				)
@@ -66,19 +66,21 @@ v-card(:loading="loading")
 </template>
 
 <script>
-import { cloneDeep } from 'lodash';
+import { cloneDeep, get } from 'lodash';
 
 import placesApi from '@/apis/places-api';
 import placeEditsApi from '@/apis/place-edits-api';
 
 import CategoryTypesSelect from '@/components/Sites/site-change-request/CategoryTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/site-change-request/DesignationTypesSelect';
+import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
 
 export default {
 	name: 'SiteChangeRequest',
 	components: {
 		CategoryTypesSelect,
 		DesignationTypesSelect,
+		JsonViewer,
 	},
 	props: {
 		placeEditId: {
@@ -151,6 +153,14 @@ export default {
 						label: 'Primary name',
 					},
 				},
+				{
+					key: 'nameJSON',
+					placeKey: 'names',
+					type: 'JsonViewer',
+					fieldAttrs: {
+						label: 'Primary name',
+					},
+				},
 			];
 		},
 	},
@@ -161,11 +171,27 @@ export default {
 		});
 	},
 	methods: {
+		get,
+		// This function can go away when the back-end serves the
+		// relationship data as part of the data directly.
+		// e.g. { data: { names: [{ id: 1, placeId: 1, description: "SomeName" }] } }
+		// instead of { data: {}, relationships: { names: [{ id: 1, placeId: 1, description: "SomeName" }] } } }
+		injectRelationshipData(data, relationships) {
+			Object.keys(relationships).forEach((key) => {
+				if (key in data) {
+					console.error('Relationship data conflicts with source data.');
+					return;
+				}
+
+				data[key] = get(relationships, `data.${key}`, []);
+			});
+		},
 		getPlace(placeId) {
 			this.loading = true;
 			return placesApi
 				.get(placeId)
-				.then(({ data }) => {
+				.then(({ data, relationships }) => {
+					this.injectRelationshipData(data, relationships);
 					this.place = data;
 					this.newPlace = cloneDeep(this.place);
 				})
