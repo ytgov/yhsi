@@ -110,17 +110,17 @@ export default {
 		hideUnchanged: false,
 	}),
 	computed: {
+		changedFieldTypes() {
+			return this.fieldTypes.filter(
+				({ key }) => !isEqual(this.placeEdit[key], this.place[key])
+			);
+		},
 		headers() {
 			return [
 				{ text: 'New', value: 'new' },
 				{ text: 'Original', value: 'original' },
 				{ text: 'Actions', value: 'actions' },
 			];
-		},
-		changedFieldTypes() {
-			return this.fieldTypes.filter(
-				({ key }) => !isEqual(this.placeEdit[key], this.place[key])
-			);
 		},
 		fieldTypes() {
 			return [
