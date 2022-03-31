@@ -77,6 +77,7 @@ export class PlaceEditService {
 				category: 'Category',
 				contributingResources: 'ContributingResources',
 				designations: 'Designations',
+				historicalPatternsJSON: 'HistoricalPatternJSON',
 				namesJSON: 'NameJSON',
 				records: 'Records',
 				showInRegister: 'ShowInRegister',
