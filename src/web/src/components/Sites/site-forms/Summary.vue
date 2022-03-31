@@ -33,13 +33,12 @@
             label="Designations"
           />
 
-          <v-select
+          <CategoryTypesSelect
             v-model="fields.category"
             dense
             outlined
             clearable
             label="CRHP category"
-            :items="categoryOptions"
           />
 
           <v-select
@@ -218,14 +217,15 @@ import axios from 'axios';
 import store from '@/store';
 import { PLACE_URL, STATIC_URL } from '@/urls';
 
-import categoryTypesApi from '@/apis/category-types-api';
 import placesApi from '@/apis/places-api';
 
+import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
 
 export default {
   name: 'Summary',
   components: {
+    CategoryTypesSelect,
     DesignationTypesSelect,
   },
   props: {
@@ -236,7 +236,6 @@ export default {
   },
   data: () => ({
     recordOptions: [],
-    categoryOptions: [],
     historicalPatternOptions: [],
     siteCategoryOptions: [],
     names: [],
@@ -255,9 +254,6 @@ export default {
   }),
   mounted() {
     this.getPlace(this.placeId);
-    categoryTypesApi.getAll().then(({ data }) => {
-      this.categoryOptions = data;
-    });
     axios.get(`${STATIC_URL}/record-type`).then((resp) => {
       this.recordOptions = resp.data.data;
     });
