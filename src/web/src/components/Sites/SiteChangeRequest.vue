@@ -74,6 +74,7 @@ import placeEditsApi from '@/apis/place-edits-api';
 import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
 import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
+import SiteCategoryTypesSelect from '@/components/Sites/SiteCategoryTypesSelect';
 
 export default {
 	name: 'SiteChangeRequest',
@@ -81,6 +82,7 @@ export default {
 		CategoryTypesSelect,
 		DesignationTypesSelect,
 		JsonViewer,
+		SiteCategoryTypesSelect,
 	},
 	props: {
 		placeEditId: {
@@ -123,6 +125,13 @@ export default {
 					type: CategoryTypesSelect,
 					fieldAttrs: {
 						label: 'CRHP category',
+					},
+				},
+				{
+					key: 'siteCategories',
+					type: SiteCategoryTypesSelect,
+					fieldAttrs: {
+						label: 'Site Categories',
 					},
 				},
 				{
