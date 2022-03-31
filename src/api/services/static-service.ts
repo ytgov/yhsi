@@ -15,6 +15,7 @@ import {
 	CATEGORY_TYPES,
 	DESIGNATION_TYPES,
 	GenericStringEnum,
+	SITE_CATEGORY_TYPES,
 } from '../models';
 
 export class StaticService {
@@ -255,14 +256,8 @@ export class StaticService {
 		];
 	}
 
-	getSiteCategories(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Architecture' },
-			{ value: 4, text: 'First Nation' },
-			{ value: 5, text: 'Gravesite' },
-			{ value: 2, text: 'Industrial' },
-			{ value: 3, text: 'Landscape' },
-		];
+	getSiteCategories(): readonly GenericStringEnum[] {
+		return SITE_CATEGORY_TYPES;
 	}
 
 	getContributingResourceTypes(): GenericEnum[] {
