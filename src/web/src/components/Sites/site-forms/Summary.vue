@@ -28,6 +28,7 @@
             v-model="fields.designations"
             dense
             outlined
+            multiple
             :items="designationOptions"
             clearable
             label="Designations"
@@ -43,9 +44,20 @@
           />
 
           <v-select
+            v-model="fields.siteCategories"
+            dense
+            outlined
+            clearable
+            multiple
+            label="Site Categories"
+            :items="siteCategoryOptions"
+          />
+
+          <v-select
             v-model="fields.records"
             dense
             outlined
+            multiple
             :items="recordOptions"
             item-text="text"
             item-value="value"
@@ -57,6 +69,7 @@
             v-model="fields.contributingResources"
             dense
             outlined
+            multiple
             label="Contribuiting resources"
             required
           />
@@ -207,7 +220,6 @@ import store from '@/store';
 import { PLACE_URL, STATIC_URL } from '@/urls';
 import categoryTypesApi from '@/apis/category-types-api';
 
-/* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'Summary',
   props: {
@@ -217,33 +229,24 @@ export default {
     },
   },
   data: () => ({
-    valid: false,
     loadedId: 0,
-
     designationOptions: [],
     recordOptions: [],
     categoryOptions: [],
     historicalPatternOptions: [],
-
-    generalRules: [
-      (v) => !!v || 'This input is required',
-      (v) =>
-        (v && v.length <= 20) || 'This input must be less than 20 characters',
-    ],
+    siteCategoriesOptions: [],
     names: [],
     historicalPatterns: [],
     fields: {
-      primaryName: '', //
-      yHSIId: '', //
-      /* Placeholder variables below this line **Read above** */
+      primaryName: '',
+      yHSIId: '',
       secondaryNames: [],
-      /*Field data from the swaggerhub api docs below this line*/
-      contributingResources: '', //
-      category: '', //
-      designations: '', //
-      records: [], //
-      showInRegister: '', //
-      siteCategories: [], //
+      contributingResources: [],
+      category: '',
+      designations: [],
+      records: [],
+      showInRegister: false,
+      siteCategories: [],
     },
   }),
   mounted() {
