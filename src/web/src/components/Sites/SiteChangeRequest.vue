@@ -72,7 +72,7 @@ import placesApi from '@/apis/places-api';
 import placeEditsApi from '@/apis/place-edits-api';
 
 import CategoryTypesSelect from '@/components/Sites/site-change-request/CategoryTypesSelect';
-import DesignationTypesSelect from '@/components/Sites/site-change-request/DesignationTypesSelect';
+import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
 import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
 
 export default {

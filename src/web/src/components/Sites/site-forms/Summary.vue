@@ -24,12 +24,11 @@
             append-icon="mdi-lock"
           />
 
-          <v-select
+          <DesignationTypesSelect
             v-model="fields.designations"
             dense
             outlined
             multiple
-            :items="designationOptions"
             clearable
             label="Designations"
           />
@@ -218,11 +217,17 @@ import axios from 'axios';
 
 import store from '@/store';
 import { PLACE_URL, STATIC_URL } from '@/urls';
+
 import categoryTypesApi from '@/apis/category-types-api';
 import placesApi from '@/apis/places-api';
 
+import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
+
 export default {
   name: 'Summary',
+  components: {
+    DesignationTypesSelect,
+  },
   props: {
     placeId: {
       type: [Number, String],
@@ -230,7 +235,6 @@ export default {
     },
   },
   data: () => ({
-    designationOptions: [],
     recordOptions: [],
     categoryOptions: [],
     historicalPatternOptions: [],
@@ -251,10 +255,6 @@ export default {
   }),
   mounted() {
     this.getPlace(this.placeId);
-
-    axios.get(`${STATIC_URL}/designation-type`).then((resp) => {
-      this.designationOptions = resp.data.data;
-    });
     categoryTypesApi.getAll().then(({ data }) => {
       this.categoryOptions = data;
     });
