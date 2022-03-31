@@ -50,12 +50,12 @@ ownerRouter.put(
 	async (req: Request, res: Response) => {
 
 		const { ownerId } = req.params;
-		const { owner = {}, newOwnerAlias = [], editOwnerAlias = [] } = req.body;
+		const { owner = {}, newOwnerAlias = [], editOwnerAlias = [], newBoatsOwned = [] } = req.body;
 		const { OwnerName } = owner;
-
-		await db('boat.owner')
+		
+		await db('Boat.Owner')
 			.update({ OwnerName })
-			.where('boat.owner.id', ownerId);
+			.where('Boat.Owner.Id', ownerId);
 
 		let newArray = [];
 		// const editArray = [];
@@ -63,20 +63,35 @@ ownerRouter.put(
 		newArray = newOwnerAlias.map((alias: any) => {
 			return { OwnerId: ownerId, ...alias };
 		});
-
-		await db
+		if(newArray.lenth > 0){
+			await db
 			.insert(newArray)
 			.into('boat.OwnerAlias')
 			.returning('*')
 			.then((rows: any) => {
 				return rows;
 			});
+		}
+
 
 		for (const obj of editOwnerAlias) {
 			await db('boat.OwnerAlias')
 				.update({ Alias: obj.Alias })
 				.where('boat.OwnerAlias.id', obj.Id);
 		}
+		//BOATS OWNED
+		let newBoats = newBoatsOwned.map((boatOwned: any) => { return { OwnerId: ownerId, BoatID: boatOwned.BoatID, CurrentOwner: 0 } });
+
+		if(newBoats.length > 0){
+			await db
+			.insert(newBoats)
+			.into('boat.BoatOwner')
+			.returning('*')
+			.then((rows: any) => {
+				return rows;
+			});
+		}
+		
 
 		res.status(200).send({ message: 'success' });
 	}
