@@ -1,7 +1,9 @@
-export const CATEGORY_TYPES = [
-	{ value: 0, text: 'None Selected' },
-	{ value: 1, text: 'Building' },
-	{ value: 2, text: 'District' },
-	{ value: 3, text: 'Place' },
-	{ value: 4, text: 'Structure' },
-];
+import { GenericStringEnum } from './simple-types';
+
+export const CATEGORY_TYPES: ReadonlyArray<GenericStringEnum> = Object.freeze([
+	{ value: 'NoneSelected', text: 'None Selected' },
+	{ value: 'Building', text: 'Building' },
+	{ value: 'District', text: 'District' },
+	{ value: 'Place', text: 'Place' },
+	{ value: 'Structure', text: 'Structure' },
+]);
