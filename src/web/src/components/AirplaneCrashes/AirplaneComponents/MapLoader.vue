@@ -244,7 +244,7 @@
             </v-checkbox>
         </v-col>
         <v-col cols="5">
-            <div >
+            <div>
                 <l-map class="map" ref="myMap"
                 :center="layer.center"
                 :zoom="layer.zoom"
@@ -412,14 +412,14 @@ export default {
         maps: [{
             zoom: 8,
             center: latLng(64.000000, -135.000000), //latLng(64.000000, -135.000000),
-            url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
+            url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', //https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
         },
         {
             zoom: 8,
             center: latLng(64.000000, -135.000000), //latLng(64.000000, -135.000000),
             url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', 
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenTopoMap</a> contributors',
         }],
         yukonPolygon,
     }),
