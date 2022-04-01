@@ -234,7 +234,6 @@ export default {
     fields: {
       primaryName: '',
       yHSIId: '',
-      secondaryNames: [],
       contributingResources: [],
       category: '',
       designations: [],
@@ -285,7 +284,7 @@ export default {
         siteCategories: this.fields.siteCategories,
         records: this.fields.records,
         showInRegister: this.fields.showInRegister,
-        secondaryNames: this.names,
+        names: this.names,
         contributingResources: this.fields.contributingResources,
         historicalPatterns: this.historicalPatterns,
       };
