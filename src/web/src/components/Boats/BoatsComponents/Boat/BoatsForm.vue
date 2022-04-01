@@ -16,12 +16,12 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  
-                    v-if="mode == 'view'" :data="fields" 
-                    :name="fields.Name" 
-                    :selectedImage="selectedImage"
-                    :loadingPhotos="loadingPhotos"
-                    :loadingHistories="loadingHistories" />
+                <v-btn class="black--text mx-1" v-if="mode == 'view'" @click="downloadPdf" :loading="loadingPdf">
+                    <v-icon class="mr-1">
+                        mdi-printer
+                    </v-icon>
+                    Print
+                </v-btn>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="mode == 'edit'">
                     <v-icon>mdi-close</v-icon>
@@ -42,8 +42,8 @@
                 </v-btn>
             </v-col>
         </v-row>
-        <v-row >
-            <v-col cols="5">
+        <v-row>
+            <v-col cols="6">
                 <v-row >
                     <v-col cols="6">
                         <v-text-field outlined dense
@@ -359,7 +359,7 @@
                     </v-col>
                 </v-row> 
             </v-col>
-            <v-col cols="7">
+            <v-col cols="6">
                 <v-row>
                     <v-col cols="4">
                         <v-select outlined dense
@@ -388,9 +388,10 @@
 <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
                             <Photos 
                             v-if="infoLoaded" 
+                            :photoType="'boat'"
                             :showDefault="mode == 'new'" 
-                            :boatID="getBoatID"
                             :mode="mode"
+                            :itemId="getBoatID"
                             @updateSelectedImage="selectedImageChanged" 
                             :selectedImage="selectedImage"
                             @loadingPhotosChange="loadingPhotosChange"/>
@@ -418,16 +419,15 @@
 
 <script>
 import Breadcrumbs from '../../../Breadcrumbs.vue';
-import Photos from "./Photos/Photos";
+import Photos from "../../../PhotoEditor/Photos";
 import HistoricRecord from "../HistoricRecord";
-import PrintButton from "./PrintButton";
 import boats from "../../../../controllers/boats";
 import owners from "../../../../controllers/owners";
 import catalogs from "../../../../controllers/catalogs"
 import _ from 'lodash';
 export default {
     name: "boatsForm",
-    components: { Photos, Breadcrumbs, HistoricRecord, PrintButton },
+    components: { Photos, Breadcrumbs, HistoricRecord },
     data: ()=> ({
         overlay: false,
         infoLoaded: false,
@@ -470,7 +470,8 @@ export default {
         isLoadingVessels: false,
         regNumberWarning: [],
         loadingPhotos: false,
-        loadingHistories: false
+        loadingHistories: false,
+        loadingPdf: false
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -518,7 +519,7 @@ export default {
             this.infoLoaded = true;
         },
         async validateRegNumber(){
-            //console.log("original ", this.fieldsHistory.yacsinumber, "new",this.fields.yacsinumber);
+            ////console.log("original ", this.fieldsHistory.yacsinumber, "new",this.fields.yacsinumber);
             if(this.fieldsHistory){
                 if(this.fieldsHistory.RegistrationNumber == this.fields.RegistrationNumber){
                     this.regNumberWarning = [];
@@ -552,10 +553,11 @@ export default {
             this.fields.ServiceEnd = this.fields.ServiceEnd ? this.fields.ServiceEnd.substr(0, 10) : "";
             this.fields.deletedOwners = [];
             this.fields.ownerRemovedArray = [];
+            console.log(this.fields);
             this.fields.originalOwners = JSON.parse(JSON.stringify(this.fields.owners));
             this.infoLoaded = true;
             this.overlay = false;
-            //console.log(this.fields);
+            ////console.log(this.fields);
         },
         goToOwner(value){
             this.$router.push({name: 'ownerView', params: { name: value.OwnerName, id: value.id}});
@@ -606,10 +608,10 @@ export default {
                     pastNamesNewArray: newNames,
                     pastNamesEditArray: editedNames
                 };
-                //console.log(data);
+                ////console.log(data);
                 
             let currentBoat= {};
-            console.log(data);
+            //console.log(data);
             
             if(this.mode == 'new'){
                 let resp = await boats.post(data);
@@ -685,13 +687,13 @@ export default {
         },
     //functions for editing the table "Owners" values
         deleteOwner(item,index){
-            //console.log(this.fields.owners[index]);
+            ////console.log(this.fields.owners[index]);
             if (index > -1) {
                 this.fields.owners.splice(index, 1);
                 this.fields.deletedOwners.push(item);
                 
-                //console.log(this.fields.deletedOwners);
-                //console.log(this.fields.originalOwners);
+                ////console.log(this.fields.deletedOwners);
+                ////console.log(this.fields.originalOwners);
             }
             
         },
@@ -755,7 +757,21 @@ export default {
         },
         loadingHistoriesChange(val){
             this.loadingHistories = val;
-        }
+        },
+        async downloadPdf(){
+            this.loadingPdf = true;
+            let res = await boats.getPdf(parseInt(localStorage.currentBoatID));
+            let blob = new Blob([res], { type: "application/octetstream" });
+            let url = window.URL || window.webkitURL;
+            let link = url.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.setAttribute("download", `Boat.pdf`);//`Boat-${this.fields.Name}.pdf`
+            a.setAttribute("href", link);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            this.loadingPdf = false;
+        },
     },   
     computed:{
         getBoatID(){
@@ -778,7 +794,7 @@ export default {
         fields: {/* eslint-disable */
             handler(newval){
                 this.showSave = this.showSave+1;
-                //console.log(this.fields);
+                ////console.log(this.fields);
             },/* eslint-enable */
             deep: true
         },

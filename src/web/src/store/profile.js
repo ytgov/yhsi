@@ -6,18 +6,20 @@ const state = {
     lastName: "",
     email: "",
     id: "",
-    username: "",
-    roles: [],
-    access: []
+    expire_date_display: "",
+    roles: "",
+    role_list: [],
+    site_access: [],
 };
 const getters = {
     firstName: state => state.first_name,
     lastName: state => state.lastName,
     email: state => state.email,
     id: state => state.id,
-    username: state => state.username,
+    expire_date_display: state => state.expire_date_display,
     roles: state => state.roles,
-    access: state => state.access
+    role_list: state => state.role_list,
+    site_access: state => state.access
 };
 const actions = {
     async loadProfile({ commit }) {
@@ -35,9 +37,10 @@ const mutations = {
         state.lastName = profile.last_name;
         state.email = profile.email;
         state.id = profile.id;
-        state.username = profile.username;
+        state.expire_date_display = profile.expire_date_display;
         state.roles = profile.roles;
-        state.access = profile.access;
+        state.role_list = profile.role_list;
+        state.site_access = profile.site_access;
     },
 };
 

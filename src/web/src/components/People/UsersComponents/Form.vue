@@ -13,14 +13,11 @@
                     Edit
                 </v-btn>
                 
-                <PrintButton  
-                    v-if="isViewMode" 
-                    :loadingPhotos="loadingPhotos" 
-                    :loadingHistories="loadingHistories"  
-                    :histories="histories" 
-                    :data="fields" 
-                    :name="`${fields.Surname}-${fields.GivenName}`" 
-                    :selectedImage="selectedImage"/>
+                <v-btn class="black--text mx-1" @click="downloadPdf" v-if="isViewMode" :loading="loadingPdf">
+                    <v-icon class="mr-1">mdi-printer</v-icon>
+                    Print
+                </v-btn>
+                
  <!--buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="isEditMode">
                     <v-icon>mdi-close</v-icon>
@@ -103,7 +100,8 @@
                 <Photos 
                 v-if="infoLoaded" 
                 :showDefault="isNewMode" 
-                :PersonID="getPersonID"
+                :photoType="'people'"
+                :itemId="getPersonID"
                 @updateSelectedImage="selectedImageChanged" 
                 :selectedImage="selectedImage" 
                 @loadingPhotosChange="loadingPhotosChange"/>   
@@ -128,15 +126,14 @@
 
 <script>
 import Breadcrumbs from '../../Breadcrumbs.vue';
-import Photos from "./Photos/Photos";
+import Photos from "../../PhotoEditor/Photos.vue";
 import HistoricRecord from "./HistoricRecord";
-import PrintButton from "./PrintButton";
 import people from "../../../controllers/people";
 
 //import _ from 'lodash';
 export default {
     name: "boatsForm",
-    components: {  Breadcrumbs, HistoricRecord, Photos, PrintButton },
+    components: {  Breadcrumbs, HistoricRecord, Photos },
     data: ()=> ({
         overlay: false,
         infoLoaded: false,
@@ -152,7 +149,8 @@ export default {
     // select vars
         selectedImage: null,
         loadingPhotos: false,
-        loadingHistories: false
+        loadingHistories: false,
+        loadingPdf: false
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -162,7 +160,7 @@ export default {
         }
         else if(this.checkPath("new")){
             this.mode="new";
-            console.log(this.mode);
+            //console.log(this.mode);
             //inputs remain empty
             this.noData();
         }
@@ -208,7 +206,7 @@ export default {
 
             this.infoLoaded = true;
             this.overlay = false;
-            //console.log(this.fields);
+            ////console.log(this.fields);
         },
     //Functions dedicated to handle the edit, add, view modes
         cancelEdit(){
@@ -262,8 +260,8 @@ export default {
                         DeathAccuracy: ""
                     }
                 };
-                //console.log(data);
-            console.log(data);
+                ////console.log(data);
+            //console.log(data);
             let currentPerson = {};
             if(this.mode == 'new'){
                 let resp = await people.post(data);
@@ -303,7 +301,21 @@ export default {
         },
         loadingHistoriesChange(val){
             this.loadingHistories = val;
-        }
+        },
+        async downloadPdf(){
+            this.loadingPdf = true;
+            let res = await people.getPdf(parseInt(localStorage.currentPersonID));
+            let blob = new Blob([res], { type: "application/octetstream" });
+            let url = window.URL || window.webkitURL;
+            let link = url.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.setAttribute("download", `Person.pdf`);//`Boat-${this.fields.Name}.pdf`
+            a.setAttribute("href", link);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            this.loadingPdf = false;
+        },
     },   
     computed:{
         isViewMode(){
@@ -326,7 +338,7 @@ export default {
         fields: {/* eslint-disable */
             handler(newval){
                 this.showSave = this.showSave+1;
-                //console.log(this.fields);
+                ////console.log(this.fields);
             },/* eslint-enable */
             deep: true
         },

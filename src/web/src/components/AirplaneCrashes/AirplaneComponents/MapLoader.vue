@@ -426,7 +426,7 @@ export default {
     mounted() {
         this.getFields();
         this.fixMarkers();
-        //console.log(proj4);
+        ////console.log(proj4);
         proj4.defs([
             [
                 'EPSG:4326',
@@ -581,7 +581,7 @@ export default {
                     break;
                 case 2: //utm
                     this.utm = utmVar.convertLatLngToUtm(this.modifiableFields.lat,this.modifiableFields.long,1);
-                    //console.log(this.utm);
+                    ////console.log(this.utm);
                     this.dms = null;
                     this.dd = null;
                     break;
@@ -604,7 +604,7 @@ export default {
             };
         },
         convertDMSToDD(val) {
-            //console.log(val);
+            ////console.log(val);
             let { deg, min, sec, dir } = val;
             let dd = deg + (min/60) + sec/(60*60);
             dd = parseFloat(dd);

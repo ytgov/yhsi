@@ -13,12 +13,11 @@
                     <v-icon class="mr-1">mdi-pencil</v-icon>
                     Edit
                 </v-btn>
-                <PrintButton  
-                    v-if="isViewingCrash" 
-                    :data="fields" 
-                    :yacsinumber="fields.yacsinumber" 
-                    :selectedImage="selectedImage"
-                    :loadingPhotos="loadingPhotos"/>
+                
+                <v-btn class="black--text mx-1" @click="downloadPdf" v-if="isViewingCrash" :loading="loadingPdf">
+                    <v-icon class="mr-1">mdi-printer</v-icon>
+                    Print
+                </v-btn>
 <!-- buttons for the edit state -->
                 <v-btn class="black--text mx-1" @click="cancelEdit" v-if="isEditingCrash">
                     <v-icon>mdi-close</v-icon>
@@ -223,18 +222,104 @@
                         </v-col>
                     </v-row>
                 </v-col>
-                <v-col cols="5">
-                        <v-col cols="12">
+                <!-- <v-col cols="5">
+                        <v-col cols="12"> -->
     <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-                            <Photos 
+                            <!-- <Photos 
                             v-if="infoLoaded" 
                             :showDefault="isNewCrash" 
                             :yacsiNumber="getYACSINumber"
                             @updateSelectedImage="selectedImageChanged"
                             @loadingPhotosChange="loadingPhotosChange"/>
+                            </v-row>
+                        </v-alert>
+                        
+                    </v-col>
+                </v-row>
+            </v-col> -->
+            <v-col cols="5">
+              <v-col cols="12">
+                <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
+                <Photos
+                  v-if="infoLoaded"
+                  :showDefault="isNewCrash"
+                  :mode="mode"
+                  :photoType="'aircrash'"
+                  :itemId="getYACSINumber"
+                  @updateSelectedImage="selectedImageChanged"
+                  :selectedImage="selectedImage"
+                />
+              </v-col>
+            </v-col>
+        </v-row>
+    <MapLoader
+      v-if="infoLoaded"
+      :mode="mode"
+      :mapType="'planeCrash'"
+      @modifiedDataCoordinates="modifiedDataCoordinates"
+      :fields="{
+        accuracy: fields.accuracy,
+        inyukon: fields.inyukon,
+        locationDesc: fields.crashlocation,
+        lat: fields.lat,
+        long: fields.long,
+        Location: fields.Location,
+        mapsheet: null,
+      }"
+    />
+    <v-row>
+            <v-col col="6">
+                <v-row>
+                    <v-col>
+                         <v-text-field outlined dense
+                            v-model.number="fields.remainsonsite"
+                            label="Remains on Site"
+                            :readonly="isViewingCrash"
+                            :rules="numberRules"
+         
+                        ></v-text-field>    
+                        <v-textarea outlined dense
+                            rows="5"
+                            class="mt-0 pt-0"
+                            v-model="fields.extentofremainsonsite"
+                            label="Extent of Remains on Site"
+                            :readonly="isViewingCrash"
+                        ></v-textarea>
+                    </v-col>
+                    <v-col>
+                        <v-textarea outlined dense
+                            rows="7"
+                            v-model="fields.otherlocationsofremains"
+                            label="Other Location of Remains"
+                            :readonly="isViewingCrash"
+                        ></v-textarea>
+                    </v-col>
+                </v-row>
+            </v-col>
+             <v-col col="6">
+                 <v-row>
+                      <v-col cols="6">
+                                <v-text-field outlined dense
+                                    v-model="fields.soulsonboard"
+                                    label="Souls on Board"
+                                    :readonly="isViewingCrash"
+                                    :rules="numberRules"
+                                ></v-text-field>
+                                <v-text-field outlined dense
+                                    v-model="fields.injuries"
+                                    label="Injuries"
+                                    :readonly="isViewingCrash"
+                                    :rules="numberRules"
+                                ></v-text-field>
+                                <v-text-field outlined dense
+                                    v-model="fields.fatalities"
+                                    label="Fatalities"
+                                    :readonly="isViewingCrash"
+                                    :rules="numberRules"
+                                ></v-text-field>
                         </v-col>
-                </v-col>
-            </v-row>
+                </v-row>
+            </v-col>
             <MapLoader v-if="infoLoaded"
                 :mode="mode"
                 @modifiedDataCoordinates="modifiedDataCoordinates"
@@ -244,6 +329,7 @@
                             lat: fields.lat,
                             long: fields.long,
                             Location: fields.Location } "/>
+    </v-row>
             <v-row>
                 <v-col col="6">
                     <v-row>
@@ -446,14 +532,13 @@
 
 <script>
 import Breadcrumbs from '../../Breadcrumbs.vue';
-import Photos from "./Photos/Photos";
-import PrintButton from "./PrintButton";
+import Photos from "../../PhotoEditor/Photos";
 import aircrash from "../../../controllers/aircrash";
 import MapLoader from "./MapLoader";
 import _ from 'lodash';
 export default {
     name: "crashForm",
-    components: { Photos, Breadcrumbs, PrintButton, MapLoader },
+    components: { Photos, Breadcrumbs, MapLoader },
     data: ()=> ({
         overlay: false,
     //helper vars used for the name list functions
@@ -495,7 +580,8 @@ export default {
             return /^[0-9]*$/.test(v) || 'A positive number is required';
         }],
         formValid: true,
-        loadingPhotos: false
+        loadingPhotos: false,
+        loadingPdf: false
     }),
     async mounted(){
         if(this.checkPath("edit")){
@@ -515,8 +601,8 @@ export default {
             this.getDataFromApi();
         }
         /*
-        console.log('regex');
-        console.log(/^[0-9]*$/.test('12'));*/
+        //console.log('regex');
+        //console.log(/^[0-9]*$/.test('12'));*/
     },
     methods:{
         /*this function checks if the current path contains a specific word, this can be done with a simple includes but 
@@ -533,7 +619,7 @@ export default {
             this.fields.nation = "";
         },
         async validateYACSI(){
-            //console.log("original ", this.fieldsHistory.yacsinumber, "new",this.fields.yacsinumber);
+            ////console.log("original ", this.fieldsHistory.yacsinumber, "new",this.fields.yacsinumber);
             if(this.fieldsHistory){
                 if(this.fieldsHistory.yacsinumber == this.fields.yacsinumber){
                     this.yacsiWarning = [];
@@ -601,7 +687,7 @@ export default {
             //this.fields.infoSources = this.fields.sources.includes(";") ? this.fields.sources.split(";") : [];
             if(this.fields.nation != 'Canadian' && this.fields.nation != 'American')    
                 this.otherNation = true;
-            //console.log(this.fields);
+            ////console.log(this.fields);
             this.infoLoaded = true;
             this.overlay = false;
         },
@@ -635,7 +721,7 @@ export default {
         },
         async saveChanges(){
             this.overlay = true;
-            //console.log(this.fields);
+            ////console.log(this.fields);
         //Mapping coordinate data
             let { lat, long, inyukon, crashlocation, accuracy } = this.modifiedMapFields;
             this.fields.lat = lat;
@@ -668,7 +754,7 @@ export default {
                 };
             
             if(this.mode == 'new'){
-                console.log("api call");
+                //console.log("api call");
                 let resp = await aircrash.post(data);
                 if(resp.response){
                     if(resp.status == 409){
@@ -750,11 +836,25 @@ export default {
         },
         selectedImageChanged(val){
             this.selectedImage = val;
-            //console.log(val);
+            ////console.log(val);
         },
         loadingPhotosChange(val){
             this.loadingPhotos = val;
-        }
+        },
+        async downloadPdf(){
+            this.loadingPdf = true;
+            let res = await aircrash.getPdf(parseInt(localStorage.currentCrashNumber));
+            let blob = new Blob([res], { type: "application/octetstream" });
+            let url = window.URL || window.webkitURL;
+            let link = url.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.setAttribute("download", `Aircrash.pdf`);//`Boat-${this.fields.Name}.pdf`
+            a.setAttribute("href", link);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            this.loadingPdf = false;
+        },
         
     },   
     computed:{

@@ -1,26 +1,22 @@
-import { Request, Response } from "express";
-const express = require("express");
+import express, { Request, Response } from "express";
 import { DB_CONFIG } from "../config"
-const knex = require("knex");
+import knex from "knex";
 import { ReturnValidationErrors } from "../middleware";
 import { param, query } from "express-validator";
 
 export const historiesRouter = express.Router();
 const db = knex(DB_CONFIG);
 
-historiesRouter.get('/',
+historiesRouter.get('/:id',
+  [param("id").notEmpty()],
   [query("page").default(0).isInt(), query("limit").default(10).isInt({ gt: 0 })], ReturnValidationErrors,
   async (req: Request, res: Response) => {
-    /* const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('view')) res.sendStatus(403);
-  
-    const db = req.app.get('db'); */
     const page = parseInt(req.query.page as string);
     const limit = parseInt(req.query.limit as string);
     const offset = (page * limit) || 0;
 
     // this parameter is used in the query below, but not sure what this means
-    let boatId = 0;
+    let boatId = parseInt(req.params.id as string);
 
     const histories = await db.select('*')
       .from('Boat.History')
@@ -35,13 +31,9 @@ historiesRouter.get('/',
 // changed this route from "/new" to "/" to follow RESTFUL conventions
 historiesRouter.post('/',
   async (req: Request, res: Response) => {
-    /* const db = req.app.get('db');
-  
-    const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('create')) res.sendStatus(403); */
 
     const { history = {} } = req.body;
-
+    //console.log(history);
     const response = await db.insert(history)
       .into('boat.History')
       .returning('*');
@@ -69,36 +61,30 @@ historiesRouter.put('/:historyId',
 
 //OWNER HISTORIES
 
-historiesRouter.get('/owner/',
+historiesRouter.get('/owner/:id',
+  [param("id").notEmpty()],
   async (req: Request, res: Response) => {
-    /* const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('view')) res.sendStatus(403);
-  
-    const db = req.app.get('db'); */
     const page = parseInt(req.query.page as string);
     const limit = parseInt(req.query.limit as string);
     const offset = (page * limit) || 0;
 
 
-    // this parameter is used in the query below, but not sure what this means
-    let boatId = 0;
+    // this parameter is used in the query below, but not sure what this means - Resp : sorry this was unfinished code mb.
+    const ownerid = parseInt(req.params.id as string);
 
     const histories = await db.select('*')
-      .from('Boat.History')
+      .from('Boat.OwnerHistory')
       // .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
       // .orderBy('boat.boatowner.ownerid', 'asc')
-      .where('boat.history.uid', boatId)
+      .where('Boat.OwnerHistory.OwnerId', ownerid)
+      .orderBy('')
       .limit(limit).offset(offset);
 
     res.status(200).send(histories);
   });
 
-historiesRouter.post('/owner/new',
+historiesRouter.post('/owner',
   async (req: Request, res: Response) => {
-    /* const db = req.app.get('db');
-  
-    const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('create')) res.sendStatus(403); */
 
     const { history = {} } = req.body;
 
@@ -113,16 +99,13 @@ historiesRouter.post('/owner/new',
 historiesRouter.put('/owner/:historyId',
   [param("historyId").notEmpty()], ReturnValidationErrors,
   async (req: Request, res: Response) => {
-    /* const db = req.app.get('db');
-    const permissions = req.decodedToken['yg-claims'].permissions;
-    if (!permissions.includes('edit')) res.sendStatus(403); */
 
     const { history } = req.body;
     const { historyId } = req.params;
     //make the update
-    await db('boat.OwnerHistory')
+    let resp = await db('boat.OwnerHistory')
       .update(history)
       .where('boat.OwnerHistory.Id', historyId);
 
-    res.status(200).send({ message: 'success' });
+    res.status(200).send({ message: 'success', resp});
   });

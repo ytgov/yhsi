@@ -1,0 +1,44 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+table.title-row
+  tbody 
+    tr 
+      td
+        div Boats information
+      td
+        img(style='width:200px; height:100px;' src="https://firebasestorage.googleapis.com/v0/b/yg-historic-sites.appspot.com/o/yukon.svg?alt=media&token=41e6cd68-0efd-438f-aef0-44bec1e15b55", alt="")
+
+div.grid
+  table.grid-table
+    thead
+      tr 
+        td 
+          strong.underline Name 
+        td 
+          strong.underline Owner
+        td 
+          strong.underline VesselType
+        td 
+          strong.underline ConstructionDate
+        td 
+          strong.underline ServiceStart
+        td 
+          strong.underline ServiceEnd
+        td 
+          strong.underline CurrentLocation
+        td 
+          strong.underline RegistrationNumber
+    tbody 
+      each val in data
+        tr 
+          td #{val.Name} 
+          td #{val.Owner} 
+          td #{val.VesselType} 
+          td #{val.ConstructionDate} 
+          td #{val.ServiceStart} 
+          td #{val.ServiceEnd} 
+          td #{val.CurrentLocation} 
+          td #{val.RegistrationNumber} 

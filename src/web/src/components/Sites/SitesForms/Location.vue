@@ -1,11 +1,9 @@
 <template>
   <div>
-    <v-card-title style="width: 100%; display: block">
-      Location
-      <div class="float-right">
-        <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
-      </div>
-    </v-card-title>
+    <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
+      <span class="mt-2">Location</span>
+      <v-btn class="my-0" color="primary" @click="saveChanges">Save</v-btn>
+    </h2>
 
     <v-divider class="mb-5"></v-divider>
 
@@ -178,7 +176,7 @@ import store from "../../../store";
 import { COMMUNITY_URL, PLACE_URL, STATIC_URL } from "../../../urls";
 /* Important, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created */
 export default {
-  name: "formLocation",
+  name: "Location",
   data: () => ({
     valid: false,
     loadedId: -1,
@@ -224,6 +222,7 @@ export default {
       .get(`${PLACE_URL}/${this.loadedId}`)
       .then((resp) => {
         this.fields = resp.data.data;
+        this.fields.communityId = 29;
 
         store.dispatch("addSiteHistory", resp.data.data);
         this.$parent.siteName = this.fields.primaryName;

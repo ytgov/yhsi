@@ -3,13 +3,23 @@ import { LOGOUT_URL, PROFILE_URL } from "../urls";
 
 const state = {
     user: null,
-    fullName: "",
-    roles: [],
 };
 const getters = {
-    isAuthenticated: state => !!state.user,
-    fullName: state => { return state.fullName },
+    isAuthenticated: state => { return !!state.user },
+    fullName: state => { return state.user.display_name },
     user: state => { return state.user },
+    roles: state => { return state.user.role_list },
+
+    userInRole: state => {
+        return (roles) => {
+            if (typeof roles === 'string') roles = [roles];
+            if (roles.length == 0) return true;
+
+            if (state.user.role_list.indexOf('Administrator') > -1) return true;
+
+            return state.user.role_list.filter(f => roles.indexOf(f) !== -1).length > 0;
+        }
+    },
 };
 const actions = {
     async checkAuthentication({ commit }) {
@@ -27,18 +37,14 @@ const actions = {
             }).catch(err => {
                 console.error(err);
             });
-    }
+    },
 };
 const mutations = {
     setUser(state, user) {
         state.user = user;
-        state.fullName = user.display_name;
-        state.roles = user.roles;
     },
     clearUser(state) {
         state.user = null;
-        state.fullName = null;
-        state.roles = [];
     }
 };
 

@@ -6,8 +6,9 @@ namespace Express {
 		file: any;
 		session: any;
 		oidc: any;
+		textToMatch: string;
 
 		isAuthenticated(): boolean;
 	}
 }
-x;
+;

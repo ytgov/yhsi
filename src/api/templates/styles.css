@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+
+html,body{
+    font-family: 'Montserrat', sans-serif;
+
+}
+
+table, th, td {
+    border: 1px solid;
+}
+td{
+    padding: 10px
+}
+table{
+    border-collapse: collapse;
+}
+
+div.general{
+    margin: 10px;
+}
+
+.table-display{
+    width: 100%;
+}
+.table-display > tbody > tr > td,
+.table-display > tbody > tr,
+.table-display {
+    border: none;
+}
+.table-display > tbody > tr > td:first-of-type{
+    width: 24%;
+}
+.table-display > tbody > tr > td:nth-of-type(2){
+    width: 24%;
+}
+.table-display > tbody > tr > td:last-of-type{
+    width: 47%;
+}
+
+.divided-row{
+    display: flex;
+    flex-direction: row;
+    margin: 10px
+}
+
+.title-row{
+    width: 100%;
+}
+.title-row > tbody > tr > td:first-of-type{
+    width: 85%;
+}
+.title-row > tbody > tr > td:nth-of-type(2){
+    width: 15%;
+}
+.item-name{
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.section-title{
+    padding: 10px 20px;
+    color: black;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: #F2A900;
+}
+.underline{
+    text-decoration: underline;
+}
+.membership-table thead td{
+    border-left: none;
+    border-right: none;
+}
+.membership-table tbody td{
+    border: none;
+}
+.religion-table td{
+    border: none;
+}
+.table-full-width{
+    width: 98%;
+}
+.grid-table > thead{
+    padding: 5px 10px;
+    color: black;
+    font-weight: bold;
+    background-color: #F2A900;
+}
+
+img.right{
+    margin-left: auto;
+    margin-right: 0px;
+}
+/* DIVIDED ROW */
+.title-row tr,
+.title-row td,
+.title-row,
+table.divided-row tr,
+table.divided-row td,
+table.divided-row{
+    border: none;
+}
+table.divided-row{
+    width: 100%;
+}
+.row-container,
+table.divided-row div{
+    margin: 10px 10px;
+}
+.divided-row td{
+    width: 50%;
+}
+
+.center{
+    margin-top: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 15px;
+}

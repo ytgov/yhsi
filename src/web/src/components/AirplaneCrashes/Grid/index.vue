@@ -50,18 +50,23 @@
           Add Crash Site
         </v-btn>
 
-        <JsonCSV :data="crashsites" name="airplane_crash_data.csv">
-          <v-btn class="black--text mx-1" :disabled="crashsites.length == 0">
+        <v-btn v-if="loading" class="black--text mx-1" :loading="true">
+            <v-icon class="mr-1"> mdi-export </v-icon>
+            Export
+          </v-btn>
+        <JsonCSV v-else :data="aircrashesData" name="airplane_crash_data.csv">
+          <v-btn class="black--text mx-1" :disabled="aircrashesData.length == 0">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
           </v-btn>
         </JsonCSV>
+        <v-btn @click="downloadPdf()" class="black--text mx-1" :loading="loadingPdf">
+            <v-icon class="mr-1">
+              mdi-printer
+            </v-icon>
+            Print
+        </v-btn>
 
-        <PrintButton
-          key="prt-2"
-          :data="{ crashsites }"
-          :disabled="crashsites.length == 0"
-        />
       </v-col>
     </v-row>
     <div class="mt-2">
@@ -104,12 +109,11 @@
 <script>
 import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
-import PrintButton from "./PrintButton";
 import _ from "lodash";
 import aircrash from "../../../controllers/aircrash";
 export default {
   name: "boatsgrid-index",
-  components: { Breadcrumbs, JsonCSV, PrintButton },
+  components: { Breadcrumbs, JsonCSV },
   data: () => ({
     route: "",
     loading: false,
@@ -151,6 +155,8 @@ export default {
       { text: "Audience", icon: "mdi-account" },
       { text: "Conversions", icon: "mdi-flag" },
     ],
+    aircrashesData: [],
+    loadingPdf: false
   }),
   mounted() {
     this.getDataFromApi();
@@ -188,6 +194,7 @@ export default {
       this.crashsites.map((x) => {
         x.crashdate = this.formatDate(x.crashdate);
       });
+      this.aircrashesData = await aircrash.getExport();
       this.loading = false;
     },
     formatDate(date) {
@@ -201,6 +208,20 @@ export default {
       if (!name || !lastname) return "";
 
       return `${name}, ${lastname}`;
+    },
+    async downloadPdf(){
+      this.loadingPdf = true;
+      let res = await aircrash.getGridPdf();
+      let blob = new Blob([res], { type: "application/octetstream" });
+      let url = window.URL || window.webkitURL;
+      let link = url.createObjectURL(blob);
+      let a = document.createElement("a");
+      a.setAttribute("download", "Aircrashes.pdf");
+      a.setAttribute("href", link);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      this.loadingPdf = false;
     },
     filterPilot(data, filter) {
       let { pilotfirstname, pilotlastname } = data;

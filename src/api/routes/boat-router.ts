@@ -1,63 +1,37 @@
-import { Request, Response } from 'express';
-const express = require('express');
+import express, { Request, Response } from "express";
 import { DB_CONFIG } from '../config';
-const knex = require('knex');
+import knex from "knex";
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
+import { BoatService } from "../services";
+import { renderFile } from "pug";
+import { generatePDF } from "../utils/pdf-generator";
 
 export const boatsRouter = express.Router();
 const db = knex(DB_CONFIG);
+const boatService = new BoatService();
 
 boatsRouter.get(
 	'/',
 	[
-		query('page').default(0).isInt(),
+		query('textToMatch').default('').isString(),
+		query('sortBy').default('Name').isString(),
+		query('sort').default('asc').isString(),
+		query('page').default(0).isInt(), 
 		query('limit').default(10).isInt({ gt: 0 }),
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { textToMatch = '', sortBy = 'Id', sort = 'asc' } = req.query;
+		const textToMatch = req.query.textToMatch as string;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
+		const sortBy = req.query.sortBy as string;
+		const sort = req.query.sort as string;
 		const offset = page * limit || 0;
-		let counter = [{ count: 0 }];
-		let boats = [];
+		
+		const data = await boatService.doSearch(textToMatch, page, limit, offset, sortBy, sort);
 
-		if (textToMatch) {
-			counter = await db
-				.from('boat.boat')
-				.where('name', 'like', `%${textToMatch}%`)
-				.count('Id', { as: 'count' });
-
-			boats = await db
-				.select('*')
-				.from('boat.boat')
-				.where('name', 'like', `%${textToMatch}%`)
-				//.orderBy('boat.boat.id', 'asc')
-				.orderBy(`${sortBy}`, `${sort}`)
-				.limit(limit)
-				.offset(offset);
-		} else {
-			counter = await db.from('boat.boat').count('Id', { as: 'count' });
-
-			boats = await db
-				.select('*')
-				.from('boat.boat')
-				//.orderBy('boat.boat.id', 'asc')
-				.orderBy(`${sortBy}`, `${sort}`)
-				.limit(limit)
-				.offset(offset);
-		}
-
-		for (const boat of boats) {
-			boat.owners = await db
-				.select('boat.boatowner.currentowner', 'boat.Owner.OwnerName')
-				.from('boat.boatowner')
-				.join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-				.where('boat.boatowner.boatid', boat.Id);
-		}
-
-		res.status(200).send({ count: counter[0].count, body: boats });
+		res.status(200).send(data);
 	}
 );
 
@@ -67,41 +41,12 @@ boatsRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { boatId } = req.params;
-		/*   const db = req.app.get('db');
-    
-      const permissions = req.decodedToken['yg-claims'].permissions;
-      if (!permissions.includes('view')) res.sendStatus(403);
-     */
-		const boat = await db
-			.select('*')
-			.from('boat.boat')
-			.where('boat.boat.id', boatId)
-			.first();
+		const boat = await boatService.getById(parseInt(boatId));
 
-		if (!boat) {
-			res.status(403).send('Boat id not found');
+		if(!boat){
+			res.status(404).send({message: "Data not found"});
 			return;
 		}
-
-		boat.pastNames = await db
-			.select('*')
-			.from('boat.pastnames')
-			.where('boat.pastnames.boatid', boatId);
-
-		boat.owners = await db
-			.select(
-				'boat.boatowner.currentowner',
-				'boat.Owner.OwnerName',
-				'boat.owner.id'
-			) //added boat.owner.id to the query (I need this for the details button)
-			.from('boat.boatowner')
-			.join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-			.where('boat.boatowner.boatid', boatId);
-
-		boat.histories = await db
-			.select('*')
-			.from('boat.history')
-			.where('boat.history.uid', boatId);
 
 		res.status(200).send(boat);
 	}
@@ -223,4 +168,47 @@ boatsRouter.put('/:boatId', async (req: Request, res: Response) => {
 		});
 
 	res.status(200).send({ message: 'success' });
+});
+
+
+//PDF AND EXPORTS
+boatsRouter.post(
+	'/pdf/:boatId',
+	[param('boatId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { boatId } = req.params;
+
+		const boat = await boatService.getById(parseInt(boatId));
+
+		let data = renderFile('./templates/boats/boatView.pug', {
+			data: boat
+		});
+
+		let pdf = await generatePDF(data);
+		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		res.send(pdf);
+});
+
+boatsRouter.post('/pdf', async (req: Request, res: Response) => {
+		
+		let boats = await boatService.getAll();
+
+		let data = renderFile('./templates/boats/boatGrid.pug', {
+			data: boats
+		});
+
+		let pdf = await generatePDF(data);
+		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		res.send(pdf);
+	}
+);
+
+boatsRouter.post('/export', async (req: Request, res: Response) => {
+		
+	let boats = await boatService.getAll();
+
+	res.status(200).send(boats);
 });
