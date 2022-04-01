@@ -26,6 +26,7 @@ import {
 	WebLink,
 } from '../data';
 import { GenericEnum } from './static-service';
+import { PlaceUpdate } from '../models';
 import _ from 'lodash';
 
 export class PlaceService {
@@ -95,7 +96,7 @@ export class PlaceService {
 		return this.knex('place').insert(item).returning<Place>(PLACE_FIELDS);
 	}
 
-	async updatePlace(id: number, item: Place): Promise<Place | undefined> {
+	async updatePlace(id: number, item: PlaceUpdate): Promise<Place | undefined> {
 		return this.knex('place').where({ id }).update(item);
 	}
 
