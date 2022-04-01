@@ -75,7 +75,10 @@ v-card(:loading="loading")
 					| All
 
 	v-card-actions
-		v-btn.my-0(color="primary")
+		v-btn.my-0(
+			color="primary"
+			@click="save"
+		)
 			| Save
 </template>
 
@@ -274,6 +277,17 @@ export default {
 			this.newPlace[key] = this.place[key];
 			this.acceptedChanges.delete(key);
 			this.rejectedChanges.add(key);
+		},
+		save() {
+			this.loading = true;
+			return placesApi
+				.put(this.placeId, this.newPlace)
+				.then(() => {
+					this.$router.push('/sites-change-requests');
+				})
+				.finally(() => {
+					this.loading = false;
+				});
 		},
 		updateQueryParams(key, value) {
 			this.$router.push({
