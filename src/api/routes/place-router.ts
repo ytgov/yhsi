@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import { body, check, param, query, validationResult } from "express-validator";
 import moment from "moment";
+import { pick } from 'lodash';
 
 import { DB_CONFIG } from "../config"
 import { buildDatabaseSort, PhotoService, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
@@ -199,10 +200,15 @@ placeRouter.put("/:id/summary",
     async (req: Request, res: Response) => {
         let { id } = req.params;
         let { secondaryNames, historicalPatterns } = req.body;
-        let updater = req.body;
-        delete updater.secondaryNames;
-        delete updater.historicalPatterns;
-        delete updater.yHSIId;
+        let updater = pick(req.body, [
+            'category',
+            'contributingResources',
+            'designations',
+            'primaryName',
+            'records',
+            'showInRegister',
+            'siteCategories',
+        ]);
 
         updater.contributingResources = encodeCommaDelimitedArray(updater.contributingResources);
         updater.designations = encodeCommaDelimitedArray(updater.designations);
