@@ -267,69 +267,7 @@
         mapsheet: null,
       }"
     />
-    <v-row>
-            <v-col col="6">
-                <v-row>
-                    <v-col>
-                         <v-text-field outlined dense
-                            v-model.number="fields.remainsonsite"
-                            label="Remains on Site"
-                            :readonly="isViewingCrash"
-                            :rules="numberRules"
-         
-                        ></v-text-field>    
-                        <v-textarea outlined dense
-                            rows="5"
-                            class="mt-0 pt-0"
-                            v-model="fields.extentofremainsonsite"
-                            label="Extent of Remains on Site"
-                            :readonly="isViewingCrash"
-                        ></v-textarea>
-                    </v-col>
-                    <v-col>
-                        <v-textarea outlined dense
-                            rows="7"
-                            v-model="fields.otherlocationsofremains"
-                            label="Other Location of Remains"
-                            :readonly="isViewingCrash"
-                        ></v-textarea>
-                    </v-col>
-                </v-row>
-            </v-col>
-             <v-col col="6">
-                 <v-row>
-                      <v-col cols="6">
-                                <v-text-field outlined dense
-                                    v-model="fields.soulsonboard"
-                                    label="Souls on Board"
-                                    :readonly="isViewingCrash"
-                                    :rules="numberRules"
-                                ></v-text-field>
-                                <v-text-field outlined dense
-                                    v-model="fields.injuries"
-                                    label="Injuries"
-                                    :readonly="isViewingCrash"
-                                    :rules="numberRules"
-                                ></v-text-field>
-                                <v-text-field outlined dense
-                                    v-model="fields.fatalities"
-                                    label="Fatalities"
-                                    :readonly="isViewingCrash"
-                                    :rules="numberRules"
-                                ></v-text-field>
-                        </v-col>
-                </v-row>
-            </v-col>
-            <MapLoader v-if="infoLoaded"
-                :mode="mode"
-                @modifiedDataCoordinates="modifiedDataCoordinates"
-                :fields="{  accuracy: fields.accuracy,
-                            inyukon: fields.inyukon,
-                            crashlocation: fields.crashlocation,
-                            lat: fields.lat,
-                            long: fields.long,
-                            Location: fields.Location } "/>
-    </v-row>
+
             <v-row>
                 <v-col col="6">
                     <v-row>
