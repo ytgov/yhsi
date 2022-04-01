@@ -199,7 +199,7 @@ placeRouter.put("/:id/summary",
     ], ReturnValidationErrors,
     async (req: Request, res: Response) => {
         let { id } = req.params;
-        let { secondaryNames, historicalPatterns } = req.body;
+        let { names, historicalPatterns } = req.body;
         let updater = pick(req.body, [
             'category',
             'contributingResources',
@@ -217,17 +217,17 @@ placeRouter.put("/:id/summary",
 
         await placeService.updatePlace(parseInt(id), updater);
         let oldNames = await placeService.getNamesFor(parseInt(id));
-        secondaryNames = secondaryNames.map((n: Name) => Object.assign(n, { description: n.description.trim() }));
+        const cleanNames = names.map((n: Name) => Object.assign(n, { description: n.description.trim() }));
 
         for (let on of oldNames) {
-            let match = secondaryNames.filter((n: Name) => n.description == on.description);
+            let match = cleanNames.filter((n: Name) => n.description == on.description);
 
             if (match.length == 0) {
                 await placeService.removeSecondaryName(on.id);
             }
         }
 
-        for (let on of secondaryNames) {
+        for (let on of cleanNames) {
             let match = oldNames.filter((n: Name) => n.description == on.description);
 
             if (match.length == 0) {
