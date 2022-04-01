@@ -7,7 +7,7 @@ export function RequiresAuthentication(req: Request, res: Response, next: NextFu
 		return next();
 	}
 
-	res.status(401).send('Not authenticated'); //;.redirect('/api/auth/login');
+	res.status(401).send('Not authenticated'); //;.redirect('/api/auth/login');*/
 }
 
 export function ReturnValidationErrors(req: Request, res: Response, next: NextFunction) {
