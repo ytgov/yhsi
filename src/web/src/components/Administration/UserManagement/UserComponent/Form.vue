@@ -311,14 +311,14 @@ export default {
 			this.loadUser(this.$route.params.id)
 				.then((resp) => {
 					if (resp.error) {
-						console.log('Response Error:', resp.error.message);
+						//console.log('Response Error:', resp.error.message);
 						this.$router.push('/admin/users');
 					} else {
 						this.user = resp.data;
 					}
 				})
 				.catch((err) => {
-					console.log('ERROR', err);
+					console.error(err);
 				})
 				.finally(() => {
 					this.loading = false;

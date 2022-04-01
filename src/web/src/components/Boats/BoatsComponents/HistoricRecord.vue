@@ -122,7 +122,7 @@
                                 </template>
                                 <span>Save changes</span>
                             </v-tooltip>
-                            <v-tooltip bottom v-if="editTable != index">
+                            <v-tooltip bottom v-if="editTable != index && mode != 'view'">
                                 <template v-slot:activator="{ on, attrs }">
                                         <v-btn 
                                         v-bind="attrs"
