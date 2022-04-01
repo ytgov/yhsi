@@ -17,7 +17,10 @@ export default {
 			.catch(console.error);
 	},
 	put(id, data) {
-		return Promise.all([placesSummaryApi.put(id, data)]).catch(console.error);
+		return Promise.all([placesSummaryApi.put(id, data)]).catch((error) => {
+			console.error(error);
+			return Promise.reject(error);
+		});
 	},
 	search(data) {
 		return http

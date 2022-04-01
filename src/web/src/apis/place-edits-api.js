@@ -19,6 +19,9 @@ export default {
 		return http
 			.delete(`${placeEditsUrl}/${id}`)
 			.then((response) => response.data)
-			.catch(console.error);
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
 	},
 };
