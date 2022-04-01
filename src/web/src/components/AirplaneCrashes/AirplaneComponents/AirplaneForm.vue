@@ -23,7 +23,7 @@
                     <v-icon>mdi-close</v-icon>
                     Cancel
                 </v-btn>
-                <v-btn color="success" :disabled="showSave < 1 || yacsiWarning.length == 1" v-if="isEditingCrash" @click="saveChanges" >
+                <v-btn color="success" :disabled="showSave < 1 || yacsiWarning.length == 1 || !formValid" v-if="isEditingCrash" @click="saveChanges" >
                     <v-icon class="mr-1">mdi-check</v-icon>
                     Done
                 </v-btn>
@@ -39,189 +39,204 @@
             </v-col>
         </v-row>
 <!-- General fields -->
-
-        <v-row >
-            <v-col cols="7">
-                <v-row>
-                    <v-col>
-                    <!-- YASCI number -->
-                        <v-text-field outlined dense
-                            label="YASCI number"
-                            v-model="fields.yacsinumber"
-                            :readonly="isViewingCrash"
-                            :error-messages="yacsiWarning"
-                            @blur="validateYACSI()"
-                        ></v-text-field>
-                    </v-col>
-                    <v-col>
-                    <!-- Aircraft Maker -->
-                        <v-text-field outlined dense
-                            label="Aircraft Make/Model"
-                            v-model="fields.aircrafttype"
-                            :readonly="isViewingCrash"
-                        ></v-text-field>
-                    </v-col>
-                    <v-col>
-                    <!-- Aircraft Registration -->
-                        <v-text-field outlined dense
-                            label="Aircraft Registration"
-                            v-model="fields.aircraftregistration"
-                            :readonly="isViewingCrash"
-                        ></v-text-field>
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col cols="6">
-                        <v-row>
-                            <v-col cols="6" >   
-                            <!-- Crash Date -->
-                                    <v-menu
-                                        ref="menu"
-                                        v-model="menu"
-                                        :close-on-content-click="false"
-                                        :return-value.sync="fields.crashdate"
-                                        transition="scale-transition"
-                                        offset-y
-                                        min-width="auto"
-                                        :disabled="isViewingCrash"
-                                    >
-                                        <template v-slot:activator="{ on, attrs }">
-                                        <v-text-field outlined dense
-                                            v-model="crashdate"
-                                            label="Crash Date"
-                                            append-icon="mdi-calendar"
-                                            readonly
-                                            v-bind="attrs"
-                                            v-on="on"
-                                        ></v-text-field>
-                                        </template>
-                                        <v-date-picker
-                                        v-model="fields.crashdate"
-                                        no-title
-                                        scrollable
-                                        >
-                                        <v-spacer></v-spacer>
-                                        <v-btn
-                                            text
-                                            color="primary"
-                                            @click="menu = false"
-                                        >
-                                            Cancel
-                                        </v-btn>
-                                        <v-btn
-                                            text
-                                            color="primary"
-                                            @click="$refs.menu.save(fields.crashdate)"
-                                        >
-                                            OK
-                                        </v-btn>
-                                        </v-date-picker>
-                                    </v-menu>
-                                
-                            </v-col>
-                            <v-col cols="6">
-                                <v-select outlined dense
-                                    v-model="fields.datedescriptor"
-                                    :items="dateDescriptorOptions"
-                                    :readonly="isViewingCrash"
-                                    label="Date Descriptor"
-                                ></v-select>
-                            </v-col>
-                        </v-row>
-                        <v-row>
-                            <v-col cols="12">
-                                <v-text-field outlined dense
-                                    v-model="fields.datenote"
-                                    label="Date Note"
-                                    :readonly="isViewingCrash"
-                                ></v-text-field>
-                            </v-col>
-                        </v-row>
-                    </v-col>
-                    <v-col cols="6">
-                        <v-row>
-                            <v-col cols="6">
-                                <h4>Country of Registration</h4>
-                                <v-checkbox 
-                                    label="Canadian"
-                                    value="Canadian"
-                                    v-model="fields.nation"
-                                    :readonly="isViewingCrash"
-                                ></v-checkbox>
-                                <v-checkbox
-                                    label="American"
-                                    value="American"
-                                    v-model="fields.nation"
-                                    :readonly="isViewingCrash"
-                                ></v-checkbox>
-                                <v-checkbox
-                                    label="Other"
-                                    v-model="otherNation"
-                                    @click="changeNation"
-                                    :readonly="isViewingCrash"
-                                ></v-checkbox>
-                                <v-text-field outlined dense
-                                    v-if="otherNation"
-                                    v-model="fields.nation"
-                                    label="Other"
-                                    :readonly="isViewingCrash"
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="6">
-                                <h4>Registration Type</h4>
-                                <v-checkbox
-                                    label="Civilian"
-                                    value="Civilian"
-                                    v-model="fields.militarycivilian"
-                                    :readonly="isViewingCrash"
-                                ></v-checkbox>
-                                <v-checkbox
-                                    label="Military"
-                                    value="Military"
-                                    v-model="fields.militarycivilian"
-                                    :readonly="isViewingCrash"
-                                ></v-checkbox>
-                            </v-col>
-                        </v-row> 
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col cols="12">
-                        <v-alert
-                        outlined
-                        color="primary"
-                        >
-                            <div class="sub-title">
-                                Pilot
-                            </div>
+        <v-form v-model="formValid">
+            <v-row >
+                <v-col cols="7">
+                    <v-row>
+                        <v-col>
+                        <!-- YASCI number -->
+                            <v-text-field outlined dense
+                                label="YASCI number"
+                                v-model="fields.yacsinumber"
+                                :readonly="isViewingCrash"
+                                :error-messages="yacsiWarning"
+                                @blur="validateYACSI()"
+                            ></v-text-field>
+                        </v-col>
+                        <v-col>
+                        <!-- Aircraft Maker -->
+                            <v-text-field outlined dense
+                                label="Aircraft Make/Model"
+                                v-model="fields.aircrafttype"
+                                :readonly="isViewingCrash"
+                            ></v-text-field>
+                        </v-col>
+                        <v-col>
+                        <!-- Aircraft Registration -->
+                            <v-text-field outlined dense
+                                label="Aircraft Registration"
+                                v-model="fields.aircraftregistration"
+                                :readonly="isViewingCrash"
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="6">
                             <v-row>
-                                <v-col>
+                                <v-col cols="6" >   
+                                <!-- Crash Date -->
+                                        <v-menu
+                                            ref="menu"
+                                            v-model="menu"
+                                            :close-on-content-click="false"
+                                            :return-value.sync="fields.crashdate"
+                                            transition="scale-transition"
+                                            offset-y
+                                            min-width="auto"
+                                            :disabled="isViewingCrash"
+                                        >
+                                            <template v-slot:activator="{ on, attrs }">
+                                            <v-text-field outlined dense
+                                                v-model="crashdate"
+                                                label="Crash Date"
+                                                append-icon="mdi-calendar"
+                                                readonly
+                                                v-bind="attrs"
+                                                v-on="on"
+                                            ></v-text-field>
+                                            </template>
+                                            <v-date-picker
+                                            v-model="fields.crashdate"
+                                            no-title
+                                            scrollable
+                                            >
+                                            <v-spacer></v-spacer>
+                                            <v-btn
+                                                text
+                                                color="primary"
+                                                @click="menu = false"
+                                            >
+                                                Cancel
+                                            </v-btn>
+                                            <v-btn
+                                                text
+                                                color="primary"
+                                                @click="$refs.menu.save(fields.crashdate)"
+                                            >
+                                                OK
+                                            </v-btn>
+                                            </v-date-picker>
+                                        </v-menu>
+                                    
+                                </v-col>
+                                <v-col cols="6">
+                                    <v-select outlined dense
+                                        v-model="fields.datedescriptor"
+                                        :items="dateDescriptorOptions"
+                                        :readonly="isViewingCrash"
+                                        label="Date Descriptor"
+                                    ></v-select>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="12">
                                     <v-text-field outlined dense
-                                        v-model="fields.pilotfirstname"
-                                        label="First Name"
+                                        v-model="fields.datenote"
+                                        label="Date Note"
                                         :readonly="isViewingCrash"
                                     ></v-text-field>
                                 </v-col>
-                                <v-col>
+                            </v-row>
+                        </v-col>
+                        <v-col cols="6">
+                            <v-row>
+                                <v-col cols="6">
+                                    <h4>Country of Registration</h4>
+                                    <v-checkbox 
+                                        label="Canadian"
+                                        value="Canadian"
+                                        v-model="fields.nation"
+                                        :readonly="isViewingCrash"
+                                    ></v-checkbox>
+                                    <v-checkbox
+                                        label="American"
+                                        value="American"
+                                        v-model="fields.nation"
+                                        :readonly="isViewingCrash"
+                                    ></v-checkbox>
+                                    <v-checkbox
+                                        label="Other"
+                                        v-model="otherNation"
+                                        @click="changeNation"
+                                        :readonly="isViewingCrash"
+                                    ></v-checkbox>
                                     <v-text-field outlined dense
-                                        v-model="fields.pilotlastname"
-                                        label="Last Name"
+                                        v-if="otherNation"
+                                        v-model="fields.nation"
+                                        label="Other"
                                         :readonly="isViewingCrash"
                                     ></v-text-field>
                                 </v-col>
-                                <v-col>
-                                    <v-text-field outlined dense
-                                        v-model="fields.pilotrank"
-                                        label="Rank"
+                                <v-col cols="6">
+                                    <h4>Registration Type</h4>
+                                    <v-checkbox
+                                        label="Civilian"
+                                        value="Civilian"
+                                        v-model="fields.militarycivilian"
                                         :readonly="isViewingCrash"
-                                    ></v-text-field>
+                                    ></v-checkbox>
+                                    <v-checkbox
+                                        label="Military"
+                                        value="Military"
+                                        v-model="fields.militarycivilian"
+                                        :readonly="isViewingCrash"
+                                    ></v-checkbox>
                                 </v-col>
+                            </v-row> 
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-alert
+                            outlined
+                            color="primary"
+                            >
+                                <div class="sub-title">
+                                    Pilot
+                                </div>
+                                <v-row>
+                                    <v-col>
+                                        <v-text-field outlined dense
+                                            v-model="fields.pilotfirstname"
+                                            label="First Name"
+                                            :readonly="isViewingCrash"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col>
+                                        <v-text-field outlined dense
+                                            v-model="fields.pilotlastname"
+                                            label="Last Name"
+                                            :readonly="isViewingCrash"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col>
+                                        <v-text-field outlined dense
+                                            v-model="fields.pilotrank"
+                                            label="Rank"
+                                            :readonly="isViewingCrash"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-alert>
+                            
+                        </v-col>
+                    </v-row>
+                </v-col>
+                <!-- <v-col cols="5">
+                        <v-col cols="12"> -->
+    <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
+                            <!-- <Photos 
+                            v-if="infoLoaded" 
+                            :showDefault="isNewCrash" 
+                            :yacsiNumber="getYACSINumber"
+                            @updateSelectedImage="selectedImageChanged"
+                            @loadingPhotosChange="loadingPhotosChange"/>
                             </v-row>
                         </v-alert>
                         
                     </v-col>
                 </v-row>
-            </v-col>
+            </v-col> -->
             <v-col cols="5">
               <v-col cols="12">
                 <!-- Photos component, it includes a carousel and some dialogs for the button actions -->
@@ -252,175 +267,176 @@
         mapsheet: null,
       }"
     />
-    <v-row>
-            <v-col col="6">
-                <v-row>
-                    <v-col>
-                         <v-text-field outlined dense
-                            v-model.number="fields.remainsonsite"
-                            label="Remains on Site"
-                            :readonly="isViewingCrash"
-                            :rules="numberRules"
-         
-                        ></v-text-field>    
-                        <v-textarea outlined dense
-                            rows="5"
-                            class="mt-0 pt-0"
-                            v-model="fields.extentofremainsonsite"
-                            label="Extent of Remains on Site"
-                            :readonly="isViewingCrash"
-                        ></v-textarea>
-                    </v-col>
-                    <v-col>
-                        <v-textarea outlined dense
-                            rows="7"
-                            v-model="fields.otherlocationsofremains"
-                            label="Other Location of Remains"
-                            :readonly="isViewingCrash"
-                        ></v-textarea>
-                    </v-col>
-                </v-row>
-            </v-col>
-             <v-col col="6">
-                 <v-row>
-                      <v-col cols="6">
-                                <v-text-field outlined dense
-                                    v-model="fields.soulsonboard"
-                                    label="Souls on Board"
-                                    :readonly="isViewingCrash"
-                                    :rules="numberRules"
-                                ></v-text-field>
-                                <v-text-field outlined dense
-                                    v-model="fields.injuries"
-                                    label="Injuries"
-                                    :readonly="isViewingCrash"
-                                    :rules="numberRules"
-                                ></v-text-field>
-                                <v-text-field outlined dense
-                                    v-model="fields.fatalities"
-                                    label="Fatalities"
-                                    :readonly="isViewingCrash"
-                                    :rules="numberRules"
-                                ></v-text-field>
-                        </v-col>
-                         <v-col cols="6">
-                            <v-textarea
-                                rows="7" outlined dense
-                                v-model="fields.descriptionofcrashevent"
-                                label="Description of Crash Event"
+
+            <v-row>
+                <v-col col="6">
+                    <v-row>
+                        <v-col>
+                            <v-text-field outlined dense
+                                v-model.number="fields.remainsonsite"
+                                label="Remains on Site"
+                                :readonly="isViewingCrash"
+                                :rules="numberRules"
+            
+                            ></v-text-field>    
+                            <v-textarea outlined dense
+                                rows="5"
+                                class="mt-0 pt-0"
+                                v-model="fields.extentofremainsonsite"
+                                label="Extent of Remains on Site"
                                 :readonly="isViewingCrash"
                             ></v-textarea>
                         </v-col>
-                 </v-row>
-            </v-col>
-        </v-row>
-<!-- Additional information -->
-        <v-row>
-            <v-col cols="12">
-                <v-textarea outlined dense
-                    v-model="fields.comments"
-                    label="Additional Information"
-                    :readonly="isViewingCrash"
-                ></v-textarea>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="5">
-            <!-- Information source list -->
-                <v-card>
-                    <v-list class="pa-0" >
-                        <v-subheader>Information Source</v-subheader>
-                        <v-divider></v-divider>
-                        <template v-for="(item, index) in fields.infoSources">
-                            <v-list-item :key="`nl-${index}`">
-                                <v-list-item-content>
-                                    <v-list-item-title v-if="index != editTableSources || isViewingCrash">{{item.Source}}</v-list-item-title>
-                                    <v-form v-model="validSource" v-if="!isViewingCrash" v-on:submit.prevent>
-                                        <v-text-field outlined dense
-                                        v-if="editTableSources == index "
-                                        label="Source"
-                                        v-model="helperSource"
-                                        :rules="sourceRules"
-                                        ></v-text-field>
-                                    </v-form>
-                                    
-                                </v-list-item-content>
-                                <v-list-item-action class="d-flex flex-row">
-                                    <v-tooltip bottom v-if="!isViewingCrash && editTableSources != index">
-                                        <template v-slot:activator="{ on, attrs }">
-                                                <v-btn 
-                                                v-bind="attrs"
-                                                v-on="on"
-                                                icon class="grey--text text--darken-2"   @click="deleteSource(item,index)">
-                                                    <v-icon
+                        <v-col>
+                            <v-textarea outlined dense
+                                rows="7"
+                                v-model="fields.otherlocationsofremains"
+                                label="Other Location of Remains"
+                                :readonly="isViewingCrash"
+                            ></v-textarea>
+                        </v-col>
+                    </v-row>
+                </v-col>
+                <v-col col="6">
+                    <v-row>
+                        <v-col cols="3">
+                                    <v-text-field outlined dense
+                                        v-model="fields.soulsonboard"
+                                        label="Souls on Board"
+                                        :readonly="isViewingCrash"
+                                        :rules="numberRules"
+                                    ></v-text-field>
+                                    <v-text-field outlined dense
+                                        v-model="fields.injuries"
+                                        label="Injuries"
+                                        :readonly="isViewingCrash"
+                                        :rules="numberRules"
+                                    ></v-text-field>
+                                    <v-text-field outlined dense
+                                        v-model="fields.fatalities"
+                                        label="Fatalities"
+                                        :readonly="isViewingCrash"
+                                        :rules="numberRules"
+                                    ></v-text-field>
+                            </v-col>
+                            <v-col cols="9">
+                                <v-textarea
+                                    rows="7" outlined dense
+                                    v-model="fields.descriptionofcrashevent"
+                                    label="Description of Crash Event"
+                                    :readonly="isViewingCrash"
+                                ></v-textarea>
+                            </v-col>
+                    </v-row>
+                </v-col>
+            </v-row>
+    <!-- Additional information -->
+            <v-row>
+                <v-col cols="12">
+                    <v-textarea outlined dense
+                        v-model="fields.comments"
+                        label="Additional Information"
+                        :readonly="isViewingCrash"
+                    ></v-textarea>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="5">
+                <!-- Information source list -->
+                    <v-card>
+                        <v-list class="pa-0" >
+                            <v-subheader>Information Source</v-subheader>
+                            <v-divider></v-divider>
+                            <template v-for="(item, index) in fields.infoSources">
+                                <v-list-item :key="`nl-${index}`">
+                                    <v-list-item-content>
+                                        <v-list-item-title v-if="index != editTableSources || isViewingCrash">{{item.Source}}</v-list-item-title>
+                                        <v-form v-model="validSource" v-if="!isViewingCrash" v-on:submit.prevent>
+                                            <v-text-field outlined dense
+                                            v-if="editTableSources == index "
+                                            label="Source"
+                                            v-model="helperSource"
+                                            :rules="sourceRules"
+                                            ></v-text-field>
+                                        </v-form>
+                                        
+                                    </v-list-item-content>
+                                    <v-list-item-action class="d-flex flex-row">
+                                        <v-tooltip bottom v-if="!isViewingCrash && editTableSources != index">
+                                            <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn 
+                                                    v-bind="attrs"
+                                                    v-on="on"
+                                                    icon class="grey--text text--darken-2"   @click="deleteSource(item,index)">
+                                                        <v-icon
+                                                            small
+                                                        > mdi-delete</v-icon>
+                                                    </v-btn>
+                                            </template>
+                                            <span>Delete</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom v-if="!isViewingCrash && editTableSources != index">
+                                            <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn 
+                                                    v-bind="attrs"
+                                                    v-on="on"
+                                                    icon class="grey--text text--darken-2"   @click="changeEditTableSources(item,index)">
+                                                        <v-icon
+                                                            small
+                                                        > mdi-pencil</v-icon>
+                                                    </v-btn>
+                                            </template>
+                                            <span>Edit</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom v-if="!isViewingCrash && editTableSources == index">
+                                            <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn
+                                                    v-bind="attrs"
+                                                    v-on="on" 
+                                                    :disabled="!validSource"
+                                                    icon class="grey--text text--darken-2" color="success"  @click="saveTableSources(index)">
+                                                        <v-icon
                                                         small
-                                                    > mdi-delete</v-icon>
-                                                </v-btn>
-                                        </template>
-                                        <span>Delete</span>
-                                    </v-tooltip>
-                                    <v-tooltip bottom v-if="!isViewingCrash && editTableSources != index">
-                                        <template v-slot:activator="{ on, attrs }">
-                                                <v-btn 
-                                                v-bind="attrs"
-                                                v-on="on"
-                                                icon class="grey--text text--darken-2"   @click="changeEditTableSources(item,index)">
-                                                    <v-icon
+                                                        >mdi-check</v-icon>  
+                                                    </v-btn>
+                                            </template>
+                                            <span>Save changes</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom v-if="!isViewingCrash && editTableSources == index">
+                                            <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn 
+                                                    v-bind="attrs"
+                                                    v-on="on"
+                                                    icon class="grey--text text--darken-2"  @click="cancelEditTableSources()">
+                                                        <v-icon
                                                         small
-                                                    > mdi-pencil</v-icon>
-                                                </v-btn>
-                                        </template>
-                                        <span>Edit</span>
-                                    </v-tooltip>
-                                    <v-tooltip bottom v-if="!isViewingCrash && editTableSources == index">
-                                        <template v-slot:activator="{ on, attrs }">
-                                                <v-btn
-                                                v-bind="attrs"
-                                                v-on="on" 
-                                                :disabled="!validSource"
-                                                icon class="grey--text text--darken-2" color="success"  @click="saveTableSources(index)">
-                                                    <v-icon
-                                                    small
-                                                    >mdi-check</v-icon>  
-                                                </v-btn>
-                                        </template>
-                                        <span>Save changes</span>
-                                    </v-tooltip>
-                                    <v-tooltip bottom v-if="!isViewingCrash && editTableSources == index">
-                                        <template v-slot:activator="{ on, attrs }">
-                                                <v-btn 
-                                                v-bind="attrs"
-                                                v-on="on"
-                                                icon class="grey--text text--darken-2"  @click="cancelEditTableSources()">
-                                                    <v-icon
-                                                    small
-                                                    >mdi-close</v-icon>  
-                                                </v-btn>
-                                        </template>
-                                        <span>Cancel</span>
-                                    </v-tooltip> 
-                                </v-list-item-action>
-                            </v-list-item>
-                            <v-divider  :key="`ldiv-${index}`"></v-divider>
-                        </template>
-                    </v-list>
-                </v-card>
-                <v-row>
-                    <v-col cols="12" class="d-flex ">
-                        <v-spacer></v-spacer>
-                        <v-btn class="mx-1 black--text align" @click="addSource" v-if="!isViewingCrash && editTableSources == -1">Add Source</v-btn>
-                    </v-col>
-                </v-row>
-            </v-col>
-            <v-col cols="7">
-                <v-textarea outlined dense
-                    label="Significance of Aircraft"
-                    v-model="fields.significanceofaircraft"
-                    :readonly="isViewingCrash"
-                ></v-textarea>
-            </v-col>
-        </v-row>
-
+                                                        >mdi-close</v-icon>  
+                                                    </v-btn>
+                                            </template>
+                                            <span>Cancel</span>
+                                        </v-tooltip> 
+                                    </v-list-item-action>
+                                </v-list-item>
+                                <v-divider  :key="`ldiv-${index}`"></v-divider>
+                            </template>
+                        </v-list>
+                    </v-card>
+                    <v-row>
+                        <v-col cols="12" class="d-flex ">
+                            <v-spacer></v-spacer>
+                            <v-btn class="mx-1 black--text align" @click="addSource" v-if="!isViewingCrash && editTableSources == -1">Add Source</v-btn>
+                        </v-col>
+                    </v-row>
+                </v-col>
+                <v-col cols="7">
+                    <v-textarea outlined dense
+                        label="Significance of Aircraft"
+                        v-model="fields.significanceofaircraft"
+                        :readonly="isViewingCrash"
+                    ></v-textarea>
+                </v-col>
+            </v-row>
+        </v-form>
 
         <v-overlay :value="overlay">
             <v-progress-circular
@@ -456,7 +472,7 @@
 import Breadcrumbs from '../../Breadcrumbs.vue';
 import Photos from "../../PhotoEditor/Photos";
 import aircrash from "../../../controllers/aircrash";
-import MapLoader from "../../MapLoader";
+import MapLoader from "./MapLoader";
 import _ from 'lodash';
 export default {
     name: "crashForm",
@@ -499,9 +515,9 @@ export default {
         yacsiWarning: [],
     //number Rules
         numberRules: [ v =>{
-            return /^[0-9]*$/.test(v) || 'A number is required';
+            return /^[0-9]*$/.test(v) || 'A positive number is required';
         }],
-
+        formValid: true,
         loadingPhotos: false,
         loadingPdf: false
     }),
