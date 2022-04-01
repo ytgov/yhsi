@@ -281,8 +281,13 @@ export default {
 		save() {
 			this.loading = true;
 			return placesApi
-				.put(this.placeId, this.newPlace)
-				.then(() => placeEditsApi.delete(this.placeEditId))
+				.put(this.place.id, this.newPlace)
+				.then(() => {
+					console.log(
+						'placesApi update successfully, in future will delete change request.'
+					);
+					// return placeEditsApi.delete(this.placeEditId)
+				})
 				.then(() => {
 					this.$router.push('/sites-change-requests');
 				})

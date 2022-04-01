@@ -7,6 +7,9 @@ export default {
 		return http
 			.put(placeSummaryUrl(placeId), data)
 			.then((response) => response.data)
-			.catch(console.error);
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
 	},
 };
