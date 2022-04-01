@@ -553,7 +553,7 @@ export default {
             this.fields.ServiceEnd = this.fields.ServiceEnd ? this.fields.ServiceEnd.substr(0, 10) : "";
             this.fields.deletedOwners = [];
             this.fields.ownerRemovedArray = [];
-            console.log(this.fields);
+            //console.log(this.fields);
             this.fields.originalOwners = JSON.parse(JSON.stringify(this.fields.owners));
             this.infoLoaded = true;
             this.overlay = false;

@@ -91,7 +91,7 @@ export default {
 		this.loadUsers()
 			.then((resp) => {
 				if (resp.error) {
-					console.log('Response Error:', resp.error.message);
+					//console.log('Response Error:', resp.error.message);
 					this.$router.push('/admin');
 				} else {
 					this.users = resp.data;
