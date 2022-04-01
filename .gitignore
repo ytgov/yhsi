@@ -71,7 +71,11 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
+<<<<<<< HEAD
 .env
+=======
+src/api/.env
+>>>>>>> 0cdf0c39d93068ce691cb9c87d8d8dd0e9875eaf
 .env.development
 .env.test
 .env.production

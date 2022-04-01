@@ -2,14 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { DB_HOST } from '../config';
 
-export function RequiresAuthentication(
-	req: Request,
-	res: Response,
-	next: NextFunction
-) {
-	// DJPRATT temporary hack to get around login issue
-	return next();
-/*
+export function RequiresAuthentication(req: Request, res: Response, next: NextFunction) {
 	if (req.oidc.isAuthenticated()) {
 		return next();
 	}
@@ -17,11 +10,7 @@ export function RequiresAuthentication(
 	res.status(401).send('Not authenticated'); //;.redirect('/api/auth/login');*/
 }
 
-export function ReturnValidationErrors(
-	req: Request,
-	res: Response,
-	next: NextFunction
-) {
+export function ReturnValidationErrors(req: Request, res: Response, next: NextFunction) {
 	const errors = validationResult(req);
 
 	if (!errors.isEmpty()) {
@@ -31,11 +20,7 @@ export function ReturnValidationErrors(
 	next();
 }
 
-export function RequiresRoleAdmin(
-	req: Request,
-	res: Response,
-	next: NextFunction
-) {
+export function RequiresRoleAdmin(req: Request, res: Response, next: NextFunction) {
 	if (req.user && req.user.roles.indexOf('Admin') == -1) {
 		return res.status(401).send('You are not an Administrator');
 	}

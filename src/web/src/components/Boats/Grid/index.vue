@@ -79,37 +79,49 @@
           Add Owner
         </v-btn>
 
-        <JsonCSV :data="owners"  name="owner_data.csv">
+
+
+        <v-btn class="black--text mx-1" :loading="true" v-if="loadingExport">
+            <v-icon class="mr-1"> mdi-export </v-icon>
+            Export
+        </v-btn>
+        <JsonCSV v-else :data="ownersData"  name="owner_data.csv">
           <v-btn class="black--text mx-1" :disabled="owners.length == 0">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
           </v-btn>
         </JsonCSV>
 
-        <PrintButton
-          key="prt-1"
-          :data="{ owners }"
-          :disabled="owners.length == 0"
-        />
+        <v-btn @click="downloadPdfOwners()" class="black--text mx-1" :loading="loadingPdf">
+            <v-icon class="mr-1">
+              mdi-printer
+            </v-icon>
+            Print
+        </v-btn>
+
       </v-col>
       <v-col cols="auto" v-else class="d-flex">
         <v-btn class="black--text mx-1" @click="addNewBoat">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
           Add Boat
         </v-btn>
-
-        <JsonCSV :data="boats"  name="boat_data.csv">
-          <v-btn class="black--text mx-1" :disabled="boats.length == 0">
+        <v-btn class="black--text mx-1" :loading="true" v-if="loadingExport">
+            <v-icon class="mr-1"> mdi-export </v-icon>
+            Export
+          </v-btn>
+        <JsonCSV v-else :data="boatsData"  name="boat_data.csv" ref="csvBtn">
+          <v-btn class="black--text mx-1">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
           </v-btn>
         </JsonCSV>
+        <v-btn @click="downloadPdf()" class="black--text mx-1" :loading="loadingPdf">
+            <v-icon class="mr-1">
+              mdi-printer
+            </v-icon>
+            Print
+        </v-btn>
 
-        <PrintButton
-          key="prt-2"
-          :data="{ boats }"
-          :disabled="boats.length == 0"
-        />
       </v-col>
     </v-row>
     <div class="mt-2">
@@ -138,12 +150,14 @@
 <script>
 import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
-import PrintButton from "./PrintButton";
+//import PrintButton from "./PrintButton";
 import _ from "lodash";
-
+import boats from "../../../controllers/boats";
+import owners from "../../../controllers/owners";
+//import jsPDF from "jspdf";
 export default {
   name: "boatsgrid-index",
-  components: { Breadcrumbs, JsonCSV, PrintButton },
+  components: { Breadcrumbs, JsonCSV },
   data: () => ({
     route: "",
     active_tab: "",
@@ -162,15 +176,21 @@ export default {
       { text: "Audience", icon: "mdi-account" },
       { text: "Conversions", icon: "mdi-flag" },
     ],
+    boats: [],
+    ownersData: [],
+    loadingPdf: false,
+    loadingExport: false
   }),
-  mounted() {
+  async mounted() {
     if (this.$route.path.includes("owner")) {
       //shows the buttons for owner
+      
       this.route = "owner";
     } else {
       //shows the buttons for boats
       this.route = "boats";
     }
+    this.getExports();
   },
   methods: {
     addNewBoat() {
@@ -192,10 +212,44 @@ export default {
       //this function helps to show certain classes depending on the route
       return route.includes("owner") ? "notActive" : "";
     },
+    async getExports(){
+      this.loadingExport = true;
+      this.boats = await boats.getExport();
+      this.ownersData = await owners.getExport();
+      this.loadingExport = false;
+    },
+    async downloadPdf(){
+      this.loadingPdf = true;
+      let res = await boats.getGridPdf();
+      let blob = new Blob([res], { type: "application/octetstream" });
+      let url = window.URL || window.webkitURL;
+      let link = url.createObjectURL(blob);
+      let a = document.createElement("a");
+      a.setAttribute("download", "Boats.pdf");
+      a.setAttribute("href", link);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      this.loadingPdf = false;
+    },
+    async downloadPdfOwners(){
+      this.loadingPdf = true;
+      let res = await owners.getGridPdf();
+      let blob = new Blob([res], { type: "application/octetstream" });
+      let url = window.URL || window.webkitURL;
+      let link = url.createObjectURL(blob);
+      let a = document.createElement("a");
+      a.setAttribute("download", "Owners.pdf");
+      a.setAttribute("href", link);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      this.loadingPdf = false;
+    },
   },
   computed: {
-    boats() {
-      return this.$store.getters["boats/boats"];
+    boatsData() {
+      return this.boats;
     },
     owners() {
       return this.$store.getters["boats/owners"];

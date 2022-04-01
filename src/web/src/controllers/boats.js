@@ -16,7 +16,7 @@ export default {
         return res.data;
       }).catch(error =>{
         // handle error
-        console.log(error);
+        console.error(error);
       });
   },
   async getById(id) {
@@ -25,7 +25,7 @@ export default {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        console.error(error);
       });
   },
   async put(id, data){
@@ -51,6 +51,38 @@ export default {
     }).catch(error =>{
       return error;
     });
-  }
+  },
+  async getExport(){
+    return await api.post('boats/export')
+    .then( res => {
+      return res.data;
+    }).catch( err => {
+      return err;
+    })
+  },
+  async getGridPdf(){
+    return await api({
+      url: 'boats/pdf',
+      method: 'POST',
+      responseType: 'blob',
+    })
+    .then( res => {
+      return res.data;
+    }).catch( err => {
+      return err;
+    })
+  },
+  async getPdf(id){
+    return await api({
+      url: `boats/pdf/${id}`,
+      method: 'POST',
+      responseType: 'blob',
+    })
+    .then( res => {
+      return res.data;
+    }).catch( err => {
+      return err;
+    })
+  },
 }
 

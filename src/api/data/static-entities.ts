@@ -1,51 +1,61 @@
-
 export class Community {
-    id!: number;
-    name!: string;
+	id!: number;
+	name!: string;
 }
 
 export class FirstNation {
-    id!: number;
-    description!: string;
+	id!: number;
+	description!: string;
 }
 
 export class FunctionalType {
-    id!: number;
-    description!: string;
+	id!: number;
+	description!: string;
 }
 
 export class OriginalMedia {
-    id!: number;
-    type!: string;
+	id!: number;
+	type!: string;
 }
 
 export class PhotoOwner {
-    id?: number;
-    name!: string;
-    email!: string;
-    address!: string;
-    telephone!: string;
-    contactPerson!: string;
+	id?: number;
+	name!: string;
+	email!: string;
+	address!: string;
+	telephone!: string;
+	contactPerson!: string;
+}
+
+export class PhotoSubject {
+	id?: number;
+	name!: string;
 }
 
 export class PhotoProject {
-    id?: number;
-    name!: string;
-    permit!: string;
-    year!: string;
-    section!: string;
+	id?: number;
+	name!: string;
+	permit!: string;
+	year!: string;
+	section!: string;
 }
 
 export class PlaceTheme {
-    id!: number;
-    category!: string;
-    type!: string;
+	id!: number;
+	category!: string;
+	type!: string;
 }
 
 export class Statute {
-    id!: number;
-    recognitionAuthority!: string;
-    recognitionType!: string;
-    description!: string;
-    allStatute!: string;
+	id!: number;
+	recognitionAuthority!: string;
+	recognitionType!: string;
+	description!: string;
+	allStatute!: string;
+}
+
+export class MapSheetLookup {
+	id!: number;
+	map50k!: string;
+	map250k!: string;
 }

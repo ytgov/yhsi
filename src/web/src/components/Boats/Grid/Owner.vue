@@ -99,7 +99,7 @@ export default {
     },
     /* eslint-disable */
     selectedFilters(newv, oldv) {
-      //console.log(oldv,newv);
+      ////console.log(oldv,newv);
     },
     search(newv, oldv) {
       //this.search = newv;

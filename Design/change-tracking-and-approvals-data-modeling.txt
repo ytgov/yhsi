@@ -1,0 +1,67 @@
+@startuml
+
+entity "Place" as place {
+  * Id : int <<generated>>
+  --
+  * PrimaryName: nvarchar
+  * YHSIId : nvarchar
+  * Category: int
+  * ShowInRegister: bit
+  Designations: nvarchar
+  Records: nvarchar
+  ContributingResources: nvarchar
+}
+
+enum "Designations" as designations {
+  <only string used>
+  4 : Federal
+  2 : Municipal
+  3 : Territorial
+  5 : World
+  0 : Not Designated
+}
+
+enum "Category" as category {
+  0 : None Selected
+  1 : Building
+  2 : District
+  3 : Place
+  4 : Structure
+}
+
+enum "Records" as records {
+  <only string used>
+  1: CRHP
+  2: WHBR
+}
+
+entity "Name" as name {
+  * Id : int <<generated>>
+  --
+  * PlaceId: int
+  Description: nvarchar
+}
+
+entity "HistoricalPattern" as historical_pattern {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * HistoricalPatternType: int
+  Comments : nvarchar
+}
+
+enum "HistoricalPatternType" as historical_pattern_type {
+  1 : Political
+  2 : Economic
+  3 : Social
+  4 : Geographic
+}
+
+place }o--o| designations
+place }|--o| category
+place }o--o| records
+place }o--|| name
+place }o--historical_pattern
+historical_pattern }|--|| historical_pattern_type
+
+@enduml

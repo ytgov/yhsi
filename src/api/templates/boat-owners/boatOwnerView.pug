@@ -1,0 +1,50 @@
+//- template.pug
+
+style
+     include ../styles.css
+
+table.title-row
+  tbody 
+    tr 
+      td
+        div Owner information
+        div.item-name #{data.Name} 
+      td
+        img(style='width:200px; height:100px;' src="https://firebasestorage.googleapis.com/v0/b/yg-historic-sites.appspot.com/o/yukon.svg?alt=media&token=41e6cd68-0efd-438f-aef0-44bec1e15b55", alt="")
+
+div.section-title General information
+
+table.table-full-width.center
+  thead 
+    tr 
+      td 
+        strong.underline Alias 
+  tbody 
+    each val in data.alias
+      tr 
+        td #{val.Alias}
+
+table.table-full-width.center
+  thead 
+    tr 
+      td 
+        strong.underline Boats Owned 
+  tbody 
+    each val in data.boats
+      tr 
+        td #{val.Name}
+
+div.section-title History
+
+table.table-full-width.center
+  thead 
+    tr 
+      td
+        strong.underline Historic Record 
+      td
+        strong.underline Reference 
+  tbody
+    each val in data.histories
+      tr 
+        td #{val.HistoryText}
+        td #{val.Reference}

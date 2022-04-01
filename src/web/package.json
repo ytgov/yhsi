@@ -23,24 +23,27 @@
     "proj4": "^2.7.2",
     "utm-latlng": "^1.0.6",
     "vue": "^2.6.11",
+    "vue-affix": "^0.5.2",
     "vue-json-csv": "^1.2.12",
+    "vue-query-builder": "^0.8.2",
     "vue-router": "^3.2.0",
+    "vue-simple-search-dropdown": "^1.0.1",
     "vue2-leaflet": "^2.7.0",
     "vuetify": "^2.5.0",
     "vuex": "^3.4.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.5.13",
-    "@vue/cli-plugin-eslint": "^4.5.13",
-    "@vue/cli-plugin-router": "^4.5.13",
-    "@vue/cli-plugin-vuex": "^4.5.13",
-    "@vue/cli-service": "^4.5.13",
+    "@vue/cli-plugin-babel": "^4.5.0",
+    "@vue/cli-plugin-eslint": "^4.5.0",
+    "@vue/cli-plugin-router": "^4.5.0",
+    "@vue/cli-plugin-vuex": "^4.5.0",
+    "@vue/cli-service": "^4.5.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-vue": "^6.2.2",
-    "prettier": "^1.19.1",
+    "prettier": "^2.6.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
@@ -49,13 +52,16 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
+      "eslint:recommended",
+      "plugin:vue/recommended",
+      "prettier"
     ],
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "vue/html-indent": "off"
+    }
   },
   "browserslist": [
     "> 1%",

@@ -40,7 +40,7 @@
                     :options.sync="options"
                     :server-items-length="totalLength"
                     @click:row="handleClick"
-                    :footer-props="{'items-per-page-options': [10, 30, 100]}"
+                    :footer-props="{'items-per-page-options': [1000]}"
                   >
                     <template v-slot:item.Status="{ item }">
                         <div v-if="item.Status == 1">
@@ -103,7 +103,7 @@ export default {
     },
     removeItem(item){ //removes one element from the users array
       const index = this.placetypes.findIndex(a=> a.id == item.id);
-      console.log(index);
+      //console.log(index);
       if (index > -1) {
         this.placetypes.splice(index, 1);
       }
@@ -111,12 +111,13 @@ export default {
     async getDataFromApi() {
         this.loading = true;
         let { page, itemsPerPage, sortBy, sortDesc } = this.options;
+        if (!sortBy[0]) sortBy[0] = 'PlaceType'; 
         page = page > 0 ? page-1 : 0;
         itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
         let textToMatch = this.search;
         let data = await catalogs.getPlaceTypes(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
         this.placetypes = _.get(data, 'body', []);
-        console.log(this.placetypes);
+        //console.log(this.placetypes);
         this.totalLength = _.get(data, 'count', 0);
         this.loading = false;
     },

@@ -1,70 +1,9 @@
 <template>
-    <!-- <div>
-          <v-card-title primary-title>
-            Legal & Zoning
-          </v-card-title>
-          <v-divider inset></v-divider>
-          <v-form v-model="valid">
-              <v-container>
-                <v-row>
-                    <v-col
-                        cols="12"
-                    >
-                        <div class="mb-2">Ownerships</div>
-                        <v-alert v-for="(item, i) in fields.ownerships" :key="`theme-${i+1}`"
-                          outlined
-                          color="primary"
-                        >
-                            <div class="sub-title">
-                                Ownership {{ i+1 }}
-                            </div>
-                            <v-btn
-                                icon
-                                color="primary"
-                                class="top-right-button"
-                                @click="removeItem('ownerships', i)"
-                            >
-                                <v-icon dark>mdi-close-circle</v-icon>
-                            </v-btn>
-                            <v-row>
-                                <v-col cols="6">
-                                    <v-combobox
-                                    v-model="item.category"
-                                    label="Category of Property"
-                                    ></v-combobox>
-                                </v-col>
-                                <v-col cols="6">
-                                    <v-text-field 
-                                    v-model="item.comments"
-                                    label="Comments"
-                                    required
-                                    ></v-text-field>
-                                </v-col>
-                            </v-row>
-                        </v-alert>
-                        <v-btn
-                        outlined
-                        color="primary"
-                        @click="addItem('ownerships')"
-                        >
-                            Add New
-                        </v-btn>
-                    </v-col>
-                </v-row>
-                 <v-row>
-                    <v-col cols="6">
-                        <v-text-field 
-                        v-model="fields.zoning"
-                        label="Zoning"
-                        required
-                        ></v-text-field> -->
   <div>
-    <v-card-title style="width: 100%; display: block">
-      Legal & Zoning
-      <div class="float-right">
-        <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
-      </div>
-    </v-card-title>
+    <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
+      <span class="mt-2">Legal &amp; Zoning</span>
+      <v-btn class="my-0" color="primary" @click="saveChanges">Save</v-btn>
+    </h2>
     <v-divider class="mb-5"></v-divider>
     <v-form v-model="valid">
       <div class="row mx-1">

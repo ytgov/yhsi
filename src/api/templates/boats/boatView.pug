@@ -1,0 +1,69 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+table.title-row
+  tbody 
+    tr 
+      td
+        div Boats information
+        div.item-name #{data.Name}  
+      td
+        img(style='width:200px; height:100px;' src="https://firebasestorage.googleapis.com/v0/b/yg-historic-sites.appspot.com/o/yukon.svg?alt=media&token=41e6cd68-0efd-438f-aef0-44bec1e15b55", alt="")
+
+
+div.section-title General information
+ 
+table.divided-row
+  tbody 
+    tr 
+      td
+        div Name: #{data.Name}
+        div Registration Number: #{data.RegistrationNumber}
+        div Vessel Type: #{data.VesselType}
+        div Current Location Description: #{data.CurrentLocation}
+      td
+        div Construction Date: #{data.ConstructionDate}
+        div Service Start Date: #{data.ServiceStart}
+        div Service End Date: #{data.ServiceEnd}
+        div Notes: #{data.Notes}
+
+
+div.section-title Owners/Names
+table.divided-row 
+  tbody 
+    tr 
+      td 
+        table.table-full-width 
+          thead 
+            tr 
+              td Owners 
+          tbody 
+            each val in data.owners
+              tr 
+                td #{val.OwnerName}
+      td 
+        table.table-full-width 
+          thead 
+            tr 
+              td Names 
+          tbody 
+            each val in data.pastNames
+              tr 
+                td #{val.BoatName}
+
+div.section-title History
+
+table.table-full-width.center
+  thead 
+    tr 
+      td
+        strong.underline Historic Record 
+      td
+        strong.underline Reference 
+  tbody
+    each val in data.histories
+      tr 
+        td #{val.HistoryText}
+        td #{val.Reference}

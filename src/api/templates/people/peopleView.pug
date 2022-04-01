@@ -1,0 +1,43 @@
+//- template.pug
+
+style
+     include ../styles.css
+
+table.title-row
+  tbody 
+    tr 
+      td
+        div Person information
+        div.item-name #{data.Surname}, #{data.GivenName}
+      td
+        img(style='width:200px; height:100px;' src="https://firebasestorage.googleapis.com/v0/b/yg-historic-sites.appspot.com/o/yukon.svg?alt=media&token=41e6cd68-0efd-438f-aef0-44bec1e15b55", alt="")
+
+div.section-title Personal information
+ 
+table.divided-row
+  tbody 
+    tr 
+      td
+        div Sur Name: #{data.Surname}
+        div Given Name: #{data.GivenName}
+        div Notes: #{data.Notes}
+      td
+        div Birth Year: #{data.BirthYear}
+        div Death Year: #{data.DeathYear}
+
+div.section-title History
+
+table.table-full-width.center
+  thead 
+    tr 
+      td
+        strong.underline Historic Record 
+      td
+        strong.underline Reference 
+  tbody
+    each val in data.histories
+      tr 
+        td #{val.HistoryText}
+        td #{val.Reference}
+        
+

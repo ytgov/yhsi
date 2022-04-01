@@ -8,14 +8,14 @@ export default {
         limit,
         textToMatch,
         sortBy,
-        sort
+        sort 
       }
     })
       .then(res => {
         return res.data;
       }).catch(error => {
         // handle error
-        console.log(error);
+        console.error(error);
       });
   },
 }

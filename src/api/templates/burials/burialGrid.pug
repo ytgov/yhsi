@@ -1,0 +1,53 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+table.title-row
+  tbody 
+    tr 
+      td
+        div Burials information
+      td
+        img(style='width:200px; height:100px;' src="https://firebasestorage.googleapis.com/v0/b/yg-historic-sites.appspot.com/o/yukon.svg?alt=media&token=41e6cd68-0efd-438f-aef0-44bec1e15b55", alt="")
+
+div.grid
+  table.grid-table
+    thead
+      tr 
+        td 
+          strong.underline Last Name 
+        td 
+          strong.underline First Name
+        td 
+          strong.underline Gender
+        td 
+          strong.underline BirthYear
+        td 
+          strong.underline DeathYear
+        td 
+          strong.underline Manner
+        td 
+          strong.underline Cause
+        td 
+          strong.underline Cemetary
+        td 
+          strong.underline OriginCity
+        td 
+          strong.underline OriginState
+        td 
+          strong.underline OriginCountry
+    tbody 
+      each val in data
+        tr 
+          td #{val.FirstName} 
+          td #{val.LastName} 
+          td #{val.Gender} 
+          td #{val.BirthYear} 
+          td #{val.DeathYear} 
+          td #{val.Manner} 
+          td #{val.Cause} 
+          td #{val.Cemetary} 
+          td #{val.OriginCity} 
+          td #{val.OriginState} 
+          td #{val.OriginCountry}

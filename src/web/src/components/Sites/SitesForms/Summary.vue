@@ -1,11 +1,9 @@
 <template>
-   <div>
-    <v-card-title style="width: 100%; display: block">
-      Summary
-      <div class="float-right">
-        <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
-      </div>
-    </v-card-title>
+  <div>
+    <h2 class="mt-2 mb-0 ml-4 d-flex justify-space-between">
+      <span class="mt-2">Summary</span>
+      <v-btn class="my-0" color="primary" @click="saveChanges">Save</v-btn>
+    </h2>
     <v-divider class="mb-5"></v-divider>
     <v-form v-model="valid">
       <v-container>
@@ -184,7 +182,7 @@ import { PLACE_URL, STATIC_URL } from "../../../urls";
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
-  name: "formSummary",
+  name: "Summary",
   data: () => ({
     valid: false,
     loadedId: 0,
@@ -238,7 +236,6 @@ export default {
     });
     axios.get(`${STATIC_URL}/record-type`).then((resp) => {
       this.recordOptions = resp.data.data;
-      console.log(this.recordOptions);
     });
     axios.get(`${STATIC_URL}/historical-pattern`).then((resp) => {
       this.historicalPatternOptions = resp.data.data;

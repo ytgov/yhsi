@@ -1,100 +1,132 @@
-import { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import path from 'path';
+import helmet from 'helmet';
 
-require('dotenv').config();
+import {
+	aircrashRouter,
+	boatsRouter,
+	burialsRouter,
+	catalogsRouter,
+	communitiesRouter,
+	constructionPeriodsRouter,
+	firstNationAssociationTypesRouter,
+	firstNationsRouter,
+	historiesRouter,
+	ntsMapSheetsRouter,
+	ownerRouter,
+	ownershipTypesRouter,
+	peopleRouter,
+	photoBatchRouter,
+	photoOwnersRouter,
+	photoRouter,
+	photosExtraRouter,
+	placeRouter,
+	registerRouter,
+	revisionLogTypesRouter,
+	siteStatusesRouter,
+	staticRouter,
+	userRouter,
+	usersExtraRouter,
+	ytPlaceHistoryRouter,
+	ytPlaceRouter,
+} from './routes';
 
-const cors = require('cors'); // might want to remove before going to prod
+import * as config from './config';
+import { doHealthCheck } from './utils/healthCheck';
+import { configureAuthentication } from './routes/auth';
+import { RequiresAuthentication } from './middleware';
+import { CreateMigrationRoutes } from './data/migrator';
 
-var ownersRouter = require('./controllers/owners');
-var historiesRouter = require('./controllers/histories');
-var aircrashRouter = require('./controllers/aircrash');
-var catalogsRouter = require('./controllers/catalogs');
-var usersRouter = require('./controllers/users');
-var peopleRouter = require('./controllers/people');
-var photoOwners = require('./controllers/photoOwners');
-var boatsRouter = require('./controllers/boats');
-var photosRouter = require('./controllers/photos');
-
-var knex = require('knex');
-var express = require('express');
-
-var app = express();
-//var port = process.env.PORT || 3000;
-var port = process.env.PORT || 4125;
-var _ = require('lodash');
-// app.use(cors({
-//   origin: '*',
-//   optionsSuccessStatus: 200,
-//   credentials: true
-// }));
-// app.all('*', cors());
-
-app.use(function (req: Request, res: Response, next: NextFunction) {
-	res.header('Access-Control-Allow-Origin', '*');
-	res.header('Access-Control-Allow-Methods', 'POST, PUT, GET, OPTIONS');
-	res.header(
-		'Access-Control-Allow-Headers',
-		'Origin, X-Requested-With, Content-Type, Accept, Authorization, Ocp-Apim-Subscription-Key'
-	);
-	next();
-});
+const app = express();
 
 app.use(express.json()); // for parsing application/json
-app.use(express.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
-console.log('host: ', process.env.DB_HOST);
-console.log('user: ', process.env.DB_USER);
-console.log('psss: ', process.env.DB_PASS);
-console.log('db name: ', process.env.DB_NAME);
-
-var conn = knex({
-	client: 'mssql',
-	connection: {
-		host: process.env.DB_HOST,
-		user: process.env.DB_USER,
-		password: process.env.DB_PASS,
-		database: process.env.DB_NAME,
-		options: {
-			enableArithAbort: true,
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+//app.use(helmet());
+app.use(
+	helmet.contentSecurityPolicy({
+		directives: {
+			'default-src': ["'self'"],
+			'base-uri': ["'self'"],
+			'block-all-mixed-content': [],
+			'font-src': ["'self'", 'https:', 'data:'],
+			'frame-ancestors': ["'self'"],
+			'img-src': ["'self'", 'data:', 'https:'],
+			'object-src': ["'none'"],
+			'script-src': ["'self'", 'https://js.arcgis.com', "'unsafe-eval'"], // added https to accomodate esri components?
+			'script-src-attr': ["'none'"],
+			'style-src': ["'self'", 'https:', "'unsafe-inline'"],
+			'worker-src': ["'self'", 'blob:'],
+			'connect-src': [
+				"'self'",
+				'https://*.arcgis.com',
+				'https://services.arcgisonline.com',
+			],
 		},
-	},
-	useNullAsDefault: true,
-});
-
-app.set('db', conn);
-
-// URI for tediousJS = `mssql://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/${process.env.DB_NAME}?encrypt=true`
-app.get('/', function (req: Request, res: Response) {
-	const db = req.app.get('db');
-
-	db.raw('SELECT TOP 1 * FROM Boat.Owner;')
-		.then((rows: any) => {
-			if (rows.length > 0) {
-				console.log(rows);
-				res.status(200).send('Successful Connection');
-				return;
-			}
-		})
-		.catch((e: Error) => {
-			console.error(e);
-			res
-				.status(500)
-				.send(
-					"ERROR: Either the connection to the database isn't working or the query is incorrect"
-				);
-		});
-});
-
-app.use('/api/aircrash', aircrashRouter);
-app.use('/api/owners', ownersRouter);
-app.use('/api/histories', historiesRouter);
-app.use('/api/photos', photosRouter);
-app.use('/api/catalogs', catalogsRouter);
-app.use('/api/users', usersRouter);
-app.use('/api/people', peopleRouter);
-app.use('/api/photo-owners', photoOwners);
-app.use('/api/boats', boatsRouter);
-
-console.log(
-	`Database Info: ${process.env.DB_HOST} ${process.env.DB_NAME}, `,
-	port
+	})
 );
-app.listen(port);
+
+// very basic CORS setup
+app.use(
+	cors({
+		origin: config.FRONTEND_URL,
+		optionsSuccessStatus: 200,
+		credentials: true,
+	})
+);
+
+
+CreateMigrationRoutes(app);
+
+configureAuthentication(app);
+
+app.get('/api/healthCheck', (req: Request, res: Response) => {
+	doHealthCheck(res);
+});
+
+app.use('/api/user', userRouter);
+app.use('/api/place', RequiresAuthentication, placeRouter);
+app.use('/api/ytplace', RequiresAuthentication, ytPlaceRouter);
+app.use('/api/ytplacehistory', RequiresAuthentication, ytPlaceHistoryRouter);
+app.use('/api/photo', RequiresAuthentication, photoRouter);
+app.use('/api/photobatch', RequiresAuthentication, photoBatchRouter);
+app.use('/api/register', registerRouter);
+
+////console.log("B", boats)
+
+app.use('/api/boats', RequiresAuthentication, boatsRouter);
+app.use('/api/communities', RequiresAuthentication, communitiesRouter);
+app.use('/api/construction-periods', RequiresAuthentication, constructionPeriodsRouter);
+app.use('/api/first-nation-association-types', RequiresAuthentication, firstNationAssociationTypesRouter);
+app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);
+app.use('/api/nts-map-sheets', RequiresAuthentication, ntsMapSheetsRouter);
+app.use('/api/people', RequiresAuthentication, peopleRouter);
+app.use('/api/owners', RequiresAuthentication, ownerRouter);
+app.use('/api/ownership-types', RequiresAuthentication, ownershipTypesRouter);
+app.use('/api/aircrash', RequiresAuthentication, aircrashRouter);
+app.use('/api/histories', RequiresAuthentication, historiesRouter);
+app.use('/api/catalogs', RequiresAuthentication, catalogsRouter);
+app.use('/api/people', RequiresAuthentication, peopleRouter);
+app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
+app.use('/api/photos', photosExtraRouter);
+app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
+app.use('/api/site-statuses', RequiresAuthentication, siteStatusesRouter);
+app.use('/api/users', usersExtraRouter);
+app.use('/api/people', peopleRouter);
+app.use('/api/burials', burialsRouter);
+// app.use('/api/extras/photos', RequiresAuthentication, photosExtraRouter);
+// app.use('/api/extras/users', RequiresAuthentication, usersExtraRouter);
+
+app.use('/api', RequiresAuthentication, staticRouter);
+
+// serves the static files generated by the front-end
+app.use(express.static(path.join(__dirname, 'web')));
+
+// if no other routes match, just send the front-end
+app.use((req: Request, res: Response) => {
+	res.sendFile(path.join(__dirname, 'web') + '/index.html');
+});
+
+app.listen(config.API_PORT, () => {
+	console.log(`API listening on port ${config.API_PORT}`);
+});

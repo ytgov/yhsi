@@ -1,4 +1,15 @@
-FROM node:14-alpine3.10
+FROM node:16-alpine3.15
+
+RUN apk add --no-cache \
+      chromium \
+      nss \
+      freetype \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 RUN mkdir /home/node/app && chown -R node:node /home/node/app
 RUN mkdir /home/node/web && chown -R node:node /home/node/web
@@ -6,6 +17,7 @@ RUN mkdir /home/node/web && chown -R node:node /home/node/web
 COPY --chown=node:node src/web/package*.json /home/node/web/
 COPY --chown=node:node src/api/package*.json /home/node/app/
 
+RUN npm install -g npm@8.5.5
 USER node
 
 WORKDIR /home/node/app
@@ -13,8 +25,8 @@ RUN npm install && npm cache clean --force --loglevel=error
 COPY --chown=node:node src/api/.env* ./
 
 WORKDIR /home/node/web
-RUN npm install && npm cache clean --force --loglevel=error
 
+RUN npm install && npm cache clean --force --loglevel=error
 COPY --chown=node:node src/api /home/node/app/
 COPY --chown=node:node src/web /home/node/web/
 

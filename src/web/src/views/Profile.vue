@@ -37,10 +37,10 @@
       </div>
       <div class="col-md-6">
         <v-text-field
-          v-model="username"
+          v-model="expire_date_display"
           outlined
           dense
-          label="Username"
+          label="Expire date"
           readonly
           hide-details
         ></v-text-field>
@@ -49,7 +49,7 @@
       <div class="col-md-6">
         <h2>Roles</h2>
         <ul>
-          <li v-for="item of roles" :key="item">
+          <li v-for="item of role_list" :key="item">
             {{ item }}
           </li>
         </ul>
@@ -57,8 +57,8 @@
       <div class="col-md-6">
         <h2>Access</h2>
         <ul>
-          <li v-for="item of access" :key="item.id">
-            ({{ item.level }}) {{ item.name }}
+          <li v-for="item of site_access" :key="item.id">
+            {{ item.access_type_name }}: {{ item.access_text_name }}
           </li>
         </ul>
       </div>
@@ -76,10 +76,10 @@ export default {
     ...mapState("profile", [
       "firstName",
       "lastName",
-      "username",
+      "expire_date_display",
       "email",
-      "roles",
-      "access",
+      "role_list",
+      "site_access",
     ]),
   },
   data: () => ({}),

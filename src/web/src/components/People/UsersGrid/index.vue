@@ -67,19 +67,22 @@
           </v-btn>
         </v-col>
         <v-col cols="auto"> 
-          <JsonCSV :data="people">
-          <v-btn class="black--text mx-1" :disabled="people.length == 0">
-            <v-icon class="mr-1"> mdi-export </v-icon>
-            Export
+          <v-btn v-if="loading" class="black--text mx-1">
+              <v-icon class="mr-1"> mdi-export </v-icon>
+              Export
           </v-btn>
-        </JsonCSV>
+          <JsonCSV v-else :data="peopleData">
+            <v-btn class="black--text mx-1" :disabled="peopleData.length == 0">
+              <v-icon class="mr-1"> mdi-export </v-icon>
+              Export
+            </v-btn>
+          </JsonCSV>
         </v-col>
         <v-col cols="auto"> 
-          <PrintButton
-          key="prt-person"
-          :data="{ people }"
-          :disabled="people.length == 0"
-        />
+          <v-btn class="black--text mx-1" @click="downloadPdf" :loading="loadingPdf" >
+              <v-icon class="mr-1"> mdi-printer </v-icon>
+              Print
+          </v-btn>
         </v-col>
       </v-row>
       <div class="mt-2">
@@ -117,11 +120,11 @@
 import people from "../../../controllers/people";
 import Breadcrumbs from "../../Breadcrumbs";
 import JsonCSV from "vue-json-csv";
-import PrintButton from "./PrintButton";
+//import PrintButton from "./PrintButton";
 import _ from "lodash";
 export default {
   name: "usersgrid",
-  components: { Breadcrumbs, JsonCSV, PrintButton },
+  components: { Breadcrumbs, JsonCSV },
   data: () => ({
     loading: false,
     people: [],
@@ -143,6 +146,8 @@ export default {
       { name: "Birth Year", value: "" },
       { name: "Death Year", value: "" },
     ],
+    peopleData: [],
+    loadingPdf: false,
   }),
   mounted() {
     this.getDataFromApi();
@@ -160,7 +165,7 @@ export default {
     removeItem(item) {
       //removes one element from the users array
       const index = this.people.findIndex((a) => a.id == item.id);
-      console.log(index);
+      //console.log(index);
       if (index > -1) {
         this.people.splice(index, 1);
       }
@@ -180,9 +185,24 @@ export default {
       );
 
       this.people = _.get(data, "body", []);
-      console.log(data);
-      this.totalLength = _.get(data, "count", 0).count;
+      //console.log(data);
+      this.totalLength = _.get(data, "count", 0);
+      this.peopleData = await people.getExport();
       this.loading = false;
+    },
+    async downloadPdf(){
+      this.loadingPdf = true;
+      let res = await people.getGridPdf();
+      let blob = new Blob([res], { type: "application/octetstream" });
+      let url = window.URL || window.webkitURL;
+      let link = url.createObjectURL(blob);
+      let a = document.createElement("a");
+      a.setAttribute("download", "People.pdf");
+      a.setAttribute("href", link);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      this.loadingPdf = false;
     },
     addNewPerson(){
       this.$router.push({
