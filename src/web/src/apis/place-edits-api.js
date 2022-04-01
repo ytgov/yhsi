@@ -15,4 +15,10 @@ export default {
 			.then((response) => response.data)
 			.catch(console.error);
 	},
+	delete(id) {
+		return http
+			.delete(`${placeEditsUrl}/${id}`)
+			.then((response) => response.data)
+			.catch(console.error);
+	},
 };
