@@ -1,4 +1,5 @@
 import http from '@/apis/http-client';
+import placesSummaryApi from '@/apis/places-summary-api';
 
 const placeUrl = '/api/place';
 
@@ -14,6 +15,9 @@ export default {
 			.get(`${placeUrl}/${id}`)
 			.then((response) => response.data)
 			.catch(console.error);
+	},
+	put(id, data) {
+		return Promise.all([placesSummaryApi.put(id, data)]).catch(console.error);
 	},
 	search(data) {
 		return http
