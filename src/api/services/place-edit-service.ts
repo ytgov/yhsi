@@ -116,4 +116,8 @@ export class PlaceEditService {
 				};
 			});
 	}
+
+	delete(id: number) {
+		return this.db.where({ 'PlaceEdit.Id': id }).from('PlaceEdit').delete();
+	}
 }

@@ -282,6 +282,7 @@ export default {
 			this.loading = true;
 			return placesApi
 				.put(this.placeId, this.newPlace)
+				.then(() => placeEditsApi.delete(this.placeEditId))
 				.then(() => {
 					this.$router.push('/sites-change-requests');
 				})

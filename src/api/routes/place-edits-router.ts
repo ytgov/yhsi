@@ -67,3 +67,26 @@ placeEditsRouter.get(
 			});
 	}
 );
+
+placeEditsRouter.delete(
+	'/:id',
+	param('id').notEmpty().toInt().isInt({ gt: 0 }),
+	ReturnValidationErrors,
+	(req: Request, res: Response) => {
+		const { id } = req.params as ParsedParams;
+
+		return placeEditService
+			.delete(id)
+			.then((result) => {
+				return res.json({
+					data: result,
+					messages: [{ variant: 'success', text: 'Delete successful.' }],
+				});
+			})
+			.catch((error) => {
+				return res.status(422).json({
+					messages: [{ variant: 'error', text: error.message }],
+				});
+			});
+	}
+);
