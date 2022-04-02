@@ -1,23 +1,17 @@
 import http from '@/apis/http-client';
 
-const placeUrl = '/api/place';
+const placeEditsUrl = '/api/place-edits';
 
 export default {
-	getAll() {
+	getAll(params) {
 		return http
-			.get(placeUrl)
+			.get(placeEditsUrl, { params })
 			.then((response) => response.data)
 			.catch(console.error);
 	},
 	get(id) {
 		return http
-			.get(`${placeUrl}/${id}`)
-			.then((response) => response.data)
-			.catch(console.error);
-	},
-	search(data) {
-		return http
-			.post(`${placeUrl}/search`, data)
+			.get(`${placeEditsUrl}/${id}`)
 			.then((response) => response.data)
 			.catch(console.error);
 	},
