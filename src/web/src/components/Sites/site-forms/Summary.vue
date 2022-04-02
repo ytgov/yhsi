@@ -24,51 +24,47 @@
             append-icon="mdi-lock"
           />
 
-          <v-select
+          <DesignationTypesSelect
             v-model="fields.designations"
             dense
             outlined
-            :items="designationOptions"
+            multiple
             clearable
             label="Designations"
           />
 
-          <v-select
+          <CategoryTypesSelect
             v-model="fields.category"
             dense
             outlined
             clearable
             label="CRHP category"
-            :items="categoryOptions"
-            item-text="text"
-            item-value="id"
           />
 
-          <v-select
+          <SiteCategoryTypesSelect
+            v-model="fields.siteCategories"
+            dense
+            outlined
+            clearable
+            multiple
+            label="Site Categories"
+          />
+
+          <RecordTypesSelect
             v-model="fields.records"
             dense
             outlined
-            :items="recordOptions"
-            item-text="text"
-            item-value="value"
+            multiple
             clearable
             label="Records"
           />
 
-          <v-select
-            v-model="fields.records"
-            dense
-            outlined
-            :items="recordOptions"
-            clearable
-            label="Records"
-          />
-
-          <v-text-field
+          <ContributingResourceTypesSelect
             v-model="fields.contributingResources"
             dense
             outlined
-            label="Contribuiting resources"
+            multiple
+            label="Contributing resources"
             required
           />
 
@@ -213,104 +209,68 @@
 
 <script>
 import axios from 'axios';
+
 import store from '@/store';
 import { PLACE_URL, STATIC_URL } from '@/urls';
 
-/* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
+import placesApi from '@/apis/places-api';
+
+import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
+import ContributingResourceTypesSelect from '@/components/Sites/ContributingResourceTypesSelect';
+import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
+import RecordTypesSelect from '@/components/Sites/RecordTypesSelect';
+import SiteCategoryTypesSelect from '@/components/Sites/SiteCategoryTypesSelect';
+
 export default {
   name: 'Summary',
+  components: {
+    CategoryTypesSelect,
+    ContributingResourceTypesSelect,
+    DesignationTypesSelect,
+    RecordTypesSelect,
+    SiteCategoryTypesSelect,
+  },
+  props: {
+    placeId: {
+      type: [Number, String],
+      required: true,
+    },
+  },
   data: () => ({
-    valid: false,
-    loadedId: 0,
-
-    designationOptions: [],
-    crhpCategoryOptions: [],
-    siteCategoryOptions: [],
-    recordOptions: [],
-    categoryOptions: [
-      { text: 'None Selected', id: 0 },
-      { text: 'Building', id: 1 },
-      { text: 'District', id: 2 },
-      { text: 'Place', id: 3 },
-      { text: 'Structure', id: 4 },
-    ],
     historicalPatternOptions: [],
-
-    generalRules: [
-      (v) => !!v || 'This input is required',
-      (v) =>
-        (v && v.length <= 20) || 'This input must be less than 20 characters',
-    ],
     names: [],
     historicalPatterns: [],
     fields: {
-      primaryName: '', //
-      yHSIId: '', //
-      /* Placeholder variables below this line **Read above** */
+      primaryName: '',
+      yHSIId: '',
       secondaryNames: [],
-      /*Field data from the swaggerhub api docs below this line*/
-      contributingResources: '', //
-      category: '', //
-      designations: '', //
-      records: [], //
-      showInRegister: '', //
-      siteCategories: [], //
+      contributingResources: [],
+      category: '',
+      designations: [],
+      records: [],
+      showInRegister: false,
+      siteCategories: [],
     },
   }),
-  created: function () {
-    let id = this.$route.params.id;
-    this.loadItem(id);
-
-    axios.get(`${STATIC_URL}/designation-type`).then((resp) => {
-      this.designationOptions = resp.data.data;
-    });
-    axios.get(`${STATIC_URL}/designations`).then((resp) => {
-      this.crhpCategoryOptions = resp.data.data;
-    });
-    axios.get(`${STATIC_URL}/site-category`).then((resp) => {
-      this.siteCategoryOptions = resp.data.data;
-    });
-    axios.get(`${STATIC_URL}/record-type`).then((resp) => {
-      this.recordOptions = resp.data.data;
-    });
+  mounted() {
+    this.getPlace(this.placeId);
     axios.get(`${STATIC_URL}/historical-pattern`).then((resp) => {
       this.historicalPatternOptions = resp.data.data;
     });
   },
-  watch: {
-    '$route.params.id': {
-      handler: function (id) {
-        this.entity_id = id;
-        this.loadItem(this.entity_id);
-      },
-      deep: true,
-      immediate: true,
-    },
-  },
   methods: {
-    loadItem(id) {
-      if (id == this.loadedId) return;
+    getPlace(placeId) {
+      placesApi.get(placeId).then(({ data, relationships }) => {
+        this.fields = data;
+        this.names = relationships.names.data;
+        this.historicalPatterns = relationships.historicalPatterns.data;
 
-      axios
-        .get(`${PLACE_URL}/${id}`)
-        .then((resp) => {
-          this.setPlace(resp.data);
-        })
-        .catch((error) => console.error(error));
-    },
-    setPlace(place) {
-      this.loadedId = place.data.id;
-      this.fields = place.data;
-      this.names = place.relationships.names.data;
-      this.historicalPatterns = place.relationships.historicalPatterns.data;
-      this.fields.designations = parseInt(place.data.designations);
-      this.fields.records = parseInt(place.data.records);
-
-      store.dispatch('addSiteHistory', place.data);
-      this.$parent.siteName = this.fields.primaryName;
+        store.dispatch('addSiteHistory', data);
+        this.$parent.siteName = this.fields.primaryName;
+      });
     },
     addName() {
-      this.names.push({ description: '', placeId: this.entity_id });
+      this.names.push({ description: '', placeId: this.placeId });
     },
     removeName(index) {
       this.names.splice(index, 1);
@@ -319,7 +279,7 @@ export default {
       this.historicalPatterns.push({
         historicalPatternType: 1,
         comments: '',
-        placeId: this.entity_id,
+        placeId: this.placeId,
       });
     },
     removePattern(index) {
@@ -340,7 +300,7 @@ export default {
       };
 
       axios
-        .put(`${PLACE_URL}/${this.loadedId}/summary`, body)
+        .put(`${PLACE_URL}/${this.placeId}/summary`, body)
         .then((resp) => {
           //this.setPlace(resp.data);
           this.$emit('showAPIMessages', resp.data);
