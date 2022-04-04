@@ -49,6 +49,14 @@
 							<v-list-item-title>Sites</v-list-item-title>
 						</v-list-item>
 						<v-list-item
+							v-if="userInRole(['Site Admin'])"
+							to="/sites-change-requests"
+						>
+							<v-list-item-title>
+								Site Change Requests
+							</v-list-item-title>
+						</v-list-item>
+						<v-list-item
 							to="/photos"
 							v-if="
 								userInRole(['Photo Admin', 'Photo Editor', 'Photo Viewer'])

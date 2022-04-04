@@ -122,7 +122,7 @@
                                 </template>
                                 <span>Save changes</span>
                             </v-tooltip>
-                            <v-tooltip bottom v-if="editTable != index">
+                            <v-tooltip bottom v-if="editTable != index && mode != 'view'">
                                 <template v-slot:activator="{ on, attrs }">
                                         <v-btn 
                                         v-bind="attrs"
@@ -260,7 +260,7 @@ export default {
             let resp = await histories.post(data);
 
             if(resp[0].HistoryText);
-                this.data.push(resp[0]);
+                this.data.unshift(resp[0]);
             this.overlay = false;
             this.historicRecordHelper = null;
             this.referenceHelper = null;
@@ -278,7 +278,7 @@ export default {
             let resp = await histories.postOwner(data);
             ////console.log(resp);
             if(resp[0].HistoryText);
-                this.data.push(resp[0]);
+                this.data.unshift(resp[0]);
             this.overlay = false;
             this.historicRecordHelper = null;
             this.referenceHelper = null;
@@ -294,7 +294,7 @@ export default {
         }
     },
     watch:{
-        data(val){
+        data(val){ 
             if(val != undefined){
                 this.$emit('historicRecordChange', val);
             }
