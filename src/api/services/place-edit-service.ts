@@ -1,7 +1,8 @@
 import knex, { Knex } from 'knex';
+import { camelCase } from 'lodash';
 
 import { DB_CONFIG } from '../config';
-import { camelCaseKeysDeep } from '../utils/lodash-extensions';
+import { mapKeysDeep } from '../utils/lodash-extensions';
 import {
 	decodeCommaDelimitedArray,
 	encodeCommaDelimitedArray,
@@ -15,13 +16,12 @@ interface GenericResult {
 	[key: string]: any;
 }
 
-function parseJSONColumns(object: GenericResult) {
+function parseAndNormalizeJSONColumns(object: GenericResult) {
 	Object.keys(object).forEach((key) => {
 		if (key.endsWith('JSON')) {
 			const cleanedKey = key.replace(/JSON$/, '');
 			const objectAsJson = JSON.parse(object[key]);
-			// object[cleanedKey] = camelCaseKeysDeep(objectAsJson);
-			object[cleanedKey] = objectAsJson;
+			object[cleanedKey] = mapKeysDeep(objectAsJson, camelCase);
 			delete object[key];
 		}
 	});
@@ -33,16 +33,7 @@ export class PlaceEditService {
 	private _defaultScope: Knex.QueryBuilder;
 
 	constructor() {
-		this.db = knex({
-			...DB_CONFIG,
-			postProcessResponse: (result, queryContext) => {
-				if (Array.isArray(result)) {
-					return result;
-				} else {
-					return parseJSONColumns(result);
-				}
-			},
-		});
+		this.db = knex(DB_CONFIG);
 		this._defaultScope = this.db
 			.select({
 				id: 'PlaceEdit.Id',
@@ -79,7 +70,7 @@ export class PlaceEditService {
 
 	buildDetailedView(id: number) {
 		return this.defaultScope
-			.select({
+			.first({
 				placeId: 'PlaceId',
 				category: 'Category',
 				contributingResources: 'ContributingResources',
@@ -91,7 +82,7 @@ export class PlaceEditService {
 				siteCategories: 'SiteCategories',
 			})
 			.where({ 'PlaceEdit.Id': id })
-			.first()
+			.then(parseAndNormalizeJSONColumns)
 			.then((place) => {
 				place.contributingResources = decodeCommaDelimitedArray(
 					place.contributingResources
