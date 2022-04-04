@@ -130,15 +130,11 @@
                 class="row"
               >
                 <v-col cols="10">
-                  <v-select
+                  <HistoricalPatternTypesSelect
                     v-model="item.historicalPatternType"
                     dense
                     outlined
-                    :items="historicalPatternOptions"
-                    item-text="text"
-                    item-value="value"
                     background-color="white"
-                    label="Historical pattern"
                   />
                   <v-text-field
                     v-model="item.comments"
@@ -202,13 +198,14 @@
 import axios from 'axios';
 
 import store from '@/store';
-import { PLACE_URL, STATIC_URL } from '@/urls';
+import { PLACE_URL } from '@/urls';
 
 import placesApi from '@/apis/places-api';
 
 import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
 import ContributingResourceTypesSelect from '@/components/Sites/ContributingResourceTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
+import HistoricalPatternTypesSelect from '@/components/Sites/HistoricalPatternTypesSelect';
 import RecordTypesSelect from '@/components/Sites/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/SiteCategoryTypesSelect';
 
@@ -218,6 +215,7 @@ export default {
     CategoryTypesSelect,
     ContributingResourceTypesSelect,
     DesignationTypesSelect,
+    HistoricalPatternTypesSelect,
     RecordTypesSelect,
     SiteCategoryTypesSelect,
   },
@@ -244,9 +242,6 @@ export default {
   }),
   mounted() {
     this.getPlace(this.placeId);
-    axios.get(`${STATIC_URL}/historical-pattern`).then((resp) => {
-      this.historicalPatternOptions = resp.data.data;
-    });
   },
   methods: {
     getPlace(placeId) {
