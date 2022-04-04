@@ -13,6 +13,7 @@ import {
 	firstNationAssociationTypesRouter,
 	firstNationsRouter,
 	historiesRouter,
+	mapsRouter,
 	ntsMapSheetsRouter,
 	ownerRouter,
 	ownershipTypesRouter,
@@ -116,6 +117,7 @@ app.use('/api/people', peopleRouter);
 app.use('/api/burials', burialsRouter);
 // app.use('/api/extras/photos', RequiresAuthentication, photosExtraRouter);
 // app.use('/api/extras/users', RequiresAuthentication, usersExtraRouter);
+app.use("/api/maps", mapsRouter)
 
 app.use('/api', RequiresAuthentication, staticRouter);
 
