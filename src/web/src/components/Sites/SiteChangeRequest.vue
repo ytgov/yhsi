@@ -91,6 +91,7 @@ import placeEditsApi from '@/apis/place-edits-api';
 import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
 import ContributingResourceTypesSelect from '@/components/Sites/ContributingResourceTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
+import HistoricalPatternsViewer from '@/components/Sites/site-change-request/HistoricalPatternsViewer';
 import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
 import NamesViewer from '@/components/Sites/site-change-request/NamesViewer';
 import RecordTypesSelect from '@/components/Sites/RecordTypesSelect';
@@ -102,6 +103,7 @@ export default {
 		CategoryTypesSelect,
 		ContributingResourceTypesSelect,
 		DesignationTypesSelect,
+		HistoricalPatternsViewer,
 		JsonViewer,
 		NamesViewer,
 		RecordTypesSelect,
@@ -180,17 +182,11 @@ export default {
 				},
 				{
 					key: 'names',
-					type: 'NamesViewer',
-					fieldAttrs: {
-						label: 'Names',
-					},
+					type: NamesViewer,
 				},
 				{
 					key: 'historicalPatterns',
-					type: 'JsonViewer',
-					fieldAttrs: {
-						label: 'Historical Patterns',
-					},
+					type: HistoricalPatternsViewer,
 				},
 			];
 		},
