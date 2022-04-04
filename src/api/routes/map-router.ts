@@ -3,7 +3,6 @@ import axios from "axios";
 import { stringify } from "querystring"
 import moment from "moment";
 import { GIS_FEATURE_PASSWORD, GIS_FEATURE_USERNAME, GIS_PORTAL_CLIENT_ID, GIS_PORTAL_CLIENT_SECRET } from "../config";
-import { features } from "process";
 
 export const mapsRouter = express.Router();
 
