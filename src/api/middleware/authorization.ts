@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { isUndefined } from "lodash";
 import { User } from "../models";
 
 const USER_ACTIVE_STATUS = "Active";
@@ -18,7 +17,8 @@ export const UserRoles = {
     PLACE_EDITOR: "Places Editor",
     BURIALS_EDITOR: "Burials Editor",
     PEOPLE_EDITOR: "People Editor",
-    YRHP_EDITOR: "YRHP Editor"
+    YRHP_EDITOR: "YRHP Editor",
+    ADVANCED_MAPS: "Advanced Mapping"
 };
 
 export const UserRoleOptions = [
@@ -35,7 +35,8 @@ export const UserRoleOptions = [
     UserRoles.PLACE_EDITOR,
     UserRoles.BURIALS_EDITOR,
     UserRoles.PEOPLE_EDITOR,
-    UserRoles.YRHP_EDITOR
+    UserRoles.YRHP_EDITOR,
+    UserRoles.ADVANCED_MAPS
 ]
 
 export function authorize(roles: string[] = [], allowPending: boolean = false) {
