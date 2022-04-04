@@ -92,6 +92,7 @@ import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
 import ContributingResourceTypesSelect from '@/components/Sites/ContributingResourceTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
 import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
+import NamesViewer from '@/components/Sites/site-change-request/NamesViewer';
 import RecordTypesSelect from '@/components/Sites/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/SiteCategoryTypesSelect';
 
@@ -102,6 +103,7 @@ export default {
 		ContributingResourceTypesSelect,
 		DesignationTypesSelect,
 		JsonViewer,
+		NamesViewer,
 		RecordTypesSelect,
 		SiteCategoryTypesSelect,
 	},
@@ -178,7 +180,7 @@ export default {
 				},
 				{
 					key: 'names',
-					type: 'JsonViewer',
+					type: 'NamesViewer',
 					fieldAttrs: {
 						label: 'Names',
 					},
