@@ -1,28 +1,19 @@
 <template lang="pug">
-v-card
-	v-card-title Secondary Names
-	v-card-text
+.px-5.py-3
+	h3 Secondary Names
+	template(v-if="names.length === 0")
+		span No names
+	template(v-else)
 		v-row(
-			v-for="(name, i) in value",
+			v-for="(name, i) in names",
 			:key="i"
 		)
 			v-col
 				v-text-field(
 					:value="name.description"
 					label="Secondary name"
-					hide-details
-					dense
-					v-bind="$attrs"
-					v-on="$listeners"
+					readonly
 				)
-					template(
-						v-for="(_, slot) of $scopedSlots"
-						v-slot:[slot]="scope"
-					)
-						slot(
-							:name="slot"
-							v-bind="scope"
-						)
 </template>
 
 <script>
@@ -32,6 +23,11 @@ export default {
 		value: {
 			type: Array,
 			default: () => [],
+		},
+	},
+	computed: {
+		names() {
+			return this.value;
 		},
 	},
 };
