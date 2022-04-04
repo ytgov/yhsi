@@ -231,7 +231,7 @@ export default {
 		// This function can go away when the back-end serves the
 		// relationship data as part of the data directly.
 		// e.g. { data: { names: [{ id: 1, placeId: 1, description: "SomeName" }] } }
-		// instead of { data: {}, relationships: { names: [{ id: 1, placeId: 1, description: "SomeName" }] } } }
+		// instead of { data: {}, relationships: { names: { data: [{ id: 1, placeId: 1, description: "SomeName" }] } } }
 		injectRelationshipData(data, relationships) {
 			Object.keys(relationships).forEach((key) => {
 				if (key in data) {
@@ -239,7 +239,7 @@ export default {
 					return;
 				}
 
-				data[key] = get(relationships, `data.${key}`, []);
+				data[key] = get(relationships, `${key}.data`, []);
 			});
 		},
 		getPlace(placeId) {
