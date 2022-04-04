@@ -1,6 +1,7 @@
 import knex, { Knex } from 'knex';
 
 import { DB_CONFIG } from '../config';
+import { camelCaseKeysDeep } from '../utils/lodash-extensions';
 import {
 	decodeCommaDelimitedArray,
 	encodeCommaDelimitedArray,
@@ -18,7 +19,9 @@ function parseJSONColumns(object: GenericResult) {
 	Object.keys(object).forEach((key) => {
 		if (key.endsWith('JSON')) {
 			const cleanedKey = key.replace(/JSON$/, '');
-			object[cleanedKey] = JSON.parse(object[key]);
+			const objectAsJson = JSON.parse(object[key]);
+			// object[cleanedKey] = camelCaseKeysDeep(objectAsJson);
+			object[cleanedKey] = objectAsJson;
 			delete object[key];
 		}
 	});
