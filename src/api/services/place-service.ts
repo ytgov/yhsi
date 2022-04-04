@@ -25,8 +25,7 @@ import {
 	Theme,
 	WebLink,
 } from '../data';
-import { GenericEnum } from './static-service';
-import { PlaceUpdate } from '../models';
+import { GenericEnum, HISTORICAL_PATTERN_TYPES, PlaceUpdate } from '../models';
 import _ from 'lodash';
 
 export class PlaceService {
@@ -377,13 +376,8 @@ export class PlaceService {
 		return FIRST_NATION_ASSOCIATION_TYPES;
 	}
 
-	getHistoricalPatterns(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Political' },
-			{ value: 2, text: 'Economic' },
-			{ value: 3, text: 'Social' },
-			{ value: 4, text: 'Geographic' },
-		];
+	getHistoricalPatterns(): readonly GenericEnum[] {
+		return HISTORICAL_PATTERN_TYPES;
 	}
 
 	getDateTypes(): GenericEnum[] {
