@@ -116,7 +116,7 @@ export default {
 		newPlace: {},
 		place: {},
 		placeEdit: {},
-		hideUnchanged: false,
+		hideUnchanged: true,
 		acceptedChanges: new Set(),
 		rejectedChanges: new Set(),
 	}),
@@ -195,7 +195,7 @@ export default {
 	},
 	watch: {},
 	mounted() {
-		this.hideUnchanged = JSON.parse(this.$route.query.hideUnchanged || 'false');
+		this.hideUnchanged = JSON.parse(this.$route.query.hideUnchanged || 'true');
 		this.getPlaceEdit(this.placeEditId).then((placeEdit) => {
 			return this.getPlace(placeEdit.placeId);
 		});
@@ -224,7 +224,6 @@ export default {
 		},
 		higlightChange(key) {
 			return (
-				!this.hideUnchanged &&
 				!this.rejectedChanges.has(key) &&
 				!isEqual(this.placeEdit[key], this.newPlace[key])
 			);
