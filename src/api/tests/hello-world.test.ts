@@ -1,5 +1,3 @@
-import { expect } from 'chai';
-
 describe('Hello World', () => {
   it('boots the test suite correctly', () => {
     expect(true).to.be.true;
