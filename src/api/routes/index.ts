@@ -27,3 +27,4 @@ export * from './users-extras-router';
 export * from './ytplace-history-router';
 export * from './ytplace-router';
 export * from './photo-owners-router';
+export * from "./map-router";
