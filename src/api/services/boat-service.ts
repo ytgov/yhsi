@@ -45,7 +45,8 @@ export class BoatService {
 		boat.histories = await db
 			.select('*')
 			.from('boat.history')
-			.where('boat.history.uid', boatId);
+			.where('boat.history.uid', boatId)
+			.orderBy('boat.history.id', 'desc');
             
         return boat;
     }

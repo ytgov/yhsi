@@ -35,7 +35,7 @@
           @click:outside="reset()"
         >
           <template v-slot:activator="{ on, attrs }">
-            <v-btn color="success" dark v-bind="attrs" v-on="on" class="ml-3">
+            <v-btn v-if="mode == 'edit'" color="success" dark v-bind="attrs" v-on="on" class="ml-3">
               <v-icon class="mr-1">mdi-plus</v-icon>
               Add Photo
             </v-btn>

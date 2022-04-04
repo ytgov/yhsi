@@ -26,7 +26,7 @@ export default {
 		return await api 
         .get(`photos/${photoType}/${itemId}`)
         .then((resp) => {
-			console.log("data",resp);
+			//console.log("data",resp);
 			return resp;     
         })
         .catch((error) => console.error(error))
