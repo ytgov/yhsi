@@ -390,6 +390,7 @@
                             v-if="infoLoaded" 
                             :photoType="'boat'"
                             :showDefault="mode == 'new'" 
+                            :mode="mode"
                             :itemId="getBoatID"
                             @updateSelectedImage="selectedImageChanged" 
                             :selectedImage="selectedImage"
@@ -398,12 +399,13 @@
                 </v-row>
             </v-col>
         </v-row>
+        {{getBoatID}}
         <v-divider class="my-5"></v-divider> 
 <!-- Historic Record component -->
         <HistoricRecord 
             v-if="fields.histories != undefined && mode !='new'" 
             :historicRecords="fields.histories" 
-            :mode="'edit'" 
+            :mode="mode" 
             :boatID="getBoatID" />
 
         <v-overlay :value="overlay">
@@ -551,6 +553,7 @@ export default {
             this.fields.ServiceEnd = this.fields.ServiceEnd ? this.fields.ServiceEnd.substr(0, 10) : "";
             this.fields.deletedOwners = [];
             this.fields.ownerRemovedArray = [];
+            //console.log(this.fields);
             this.fields.originalOwners = JSON.parse(JSON.stringify(this.fields.owners));
             this.infoLoaded = true;
             this.overlay = false;

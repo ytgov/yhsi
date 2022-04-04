@@ -1,6 +1,6 @@
 
 let yukonPolygon = {
-    color: "#ff00ff",
+    color: "#B0B0B0",
     latlngs: [
         [
             69.705,
