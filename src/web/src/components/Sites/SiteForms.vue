@@ -24,7 +24,10 @@
         v-on:showAPIMessages="showAPIMessages"
       />
       <div>
-        <Summary id="summary" />
+        <Summary
+          id="summary"
+          :place-id="id"
+        />
         <Location id="location" />
         <Dates id="dates-and-condition" />
         <Themes id="themes-and-function" />

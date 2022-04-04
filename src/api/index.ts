@@ -8,8 +8,11 @@ import {
 	boatsRouter,
 	burialsRouter,
 	catalogsRouter,
+	categoryTypesRouter,
 	communitiesRouter,
 	constructionPeriodsRouter,
+	contributingResourceTypesRouter,
+	designationTypesRouter,
 	firstNationAssociationTypesRouter,
 	firstNationsRouter,
 	historiesRouter,
@@ -22,9 +25,12 @@ import {
 	photoOwnersRouter,
 	photoRouter,
 	photosExtraRouter,
+	placeEditsRouter,
 	placeRouter,
+	recordTypesRouter,
 	registerRouter,
 	revisionLogTypesRouter,
+	siteCategoryTypesRouter,
 	siteStatusesRouter,
 	staticRouter,
 	userRouter,
@@ -40,6 +46,11 @@ import { RequiresAuthentication } from './middleware';
 import { CreateMigrationRoutes } from './data/migrator';
 
 const app = express();
+
+// Use qs for query parsing
+// This setting is on by default, so I'm only surfacing it here for clarity.
+// https://expressjs.com/en/api.html#app.settings.table -> query parser
+app.set('query parser', 'extended');
 
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
@@ -96,8 +107,11 @@ app.use('/api/register', registerRouter);
 ////console.log("B", boats)
 
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
+app.use('/api/category-types', RequiresAuthentication, categoryTypesRouter);
 app.use('/api/communities', RequiresAuthentication, communitiesRouter);
 app.use('/api/construction-periods', RequiresAuthentication, constructionPeriodsRouter);
+app.use('/api/contributing-resource-types', RequiresAuthentication, contributingResourceTypesRouter);
+app.use('/api/designation-types', RequiresAuthentication, designationTypesRouter);
 app.use('/api/first-nation-association-types', RequiresAuthentication, firstNationAssociationTypesRouter);
 app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);
 app.use('/api/nts-map-sheets', RequiresAuthentication, ntsMapSheetsRouter);
@@ -111,6 +125,9 @@ app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
 app.use('/api/photos', photosExtraRouter);
 app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
+app.use('/api/place-edits', RequiresAuthentication, placeEditsRouter);
+app.use('/api/record-types', RequiresAuthentication, recordTypesRouter);
+app.use('/api/site-category-types', RequiresAuthentication, siteCategoryTypesRouter);
 app.use('/api/site-statuses', RequiresAuthentication, siteStatusesRouter);
 app.use('/api/users', usersExtraRouter);
 app.use('/api/people', peopleRouter);
