@@ -4,7 +4,7 @@
         <Breadcrumbs/>
         <v-row>
             <v-col cols="12" class="d-flex">
-                <h1 v-if="isEditMode || isViewMode">{{fields.GivenName}}</h1>
+                <h1 v-if="isEditMode || isViewMode">{{fields.GivenName}}, {{fields.Surname}}</h1>
                 <h1 v-else>New Person</h1>
                 <v-spacer></v-spacer>
 <!-- buttons for the view state -->

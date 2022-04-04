@@ -26,6 +26,7 @@
                         :headers="headers"
                         :items="data"
                         :search="search"
+                        @pagination="updatePagination"
                         :options="options"
                         :footer-props="{'items-per-page-options': [10, 20, 30, 100, 500]}"
                         :loading="loadingData"
@@ -175,11 +176,15 @@ export default {
         this.getDataFromApi();
     },
     methods:{
+        updatePagination(pagination) {
+            this.pagination = pagination;
+        },
         async getDataFromApi(){
             this.loadingData = true;
             this.loadingHistoriesChange(this.loadingData);
             let res = await people.getHistories(this.personID);
             this.data = res.histories;
+
             this.loadingData = false;
             this.loadingHistoriesChange(this.loadingData);
         },
