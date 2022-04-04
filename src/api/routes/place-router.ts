@@ -626,7 +626,7 @@ placeRouter.put("/:id/all",
     });
 
 
-function combine(list1: Array<any>, list2: Array<any>, linker: any, linker2: any, value: any, typeText: any = "typeText"): any[] {
+function combine(list1: Array<any>, list2: Array<any> | ReadonlyArray<any>, linker: any, linker2: any, value: any, typeText: any = "typeText"): any[] {
     list1.forEach(item => {
         let match = list2.filter(i => i[linker] == item[linker2]);
 
