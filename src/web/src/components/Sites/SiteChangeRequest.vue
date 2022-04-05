@@ -40,23 +40,23 @@ v-card(:loading="loading")
 					v-bind="item.fieldAttrs"
 				)
 			template(#item.actions="{ item }")
-				//- hide buttons if there is no change
-				v-btn(
-					color="success"
-					title="Accept"
-					icon,
-					:input-value="acceptedChanges[item.key]"
-					@click="acceptChange(item.key)"
-				)
-					v-icon mdi-check
-				v-btn.ml-4(
-					color="warning"
-					title="Reject"
-					icon,
-					:input-value="rejectedChanges[item.key]"
-					@click="rejectChange(item.key)"
-				)
-					v-icon mdi-close
+				template(v-if="hasChanges(item.key)")
+					v-btn(
+						color="success"
+						title="Accept"
+						icon,
+						:input-value="acceptedChanges[item.key]"
+						@click="acceptChange(item.key)"
+					)
+						v-icon mdi-check
+					v-btn.ml-4(
+						color="warning"
+						title="Reject"
+						icon,
+						:input-value="rejectedChanges[item.key]"
+						@click="rejectChange(item.key)"
+					)
+						v-icon mdi-close
 		v-row
 			v-spacer
 			v-col(cols="2")
@@ -268,6 +268,9 @@ export default {
 				.finally(() => {
 					this.loading = false;
 				});
+		},
+		hasChanges(key) {
+			return this.changedFieldTypeKeys.includes(key);
 		},
 		rejectAll() {
 			this.fieldTypes.forEach(({ key }) => {
