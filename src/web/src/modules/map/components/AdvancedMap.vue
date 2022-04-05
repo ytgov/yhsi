@@ -28,7 +28,7 @@
 	</div>
 </template>
 
-<style scoped>
+<style>
 .map {
 	height: 100%;
 	border: 1px #ddd solid;
@@ -36,12 +36,8 @@
 .esri-layer-list {
 	background-color: white;
 }
-.esri-layer-list ul {
-	background-color: green;
-	padding-left: 0;
-}
-.esri-layer-list__item-container {
-	padding-left: 0;
+.esri-layer-list__list--root {
+	padding-left: 0 !important;
 }
 </style>
 
