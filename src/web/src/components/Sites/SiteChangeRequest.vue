@@ -25,17 +25,17 @@ v-card(:loading="loading")
 			disable-sort
 			hide-default-footer
 		)
+			template(#item.original="{ item }")
+				component(
+					:is="item.type",
+					:value="place[item.key]"
+					readonly
+					v-bind="item.fieldAttrs"
+				)
 			template(#item.new="{ item }")
 				component(
 					:is="item.type",
 					:value="placeEdit[item.key]"
-					readonly
-					v-bind="item.fieldAttrs"
-				)
-			template(#item.original="{ item }")
-				component(
-					:is="item.type",
-					:value="newPlace[item.key]"
 					readonly
 					v-bind="item.fieldAttrs"
 				)
@@ -153,8 +153,8 @@ export default {
 		},
 		headers() {
 			return [
-				{ text: 'New', value: 'new' },
 				{ text: 'Original', value: 'original' },
+				{ text: 'New', value: 'new' },
 				{ text: 'Actions', value: 'actions' },
 			];
 		},
