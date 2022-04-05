@@ -299,7 +299,12 @@ export class PlaceService {
 	}
 
 	updatePlaceSummary(id: number, attributes: Place) {
-		return new Promise((resolve, reject) => {
+		const names = attributes.names || [];
+		const historicalPatterns = attributes.historicalPatterns || [];
+		delete attributes['names'];
+		delete attributes['historicalPatterns'];
+
+		return new Promise(async (resolve, reject) => {
 			attributes.contributingResources = encodeCommaDelimitedArray(
 				attributes.contributingResources
 			);
@@ -313,11 +318,8 @@ export class PlaceService {
 
 			return this.updatePlace(id, attributes).then(resolve).catch(reject);
 		}).then(async (result) => {
-			await this.nameService.upsertFor(id, attributes.names || []);
-			await this.historicalPatternService.upsertFor(
-				id,
-				attributes.historicalPatterns || []
-			);
+			await this.nameService.upsertFor(id, names);
+			await this.historicalPatternService.upsertFor(id, historicalPatterns);
 
 			return result;
 		});
