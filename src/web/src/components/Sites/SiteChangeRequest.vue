@@ -221,7 +221,7 @@ export default {
 	},
 	methods: {
 		acceptAll() {
-			this.changedFieldTypes.forEach(({ key }) => {
+			this.fieldTypes.forEach(({ key }) => {
 				this.acceptChange(key);
 			});
 		},
@@ -270,7 +270,7 @@ export default {
 				});
 		},
 		rejectAll() {
-			this.changedFieldTypes.forEach(({ key }) => {
+			this.fieldTypes.forEach(({ key }) => {
 				this.rejectChange(key);
 			});
 		},
