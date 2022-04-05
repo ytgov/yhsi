@@ -2,8 +2,7 @@
 	<div>
 		<h1>Maps</h1>
 		<div id="mapHost">
-			<advanced-map v-if="showAdvanced"></advanced-map>
-			<basic-map v-if="!showAdvanced"></basic-map>
+			<advanced-map></advanced-map>
 		</div>
 	</div>
 </template>
@@ -12,13 +11,12 @@
 import { mapGetters } from 'vuex';
 import { UserRoles } from '../../../authorization';
 import AdvancedMap from '../components/AdvancedMap.vue';
-import BasicMap from '../components/BasicMap.vue';
 
 export default {
-	components: { BasicMap, AdvancedMap },
+	components: { AdvancedMap },
 	data: () => {
 		return {
-			showAdvanced: false,
+			showAdvanced: true,
 		};
 	},
 	computed: {
