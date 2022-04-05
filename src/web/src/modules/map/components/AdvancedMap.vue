@@ -119,7 +119,7 @@ export default {
 					});
 
 					var element = document.createElement('div');
-					element.title="Map settings";
+					element.title = 'Map settings';
 					element.className =
 						'esri-icon-drag-horizontal esri-widget--button esri-widget esri-interactive';
 					element.addEventListener('click', function () {
@@ -219,7 +219,7 @@ export default {
 						};
 
 						var sites = new FeatureLayer({
-							url: 'http://localhost:3000/api/maps/sites/0',
+							url: `${MAPS_URL}/sites/0`,
 							popupTemplate: YHSIpopup,
 							outFields: ['YHSI_ID'],
 						});
@@ -278,8 +278,8 @@ export default {
 						};
 
 						var crash = new FeatureLayer({
-							url: 'http://localhost:3000/api/maps/sites/1',
-							popupTemplate: CrashPopup
+							url: `${MAPS_URL}/sites/1`,
+							popupTemplate: CrashPopup,
 						});
 
 						view.when(function () {
