@@ -195,11 +195,9 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 import store from '@/store';
-import { PLACE_URL } from '@/urls';
 
+import placesSummaryApi from '@/apis/places-summary-api';
 import placesApi from '@/apis/places-api';
 
 import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
@@ -271,27 +269,24 @@ export default {
       this.historicalPatterns.splice(index, 1);
     },
     saveChanges() {
-      let body = {
-        yHSIId: this.fields.yHSIId,
-        primaryName: this.fields.primaryName,
-        designations: this.fields.designations,
-        category: this.fields.category,
-        siteCategories: this.fields.siteCategories,
-        records: this.fields.records,
-        showInRegister: this.fields.showInRegister,
-        names: this.names,
-        contributingResources: this.fields.contributingResources,
-        historicalPatterns: this.historicalPatterns,
-      };
-
-      axios
-        .put(`${PLACE_URL}/${this.placeId}/summary`, body)
-        .then((resp) => {
-          //this.setPlace(resp.data);
-          this.$emit('showAPIMessages', resp.data);
+      placesSummaryApi
+        .put(this.placeId, {
+          yHSIId: this.fields.yHSIId,
+          primaryName: this.fields.primaryName,
+          designations: this.fields.designations,
+          category: this.fields.category,
+          siteCategories: this.fields.siteCategories,
+          records: this.fields.records,
+          showInRegister: this.fields.showInRegister,
+          names: this.names,
+          contributingResources: this.fields.contributingResources,
+          historicalPatterns: this.historicalPatterns,
         })
-        .catch((err) => {
-          this.$emit('showError', err);
+        .then((data) => {
+          this.$emit('showAPIMessages', data);
+        })
+        .catch((error) => {
+          this.$emit('showError', error);
         });
     },
     removeItem(objName, position) {
