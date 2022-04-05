@@ -1,3 +1,7 @@
+export * from '../models/historical-pattern';
+export * from '../models/name';
+export * from '../models/place';
+
 export const PLACE_FIELDS = [
 	'place.id',
 	'primaryName',
@@ -81,72 +85,6 @@ export const CONSTRUCTION_PERIODS = [
 	{ value: 5, text: 'Post 1965' },
 ];
 
-export class Place {
-	id!: number;
-	primaryName!: string;
-	yHSIId!: string;
-	jurisdiction!: number;
-	statuteId!: number;
-	statute2Id!: number;
-	recognitionDate!: Date;
-	ownerConsent!: number;
-	category!: number;
-	isPubliclyAccessible!: boolean;
-	nTSMapSheet!: string;
-	bordenNumber!: string;
-	geocode!: string;
-	hectareArea!: string;
-	latitude!: string;
-	longitude!: string;
-	locationComment!: string;
-	resourceType!: string;
-	buildingSize!: string;
-	conditionComment!: string;
-	currentUseComment!: string;
-	yHSPastUse!: string;
-	cIHBNumber!: string;
-	groupYHSI!: string;
-	yGBuildingNumber!: string;
-	yGReserveNumber!: string;
-	fHBRONumber!: string;
-	zoning!: string;
-	townSiteMapNumber!: string;
-	siteDistrictNumber!: string;
-	planNumber!: string;
-	block!: string;
-	lot!: string;
-	slideNegativeIndex!: string;
-	otherCommunity!: string;
-	otherLocality!: string;
-	previousAddress!: string;
-	yHSThemes!: string;
-	rollNumber!: string;
-	locationContext!: string;
-	communityId!: number;
-	lAGroup!: string;
-	siteStatus!: number;
-	floorCondition!: number;
-	wallCondition!: number;
-	doorCondition!: number;
-	roofCondition!: number;
-	coordinateDetermination!: number;
-	physicalAddress!: string;
-	physicalProvince!: string;
-	physicalCountry!: string;
-	physicalPostalCode!: string;
-	mailingAddress!: string;
-	mailingProvince!: string;
-	mailingCountry!: string;
-	mailingPostalCode!: string;
-	showInRegister!: boolean;
-	siteCategories!: string | string[];
-	designations!: string | string[];
-	contributingResources!: string | string[];
-	records!: string | string[];
-	recognitionDateDisplay?: string;
-	hasPendingChanges?: boolean;
-}
-
 export class Association {
 	id!: number;
 	placeId!: number;
@@ -202,19 +140,6 @@ export class FunctionalUse {
 	placeId!: number;
 	functionalTypeId!: number;
 	functionalUseType!: number;
-	description!: string;
-}
-
-export class HistoricalPattern {
-	id!: number;
-	placeId!: number;
-	comments!: string;
-	historicalPatternType!: number;
-}
-
-export class Name {
-	id!: number;
-	placeId!: number;
 	description!: string;
 }
 
