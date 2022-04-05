@@ -4,6 +4,7 @@ import Vuex from 'vuex';
 import auth from './auth';
 import communities from '@/store/communities';
 import ntsMapSheets from '@/store/nts-map-sheets';
+import places from '@/store/places';
 import profile from './profile';
 import boats from './boats';
 import alerts from './alerts';
@@ -60,6 +61,7 @@ export default new Vuex.Store({
     maps,
     ntsMapSheets,
     photos,
+    places,
     profile,
     users,
   },
