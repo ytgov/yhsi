@@ -314,7 +314,7 @@ export default {
 		},
 		updateQueryParams(key, value) {
 			this.$router.push({
-				path: '/sites-change-requests/5336',
+				path: `/sites-change-requests/${this.placeEditId}`,
 				query: {
 					...this.$route.query,
 					[key]: value,
