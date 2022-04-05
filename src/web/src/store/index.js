@@ -3,11 +3,14 @@ import Vuex from "vuex";
 
 import auth from "./auth";
 import communities from "@/store/communities"
+import ntsMapSheets from "@/store/nts-map-sheets"
 import profile from "./profile";
 import boats from "./boats";
 import alerts from "./alerts";
 import photos from "./photos";
 import users from "./users";
+
+import maps from "@/modules/map/store"
 
 Vue.use(Vuex);
 
@@ -47,5 +50,5 @@ export default new Vuex.Store({
     siteHistory: state => state.siteHistory,
     search: state => state.search,
   },
-  modules: { auth, communities, profile, boats, alerts, photos, users }
+  modules: { auth, communities, ntsMapSheets, profile, boats, alerts, photos, users, maps }
 });
