@@ -75,11 +75,20 @@ v-card(:loading="loading")
 					| All
 
 	v-card-actions
-		v-btn.my-0(
-			color="primary"
-			@click="save"
+		v-tooltip(
+			right,
+			:disabled="!hasUnconfirmedChanges"
 		)
-			| Save
+			template(#activator="{ on, attrs }")
+				div(v-on="on")
+					v-btn.my-0(
+						color="primary",
+						:disabled="hasUnconfirmedChanges"
+						v-bind="attrs"
+						v-on="on"
+						@click="save"
+					) Save
+			span You may only save once all changes are confirmed or rejected.
 </template>
 
 <script>
@@ -121,13 +130,24 @@ export default {
 		place: {},
 		placeEdit: {},
 		hideUnchanged: true,
-		acceptedChanges: new Set(),
-		rejectedChanges: new Set(),
+		acceptedChanges: {},
+		rejectedChanges: {},
 	}),
 	computed: {
+		acceptedAndRejectedChanges() {
+			return { ...this.acceptedChanges, ...this.rejectedChanges };
+		},
+		changedFieldTypeKeys() {
+			return this.changedFieldTypes.map(({ key }) => key);
+		},
 		changedFieldTypes() {
 			return this.fieldTypes.filter(
 				({ key }) => !isEqual(this.placeEdit[key], this.place[key])
+			);
+		},
+		hasUnconfirmedChanges() {
+			return !this.changedFieldTypeKeys.every(
+				(key) => this.acceptedChanges[key] || this.rejectedChanges[key]
 			);
 		},
 		headers() {
@@ -206,15 +226,15 @@ export default {
 		},
 		acceptChange(key) {
 			this.newPlace[key] = this.placeEdit[key];
-			this.rejectedChanges.delete(key);
-			this.acceptedChanges.add(key);
+			this.$delete(this.rejectedChanges, key);
+			this.$set(this.acceptedChanges, key, true);
 		},
 		buildStateClass(key) {
-			if (this.rejectedChanges.has(key)) {
+			if (this.rejectedChanges[key]) {
 				return ['orange', 'accent-1'];
 			}
 
-			if (this.acceptedChanges.has(key)) {
+			if (this.acceptedChanges[key]) {
 				return ['green', 'accent-1'];
 			}
 
@@ -222,7 +242,7 @@ export default {
 		},
 		higlightChange(key) {
 			return (
-				!this.rejectedChanges.has(key) &&
+				!this.rejectedChanges[key] &&
 				!isEqual(this.placeEdit[key], this.newPlace[key])
 			);
 		},
@@ -272,8 +292,8 @@ export default {
 		},
 		rejectChange(key) {
 			this.newPlace[key] = this.place[key];
-			this.acceptedChanges.delete(key);
-			this.rejectedChanges.add(key);
+			this.$delete(this.acceptedChanges, key);
+			this.$set(this.rejectedChanges, key, true);
 		},
 		save() {
 			this.loading = true;
