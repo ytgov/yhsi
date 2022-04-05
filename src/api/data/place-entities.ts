@@ -143,6 +143,7 @@ export class Place {
 	designations!: string | string[];
 	contributingResources!: string | string[];
 	records!: string | string[];
+	recognitionDateDisplay?: string;
 }
 
 export class Association {
