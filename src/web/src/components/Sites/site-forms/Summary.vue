@@ -249,7 +249,6 @@ export default {
         this.historicalPatterns = relationships.historicalPatterns.data;
 
         store.dispatch('addSiteHistory', data);
-        this.$parent.siteName = this.fields.primaryName;
       });
     },
     addName() {
