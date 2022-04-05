@@ -140,9 +140,9 @@ export class Place {
 	mailingPostalCode!: string;
 	showInRegister!: boolean;
 	siteCategories!: string | string[];
-	designations!: string;
-	contributingResources!: string;
-	records!: string;
+	designations!: string | string[];
+	contributingResources!: string | string[];
+	records!: string | string[];
 }
 
 export class Association {

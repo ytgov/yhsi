@@ -49,6 +49,14 @@
 							<v-list-item-title>Sites</v-list-item-title>
 						</v-list-item>
 						<v-list-item
+							v-if="userInRole(['Site Admin'])"
+							to="/sites-change-requests"
+						>
+							<v-list-item-title>
+								Site Change Requests
+							</v-list-item-title>
+						</v-list-item>
+						<v-list-item
 							to="/photos"
 							v-if="
 								userInRole(['Photo Admin', 'Photo Editor', 'Photo Viewer'])
@@ -212,10 +220,6 @@ export default {
 		},
 		async showHistory() {
 			this.$refs.historySidebar.show();
-
-			let t = this.userInRole(this.UserRoles.PLACE_EDITOR);
-
-			console.log(t);
 		},
 		showError: function (msg) {
 			this.$refs.notifier.showError(msg);

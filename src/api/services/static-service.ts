@@ -11,6 +11,14 @@ import {
 	Statute,
 	MapSheetLookup,
 } from '../data';
+import {
+	CATEGORY_TYPES,
+	CONTRIBUTING_RESOURCE_TYPES,
+	DESIGNATION_TYPES,
+	GenericStringEnum,
+	RECORD_TYPES,
+	SITE_CATEGORY_TYPES,
+} from '../models';
 
 export class StaticService {
 	private knex: Knex;
@@ -205,24 +213,12 @@ export class StaticService {
 		];
 	}
 
-	getCategories(): GenericEnum[] {
-		return [
-			{ value: 0, text: 'None Selected' },
-			{ value: 1, text: 'Building' },
-			{ value: 2, text: 'District' },
-			{ value: 3, text: 'Place' },
-			{ value: 4, text: 'Structure' },
-		];
+	getCategories(): readonly GenericStringEnum[] {
+		return CATEGORY_TYPES;
 	}
 
-	getDesignationTypes(): GenericEnum[] {
-		return [
-			{ value: 4, text: 'Federal' },
-			{ value: 2, text: 'Municipal' },
-			{ value: 3, text: 'Territorial' },
-			{ value: 5, text: 'World' },
-			{ value: 0, text: 'Not Designated' },
-		];
+	getDesignationTypes(): readonly GenericStringEnum[] {
+		return DESIGNATION_TYPES;
 	}
 
 	getConditions(): GenericEnum[] {
@@ -255,31 +251,16 @@ export class StaticService {
 		];
 	}
 
-	getRecordTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'CRHP' },
-			{ value: 2, text: 'WHBR' },
-		];
+	getRecordTypes(): readonly GenericStringEnum[] {
+		return RECORD_TYPES;
 	}
 
-	getSiteCategories(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Architecture' },
-			{ value: 4, text: 'First Nation' },
-			{ value: 5, text: 'Gravesite' },
-			{ value: 2, text: 'Industrial' },
-			{ value: 3, text: 'Landscape' },
-		];
+	getSiteCategories(): readonly GenericStringEnum[] {
+		return SITE_CATEGORY_TYPES;
 	}
 
-	getContributingResourceTypes(): GenericEnum[] {
-		return [
-			{ value: 4, text: 'Archaeological' },
-			{ value: 2, text: 'Building' },
-			{ value: 9, text: 'Collection' },
-			{ value: 3, text: 'Landscapes' },
-			{ value: 1, text: 'Structure' },
-		];
+	getContributingResourceTypes(): readonly GenericStringEnum[] {
+		return CONTRIBUTING_RESOURCE_TYPES;
 	}
 
 	getPhotoPrograms(): GenericEnum[] {

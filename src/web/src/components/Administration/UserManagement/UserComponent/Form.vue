@@ -199,14 +199,18 @@
 						@change="accessItem.access_text = ''"
 					></v-select>
 
-					<v-text-field
+					<v-autocomplete
 						v-model="accessItem.access_text"
+						:items="ntsMapSheets"
+						:loading="ntsMapSheetsLoading"
+						item-text="name"
+						item-value="name"
 						dense
 						outlined
 						background-color="white"
 						label="Map sheet"
 						v-if="accessItem.access_type_id == 1"
-					></v-text-field>
+					></v-autocomplete>
 					<v-select
 						v-model="accessItem.access_text"
 						:items="communities"
@@ -283,21 +287,26 @@ export default {
 
 		showAccessDialog: false,
 	}),
-	async mounted() {
+	mounted() {
 		this.loadRoles();
 		this.loadFirstNations();
 		this.loadCommunities();
+		this.loadNtsMapSheets();
 		this.doLoad();
 	},
 	computed: {
+		...mapGetters('ntsMapSheets', {
+			ntsMapSheets: 'ntsMapSheets',
+			ntsMapSheetsLoading: 'loading',
+		}),
 		...mapGetters('users', ['roles', 'communities', 'firstNations']),
 		canSaveAccess: function () {
 			if (this.accessItem.access_text) return false;
 			return true;
 		},
 	},
-	watch: {},
 	methods: {
+		...mapActions('ntsMapSheets', { loadNtsMapSheets: 'initialize' }),
 		...mapActions('users', [
 			'loadUser',
 			'loadRoles',

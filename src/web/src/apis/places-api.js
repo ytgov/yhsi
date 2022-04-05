@@ -3,9 +3,15 @@ import http from '@/apis/http-client';
 const placeUrl = '/api/place';
 
 export default {
-	getAll () {
+	getAll() {
 		return http
 			.get(placeUrl)
+			.then((response) => response.data)
+			.catch(console.error);
+	},
+	get(id) {
+		return http
+			.get(`${placeUrl}/${id}`)
 			.then((response) => response.data)
 			.catch(console.error);
 	},

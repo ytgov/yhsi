@@ -27,7 +27,7 @@ export const DB_PORT = process.env.DB_PORT || '1433';
 
 export const CLIENT_ID = process.env.CLIENT_ID || '';
 export const ISSUER_BASE_URL = process.env.ISSUER_BASE_URL || '';
-export const AUTH_DB_CONNECTION= process.env.AUTH_DB_CONNECTION || '';
+export const AUTH_DB_CONNECTION = process.env.AUTH_DB_CONNECTION || '';
 
 export const DB_CONFIG = {
 	client: 'mssql',
@@ -39,3 +39,8 @@ export const DB_CONFIG = {
 		port: parseInt(DB_PORT),
 	},
 };
+
+export const GIS_PORTAL_CLIENT_ID = process.env.GIS_PORTAL_CLIENT_ID || '';
+export const GIS_PORTAL_CLIENT_SECRET = process.env.GIS_PORTAL_CLIENT_SECRET || '';
+export const GIS_FEATURE_USERNAME = process.env.GIS_FEATURE_USERNAME || '';
+export const GIS_FEATURE_PASSWORD = process.env.GIS_FEATURE_PASSWORD || '';
