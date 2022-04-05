@@ -16,7 +16,15 @@
           <div class="ml-2">Back to Sites</div>
         </v-btn>
         <v-spacer />
-        {{ siteName }}
+        <v-progress-circular
+          v-if="loading"
+          indeterminate
+          size="20"
+          width="2"
+        />
+        <span v-else>
+          {{ siteName }}
+        </span>
         <v-spacer />
         <v-btn
           color="primary"
@@ -35,10 +43,14 @@
         @showAPIMessages="showAPIMessages"
       />
       <div>
-        <Summary
-          id="summary"
-          :place-id="id"
-        />
+        <template v-if="loading" />
+        <template v-else>
+          <component
+            :is="summaryComponent"
+            id="summary"
+            :place-id="id"
+          />
+        </template>
         <Location id="location" />
         <Dates id="dates-and-condition" />
         <Themes id="themes-and-function" />
@@ -53,7 +65,7 @@
 </template>
 
 <script>
-import { applicationName } from '@/config';
+import { mapActions, mapGetters } from 'vuex';
 
 import Associations from '@/components/Sites/site-forms/Associations';
 import Dates from '@/components/Sites/site-forms/Dates';
@@ -65,6 +77,7 @@ import Photos from '@/components/Sites/site-forms/Photos';
 import PrintDialog from '@/components/Sites/SiteFormsPrintDialog';
 import SiteFormsSidebar from '@/components/Sites/SiteFormsSidebar';
 import Summary from '@/components/Sites/site-forms/Summary';
+import SummaryReadonly from '@/components/Sites/site-forms/SummaryReadonly';
 import Themes from '@/components/Sites/site-forms/Themes';
 
 export default {
@@ -80,6 +93,7 @@ export default {
     PrintDialog,
     SiteFormsSidebar,
     Summary,
+    SummaryReadonly,
     Themes,
   },
   props: {
@@ -89,11 +103,25 @@ export default {
     },
   },
   data: () => ({
-    siteName: applicationName,
     dialog: false, //tells the print dialog when to show itself
   }),
-  created() {},
+  computed: {
+    ...mapGetters('places', {
+      hasPendingChanges: 'hasPendingChanges',
+      loading: 'loading',
+      siteName: 'primaryName',
+    }),
+    summaryComponent() {
+      if (this.hasPendingChanges) return SummaryReadonly;
+
+      return Summary;
+    },
+  },
+  mounted() {
+    this.initializePlace(this.id);
+  },
   methods: {
+    ...mapActions({ initializePlace: 'places/initialize' }),
     showDialog() {
       this.dialog = true;
     },
