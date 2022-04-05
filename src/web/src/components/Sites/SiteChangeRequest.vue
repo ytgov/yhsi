@@ -29,30 +29,31 @@ v-card(:loading="loading")
 				component(
 					:is="item.type",
 					:value="placeEdit[item.key]"
-					readonly,
-					:class="higlightChange(item.key) ? ['green', 'accent-1'] : []"
+					readonly
 					v-bind="item.fieldAttrs"
 				)
 			template(#item.original="{ item }")
 				component(
 					:is="item.type",
 					:value="newPlace[item.key]"
-					readonly,
-					:class="buildStateClass(item.key)"
+					readonly
 					v-bind="item.fieldAttrs"
 				)
 			template(#item.actions="{ item }")
+				//- hide buttons if there is no change
 				v-btn(
 					color="success"
 					title="Accept"
-					icon
+					icon,
+					:input-value="acceptedChanges[item.key]"
 					@click="acceptChange(item.key)"
 				)
 					v-icon mdi-check
 				v-btn.ml-4(
 					color="warning"
 					title="Reject"
-					icon
+					icon,
+					:input-value="rejectedChanges[item.key]"
 					@click="rejectChange(item.key)"
 				)
 					v-icon mdi-close
@@ -228,23 +229,6 @@ export default {
 			this.newPlace[key] = this.placeEdit[key];
 			this.$delete(this.rejectedChanges, key);
 			this.$set(this.acceptedChanges, key, true);
-		},
-		buildStateClass(key) {
-			if (this.rejectedChanges[key]) {
-				return ['orange', 'accent-1'];
-			}
-
-			if (this.acceptedChanges[key]) {
-				return ['green', 'accent-1'];
-			}
-
-			return [];
-		},
-		higlightChange(key) {
-			return (
-				!this.rejectedChanges[key] &&
-				!isEqual(this.placeEdit[key], this.newPlace[key])
-			);
 		},
 		// This function can go away when the back-end serves the
 		// relationship data as part of the data directly.
