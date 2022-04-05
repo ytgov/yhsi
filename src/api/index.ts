@@ -73,6 +73,7 @@ app.use(
 				"'self'",
 				'https://*.arcgis.com',
 				'https://services.arcgisonline.com',
+				'https://mapservices.gov.yk.ca'
 			],
 		},
 	})
