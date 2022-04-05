@@ -14,7 +14,7 @@
 
                 <v-spacer></v-spacer>
 
-                <v-btn class="black--text" v-if="mode != 'view'" :disabled="addingItem" @click="addRecord">Add Historic Record</v-btn>
+                <v-btn class="black--text" v-if="mode === 'edit'" :disabled="addingItem" @click="addRecord">Add Historic Record</v-btn>
             </v-col>
         </v-row>
         <v-row>
@@ -239,7 +239,7 @@ export default {
             let resp = await people.postHistory(this.personID, data);
     //console.log(resp);
             if(resp.message == 'success'){
-                this.data.push(data.history);
+                this.data.unshift(data.history);
                 //console.log("DATA PUSHED");
                 //console.log(this.data);
             }
