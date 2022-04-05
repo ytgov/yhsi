@@ -1,8 +1,10 @@
 import knex, { Knex } from 'knex';
 import moment from 'moment';
-import { uniq, cloneDeep } from 'lodash';
+import { uniq, cloneDeep, pick } from 'lodash';
 
 import {
+	HistoricalPatternService,
+	NameService,
 	PhotoService,
 	PlaceEditService,
 	QueryStatement,
@@ -21,11 +23,8 @@ import {
 	FIRST_NATION_ASSOCIATION_TYPES,
 	FirstNationAssociation,
 	FunctionalUse,
-	HistoricalPattern,
-	Name,
 	Ownership,
 	OWNERSHIP_TYPES,
-	Place,
 	PLACE_FIELDS,
 	PreviousOwnership,
 	REGISTER_FIELDS,
@@ -36,9 +35,12 @@ import {
 } from '../data';
 import {
 	decodeCommaDelimitedArray,
+	encodeCommaDelimitedArray,
 	GenericEnum,
+	HistoricalPattern,
 	HISTORICAL_PATTERN_TYPES,
-	PlaceUpdate,
+	Name,
+	Place,
 } from '../models';
 
 function combine(
@@ -63,15 +65,19 @@ function combine(
 
 export class PlaceService {
 	private db: Knex;
+	private historicalPatternService: HistoricalPatternService;
+	private nameService: NameService;
 	private photoService: PhotoService;
 	private placeEditService: PlaceEditService;
 	private staticService: StaticService;
 
 	constructor(config: Knex.Config<any>) {
 		this.db = knex(config);
-		this.staticService = new StaticService(config);
+		this.historicalPatternService = new HistoricalPatternService();
+		this.nameService = new NameService();
 		this.photoService = new PhotoService(config);
 		this.placeEditService = new PlaceEditService();
+		this.staticService = new StaticService(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Place>> {
@@ -116,14 +122,14 @@ export class PlaceService {
 				place.siteCategories = decodeCommaDelimitedArray(place.siteCategories);
 
 				const associations = combine(
-					await this.getAssociationsFor(place.id),
+					await this.getAssociationsFor(id),
 					this.getAssociationTypes(),
 					'value',
 					'type',
 					'text'
 				);
 				let fnAssociations = combine(
-					await this.getFNAssociationsFor(place.id),
+					await this.getFNAssociationsFor(id),
 					this.getFNAssociationTypes(),
 					'value',
 					'firstNationAssociationType',
@@ -137,23 +143,23 @@ export class PlaceService {
 					'description'
 				);
 
-				const names = await this.getNamesFor(place.id);
+				const names = await this.getNamesFor(id);
 				const historicalPatterns = combine(
-					await this.getHistoricalPatternsFor(place.id),
+					await this.getHistoricalPatternsFor(id),
 					this.getHistoricalPatterns(),
 					'value',
 					'historicalPatternType',
 					'text'
 				);
 				const dates = combine(
-					await this.getDatesFor(place.id),
+					await this.getDatesFor(id),
 					this.getDateTypes(),
 					'value',
 					'type',
 					'text'
 				);
 				const constructionPeriods = combine(
-					await this.getConstructionPeriodsFor(place.id),
+					await this.getConstructionPeriodsFor(id),
 					this.getConstructionPeriodTypes(),
 					'value',
 					'type',
@@ -161,7 +167,7 @@ export class PlaceService {
 				);
 				const themes = combine(
 					combine(
-						await this.getThemesFor(place.id),
+						await this.getThemesFor(id),
 						themeList,
 						'id',
 						'placeThemeId',
@@ -175,7 +181,7 @@ export class PlaceService {
 					'categoryName'
 				);
 				let functionalUses = combine(
-					await this.getFunctionUsesFor(place.id),
+					await this.getFunctionUsesFor(id),
 					this.getFunctionalUseTypes(),
 					'value',
 					'functionalUseType',
@@ -191,17 +197,15 @@ export class PlaceService {
 					'functionalTypeText'
 				);
 				const ownerships = combine(
-					await this.getOwnershipsFor(place.id),
+					await this.getOwnershipsFor(id),
 					this.getOwnershipTypes(),
 					'value',
 					'ownershipType',
 					'text'
 				);
-				const previousOwnerships = await this.getPreviousOwnershipsFor(
-					place.id
-				);
+				const previousOwnerships = await this.getPreviousOwnershipsFor(id);
 				const contacts = combine(
-					await this.getContactsFor(place.id),
+					await this.getContactsFor(id),
 					this.getContactTypes(),
 					'value',
 					'contactType',
@@ -209,7 +213,7 @@ export class PlaceService {
 					'contactTypeText'
 				);
 				const revisionLogs = combine(
-					await this.getRevisionLogFor(place.id),
+					await this.getRevisionLogFor(id),
 					this.getRevisionLogTypes(),
 					'value',
 					'revisionLogType',
@@ -217,14 +221,14 @@ export class PlaceService {
 					'revisionLogTypeText'
 				);
 				const webLinks = combine(
-					await this.getWebLinksFor(place.id),
+					await this.getWebLinksFor(id),
 					this.getWebLinkTypes(),
 					'value',
 					'type',
 					'text'
 				);
 				const descriptions = combine(
-					await this.getDescriptionsFor(place.id),
+					await this.getDescriptionsFor(id),
 					this.getDescriptionTypes(),
 					'value',
 					'type',
@@ -290,8 +294,33 @@ export class PlaceService {
 		return this.db('place').insert(item).returning<Place>(PLACE_FIELDS);
 	}
 
-	async updatePlace(id: number, item: PlaceUpdate): Promise<Place | undefined> {
+	updatePlace(id: number, item: Place): Promise<Place | undefined> {
 		return this.db('place').where({ id }).update(item);
+	}
+
+	updatePlaceSummary(id: number, attributes: Place) {
+		return new Promise((resolve, reject) => {
+			attributes.contributingResources = encodeCommaDelimitedArray(
+				attributes.contributingResources
+			);
+			attributes.designations = encodeCommaDelimitedArray(
+				attributes.designations
+			);
+			attributes.records = encodeCommaDelimitedArray(attributes.records);
+			attributes.siteCategories = encodeCommaDelimitedArray(
+				attributes.siteCategories
+			);
+
+			return this.updatePlace(id, attributes).then(resolve).catch(reject);
+		}).then(async (result) => {
+			await this.nameService.upsertFor(id, attributes.names || []);
+			await this.historicalPatternService.upsertFor(
+				id,
+				attributes.historicalPatterns || []
+			);
+
+			return result;
+		});
 	}
 
 	async generateIdFor(nTSMapSheet: string): Promise<string> {

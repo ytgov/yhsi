@@ -6,7 +6,6 @@ import { DB_CONFIG } from "../config"
 import { buildDatabaseSort, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
 import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership, WebLink, RevisionLog, Contact, Description } from "../data";
 import { ReturnValidationErrors } from "../middleware";
-import { encodeCommaDelimitedArray } from '../models'
 
 const placeService = new PlaceService(DB_CONFIG);
 const PAGE_SIZE = 10;
@@ -135,73 +134,41 @@ placeRouter.post("/",
         return res.json({ data: result });
     });
 
-placeRouter.put("/:id/summary",
-    [
-        param("id").isInt().notEmpty(),
-        body("primaryName").isString().bail().notEmpty().trim(),
-        body("showInRegister").isBoolean().notEmpty()
-    ], ReturnValidationErrors,
-    async (req: Request, res: Response) => {
-        let { id } = req.params;
-        let { names, historicalPatterns } = req.body;
-        let updater = pick(req.body, [
-            'category',
-            'contributingResources',
-            'designations',
-            'primaryName',
-            'records',
-            'showInRegister',
-            'siteCategories',
-        ]);
-
-        updater.contributingResources = encodeCommaDelimitedArray(updater.contributingResources);
-        updater.designations = encodeCommaDelimitedArray(updater.designations);
-        updater.records = encodeCommaDelimitedArray(updater.records);
-        updater.siteCategories = encodeCommaDelimitedArray(updater.siteCategories);
-
-        await placeService.updatePlace(parseInt(id), updater);
-        let oldNames = await placeService.getNamesFor(parseInt(id));
-        const cleanNames = names.map((n: Name) => Object.assign(n, { description: n.description.trim() }));
-
-        for (let on of oldNames) {
-            let match = cleanNames.filter((n: Name) => n.description == on.description);
-
-            if (match.length == 0) {
-                await placeService.removeSecondaryName(on.id);
-            }
-        }
-
-        for (let on of cleanNames) {
-            let match = oldNames.filter((n: Name) => n.description == on.description);
-
-            if (match.length == 0) {
-                delete on.id;
-                await placeService.addSecondaryName(on);
-            }
-        }
-
-        let oldPatterns = await placeService.getHistoricalPatternsFor(parseInt(id))
-
-        for (let on of oldPatterns) {
-            let match = historicalPatterns.filter((n: HistoricalPattern) => n.comments == on.comments && n.historicalPatternType == on.historicalPatternType);
-
-            if (match.length == 0) {
-                await placeService.removeHistoricalPattern(on.id);
-            }
-        }
-
-        for (let on of historicalPatterns) {
-            let match = oldPatterns.filter((n: HistoricalPattern) => n.comments == on.comments && n.historicalPatternType == on.historicalPatternType);
-
-            if (match.length == 0) {
-                delete on.id;
-                delete on.typeText;
-                await placeService.addHistoricalPattern(on);
-            }
-        }
-
-        return res.json({ messages: [{ variant: "success", text: "Site updated" }] });
-    });
+placeRouter.put(
+	'/:id/summary',
+	[
+		param('id').isInt().notEmpty(),
+		body('primaryName').isString().bail().notEmpty().trim(),
+		body('showInRegister').isBoolean().notEmpty(),
+	],
+	ReturnValidationErrors,
+	(req: Request, res: Response) => {
+		const id = parseInt(req.params.id);
+		const attributes = pick(req.body, [
+			'category',
+			'contributingResources',
+			'designations',
+			'historicalpatterns',
+			'names',
+			'primaryName',
+			'records',
+			'showInRegister',
+			'siteCategories',
+		]);
+		return placeService
+			.updatePlaceSummary(id, attributes)
+			.then(() => {
+				return res.json({
+					messages: [{ variant: 'success', text: 'Site updated' }],
+				});
+			})
+			.catch((error) => {
+				return res.status(422).json({
+					messages: [{ variant: 'error', text: error.message }],
+				});
+			});
+	}
+);
 
 placeRouter.put("/:id/location",
     [
