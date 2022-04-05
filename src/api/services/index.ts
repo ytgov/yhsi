@@ -1,4 +1,3 @@
-
 export * from "./photo-service";
 export * from "./place-service";
 export * from "./static-service";
@@ -11,6 +10,8 @@ export * from "./photo-batch-service";
 export * from "./boat-owner-service";
 export * from "./people-service";
 export * from "./catalog-service";
+export * from "./place-edit-service";
+
 export interface QueryStatement {
 	field: string;
 	operator: string;

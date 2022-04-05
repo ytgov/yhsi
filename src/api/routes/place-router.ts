@@ -6,6 +6,7 @@ import { DB_CONFIG } from "../config"
 import { buildDatabaseSort, PhotoService, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
 import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership, WebLink, RevisionLog, Contact, Description } from "../data";
 import { ReturnValidationErrors } from "../middleware";
+import { decodeCommaDelimitedArray, encodeCommaDelimitedArray } from '../models'
 
 const placeService = new PlaceService(DB_CONFIG);
 const staticService = new StaticService(DB_CONFIG);
@@ -14,7 +15,7 @@ const PAGE_SIZE = 10;
 
 export const placeRouter = express.Router();
 
-placeRouter.get("/", 
+placeRouter.get("/",
     [query("page").default(1).isInt({ gt: 0 })], ReturnValidationErrors,
     async (req: Request, res: Response) => {
         let page = parseInt(req.query.page as string);
@@ -92,7 +93,10 @@ placeRouter.get("/:id",
         await placeService.getById(id)
             .then(async (place) => {
                 if (place) {
-                    place.siteCategories = (place.siteCategories as string).split(',');
+                    place.contributingResources = decodeCommaDelimitedArray(place.contributingResources);
+                    place.designations = decodeCommaDelimitedArray(place.designations);
+                    place.records = decodeCommaDelimitedArray(place.records);
+                    place.siteCategories = decodeCommaDelimitedArray(place.siteCategories);
 
                     let associations = combine(await placeService.getAssociationsFor(place.id), placeService.getAssociationTypes(), 'value', 'type', 'text');
                     let fnAssociations = combine(await placeService.getFNAssociationsFor(place.id), placeService.getFNAssociationTypes(), 'value', 'firstNationAssociationType', "text");
@@ -200,9 +204,10 @@ placeRouter.put("/:id/summary",
         delete updater.historicalPatterns;
         delete updater.yHSIId;
 
-        updater.siteCategories = (updater.siteCategories as string[]).join(',')
-
-        //console.log(updater)
+        updater.contributingResources = encodeCommaDelimitedArray(updater.contributingResources);
+        updater.designations = encodeCommaDelimitedArray(updater.designations);
+        updater.records = encodeCommaDelimitedArray(updater.records);
+        updater.siteCategories = encodeCommaDelimitedArray(updater.siteCategories);
 
         await placeService.updatePlace(parseInt(id), updater);
         let oldNames = await placeService.getNamesFor(parseInt(id));

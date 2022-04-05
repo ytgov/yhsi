@@ -1,12 +1,9 @@
 <template>
     <div>
-        <h1>Maps</h1>
+        This is the basic map
     </div>
 </template>
 
 <script>
 
-export default({
-
-})
 </script>
