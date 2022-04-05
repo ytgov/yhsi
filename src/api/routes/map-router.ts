@@ -28,13 +28,17 @@ mapsRouter.get("/sites*", async (req: Request, res: Response) => {
 
     let ms = `https://deptweb.gov.yk.ca/arcgis/rest/services/Tour_YHIS/YHIS_Internal/MapServer${path}?${queryString}`;
 
-    let resp = await axios.get(ms, { headers: { "X-Esri-Authorization": `Bearer ${FEATURE_TOKEN.access_token}`, "Content-Type": "application/json" } })
-        .then(resp => {
-            return resp.data;
+    await axios.get(ms, { headers: { "X-Esri-Authorization": `Bearer ${FEATURE_TOKEN.access_token}`, "Content-Type": "application/json" } })
+        .then(async (resp) => {
+            if (resp.data.error) {
+                console.log("ERROR RESPONSE:", resp.data.error)
+                await loadFeatureToken();
+                return res.redirect("/maps");
+            }
+   
+            return res.json(await filterSites(resp.data));
         })
-        .catch(err => { console.log(err); return { error: "BROKEN" } });
-
-    res.json(await filterSites(resp));
+        .catch(err => { console.log(err); return res.json({ error: "BROKEN" }) });
 })
 
 async function loadPortalToken() {
@@ -72,7 +76,7 @@ async function loadFeatureToken() {
     await axios.post(`https://deptweb.gov.yk.ca/arcgis/tokens/generateToken`, stringify(body), { headers: { "Content-Type": "application/x-www-form-urlencoded" } })
         .then(resp => {
             let { token, expires } = resp.data;
-            let renew_after = moment(expires).subtract(15, "minutes");
+            let renew_after = moment(expires).subtract(30, "minutes");
             FEATURE_TOKEN = { access_token: token, expires_in: 3600, renew_after };
         })
         .catch(err => {
