@@ -114,7 +114,6 @@ export default {
         this.fields = resp.data.data;
         this.descriptions = resp.data.relationships.descriptions.data;
         store.dispatch('addSiteHistory', resp.data.data);
-        this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
 

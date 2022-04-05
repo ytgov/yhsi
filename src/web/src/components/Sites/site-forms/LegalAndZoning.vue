@@ -296,7 +296,6 @@ export default {
         this.ownerships = resp.data.relationships.ownerships.data;
         this.prevOwnerships = resp.data.relationships.previousOwnerships.data;
         store.dispatch('addSiteHistory', resp.data.data);
-        this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
 
