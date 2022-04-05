@@ -224,9 +224,10 @@ peopleRouter.post('/export',
 	  async (req: Request, res: Response) => {
 		const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
 	
-		const offset = page * limit || 0;
-		console.log("inside the endpoint");
-		let data = await peopleService.doSearch(page, limit, offset, { sortBy, sort, textToMatch });
-		console.log(data);
+		// const offset = page * limit || 0;
+		// console.log("inside the endpoint");
+		// let data = await peopleService.doSearch(page, limit, offset, { sortBy, sort, textToMatch });
+		// console.log(data);
+		let data = await peopleService.getAll();
 		res.status(200).send(data);
 });
