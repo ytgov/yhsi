@@ -2,15 +2,26 @@
   <div class="d-flex">
     <SiteFormsSidebar :site-id="id" />
     <div>
-      <v-app-bar color="primary" dark flat>
-        <v-btn color="primary" to="/sites" exact>
+      <v-app-bar
+        color="primary"
+        dark
+        flat
+      >
+        <v-btn
+          color="primary"
+          to="/sites"
+          exact
+        >
           <v-icon>mdi-arrow-left-drop-circle</v-icon>
           <div class="ml-2">Back to Sites</div>
         </v-btn>
-        <v-spacer></v-spacer>
+        <v-spacer />
         {{ siteName }}
-        <v-spacer></v-spacer>
-        <v-btn color="primary" @click="showDialog()">
+        <v-spacer />
+        <v-btn
+          color="primary"
+          @click="showDialog"
+        >
           <v-icon class="mr-2">mdi-printer</v-icon>
           <div>Print Site</div>
         </v-btn>
@@ -19,9 +30,9 @@
         :dialog="dialog"
         :sitename="siteName"
         @closeDialog="closeDialog"
-        v-on:showError="showError"
-        v-on:showSuccess="showSuccess"
-        v-on:showAPIMessages="showAPIMessages"
+        @showError="showError"
+        @showSuccess="showSuccess"
+        @showAPIMessages="showAPIMessages"
       />
       <div>
         <Summary
