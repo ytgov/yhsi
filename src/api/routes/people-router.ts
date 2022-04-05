@@ -219,10 +219,14 @@ peopleRouter.post(
 		res.send(pdf);
 });
 
-
-peopleRouter.post('/export', async (req: Request, res: Response) => {
+peopleRouter.post('/export',
+	  ReturnValidationErrors,
+	  async (req: Request, res: Response) => {
+		const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
 	
-	let data = await peopleService.getAll();
-
-	res.status(200).send(data);
+		const offset = page * limit || 0;
+		console.log("inside the endpoint");
+		let data = await peopleService.doSearch(page, limit, offset, { sortBy, sort, textToMatch });
+		console.log(data);
+		res.status(200).send(data);
 });
