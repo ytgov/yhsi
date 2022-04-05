@@ -144,6 +144,7 @@ export class Place {
 	contributingResources!: string | string[];
 	records!: string | string[];
 	recognitionDateDisplay?: string;
+	hasPendingChanges?: boolean;
 }
 
 export class Association {

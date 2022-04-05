@@ -114,4 +114,16 @@ export class PlaceEditService {
 	delete(id: number) {
 		return this.db.where({ 'PlaceEdit.Id': id }).from('PlaceEdit').delete();
 	}
+
+	existsForPlace(id: number) {
+		return this.db
+			.first('Id')
+			.from('PlaceEdit')
+			.where({ PlaceId: id })
+			.then((result) => {
+				if (result) return true;
+
+				return false;
+			});
+	}
 }

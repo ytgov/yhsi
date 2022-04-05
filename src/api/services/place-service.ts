@@ -2,7 +2,13 @@ import knex, { Knex } from 'knex';
 import moment from 'moment';
 import { uniq, cloneDeep } from 'lodash';
 
-import { PhotoService, QueryStatement, SortStatement, StaticService } from './';
+import {
+	PhotoService,
+	PlaceEditService,
+	QueryStatement,
+	SortStatement,
+	StaticService,
+} from './';
 import {
 	Association,
 	CONSTRUCTION_PERIODS,
@@ -58,12 +64,14 @@ function combine(
 export class PlaceService {
 	private db: Knex;
 	private photoService: PhotoService;
+	private placeEditService: PlaceEditService;
 	private staticService: StaticService;
 
 	constructor(config: Knex.Config<any>) {
 		this.db = knex(config);
 		this.staticService = new StaticService(config);
 		this.photoService = new PhotoService(config);
+		this.placeEditService = new PlaceEditService();
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Place>> {
@@ -95,6 +103,10 @@ export class PlaceService {
 				const fnList = await this.staticService.getFirstNations();
 				const themeList = await this.staticService.getPlaceThemes();
 				const functionalTypes = await this.staticService.getFunctionalTypes();
+
+				place.hasPendingChanges = await this.placeEditService.existsForPlace(
+					id
+				);
 
 				place.contributingResources = decodeCommaDelimitedArray(
 					place.contributingResources
