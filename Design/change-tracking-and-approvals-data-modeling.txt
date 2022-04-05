@@ -7,32 +7,47 @@ entity "Place" as place {
   * YHSIId : nvarchar
   * Category: int
   * ShowInRegister: bit
-  Designations: nvarchar
-  Records: nvarchar
-  ContributingResources: nvarchar
+  ContributingResources: nvarchar : <<comma delimited array>>
+  Designations: nvarchar : <<comma delimited array>>
+  Records: nvarchar : <<comma delimited array>>
+  SiteCategories: nvarchar: <<comma delimited array>>
 }
 
 enum "Designations" as designations {
-  <only string used>
-  4 : Federal
-  2 : Municipal
-  3 : Territorial
-  5 : World
-  0 : Not Designated
+  Federal : Federal
+  Municipal : Municipal
+  Territorial : Territorial
+  World : World
+  NotDesignated : Not Designated
 }
 
 enum "Category" as category {
-  0 : None Selected
-  1 : Building
-  2 : District
-  3 : Place
-  4 : Structure
+  NoneSelected : None Selected
+  Building : Building
+  District : District
+  Place : Place
+  Structure : Structure
+}
+
+enum "ContributingResources" as contributing_resources {
+  Archaeological : Archaeological
+  Building : Building
+  Collection : Collection
+  Landscapes : Landscapes
+  Structure : Structure
 }
 
 enum "Records" as records {
-  <only string used>
-  1: CRHP
-  2: WHBR
+  CRHP: CRHP
+  WHBR: WHBR
+}
+
+enum "SiteCategories" as site_categories {
+  Architecture : Architecture
+  FirstNation : First Nation
+  Gravesite : Gravesite
+  Industrial : Industrial
+  Landscape : Landscape
 }
 
 entity "Name" as name {
@@ -60,6 +75,8 @@ enum "HistoricalPatternType" as historical_pattern_type {
 place }o--o| designations
 place }|--o| category
 place }o--o| records
+place }o--o| contributing_resources
+place }o--o| site_categories
 place }o--|| name
 place }o--historical_pattern
 historical_pattern }|--|| historical_pattern_type

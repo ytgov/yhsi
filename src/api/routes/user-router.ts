@@ -15,7 +15,8 @@ userRouter.get("/", authorize([UserRoles.ADMINISTRATOR]),
         let users = await db.getAll();
 
         for (let user of users) {
-            user.last_login_date_display = moment(user.last_login_date).utc(true).format("YYYY-MM-DD @ h:mmA");
+            if (user.last_login_date)
+                user.last_login_date_display = moment(user.last_login_date).utc(true).format("YYYY-MM-DD @ h:mmA");
 
             if (user.expire_date) {
                 let isExpired = moment().isAfter(moment(user.expire_date))

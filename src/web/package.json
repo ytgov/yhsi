@@ -21,6 +21,7 @@
     "point-in-polygon": "^1.1.0",
     "postcss": "^8.2.15",
     "proj4": "^2.7.2",
+    "qs": "^6.10.3",
     "utm-latlng": "^1.0.6",
     "vue": "^2.6.11",
     "vue-affix": "^0.5.2",
@@ -29,10 +30,11 @@
     "vue-router": "^3.2.0",
     "vue-simple-search-dropdown": "^1.0.1",
     "vue2-leaflet": "^2.7.0",
-    "vuetify": "^2.5.0",
+    "vuetify": "^2.6.4",
     "vuex": "^3.4.0"
   },
   "devDependencies": {
+    "@prettier/plugin-pug": "^1.20.0",
     "@vue/cli-plugin-babel": "^4.5.0",
     "@vue/cli-plugin-eslint": "^4.5.0",
     "@vue/cli-plugin-router": "^4.5.0",
@@ -44,6 +46,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-vue": "^6.2.2",
     "prettier": "^2.6.0",
+    "vue-cli-plugin-pug": "~2.0.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
