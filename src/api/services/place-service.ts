@@ -1,5 +1,8 @@
 import knex, { Knex } from 'knex';
-import { QueryStatement, SortStatement } from './';
+import moment from 'moment';
+import { uniq, cloneDeep } from 'lodash';
+
+import { PhotoService, QueryStatement, SortStatement, StaticService } from './';
 import {
 	Association,
 	CONSTRUCTION_PERIODS,
@@ -25,14 +28,42 @@ import {
 	Theme,
 	WebLink,
 } from '../data';
-import { GenericEnum, HISTORICAL_PATTERN_TYPES, PlaceUpdate } from '../models';
-import _ from 'lodash';
+import {
+	decodeCommaDelimitedArray,
+	GenericEnum,
+	HISTORICAL_PATTERN_TYPES,
+	PlaceUpdate,
+} from '../models';
+
+function combine(
+	list1: Array<any>,
+	list2: Array<any> | ReadonlyArray<any>,
+	linker: any,
+	linker2: any,
+	value: any,
+	typeText: any = 'typeText'
+): any[] {
+	list1.forEach((item) => {
+		let match = list2.filter((i) => i[linker] == item[linker2]);
+
+		if (match && match[0]) {
+			let add = { [typeText]: match[0][value] };
+			item = Object.assign(item, add);
+		} else item = Object.assign(item, { [typeText]: null });
+	});
+
+	return list1;
+}
 
 export class PlaceService {
 	private knex: Knex;
+	private photoService: PhotoService;
+	private staticService: StaticService;
 
 	constructor(config: Knex.Config<any>) {
 		this.knex = knex(config);
+		this.staticService = new StaticService(config);
+		this.photoService = new PhotoService(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Place>> {
@@ -52,14 +83,166 @@ export class PlaceService {
 			.select(this.knex.raw("'French teaser' as teaserFrench"));
 	}
 
-	async getById(id: number): Promise<Place | undefined> {
+	async getById(id: number) {
 		return this.knex('place')
-			.select<Place>(PLACE_FIELDS)
+			.first<Place>(PLACE_FIELDS)
 			.where({ id: id })
-			.first()
-			.catch((err: any) => {
-				//console.log('BOMBED', err);
-				return undefined;
+			.then(async (place) => {
+				if (!place) {
+					return Promise.reject(new Error(`Could not find Place for id=${id}`));
+				}
+
+				const fnList = await this.staticService.getFirstNations();
+				const themeList = await this.staticService.getPlaceThemes();
+				const functionalTypes = await this.staticService.getFunctionalTypes();
+
+				place.contributingResources = decodeCommaDelimitedArray(
+					place.contributingResources
+				);
+				place.designations = decodeCommaDelimitedArray(place.designations);
+				place.records = decodeCommaDelimitedArray(place.records);
+				place.siteCategories = decodeCommaDelimitedArray(place.siteCategories);
+
+				const associations = combine(
+					await this.getAssociationsFor(place.id),
+					this.getAssociationTypes(),
+					'value',
+					'type',
+					'text'
+				);
+				let fnAssociations = combine(
+					await this.getFNAssociationsFor(place.id),
+					this.getFNAssociationTypes(),
+					'value',
+					'firstNationAssociationType',
+					'text'
+				);
+				fnAssociations = combine(
+					fnAssociations,
+					fnList,
+					'id',
+					'firstNationId',
+					'description'
+				);
+
+				const names = await this.getNamesFor(place.id);
+				const historicalPatterns = combine(
+					await this.getHistoricalPatternsFor(place.id),
+					this.getHistoricalPatterns(),
+					'value',
+					'historicalPatternType',
+					'text'
+				);
+				const dates = combine(
+					await this.getDatesFor(place.id),
+					this.getDateTypes(),
+					'value',
+					'type',
+					'text'
+				);
+				const constructionPeriods = combine(
+					await this.getConstructionPeriodsFor(place.id),
+					this.getConstructionPeriodTypes(),
+					'value',
+					'type',
+					'text'
+				);
+				const themes = combine(
+					combine(
+						await this.getThemesFor(place.id),
+						themeList,
+						'id',
+						'placeThemeId',
+						'type',
+						'typeName'
+					),
+					themeList,
+					'id',
+					'placeThemeId',
+					'category',
+					'categoryName'
+				);
+				let functionalUses = combine(
+					await this.getFunctionUsesFor(place.id),
+					this.getFunctionalUseTypes(),
+					'value',
+					'functionalUseType',
+					'text',
+					'functionalUseTypeText'
+				);
+				functionalUses = combine(
+					functionalUses,
+					functionalTypes,
+					'id',
+					'functionalTypeId',
+					'description',
+					'functionalTypeText'
+				);
+				const ownerships = combine(
+					await this.getOwnershipsFor(place.id),
+					this.getOwnershipTypes(),
+					'value',
+					'ownershipType',
+					'text'
+				);
+				const previousOwnerships = await this.getPreviousOwnershipsFor(
+					place.id
+				);
+				const contacts = combine(
+					await this.getContactsFor(place.id),
+					this.getContactTypes(),
+					'value',
+					'contactType',
+					'text',
+					'contactTypeText'
+				);
+				const revisionLogs = combine(
+					await this.getRevisionLogFor(place.id),
+					this.getRevisionLogTypes(),
+					'value',
+					'revisionLogType',
+					'text',
+					'revisionLogTypeText'
+				);
+				const webLinks = combine(
+					await this.getWebLinksFor(place.id),
+					this.getWebLinkTypes(),
+					'value',
+					'type',
+					'text'
+				);
+				const descriptions = combine(
+					await this.getDescriptionsFor(place.id),
+					this.getDescriptionTypes(),
+					'value',
+					'type',
+					'text'
+				);
+
+				const photos = await this.photoService.getAllForPlace(id);
+
+				const relationships = {
+					associations: { data: associations },
+					firstNationAssociations: { data: fnAssociations },
+					names: { data: names },
+					historicalPatterns: { data: historicalPatterns },
+					dates: { data: dates },
+					constructionPeriods: { data: constructionPeriods },
+					themes: { data: themes },
+					functionalUses: { data: functionalUses },
+					ownerships: { data: ownerships },
+					previousOwnerships: { data: previousOwnerships },
+					photos: { data: photos },
+					contacts: { data: contacts },
+					revisionLogs: { data: revisionLogs },
+					webLinks: { data: webLinks },
+					descriptions: { data: descriptions },
+				};
+
+				place.recognitionDateDisplay = place.recognitionDate
+					? moment(place.recognitionDate).add(7, 'hours').format('YYYY-MM-DD')
+					: '';
+				return { place, relationships };
 			});
 	}
 
@@ -609,7 +792,7 @@ export class PlaceService {
 				return [];
 			});
 
-			let uniqIds = _.uniq(fullData.map((i: any) => i.id));
+			let uniqIds = uniq(fullData.map((i: any) => i.id));
 			let count = uniqIds.length;
 			let pageCount = Math.ceil(count / itemsPerPage);
 
