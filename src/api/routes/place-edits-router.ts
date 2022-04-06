@@ -4,6 +4,7 @@ import moment from 'moment';
 
 import { ReturnValidationErrors } from '../middleware';
 import { PlaceEditService } from '../services';
+import { authorize, UserRoles } from '../middleware/authorization';
 
 export const placeEditsRouter = express.Router();
 const placeEditService = new PlaceEditService();
@@ -47,27 +48,35 @@ placeEditsRouter.get(
 	}
 );
 
-placeEditsRouter.post('/', (req: Request, res: Response) => {
-	const data = req.body;
-	const currentUser = req.user;
+placeEditsRouter.post(
+	'/',
+	authorize([
+		UserRoles.SITE_EDITOR,
+		UserRoles.SITE_ADMIN,
+		UserRoles.ADMINISTRATOR,
+	]),
+	(req: Request, res: Response) => {
+		const data = req.body;
+		const currentUser = req.user;
 
-	return placeEditService
-		.create({
-			...data,
-			editorUserId: currentUser.id,
-			editDate: moment().format('YYYY-MM-DD'),
-		})
-		.then((result) => {
-			return res.json({
-				data: result,
+		return placeEditService
+			.create({
+				...data,
+				editorUserId: currentUser.id,
+				editDate: moment().format('YYYY-MM-DD'),
+			})
+			.then((result) => {
+				return res.json({
+					data: result,
+				});
+			})
+			.catch((error) => {
+				return res.status(422).json({
+					messages: [{ variant: 'error', text: error.message }],
+				});
 			});
-		})
-		.catch((error) => {
-			return res.status(422).json({
-				messages: [{ variant: 'error', text: error.message }],
-			});
-		});
-});
+	}
+);
 
 placeEditsRouter.get(
 	'/:id',
