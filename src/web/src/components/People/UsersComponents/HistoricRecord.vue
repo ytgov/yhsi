@@ -14,7 +14,7 @@
 
                 <v-spacer></v-spacer>
 
-                <v-btn class="black--text" v-if="mode != 'view'" :disabled="addingItem" @click="addRecord">Add Historic Record</v-btn>
+                <v-btn class="black--text" v-if="mode === 'edit'" :disabled="addingItem" @click="addRecord">Add Historic Record</v-btn>
             </v-col>
         </v-row>
         <v-row>
@@ -26,6 +26,7 @@
                         :headers="headers"
                         :items="data"
                         :search="search"
+                        @pagination="updatePagination"
                         :options="options"
                         :footer-props="{'items-per-page-options': [10, 20, 30, 100, 500]}"
                         :loading="loadingData"
@@ -175,11 +176,15 @@ export default {
         this.getDataFromApi();
     },
     methods:{
+        updatePagination(pagination) {
+            this.pagination = pagination;
+        },
         async getDataFromApi(){
             this.loadingData = true;
             this.loadingHistoriesChange(this.loadingData);
             let res = await people.getHistories(this.personID);
             this.data = res.histories;
+
             this.loadingData = false;
             this.loadingHistoriesChange(this.loadingData);
         },
@@ -234,7 +239,7 @@ export default {
             let resp = await people.postHistory(this.personID, data);
     //console.log(resp);
             if(resp.message == 'success'){
-                this.data.push(data.history);
+                this.data.unshift(data.history);
                 //console.log("DATA PUSHED");
                 //console.log(this.data);
             }

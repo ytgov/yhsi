@@ -28,7 +28,7 @@
     </v-row>
     <v-row v-else>
       <v-col cols="12" class="d-flex">
-        <v-dialog v-if="mode != 'view'" 
+        <v-dialog v-if="mode === 'edit'" 
           v-model="dialog1"
           max-width="600"
           scrollable

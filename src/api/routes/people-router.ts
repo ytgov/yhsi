@@ -32,41 +32,7 @@ peopleRouter.get(
 
     let counter = 0;
     let data = await peopleService.doSearch(page, limit, offset,{sortBy, sort, textToMatch});
-/*
-    if (textToMatch) {
-      counter = await db
-        .from('Person.Person')
-        .where('Surname', 'like', `%${textToMatch}%`)
-        .orWhere('GivenName', 'like', `%${textToMatch}%`)
-        .orWhere('BirthYear', 'like', `%${textToMatch}%`)
-        .orWhere('BirthAccuracy', 'like', `%${textToMatch}%`)
-        .orWhere('DeathYear', 'like', `%${textToMatch}%`)
-        .orWhere('DeathAccuracy', 'like', `%${textToMatch}%`)
-        .count('PersonID', { as: 'count' });
 
-      people = await db
-        .from('Person.Person')
-        .where('Surname', 'like', `%${textToMatch}%`)
-        .orWhere('GivenName', 'like', `%${textToMatch}%`)
-        .orWhere('BirthYear', 'like', `%${textToMatch}%`)
-        .orWhere('BirthAccuracy', 'like', `%${textToMatch}%`)
-        .orWhere('DeathYear', 'like', `%${textToMatch}%`)
-        .orWhere('DeathAccuracy', 'like', `%${textToMatch}%`)
-        .orderBy(`${sortBy}`, `${sort}`)
-        .limit(limit)
-        .offset(offset);
-    } else {
-      counter = await db
-        .from('Person.Person')
-        .count('PersonID', { as: 'count' });
-
-      people = await db
-        .from('Person.Person')
-        .orderBy(`${sortBy}`, `${sort}`)
-        .limit(limit)
-        .offset(offset);
-    }
-*/
     res.status(200).send(data);
   }
 );
@@ -99,7 +65,7 @@ peopleRouter.put(
 
 		const { personId } = req.params;
 		const { person = {} } = req.body;
-
+		// console.log(person);
 		const updatePerson = await db('Person.Person')
 			.update(person)
 			.where('Person.Person.PersonID', personId)
@@ -143,7 +109,8 @@ peopleRouter.get(
 
 		const histories = await db
 			.from('Person.History')
-			.where('History.PersonID', personId);
+			.where('History.PersonID', personId)
+			.orderBy('SeqID', 'desc');
 
 		if (histories.length == 0) {
 			res.status(200).send({
@@ -218,13 +185,14 @@ peopleRouter.post(
 peopleRouter.post('/pdf',   
 ReturnValidationErrors,
 async (req: Request, res: Response) => {
-	let people = [];
-
-	people = await peopleService.getAll();
-
+	const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
+		//console.log(req.body);
+	const offset = 0;
+	let people = await peopleService.doSearch(page, limit, offset, { sortBy, sort, textToMatch });
+	// not working right now
 	// Compile template.pug, and render a set of data
 	let data = renderFile('./templates/people/peopleGrid.pug', {
-		data: people
+		data: people.body
 	});
 
 	let pdf = await generatePDF(data)
@@ -252,10 +220,12 @@ peopleRouter.post(
 		res.send(pdf);
 });
 
-
-peopleRouter.post('/export', async (req: Request, res: Response) => {
-	
-	let data = await peopleService.getAll();
-
-	res.status(200).send(data);
+peopleRouter.post('/export',
+	  ReturnValidationErrors,
+	  async (req: Request, res: Response) => {
+		const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
+		//console.log(req.body);
+		const offset = 0;
+		let data = await peopleService.doSearch(page, limit, offset, { sortBy, sort, textToMatch });
+		res.status(200).send(data.body);
 });

@@ -4,7 +4,7 @@
         <Breadcrumbs/>
         <v-row>
             <v-col cols="12" class="d-flex">
-                <h1 v-if="isEditMode || isViewMode">{{fields.GivenName}}</h1>
+                <h1 v-if="isEditMode || isViewMode">{{fields.GivenName}}, {{fields.Surname}}</h1>
                 <h1 v-else>New Person</h1>
                 <v-spacer></v-spacer>
 <!-- buttons for the view state -->
@@ -41,7 +41,7 @@
         <v-row>
             <v-col cols="7">
                 <v-row>
-                    <v-col cols="6">
+                    <v-col cols="4">
                       <v-text-field outlined dense
                         name="Surname"
                         label="Surname"
@@ -56,12 +56,6 @@
                         :readonly="isViewMode"
                       ></v-text-field>
 
-                      <v-text-field outlined dense
-                        name="Notes"
-                        label="Notes"
-                        v-model="fields.Notes"
-                        :readonly="isViewMode"
-                      ></v-text-field>
                     </v-col>
 
                     <v-col cols="4">
@@ -80,18 +74,32 @@
                       ></v-text-field>
                     </v-col>
 
-                    <v-col cols="2">
-                      <v-checkbox class="my-2"
-                        v-model="fields.BirthAccuracy"
+                    <v-col cols="4">
+                      <v-select outlined dense
+                          :items="accuracyList"
+                          v-model="fields.BirthAccuracy"
+                          item-text="name"
+                          item-value="val"
+                          label="Birth Accuracy"
+                      ></v-select>
+              
+                      <v-select outlined dense
+                          :items="accuracyList"
+                          v-model="fields.DeathAccuracy"
+                          item-text="name"
+                          item-value="val"
+                          label="Death Accuracy"
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12">
+                        <v-textarea outlined dense
+                        name="Notes"
+                        label="Notes"
+                        v-model="fields.Notes"
                         :readonly="isViewMode"
-                        label="Estimated"
-                      ></v-checkbox>
-
-                      <v-checkbox class="my-2"
-                        v-model="fields.DeathAccuracy"
-                        :readonly="isViewMode"
-                        label="Estimated"
-                      ></v-checkbox>
+                      ></v-textarea>
                     </v-col>
                   </v-row>
             </v-col>
@@ -102,6 +110,7 @@
                 :showDefault="isNewMode" 
                 :photoType="'people'"
                 :itemId="getPersonID"
+                :mode="mode"
                 @updateSelectedImage="selectedImageChanged" 
                 :selectedImage="selectedImage" 
                 @loadingPhotosChange="loadingPhotosChange"/>   
@@ -110,7 +119,7 @@
         <v-divider class="my-5"></v-divider> 
 <!-- Historic Record component -->
         <HistoricRecord 
-            v-if="!isNewMode" :mode="'edit'" 
+            v-if="!isNewMode" :mode="mode" 
             :personID="getPersonID" 
             @historicRecordChange="onHistoryChange" 
             @loadingHistoriesChange="loadingHistoriesChange"/>
@@ -150,7 +159,8 @@ export default {
         selectedImage: null,
         loadingPhotos: false,
         loadingHistories: false,
-        loadingPdf: false
+        loadingPdf: false,
+        accuracyList: [{ name: "Estimated", val: "E"},{name: "Approximate", val: "A"}]
     }),
     mounted(){
         if(this.checkPath("edit")){
@@ -248,16 +258,18 @@ export default {
             let { Surname,
                 GivenName,
                 BirthYear,
-                //BirthAccuracy,DeathAccuracy
+                BirthAccuracy,
+                DeathAccuracy,
                 DeathYear } = this.fields;
+                console.log(this.fields);
              let data = {
                     person: {
                         Surname,
                         GivenName,
                         BirthYear,
-                        BirthAccuracy: "",
+                        BirthAccuracy,
                         DeathYear,
-                        DeathAccuracy: ""
+                        DeathAccuracy
                     }
                 };
                 ////console.log(data);

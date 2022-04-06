@@ -35,25 +35,11 @@
             <v-list>
               <v-list-item-group color="primary">
                 <v-list-item v-for="(item, i) in filterOptions" :key="i" link>
-                  <!-- 
-
-<template v-slot:default="{ active }">
-                    <v-list-item-action>
-                      <v-icon v-if="!active">
-                        mdi-checkbox-blank-outline
-                      </v-icon>
-                      <v-icon v-else> mdi-checkbox-marked-outline </v-icon>
-                    </v-list-item-action>
-                    <v-list-item-title>{{ item.name }}</v-list-item-title>
-                  </template>
-                  -->
-
                   <v-text-field
                     :name="item.name"
                     :label="item.name"
                     v-model="item.value"
-                  ></v-text-field>
-                  
+                  ></v-text-field>           
                 </v-list-item>
               </v-list-item-group>
             </v-list>
@@ -106,7 +92,7 @@
                 :options.sync="options"
                 :server-items-length="totalLength"
                 @click:row="handleClick"
-                :footer-props="{ 'items-per-page-options': [10, 30, 100] }"
+                :footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
               ></v-data-table>
             </v-col>
           </v-row>
@@ -187,7 +173,8 @@ export default {
       this.people = _.get(data, "body", []);
       //console.log(data);
       this.totalLength = _.get(data, "count", 0);
-      this.peopleData = await people.getExport();
+      this.peopleData = await people.getExport(textToMatch, sortBy[0] ? sortBy[0] : 'GivenName', sortDesc[0] ? "desc" : "asc");
+      console.log(this.peopleData);
       this.loading = false;
     },
     async downloadPdf(){
