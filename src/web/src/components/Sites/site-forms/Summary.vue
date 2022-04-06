@@ -194,6 +194,7 @@
 </template>
 
 <script>
+import { pickBy } from 'lodash';
 import { mapActions, mapGetters } from 'vuex';
 
 import store from '@/store';
@@ -303,8 +304,13 @@ export default {
       return this.saveAsChangeRequest(data);
     },
     saveAsChangeRequest(data) {
+      const safePlaceData = pickBy(this.place, (_value, key) => {
+        return !['id', 'recognitionDateDisplay', 'hasPendingChanges'].includes(
+          key
+        );
+      });
       return placeEditsApi
-        .post({ ...this.place, ...data, placeId: this.placeId })
+        .post({ ...safePlaceData, ...data, placeId: this.placeId })
         .then((data) => {
           this.$emit('showAPIMessages', data);
         })
