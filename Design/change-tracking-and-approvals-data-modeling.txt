@@ -22,11 +22,11 @@ enum "Designations" as designations {
 }
 
 enum "Category" as category {
-  NoneSelected : None Selected
-  Building : Building
-  District : District
-  Place : Place
-  Structure : Structure
+  0 : None Selected
+  1 : Building
+  2 : District
+  3 : Place
+  4 : Structure
 }
 
 enum "ContributingResources" as contributing_resources {
