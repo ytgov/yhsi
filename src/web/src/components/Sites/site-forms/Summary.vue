@@ -245,6 +245,7 @@ export default {
     }),
   },
   mounted() {
+    this.loadProfile();
     this.initializeOrGetCachedPlace(this.placeId).then((place) => {
       this.category = place.category;
       this.contributingResources = place.contributingResources;
@@ -263,6 +264,7 @@ export default {
   methods: {
     ...mapActions({
       initializeOrGetCachedPlace: 'places/initializeOrGetCached',
+      loadProfile: 'profile/loadProfile',
     }),
     addName() {
       this.names.push({ description: '', placeId: this.placeId });
