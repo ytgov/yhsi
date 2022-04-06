@@ -35,7 +35,6 @@
             v-model="fields.category"
             dense
             outlined
-            clearable
           />
 
           <SiteCategoryTypesSelect
