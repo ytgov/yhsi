@@ -247,6 +247,17 @@ export default {
   mounted() {
     this.loadProfile();
     this.initializeOrGetCachedPlace(this.placeId).then((place) => {
+      this.updateFormFields(place);
+      store.dispatch('addSiteHistory', place);
+    });
+  },
+  methods: {
+    ...mapActions({
+      initializeOrGetCachedPlace: 'places/initializeOrGetCached',
+      refreshPlace: 'places/refresh',
+      loadProfile: 'profile/loadProfile',
+    }),
+    updateFormFields(place) {
       this.category = place.category;
       this.contributingResources = place.contributingResources;
       this.designations = place.designations;
@@ -257,15 +268,10 @@ export default {
       this.showInRegister = place.showInRegister;
       this.siteCategories = place.siteCategories;
       this.yHSIId = place.yHSIId;
-
-      store.dispatch('addSiteHistory', place);
-    });
-  },
-  methods: {
-    ...mapActions({
-      initializeOrGetCachedPlace: 'places/initializeOrGetCached',
-      loadProfile: 'profile/loadProfile',
-    }),
+    },
+    refresh() {
+      return this.refreshPlace(this.placeId).then(this.updateFormFields);
+    },
     addName() {
       this.names.push({ description: '', placeId: this.placeId });
     },
@@ -314,6 +320,7 @@ export default {
       return placeEditsApi
         .post({ ...safePlaceData, ...data, placeId: this.placeId })
         .then((data) => {
+          this.refresh();
           this.$emit('showAPIMessages', data);
         })
         .catch((error) => {
@@ -324,6 +331,7 @@ export default {
       return placesSummaryApi
         .put(this.placeId, data)
         .then((data) => {
+          this.refresh();
           this.$emit('showAPIMessages', data);
         })
         .catch((error) => {
