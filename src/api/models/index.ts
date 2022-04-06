@@ -6,6 +6,7 @@ export * from './historical-pattern';
 export * from './historical-pattern-types';
 export * from './name';
 export * from './place';
+export * from './place-edit';
 export * from './security';
 export * from './record-types';
 export * from './simple-types';
