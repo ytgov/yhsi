@@ -1,8 +1,10 @@
 <template lang="pug">
 v-select(
-	v-bind="$attrs",
+	label="Site Categories",
 	:items="siteCategoryTypeOptions",
 	:loading="loading"
+	multiple
+	v-bind="$attrs"
 	v-on="$listeners"
 )
 	template(

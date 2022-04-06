@@ -174,7 +174,6 @@ export default {
         this.fields = resp.data.data;
         this.photos = resp.data.relationships.photos.data;
         store.dispatch('addSiteHistory', resp.data.data);
-        this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
   },

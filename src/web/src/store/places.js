@@ -1,41 +1,56 @@
+import { isEmpty } from 'lodash';
 
-
-const state = {
-    selectedFilters: [],
-    ownerSearch: "",
-    boatSearch: "",
-    boats: [],
-    owners: [],
-};
-const getters = {
-    selectedFilters: state => state.selectedFilters,
-    ownerSearch: state => state.ownerSearch,
-    boatSearch: state => state.boatSearch,
-    boats: state => state.boats,
-    owners: state => state.owners
-};
-const mutations = {
-    setBoatSearch(state, search) {
-        state.boatSearch = search;
-    },
-    setOwnerSearch(state, search) {
-        state.ownerSearch = search;
-    },
-    setSelectedFilters(state, arr) {
-        state.selectedFilters = arr;
-    },
-    setBoats(state, arr){
-        state.boats = arr;
-    },
-    setOwners(state, arr){
-        state.owners = arr;
-    }
-};
-
+import api from '@/apis/places-api';
 
 export default {
-    namespaced: true,
-    state,
-    getters,
-    mutations
+  namespaced: true,
+  state: () => ({ place: {}, loading: false }),
+  getters: {
+    hasPendingChanges: (state) => state.place.hasPendingChanges,
+    historicalPatterns: (state) => state.place.historicalPatterns || [],
+    loading: (state) => state.loading,
+    names: (state) => state.place.names || [],
+    place: (state) => state.place,
+    primaryName: (state) => state.place.primaryName,
+  },
+  mutations: {
+    setLoading: (state, value) => {
+      state.loading = value;
+    },
+    setPlace: (state, value) => {
+      state.place = value;
+    },
+  },
+  actions: {
+    get({ state, commit }, placeId) {
+      commit('setLoading', true);
+      return api
+        .get(placeId)
+        .then(({ data, relationships }) => {
+          data.names = relationships.names.data;
+          data.historicalPatterns = relationships.historicalPatterns.data;
+          commit('setPlace', data);
+          return state.place;
+        })
+        .finally(() => {
+          commit('setLoading', false);
+        });
+    },
+    initialize({ dispatch }, placeId) {
+      return dispatch('get', placeId);
+    },
+    refresh({ dispatch }, placeId) {
+      return dispatch('get', placeId);
+    },
+    initializeOrGetCached({ dispatch, state }, placeId) {
+      if (
+        !isEmpty(state.place) &&
+        !state.loading &&
+        state.place.id == placeId
+      ) {
+        return state.place;
+      }
+      return dispatch('get', placeId);
+    },
+  },
 };

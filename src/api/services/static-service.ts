@@ -213,7 +213,7 @@ export class StaticService {
 		];
 	}
 
-	getCategories(): readonly GenericStringEnum[] {
+	getCategories(): readonly GenericEnum[] {
 		return CATEGORY_TYPES;
 	}
 
