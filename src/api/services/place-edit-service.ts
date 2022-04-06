@@ -3,11 +3,7 @@ import { camelCase, mapKeys } from 'lodash';
 
 import { DB_CONFIG } from '../config';
 import { mapKeysDeep, pascalCase } from '../utils/lodash-extensions';
-import {
-	decodeCommaDelimitedArray,
-	encodeCommaDelimitedArray,
-	PlaceEdit,
-} from '../models';
+import { decodeCommaDelimitedArray, Place, PlaceEdit } from '../models';
 
 const JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } = Object.freeze(
 	{
@@ -51,7 +47,7 @@ function encodeAndDenormalizeJSONColumns(object: PlainObject) {
 
 function encodeCommaDelimitedArrayColumns(object: PlainObject) {
 	Place.COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
-		object[column] = encodeCommaDelimitedArray(object[column]);
+		object[column] = Place.encodeCommaDelimitedArray(object[column]);
 	});
 
 	return object;

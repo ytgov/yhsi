@@ -76,6 +76,21 @@ export class Place {
 		'records',
 		'siteCategories',
 	]);
+
+	static encodeCommaDelimitedArray(
+		value: undefined | null | string | string[]
+	): string | null {
+		if (
+			value === undefined ||
+			value === null ||
+			value === '' ||
+			value.length === 0
+		)
+			return null;
+		if (isString(value)) return value;
+
+		return value.join(',');
+	}
 }
 
 export function decodeCommaDelimitedArray(
@@ -85,19 +100,4 @@ export function decodeCommaDelimitedArray(
 	if (Array.isArray(value)) return value;
 
 	return value.split(',');
-}
-
-export function encodeCommaDelimitedArray(
-	value: undefined | null | string | string[]
-): string | null {
-	if (
-		value === undefined ||
-		value === null ||
-		value === '' ||
-		value.length === 0
-	)
-		return null;
-	if (isString(value)) return value;
-
-	return value.join(',');
 }

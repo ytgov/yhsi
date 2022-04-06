@@ -35,7 +35,6 @@ import {
 } from '../data';
 import {
 	decodeCommaDelimitedArray,
-	encodeCommaDelimitedArray,
 	GenericEnum,
 	HistoricalPattern,
 	HISTORICAL_PATTERN_TYPES,
@@ -305,14 +304,14 @@ export class PlaceService {
 		delete attributes['historicalPatterns'];
 
 		return new Promise(async (resolve, reject) => {
-			attributes.contributingResources = encodeCommaDelimitedArray(
+			attributes.contributingResources = Place.encodeCommaDelimitedArray(
 				attributes.contributingResources
 			);
-			attributes.designations = encodeCommaDelimitedArray(
+			attributes.designations = Place.encodeCommaDelimitedArray(
 				attributes.designations
 			);
-			attributes.records = encodeCommaDelimitedArray(attributes.records);
-			attributes.siteCategories = encodeCommaDelimitedArray(
+			attributes.records = Place.encodeCommaDelimitedArray(attributes.records);
+			attributes.siteCategories = Place.encodeCommaDelimitedArray(
 				attributes.siteCategories
 			);
 
