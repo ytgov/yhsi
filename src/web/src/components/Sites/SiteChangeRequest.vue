@@ -98,14 +98,14 @@ import { cloneDeep, isEqual, get } from 'lodash';
 import placesApi from '@/apis/places-api';
 import placeEditsApi from '@/apis/place-edits-api';
 
-import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
-import ContributingResourceTypesSelect from '@/components/Sites/ContributingResourceTypesSelect';
-import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
+import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSelect';
+import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
+import DesignationTypesSelect from '@/components/Sites/site-forms/DesignationTypesSelect';
 import HistoricalPatternsViewer from '@/components/Sites/site-change-request/HistoricalPatternsViewer';
 import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
 import NamesViewer from '@/components/Sites/site-change-request/NamesViewer';
-import RecordTypesSelect from '@/components/Sites/RecordTypesSelect';
-import SiteCategoryTypesSelect from '@/components/Sites/SiteCategoryTypesSelect';
+import RecordTypesSelect from '@/components/Sites/site-forms/RecordTypesSelect';
+import SiteCategoryTypesSelect from '@/components/Sites/site-forms/SiteCategoryTypesSelect';
 
 export default {
 	name: 'SiteChangeRequest',

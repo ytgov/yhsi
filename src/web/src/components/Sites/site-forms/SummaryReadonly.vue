@@ -133,12 +133,12 @@ v-card.mb-0(
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
-import ContributingResourceTypesSelect from '@/components/Sites/ContributingResourceTypesSelect';
-import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
-import HistoricalPatternTypesSelect from '@/components/Sites/HistoricalPatternTypesSelect';
-import RecordTypesSelect from '@/components/Sites/RecordTypesSelect';
-import SiteCategoryTypesSelect from '@/components/Sites/SiteCategoryTypesSelect';
+import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSelect';
+import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
+import DesignationTypesSelect from '@/components/Sites/site-forms/DesignationTypesSelect';
+import HistoricalPatternTypesSelect from '@/components/Sites/site-forms/HistoricalPatternTypesSelect';
+import RecordTypesSelect from '@/components/Sites/site-forms/RecordTypesSelect';
+import SiteCategoryTypesSelect from '@/components/Sites/site-forms/SiteCategoryTypesSelect';
 
 export default {
 	name: 'Summary',
