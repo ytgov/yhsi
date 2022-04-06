@@ -399,7 +399,6 @@
                 </v-row>
             </v-col>
         </v-row>
-        {{getBoatID}}
         <v-divider class="my-5"></v-divider> 
 <!-- Historic Record component -->
         <HistoricRecord 
