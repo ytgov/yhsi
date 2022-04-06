@@ -185,13 +185,14 @@ peopleRouter.post(
 peopleRouter.post('/pdf',   
 ReturnValidationErrors,
 async (req: Request, res: Response) => {
-	let people = [];
-
-	people = await peopleService.getAll();
-
+	const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
+		//console.log(req.body);
+	const offset = 0;
+	let people = await peopleService.doSearch(page, limit, offset, { sortBy, sort, textToMatch });
+	// not working right now
 	// Compile template.pug, and render a set of data
 	let data = renderFile('./templates/people/peopleGrid.pug', {
-		data: people
+		data: people.body
 	});
 
 	let pdf = await generatePDF(data)
@@ -223,11 +224,8 @@ peopleRouter.post('/export',
 	  ReturnValidationErrors,
 	  async (req: Request, res: Response) => {
 		const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
-	
-		// const offset = page * limit || 0;
-		// console.log("inside the endpoint");
-		// let data = await peopleService.doSearch(page, limit, offset, { sortBy, sort, textToMatch });
-		// console.log(data);
-		let data = await peopleService.getAll();
-		res.status(200).send(data);
+		//console.log(req.body);
+		const offset = 0;
+		let data = await peopleService.doSearch(page, limit, offset, { sortBy, sort, textToMatch });
+		res.status(200).send(data.body);
 });

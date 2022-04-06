@@ -31,44 +31,41 @@ export class PeopleService {
 			sortBy = 'GivenName',
 			sort = 'asc',
 		} = filters;
-		let counter = [{ count: 0 }];
         let people = [];
 
-        if (textToMatch) {
-        counter = await db
-            .from('Person.Person')
-            .where('Surname', 'like', `%${textToMatch}%`)
-            .orWhere('GivenName', 'like', `%${textToMatch}%`)
-            .orWhere('BirthYear', 'like', `%${textToMatch}%`)
-            .orWhere('BirthAccuracy', 'like', `%${textToMatch}%`)
-            .orWhere('DeathYear', 'like', `%${textToMatch}%`)
-            .orWhere('DeathAccuracy', 'like', `%${textToMatch}%`)
-            .count('PersonID', { as: 'count' });
-
-        people = await db
-            .from('Person.Person')
-            .where('Surname', 'like', `%${textToMatch}%`)
-            .orWhere('GivenName', 'like', `%${textToMatch}%`)
-            .orWhere('BirthYear', 'like', `%${textToMatch}%`)
-            .orWhere('BirthAccuracy', 'like', `%${textToMatch}%`)
-            .orWhere('DeathYear', 'like', `%${textToMatch}%`)
-            .orWhere('DeathAccuracy', 'like', `%${textToMatch}%`)
-            .orderBy(`${sortBy}`, `${sort}`)
-            .limit(limit)
-            .offset(offset);
-        } else {
-        counter = await db
-            .from('Person.Person')
-            .count('PersonID', { as: 'count' });
-
-        people = await db
-            .from('Person.Person')
-            .orderBy(`${sortBy}`, `${sort}`)
-            .limit(limit)
-            .offset(offset);
+        if (limit === 0) {
+            people = await db
+                .from('Person.Person')
+                .where('Surname', 'like', `%${textToMatch}%`)
+                .orWhere('GivenName', 'like', `%${textToMatch}%`)
+                .orWhere('BirthYear', 'like', `%${textToMatch}%`)
+                .orWhere('BirthAccuracy', 'like', `%${textToMatch}%`)
+                .orWhere('DeathYear', 'like', `%${textToMatch}%`)
+                .orWhere('DeathAccuracy', 'like', `%${textToMatch}%`)
+                .orderBy(`${sortBy}`, `${sort}`);
+        
+        } else if (textToMatch) {
+            people = await db
+                .from('Person.Person')
+                .where('Surname', 'like', `%${textToMatch}%`)
+                .orWhere('GivenName', 'like', `%${textToMatch}%`)
+                .orWhere('BirthYear', 'like', `%${textToMatch}%`)
+                .orWhere('BirthAccuracy', 'like', `%${textToMatch}%`)
+                .orWhere('DeathYear', 'like', `%${textToMatch}%`)
+                .orWhere('DeathAccuracy', 'like', `%${textToMatch}%`)
+                .orderBy(`${sortBy}`, `${sort}`)
+                .limit(limit)
+                .offset(offset);
+        }
+        else{
+            people = await db
+                .from('Person.Person')
+                .orderBy(`${sortBy}`, `${sort}`)
+                .limit(limit)
+                .offset(offset);
         }
 
-        return { count: counter[0].count, body: people };
+        return { count: people.length, body: people };
 
     }
 
