@@ -148,7 +148,7 @@ placeRouter.put(
 			'category',
 			'contributingResources',
 			'designations',
-			'historicalpatterns',
+			'historicalPatterns',
 			'names',
 			'primaryName',
 			'records',
