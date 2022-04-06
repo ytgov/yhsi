@@ -9,15 +9,29 @@ import {
 	PlaceEdit,
 } from '../models';
 
+const JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } = Object.freeze(
+	{
+		names: 'NameJSON',
+		historicalPatterns: 'HistoricalPatternJSON',
+	}
+);
+
+const COMMA_DELIMITED_ARRAY_COLUMNS: ReadonlyArray<string> = Object.freeze([
+	'contributingResources',
+	'designations',
+	'records',
+	'siteCategories',
+]);
+
 interface CountQuery {
 	count: number;
 }
 
-interface GenericResult {
+interface PlainObject {
 	[key: string]: any;
 }
 
-function parseAndNormalizeJSONColumns(object: GenericResult) {
+function parseAndNormalizeJSONColumns(object: PlainObject) {
 	Object.keys(object).forEach((key) => {
 		if (key.endsWith('JSON')) {
 			const cleanedKey = key.replace(/JSON$/, '');
@@ -29,16 +43,24 @@ function parseAndNormalizeJSONColumns(object: GenericResult) {
 	return object;
 }
 
-function encodeAndDenormalizeJSONColumns(object: GenericResult) {
+function encodeAndDenormalizeJSONColumns(object: PlainObject) {
 	Object.keys(object).forEach((key) => {
-		if (['historicalPatterns', 'names'].includes(key)) {
-			const encodedKey = `${key}JSON`;
+		if (JS_TO_JSON_COLUMN_TRANSLATIONS[key]) {
+			const encodedKey = JS_TO_JSON_COLUMN_TRANSLATIONS[key];
 			const encodedValue = mapKeysDeep(object[key], pascalCase);
 			const jsonObjectAsString = JSON.stringify(encodedValue);
 			object[encodedKey] = jsonObjectAsString;
 			delete object[key];
 		}
 	});
+	return object;
+}
+
+function encodeCommaDelimitedArrayColumns(object: PlainObject) {
+	COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
+		object[column] = encodeCommaDelimitedArray(object[column]);
+	});
+
 	return object;
 }
 
@@ -128,6 +150,7 @@ export class PlaceEditService {
 	create(data: PlaceEdit) {
 		return Promise.resolve(data)
 			.then(encodeAndDenormalizeJSONColumns)
+			.then(encodeCommaDelimitedArrayColumns)
 			.then((normalizedData) => {
 				return this.db('PlaceEdit').insert(normalizedData);
 			});
