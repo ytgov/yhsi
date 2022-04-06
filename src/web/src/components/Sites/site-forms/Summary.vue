@@ -15,7 +15,7 @@
       <v-row>
         <v-col cols="6">
           <v-text-field
-            v-model="fields.yHSIId"
+            v-model="yHSIId"
             dense
             outlined
             label="YHSI ID"
@@ -25,51 +25,41 @@
           />
 
           <DesignationTypesSelect
-            v-model="fields.designations"
+            v-model="designations"
             dense
             outlined
-            multiple
             clearable
-            label="Designations"
           />
 
           <CategoryTypesSelect
-            v-model="fields.category"
+            v-model="category"
             dense
             outlined
-            clearable
-            label="CRHP category"
           />
 
           <SiteCategoryTypesSelect
-            v-model="fields.siteCategories"
+            v-model="siteCategories"
             dense
             outlined
             clearable
-            multiple
-            label="Site Categories"
           />
 
           <RecordTypesSelect
-            v-model="fields.records"
+            v-model="records"
             dense
             outlined
-            multiple
             clearable
-            label="Records"
           />
 
           <ContributingResourceTypesSelect
-            v-model="fields.contributingResources"
+            v-model="contributingResources"
             dense
             outlined
-            multiple
-            label="Contributing resources"
             required
           />
 
           <v-checkbox
-            v-model="fields.showInRegister"
+            v-model="showInRegister"
             dense
             outlined
             label="Show in Register?"
@@ -77,7 +67,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            v-model="fields.primaryName"
+            v-model="primaryName"
             dense
             outlined
             label="Primary name"
@@ -139,15 +129,11 @@
                 class="row"
               >
                 <v-col cols="10">
-                  <v-select
+                  <HistoricalPatternTypesSelect
                     v-model="item.historicalPatternType"
                     dense
                     outlined
-                    :items="historicalPatternOptions"
-                    item-text="text"
-                    item-value="value"
                     background-color="white"
-                    label="Historical pattern"
                   />
                   <v-text-field
                     v-model="item.comments"
@@ -208,16 +194,19 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { pickBy } from 'lodash';
+import { mapActions, mapGetters } from 'vuex';
 
 import store from '@/store';
-import { PLACE_URL, STATIC_URL } from '@/urls';
+import { UserRoles } from '@/authorization';
 
-import placesApi from '@/apis/places-api';
+import placeEditsApi from '@/apis/place-edits-api';
+import placesSummaryApi from '@/apis/places-summary-api';
 
 import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
 import ContributingResourceTypesSelect from '@/components/Sites/ContributingResourceTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
+import HistoricalPatternTypesSelect from '@/components/Sites/HistoricalPatternTypesSelect';
 import RecordTypesSelect from '@/components/Sites/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/SiteCategoryTypesSelect';
 
@@ -227,6 +216,7 @@ export default {
     CategoryTypesSelect,
     ContributingResourceTypesSelect,
     DesignationTypesSelect,
+    HistoricalPatternTypesSelect,
     RecordTypesSelect,
     SiteCategoryTypesSelect,
   },
@@ -237,37 +227,50 @@ export default {
     },
   },
   data: () => ({
-    historicalPatternOptions: [],
-    names: [],
+    category: '',
+    contributingResources: [],
+    designations: [],
     historicalPatterns: [],
-    fields: {
-      primaryName: '',
-      yHSIId: '',
-      secondaryNames: [],
-      contributingResources: [],
-      category: '',
-      designations: [],
-      records: [],
-      showInRegister: false,
-      siteCategories: [],
-    },
+    names: [],
+    primaryName: '',
+    records: [],
+    showInRegister: false,
+    siteCategories: [],
+    yHSIId: '',
   }),
+  computed: {
+    ...mapGetters({
+      currentUserRoles: 'profile/role_list',
+      place: 'places/place',
+    }),
+  },
   mounted() {
-    this.getPlace(this.placeId);
-    axios.get(`${STATIC_URL}/historical-pattern`).then((resp) => {
-      this.historicalPatternOptions = resp.data.data;
+    this.loadProfile();
+    this.initializeOrGetCachedPlace(this.placeId).then((place) => {
+      this.updateFormFields(place);
+      store.dispatch('addSiteHistory', place);
     });
   },
   methods: {
-    getPlace(placeId) {
-      placesApi.get(placeId).then(({ data, relationships }) => {
-        this.fields = data;
-        this.names = relationships.names.data;
-        this.historicalPatterns = relationships.historicalPatterns.data;
-
-        store.dispatch('addSiteHistory', data);
-        this.$parent.siteName = this.fields.primaryName;
-      });
+    ...mapActions({
+      initializeOrGetCachedPlace: 'places/initializeOrGetCached',
+      refreshPlace: 'places/refresh',
+      loadProfile: 'profile/loadProfile',
+    }),
+    updateFormFields(place) {
+      this.category = place.category;
+      this.contributingResources = place.contributingResources;
+      this.designations = place.designations;
+      this.historicalPatterns = place.historicalPatterns;
+      this.names = place.names;
+      this.primaryName = place.primaryName;
+      this.records = place.records;
+      this.showInRegister = place.showInRegister;
+      this.siteCategories = place.siteCategories;
+      this.yHSIId = place.yHSIId;
+    },
+    refresh() {
+      return this.refreshPlace(this.placeId).then(this.updateFormFields);
     },
     addName() {
       this.names.push({ description: '', placeId: this.placeId });
@@ -286,33 +289,54 @@ export default {
       this.historicalPatterns.splice(index, 1);
     },
     saveChanges() {
-      let body = {
-        yHSIId: this.fields.yHSIId,
-        primaryName: this.fields.primaryName,
-        designations: this.fields.designations,
-        category: this.fields.category,
-        siteCategories: this.fields.siteCategories,
-        records: this.fields.records,
-        showInRegister: this.fields.showInRegister,
-        secondaryNames: this.names,
-        contributingResources: this.fields.contributingResources,
+      const data = {
+        yHSIId: this.yHSIId,
+        primaryName: this.primaryName,
+        designations: this.designations,
+        category: this.category,
+        siteCategories: this.siteCategories,
+        records: this.records,
+        showInRegister: this.showInRegister,
+        names: this.names,
+        contributingResources: this.contributingResources,
         historicalPatterns: this.historicalPatterns,
       };
+      if (
+        this.currentUserRoles.some((role) =>
+          [UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR].includes(role)
+        )
+      ) {
+        return this.saveDirectly(data);
+      }
 
-      axios
-        .put(`${PLACE_URL}/${this.placeId}/summary`, body)
-        .then((resp) => {
-          //this.setPlace(resp.data);
-          this.$emit('showAPIMessages', resp.data);
+      return this.saveAsChangeRequest(data);
+    },
+    saveAsChangeRequest(data) {
+      const safePlaceData = pickBy(this.place, (_value, key) => {
+        return !['id', 'recognitionDateDisplay', 'hasPendingChanges'].includes(
+          key
+        );
+      });
+      return placeEditsApi
+        .post({ ...safePlaceData, ...data, placeId: this.placeId })
+        .then((data) => {
+          this.refresh();
+          this.$emit('showAPIMessages', data);
         })
-        .catch((err) => {
-          this.$emit('showError', err);
+        .catch((error) => {
+          this.$emit('showError', error);
         });
     },
-    removeItem(objName, position) {
-      if (position > -1) {
-        this.fields[objName].splice(position, 1);
-      }
+    saveDirectly(data) {
+      return placesSummaryApi
+        .put(this.placeId, data)
+        .then((data) => {
+          this.refresh();
+          this.$emit('showAPIMessages', data);
+        })
+        .catch((error) => {
+          this.$emit('showError', error);
+        });
     },
   },
 };

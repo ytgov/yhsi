@@ -1,9 +1,8 @@
 <template lang="pug">
 v-select(
-	label="Designations",
-	:items="designationOptions",
+	label="Historical pattern",
+	:items="historicalPatternTypeOptions",
 	:loading="loading"
-	multiple
 	v-bind="$attrs"
 	v-on="$listeners"
 )
@@ -18,24 +17,24 @@ v-select(
 </template>
 
 <script>
-import api from '@/apis/designation-types-api';
+import api from '@/apis/historical-pattern-types-api';
 
 export default {
-	name: 'DesignationTypesSelect',
+	name: 'HistoricalPatternTypesSelect',
 	data: () => ({
-		designationOptions: [],
+		historicalPatternTypeOptions: [],
 		loading: false,
 	}),
 	mounted() {
-		this.getDesignations();
+		this.getHistoricalPatternTypes();
 	},
 	methods: {
-		getDesignations() {
+		getHistoricalPatternTypes() {
 			this.loading = true;
 			api
 				.getAll()
 				.then(({ data }) => {
-					this.designationOptions = data;
+					this.historicalPatternTypeOptions = data;
 				})
 				.finally(() => {
 					this.loading = false;
