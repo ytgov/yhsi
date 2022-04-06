@@ -14,8 +14,8 @@ export class HistoricalPatternService {
 		return new Promise((resolve) => {
 			resolve(
 				historicalPatterns.map((historicalPattern) => ({
-					...historicalPattern,
 					placeId,
+					historicalPatternType: historicalPattern.historicalPatternType,
 					comments: historicalPattern.comments.trim(),
 				}))
 			);

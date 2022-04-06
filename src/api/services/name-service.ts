@@ -14,7 +14,6 @@ export class NameService {
 		return new Promise((resolve) => {
 			resolve(
 				names.map((name) => ({
-					...name,
 					placeId,
 					description: name.description.trim(),
 				}))
