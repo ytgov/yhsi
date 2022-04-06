@@ -195,10 +195,14 @@
 </template>
 
 <script>
-import store from '@/store';
+import { mapGetters } from 'vuex';
 
-import placesSummaryApi from '@/apis/places-summary-api';
+import store from '@/store';
+import { UserRoles } from '@/authorization';
+
+import placeEditsApi from '@/apis/place-edits-api';
 import placesApi from '@/apis/places-api';
+import placesSummaryApi from '@/apis/places-summary-api';
 
 import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
 import ContributingResourceTypesSelect from '@/components/Sites/ContributingResourceTypesSelect';
@@ -238,6 +242,9 @@ export default {
       siteCategories: [],
     },
   }),
+  computed: {
+    ...mapGetters('profile', { currentUserRoles: 'role_list' }),
+  },
   mounted() {
     this.getPlace(this.placeId);
   },
@@ -268,19 +275,41 @@ export default {
       this.historicalPatterns.splice(index, 1);
     },
     saveChanges() {
-      placesSummaryApi
-        .put(this.placeId, {
-          yHSIId: this.fields.yHSIId,
-          primaryName: this.fields.primaryName,
-          designations: this.fields.designations,
-          category: this.fields.category,
-          siteCategories: this.fields.siteCategories,
-          records: this.fields.records,
-          showInRegister: this.fields.showInRegister,
-          names: this.names,
-          contributingResources: this.fields.contributingResources,
-          historicalPatterns: this.historicalPatterns,
+      const data = {
+        yHSIId: this.fields.yHSIId,
+        primaryName: this.fields.primaryName,
+        designations: this.fields.designations,
+        category: this.fields.category,
+        siteCategories: this.fields.siteCategories,
+        records: this.fields.records,
+        showInRegister: this.fields.showInRegister,
+        names: this.names,
+        contributingResources: this.fields.contributingResources,
+        historicalPatterns: this.historicalPatterns,
+      };
+      if (
+        this.currentUserRoles.some((role) =>
+          [UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR].includes(role)
+        )
+      ) {
+        return this.saveDirectly(data);
+      }
+
+      return this.saveAsChangeRequest(data);
+    },
+    saveAsChangeRequest(data) {
+      return placeEditsApi
+        .post({ ...data, placeId: this.placeId })
+        .then((data) => {
+          this.$emit('showAPIMessages', data);
         })
+        .catch((error) => {
+          this.$emit('showError', error);
+        });
+    },
+    saveDirectly(data) {
+      return placesSummaryApi
+        .put(this.placeId, data)
         .then((data) => {
           this.$emit('showAPIMessages', data);
         })
