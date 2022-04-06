@@ -3,15 +3,30 @@
 entity "Place" as place {
   * Id : int <<generated>>
   --
-  * Category: int
-  * CommunityId: int
-  * PrimaryName: nvarchar
-  * ShowInRegister: bit
+  * Category : int
+  * CommunityId : int
+  * CoordinateDetermination : int
+  * PrimaryName : nvarchar
+  * ShowInRegister : bit
   * YHSIId : nvarchar
-  ContributingResources: nvarchar : <<comma delimited array>>
-  Designations: nvarchar : <<comma delimited array>>
-  Records: nvarchar : <<comma delimited array>>
-  SiteCategories: nvarchar: <<comma delimited array>>
+  BordenNumber : nvarchar
+  ContributingResources : nvarchar : <<comma delimited array>>
+  Designations : nvarchar : <<comma delimited array>>
+  HectareArea : nvarchar
+  Latitude : nvarchar
+  LocationComment : nvarchar
+  LocationContext : nvarchar
+  Longitude : nvarchar
+  NTSMapSheet: nvarchar
+  OtherCommunity : nvarchar
+  OtherLocality : nvarchar
+  PhysicalAddress : nvarchar
+  PhysicalProvince : nvarchar
+  PhysicalCountry : nvarchar
+  PhysicalPostalCode : nvarchar
+  PreviousAddress : nvarchar
+  Records : nvarchar : <<comma delimited array>>
+  SiteCategories : nvarchar : <<comma delimited array>>
 }
 
 enum "Category" as category {
@@ -26,6 +41,14 @@ enum "Community" as community {
   * Id : int <<generated>>
   --
   * Name : nvarchar
+}
+
+enum "CoordinateDetermination" as coordinate_determination {
+  1 : GPS
+  2 : Paper Maps
+  3 : Unknown
+  4 : Digital Maps
+  5 : Geocoding
 }
 
 enum "ContributingResources" as contributing_resources {
@@ -48,7 +71,7 @@ entity "HistoricalPattern" as historical_pattern {
   * Id : int <<generated>>
   --
   * PlaceId : int
-  * HistoricalPatternType: int
+  * HistoricalPatternType : int
   Comments : nvarchar
 }
 
@@ -62,13 +85,13 @@ enum "HistoricalPatternType" as historical_pattern_type {
 entity "Name" as name {
   * Id : int <<generated>>
   --
-  * PlaceId: int
-  Description: nvarchar
+  * PlaceId : int
+  Description : nvarchar
 }
 
 enum "Records" as records {
-  CRHP: CRHP
-  WHBR: WHBR
+  CRHP : CRHP
+  WHBR : WHBR
 }
 
 enum "SiteCategories" as site_categories {
@@ -82,6 +105,7 @@ enum "SiteCategories" as site_categories {
 place }|--o| category
 place ||--o{ community
 place }o--o| contributing_resources
+place ||--o{ coordinate_determination
 place }o--o| designations
 place }o--|| historical_pattern
 place }o--|| name
