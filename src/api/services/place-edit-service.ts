@@ -16,13 +16,6 @@ const JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } = Object.freeze(
 	}
 );
 
-const COMMA_DELIMITED_ARRAY_COLUMNS: ReadonlyArray<string> = Object.freeze([
-	'contributingResources',
-	'designations',
-	'records',
-	'siteCategories',
-]);
-
 interface CountQuery {
 	count: number;
 }
@@ -57,7 +50,7 @@ function encodeAndDenormalizeJSONColumns(object: PlainObject) {
 }
 
 function encodeCommaDelimitedArrayColumns(object: PlainObject) {
-	COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
+	Place.COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
 		object[column] = encodeCommaDelimitedArray(object[column]);
 	});
 

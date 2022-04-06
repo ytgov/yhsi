@@ -69,6 +69,13 @@ export class Place {
 	yHSPastUse?: string;
 	yHSThemes?: string;
 	zoning?: string;
+
+	static COMMA_DELIMITED_ARRAY_COLUMNS: ReadonlyArray<string> = Object.freeze([
+		'contributingResources',
+		'designations',
+		'records',
+		'siteCategories',
+	]);
 }
 
 export function decodeCommaDelimitedArray(
