@@ -6,6 +6,7 @@ import { DB_CONFIG } from "../config"
 import { buildDatabaseSort, PlaceService, SortDirection, SortStatement, StaticService } from "../services";
 import { HistoricalPattern, Name, Place, Dates, PLACE_FIELDS, ConstructionPeriod, Theme, FunctionalUse, Association, FirstNationAssociation, Ownership, PreviousOwnership, WebLink, RevisionLog, Contact, Description } from "../data";
 import { ReturnValidationErrors } from "../middleware";
+import { authorize, UserRoles } from "../middleware/authorization";
 
 const placeService = new PlaceService(DB_CONFIG);
 const PAGE_SIZE = 10;
@@ -136,6 +137,7 @@ placeRouter.post("/",
 
 placeRouter.put(
 	'/:id/summary',
+	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
 	[
 		param('id').isInt().notEmpty(),
 		body('primaryName').isString().bail().notEmpty().trim(),
