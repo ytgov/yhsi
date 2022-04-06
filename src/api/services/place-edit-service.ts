@@ -1,11 +1,12 @@
 import knex, { Knex } from 'knex';
-import { camelCase } from 'lodash';
+import { camelCase, mapKeys } from 'lodash';
 
 import { DB_CONFIG } from '../config';
-import { mapKeysDeep } from '../utils/lodash-extensions';
+import { mapKeysDeep, pascalCase } from '../utils/lodash-extensions';
 import {
 	decodeCommaDelimitedArray,
 	encodeCommaDelimitedArray,
+	PlaceEdit,
 } from '../models';
 
 interface CountQuery {
@@ -22,6 +23,19 @@ function parseAndNormalizeJSONColumns(object: GenericResult) {
 			const cleanedKey = key.replace(/JSON$/, '');
 			const objectAsJson = JSON.parse(object[key]);
 			object[cleanedKey] = mapKeysDeep(objectAsJson, camelCase);
+			delete object[key];
+		}
+	});
+	return object;
+}
+
+function encodeAndDenormalizeJSONColumns(object: GenericResult) {
+	Object.keys(object).forEach((key) => {
+		if (['historicalPatterns', 'names'].includes(key)) {
+			const encodedKey = `${key}JSON`;
+			const encodedValue = mapKeysDeep(object[key], pascalCase);
+			const jsonObjectAsString = JSON.stringify(encodedValue);
+			object[encodedKey] = jsonObjectAsString;
 			delete object[key];
 		}
 	});
@@ -108,6 +122,14 @@ export class PlaceEditService {
 					results,
 					totalCount,
 				};
+			});
+	}
+
+	create(data: PlaceEdit) {
+		return Promise.resolve(data)
+			.then(encodeAndDenormalizeJSONColumns)
+			.then((normalizedData) => {
+				return this.db('PlaceEdit').insert(normalizedData);
 			});
 	}
 

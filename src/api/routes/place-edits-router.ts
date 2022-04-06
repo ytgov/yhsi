@@ -46,6 +46,23 @@ placeEditsRouter.get(
 	}
 );
 
+placeEditsRouter.post('/', (req: Request, res: Response) => {
+	const data = req.body;
+
+	return placeEditService
+		.create(data)
+		.then((result) => {
+			return res.json({
+				data: result,
+			});
+		})
+		.catch((error) => {
+			return res.status(422).json({
+				messages: [{ variant: 'error', text: error.message }],
+			});
+		});
+});
+
 placeEditsRouter.get(
 	'/:id',
 	param('id').notEmpty().toInt().isInt({ gt: 0 }),
