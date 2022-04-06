@@ -247,7 +247,6 @@ export default {
         this.fields.communityId = 29;
 
         store.dispatch('addSiteHistory', resp.data.data);
-        this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
 

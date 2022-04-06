@@ -1,23 +1,66 @@
 import knex, { Knex } from 'knex';
+import { camelCase, mapKeys } from 'lodash';
 
 import { DB_CONFIG } from '../config';
+import { mapKeysDeep, pascalCase } from '../utils/lodash-extensions';
+import {
+	decodeCommaDelimitedArray,
+	encodeCommaDelimitedArray,
+	PlaceEdit,
+} from '../models';
+
+const JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } = Object.freeze(
+	{
+		names: 'NameJSON',
+		historicalPatterns: 'HistoricalPatternJSON',
+	}
+);
+
+const COMMA_DELIMITED_ARRAY_COLUMNS: ReadonlyArray<string> = Object.freeze([
+	'contributingResources',
+	'designations',
+	'records',
+	'siteCategories',
+]);
 
 interface CountQuery {
 	count: number;
 }
 
-interface GenericResult {
+interface PlainObject {
 	[key: string]: any;
 }
 
-function parseJSONColumns(object: GenericResult) {
+function parseAndNormalizeJSONColumns(object: PlainObject) {
 	Object.keys(object).forEach((key) => {
 		if (key.endsWith('JSON')) {
 			const cleanedKey = key.replace(/JSON$/, '');
-			object[cleanedKey] = JSON.parse(object[key]);
+			const objectAsJson = JSON.parse(object[key]);
+			object[cleanedKey] = mapKeysDeep(objectAsJson, camelCase);
 			delete object[key];
 		}
 	});
+	return object;
+}
+
+function encodeAndDenormalizeJSONColumns(object: PlainObject) {
+	Object.keys(object).forEach((key) => {
+		if (JS_TO_JSON_COLUMN_TRANSLATIONS[key]) {
+			const encodedKey = JS_TO_JSON_COLUMN_TRANSLATIONS[key];
+			const encodedValue = mapKeysDeep(object[key], pascalCase);
+			const jsonObjectAsString = JSON.stringify(encodedValue);
+			object[encodedKey] = jsonObjectAsString;
+			delete object[key];
+		}
+	});
+	return object;
+}
+
+function encodeCommaDelimitedArrayColumns(object: PlainObject) {
+	COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
+		object[column] = encodeCommaDelimitedArray(object[column]);
+	});
+
 	return object;
 }
 
@@ -26,16 +69,7 @@ export class PlaceEditService {
 	private _defaultScope: Knex.QueryBuilder;
 
 	constructor() {
-		this.db = knex({
-			...DB_CONFIG,
-			postProcessResponse: (result, queryContext) => {
-				if (Array.isArray(result)) {
-					return result;
-				} else {
-					return parseJSONColumns(result);
-				}
-			},
-		});
+		this.db = knex(DB_CONFIG);
 		this._defaultScope = this.db
 			.select({
 				id: 'PlaceEdit.Id',
@@ -72,7 +106,7 @@ export class PlaceEditService {
 
 	buildDetailedView(id: number) {
 		return this.defaultScope
-			.select({
+			.first({
 				placeId: 'PlaceId',
 				category: 'Category',
 				contributingResources: 'ContributingResources',
@@ -81,9 +115,20 @@ export class PlaceEditService {
 				namesJSON: 'NameJSON',
 				records: 'Records',
 				showInRegister: 'ShowInRegister',
+				siteCategories: 'SiteCategories',
 			})
 			.where({ 'PlaceEdit.Id': id })
-			.first();
+			.then(parseAndNormalizeJSONColumns)
+			.then((place) => {
+				place.contributingResources = decodeCommaDelimitedArray(
+					place.contributingResources
+				);
+				place.designations = decodeCommaDelimitedArray(place.designations);
+				place.records = decodeCommaDelimitedArray(place.records);
+				place.siteCategories = decodeCommaDelimitedArray(place.siteCategories);
+
+				return place;
+			});
 	}
 
 	async buildTableView(page: number, itemsPerPage: number) {
@@ -99,6 +144,31 @@ export class PlaceEditService {
 					results,
 					totalCount,
 				};
+			});
+	}
+
+	create(data: PlaceEdit) {
+		return Promise.resolve(data)
+			.then(encodeAndDenormalizeJSONColumns)
+			.then(encodeCommaDelimitedArrayColumns)
+			.then((normalizedData) => {
+				return this.db('PlaceEdit').insert(normalizedData);
+			});
+	}
+
+	delete(id: number) {
+		return this.db.where({ 'PlaceEdit.Id': id }).from('PlaceEdit').delete();
+	}
+
+	existsForPlace(id: number) {
+		return this.db
+			.first('Id')
+			.from('PlaceEdit')
+			.where({ PlaceId: id })
+			.then((result) => {
+				if (result) return true;
+
+				return false;
 			});
 	}
 }

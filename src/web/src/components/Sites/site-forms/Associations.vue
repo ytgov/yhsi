@@ -205,7 +205,6 @@ export default {
         this.firstNationAssociations =
           resp.data.relationships.firstNationAssociations.data;
         store.dispatch('addSiteHistory', resp.data.data);
-        this.$parent.siteName = resp.data.data.primaryName;
       })
       .catch((error) => console.error(error));
 

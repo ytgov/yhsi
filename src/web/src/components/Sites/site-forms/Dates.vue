@@ -356,7 +356,6 @@ export default {
           resp.data.relationships.constructionPeriods.data;
         this.dates = resp.data.relationships.dates.data;
         store.dispatch('addSiteHistory', resp.data.data);
-        this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
 
