@@ -22,6 +22,10 @@ export class NameService {
 			return this.db.transaction(async (trx) => {
 				await trx('Name').where({ placeId }).delete();
 
+				if (Array.isArray(cleanNames) && cleanNames.length === 0) {
+					return [];
+				}
+
 				return trx.insert(cleanNames).into('Name');
 			});
 		});

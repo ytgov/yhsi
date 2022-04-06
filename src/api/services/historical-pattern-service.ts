@@ -23,6 +23,13 @@ export class HistoricalPatternService {
 			return this.db.transaction(async (trx) => {
 				await trx('HistoricalPattern').where({ placeId }).delete();
 
+				if (
+					Array.isArray(cleanHistoricalPatterns) &&
+					cleanHistoricalPatterns.length === 0
+				) {
+					return [];
+				}
+
 				return trx.insert(cleanHistoricalPatterns).into('HistoricalPattern');
 			});
 		});
