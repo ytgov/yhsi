@@ -231,7 +231,6 @@ export default {
         this.themes = resp.data.relationships.themes.data;
         this.functionalUses = resp.data.relationships.functionalUses.data;
         store.dispatch('addSiteHistory', resp.data.data);
-        this.$parent.siteName = this.fields.primaryName;
       })
       .catch((error) => console.error(error));
 
