@@ -1,5 +1,16 @@
 import knex, { Knex } from 'knex';
-import { QueryStatement, SortStatement } from './';
+import moment from 'moment';
+import { uniq, cloneDeep, pick } from 'lodash';
+
+import {
+	HistoricalPatternService,
+	NameService,
+	PhotoService,
+	PlaceEditService,
+	QueryStatement,
+	SortStatement,
+	StaticService,
+} from './';
 import {
 	Association,
 	CONSTRUCTION_PERIODS,
@@ -12,11 +23,8 @@ import {
 	FIRST_NATION_ASSOCIATION_TYPES,
 	FirstNationAssociation,
 	FunctionalUse,
-	HistoricalPattern,
-	Name,
 	Ownership,
 	OWNERSHIP_TYPES,
-	Place,
 	PLACE_FIELDS,
 	PreviousOwnership,
 	REGISTER_FIELDS,
@@ -25,18 +33,55 @@ import {
 	Theme,
 	WebLink,
 } from '../data';
-import { GenericEnum } from './static-service';
-import _ from 'lodash';
+import {
+	decodeCommaDelimitedArray,
+	encodeCommaDelimitedArray,
+	GenericEnum,
+	HistoricalPattern,
+	HISTORICAL_PATTERN_TYPES,
+	Name,
+	Place,
+} from '../models';
+
+function combine(
+	list1: Array<any>,
+	list2: Array<any> | ReadonlyArray<any>,
+	linker: any,
+	linker2: any,
+	value: any,
+	typeText: any = 'typeText'
+): any[] {
+	list1.forEach((item) => {
+		let match = list2.filter((i) => i[linker] == item[linker2]);
+
+		if (match && match[0]) {
+			let add = { [typeText]: match[0][value] };
+			item = Object.assign(item, add);
+		} else item = Object.assign(item, { [typeText]: null });
+	});
+
+	return list1;
+}
 
 export class PlaceService {
-	private knex: Knex;
+	private db: Knex;
+	private historicalPatternService: HistoricalPatternService;
+	private nameService: NameService;
+	private photoService: PhotoService;
+	private placeEditService: PlaceEditService;
+	private staticService: StaticService;
 
 	constructor(config: Knex.Config<any>) {
-		this.knex = knex(config);
+		this.db = knex(config);
+		this.historicalPatternService = new HistoricalPatternService();
+		this.nameService = new NameService();
+		this.photoService = new PhotoService(config);
+		this.placeEditService = new PlaceEditService();
+		this.staticService = new StaticService(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Place>> {
-		return this.knex('place')
+		return this.db('place')
 			.select<Place[]>(PLACE_FIELDS)
 			.orderBy('id')
 			.offset(skip)
@@ -44,27 +89,181 @@ export class PlaceService {
 	}
 
 	async getRegisterAll(): Promise<Array<any>> {
-		return this.knex('place')
+		return this.db('place')
 			.join('community', 'community.id', 'place.communityid')
 			.where({ showInRegister: true })
 			.select(REGISTER_FIELDS)
-			.select(this.knex.raw("'English teaser' as teaserEnglish"))
-			.select(this.knex.raw("'French teaser' as teaserFrench"));
+			.select(this.db.raw("'English teaser' as teaserEnglish"))
+			.select(this.db.raw("'French teaser' as teaserFrench"));
 	}
 
-	async getById(id: number): Promise<Place | undefined> {
-		return this.knex('place')
-			.select<Place>(PLACE_FIELDS)
+	async getById(id: number) {
+		return this.db('place')
+			.first<Place>(PLACE_FIELDS)
 			.where({ id: id })
-			.first()
-			.catch((err: any) => {
-				//console.log('BOMBED', err);
-				return undefined;
+			.then(async (place) => {
+				if (!place) {
+					return Promise.reject(new Error(`Could not find Place for id=${id}`));
+				}
+
+				const fnList = await this.staticService.getFirstNations();
+				const themeList = await this.staticService.getPlaceThemes();
+				const functionalTypes = await this.staticService.getFunctionalTypes();
+
+				place.hasPendingChanges = await this.placeEditService.existsForPlace(
+					id
+				);
+
+				place.contributingResources = decodeCommaDelimitedArray(
+					place.contributingResources
+				);
+				place.designations = decodeCommaDelimitedArray(place.designations);
+				place.records = decodeCommaDelimitedArray(place.records);
+				place.siteCategories = decodeCommaDelimitedArray(place.siteCategories);
+
+				const associations = combine(
+					await this.getAssociationsFor(id),
+					this.getAssociationTypes(),
+					'value',
+					'type',
+					'text'
+				);
+				let fnAssociations = combine(
+					await this.getFNAssociationsFor(id),
+					this.getFNAssociationTypes(),
+					'value',
+					'firstNationAssociationType',
+					'text'
+				);
+				fnAssociations = combine(
+					fnAssociations,
+					fnList,
+					'id',
+					'firstNationId',
+					'description'
+				);
+
+				const names = await this.getNamesFor(id);
+				const historicalPatterns = combine(
+					await this.getHistoricalPatternsFor(id),
+					this.getHistoricalPatterns(),
+					'value',
+					'historicalPatternType',
+					'text'
+				);
+				const dates = combine(
+					await this.getDatesFor(id),
+					this.getDateTypes(),
+					'value',
+					'type',
+					'text'
+				);
+				const constructionPeriods = combine(
+					await this.getConstructionPeriodsFor(id),
+					this.getConstructionPeriodTypes(),
+					'value',
+					'type',
+					'text'
+				);
+				const themes = combine(
+					combine(
+						await this.getThemesFor(id),
+						themeList,
+						'id',
+						'placeThemeId',
+						'type',
+						'typeName'
+					),
+					themeList,
+					'id',
+					'placeThemeId',
+					'category',
+					'categoryName'
+				);
+				let functionalUses = combine(
+					await this.getFunctionUsesFor(id),
+					this.getFunctionalUseTypes(),
+					'value',
+					'functionalUseType',
+					'text',
+					'functionalUseTypeText'
+				);
+				functionalUses = combine(
+					functionalUses,
+					functionalTypes,
+					'id',
+					'functionalTypeId',
+					'description',
+					'functionalTypeText'
+				);
+				const ownerships = combine(
+					await this.getOwnershipsFor(id),
+					this.getOwnershipTypes(),
+					'value',
+					'ownershipType',
+					'text'
+				);
+				const previousOwnerships = await this.getPreviousOwnershipsFor(id);
+				const contacts = combine(
+					await this.getContactsFor(id),
+					this.getContactTypes(),
+					'value',
+					'contactType',
+					'text',
+					'contactTypeText'
+				);
+				const revisionLogs = combine(
+					await this.getRevisionLogFor(id),
+					this.getRevisionLogTypes(),
+					'value',
+					'revisionLogType',
+					'text',
+					'revisionLogTypeText'
+				);
+				const webLinks = combine(
+					await this.getWebLinksFor(id),
+					this.getWebLinkTypes(),
+					'value',
+					'type',
+					'text'
+				);
+				const descriptions = combine(
+					await this.getDescriptionsFor(id),
+					this.getDescriptionTypes(),
+					'value',
+					'type',
+					'text'
+				);
+
+				const photos = await this.photoService.getAllForPlace(id);
+
+				const relationships = {
+					associations: { data: associations },
+					firstNationAssociations: { data: fnAssociations },
+					names: { data: names },
+					historicalPatterns: { data: historicalPatterns },
+					dates: { data: dates },
+					constructionPeriods: { data: constructionPeriods },
+					themes: { data: themes },
+					functionalUses: { data: functionalUses },
+					ownerships: { data: ownerships },
+					previousOwnerships: { data: previousOwnerships },
+					photos: { data: photos },
+					contacts: { data: contacts },
+					revisionLogs: { data: revisionLogs },
+					webLinks: { data: webLinks },
+					descriptions: { data: descriptions },
+				};
+
+				place.recognitionDateDisplay = place.recognitionDate
+					? moment(place.recognitionDate).add(7, 'hours').format('YYYY-MM-DD')
+					: '';
+				return { place, relationships };
 			});
 	}
 
 	async getRegisterById(id: number): Promise<any | undefined> {
-		return this.knex('place')
+		return this.db('place')
 			.join('community', 'community.id', 'place.communityid')
 			.select(REGISTER_FIELDS)
 			.where({ 'place.id': id })
@@ -78,7 +277,7 @@ export class PlaceService {
 
 	async getPlaceCount(): Promise<number> {
 		return new Promise(async (resolve, reject) => {
-			let results = await this.knex<number>('place').count('*', {
+			let results = await this.db<number>('place').count('*', {
 				as: 'count',
 			});
 
@@ -92,15 +291,42 @@ export class PlaceService {
 	}
 
 	async addPlace(item: Place): Promise<Place | undefined> {
-		return this.knex('place').insert(item).returning<Place>(PLACE_FIELDS);
+		return this.db('place').insert(item).returning<Place>(PLACE_FIELDS);
 	}
 
-	async updatePlace(id: number, item: Place): Promise<Place | undefined> {
-		return this.knex('place').where({ id }).update(item);
+	updatePlace(id: number, item: Place): Promise<Place | undefined> {
+		return this.db('place').where({ id }).update(item);
+	}
+
+	updatePlaceSummary(id: number, attributes: Place) {
+		const names = attributes.names || [];
+		const historicalPatterns = attributes.historicalPatterns || [];
+		delete attributes['names'];
+		delete attributes['historicalPatterns'];
+
+		return new Promise(async (resolve, reject) => {
+			attributes.contributingResources = encodeCommaDelimitedArray(
+				attributes.contributingResources
+			);
+			attributes.designations = encodeCommaDelimitedArray(
+				attributes.designations
+			);
+			attributes.records = encodeCommaDelimitedArray(attributes.records);
+			attributes.siteCategories = encodeCommaDelimitedArray(
+				attributes.siteCategories
+			);
+
+			return this.updatePlace(id, attributes).then(resolve).catch(reject);
+		}).then(async (result) => {
+			await this.nameService.upsertFor(id, names);
+			await this.historicalPatternService.upsertFor(id, historicalPatterns);
+
+			return result;
+		});
 	}
 
 	async generateIdFor(nTSMapSheet: string): Promise<string> {
-		let maxPlace = await this.knex('place')
+		let maxPlace = await this.db('place')
 			.where({ nTSMapSheet })
 			.max('yhsiId', { as: 'maxVal' });
 
@@ -119,21 +345,21 @@ export class PlaceService {
 	}
 
 	async getAssociationsFor(id: number): Promise<Association[]> {
-		return this.knex('association')
+		return this.db('association')
 			.where({ placeId: id })
 			.select<Association[]>(['id', 'placeId', 'type', 'description']);
 	}
 
 	async addAssociation(name: Association) {
-		return this.knex('association').insert(name);
+		return this.db('association').insert(name);
 	}
 
 	async removeAssociation(id: number) {
-		return this.knex('association').where({ id }).delete();
+		return this.db('association').where({ id }).delete();
 	}
 
 	async getFNAssociationsFor(id: number): Promise<FirstNationAssociation[]> {
-		return this.knex('FirstNationAssociation')
+		return this.db('FirstNationAssociation')
 			.where({ placeId: id })
 			.select<FirstNationAssociation[]>([
 				'id',
@@ -145,29 +371,29 @@ export class PlaceService {
 	}
 
 	async addFNAssociation(name: FirstNationAssociation) {
-		return this.knex('FirstNationAssociation').insert(name);
+		return this.db('FirstNationAssociation').insert(name);
 	}
 
 	async removeFNAssociation(id: number) {
-		return this.knex('FirstNationAssociation').where({ id }).delete();
+		return this.db('FirstNationAssociation').where({ id }).delete();
 	}
 
 	async getNamesFor(id: number) {
-		return this.knex('name')
+		return this.db('name')
 			.where({ placeId: id })
 			.select<Name[]>(['id', 'placeId', 'description']);
 	}
 
 	async addSecondaryName(name: Name) {
-		return this.knex('name').insert(name);
+		return this.db('name').insert(name);
 	}
 
 	async removeSecondaryName(id: number) {
-		return this.knex('name').where({ id }).delete();
+		return this.db('name').where({ id }).delete();
 	}
 
 	async getHistoricalPatternsFor(id: number): Promise<HistoricalPattern[]> {
-		return this.knex('historicalpattern')
+		return this.db('historicalpattern')
 			.where({ placeId: id })
 			.select<HistoricalPattern[]>([
 				'id',
@@ -178,15 +404,15 @@ export class PlaceService {
 	}
 
 	async addHistoricalPattern(name: Name) {
-		return this.knex('historicalpattern').insert(name);
+		return this.db('historicalpattern').insert(name);
 	}
 
 	async removeHistoricalPattern(id: number) {
-		return this.knex('historicalpattern').where({ id }).delete();
+		return this.db('historicalpattern').where({ id }).delete();
 	}
 
 	async getDatesFor(id: number): Promise<Dates[]> {
-		return this.knex('dates')
+		return this.db('dates')
 			.where({ placeId: id })
 			.select<Dates[]>([
 				'id',
@@ -199,43 +425,43 @@ export class PlaceService {
 	}
 
 	async addDate(name: Dates) {
-		return this.knex('dates').insert(name);
+		return this.db('dates').insert(name);
 	}
 
 	async removeDate(id: number) {
-		return this.knex('dates').where({ id }).delete();
+		return this.db('dates').where({ id }).delete();
 	}
 
 	async getConstructionPeriodsFor(id: number): Promise<ConstructionPeriod[]> {
-		return this.knex('constructionperiod')
+		return this.db('constructionperiod')
 			.where({ placeId: id })
 			.select<ConstructionPeriod[]>(['id', 'placeId', 'type']);
 	}
 
 	async addConstructionPeriod(name: ConstructionPeriod) {
-		return this.knex('constructionperiod').insert(name);
+		return this.db('constructionperiod').insert(name);
 	}
 
 	async removeConstructionPeriod(id: number) {
-		return this.knex('constructionperiod').where({ id }).delete();
+		return this.db('constructionperiod').where({ id }).delete();
 	}
 
 	async getThemesFor(id: number): Promise<Theme[]> {
-		return this.knex('theme')
+		return this.db('theme')
 			.where({ placeId: id })
 			.select<Theme[]>(['id', 'placeId', 'placeThemeId']);
 	}
 
 	async addTheme(name: Theme) {
-		return this.knex('theme').insert(name);
+		return this.db('theme').insert(name);
 	}
 
 	async removeTheme(id: number) {
-		return this.knex('theme').where({ id }).delete();
+		return this.db('theme').where({ id }).delete();
 	}
 
 	async getFunctionUsesFor(id: number): Promise<FunctionalUse[]> {
-		return this.knex('FunctionalUse')
+		return this.db('FunctionalUse')
 			.where({ placeId: id })
 			.select<FunctionalUse[]>([
 				'id',
@@ -247,29 +473,29 @@ export class PlaceService {
 	}
 
 	async addFunctionalUse(name: FunctionalUse) {
-		return this.knex('FunctionalUse').insert(name);
+		return this.db('FunctionalUse').insert(name);
 	}
 
 	async removeFunctionalUse(id: number) {
-		return this.knex('FunctionalUse').where({ id }).delete();
+		return this.db('FunctionalUse').where({ id }).delete();
 	}
 
 	async getOwnershipsFor(id: number): Promise<Ownership[]> {
-		return this.knex('Ownership')
+		return this.db('Ownership')
 			.where({ placeId: id })
 			.select<Ownership[]>(['id', 'placeId', 'ownershipType', 'comments']);
 	}
 
 	async addOwnership(name: Ownership) {
-		return this.knex('Ownership').insert(name);
+		return this.db('Ownership').insert(name);
 	}
 
 	async removeOwnership(id: number) {
-		return this.knex('Ownership').where({ id }).delete();
+		return this.db('Ownership').where({ id }).delete();
 	}
 
 	async getPreviousOwnershipsFor(id: number): Promise<PreviousOwnership[]> {
-		return this.knex('PreviousOwnership')
+		return this.db('PreviousOwnership')
 			.where({ placeId: id })
 			.select<PreviousOwnership[]>([
 				'id',
@@ -281,15 +507,15 @@ export class PlaceService {
 	}
 
 	async addPreviousOwnership(name: PreviousOwnership) {
-		return this.knex('PreviousOwnership').insert(name);
+		return this.db('PreviousOwnership').insert(name);
 	}
 
 	async removePreviousOwnership(id: number) {
-		return this.knex('PreviousOwnership').where({ id }).delete();
+		return this.db('PreviousOwnership').where({ id }).delete();
 	}
 
 	async getContactsFor(id: number): Promise<Contact[]> {
-		return this.knex('Contact')
+		return this.db('Contact')
 			.where({ placeId: id })
 			.select<Contact[]>([
 				'id',
@@ -305,15 +531,15 @@ export class PlaceService {
 	}
 
 	async addContact(name: Contact) {
-		return this.knex('Contact').insert(name);
+		return this.db('Contact').insert(name);
 	}
 
 	async removeContact(id: number) {
-		return this.knex('Contact').where({ id }).delete();
+		return this.db('Contact').where({ id }).delete();
 	}
 
 	async getRevisionLogFor(id: number): Promise<RevisionLog[]> {
-		return this.knex('RevisionLog')
+		return this.db('RevisionLog')
 			.where({ placeId: id })
 			.select<RevisionLog[]>([
 				'id',
@@ -327,39 +553,39 @@ export class PlaceService {
 	}
 
 	async addRevisionLog(name: RevisionLog) {
-		return this.knex('RevisionLog').insert(name);
+		return this.db('RevisionLog').insert(name);
 	}
 
 	async removeRevisionLog(id: number) {
-		return this.knex('RevisionLog').where({ id }).delete();
+		return this.db('RevisionLog').where({ id }).delete();
 	}
 
 	async getWebLinksFor(id: number): Promise<WebLink[]> {
-		return this.knex('WebLink')
+		return this.db('WebLink')
 			.where({ placeId: id })
 			.select<WebLink[]>(['id', 'placeId', 'type', 'address']);
 	}
 
 	async addWebLink(name: WebLink) {
-		return this.knex('WebLink').insert(name);
+		return this.db('WebLink').insert(name);
 	}
 
 	async removeWebLink(id: number) {
-		return this.knex('WebLink').where({ id }).delete();
+		return this.db('WebLink').where({ id }).delete();
 	}
 
 	async getDescriptionsFor(id: number): Promise<Description[]> {
-		return this.knex('Description')
+		return this.db('Description')
 			.where({ placeId: id })
 			.select<Description[]>(['id', 'placeId', 'descriptionText', 'type']);
 	}
 
 	async addDescription(name: Description) {
-		return this.knex('Description').insert(name);
+		return this.db('Description').insert(name);
 	}
 
 	async removeDescription(id: number) {
-		return this.knex('Description').where({ id }).delete();
+		return this.db('Description').where({ id }).delete();
 	}
 
 	getAssociationTypes(): GenericEnum[] {
@@ -376,13 +602,8 @@ export class PlaceService {
 		return FIRST_NATION_ASSOCIATION_TYPES;
 	}
 
-	getHistoricalPatterns(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Political' },
-			{ value: 2, text: 'Economic' },
-			{ value: 3, text: 'Social' },
-			{ value: 4, text: 'Geographic' },
-		];
+	getHistoricalPatterns(): readonly GenericEnum[] {
+		return HISTORICAL_PATTERN_TYPES;
 	}
 
 	getDateTypes(): GenericEnum[] {
@@ -443,7 +664,7 @@ export class PlaceService {
 		take: number
 	): Promise<any> {
 		return new Promise(async (resolve, reject) => {
-			const selectStatement = this.knex('place')
+			const selectStatement = this.db('place')
 				.distinct()
 				.select(...PLACE_FIELDS, { status: 'StatusTable.Status' })
 				.leftOuterJoin(
@@ -460,10 +681,10 @@ export class PlaceService {
 				.leftOuterJoin('Description', 'Place.id', 'Description.PlaceId')
 				.leftOuterJoin('Ownership', 'Place.id', 'Ownership.PlaceId')
 				.leftOuterJoin(
-					this.knex('Place')
+					this.db('Place')
 						.select({
 							PlaceId: 'Place.Id',
-							Status: this.knex.raw(`
+							Status: this.db.raw(`
 								CASE
 									WHEN PlaceEdit.PlaceId IS NULL THEN ''
 									ELSE 'Editing'
@@ -614,7 +835,7 @@ export class PlaceService {
 				return [];
 			});
 
-			let uniqIds = _.uniq(fullData.map((i: any) => i.id));
+			let uniqIds = uniq(fullData.map((i: any) => i.id));
 			let count = uniqIds.length;
 			let pageCount = Math.ceil(count / itemsPerPage);
 

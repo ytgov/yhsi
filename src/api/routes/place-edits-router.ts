@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { query, param } from 'express-validator';
+import moment from 'moment';
 
 import { ReturnValidationErrors } from '../middleware';
 import { PlaceEditService } from '../services';
@@ -46,6 +47,28 @@ placeEditsRouter.get(
 	}
 );
 
+placeEditsRouter.post('/', (req: Request, res: Response) => {
+	const data = req.body;
+	const currentUser = req.user;
+
+	return placeEditService
+		.create({
+			...data,
+			editorUserId: currentUser.id,
+			editDate: moment().format('YYYY-MM-DD'),
+		})
+		.then((result) => {
+			return res.json({
+				data: result,
+			});
+		})
+		.catch((error) => {
+			return res.status(422).json({
+				messages: [{ variant: 'error', text: error.message }],
+			});
+		});
+});
+
 placeEditsRouter.get(
 	'/:id',
 	param('id').notEmpty().toInt().isInt({ gt: 0 }),
@@ -58,6 +81,29 @@ placeEditsRouter.get(
 			.then((result) => {
 				return res.json({
 					data: result,
+				});
+			})
+			.catch((error) => {
+				return res.status(422).json({
+					messages: [{ variant: 'error', text: error.message }],
+				});
+			});
+	}
+);
+
+placeEditsRouter.delete(
+	'/:id',
+	param('id').notEmpty().toInt().isInt({ gt: 0 }),
+	ReturnValidationErrors,
+	(req: Request, res: Response) => {
+		const { id } = req.params as ParsedParams;
+
+		return placeEditService
+			.delete(id)
+			.then((result) => {
+				return res.json({
+					data: result,
+					messages: [{ variant: 'success', text: 'Delete successful.' }],
 				});
 			})
 			.catch((error) => {

@@ -1,9 +1,10 @@
 <template lang="pug">
 v-select(
-	label="Records"
-	v-bind="$attrs",
+	label="Records",
 	:items="recordTypeOptions",
 	:loading="loading"
+	multiple
+	v-bind="$attrs"
 	v-on="$listeners"
 )
 	template(
