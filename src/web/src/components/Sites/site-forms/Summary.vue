@@ -15,7 +15,7 @@
       <v-row>
         <v-col cols="6">
           <v-text-field
-            v-model="fields.yHSIId"
+            v-model="yHSIId"
             dense
             outlined
             label="YHSI ID"
@@ -25,41 +25,41 @@
           />
 
           <DesignationTypesSelect
-            v-model="fields.designations"
+            v-model="designations"
             dense
             outlined
             clearable
           />
 
           <CategoryTypesSelect
-            v-model="fields.category"
+            v-model="category"
             dense
             outlined
           />
 
           <SiteCategoryTypesSelect
-            v-model="fields.siteCategories"
+            v-model="siteCategories"
             dense
             outlined
             clearable
           />
 
           <RecordTypesSelect
-            v-model="fields.records"
+            v-model="records"
             dense
             outlined
             clearable
           />
 
           <ContributingResourceTypesSelect
-            v-model="fields.contributingResources"
+            v-model="contributingResources"
             dense
             outlined
             required
           />
 
           <v-checkbox
-            v-model="fields.showInRegister"
+            v-model="showInRegister"
             dense
             outlined
             label="Show in Register?"
@@ -67,7 +67,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            v-model="fields.primaryName"
+            v-model="primaryName"
             dense
             outlined
             label="Primary name"
@@ -194,13 +194,12 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 import store from '@/store';
 import { UserRoles } from '@/authorization';
 
 import placeEditsApi from '@/apis/place-edits-api';
-import placesApi from '@/apis/places-api';
 import placesSummaryApi from '@/apis/places-summary-api';
 
 import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
@@ -227,36 +226,43 @@ export default {
     },
   },
   data: () => ({
-    historicalPatternOptions: [],
-    names: [],
+    category: '',
+    contributingResources: [],
+    designations: [],
     historicalPatterns: [],
-    fields: {
-      primaryName: '',
-      yHSIId: '',
-      contributingResources: [],
-      category: '',
-      designations: [],
-      records: [],
-      showInRegister: false,
-      siteCategories: [],
-    },
+    names: [],
+    primaryName: '',
+    records: [],
+    showInRegister: false,
+    siteCategories: [],
+    yHSIId: '',
   }),
   computed: {
-    ...mapGetters('profile', { currentUserRoles: 'role_list' }),
+    ...mapGetters({
+      currentUserRoles: 'profile/role_list',
+      place: 'places/place',
+    }),
   },
   mounted() {
-    this.getPlace(this.placeId);
+    this.initializeOrGetCachedPlace(this.placeId).then((place) => {
+      this.category = place.category;
+      this.contributingResources = place.contributingResources;
+      this.designations = place.designations;
+      this.historicalPatterns = place.historicalPatterns;
+      this.names = place.names;
+      this.primaryName = place.primaryName;
+      this.records = place.records;
+      this.showInRegister = place.showInRegister;
+      this.siteCategories = place.siteCategories;
+      this.yHSIId = place.yHSIId;
+
+      store.dispatch('addSiteHistory', place);
+    });
   },
   methods: {
-    getPlace(placeId) {
-      placesApi.get(placeId).then(({ data, relationships }) => {
-        this.fields = data;
-        this.names = relationships.names.data;
-        this.historicalPatterns = relationships.historicalPatterns.data;
-
-        store.dispatch('addSiteHistory', data);
-      });
-    },
+    ...mapActions({
+      initializeOrGetCachedPlace: 'places/initializeOrGetCached',
+    }),
     addName() {
       this.names.push({ description: '', placeId: this.placeId });
     },
@@ -275,15 +281,15 @@ export default {
     },
     saveChanges() {
       const data = {
-        yHSIId: this.fields.yHSIId,
-        primaryName: this.fields.primaryName,
-        designations: this.fields.designations,
-        category: this.fields.category,
-        siteCategories: this.fields.siteCategories,
-        records: this.fields.records,
-        showInRegister: this.fields.showInRegister,
+        yHSIId: this.yHSIId,
+        primaryName: this.primaryName,
+        designations: this.designations,
+        category: this.category,
+        siteCategories: this.siteCategories,
+        records: this.records,
+        showInRegister: this.showInRegister,
         names: this.names,
-        contributingResources: this.fields.contributingResources,
+        contributingResources: this.contributingResources,
         historicalPatterns: this.historicalPatterns,
       };
       if (
@@ -315,11 +321,6 @@ export default {
         .catch((error) => {
           this.$emit('showError', error);
         });
-    },
-    removeItem(objName, position) {
-      if (position > -1) {
-        this.fields[objName].splice(position, 1);
-      }
     },
   },
 };

@@ -22,9 +22,9 @@ const mutations = {
     return api
       .get(placeId)
       .then(({ data, relationships }) => {
+        data.names = relationships.names.data;
+        data.historicalPatterns = relationships.historicalPatterns.data;
         state.place = data;
-        state.place.names = relationships.names.data;
-        state.place.historicalPatterns = relationships.historicalPatterns.data;
         return state.place;
       })
       .finally(() => {
@@ -37,9 +37,10 @@ const actions = {
   initialize({ commit }, placeId) {
     return commit('get', placeId);
   },
-  initializeOrGetCached({ commit }, placeId) {
-    if (!isEmpty(state.place) && !state.loading && state.place.id == placeId)
-      return;
+  initializeOrGetCached({ commit, state }, placeId) {
+    if (!isEmpty(state.place) && !state.loading && state.place.id == placeId) {
+      return state.place;
+    }
 
     return commit('get', placeId);
   },
