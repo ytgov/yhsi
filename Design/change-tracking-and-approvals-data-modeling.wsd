@@ -22,6 +22,12 @@ enum "Category" as category {
   4 : Structure
 }
 
+enum "Community" as community {
+  * Id : int <<generated>>
+  --
+  * Name : nvarchar
+}
+
 enum "ContributingResources" as contributing_resources {
   Archaeological : Archaeological
   Building : Building
@@ -74,6 +80,7 @@ enum "SiteCategories" as site_categories {
 }
 
 place }|--o| category
+place ||--o{ community
 place }o--o| contributing_resources
 place }o--o| designations
 place }o--|| historical_pattern
