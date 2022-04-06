@@ -304,7 +304,7 @@ export default {
     },
     saveAsChangeRequest(data) {
       return placeEditsApi
-        .post({ ...data, placeId: this.placeId })
+        .post({ ...this.place, ...data, placeId: this.placeId })
         .then((data) => {
           this.$emit('showAPIMessages', data);
         })
