@@ -39,6 +39,9 @@ export default {
     initialize({ dispatch }, placeId) {
       return dispatch('get', placeId);
     },
+    refresh({ dispatch }, placeId) {
+      return dispatch('get', placeId);
+    },
     initializeOrGetCached({ dispatch, state }, placeId) {
       if (
         !isEmpty(state.place) &&
