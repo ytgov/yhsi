@@ -26,7 +26,7 @@
                     <v-data-table
                         :headers="headers"
                         :items="data"
-                        :search="search" @pagination="yourMethod"
+                        :search="search" @pagination="updatePagination"
                         :options="options"
                         :footer-props="{'items-per-page-options': [10, 20, 30, 100]}"
                     >
@@ -191,7 +191,7 @@ export default {
         this.data = this.historicRecords;
     },
     methods:{
-        yourMethod(pagination) {
+        updatePagination(pagination) {
             this.pagination = pagination;
         },
         //functions for editing the table values

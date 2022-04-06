@@ -98,8 +98,10 @@ export default {
 			return err;
 		})
 	},
-	async getExport(){
-		return await api.post('people/export')
+	async getExport(textToMatch, sortBy, sort){
+		return await api.post('people/export', {
+			page: 0, limit: 0, textToMatch, sortBy, sort
+		})
 		.then( res => {
 			return res.data;
 		}).catch( err => {
