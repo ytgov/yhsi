@@ -41,14 +41,6 @@ function encodeAndDenormalizeJSONColumns(object: PlainObject) {
 	return object;
 }
 
-function encodeCommaDelimitedArrayColumns(object: PlainObject) {
-	Place.COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
-		object[column] = Place.encodeCommaDelimitedArray(object[column]);
-	});
-
-	return object;
-}
-
 export class PlaceEditService {
 	private db: Knex;
 	private _defaultScope: Knex.QueryBuilder;
@@ -139,7 +131,7 @@ export class PlaceEditService {
 	create(data: PlaceEdit) {
 		return Promise.resolve(data)
 			.then(encodeAndDenormalizeJSONColumns)
-			.then(encodeCommaDelimitedArrayColumns)
+			.then(Place.encodeCommaDelimitedArrayColumns)
 			.then((normalizedData) => {
 				return this.db('PlaceEdit').insert(normalizedData);
 			});

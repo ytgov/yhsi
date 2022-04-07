@@ -1,7 +1,7 @@
 import { isString } from 'lodash';
 
-import { Name } from './name';
 import { HistoricalPattern } from './historical-pattern';
+import { Name } from './name';
 
 export class Place {
 	id?: number;
@@ -99,5 +99,13 @@ export class Place {
 		if (Array.isArray(value)) return value;
 
 		return value.split(',');
+	}
+
+	static encodeCommaDelimitedArrayColumns(object: PlainObject) {
+		Place.COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
+			object[column] = Place.encodeCommaDelimitedArray(object[column]);
+		});
+
+		return object;
 	}
 }
