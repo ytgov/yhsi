@@ -188,13 +188,12 @@ export default {
         sortBy[0],
         sortDesc[0] ? "desc" : "asc"
       );
-      let { count } = data.count;
       this.crashsites = data.body;
-      this.totalLength = count;
+      this.totalLength = data.count;
       this.crashsites.map((x) => {
         x.crashdate = this.formatDate(x.crashdate);
       });
-      this.aircrashesData = await aircrash.getExport();
+      this.aircrashesData = await aircrash.getExport(textToMatch, sortBy[0] ? sortBy[0] : "YACSINumber", sortDesc[0] ? "desc" : "asc");
       this.loading = false;
     },
     formatDate(date) {
@@ -211,7 +210,8 @@ export default {
     },
     async downloadPdf(){
       this.loadingPdf = true;
-      let res = await aircrash.getGridPdf();
+      let { sortBy, sortDesc } = this.options;
+      let res = await aircrash.getGridPdf(this.search, sortBy[0] ? sortBy[0] : "YACSINumber", sortDesc[0] ? "desc" : "asc");
       let blob = new Blob([res], { type: "application/octetstream" });
       let url = window.URL || window.webkitURL;
       let link = url.createObjectURL(blob);

@@ -174,7 +174,7 @@ export default {
       //console.log(data);
       this.totalLength = _.get(data, "count", 0);
       this.peopleData = await people.getExport(textToMatch, sortBy[0] ? sortBy[0] : 'GivenName', sortDesc[0] ? "desc" : "asc");
-      console.log(this.peopleData);
+
       this.loading = false;
     },
     async downloadPdf(){

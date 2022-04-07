@@ -223,8 +223,7 @@ peopleRouter.post('/export',
 	  ReturnValidationErrors,
 	  async (req: Request, res: Response) => {
 		const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
-		//console.log(req.body);
-		const offset = 0;
-		let data = await peopleService.doSearch(page, limit, offset, { sortBy, sort, textToMatch });
+
+		let data = await peopleService.doSearch(page, limit, 0, { sortBy, sort, textToMatch });
 		res.status(200).send(data.body);
 });
