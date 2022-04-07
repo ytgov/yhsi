@@ -14,14 +14,10 @@
     <v-card-text>
       <v-row>
         <v-col cols="3">
-          <v-select
+          <CommunitySelect
             v-model="fields.communityId"
             dense
             outlined
-            :items="communities"
-            label="Community"
-            item-text="name"
-            item-value="id"
             hide-details
           />
         </v-col>
@@ -193,12 +189,14 @@
 <script>
 import axios from 'axios';
 
+import CommunitySelect from '@/components/Sites/site-forms/CommunitySelect';
 import store from '@/store';
-import { COMMUNITY_URL, PLACE_URL, STATIC_URL } from '@/urls';
+import { PLACE_URL, STATIC_URL } from '@/urls';
 
 /* Important, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created */
 export default {
   name: 'Location',
+  components: { CommunitySelect },
   data: () => ({
     valid: false,
     loadedId: -1,
@@ -208,7 +206,6 @@ export default {
     ],
     /* Placeholder variables below this line **Read above** */
     coordinateDeterminationOptions: [],
-    communities: [],
     /*Field data from the swaggerhub api docs below this line*/
     fields: {
       bordenNumber: '', //
@@ -249,10 +246,6 @@ export default {
         store.dispatch('addSiteHistory', resp.data.data);
       })
       .catch((error) => console.error(error));
-
-    axios.get(`${COMMUNITY_URL}`).then((resp) => {
-      this.communities = resp.data.data;
-    });
 
     axios.get(`${STATIC_URL}/coordinate-determination`).then((resp) => {
       this.coordinateDeterminationOptions = resp.data.data;
