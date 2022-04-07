@@ -3,7 +3,7 @@ import { camelCase, mapKeys } from 'lodash';
 
 import { DB_CONFIG } from '../config';
 import { mapKeysDeep, pascalCase } from '../utils/lodash-extensions';
-import { Place, PlaceEdit } from '../models';
+import { Place, PlaceEdit, PlainObject } from '../models';
 
 const JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } = Object.freeze(
 	{
@@ -14,10 +14,6 @@ const JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } = Object.freeze(
 
 interface CountQuery {
 	count: number;
-}
-
-interface PlainObject {
-	[key: string]: any;
 }
 
 function parseAndNormalizeJSONColumns(object: PlainObject) {

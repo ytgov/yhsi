@@ -7,3 +7,7 @@ export interface GenericStringEnum {
 	value: string;
 	text: string;
 }
+
+export interface PlainObject {
+	[key: string]: any;
+}
