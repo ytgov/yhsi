@@ -186,7 +186,6 @@ peopleRouter.post('/pdf',
 ReturnValidationErrors,
 async (req: Request, res: Response) => {
 	const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
-		//console.log(req.body);
 	const offset = 0;
 	let people = await peopleService.doSearch(page, limit, offset, { sortBy, sort, textToMatch });
 	// not working right now
