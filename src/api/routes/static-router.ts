@@ -159,11 +159,6 @@ staticRouter.get('/condition', async (req: Request, res: Response) => {
 	return res.json({ data: list });
 });
 
-staticRouter.get('/historical-pattern', async (req: Request, res: Response) => {
-	let list = placeService.getHistoricalPatterns();
-	return res.json({ data: list });
-});
-
 staticRouter.get(
 	'/coordinate-determination',
 	async (req: Request, res: Response) => {

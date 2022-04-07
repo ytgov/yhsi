@@ -165,12 +165,8 @@ export class PlaceService {
 				);
 
 				const names = await this.getNamesFor(id);
-				const historicalPatterns = combine(
-					await this.getHistoricalPatternsFor(id),
-					this.getHistoricalPatterns(),
-					'value',
-					'historicalPatternType',
-					'text'
+				place.historicalPatterns = await this.historicalPatternService.getFor(
+					id
 				);
 				const dates = combine(
 					await this.getDatesFor(id),
@@ -262,7 +258,6 @@ export class PlaceService {
 					associations: { data: associations },
 					firstNationAssociations: { data: fnAssociations },
 					names: { data: names },
-					historicalPatterns: { data: historicalPatterns },
 					dates: { data: dates },
 					constructionPeriods: { data: constructionPeriods },
 					themes: { data: themes },
@@ -442,17 +437,6 @@ export class PlaceService {
 
 	async removeSecondaryName(id: number) {
 		return this.db('name').where({ id }).delete();
-	}
-
-	async getHistoricalPatternsFor(id: number): Promise<HistoricalPattern[]> {
-		return this.db('historicalpattern')
-			.where({ placeId: id })
-			.select<HistoricalPattern[]>([
-				'id',
-				'placeId',
-				'comments',
-				'historicalPatternType',
-			]);
 	}
 
 	async addHistoricalPattern(name: Name) {
@@ -652,10 +636,6 @@ export class PlaceService {
 
 	getFNAssociationTypes(): GenericEnum[] {
 		return FIRST_NATION_ASSOCIATION_TYPES;
-	}
-
-	getHistoricalPatterns(): readonly GenericEnum[] {
-		return HISTORICAL_PATTERN_TYPES;
 	}
 
 	getDateTypes(): GenericEnum[] {
