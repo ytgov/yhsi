@@ -172,8 +172,8 @@ export class PlaceEdit {
 
 	static JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } =
 		Object.freeze({
-			names: 'NameJSON',
-			historicalPatterns: 'HistoricalPatternJSON',
+			names: 'nameJSON',
+			historicalPatterns: 'historicalPatternJSON',
 		});
 
 	static encodeAndDenormalizeJSONColumns(object: PlainObject) {
