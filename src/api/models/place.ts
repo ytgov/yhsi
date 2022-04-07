@@ -2,6 +2,7 @@ import { isString } from 'lodash';
 
 import { HistoricalPattern } from './historical-pattern';
 import { Name } from './name';
+import { PlainObject } from './simple-types';
 
 export class Place {
 	id?: number;
@@ -103,6 +104,8 @@ export class Place {
 
 	static encodeCommaDelimitedArrayColumns(object: PlainObject) {
 		Place.COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
+			if (!object.hasOwnProperty(column)) return;
+
 			object[column] = Place.encodeCommaDelimitedArray(object[column]);
 		});
 
