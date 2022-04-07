@@ -80,10 +80,16 @@ export default {
       });
     },
     saveDirectly({ commit, state }, data) {
-      return api.patch(state.place.id, data).then(({ data }) => {
-        commit('setPlace', data);
-        return state.place;
-      });
+      commit('setLoading', true);
+      return api
+        .patch(state.place.id, data)
+        .then(({ data }) => {
+          commit('setPlace', data);
+          return state.place;
+        })
+        .finally(() => {
+          commit('setLoading', false);
+        });
     },
   },
 };
