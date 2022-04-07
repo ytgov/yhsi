@@ -65,7 +65,7 @@ export default {
 		...mapGetters(['userInRole']),
 	},
 	methods: {
-		...mapActions('maps', ['loadToken']),
+		...mapActions('maps', ['loadToken', 'searchByYHSIId']),
 		showSidebar() {
 			this.sidebarVisible = true;
 		},
@@ -147,6 +147,12 @@ export default {
 							[UserRoles.SITE_ADMIN]
 						)
 					) {
+						let viewSiteAction = {
+							title: 'View site details',
+							id: 'view-site',
+							className: 'esri-icon-visible',
+						};
+
 						var YHSIpopup = {
 							title: '{YHSI_ID} - {SITE_NAME}',
 							content: [
@@ -212,6 +218,7 @@ export default {
 									],
 								},
 							],
+							actions: [viewSiteAction],
 						};
 
 						var sites = new FeatureLayer({
@@ -224,8 +231,16 @@ export default {
 							webmap.add(sites);
 						});
 					}
+					
 
 					if (this.userInRole([UserRoles.AIRPLANE_CRASH_EDITOR])) {
+
+						let viewCrashAction = {
+							title: 'View airplane crash details',
+							id: 'view-aircrash',
+							className: 'esri-icon-visible',
+						};
+
 						var CrashPopup = {
 							title: '{YACSI_NUM}',
 							content: [
@@ -271,6 +286,7 @@ export default {
 									],
 								},
 							],
+							actions: [viewCrashAction],
 						};
 
 						var crash = new FeatureLayer({
@@ -282,6 +298,24 @@ export default {
 							webmap.add(crash);
 						});
 					}
+
+					view.popup.on('trigger-action', async (event) => {
+						if (event.action.id === 'view-site') {
+							let yhsiId = view.popup.selectedFeature.attributes.YHSI_ID;
+							let results = await parent.searchByYHSIId(yhsiId);
+
+							if (results.length > 0) {
+								let item = results[0];
+								window.open(`/sites/${item.id}`, '_blank');
+							}
+						}
+						if (event.action.id === 'view-aircrash') {
+							let id = view.popup.selectedFeature.attributes.YACSI_NUM;
+							window.open(`/airplane/view/${id}`, '_blank');
+						}
+					});
+
+
 				}
 			);
 		});
