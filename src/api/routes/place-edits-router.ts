@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { query, param } from 'express-validator';
+import { body, query, param } from 'express-validator';
 import moment from 'moment';
 
 import { ReturnValidationErrors } from '../middleware';
@@ -55,6 +55,10 @@ placeEditsRouter.post(
 		UserRoles.SITE_ADMIN,
 		UserRoles.ADMINISTRATOR,
 	]),
+	[
+		body('placeId').notEmpty().toInt().isInt({ gt: 0 }),
+	],
+	ReturnValidationErrors,
 	(req: Request, res: Response) => {
 		const data = req.body;
 		const currentUser = req.user;

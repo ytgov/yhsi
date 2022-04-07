@@ -77,7 +77,7 @@ export default {
         {
           ...state.place,
           ...data,
-          placeId: state.placeId,
+          placeId: state.place.id,
         },
         { root: true }
       ).then(() => {
