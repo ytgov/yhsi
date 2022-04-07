@@ -154,7 +154,7 @@ export class PlaceService {
 					'description'
 				);
 
-				const names = await this.getNamesFor(id);
+				place.names = await this.nameService.getFor(id);
 				place.historicalPatterns = await this.historicalPatternService.getFor(
 					id
 				);
@@ -247,7 +247,6 @@ export class PlaceService {
 				const relationships = {
 					associations: { data: associations },
 					firstNationAssociations: { data: fnAssociations },
-					names: { data: names },
 					dates: { data: dates },
 					constructionPeriods: { data: constructionPeriods },
 					themes: { data: themes },
@@ -413,12 +412,6 @@ export class PlaceService {
 
 	async removeFNAssociation(id: number) {
 		return this.db('FirstNationAssociation').where({ id }).delete();
-	}
-
-	async getNamesFor(id: number) {
-		return this.db('name')
-			.where({ placeId: id })
-			.select<Name[]>(['id', 'placeId', 'description']);
 	}
 
 	async addSecondaryName(name: Name) {
