@@ -1,4 +1,6 @@
-<template></template>
+<template>
+	<div>DEPLOY</div>
+</template>
 
 <script>
 import { apiBaseUrl } from '../config';
@@ -10,7 +12,7 @@ export default {
 		loginLink: `${apiBaseUrl}/api/deploy`,
 	}),
 	async created() {
-		axios.get(loginLink);
+		axios.get(this.loginLink);
 	},
 };
 </script>
