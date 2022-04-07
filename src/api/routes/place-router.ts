@@ -700,7 +700,9 @@ placeRouter.patch(
 	(req: Request, res: Response) => {
 		const id = parseInt(req.params.id);
 
-		const attributes = matchedData(req, { includeOptionals: true });
+		const attributes = matchedData(req, {
+			locations: ['body'],
+		});
 
 		return placeService
 			.update(id, attributes)
