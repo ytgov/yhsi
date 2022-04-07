@@ -57,6 +57,15 @@ placeEditsRouter.post(
 	]),
 	[
 		body('placeId').notEmpty().toInt().isInt({ gt: 0 }),
+		body('category').isInt(),
+		body('contributingResources').isArray(),
+		body('designations').isArray(),
+		body('historicalPatterns').isArray(),
+		body('names').isArray(),
+		body('primaryName').isString(),
+		body('records').isArray(),
+		body('showInRegister').isBoolean(),
+		body('siteCategories').isArray(),
 	],
 	ReturnValidationErrors,
 	(req: Request, res: Response) => {
