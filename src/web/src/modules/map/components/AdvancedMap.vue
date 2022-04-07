@@ -34,10 +34,12 @@
 	border: 1px #ddd solid;
 }
 .esri-layer-list {
-	background-color: white;
+	background-color: white !important;
 }
-.esri-layer-list__list--root {
+.esri-layer-list__list--root,
+.esri-layer-list__item-container {
 	padding-left: 0 !important;
+	padding-right: 0 !important;
 }
 </style>
 
@@ -231,10 +233,8 @@ export default {
 							webmap.add(sites);
 						});
 					}
-					
 
 					if (this.userInRole([UserRoles.AIRPLANE_CRASH_EDITOR])) {
-
 						let viewCrashAction = {
 							title: 'View airplane crash details',
 							id: 'view-aircrash',
@@ -314,8 +314,6 @@ export default {
 							window.open(`/airplane/view/${id}`, '_blank');
 						}
 					});
-
-
 				}
 			);
 		});
