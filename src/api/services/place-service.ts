@@ -34,7 +34,6 @@ import {
 	WebLink,
 } from '../data';
 import {
-	decodeCommaDelimitedArray,
 	GenericEnum,
 	HistoricalPattern,
 	HISTORICAL_PATTERN_TYPES,
@@ -113,12 +112,16 @@ export class PlaceService {
 					id
 				);
 
-				place.contributingResources = decodeCommaDelimitedArray(
+				place.contributingResources = Place.decodeCommaDelimitedArray(
 					place.contributingResources
 				);
-				place.designations = decodeCommaDelimitedArray(place.designations);
-				place.records = decodeCommaDelimitedArray(place.records);
-				place.siteCategories = decodeCommaDelimitedArray(place.siteCategories);
+				place.designations = Place.decodeCommaDelimitedArray(
+					place.designations
+				);
+				place.records = Place.decodeCommaDelimitedArray(place.records);
+				place.siteCategories = Place.decodeCommaDelimitedArray(
+					place.siteCategories
+				);
 
 				const associations = combine(
 					await this.getAssociationsFor(id),

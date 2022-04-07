@@ -91,13 +91,13 @@ export class Place {
 
 		return value.join(',');
 	}
-}
 
-export function decodeCommaDelimitedArray(
-	value: undefined | null | string | string[]
-): string[] {
-	if (value === undefined || value === null || value === '') return [];
-	if (Array.isArray(value)) return value;
+	static decodeCommaDelimitedArray(
+		value: undefined | null | string | string[]
+	): string[] {
+		if (value === undefined || value === null || value === '') return [];
+		if (Array.isArray(value)) return value;
 
-	return value.split(',');
+		return value.split(',');
+	}
 }

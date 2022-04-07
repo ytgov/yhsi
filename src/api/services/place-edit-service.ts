@@ -3,7 +3,7 @@ import { camelCase, mapKeys } from 'lodash';
 
 import { DB_CONFIG } from '../config';
 import { mapKeysDeep, pascalCase } from '../utils/lodash-extensions';
-import { decodeCommaDelimitedArray, Place, PlaceEdit } from '../models';
+import { Place, PlaceEdit } from '../models';
 
 const JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } = Object.freeze(
 	{
@@ -109,12 +109,16 @@ export class PlaceEditService {
 			.where({ 'PlaceEdit.Id': id })
 			.then(parseAndNormalizeJSONColumns)
 			.then((place) => {
-				place.contributingResources = decodeCommaDelimitedArray(
+				place.contributingResources = Place.decodeCommaDelimitedArray(
 					place.contributingResources
 				);
-				place.designations = decodeCommaDelimitedArray(place.designations);
-				place.records = decodeCommaDelimitedArray(place.records);
-				place.siteCategories = decodeCommaDelimitedArray(place.siteCategories);
+				place.designations = Place.decodeCommaDelimitedArray(
+					place.designations
+				);
+				place.records = Place.decodeCommaDelimitedArray(place.records);
+				place.siteCategories = Place.decodeCommaDelimitedArray(
+					place.siteCategories
+				);
 
 				return place;
 			});
