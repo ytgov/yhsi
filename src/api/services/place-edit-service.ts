@@ -112,7 +112,10 @@ export class PlaceEditService {
 		return Promise.resolve(data)
 			.then(PlaceEdit.encodeAndDenormalizeJSONColumns)
 			.then(Place.encodeCommaDelimitedArrayColumns)
+			.then(PlaceEdit.stripOutNonColumnAttributes)
 			.then((normalizedData) => {
+				delete normalizedData['id'];
+
 				return this.db('PlaceEdit').insert(normalizedData);
 			});
 	}
