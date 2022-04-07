@@ -231,7 +231,7 @@ export default {
       this.loadingPdf = true;
       let b = this.boatTableOptions;
       
-      let res = await boats.getGridPdf(this.searchBoat, b.sortBy[0] ? b.sortBy[0] : "", b.sortDesc[0] ? "desc" : "asc");
+      let res = await boats.getGridPdf(this.searchBoat, b.sortBy[0] ? b.sortBy[0] : "Name", b.sortDesc[0] ? "desc" : "asc");
       let blob = new Blob([res], { type: "application/octetstream" });
       let url = window.URL || window.webkitURL;
       let link = url.createObjectURL(blob);
@@ -246,7 +246,7 @@ export default {
     async downloadPdfOwners(){
       this.loadingPdf = true;
       let o = this.ownerTableOptions;
-      let res = await owners.getGridPdf(this.searchBoat, o.sortBy[0] ? o.sortBy[0] : "", o.sortDesc[0] ? "desc" : "asc");
+      let res = await owners.getGridPdf(this.searchBoat, o.sortBy[0] ? o.sortBy[0] : "OwnerName", o.sortDesc[0] ? "desc" : "asc");
       let blob = new Blob([res], { type: "application/octetstream" });
       let url = window.URL || window.webkitURL;
       let link = url.createObjectURL(blob);
