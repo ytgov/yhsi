@@ -81,13 +81,14 @@ export default {
         sortDesc[0] ? "desc" : "asc"
       );
       this.boats = _.get(data, "body", []);
-      this.totalLength = _.get(data, "count", 0).count;
+      this.totalLength = _.get(data, "count", 0);
       this.boats.map((x) => {
         x.ConstructionDate = this.formatDate(x.ConstructionDate);
         x.ServiceStart = this.formatDate(x.ServiceStart);
         x.ServiceEnd = this.formatDate(x.ServiceEnd);
       });
       this.$store.commit("boats/setBoats", this.boats);
+      this.$store.commit("boats/setBoatTableOptions", this.options);
       this.loading = false;
     },
     formatDate(date) {

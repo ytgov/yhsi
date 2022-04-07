@@ -52,19 +52,22 @@ export default {
       return error;
     });
   },
-  async getExport(){
-    return await api.post('boats/export')
+  async getExport(textToMatch, sortBy, sort){
+    return await api.post('boats/export', {
+      textToMatch, sortBy, sort, page: 0, limit: 0
+    })
     .then( res => {
       return res.data;
     }).catch( err => {
       return err;
     })
   },
-  async getGridPdf(){
+  async getGridPdf(textToMatch, sortBy, sort){
     return await api({
       url: 'boats/pdf',
       method: 'POST',
       responseType: 'blob',
+      data: { textToMatch, sortBy, sort, page: 0, limit: 0 }
     })
     .then( res => {
       return res.data;

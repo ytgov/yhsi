@@ -55,7 +55,20 @@ export class BoatService {
 		let counter = [{ count: 0 }];
 		let boats = [];
 
-        if (textToMatch) {
+		if(limit === 0){
+			counter = await db
+				.from('boat.boat')
+				.where('name', 'like', `%${textToMatch}%`)
+				.count('Id', { as: 'count' });
+
+			boats = await db
+				.select('*')
+				.from('boat.boat')
+				.where('name', 'like', `%${textToMatch}%`)
+				//.orderBy('boat.boat.id', 'asc')
+				.orderBy(`${sortBy}`, `${sort}`);
+		}
+        else if (textToMatch) {
 			counter = await db
 				.from('boat.boat')
 				.where('name', 'like', `%${textToMatch}%`)

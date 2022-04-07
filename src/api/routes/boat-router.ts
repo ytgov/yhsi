@@ -192,11 +192,11 @@ boatsRouter.post(
 });
 
 boatsRouter.post('/pdf', async (req: Request, res: Response) => {
-		
-		let boats = await boatService.getAll();
+		const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
+		let boats = await boatService.doSearch(textToMatch, page, limit, 0, sortBy, sort);
 
 		let data = renderFile('./templates/boats/boatGrid.pug', {
-			data: boats
+			data: boats.body
 		});
 
 		let pdf = await generatePDF(data);
@@ -207,8 +207,7 @@ boatsRouter.post('/pdf', async (req: Request, res: Response) => {
 );
 
 boatsRouter.post('/export', async (req: Request, res: Response) => {
-		
-	let boats = await boatService.getAll();
-
-	res.status(200).send(boats);
+	const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
+	let boats = await boatService.doSearch(textToMatch, page, limit, 0, sortBy, sort);
+	res.status(200).send(boats.body);
 });

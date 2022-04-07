@@ -73,11 +73,11 @@ export default {
         sortDesc[0] ? "desc" : "asc"
       );
 
-      let { count } = data.count;
       this.owners = data.body;
-      this.totalLength = count;
+      this.totalLength = data.count;
       //console.log(data);
       this.$store.commit("boats/setOwners", this.owners);
+      this.$store.commit("boats/setOwnerTableOptions", this.options);
       this.loading = false;
     },
   },
