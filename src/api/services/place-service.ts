@@ -118,6 +118,7 @@ export class PlaceService {
 		return this.db('place')
 			.first<Place>(PLACE_FIELDS)
 			.where({ id: id })
+			.then(Place.decodeCommaDelimitedArrayColumns)
 			.then(async (place) => {
 				if (!place) {
 					return Promise.reject(new Error(`Could not find Place for id=${id}`));
@@ -129,17 +130,6 @@ export class PlaceService {
 
 				place.hasPendingChanges = await this.placeEditService.existsForPlace(
 					id
-				);
-
-				place.contributingResources = Place.decodeCommaDelimitedArray(
-					place.contributingResources
-				);
-				place.designations = Place.decodeCommaDelimitedArray(
-					place.designations
-				);
-				place.records = Place.decodeCommaDelimitedArray(place.records);
-				place.siteCategories = Place.decodeCommaDelimitedArray(
-					place.siteCategories
 				);
 
 				const associations = combine(

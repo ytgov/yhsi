@@ -176,6 +176,16 @@ export class Place {
 		return object;
 	}
 
+	static decodeCommaDelimitedArrayColumns(object: PlainObject) {
+		Place.COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
+			if (!object.hasOwnProperty(column)) return;
+
+			object[column] = Place.decodeCommaDelimitedArray(object[column]);
+		});
+
+		return object;
+	}
+
 	static stripOutNonColumnAttributes(object: PlainObject) {
 		return pick(object, Place.FIELDS);
 	}
