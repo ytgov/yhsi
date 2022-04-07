@@ -2,15 +2,8 @@ import knex, { Knex } from 'knex';
 import { camelCase, mapKeys } from 'lodash';
 
 import { DB_CONFIG } from '../config';
-import { mapKeysDeep, pascalCase } from '../utils/lodash-extensions';
+import { mapKeysDeep } from '../utils/lodash-extensions';
 import { Place, PlaceEdit, PlainObject } from '../models';
-
-const JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } = Object.freeze(
-	{
-		names: 'NameJSON',
-		historicalPatterns: 'HistoricalPatternJSON',
-	}
-);
 
 interface CountQuery {
 	count: number;
@@ -22,19 +15,6 @@ function parseAndNormalizeJSONColumns(object: PlainObject) {
 			const cleanedKey = key.replace(/JSON$/, '');
 			const objectAsJson = JSON.parse(object[key]);
 			object[cleanedKey] = mapKeysDeep(objectAsJson, camelCase);
-			delete object[key];
-		}
-	});
-	return object;
-}
-
-function encodeAndDenormalizeJSONColumns(object: PlainObject) {
-	Object.keys(object).forEach((key) => {
-		if (JS_TO_JSON_COLUMN_TRANSLATIONS[key]) {
-			const encodedKey = JS_TO_JSON_COLUMN_TRANSLATIONS[key];
-			const encodedValue = mapKeysDeep(object[key], pascalCase);
-			const jsonObjectAsString = JSON.stringify(encodedValue);
-			object[encodedKey] = jsonObjectAsString;
 			delete object[key];
 		}
 	});
@@ -130,7 +110,7 @@ export class PlaceEditService {
 
 	create(data: PlaceEdit) {
 		return Promise.resolve(data)
-			.then(encodeAndDenormalizeJSONColumns)
+			.then(PlaceEdit.encodeAndDenormalizeJSONColumns)
 			.then(Place.encodeCommaDelimitedArrayColumns)
 			.then((normalizedData) => {
 				return this.db('PlaceEdit').insert(normalizedData);

@@ -1,3 +1,6 @@
+import { mapKeysDeep, pascalCase } from '../utils/lodash-extensions';
+import { PlainObject } from './simple-types';
+
 export class PlaceEdit {
 	id?: number;
 	placeId?: number;
@@ -80,4 +83,23 @@ export class PlaceEdit {
 	themeJSON?: string;
 	webLinkJSON?: string;
 	ownershipJSON?: string;
+
+	static JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } =
+		Object.freeze({
+			names: 'NameJSON',
+			historicalPatterns: 'HistoricalPatternJSON',
+		});
+
+	static encodeAndDenormalizeJSONColumns(object: PlainObject) {
+		Object.keys(object).forEach((key) => {
+			if (PlaceEdit.JS_TO_JSON_COLUMN_TRANSLATIONS[key]) {
+				const encodedKey = PlaceEdit.JS_TO_JSON_COLUMN_TRANSLATIONS[key];
+				const encodedValue = mapKeysDeep(object[key], pascalCase);
+				const jsonObjectAsString = JSON.stringify(encodedValue);
+				object[encodedKey] = jsonObjectAsString;
+				delete object[key];
+			}
+		});
+		return object;
+	}
 }
