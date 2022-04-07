@@ -1,5 +1,22 @@
+import { get } from 'lodash';
+
 import { UserRoles } from '@/authorization';
 import api from '@/apis/places-api';
+
+// This function can go away when the back-end serves the
+// relationship data as part of the data directly.
+// e.g. { data: { names: [{ id: 1, placeId: 1, description: "SomeName" }] } }
+// instead of { data: {}, relationships: { names: { data: [{ id: 1, placeId: 1, description: "SomeName" }] } } }
+function injectRelationshipData(data, relationships) {
+  Object.keys(relationships).forEach((key) => {
+    if (key in data) {
+      console.error('Relationship data conflicts with source data.');
+      return;
+    }
+
+    data[key] = get(relationships, `${key}.data`, []);
+  });
+}
 
 export default {
   namespaced: true,
@@ -26,8 +43,7 @@ export default {
       return api
         .get(placeId)
         .then(({ data, relationships }) => {
-          data.names = relationships.names.data;
-          data.historicalPatterns = relationships.historicalPatterns.data;
+          injectRelationshipData(data, relationships);
           commit('setPlace', data);
           return state.place;
         })
