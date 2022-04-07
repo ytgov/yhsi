@@ -1,6 +1,4 @@
-import { isEmpty } from 'lodash';
-
-import api from '@/apis/place-edis-api';
+import api from '@/apis/place-edits-api';
 
 export default {
 	namespaced: true,

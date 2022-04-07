@@ -70,12 +70,17 @@ export default {
 
       return dispatch('saveAsChangeRequest', data);
     },
-    saveAsChangeRequest({ dispatch, state }, data) {
-      return dispatch('placeEdit/save', {
-        ...state.place,
-        ...data,
-        placeId: state.placeId,
-      }).then(() => {
+    saveAsChangeRequest({ commit, dispatch, state }, data) {
+      commit('setLoading', true);
+      return dispatch(
+        'placeEdits/save',
+        {
+          ...state.place,
+          ...data,
+          placeId: state.placeId,
+        },
+        { root: true }
+      ).then(() => {
         return dispatch('refresh', state.place.id);
       });
     },
