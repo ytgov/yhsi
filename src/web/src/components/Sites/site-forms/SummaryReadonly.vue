@@ -131,7 +131,7 @@ v-card.mb-0(
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
 
 import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSelect';
 import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
@@ -162,14 +162,6 @@ export default {
 			place: 'place',
 			names: 'names',
 			historicalPatterns: 'historicalPatterns',
-		}),
-	},
-	mounted() {
-		this.initializePlace(this.placeId);
-	},
-	methods: {
-		...mapActions({
-			initializePlace: 'places/initialize',
 		}),
 	},
 };

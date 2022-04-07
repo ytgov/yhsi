@@ -233,18 +233,14 @@ export default {
   }),
   computed: {
     ...mapGetters({
-      currentUserRoles: 'profile/role_list',
       place: 'places/place',
     }),
   },
   mounted() {
-    this.initialize(this.placeId).then((place) => {
-      this.updateFormFields(place);
-    });
+    this.updateFormFields(this.place);
   },
   methods: {
     ...mapActions({
-      initialize: 'places/initialize',
       savePlace: 'places/save',
     }),
     updateFormFields(place) {

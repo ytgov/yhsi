@@ -1,5 +1,3 @@
-import { isEmpty } from 'lodash';
-
 import { UserRoles } from '@/authorization';
 import api from '@/apis/places-api';
 
@@ -37,15 +35,8 @@ export default {
           commit('setLoading', false);
         });
     },
-    async initialize({ dispatch, state }, placeId) {
+    initialize({ dispatch }, placeId) {
       return dispatch('profile/loadProfile', null, { root: true }).then(() => {
-        if (
-          !state.loading &&
-          !isEmpty(state.place) &&
-          state.place.id == placeId
-        ) {
-          return state.place;
-        }
         return dispatch('get', placeId);
       });
     },
