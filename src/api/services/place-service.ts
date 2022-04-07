@@ -1,6 +1,6 @@
 import knex, { Knex } from 'knex';
 import moment from 'moment';
-import { uniq, cloneDeep, pick } from 'lodash';
+import { get, uniq, cloneDeep, pick } from 'lodash';
 
 import {
 	HistoricalPatternService,
@@ -60,6 +60,24 @@ function combine(
 	});
 
 	return list1;
+}
+
+// This function can go away when the back-end serves the
+// relationship data as part of the data directly.
+// e.g. { data: { names: [{ id: 1, placeId: 1, description: "SomeName" }] } }
+// instead of { data: {}, relationships: { names: { data: [{ id: 1, placeId: 1, description: "SomeName" }] } } }
+function injectRelationshipData(
+	attributes: PlainObject,
+	relationships: PlainObject
+) {
+	Object.keys(relationships).forEach((key) => {
+		if (attributes.hasOwnProperty(key)) {
+			console.error('Relationship data conflicts with source data.');
+			return;
+		}
+
+		attributes[key] = get(relationships, `${key}.data`, []);
+	});
 }
 
 export class PlaceService {
@@ -318,10 +336,13 @@ export class PlaceService {
 			.then(Place.stripOutNonColumnAttributes)
 			.then(Place.encodeCommaDelimitedArrayColumns)
 			.then((encodedAttributes) => {
-				return this.db('place')
-					.where({ id })
-					.update(encodedAttributes, Place.FIELDS)
-					.then((result) => result[0]);
+				return this.db('place').where({ id }).update(encodedAttributes);
+			})
+			.then(() => {
+				return this.getById(id).then(({ place, relationships }) => {
+					injectRelationshipData(place, relationships);
+					return place;
+				});
 			});
 	}
 
