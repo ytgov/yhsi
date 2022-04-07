@@ -1,5 +1,4 @@
 import http from '@/apis/http-client';
-import placesSummaryApi from '@/apis/places-summary-api';
 
 const placeUrl = '/api/place';
 
@@ -24,12 +23,6 @@ export default {
 				console.error(error);
 				return Promise.reject(error);
 			});
-	},
-	put(id, data) {
-		return Promise.all([placesSummaryApi.put(id, data)]).catch((error) => {
-			console.error(error);
-			return Promise.reject(error);
-		});
 	},
 	search(data) {
 		return http

@@ -293,7 +293,7 @@ export default {
 		save() {
 			this.loading = true;
 			return placesApi
-				.put(this.place.id, this.newPlace)
+				.patch(this.place.id, this.newPlace)
 				.then(() => {
 					return placeEditsApi.delete(this.placeEditId);
 				})

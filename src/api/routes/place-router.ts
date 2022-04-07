@@ -184,43 +184,6 @@ placeRouter.post(
 );
 
 placeRouter.put(
-	'/:id/summary',
-	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
-	[
-		param('id').isInt().notEmpty(),
-		body('primaryName').isString().bail().notEmpty().trim(),
-		body('showInRegister').isBoolean().notEmpty(),
-	],
-	ReturnValidationErrors,
-	(req: Request, res: Response) => {
-		const id = parseInt(req.params.id);
-		const attributes = pick(req.body, [
-			'category',
-			'contributingResources',
-			'designations',
-			'historicalPatterns',
-			'names',
-			'primaryName',
-			'records',
-			'showInRegister',
-			'siteCategories',
-		]);
-		return placeService
-			.updatePlaceSummary(id, attributes)
-			.then(() => {
-				return res.json({
-					messages: [{ variant: 'success', text: 'Site updated' }],
-				});
-			})
-			.catch((error) => {
-				return res.status(422).json({
-					messages: [{ variant: 'error', text: error.message }],
-				});
-			});
-	}
-);
-
-placeRouter.put(
 	'/:id/location',
 	[param('id').isInt().notEmpty()],
 	ReturnValidationErrors,

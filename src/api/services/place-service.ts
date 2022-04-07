@@ -334,33 +334,6 @@ export class PlaceService {
 		return this.db('place').where({ id }).update(item);
 	}
 
-	updatePlaceSummary(id: number, attributes: Place) {
-		const names = attributes.names || [];
-		const historicalPatterns = attributes.historicalPatterns || [];
-		delete attributes['names'];
-		delete attributes['historicalPatterns'];
-
-		return new Promise(async (resolve, reject) => {
-			attributes.contributingResources = Place.encodeCommaDelimitedArray(
-				attributes.contributingResources
-			);
-			attributes.designations = Place.encodeCommaDelimitedArray(
-				attributes.designations
-			);
-			attributes.records = Place.encodeCommaDelimitedArray(attributes.records);
-			attributes.siteCategories = Place.encodeCommaDelimitedArray(
-				attributes.siteCategories
-			);
-
-			return this.updatePlace(id, attributes).then(resolve).catch(reject);
-		}).then(async (result) => {
-			await this.nameService.upsertFor(id, names);
-			await this.historicalPatternService.upsertFor(id, historicalPatterns);
-
-			return result;
-		});
-	}
-
 	async generateIdFor(nTSMapSheet: string): Promise<string> {
 		let maxPlace = await this.db('place')
 			.where({ nTSMapSheet })
