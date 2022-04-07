@@ -43,7 +43,7 @@ mapsRouter.get("/sites*", async (req: Request, res: Response) => {
 
 async function loadPortalToken() {
     let now = moment().utc(true);
-
+    
     if (now.isBefore(PORTAL_TOKEN.renew_after))
         return;
 
@@ -76,7 +76,7 @@ async function loadFeatureToken() {
     await axios.post(`https://deptweb.gov.yk.ca/arcgis/tokens/generateToken`, stringify(body), { headers: { "Content-Type": "application/x-www-form-urlencoded" } })
         .then(resp => {
             let { token, expires } = resp.data;
-            let renew_after = moment(expires).subtract(30, "minutes");
+            let renew_after = moment(expires).utc(true).subtract(30, "minutes");
             FEATURE_TOKEN = { access_token: token, expires_in: 3600, renew_after };
         })
         .catch(err => {
