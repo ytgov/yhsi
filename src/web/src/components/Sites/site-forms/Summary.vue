@@ -194,14 +194,7 @@
 </template>
 
 <script>
-import { pickBy } from 'lodash';
 import { mapActions, mapGetters } from 'vuex';
-
-import store from '@/store';
-import { UserRoles } from '@/authorization';
-
-import placeEditsApi from '@/apis/place-edits-api';
-import placesSummaryApi from '@/apis/places-summary-api';
 
 import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSelect';
 import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
@@ -245,17 +238,14 @@ export default {
     }),
   },
   mounted() {
-    this.loadProfile();
-    this.initializeOrGetCachedPlace(this.placeId).then((place) => {
+    this.initialize(this.placeId).then((place) => {
       this.updateFormFields(place);
-      store.dispatch('addSiteHistory', place);
     });
   },
   methods: {
     ...mapActions({
-      initializeOrGetCachedPlace: 'places/initializeOrGetCached',
-      refreshPlace: 'places/refresh',
-      loadProfile: 'profile/loadProfile',
+      initialize: 'places/initialize',
+      savePlace: 'places/save',
     }),
     updateFormFields(place) {
       this.category = place.category;
@@ -268,9 +258,6 @@ export default {
       this.showInRegister = place.showInRegister;
       this.siteCategories = place.siteCategories;
       this.yHSIId = place.yHSIId;
-    },
-    refresh() {
-      return this.refreshPlace(this.placeId).then(this.updateFormFields);
     },
     addName() {
       this.names.push({ description: '', placeId: this.placeId });
@@ -289,7 +276,7 @@ export default {
       this.historicalPatterns.splice(index, 1);
     },
     saveChanges() {
-      const data = {
+      return this.savePlace({
         yHSIId: this.yHSIId,
         primaryName: this.primaryName,
         designations: this.designations,
@@ -300,43 +287,7 @@ export default {
         names: this.names,
         contributingResources: this.contributingResources,
         historicalPatterns: this.historicalPatterns,
-      };
-      if (
-        this.currentUserRoles.some((role) =>
-          [UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR].includes(role)
-        )
-      ) {
-        return this.saveDirectly(data);
-      }
-
-      return this.saveAsChangeRequest(data);
-    },
-    saveAsChangeRequest(data) {
-      const safePlaceData = pickBy(this.place, (_value, key) => {
-        return !['id', 'recognitionDateDisplay', 'hasPendingChanges'].includes(
-          key
-        );
-      });
-      return placeEditsApi
-        .post({ ...safePlaceData, ...data, placeId: this.placeId })
-        .then((data) => {
-          this.refresh();
-          this.$emit('showAPIMessages', data);
-        })
-        .catch((error) => {
-          this.$emit('showError', error);
-        });
-    },
-    saveDirectly(data) {
-      return placesSummaryApi
-        .put(this.placeId, data)
-        .then((data) => {
-          this.refresh();
-          this.$emit('showAPIMessages', data);
-        })
-        .catch((error) => {
-          this.$emit('showError', error);
-        });
+      }).then(this.updateFormFields);
     },
   },
 };

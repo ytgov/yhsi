@@ -1,5 +1,6 @@
 import { isEmpty } from 'lodash';
 
+import { UserRoles } from '@/authorization';
 import api from '@/apis/places-api';
 
 export default {
@@ -36,21 +37,46 @@ export default {
           commit('setLoading', false);
         });
     },
-    initialize({ dispatch }, placeId) {
-      return dispatch('get', placeId);
+    async initialize({ dispatch, state }, placeId) {
+      return dispatch('profile/loadProfile', null, { root: true }).then(() => {
+        if (
+          !state.loading &&
+          !isEmpty(state.place) &&
+          state.place.id == placeId
+        ) {
+          return state.place;
+        }
+        return dispatch('get', placeId);
+      });
     },
     refresh({ dispatch }, placeId) {
       return dispatch('get', placeId);
     },
-    initializeOrGetCached({ dispatch, state }, placeId) {
+    save({ dispatch, rootGetters }, data) {
       if (
-        !isEmpty(state.place) &&
-        !state.loading &&
-        state.place.id == placeId
+        rootGetters['profile/role_list'].some((role) =>
+          [UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR].includes(role)
+        )
       ) {
-        return state.place;
+        return dispatch('saveDirectly', data);
       }
-      return dispatch('get', placeId);
+
+      return dispatch('saveAsChangeRequest', data);
+    },
+    saveAsChangeRequest({ dispatch, state }, data) {
+      return dispatch('placeEdit/save', {
+        ...state.place,
+        ...data,
+        placeId: state.placeId,
+      }).then(() => {
+        return dispatch('refresh', state.place.id);
+      });
+    },
+    saveDirectly({ commit, state }, data) {
+      return api.patch(state.place.id, data).then(({ data }) => {
+        commit('setPlace', data);
+        return state.place;
+      });
     },
   },
 };

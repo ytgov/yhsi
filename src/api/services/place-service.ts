@@ -320,7 +320,7 @@ export class PlaceService {
 			.then((encodedAttributes) => {
 				return this.db('place')
 					.where({ id })
-					.update(attributes, Place.FIELDS)
+					.update(encodedAttributes, Place.FIELDS)
 					.then((result) => result[0]);
 			});
 	}

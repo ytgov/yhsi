@@ -165,11 +165,11 @@ export default {
 		}),
 	},
 	mounted() {
-		this.initializeOrGetCachedPlace(this.placeId);
+		this.initializePlace(this.placeId);
 	},
 	methods: {
 		...mapActions({
-			initializeOrGetCachedPlace: 'places/initializeOrGetCached',
+			initializePlace: 'places/initialize',
 		}),
 	},
 };
