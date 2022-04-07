@@ -39,6 +39,7 @@ import {
 	HISTORICAL_PATTERN_TYPES,
 	Name,
 	Place,
+	PlainObject,
 } from '../models';
 
 function combine(
@@ -294,6 +295,34 @@ export class PlaceService {
 
 	async addPlace(item: Place): Promise<Place | undefined> {
 		return this.db('place').insert(item).returning<Place>(PLACE_FIELDS);
+	}
+
+	updateRelations(id: number, attributes: PlainObject) {
+		return Promise.resolve(attributes).then(async (attrs) => {
+			if (attrs.hasOwnProperty('names')) {
+				await this.nameService.upsertFor(id, attrs['names']);
+			}
+			if (attrs.hasOwnProperty('historicalPatterns')) {
+				await this.historicalPatternService.upsertFor(
+					id,
+					attrs['historicalPatterns']
+				);
+			}
+			return attrs;
+		});
+	}
+
+	update(id: number, attributes: PlainObject): Promise<Place | undefined> {
+		return Promise.resolve(attributes)
+			.then((attrs) => this.updateRelations(id, attrs))
+			.then(Place.stripOutNonColumnAttributes)
+			.then(Place.encodeCommaDelimitedArrayColumns)
+			.then((encodedAttributes) => {
+				return this.db('place')
+					.where({ id })
+					.update(attributes, Place.FIELDS)
+					.then((result) => result[0]);
+			});
 	}
 
 	updatePlace(id: number, item: Place): Promise<Place | undefined> {

@@ -1,5 +1,12 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { body, check, param, query, validationResult } from 'express-validator';
+import {
+	body,
+	check,
+	param,
+	query,
+	validationResult,
+	matchedData,
+} from 'express-validator';
 import { pick } from 'lodash';
 
 import { DB_CONFIG } from '../config';
@@ -674,42 +681,39 @@ placeRouter.put(
 	}
 );
 
-placeRouter.put(
-	'/:id/all',
+placeRouter.patch(
+	'/:id',
+	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
 	[
-		check('id').isInt().bail().notEmpty(),
-		body('primaryName').isString().bail().notEmpty().trim(),
-		body('yHSIId').isString().bail().notEmpty().trim(),
-		body('jurisdiction').isInt().bail().notEmpty(),
-		body('statuteId').isInt().bail().notEmpty(),
-		body('statute2Id').isInt().bail().notEmpty(),
-		body('ownerConsent').isInt().bail().notEmpty(),
-		body('category').isInt().bail().notEmpty(),
-		body('isPubliclyAccessible').isBoolean().bail().notEmpty(),
-		body('communityId').isInt().bail().notEmpty(),
-		body('siteStatus').isInt().bail().notEmpty(),
-		body('floorCondition').isInt().bail().notEmpty(),
-		body('wallCondition').isInt().bail().notEmpty(),
-		body('doorCondition').isInt().bail().notEmpty(),
-		body('roofCondition').isInt().bail().notEmpty(),
-		body('coordinateDetermination').isInt().bail().notEmpty(),
-		body('showInRegister').isBoolean().bail().notEmpty(),
+		param('id').isInt({ gt: 0 }),
+		body('category').isInt(),
+		body('contributingResources').isArray(),
+		body('designations').isArray(),
+		body('historicalPatterns').isArray(),
+		body('names').isArray(),
+		body('primaryName').isString(),
+		body('records').isArray(),
+		body('showInRegister').isBoolean(),
+		body('siteCategories').isArray(),
 	],
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
+	ReturnValidationErrors,
+	(req: Request, res: Response) => {
+		const id = parseInt(req.params.id);
 
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
+		const attributes = matchedData(req, { includeOptionals: true });
 
-		const id = req.params.id as string;
-		let result = await placeService
-			.updatePlace(parseInt(id), req.body as Place)
-			.then((item) => item)
-			.catch((err) => {
-				return res.json({ errors: [err.originalError.info.message] });
+		return placeService
+			.update(id, attributes)
+			.then((data) => {
+				return res.json({
+					data,
+					messages: [{ variant: 'success', text: 'Site updated' }],
+				});
+			})
+			.catch((error) => {
+				return res.status(422).json({
+					messages: [{ variant: 'error', text: error.message }],
+				});
 			});
-
-		return res.json({ data: result });
 	}
 );

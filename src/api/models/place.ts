@@ -1,4 +1,4 @@
-import { isString } from 'lodash';
+import { isString, pick } from 'lodash';
 
 import { HistoricalPattern } from './historical-pattern';
 import { Name } from './name';
@@ -71,6 +71,70 @@ export class Place {
 	yHSThemes?: string;
 	zoning?: string;
 
+	static FIELDS: ReadonlyArray<string> = Object.freeze([
+		'id',
+		'block',
+		'bordenNumber',
+		'buildingSize',
+		'category',
+		'cIHBNumber',
+		'communityId',
+		'conditionComment',
+		'contributingResources',
+		'coordinateDetermination',
+		'currentUseComment',
+		'designations',
+		'doorCondition',
+		'fHBRONumber',
+		'floorCondition',
+		'geocode',
+		'groupYHSI',
+		'hectareArea',
+		'isPubliclyAccessible',
+		'jurisdiction',
+		'lAGroup',
+		'latitude',
+		'locationComment',
+		'locationContext',
+		'longitude',
+		'lot',
+		'mailingAddress',
+		'mailingCountry',
+		'mailingPostalCode',
+		'mailingProvince',
+		'nTSMapSheet',
+		'otherCommunity',
+		'otherLocality',
+		'ownerConsent',
+		'physicalAddress',
+		'physicalCountry',
+		'physicalPostalCode',
+		'physicalProvince',
+		'planNumber',
+		'previousAddress',
+		'primaryName',
+		'recognitionDate',
+		'records',
+		'resourceType',
+		'rollNumber',
+		'roofCondition',
+		'showInRegister',
+		'siteCategories',
+		'siteDistrictNumber',
+		'siteStatus',
+		'slideNegativeIndex',
+		'statute2Id',
+		'statuteId',
+		'townSiteMapNumber',
+		'wallCondition',
+		'yGBuildingNumber',
+		'yGReserveNumber',
+		'yHSIId',
+		'yHSPastUse',
+		'yHSThemes',
+		'zoning',
+	]);
+
 	static COMMA_DELIMITED_ARRAY_COLUMNS: ReadonlyArray<string> = Object.freeze([
 		'contributingResources',
 		'designations',
@@ -110,5 +174,9 @@ export class Place {
 		});
 
 		return object;
+	}
+
+	static stripOutNonColumnAttributes(object: PlainObject) {
+		return pick(object, Place.FIELDS);
 	}
 }
