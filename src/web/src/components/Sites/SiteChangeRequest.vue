@@ -99,6 +99,7 @@ import placesApi from '@/apis/places-api';
 import placeEditsApi from '@/apis/place-edits-api';
 
 import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSelect';
+import CommunitySelect from '@/components/Sites/site-forms/CommunitySelect';
 import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/site-forms/DesignationTypesSelect';
 import HistoricalPatternsViewer from '@/components/Sites/site-change-request/HistoricalPatternsViewer';
@@ -111,6 +112,7 @@ export default {
 	name: 'SiteChangeRequest',
 	components: {
 		CategoryTypesSelect,
+		CommunitySelect,
 		ContributingResourceTypesSelect,
 		DesignationTypesSelect,
 		HistoricalPatternsViewer,
@@ -160,6 +162,7 @@ export default {
 		},
 		fieldTypes() {
 			return [
+				// Summary Form Fields
 				{
 					key: 'yHSIId',
 					type: 'v-text-field',
@@ -208,6 +211,11 @@ export default {
 				{
 					key: 'historicalPatterns',
 					type: HistoricalPatternsViewer,
+				},
+				// Location Form Fields
+				{
+					key: 'communityId',
+					type: CommunitySelect,
 				},
 			];
 		},
