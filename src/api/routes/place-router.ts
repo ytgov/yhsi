@@ -214,7 +214,7 @@ placeRouter.put(
 
 		let oldDates = await placeService.getDatesFor(parseInt(id));
 		dates = dates.map((n: Dates) =>
-			Object.assign(n, { details: n.details.trim() })
+			Object.assign(n, { details: n.details?.trim() })
 		);
 
 		for (let on of oldDates) {
