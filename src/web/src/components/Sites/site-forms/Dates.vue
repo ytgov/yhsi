@@ -62,7 +62,7 @@
             <v-row>
               <v-col cols="5">
                 <v-menu
-                  v-model="item.from_menu"
+                  v-model="datesFromMenus[i]"
                   :close-on-content-click="false"
                   transition="scale-transition"
                   left
@@ -86,13 +86,13 @@
                   </template>
                   <v-date-picker
                     v-model="item.fromDate"
-                    @input="item.from_menu = false"
+                    @input="datesFromMenus[i] = false"
                   />
                 </v-menu>
               </v-col>
               <v-col col="5">
                 <v-menu
-                  v-model="item.to_menu"
+                  v-model="datesToMenus[i]"
                   :close-on-content-click="false"
                   transition="scale-transition"
                   left
@@ -116,7 +116,7 @@
                   </template>
                   <v-date-picker
                     v-model="item.toDate"
-                    @input="item.to_menu = false"
+                    @input="datesToMenus[i] = false"
                   />
                 </v-menu>
               </v-col>
@@ -349,6 +349,8 @@ export default {
       siteStatus: '', //
       wallCondition: '', //
     },
+    datesFromMenus: [],
+    datesToMenus: [],
   }),
   mounted() {
     axios
@@ -359,6 +361,10 @@ export default {
         this.constructionPeriods =
           resp.data.relationships.constructionPeriods.data;
         this.dates = resp.data.relationships.dates.data;
+
+        this.datesFromMenus = this.dates.map(() => false);
+        this.datesToMenus = this.dates.map(() => false);
+
         store.dispatch('addSiteHistory', resp.data.data);
       })
       .catch((error) => console.error(error));
