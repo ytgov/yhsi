@@ -101,6 +101,7 @@ import placeEditsApi from '@/apis/place-edits-api';
 import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSelect';
 import CommunitySelect from '@/components/Sites/site-forms/CommunitySelect';
 import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
+import CoordinateDeterminationTypesSelect from '@/components/Sites/site-forms/CoordinateDeterminationTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/site-forms/DesignationTypesSelect';
 import HistoricalPatternsViewer from '@/components/Sites/site-change-request/HistoricalPatternsViewer';
 import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
@@ -114,6 +115,7 @@ export default {
 		CategoryTypesSelect,
 		CommunitySelect,
 		ContributingResourceTypesSelect,
+		CoordinateDeterminationTypesSelect,
 		DesignationTypesSelect,
 		HistoricalPatternsViewer,
 		JsonViewer,
@@ -285,6 +287,31 @@ export default {
 					type: 'v-text-field',
 					fieldAttrs: {
 						label: 'Longitude',
+					},
+				},
+				{
+					key: 'coordinateDetermination',
+					type: CoordinateDeterminationTypesSelect,
+				},
+				{
+					key: 'nTSMapSheet',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'NTS map sheet',
+					},
+				},
+				{
+					key: 'bordenNumber',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Border number',
+					},
+				},
+				{
+					key: 'locationComment',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Misc. info',
 					},
 				},
 			];
