@@ -62,6 +62,7 @@ placeEditsRouter.post(
 		body('communityId').isInt(),
 		body('contributingResources').isArray().optional({ nullable: true }),
 		body('coordinateDetermination').isInt(),
+		body('dates').isArray().optional({ nullable: true }),
 		body('designations').isArray().optional({ nullable: true }),
 		body('hectareArea').isString().optional({ nullable: true }),
 		body('historicalPatterns').isArray().optional({ nullable: true }),

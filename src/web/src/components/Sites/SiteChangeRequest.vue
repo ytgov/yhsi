@@ -101,6 +101,7 @@ import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSele
 import CommunitySelect from '@/components/Sites/site-forms/CommunitySelect';
 import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
 import CoordinateDeterminationTypesSelect from '@/components/Sites/site-forms/CoordinateDeterminationTypesSelect';
+import DatesViewer from '@/components/Sites/site-change-request/DatesViewer';
 import DesignationTypesSelect from '@/components/Sites/site-forms/DesignationTypesSelect';
 import HistoricalPatternsViewer from '@/components/Sites/site-change-request/HistoricalPatternsViewer';
 import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
@@ -259,6 +260,11 @@ const FIELD_TYPES = Object.freeze([
 			label: 'Misc. info',
 		},
 	},
+	// Dates & Condition form fields
+	{
+		key: 'dates',
+		type: DatesViewer,
+	},
 ]);
 
 export default {
@@ -268,6 +274,7 @@ export default {
 		CommunitySelect,
 		ContributingResourceTypesSelect,
 		CoordinateDeterminationTypesSelect,
+		DatesViewer,
 		DesignationTypesSelect,
 		HistoricalPatternsViewer,
 		JsonViewer,

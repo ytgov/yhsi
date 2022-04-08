@@ -56,6 +56,7 @@ export class PlaceEditService {
 				communityId: 'CommunityId',
 				contributingResources: 'ContributingResources',
 				coordinateDetermination: 'CoordinateDetermination',
+				datesJSON: 'DatesJSON',
 				designations: 'Designations',
 				hectareArea: 'HectareArea',
 				historicalPatternsJSON: 'HistoricalPatternJSON',
