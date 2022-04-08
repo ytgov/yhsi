@@ -649,15 +649,31 @@ placeRouter.patch(
 	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
 	[
 		param('id').isInt({ gt: 0 }),
-		body('category').isInt(),
-		body('contributingResources').isArray(),
-		body('designations').isArray(),
-		body('historicalPatterns').isArray(),
-		body('names').isArray(),
-		body('primaryName').isString(),
-		body('records').isArray(),
-		body('showInRegister').isBoolean(),
-		body('siteCategories').isArray(),
+		body('bordenNumber').isString().optional({ nullable: true }),
+		body('category').isInt().optional(),
+		body('communityId').isInt().optional(),
+		body('contributingResources').isArray().optional({ nullable: true }),
+		body('coordinateDetermination').isInt().optional(),
+		body('designations').isArray().optional({ nullable: true }),
+		body('hectareArea').isString().optional({ nullable: true }),
+		body('historicalPatterns').isArray().optional({ nullable: true }),
+		body('latitude').isString().optional({ nullable: true }),
+		body('locationComment').isString().optional({ nullable: true }),
+		body('locationContext').isString().optional({ nullable: true }),
+		body('longitude').isString().optional({ nullable: true }),
+		body('names').isArray().optional({ nullable: true }),
+		body('nTSMapSheet').isString().optional({ nullable: true }),
+		body('otherCommunity').isString().optional({ nullable: true }),
+		body('otherLocality').isString().optional({ nullable: true }),
+		body('physicalAddress').isString().optional({ nullable: true }),
+		body('physicalCountry').isString().optional({ nullable: true }),
+		body('physicalPostalCode').isString().optional({ nullable: true }),
+		body('physicalProvince').isString().optional({ nullable: true }),
+		body('previousAddress').isString().optional({ nullable: true }),
+		body('primaryName').isString().optional(),
+		body('records').isArray().optional({ nullable: true }),
+		body('showInRegister').isBoolean().optional(),
+		body('siteCategories').isArray().optional({ nullable: true }),
 	],
 	ReturnValidationErrors,
 	(req: Request, res: Response) => {
@@ -665,6 +681,7 @@ placeRouter.patch(
 
 		const attributes = matchedData(req, {
 			locations: ['body'],
+			includeOptionals: true,
 		});
 
 		return placeService
