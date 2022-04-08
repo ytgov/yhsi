@@ -122,6 +122,14 @@
               </v-col>
               <v-col cols="2" />
             </v-row>
+            <v-row
+              v-if="i < dates.length - 1"
+              class="my-0"
+            >
+              <v-col cols="10">
+                <v-divider class="black" />
+              </v-col>
+            </v-row>
           </div>
         </v-card-text>
         <v-card-actions>
