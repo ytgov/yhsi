@@ -70,6 +70,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import goTo from 'vuetify/lib/services/goto';
 
 import Associations from '@/components/Sites/site-forms/Associations';
 import Dates from '@/components/Sites/site-forms/Dates';
@@ -129,7 +130,9 @@ export default {
     },
   },
   mounted() {
-    this.initializePlace(this.id);
+    this.initializePlace(this.id).then(() => {
+      goTo(this.$route.hash, { offset: 75 });
+    });
   },
   methods: {
     ...mapActions({ initializePlace: 'places/initialize' }),
