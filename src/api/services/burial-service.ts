@@ -115,64 +115,172 @@ export class BurialService {
 			OriginCountry = ''  } = filters;
 
 		let burials = [];
+		let counter = [{count: 0}];
+			if(limit === 0){
 
-			burials = await db
-					.select(
-						'BUR.BurialID',
-						'BUR.LastName',
-						'BUR.FirstName',
-						'BUR.Gender',
-						'BUR.GenderOther',
-						'BUR.BirthYear',
-						'BUR.BirthMonth',
-						'BUR.BirthDay',
-						'BUR.BirthDateNotes',
-						'BUR.DeathYear',
-						'BUR.DeathMonth',
-						'BUR.DeathDay',
-						'BUR.DeathDateNotes',
-						'BUR.Age',
-						'BUR.Manner',
-						'CL.Cause',
-						'CE.Cemetary',
-						'BUR.OtherCemetaryDesc',
-						'BUR.PlotDescription',
-						'BUR.ShippedIndicator',
-						'BUR.DestinationShipped',
-						'BUR.FuneralPaidBy',
-						'BUR.OriginCity',
-						'BUR.OriginState',
-						'BUR.OriginCountry',
-						'BUR.OtherCountry',
-						'BUR.PersonNotes',
-						'RE.Religion'
-						)
-					.from('Burial.Burial as BUR')
-					.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
-					.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
-					.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
-					.where('BUR.FirstName', 'like', `%${textToMatch}%`)
-					.orWhere('BUR.LastName', 'like', `%${textToMatch}%`)
-					.andWhere('BUR.Gender', 'like', `%${Gender}%`)
-					.andWhere('BUR.BirthYear', 'like', `%${BirthYear}%`)
-					.andWhere('BUR.BirthMonth', 'like', `%${BirthMonth}%`)
-					.andWhere('BUR.BirthDay', 'like', `%${BirthDay}%`)
-					.andWhere('BUR.DeathYear', 'like', `%${DeathYear}%`)
-					.andWhere('BUR.DeathMonth', 'like', `%${DeathMonth}%`)
-					.andWhere('BUR.DeathDay', 'like', `%${DeathDay}%`)
-					.andWhere('BUR.Manner', 'like', `%${Manner}%`)
-					.andWhere('CL.Cause', 'like', `%${Cause}%`)
-					.andWhere('CE.Cemetary', 'like', `%${Cemetary}%`)
-					//.andWhere('BUR.OtherCemetaryDesc', 'like', `%${OtherCemetaryDesc}%`)
-					//.andWhere('BUR.OriginCity', 'like', `%${OriginCity}%`)
-					//.andWhere('BUR.OriginState', 'like', `%${OriginState}%`)
-					.andWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
-					//.andWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
-					.orderBy(`${sortBy}`, `${sort}`)
-					.limit(limit)
-					.offset(offset);
+				counter = await db
+				.from('Burial.Burial as BUR')
+				.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
+				.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
+				.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
+				.where('BUR.FirstName', 'like', `%${textToMatch}%`)
+				.orWhere('BUR.LastName', 'like', `%${textToMatch}%`)
+				.andWhere('BUR.Gender', 'like', `%${Gender}%`)
+				.andWhere('BUR.BirthYear', 'like', `%${BirthYear}%`)
+				.andWhere('BUR.BirthMonth', 'like', `%${BirthMonth}%`)
+				.andWhere('BUR.BirthDay', 'like', `%${BirthDay}%`)
+				.andWhere('BUR.DeathYear', 'like', `%${DeathYear}%`)
+				.andWhere('BUR.DeathMonth', 'like', `%${DeathMonth}%`)
+				.andWhere('BUR.DeathDay', 'like', `%${DeathDay}%`)
+				.andWhere('BUR.Manner', 'like', `%${Manner}%`)
+				.andWhere('CL.Cause', 'like', `%${Cause}%`)
+				.andWhere('CE.Cemetary', 'like', `%${Cemetary}%`)
+				//.andWhere('BUR.OtherCemetaryDesc', 'like', `%${OtherCemetaryDesc}%`)
+				//.andWhere('BUR.OriginCity', 'like', `%${OriginCity}%`)
+				//.andWhere('BUR.OriginState', 'like', `%${OriginState}%`)
+				.andWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
+				//.andWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
+				.count('BurialID', { as: 'count' });
 
-		return { count: burials.length, body: burials };
+				burials = await db
+				.select(
+					'BUR.BurialID',
+					'BUR.LastName',
+					'BUR.FirstName',
+					'BUR.Gender',
+					'BUR.GenderOther',
+					'BUR.BirthYear',
+					'BUR.BirthMonth',
+					'BUR.BirthDay',
+					'BUR.BirthDateNotes',
+					'BUR.DeathYear',
+					'BUR.DeathMonth',
+					'BUR.DeathDay',
+					'BUR.DeathDateNotes',
+					'BUR.Age',
+					'BUR.Manner',
+					'CL.Cause',
+					'CE.Cemetary',
+					'BUR.OtherCemetaryDesc',
+					'BUR.PlotDescription',
+					'BUR.ShippedIndicator',
+					'BUR.DestinationShipped',
+					'BUR.FuneralPaidBy',
+					'BUR.OriginCity',
+					'BUR.OriginState',
+					'BUR.OriginCountry',
+					'BUR.OtherCountry',
+					'BUR.PersonNotes',
+					'RE.Religion'
+					)
+				.from('Burial.Burial as BUR')
+				.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
+				.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
+				.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
+				.where('BUR.FirstName', 'like', `%${textToMatch}%`)
+				.orWhere('BUR.LastName', 'like', `%${textToMatch}%`)
+				.andWhere('BUR.Gender', 'like', `%${Gender}%`)
+				.andWhere('BUR.BirthYear', 'like', `%${BirthYear}%`)
+				.andWhere('BUR.BirthMonth', 'like', `%${BirthMonth}%`)
+				.andWhere('BUR.BirthDay', 'like', `%${BirthDay}%`)
+				.andWhere('BUR.DeathYear', 'like', `%${DeathYear}%`)
+				.andWhere('BUR.DeathMonth', 'like', `%${DeathMonth}%`)
+				.andWhere('BUR.DeathDay', 'like', `%${DeathDay}%`)
+				.andWhere('BUR.Manner', 'like', `%${Manner}%`)
+				.andWhere('CL.Cause', 'like', `%${Cause}%`)
+				.andWhere('CE.Cemetary', 'like', `%${Cemetary}%`)
+				//.andWhere('BUR.OtherCemetaryDesc', 'like', `%${OtherCemetaryDesc}%`)
+				//.andWhere('BUR.OriginCity', 'like', `%${OriginCity}%`)
+				//.andWhere('BUR.OriginState', 'like', `%${OriginState}%`)
+				.andWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
+				//.andWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
+				.orderBy(`${sortBy}`, `${sort}`);
+				//console.log(burials);
+			}
+			else{
+				counter = await db
+				.from('Burial.Burial as BUR')
+				.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
+				.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
+				.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
+				.where('BUR.FirstName', 'like', `%${textToMatch}%`)
+				.orWhere('BUR.LastName', 'like', `%${textToMatch}%`)
+				.andWhere('BUR.Gender', 'like', `%${Gender}%`)
+				.andWhere('BUR.BirthYear', 'like', `%${BirthYear}%`)
+				.andWhere('BUR.BirthMonth', 'like', `%${BirthMonth}%`)
+				.andWhere('BUR.BirthDay', 'like', `%${BirthDay}%`)
+				.andWhere('BUR.DeathYear', 'like', `%${DeathYear}%`)
+				.andWhere('BUR.DeathMonth', 'like', `%${DeathMonth}%`)
+				.andWhere('BUR.DeathDay', 'like', `%${DeathDay}%`)
+				.andWhere('BUR.Manner', 'like', `%${Manner}%`)
+				.andWhere('CL.Cause', 'like', `%${Cause}%`)
+				.andWhere('CE.Cemetary', 'like', `%${Cemetary}%`)
+				//.andWhere('BUR.OtherCemetaryDesc', 'like', `%${OtherCemetaryDesc}%`)
+				//.andWhere('BUR.OriginCity', 'like', `%${OriginCity}%`)
+				//.andWhere('BUR.OriginState', 'like', `%${OriginState}%`)
+				.andWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
+				//.andWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
+				.count('BurialID', { as: 'count' });
+
+				burials = await db
+				.select(
+					'BUR.BurialID',
+					'BUR.LastName',
+					'BUR.FirstName',
+					'BUR.Gender',
+					'BUR.GenderOther',
+					'BUR.BirthYear',
+					'BUR.BirthMonth',
+					'BUR.BirthDay',
+					'BUR.BirthDateNotes',
+					'BUR.DeathYear',
+					'BUR.DeathMonth',
+					'BUR.DeathDay',
+					'BUR.DeathDateNotes',
+					'BUR.Age',
+					'BUR.Manner',
+					'CL.Cause',
+					'CE.Cemetary',
+					'BUR.OtherCemetaryDesc',
+					'BUR.PlotDescription',
+					'BUR.ShippedIndicator',
+					'BUR.DestinationShipped',
+					'BUR.FuneralPaidBy',
+					'BUR.OriginCity',
+					'BUR.OriginState',
+					'BUR.OriginCountry',
+					'BUR.OtherCountry',
+					'BUR.PersonNotes',
+					'RE.Religion'
+					)
+				.from('Burial.Burial as BUR')
+				.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
+				.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
+				.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
+				.where('BUR.FirstName', 'like', `%${textToMatch}%`)
+				.orWhere('BUR.LastName', 'like', `%${textToMatch}%`)
+				.andWhere('BUR.Gender', 'like', `%${Gender}%`)
+				.andWhere('BUR.BirthYear', 'like', `%${BirthYear}%`)
+				.andWhere('BUR.BirthMonth', 'like', `%${BirthMonth}%`)
+				.andWhere('BUR.BirthDay', 'like', `%${BirthDay}%`)
+				.andWhere('BUR.DeathYear', 'like', `%${DeathYear}%`)
+				.andWhere('BUR.DeathMonth', 'like', `%${DeathMonth}%`)
+				.andWhere('BUR.DeathDay', 'like', `%${DeathDay}%`)
+				.andWhere('BUR.Manner', 'like', `%${Manner}%`)
+				.andWhere('CL.Cause', 'like', `%${Cause}%`)
+				.andWhere('CE.Cemetary', 'like', `%${Cemetary}%`)
+				//.andWhere('BUR.OtherCemetaryDesc', 'like', `%${OtherCemetaryDesc}%`)
+				//.andWhere('BUR.OriginCity', 'like', `%${OriginCity}%`)
+				//.andWhere('BUR.OriginState', 'like', `%${OriginState}%`)
+				.andWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
+				//.andWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+			}
+
+
+		return { count: counter[0].count, body: burials };
 
 		
 	}

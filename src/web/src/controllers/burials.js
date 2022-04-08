@@ -79,19 +79,84 @@ export default {
       return error;
     });
   },
-  async getExport(){
-    return await api.post('burials/export')
+  async getExport(
+    textToMatch,
+    sortBy,
+    sort,
+    BirthYear,
+    BirthMonth,
+    BirthDay,
+    DeathYear,
+    DeathMonth,
+    DeathDay,
+    Gender,
+    Cause,
+    Manner,
+    Cemetary,
+    OriginCountry
+  ){
+    return await api.post('burials/export', {
+      page: 0,
+      limit: 0,
+      textToMatch,
+      sortBy,
+      sort,
+      BirthYear,
+      BirthMonth,
+      BirthDay,
+      DeathYear,
+      DeathMonth,
+      DeathDay,
+      Gender,
+      Cause,
+      Manner,
+      Cemetary,
+      OriginCountry
+    })
     .then( res => {
       return res.data;
     }).catch( err => {
       return err;
     })
   },
-  async getGridPdf(){
+  async getGridPdf(
+      textToMatch,
+      sortBy,
+      sort,
+      BirthYear,
+      BirthMonth,
+      BirthDay,
+      DeathYear,
+      DeathMonth,
+      DeathDay,
+      Gender,
+      Cause,
+      Manner,
+      Cemetary,
+      OriginCountry
+  ){
     return await api({
       url: 'burials/pdf',
       method: 'POST',
       responseType: 'blob',
+      data: {
+        page: 0,
+        limit: 0,
+        textToMatch,
+        sortBy,
+        sort,
+        BirthYear,
+        BirthMonth,
+        BirthDay,
+        DeathYear,
+        DeathMonth,
+        DeathDay,
+        Gender,
+        Cause,
+        Manner,
+        Cemetary,
+        OriginCountry
+      }
     })
     .then( res => {
       return res.data;
