@@ -217,6 +217,76 @@ export default {
 					key: 'communityId',
 					type: CommunitySelect,
 				},
+				{
+					key: 'otherCommunity',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Other community',
+					},
+				},
+				{
+					key: 'otherLocality',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Other locality',
+					},
+				},
+				{
+					key: 'physicalAddress',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Address',
+					},
+				},
+				{
+					key: 'physicalProvince',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Province',
+					},
+				},
+				{
+					key: 'physicalCountry',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Country',
+					},
+				},
+				{
+					key: 'physicalPostalCode',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Postal code',
+					},
+				},
+				{
+					key: 'previousAddress',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Previous address',
+					},
+				},
+				{
+					key: 'locationContext',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Context',
+					},
+				},
+				{
+					key: 'latitude',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Latitude',
+					},
+				},
+				{
+					key: 'longitude',
+					type: 'v-text-field',
+					fieldAttrs: {
+						label: 'Longitude',
+					},
+				},
 			];
 		},
 	},
