@@ -21,6 +21,7 @@ v-card(:loading="loading")
 		v-data-table.mb-5(
 			:headers="headers",
 			:items="hideUnchanged ? changedFieldTypes : fieldTypes",
+			:items-per-page="fieldTypes.length",
 			:loading="loading"
 			disable-sort
 			hide-default-footer
