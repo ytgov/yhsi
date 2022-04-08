@@ -59,6 +59,22 @@ enum "ContributingResources" as contributing_resources {
   Structure : Structure
 }
 
+entity "Dates" as dates {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * Type : int
+  Details : nvarchar
+  FromDate : nvarchar
+  ToDate : nvarchar
+}
+
+enum "DateType" as date_type {
+  1 : Construction
+  2 : Significant Date
+  8 : Construction Circa
+}
+
 enum "Designations" as designations {
   Federal : Federal
   Municipal : Municipal
@@ -106,11 +122,13 @@ place }|--o| category
 place ||--o{ community
 place }o--o| contributing_resources
 place ||--o{ coordinate_determination
+place }o--|| dates
 place }o--o| designations
 place }o--|| historical_pattern
 place }o--|| name
 place }o--o| records
 place }o--o| site_categories
-historical_pattern }|--|| historical_pattern_type
+historical_pattern ||--o{ historical_pattern_type
+dates ||--o{ date_type
 
 @enduml
