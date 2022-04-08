@@ -681,7 +681,6 @@ placeRouter.patch(
 
 		const attributes = matchedData(req, {
 			locations: ['body'],
-			includeOptionals: true,
 		});
 
 		return placeService
