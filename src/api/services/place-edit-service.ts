@@ -70,7 +70,7 @@ export class PlaceEditService {
 				physicalPostalCode: 'PhysicalPostalCode',
 				physicalProvince: 'PhysicalPostalCode',
 				previousAddress: 'PreviousAddress',
-				primaryName: 'PrimaryName',
+				// primaryName is in default scope
 				records: 'Records',
 				showInRegister: 'ShowInRegister',
 				siteCategories: 'SiteCategories',
