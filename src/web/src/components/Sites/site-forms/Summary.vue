@@ -15,7 +15,7 @@
       <v-row>
         <v-col cols="6">
           <v-text-field
-            v-model="yHSIId"
+            v-model="place.yHSIId"
             dense
             outlined
             label="YHSI ID"
@@ -25,41 +25,41 @@
           />
 
           <DesignationTypesSelect
-            v-model="designations"
+            v-model="place.designations"
             dense
             outlined
             clearable
           />
 
           <CategoryTypesSelect
-            v-model="category"
+            v-model="place.category"
             dense
             outlined
           />
 
           <SiteCategoryTypesSelect
-            v-model="siteCategories"
+            v-model="place.siteCategories"
             dense
             outlined
             clearable
           />
 
           <RecordTypesSelect
-            v-model="records"
+            v-model="place.records"
             dense
             outlined
             clearable
           />
 
           <ContributingResourceTypesSelect
-            v-model="contributingResources"
+            v-model="place.contributingResources"
             dense
             outlined
             required
           />
 
           <v-checkbox
-            v-model="showInRegister"
+            v-model="place.showInRegister"
             dense
             outlined
             label="Show in Register?"
@@ -67,7 +67,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            v-model="primaryName"
+            v-model="place.primaryName"
             dense
             outlined
             label="Primary name"
@@ -82,7 +82,7 @@
             </v-card-title>
             <v-card-text>
               <v-row
-                v-for="(item, i) in names"
+                v-for="(item, i) in place.names"
                 :key="i"
               >
                 <v-col cols="10">
@@ -124,7 +124,7 @@
             <v-card-text>
               <h3>Historical Patterns</h3>
               <v-row
-                v-for="(item, i) of historicalPatterns"
+                v-for="(item, i) of place.historicalPatterns"
                 :key="i"
                 class="row"
               >
@@ -160,7 +160,7 @@
                 </v-col>
 
                 <v-col
-                  v-if="i < historicalPatterns.length - 1"
+                  v-if="i < place.historicalPatterns.length - 1"
                   cols="12"
                 >
                   <hr />
@@ -171,7 +171,7 @@
               <v-btn
                 class="my-0"
                 color="info"
-                @click="addPattern()"
+                @click="addPattern"
               >
                 Add Historical Pattern
               </v-btn>
@@ -194,6 +194,7 @@
 </template>
 
 <script>
+import { pick } from 'lodash';
 import { mapActions, mapGetters } from 'vuex';
 
 import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSelect';
@@ -219,71 +220,47 @@ export default {
       required: true,
     },
   },
-  data: () => ({
-    category: '',
-    contributingResources: [],
-    designations: [],
-    historicalPatterns: [],
-    names: [],
-    primaryName: '',
-    records: [],
-    showInRegister: false,
-    siteCategories: [],
-    yHSIId: '',
-  }),
+  data: () => ({}),
   computed: {
     ...mapGetters({
       place: 'places/place',
     }),
   },
-  mounted() {
-    this.updateFormFields(this.place);
-  },
+  mounted() {},
   methods: {
     ...mapActions({
       savePlace: 'places/save',
     }),
-    updateFormFields(place) {
-      this.category = place.category;
-      this.contributingResources = place.contributingResources;
-      this.designations = place.designations;
-      this.historicalPatterns = place.historicalPatterns;
-      this.names = place.names;
-      this.primaryName = place.primaryName;
-      this.records = place.records;
-      this.showInRegister = place.showInRegister;
-      this.siteCategories = place.siteCategories;
-      this.yHSIId = place.yHSIId;
-    },
     addName() {
-      this.names.push({ description: '', placeId: this.placeId });
+      this.place.names.push({ description: '', placeId: this.placeId });
     },
     removeName(index) {
-      this.names.splice(index, 1);
+      this.place.names.splice(index, 1);
     },
     addPattern() {
-      this.historicalPatterns.push({
+      this.place.historicalPatterns.push({
         historicalPatternType: 1,
         comments: '',
         placeId: this.placeId,
       });
     },
     removePattern(index) {
-      this.historicalPatterns.splice(index, 1);
+      this.place.historicalPatterns.splice(index, 1);
     },
     saveChanges() {
-      return this.savePlace({
-        yHSIId: this.yHSIId,
-        primaryName: this.primaryName,
-        designations: this.designations,
-        category: this.category,
-        siteCategories: this.siteCategories,
-        records: this.records,
-        showInRegister: this.showInRegister,
-        names: this.names,
-        contributingResources: this.contributingResources,
-        historicalPatterns: this.historicalPatterns,
-      }).then(this.updateFormFields);
+      const data = pick(this.place, [
+        'yHSIId',
+        'primaryName',
+        'designations',
+        'category',
+        'siteCategories',
+        'records',
+        'showInRegister',
+        'names',
+        'contributingResources',
+        'historicalPatterns',
+      ]);
+      return this.savePlace(data);
     },
   },
 };
