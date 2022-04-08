@@ -206,7 +206,7 @@ export default {
       place: 'places/place',
     }),
     showMapButton() {
-      if (this.latitude && this.longitude) {
+      if (this.place.latitude && this.place.longitude) {
         return true;
       }
       return false;
@@ -239,7 +239,7 @@ export default {
       return this.savePlace(data);
     },
     showMap() {
-      this.$refs.map.show(this.latitude, this.longitude);
+      this.$refs.map.show(this.place.latitude, this.place.longitude);
     },
   },
 };
