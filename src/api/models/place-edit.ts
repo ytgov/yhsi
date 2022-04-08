@@ -1,4 +1,4 @@
-import { pick } from 'lodash';
+import { camelCase, mapKeys, pick } from 'lodash';
 
 import { mapKeysDeep, pascalCase } from '../utils/lodash-extensions';
 import { PlainObject } from './simple-types';
@@ -183,6 +183,18 @@ export class PlaceEdit {
 				const encodedValue = mapKeysDeep(object[key], pascalCase);
 				const jsonObjectAsString = JSON.stringify(encodedValue);
 				object[encodedKey] = jsonObjectAsString;
+				delete object[key];
+			}
+		});
+		return object;
+	}
+
+	static parseAndNormalizeJSONColumns(object: PlainObject) {
+		Object.keys(object).forEach((key) => {
+			if (key.endsWith('JSON')) {
+				const cleanedKey = key.replace(/JSON$/, '');
+				const objectAsJson = JSON.parse(object[key]);
+				object[cleanedKey] = mapKeysDeep(objectAsJson, camelCase);
 				delete object[key];
 			}
 		});

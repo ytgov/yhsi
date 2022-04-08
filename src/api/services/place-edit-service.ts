@@ -1,24 +1,10 @@
 import knex, { Knex } from 'knex';
-import { camelCase, mapKeys } from 'lodash';
 
 import { DB_CONFIG } from '../config';
-import { mapKeysDeep } from '../utils/lodash-extensions';
-import { Place, PlaceEdit, PlainObject } from '../models';
+import { Place, PlaceEdit } from '../models';
 
 interface CountQuery {
 	count: number;
-}
-
-function parseAndNormalizeJSONColumns(object: PlainObject) {
-	Object.keys(object).forEach((key) => {
-		if (key.endsWith('JSON')) {
-			const cleanedKey = key.replace(/JSON$/, '');
-			const objectAsJson = JSON.parse(object[key]);
-			object[cleanedKey] = mapKeysDeep(objectAsJson, camelCase);
-			delete object[key];
-		}
-	});
-	return object;
 }
 
 export class PlaceEditService {
@@ -75,19 +61,9 @@ export class PlaceEditService {
 				siteCategories: 'SiteCategories',
 			})
 			.where({ 'PlaceEdit.Id': id })
-			.then(parseAndNormalizeJSONColumns)
+			.then(PlaceEdit.parseAndNormalizeJSONColumns)
+			.then(Place.decodeCommaDelimitedArrayColumns)
 			.then((place) => {
-				place.contributingResources = Place.decodeCommaDelimitedArray(
-					place.contributingResources
-				);
-				place.designations = Place.decodeCommaDelimitedArray(
-					place.designations
-				);
-				place.records = Place.decodeCommaDelimitedArray(place.records);
-				place.siteCategories = Place.decodeCommaDelimitedArray(
-					place.siteCategories
-				);
-
 				return place;
 			});
 	}
