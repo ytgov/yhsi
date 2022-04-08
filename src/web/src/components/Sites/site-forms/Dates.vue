@@ -316,15 +316,13 @@ export default {
   components: {
     DateTypesSelect,
   },
+  props: {
+    placeId: {
+      type: [Number, String],
+      required: true,
+    },
+  },
   data: () => ({
-    valid: false,
-    loadedId: -1,
-
-    generalRules: [
-      (v) => !!v || 'This input is required',
-      (v) => v.length <= 20 || 'This input must be less than 20 characters',
-    ],
-
     dates: [],
     constructionPeriods: [],
     constructionPeriodOptions: [],
@@ -344,14 +342,12 @@ export default {
       wallCondition: '', //
     },
   }),
-  created: function () {
-    let id = this.$route.params.id;
-
+  mounted() {
     axios
-      .get(`${PLACE_URL}/${id}`)
+      .get(`${PLACE_URL}/${this.placeId}`)
       .then((resp) => {
         this.fields = resp.data.data;
-        this.loadedId = this.fields.id;
+        this.placeId = this.fields.id;
         this.constructionPeriods =
           resp.data.relationships.constructionPeriods.data;
         this.dates = resp.data.relationships.dates.data;
@@ -374,7 +370,7 @@ export default {
   methods: {
     addDate() {
       this.dates.push({
-        placeId: this.loadedId,
+        placeId: this.placeId,
         type: 1,
         fromDate: '1900-01-01',
         toDate: '1901-01-01',
@@ -384,7 +380,7 @@ export default {
       this.dates.splice(index, 1);
     },
     addPeriod() {
-      this.constructionPeriods.push({ placeId: this.loadedId, type: 2 });
+      this.constructionPeriods.push({ placeId: this.placeId, type: 2 });
     },
     removePeriod(index) {
       this.constructionPeriods.splice(index, 1);
@@ -405,7 +401,7 @@ export default {
       };
 
       axios
-        .put(`${PLACE_URL}/${this.loadedId}/dates`, body)
+        .put(`${PLACE_URL}/${this.placeId}/dates`, body)
         .then((resp) => {
           this.$emit('showAPIMessages', resp.data);
         })
