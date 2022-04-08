@@ -27,7 +27,7 @@ export class HistoricalPatternService {
 				historicalPatterns.map((historicalPattern) => ({
 					placeId,
 					historicalPatternType: historicalPattern.historicalPatternType,
-					comments: historicalPattern.comments.trim(),
+					comments: historicalPattern.comments?.trim(),
 				}))
 			);
 		}).then((cleanHistoricalPatterns) => {
