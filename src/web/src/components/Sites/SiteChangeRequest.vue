@@ -108,6 +108,159 @@ import NamesViewer from '@/components/Sites/site-change-request/NamesViewer';
 import RecordTypesSelect from '@/components/Sites/site-forms/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/site-forms/SiteCategoryTypesSelect';
 
+const FIELD_TYPES = Object.freeze([
+	// Summary Form Fields
+	{
+		key: 'yHSIId',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'YHSI ID',
+		},
+	},
+	{
+		key: 'designations',
+		type: DesignationTypesSelect,
+	},
+	{
+		key: 'category',
+		type: CategoryTypesSelect,
+	},
+	{
+		key: 'siteCategories',
+		type: SiteCategoryTypesSelect,
+	},
+	{
+		key: 'records',
+		type: RecordTypesSelect,
+	},
+	{
+		key: 'contributingResources',
+		type: ContributingResourceTypesSelect,
+	},
+	{
+		key: 'showInRegister',
+		type: 'v-checkbox',
+		fieldAttrs: {
+			label: 'Show in Register?',
+		},
+	},
+	{
+		key: 'primaryName',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Primary name',
+		},
+	},
+	{
+		key: 'names',
+		type: NamesViewer,
+	},
+	{
+		key: 'historicalPatterns',
+		type: HistoricalPatternsViewer,
+	},
+	// Location Form Fields
+	{
+		key: 'communityId',
+		type: CommunitySelect,
+	},
+	{
+		key: 'otherCommunity',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Other community',
+		},
+	},
+	{
+		key: 'otherLocality',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Other locality',
+		},
+	},
+	{
+		key: 'physicalAddress',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Address',
+		},
+	},
+	{
+		key: 'physicalProvince',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Province',
+		},
+	},
+	{
+		key: 'physicalCountry',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Country',
+		},
+	},
+	{
+		key: 'physicalPostalCode',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Postal code',
+		},
+	},
+	{
+		key: 'previousAddress',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Previous address',
+		},
+	},
+	{
+		key: 'locationContext',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Context',
+		},
+	},
+	{
+		key: 'latitude',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Latitude',
+		},
+	},
+	{
+		key: 'longitude',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Longitude',
+		},
+	},
+	{
+		key: 'coordinateDetermination',
+		type: CoordinateDeterminationTypesSelect,
+	},
+	{
+		key: 'nTSMapSheet',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'NTS map sheet',
+		},
+	},
+	{
+		key: 'bordenNumber',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Border number',
+		},
+	},
+	{
+		key: 'locationComment',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Misc. info',
+		},
+	},
+]);
+
 export default {
 	name: 'SiteChangeRequest',
 	components: {
@@ -166,158 +319,7 @@ export default {
 			];
 		},
 		fieldTypes() {
-			return [
-				// Summary Form Fields
-				{
-					key: 'yHSIId',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'YHSI ID',
-					},
-				},
-				{
-					key: 'designations',
-					type: DesignationTypesSelect,
-				},
-				{
-					key: 'category',
-					type: CategoryTypesSelect,
-				},
-				{
-					key: 'siteCategories',
-					type: SiteCategoryTypesSelect,
-				},
-				{
-					key: 'records',
-					type: RecordTypesSelect,
-				},
-				{
-					key: 'contributingResources',
-					type: ContributingResourceTypesSelect,
-				},
-				{
-					key: 'showInRegister',
-					type: 'v-checkbox',
-					fieldAttrs: {
-						label: 'Show in Register?',
-					},
-				},
-				{
-					key: 'primaryName',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Primary name',
-					},
-				},
-				{
-					key: 'names',
-					type: NamesViewer,
-				},
-				{
-					key: 'historicalPatterns',
-					type: HistoricalPatternsViewer,
-				},
-				// Location Form Fields
-				{
-					key: 'communityId',
-					type: CommunitySelect,
-				},
-				{
-					key: 'otherCommunity',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Other community',
-					},
-				},
-				{
-					key: 'otherLocality',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Other locality',
-					},
-				},
-				{
-					key: 'physicalAddress',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Address',
-					},
-				},
-				{
-					key: 'physicalProvince',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Province',
-					},
-				},
-				{
-					key: 'physicalCountry',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Country',
-					},
-				},
-				{
-					key: 'physicalPostalCode',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Postal code',
-					},
-				},
-				{
-					key: 'previousAddress',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Previous address',
-					},
-				},
-				{
-					key: 'locationContext',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Context',
-					},
-				},
-				{
-					key: 'latitude',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Latitude',
-					},
-				},
-				{
-					key: 'longitude',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Longitude',
-					},
-				},
-				{
-					key: 'coordinateDetermination',
-					type: CoordinateDeterminationTypesSelect,
-				},
-				{
-					key: 'nTSMapSheet',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'NTS map sheet',
-					},
-				},
-				{
-					key: 'bordenNumber',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Border number',
-					},
-				},
-				{
-					key: 'locationComment',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Misc. info',
-					},
-				},
-			];
+			return FIELD_TYPES;
 		},
 		loading() {
 			return this.internalLoading || this.placeLoading || this.placeEditLoading;
