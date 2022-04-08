@@ -11,6 +11,7 @@ entity "Place" as place {
   * PrimaryName : nvarchar
   * RoofCondition : int
   * ShowInRegister : bit
+  * SiteStatus : int
   * WallCondition : int
   * YHSIId : nvarchar
   BordenNumber : nvarchar
@@ -144,6 +145,15 @@ enum "SiteCategories" as site_categories {
   Landscape : Landscape
 }
 
+enum "SiteStatus" as site_status {
+ 1 : Standing
+ 2 : Demolished
+ 3 : Burned
+ 4 : Moved
+ 5 : Dimantled
+ 6 : Reconstruction
+}
+
 place }|--o{ category : Category
 place ||--o{ community : CommunityId
 place }|--o{ condition_type : DoorCondition
@@ -159,6 +169,7 @@ place }o--|| historical_pattern : PlaceId
 place }o--|| name : PlaceId
 place }o--o{ records : Records
 place }o--o{ site_categories : SiteCategories
+place ||--o{ site_status : SiteStatus
 historical_pattern ||--o{ historical_pattern_type : HistoricalPatternType
 dates ||--o{ date_type : Type
 construction_period ||--o{ construction_period_type : Type
