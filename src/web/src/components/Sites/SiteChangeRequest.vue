@@ -93,10 +93,8 @@ v-card(:loading="loading")
 </template>
 
 <script>
-import { cloneDeep, isEqual, get } from 'lodash';
-
-import placesApi from '@/apis/places-api';
-import placeEditsApi from '@/apis/place-edits-api';
+import { mapActions, mapGetters } from 'vuex';
+import { cloneDeep, isEqual } from 'lodash';
 
 import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSelect';
 import CommunitySelect from '@/components/Sites/site-forms/CommunitySelect';
@@ -130,15 +128,19 @@ export default {
 		},
 	},
 	data: () => ({
-		loading: false,
+		internalLoading: false,
 		newPlace: {},
-		place: {},
-		placeEdit: {},
 		hideUnchanged: true,
 		acceptedChanges: {},
 		rejectedChanges: {},
 	}),
 	computed: {
+		...mapGetters({
+			place: 'places/place',
+			placeEdit: 'placeEdits/placeEdit',
+			placeEditLoading: 'placeEdits/loading',
+			placeLoading: 'places/loading',
+		}),
 		acceptedAndRejectedChanges() {
 			return { ...this.acceptedChanges, ...this.rejectedChanges };
 		},
@@ -316,15 +318,27 @@ export default {
 				},
 			];
 		},
+		loading() {
+			return this.internalLoading || this.placeLoading || this.placeEditLoading;
+		},
 	},
 	watch: {},
 	mounted() {
 		this.hideUnchanged = JSON.parse(this.$route.query.hideUnchanged || 'true');
-		this.getPlaceEdit(this.placeEditId).then((placeEdit) => {
-			return this.getPlace(placeEdit.placeId);
+
+		this.initializePlaceEdit(this.placeEditId).then((placeEdit) => {
+			return this.initializePlace(placeEdit.placeId).then((place) => {
+				this.newPlace = cloneDeep(place);
+			});
 		});
 	},
 	methods: {
+		...mapActions({
+			deletePlaceEdit: 'placeEdits/delete',
+			initializePlace: 'places/initialize',
+			initializePlaceEdit: 'placeEdits/initialize',
+			savePlace: 'places/save',
+		}),
 		acceptAll() {
 			this.fieldTypes.forEach(({ key }) => {
 				this.acceptChange(key);
@@ -334,45 +348,6 @@ export default {
 			this.newPlace[key] = this.placeEdit[key];
 			this.$delete(this.rejectedChanges, key);
 			this.$set(this.acceptedChanges, key, true);
-		},
-		// This function can go away when the back-end serves the
-		// relationship data as part of the data directly.
-		// e.g. { data: { names: [{ id: 1, placeId: 1, description: "SomeName" }] } }
-		// instead of { data: {}, relationships: { names: { data: [{ id: 1, placeId: 1, description: "SomeName" }] } } }
-		injectRelationshipData(data, relationships) {
-			Object.keys(relationships).forEach((key) => {
-				if (key in data) {
-					console.error('Relationship data conflicts with source data.');
-					return;
-				}
-
-				data[key] = get(relationships, `${key}.data`, []);
-			});
-		},
-		getPlace(placeId) {
-			this.loading = true;
-			return placesApi
-				.get(placeId)
-				.then(({ data, relationships }) => {
-					this.injectRelationshipData(data, relationships);
-					this.place = data;
-					this.newPlace = cloneDeep(this.place);
-				})
-				.finally(() => {
-					this.loading = false;
-				});
-		},
-		getPlaceEdit(placeEditId) {
-			this.loading = true;
-			return placeEditsApi
-				.get(placeEditId)
-				.then(({ data }) => {
-					this.placeEdit = data;
-					return this.placeEdit;
-				})
-				.finally(() => {
-					this.loading = false;
-				});
 		},
 		hasChanges(key) {
 			return this.changedFieldTypeKeys.includes(key);
@@ -388,17 +363,16 @@ export default {
 			this.$set(this.rejectedChanges, key, true);
 		},
 		save() {
-			this.loading = true;
-			return placesApi
-				.patch(this.place.id, this.newPlace)
+			this.internalLoading = true;
+			return this.savePlace(this.place.id, this.newPlace)
 				.then(() => {
-					return placeEditsApi.delete(this.placeEditId);
+					return this.deletePlaceEdit(this.placeEditId);
 				})
 				.then(() => {
 					this.$router.push('/sites-change-requests');
 				})
 				.finally(() => {
-					this.loading = false;
+					this.internalLoading = false;
 				});
 		},
 		updateQueryParams(key, value) {
