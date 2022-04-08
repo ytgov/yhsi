@@ -60,6 +60,8 @@ export class PlaceEditService {
 				hectareArea: 'HectareArea',
 				historicalPatternsJSON: 'HistoricalPatternJSON',
 				latitude: 'Latitude',
+				locationComment: 'LocationComment',
+				locationContext: 'LocationContext',
 				longitude: 'Longitude',
 				namesJSON: 'NameJSON',
 				nTSMapSheet: 'NTSMapSheet',
@@ -68,7 +70,7 @@ export class PlaceEditService {
 				physicalAddress: 'PhysicalAddress',
 				physicalCountry: 'PhysicalCountry',
 				physicalPostalCode: 'PhysicalPostalCode',
-				physicalProvince: 'PhysicalPostalCode',
+				physicalProvince: 'PhysicalProvince',
 				previousAddress: 'PreviousAddress',
 				// primaryName is in default scope
 				records: 'Records',
