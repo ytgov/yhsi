@@ -28,7 +28,7 @@ v-card(:loading="loading")
 			template(#item.original="{ item }")
 				component(
 					:is="item.type",
-					:value="place[item.key]"
+					:value="originalPlace[item.key]"
 					readonly
 					v-bind="item.fieldAttrs"
 				)
@@ -129,7 +129,7 @@ export default {
 	},
 	data: () => ({
 		internalLoading: false,
-		newPlace: {},
+		originalPlace: {},
 		hideUnchanged: true,
 		acceptedChanges: {},
 		rejectedChanges: {},
@@ -149,7 +149,7 @@ export default {
 		},
 		changedFieldTypes() {
 			return this.fieldTypes.filter(
-				({ key }) => !isEqual(this.placeEdit[key], this.place[key])
+				({ key }) => !isEqual(this.placeEdit[key], this.originalPlace[key])
 			);
 		},
 		hasUnconfirmedChanges() {
@@ -328,7 +328,7 @@ export default {
 
 		this.initializePlaceEdit(this.placeEditId).then((placeEdit) => {
 			return this.initializePlace(placeEdit.placeId).then((place) => {
-				this.newPlace = cloneDeep(place);
+				this.originalPlace = cloneDeep(place);
 			});
 		});
 	},
@@ -345,7 +345,7 @@ export default {
 			});
 		},
 		acceptChange(key) {
-			this.newPlace[key] = this.placeEdit[key];
+			this.place[key] = this.placeEdit[key];
 			this.$delete(this.rejectedChanges, key);
 			this.$set(this.acceptedChanges, key, true);
 		},
@@ -358,13 +358,13 @@ export default {
 			});
 		},
 		rejectChange(key) {
-			this.newPlace[key] = this.place[key];
+			this.place[key] = this.originalPlace[key];
 			this.$delete(this.acceptedChanges, key);
 			this.$set(this.rejectedChanges, key, true);
 		},
 		save() {
 			this.internalLoading = true;
-			return this.savePlace(this.newPlace)
+			return this.savePlace(this.place)
 				.then(() => {
 					return this.deletePlaceEdit(this.placeEditId);
 				})
