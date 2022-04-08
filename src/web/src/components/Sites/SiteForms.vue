@@ -51,7 +51,10 @@
             :place-id="id"
           />
         </template>
-        <Location id="location" />
+        <Location
+          id="location"
+          :place-id="id"
+        />
         <Dates id="dates-and-condition" />
         <Themes id="themes-and-function" />
         <Associations id="associations" />
