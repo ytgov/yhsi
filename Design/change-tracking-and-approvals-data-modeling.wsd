@@ -15,6 +15,8 @@ entity "Place" as place {
   * WallCondition : int
   * YHSIId : nvarchar
   BordenNumber : nvarchar
+  BuildingSize : nvarchar
+  ConditionComment : nvarchar
   ContributingResources : nvarchar : <<comma delimited array>>
   Designations : nvarchar : <<comma delimited array>>
   HectareArea : nvarchar
@@ -26,11 +28,12 @@ entity "Place" as place {
   OtherCommunity : nvarchar
   OtherLocality : nvarchar
   PhysicalAddress : nvarchar
-  PhysicalProvince : nvarchar
   PhysicalCountry : nvarchar
   PhysicalPostalCode : nvarchar
+  PhysicalProvince : nvarchar
   PreviousAddress : nvarchar
   Records : nvarchar : <<comma delimited array>>
+  ResourceType : nvarchar
   SiteCategories : nvarchar : <<comma delimited array>>
 }
 
@@ -146,12 +149,12 @@ enum "SiteCategories" as site_categories {
 }
 
 enum "SiteStatus" as site_status {
- 1 : Standing
- 2 : Demolished
- 3 : Burned
- 4 : Moved
- 5 : Dimantled
- 6 : Reconstruction
+  1 : Standing
+  2 : Demolished
+  3 : Burned
+  4 : Moved
+  5 : Dimantled
+  6 : Reconstruction
 }
 
 place }|--o{ category : Category
