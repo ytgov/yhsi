@@ -43,6 +43,21 @@ enum "Community" as community {
   * Name : nvarchar
 }
 
+entity "ConstructionPeriod" as construction_period {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * Type : int
+}
+
+enum "ConstructionPeriodType" as construction_period_type {
+  1 : Pre 1895
+  2 : From 1896 to 1905
+  3 : From 1906 to 1939
+  4 : From 1940 to 1965
+  5 : Post 1965
+}
+
 enum "CoordinateDetermination" as coordinate_determination {
   1 : GPS
   2 : Paper Maps
@@ -120,6 +135,7 @@ enum "SiteCategories" as site_categories {
 
 place }|--o| category
 place ||--o{ community
+place }o--|| construction_period
 place }o--o| contributing_resources
 place ||--o{ coordinate_determination
 place }o--|| dates
@@ -130,5 +146,6 @@ place }o--o| records
 place }o--o| site_categories
 historical_pattern ||--o{ historical_pattern_type
 dates ||--o{ date_type
+construction_period ||--o{ construction_period_type
 
 @enduml
