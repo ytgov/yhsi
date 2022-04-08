@@ -15,7 +15,7 @@
       <v-row>
         <v-col cols="3">
           <CommunitySelect
-            v-model="communityId"
+            v-model="place.communityId"
             dense
             outlined
             hide-details
@@ -23,7 +23,7 @@
         </v-col>
         <v-col cols="3">
           <v-text-field
-            v-model="otherCommunity"
+            v-model="place.otherCommunity"
             dense
             outlined
             label="Other community"
@@ -32,7 +32,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            v-model="otherLocality"
+            v-model="place.otherLocality"
             dense
             outlined
             label="Other locality"
@@ -52,7 +52,7 @@
             </v-card-title>
             <v-card-text>
               <v-textarea
-                v-model="physicalAddress"
+                v-model="place.physicalAddress"
                 dense
                 outlined
                 label="Address"
@@ -60,7 +60,7 @@
               />
 
               <v-text-field
-                v-model="physicalProvince"
+                v-model="place.physicalProvince"
                 dense
                 outlined
                 label="Province"
@@ -69,7 +69,7 @@
               <v-row>
                 <v-col cols="6">
                   <v-text-field
-                    v-model="physicalCountry"
+                    v-model="place.physicalCountry"
                     dense
                     outlined
                     label="Country"
@@ -79,7 +79,7 @@
                 </v-col>
                 <v-col cols="6">
                   <v-text-field
-                    v-model="physicalPostalCode"
+                    v-model="place.physicalPostalCode"
                     dense
                     outlined
                     label="Postal code"
@@ -93,13 +93,13 @@
         </v-col>
         <v-col cols="6">
           <v-textarea
-            v-model="previousAddress"
+            v-model="place.previousAddress"
             dense
             outlined
             label="Previous address"
           />
           <v-textarea
-            v-model="locationContext"
+            v-model="place.locationContext"
             dense
             outlined
             label="Context"
@@ -107,20 +107,20 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            v-model="latitude"
+            v-model="place.latitude"
             dense
             outlined
             label="Latitude"
           />
 
           <v-text-field
-            v-model="longitude"
+            v-model="place.longitude"
             dense
             outlined
             label="Longitude"
           />
           <v-select
-            v-model="coordinateDetermination"
+            v-model="place.coordinateDetermination"
             dense
             outlined
             :items="coordinateDeterminationOptions"
@@ -141,7 +141,7 @@
           <v-row>
             <v-col cols="6">
               <v-text-field
-                v-model="nTSMapSheet"
+                v-model="place.nTSMapSheet"
                 dense
                 outlined
                 label="NTS map sheet"
@@ -149,7 +149,7 @@
             </v-col>
             <v-col cols="6">
               <v-text-field
-                v-model="hectareArea"
+                v-model="place.hectareArea"
                 dense
                 outlined
                 label="Area(m2)"
@@ -157,13 +157,13 @@
             </v-col>
           </v-row>
           <v-text-field
-            v-model="bordenNumber"
+            v-model="place.bordenNumber"
             dense
             outlined
             label="Border number"
           />
           <v-textarea
-            v-model="locationComment"
+            v-model="place.locationComment"
             dense
             outlined
             label="Misc. info"
@@ -188,6 +188,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { pick } from 'lodash';
 import axios from 'axios';
 
 import CommunitySelect from '@/components/Sites/site-forms/CommunitySelect';
@@ -204,22 +205,6 @@ export default {
     },
   },
   data: () => ({
-    bordenNumber: '',
-    communityId: -1,
-    coordinateDetermination: '',
-    hectareArea: '',
-    latitude: '',
-    locationComment: '',
-    locationContext: '',
-    longitude: '',
-    nTSMapSheet: '',
-    otherCommunity: '',
-    otherLocality: '',
-    physicalAddress: '',
-    physicalCountry: '',
-    physicalPostalCode: '',
-    physicalProvince: '',
-    previousAddress: '',
     /* Placeholder variables below this line **Read above** */
     coordinateDeterminationOptions: [],
   }),
@@ -235,7 +220,6 @@ export default {
     },
   },
   mounted() {
-    this.updateFormFields(this.place);
     axios.get(`${STATIC_URL}/coordinate-determination`).then((resp) => {
       this.coordinateDeterminationOptions = resp.data.data;
     });
@@ -245,45 +229,28 @@ export default {
       savePlace: 'places/save',
     }),
     saveChanges() {
-      return this.savePlace({
-        bordenNumber: this.bordenNumber,
-        communityId: this.communityId,
-        coordinateDetermination: this.coordinateDetermination,
-        hectareArea: this.hectareArea,
-        latitude: this.latitude,
-        locationComment: this.locationComment,
-        locationContext: this.locationContext,
-        longitude: this.longitude,
-        nTSMapSheet: this.nTSMapSheet,
-        otherCommunity: this.otherCommunity,
-        otherLocality: this.otherLocality,
-        physicalAddress: this.physicalAddress,
-        physicalCountry: this.physicalCountry,
-        physicalPostalCode: this.physicalPostalCode,
-        physicalProvince: this.physicalProvince,
-        previousAddress: this.previousAddress,
-      }).then(this.updateFormFields);
+      const data = pick(this.place, [
+        'bordenNumber',
+        'communityId',
+        'coordinateDetermination',
+        'hectareArea',
+        'latitude',
+        'locationComment',
+        'locationContext',
+        'longitude',
+        'nTSMapSheet',
+        'otherCommunity',
+        'otherLocality',
+        'physicalAddress',
+        'physicalCountry',
+        'physicalPostalCode',
+        'physicalProvince',
+        'previousAddress',
+      ]);
+      return this.savePlace(data);
     },
     showMap() {
       this.$refs.map.show(this.latitude, this.longitude);
-    },
-    updateFormFields(place) {
-      this.bordenNumber = place.bordenNumber;
-      this.communityId = place.communityId;
-      this.coordinateDetermination = place.coordinateDetermination;
-      this.hectareArea = place.hectareArea;
-      this.latitude = place.latitude;
-      this.locationComment = place.locationComment;
-      this.locationContext = place.locationContext;
-      this.longitude = place.longitude;
-      this.nTSMapSheet = place.nTSMapSheet;
-      this.otherCommunity = place.otherCommunity;
-      this.otherLocality = place.otherLocality;
-      this.physicalAddress = place.physicalAddress;
-      this.physicalCountry = place.physicalCountry;
-      this.physicalPostalCode = place.physicalPostalCode;
-      this.physicalProvince = place.physicalProvince;
-      this.previousAddress = place.previousAddress;
     },
   },
 };
