@@ -50,7 +50,8 @@
             id="summary"
             :place-id="id"
           />
-          <Location
+          <component
+            :is="locationComponent"
             id="location"
             :place-id="id"
           />
@@ -75,6 +76,7 @@ import Dates from '@/components/Sites/site-forms/Dates';
 import Description from '@/components/Sites/site-forms/Description';
 import LegalAndZoning from '@/components/Sites/site-forms/LegalAndZoning';
 import Location from '@/components/Sites/site-forms/Location';
+import LocationReadonly from '@/components/Sites/site-forms/LocationReadonly';
 import Management from '@/components/Sites/site-forms/Management';
 import Photos from '@/components/Sites/site-forms/Photos';
 import PrintDialog from '@/components/Sites/SiteFormsPrintDialog';
@@ -91,6 +93,7 @@ export default {
     Description,
     LegalAndZoning,
     Location,
+    LocationReadonly,
     Management,
     Photos,
     PrintDialog,
@@ -118,6 +121,11 @@ export default {
       if (this.hasPendingChanges) return SummaryReadonly;
 
       return Summary;
+    },
+    locationComponent() {
+      if (this.hasPendingChanges) return LocationReadonly;
+
+      return Location;
     },
   },
   mounted() {
