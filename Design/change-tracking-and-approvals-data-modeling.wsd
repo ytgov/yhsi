@@ -1,6 +1,6 @@
 @startuml
 
-entity "Place" as place {
+entity Place {
   * Id : int <<generated>>
   --
   * Category : int
@@ -37,7 +37,7 @@ entity "Place" as place {
   SiteCategories : nvarchar : <<comma delimited array>>
 }
 
-enum "Category" as category {
+enum Category {
   0 : None Selected
   1 : Building
   2 : District
@@ -45,27 +45,27 @@ enum "Category" as category {
   4 : Structure
 }
 
-enum "Community" as community {
+enum Community {
   * Id : int <<generated>>
   --
   * Name : nvarchar
 }
 
-enum "ConditionType" as condition_type {
+enum ConditionType {
   0 : Not Applicable
   1 : Fair
   2 : Good
   3 : Poor
 }
 
-entity "ConstructionPeriod" as construction_period {
+entity ConstructionPeriod {
   * Id : int <<generated>>
   --
   * PlaceId : int
   * Type : int
 }
 
-enum "ConstructionPeriodType" as construction_period_type {
+enum ConstructionPeriodType {
   1 : Pre 1895
   2 : From 1896 to 1905
   3 : From 1906 to 1939
@@ -73,7 +73,7 @@ enum "ConstructionPeriodType" as construction_period_type {
   5 : Post 1965
 }
 
-enum "ContributingResources" as contributing_resources {
+enum ContributingResources {
   Archaeological : Archaeological
   Building : Building
   Collection : Collection
@@ -81,7 +81,7 @@ enum "ContributingResources" as contributing_resources {
   Structure : Structure
 }
 
-enum "CoordinateDetermination" as coordinate_determination {
+enum CoordinateDetermination {
   1 : GPS
   2 : Paper Maps
   3 : Unknown
@@ -89,7 +89,7 @@ enum "CoordinateDetermination" as coordinate_determination {
   5 : Geocoding
 }
 
-entity "Dates" as dates {
+entity Dates {
   * Id : int <<generated>>
   --
   * PlaceId : int
@@ -99,13 +99,13 @@ entity "Dates" as dates {
   ToDate : nvarchar
 }
 
-enum "DateType" as date_type {
+enum DateType {
   1 : Construction
   2 : Significant Date
   8 : Construction Circa
 }
 
-enum "Designations" as designations {
+enum Designations {
   Federal : Federal
   Municipal : Municipal
   Territorial : Territorial
@@ -113,7 +113,7 @@ enum "Designations" as designations {
   NotDesignated : Not Designated
 }
 
-entity "HistoricalPattern" as historical_pattern {
+entity HistoricalPattern {
   * Id : int <<generated>>
   --
   * PlaceId : int
@@ -121,26 +121,26 @@ entity "HistoricalPattern" as historical_pattern {
   Comments : nvarchar
 }
 
-enum "HistoricalPatternType" as historical_pattern_type {
+enum HistoricalPatternType {
   1 : Political
   2 : Economic
   3 : Social
   4 : Geographic
 }
 
-entity "Name" as name {
+entity Name {
   * Id : int <<generated>>
   --
   * PlaceId : int
   Description : nvarchar
 }
 
-enum "Records" as records {
+enum Records {
   CRHP : CRHP
   WHBR : WHBR
 }
 
-enum "SiteCategories" as site_categories {
+enum SiteCategories {
   Architecture : Architecture
   FirstNation : First Nation
   Gravesite : Gravesite
@@ -148,7 +148,7 @@ enum "SiteCategories" as site_categories {
   Landscape : Landscape
 }
 
-enum "SiteStatus" as site_status {
+enum SiteStatus {
   1 : Standing
   2 : Demolished
   3 : Burned
@@ -157,24 +157,24 @@ enum "SiteStatus" as site_status {
   6 : Reconstruction
 }
 
-place }|--o{ category : Category
-place ||--o{ community : CommunityId
-place }|--o{ condition_type : DoorCondition
-place }|--o{ condition_type : FloorCondition
-place }|--o{ condition_type : RoofCondition
-place }|--o{ condition_type : WallCondition
-place }o--|| construction_period : PlaceId
-place }o--o{ contributing_resources : ContributingResources
-place ||--o{ coordinate_determination : CoordinateDetermination
-place }o--|| dates : PlaceId
-place }o--o{ designations : Designations
-place }o--|| historical_pattern : PlaceId
-place }o--|| name : PlaceId
-place }o--o{ records : Records
-place }o--o{ site_categories : SiteCategories
-place ||--o{ site_status : SiteStatus
-historical_pattern ||--o{ historical_pattern_type : HistoricalPatternType
-dates ||--o{ date_type : Type
-construction_period ||--o{ construction_period_type : Type
+Place::Category }|--o{ Category
+Place::CommunityId ||--o{ Community
+Place::DoorCondition }|--o{ ConditionType
+Place::FloorCondition }|--o{ ConditionType
+Place::RoofCondition }|--o{ ConditionType
+Place::WallCondition }|--o{ ConditionType
+Place }o--|| ConstructionPeriod::PlaceId
+Place::ContributingResources }o--o{ ContributingResources
+Place::CoordinateDetermination ||--o{ CoordinateDetermination
+Place }o--|| Dates::PlaceId
+Place::Designations }o--o{ Designations
+Place }o--|| HistoricalPattern::PlaceId
+Place }o--|| Name::PlaceId
+Place::Records }o--o{ Records
+Place::SiteCategories }o--o{ SiteCategories
+Place::SiteStatus ||--o{ SiteStatus
+HistoricalPattern::HistoricalPatternType ||--o{ HistoricalPatternType
+Dates::Type ||--o{ DateType
+ConstructionPeriod::Type ||--o{ ConstructionPeriodType
 
 @enduml
