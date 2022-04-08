@@ -29,12 +29,8 @@
           >
             <v-row>
               <v-col cols="5">
-                <v-select
+                <DateTypesSelect
                   v-model="item.type"
-                  label="Date type"
-                  :items="dateTypeOptions"
-                  item-value="value"
-                  item-text="text"
                   dense
                   outlined
                   background-color="white"
@@ -312,9 +308,14 @@ import axios from 'axios';
 import store from '@/store';
 import { PLACE_URL, STATIC_URL } from '@/urls';
 
+import DateTypesSelect from '@/components/Sites/site-forms/DateTypesSelect';
+
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'Dates',
+  components: {
+    DateTypesSelect,
+  },
   data: () => ({
     valid: false,
     loadedId: -1,
@@ -325,7 +326,6 @@ export default {
     ],
 
     dates: [],
-    dateTypeOptions: [],
     constructionPeriods: [],
     constructionPeriodOptions: [],
     conditionOptions: [],
@@ -361,10 +361,6 @@ export default {
 
     axios.get(`${STATIC_URL}/construction-period`).then((resp) => {
       this.constructionPeriodOptions = resp.data.data;
-    });
-
-    axios.get(`${STATIC_URL}/date-type`).then((resp) => {
-      this.dateTypeOptions = resp.data.data;
     });
 
     axios.get(`${STATIC_URL}/condition`).then((resp) => {

@@ -2,6 +2,7 @@ export * from './auth';
 export * from './category-types';
 export * from './contributing-resource-types';
 export * from './coordinate-determination-types';
+export * from './date-types';
 export * from './designation-types';
 export * from './historical-pattern';
 export * from './historical-pattern-types';

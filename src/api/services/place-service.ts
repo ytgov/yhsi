@@ -34,6 +34,7 @@ import {
 	WebLink,
 } from '../data';
 import {
+	DATE_TYPES,
 	GenericEnum,
 	HistoricalPattern,
 	HISTORICAL_PATTERN_TYPES,
@@ -594,12 +595,8 @@ export class PlaceService {
 		return FIRST_NATION_ASSOCIATION_TYPES;
 	}
 
-	getDateTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Construction' },
-			{ value: 2, text: 'Significant Date' },
-			{ value: 8, text: 'Construction Circa' },
-		];
+	getDateTypes(): readonly GenericEnum[] {
+		return DATE_TYPES;
 	}
 
 	getConstructionPeriodTypes(): GenericEnum[] {

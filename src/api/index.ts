@@ -13,6 +13,7 @@ import {
 	constructionPeriodsRouter,
 	contributingResourceTypesRouter,
 	coordinateDeterminationTypesRouter,
+	dateTypesRouter,
 	designationTypesRouter,
 	firstNationAssociationTypesRouter,
 	firstNationsRouter,
@@ -115,6 +116,7 @@ app.use('/api/communities', RequiresAuthentication, communitiesRouter);
 app.use('/api/construction-periods', RequiresAuthentication, constructionPeriodsRouter);
 app.use('/api/contributing-resource-types', RequiresAuthentication, contributingResourceTypesRouter);
 app.use('/api/coordinate-determination-types', RequiresAuthentication, coordinateDeterminationTypesRouter);
+app.use('/api/date-types', RequiresAuthentication, dateTypesRouter);
 app.use('/api/designation-types', RequiresAuthentication, designationTypesRouter);
 app.use('/api/first-nation-association-types', RequiresAuthentication, firstNationAssociationTypesRouter);
 app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);
