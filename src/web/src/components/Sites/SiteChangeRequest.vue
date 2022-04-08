@@ -364,7 +364,7 @@ export default {
 		},
 		save() {
 			this.internalLoading = true;
-			return this.savePlace(this.place.id, this.newPlace)
+			return this.savePlace(this.newPlace)
 				.then(() => {
 					return this.deletePlaceEdit(this.placeEditId);
 				})
