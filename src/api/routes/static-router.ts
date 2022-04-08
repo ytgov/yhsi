@@ -159,14 +159,6 @@ staticRouter.get('/condition', async (req: Request, res: Response) => {
 	return res.json({ data: list });
 });
 
-staticRouter.get(
-	'/coordinate-determination',
-	async (req: Request, res: Response) => {
-		let list = staticService.getCoordinateDeterminations();
-		return res.json({ data: list });
-	}
-);
-
 staticRouter.get('/site-status', async (req: Request, res: Response) => {
 	let list = staticService.getSiteStatuses();
 	return res.json({ data: list });

@@ -119,12 +119,10 @@
             outlined
             label="Longitude"
           />
-          <v-select
+          <CoordinateDeterminationTypesSelect
             v-model="place.coordinateDetermination"
             dense
             outlined
-            :items="coordinateDeterminationOptions"
-            label="Coordinate determination"
             hide-details
           />
 
@@ -189,25 +187,20 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { pick } from 'lodash';
-import axios from 'axios';
 
 import CommunitySelect from '@/components/Sites/site-forms/CommunitySelect';
-import { STATIC_URL } from '@/urls';
+import CoordinateDeterminationTypesSelect from '@/components/Sites/site-forms/CoordinateDeterminationTypesSelect';
 
-/* Important, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created */
 export default {
   name: 'Location',
-  components: { CommunitySelect },
+  components: { CommunitySelect, CoordinateDeterminationTypesSelect },
   props: {
     placeId: {
       type: [Number, String],
       required: true,
     },
   },
-  data: () => ({
-    /* Placeholder variables below this line **Read above** */
-    coordinateDeterminationOptions: [],
-  }),
+  data: () => ({}),
   computed: {
     ...mapGetters({
       place: 'places/place',
@@ -219,11 +212,7 @@ export default {
       return false;
     },
   },
-  mounted() {
-    axios.get(`${STATIC_URL}/coordinate-determination`).then((resp) => {
-      this.coordinateDeterminationOptions = resp.data.data;
-    });
-  },
+  mounted() {},
   methods: {
     ...mapActions({
       savePlace: 'places/save',
