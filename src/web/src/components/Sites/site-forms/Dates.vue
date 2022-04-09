@@ -36,41 +36,29 @@
         <v-card-text>
           <v-row>
             <v-col cols="6">
-              <v-select
+              <ConditionTypesSelect
                 v-model="fields.floorCondition"
-                item-text="text"
-                item-value="value"
-                :items="conditionOptions"
                 label="Floor condition"
                 dense
                 outlined
                 background-color="white"
               />
-              <v-select
+              <ConditionTypesSelect
                 v-model="fields.roofCondition"
-                item-text="text"
-                item-value="value"
-                :items="conditionOptions"
                 label="Roof condition"
                 dense
                 outlined
                 background-color="white"
               />
-              <v-select
+              <ConditionTypesSelect
                 v-model="fields.wallCondition"
-                item-text="text"
-                item-value="value"
-                :items="conditionOptions"
                 label="Wall condition"
                 dense
                 outlined
                 background-color="white"
               />
-              <v-select
+              <ConditionTypesSelect
                 v-model="fields.doorCondition"
-                item-text="text"
-                item-value="value"
-                :items="conditionOptions"
                 label="Door condition"
                 dense
                 outlined
@@ -142,6 +130,7 @@ import axios from 'axios';
 import store from '@/store';
 import { PLACE_URL, STATIC_URL } from '@/urls';
 
+import ConditionTypesSelect from '@/components/Sites/site-forms/ConditionTypesSelect';
 import ConstructionPeriodsEditor from '@/components/Sites/site-forms/dates/ConstructionPeriodsEditor';
 import DatesEditor from '@/components/Sites/site-forms/dates/DatesEditor';
 
@@ -149,6 +138,7 @@ import DatesEditor from '@/components/Sites/site-forms/dates/DatesEditor';
 export default {
   name: 'Dates',
   components: {
+    ConditionTypesSelect,
     ConstructionPeriodsEditor,
     DatesEditor,
   },
@@ -160,7 +150,6 @@ export default {
   },
   data: () => ({
     constructionPeriods: [],
-    conditionOptions: [],
     dates: [],
     siteStatusOptions: [],
 
@@ -189,10 +178,6 @@ export default {
         store.dispatch('addSiteHistory', resp.data.data);
       })
       .catch((error) => console.error(error));
-
-    axios.get(`${STATIC_URL}/condition`).then((resp) => {
-      this.conditionOptions = resp.data.data;
-    });
 
     axios.get(`${STATIC_URL}/site-status`).then((resp) => {
       this.siteStatusOptions = resp.data.data;

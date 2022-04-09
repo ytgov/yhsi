@@ -221,15 +221,6 @@ export class StaticService {
 		return DESIGNATION_TYPES;
 	}
 
-	getConditions(): GenericEnum[] {
-		return [
-			{ value: 0, text: 'Not Applicable' },
-			{ value: 3, text: 'Poor' },
-			{ value: 1, text: 'Fair' },
-			{ value: 2, text: 'Good' },
-		];
-	}
-
 	getSiteStatuses(): GenericEnum[] {
 		return [
 			{ value: 1, text: 'Standing' },

@@ -4,6 +4,7 @@ export * from './burials-router';
 export * from './catalogs-router';
 export * from './category-types-router';
 export * from './communities-router';
+export * from './condition-types-router';
 export * from './construction-periods-router';
 export * from './contributing-resource-types-router';
 export * from './coordinate-determination-types-router';

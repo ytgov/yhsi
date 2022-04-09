@@ -10,6 +10,7 @@ import {
 	catalogsRouter,
 	categoryTypesRouter,
 	communitiesRouter,
+	conditionTypesRouter,
 	constructionPeriodsRouter,
 	contributingResourceTypesRouter,
 	coordinateDeterminationTypesRouter,
@@ -113,6 +114,7 @@ app.use('/api/register', registerRouter);
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
 app.use('/api/category-types', RequiresAuthentication, categoryTypesRouter);
 app.use('/api/communities', RequiresAuthentication, communitiesRouter);
+app.use('/api/condition-types', RequiresAuthentication, conditionTypesRouter);
 app.use('/api/construction-periods', RequiresAuthentication, constructionPeriodsRouter);
 app.use('/api/contributing-resource-types', RequiresAuthentication, contributingResourceTypesRouter);
 app.use('/api/coordinate-determination-types', RequiresAuthentication, coordinateDeterminationTypesRouter);
