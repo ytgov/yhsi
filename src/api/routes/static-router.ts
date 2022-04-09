@@ -26,14 +26,6 @@ staticRouter.get(
 	}
 );
 
-staticRouter.get(
-	'/construction-period',
-	async (req: Request, res: Response) => {
-		let list = await placeService.getConstructionPeriodTypes();
-		return res.json({ data: list });
-	}
-);
-
 staticRouter.get('/first-nation', async (req: Request, res: Response) => {
 	let list = await staticService.getFirstNations();
 	return res.json({ data: list });

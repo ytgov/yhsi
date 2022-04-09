@@ -33,11 +33,8 @@
             :key="i"
           >
             <v-col cols="10">
-              <v-select
+              <ConstructionPeriodSelect
                 v-model="item.type"
-                :items="constructionPeriodOptions"
-                item-text="text"
-                item-value="value"
                 label=""
                 dense
                 outlined
@@ -190,12 +187,14 @@ import axios from 'axios';
 import store from '@/store';
 import { PLACE_URL, STATIC_URL } from '@/urls';
 
+import ConstructionPeriodSelect from '@/components/Sites/site-forms/ConstructionPeriodSelect';
 import DatesEditor from '@/components/Sites/site-forms/dates/DatesEditor';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'Dates',
   components: {
+    ConstructionPeriodSelect,
     DatesEditor,
   },
   props: {
@@ -206,7 +205,6 @@ export default {
   },
   data: () => ({
     constructionPeriods: [],
-    constructionPeriodOptions: [],
     conditionOptions: [],
     dates: [],
     siteStatusOptions: [],
@@ -236,10 +234,6 @@ export default {
         store.dispatch('addSiteHistory', resp.data.data);
       })
       .catch((error) => console.error(error));
-
-    axios.get(`${STATIC_URL}/construction-period`).then((resp) => {
-      this.constructionPeriodOptions = resp.data.data;
-    });
 
     axios.get(`${STATIC_URL}/condition`).then((resp) => {
       this.conditionOptions = resp.data.data;
