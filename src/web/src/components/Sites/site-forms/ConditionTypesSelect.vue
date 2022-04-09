@@ -1,6 +1,6 @@
 <template lang="pug">
 v-select(
-	label="Condition",
+	:label="$attrs.label || 'Condition'",
 	:items="conditionTypeOptions",
 	:loading="loading"
 	v-bind="$attrs"
