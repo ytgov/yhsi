@@ -32,10 +32,11 @@ export default {
 	methods: {
 		getRecordTypes() {
 			this.loading = true;
-			api
+			return api
 				.getAll()
 				.then(({ data }) => {
 					this.contributingResourceTypeOptions = data;
+					return data;
 				})
 				.finally(() => {
 					this.loading = false;

@@ -31,10 +31,11 @@ export default {
 	methods: {
 		getCoordinateDeterminationTypes() {
 			this.loading = true;
-			api
+			return api
 				.getAll()
 				.then(({ data }) => {
 					this.coordinateDeterminationTypeOptions = data;
+					return data;
 				})
 				.finally(() => {
 					this.loading = false;

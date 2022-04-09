@@ -31,10 +31,11 @@ export default {
 	methods: {
 		getDateTypes() {
 			this.loading = true;
-			api
+			return api
 				.getAll()
 				.then(({ data }) => {
 					this.dateTypeOptions = data;
+					return data;
 				})
 				.finally(() => {
 					this.loading = false;

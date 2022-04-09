@@ -32,10 +32,11 @@ export default {
 	methods: {
 		getDesignations() {
 			this.loading = true;
-			api
+			return api
 				.getAll()
 				.then(({ data }) => {
 					this.designationOptions = data;
+					return data;
 				})
 				.finally(() => {
 					this.loading = false;

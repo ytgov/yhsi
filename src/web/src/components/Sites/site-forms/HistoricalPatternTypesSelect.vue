@@ -31,10 +31,11 @@ export default {
 	methods: {
 		getHistoricalPatternTypes() {
 			this.loading = true;
-			api
+			return api
 				.getAll()
 				.then(({ data }) => {
 					this.historicalPatternTypeOptions = data;
+					return data;
 				})
 				.finally(() => {
 					this.loading = false;

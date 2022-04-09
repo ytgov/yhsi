@@ -31,10 +31,11 @@ export default {
 	methods: {
 		getConstructionPeriods() {
 			this.loading = true;
-			api
+			return api
 				.getAll()
 				.then(({ data }) => {
 					this.constructionPeriodOptions = data;
+					return data;
 				})
 				.finally(() => {
 					this.loading = false;
