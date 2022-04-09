@@ -17,55 +17,10 @@
         :place-id="placeId"
       />
       <v-divider class="mt-2 mb-4" />
-      <v-card
-        tag="section"
-        class="default mb-5"
-      >
-        <v-card-title
-          tag="h3"
-          class="mb-0 text-h6"
-        >
-          Construction Periods
-        </v-card-title>
-        <v-card-text tag="form">
-          <v-row
-            v-for="(item, i) in constructionPeriods"
-            :key="i"
-          >
-            <v-col cols="10">
-              <ConstructionPeriodSelect
-                v-model="item.type"
-                label=""
-                dense
-                outlined
-                hide-details
-                background-color="white"
-              />
-            </v-col>
-            <v-col cols="2">
-              <v-btn
-                title="Remove"
-                color="warning"
-                x-small
-                fab
-                class="my-0"
-                @click="removePeriod(i)"
-              >
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn
-            class="my-0"
-            color="info"
-            @click="addPeriod()"
-          >
-            Add construction period
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+      <ConstructionPeriodsEditor
+        v-model="constructionPeriods"
+        :place-id="placeId"
+      />
       <v-divider class="mt-2 mb-2" />
 
       <v-card
@@ -187,14 +142,14 @@ import axios from 'axios';
 import store from '@/store';
 import { PLACE_URL, STATIC_URL } from '@/urls';
 
-import ConstructionPeriodSelect from '@/components/Sites/site-forms/ConstructionPeriodSelect';
+import ConstructionPeriodsEditor from '@/components/Sites/site-forms/dates/ConstructionPeriodsEditor';
 import DatesEditor from '@/components/Sites/site-forms/dates/DatesEditor';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'Dates',
   components: {
-    ConstructionPeriodSelect,
+    ConstructionPeriodsEditor,
     DatesEditor,
   },
   props: {
@@ -244,13 +199,6 @@ export default {
     });
   },
   methods: {
-    addPeriod() {
-      this.constructionPeriods.push({ placeId: this.placeId, type: 2 });
-    },
-    removePeriod(index) {
-      this.constructionPeriods.splice(index, 1);
-    },
-
     saveChanges() {
       let body = {
         buildingSize: this.fields.buildingSize,
