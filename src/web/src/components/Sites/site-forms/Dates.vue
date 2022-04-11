@@ -158,14 +158,14 @@ export default {
       const data = pick(this.place, [
         'buildingSize',
         'conditionComment',
+        'constructionPeriods',
+        'dates',
         'doorCondition',
         'floorCondition',
         'resourceType',
         'roofCondition',
         'siteStatus',
         'wallCondition',
-        'dates',
-        'constructionPeriods',
       ]);
 
       return this.savePlace(data);
