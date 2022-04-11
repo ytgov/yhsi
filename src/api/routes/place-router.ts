@@ -181,50 +181,12 @@ placeRouter.put(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		let { id } = req.params;
-		let { dates, constructionPeriods } = req.body;
+		let { constructionPeriods } = req.body;
 		let updater = req.body;
 
-		delete updater.dates;
 		delete updater.constructionPeriods;
 
 		await placeService.updatePlace(parseInt(id), updater);
-
-		let oldDates = await dateService.getFor(parseInt(id));
-		dates = dates.map((n: Date) =>
-			Object.assign(n, { details: n.details?.trim() })
-		);
-
-		for (let on of oldDates) {
-			let match = dates.filter(
-				(n: Date) =>
-					n.type == on.type &&
-					n.details == on.details &&
-					n.fromDate == on.fromDate &&
-					n.toDate == on.toDate
-			);
-
-			if (match.length == 0) {
-				await placeService.removeDate(on.id);
-			}
-		}
-
-		for (let on of dates) {
-			let match = oldDates.filter(
-				(n: Date) =>
-					n.type == on.type &&
-					n.details == on.details &&
-					n.fromDate == on.fromDate &&
-					n.toDate == on.toDate
-			);
-
-			if (match.length == 0) {
-				delete on.id;
-				delete on.from_menu;
-				delete on.to_menu;
-				delete on.typeText;
-				await placeService.addDate(on);
-			}
-		}
 
 		let oldConst = await placeService.getConstructionPeriodsFor(parseInt(id));
 
@@ -631,6 +593,7 @@ placeRouter.patch(
 		body('communityId').isInt().optional(),
 		body('contributingResources').isArray().optional({ nullable: true }),
 		body('coordinateDetermination').isInt().optional(),
+		body('dates').isArray().optional({ nullable: true }),
 		body('designations').isArray().optional({ nullable: true }),
 		body('hectareArea').isString().optional({ nullable: true }),
 		body('historicalPatterns').isArray().optional({ nullable: true }),

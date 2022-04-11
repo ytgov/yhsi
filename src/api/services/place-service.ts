@@ -297,14 +297,17 @@ export class PlaceService {
 
 	updateRelations(id: number, attributes: PlainObject) {
 		return Promise.resolve(attributes).then(async (attrs) => {
-			if (attrs.hasOwnProperty('names')) {
-				await this.nameService.upsertFor(id, attrs['names']);
+			if (attrs.hasOwnProperty('dates')) {
+				await this.dateService.upsertFor(id, attrs['dates']);
 			}
 			if (attrs.hasOwnProperty('historicalPatterns')) {
 				await this.historicalPatternService.upsertFor(
 					id,
 					attrs['historicalPatterns']
 				);
+			}
+			if (attrs.hasOwnProperty('names')) {
+				await this.nameService.upsertFor(id, attrs['names']);
 			}
 			return attrs;
 		});
@@ -381,14 +384,6 @@ export class PlaceService {
 
 	async removeFNAssociation(id: number) {
 		return this.db('FirstNationAssociation').where({ id }).delete();
-	}
-
-	async addDate(name: Date) {
-		return this.db('dates').insert(name);
-	}
-
-	async removeDate(id: number) {
-		return this.db('dates').where({ id }).delete();
 	}
 
 	async getConstructionPeriodsFor(id: number): Promise<ConstructionPeriod[]> {

@@ -10,7 +10,7 @@ export class DateService {
 	}
 
 	async getFor(placeId: number) {
-		return this.db('dates')
+		return this.db('Dates')
 			.where({ placeId })
 			.select<Date[]>([
 				'id',
@@ -20,5 +20,29 @@ export class DateService {
 				'toDate',
 				'details',
 			]);
+	}
+
+	async upsertFor(placeId: number, dates: Date[]) {
+		return new Promise((resolve) => {
+			resolve(
+				dates.map((date) => ({
+					placeId,
+					type: date.type,
+					fromDate: date.fromDate,
+					toDate: date.toDate,
+					details: date.details?.trim(),
+				}))
+			);
+		}).then((cleanDates) => {
+			return this.db.transaction(async (trx) => {
+				await trx('Dates').where({ placeId }).delete();
+
+				if (Array.isArray(cleanDates) && cleanDates.length === 0) {
+					return [];
+				}
+
+				return trx.insert(cleanDates).into('Dates');
+			});
+		});
 	}
 }
