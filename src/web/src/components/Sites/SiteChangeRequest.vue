@@ -99,6 +99,7 @@ import { cloneDeep, isEqual } from 'lodash';
 
 import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSelect';
 import CommunitySelect from '@/components/Sites/site-forms/CommunitySelect';
+import ConditionTypesSelect from '@/components/Sites/site-forms/ConditionTypesSelect';
 import ConstructionPeriodsViewer from '@/components/Sites/site-change-request/ConstructionPeriodsViewer';
 import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
 import CoordinateDeterminationTypesSelect from '@/components/Sites/site-forms/CoordinateDeterminationTypesSelect';
@@ -109,6 +110,7 @@ import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
 import NamesViewer from '@/components/Sites/site-change-request/NamesViewer';
 import RecordTypesSelect from '@/components/Sites/site-forms/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/site-forms/SiteCategoryTypesSelect';
+import SiteStatusTypesSelect from '@/components/Sites/site-forms/SiteStatusTypesSelect';
 
 const FIELD_TYPES = Object.freeze([
 	// Summary Form Fields
@@ -270,6 +272,47 @@ const FIELD_TYPES = Object.freeze([
 		key: 'constructionPeriods',
 		type: ConstructionPeriodsViewer,
 	},
+	{
+		key: 'floorCondition',
+		type: ConditionTypesSelect,
+	},
+	{
+		key: 'roofCondition',
+		type: ConditionTypesSelect,
+	},
+	{
+		key: 'wallCondition',
+		type: ConditionTypesSelect,
+	},
+	{
+		key: 'doorCondition',
+		type: ConditionTypesSelect,
+	},
+	{
+		key: 'siteStatus',
+		type: SiteStatusTypesSelect,
+	},
+	{
+		key: 'buildingSize',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Building size',
+		},
+	},
+	{
+		key: 'resourceType',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'All other resource types',
+		},
+	},
+	{
+		key: 'conditionComment',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Condition notes',
+		},
+	},
 ]);
 
 export default {
@@ -277,6 +320,7 @@ export default {
 	components: {
 		CategoryTypesSelect,
 		CommunitySelect,
+		ConditionTypesSelect,
 		ConstructionPeriodsViewer,
 		ContributingResourceTypesSelect,
 		CoordinateDeterminationTypesSelect,
@@ -287,6 +331,7 @@ export default {
 		NamesViewer,
 		RecordTypesSelect,
 		SiteCategoryTypesSelect,
+		SiteStatusTypesSelect,
 	},
 	props: {
 		placeEditId: {

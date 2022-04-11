@@ -52,13 +52,17 @@ export class PlaceEditService {
 			.first({
 				placeId: 'PlaceId',
 				bordenNumber: 'BordenNumber',
+				buildingSize: 'BuildingSize',
 				category: 'Category',
 				communityId: 'CommunityId',
+				conditionComment: 'ConditionComment',
 				constructionPeriodsJSON: 'ConstructionPeriodJSON',
 				contributingResources: 'ContributingResources',
 				coordinateDetermination: 'CoordinateDetermination',
 				datesJSON: 'DatesJSON',
 				designations: 'Designations',
+				doorCondition: 'DoorCondition',
+				floorCondition: 'FloorCondition',
 				hectareArea: 'HectareArea',
 				historicalPatternsJSON: 'HistoricalPatternJSON',
 				latitude: 'Latitude',
@@ -76,8 +80,12 @@ export class PlaceEditService {
 				previousAddress: 'PreviousAddress',
 				// primaryName is in default scope
 				records: 'Records',
+				resourceType: 'ResourceType',
+				roofCondition: 'RoofCondition',
 				showInRegister: 'ShowInRegister',
 				siteCategories: 'SiteCategories',
+				siteStatus: 'SiteStatus',
+				wallCondition: 'WallCondition',
 			})
 			.where({ 'PlaceEdit.Id': id })
 			.then(PlaceEdit.parseAndNormalizeJSONColumns)
