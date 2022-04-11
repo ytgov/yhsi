@@ -10,19 +10,10 @@ import {
 import { pick } from 'lodash';
 
 import { DB_CONFIG } from '../config';
+import { buildDatabaseSort, DateService, PlaceService } from '../services';
 import {
-	buildDatabaseSort,
-	PlaceService,
-	SortDirection,
-	SortStatement,
-	StaticService,
-} from '../services';
-import {
-	HistoricalPattern,
-	Name,
 	Place,
-	Dates,
-	PLACE_FIELDS,
+	Date,
 	ConstructionPeriod,
 	Theme,
 	FunctionalUse,
@@ -39,6 +30,7 @@ import { ReturnValidationErrors } from '../middleware';
 import { authorize, UserRoles } from '../middleware/authorization';
 
 const placeService = new PlaceService(DB_CONFIG);
+const dateService = new DateService(DB_CONFIG);
 const PAGE_SIZE = 10;
 
 export const placeRouter = express.Router();
@@ -212,14 +204,14 @@ placeRouter.put(
 
 		await placeService.updatePlace(parseInt(id), updater);
 
-		let oldDates = await placeService.getDatesFor(parseInt(id));
-		dates = dates.map((n: Dates) =>
+		let oldDates = await dateService.getFor(parseInt(id));
+		dates = dates.map((n: Date) =>
 			Object.assign(n, { details: n.details?.trim() })
 		);
 
 		for (let on of oldDates) {
 			let match = dates.filter(
-				(n: Dates) =>
+				(n: Date) =>
 					n.type == on.type &&
 					n.details == on.details &&
 					n.fromDate == on.fromDate &&
@@ -233,7 +225,7 @@ placeRouter.put(
 
 		for (let on of dates) {
 			let match = oldDates.filter(
-				(n: Dates) =>
+				(n: Date) =>
 					n.type == on.type &&
 					n.details == on.details &&
 					n.fromDate == on.fromDate &&

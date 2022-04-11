@@ -1,3 +1,4 @@
+export * from '../models/date';
 export * from '../models/historical-pattern';
 export * from '../models/name';
 export * from '../models/place';
@@ -110,15 +111,6 @@ export class Contact {
 	mailingAddress!: string;
 	description!: string;
 	contactType!: number;
-}
-
-export class Dates {
-	id!: number;
-	placeId!: number;
-	type!: number;
-	fromDate!: string;
-	toDate!: string;
-	details!: string;
 }
 
 export class Description {

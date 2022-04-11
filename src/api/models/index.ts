@@ -3,6 +3,7 @@ export * from './category-types';
 export * from './condition-types';
 export * from './contributing-resource-types';
 export * from './coordinate-determination-types';
+export * from './date';
 export * from './date-types';
 export * from './designation-types';
 export * from './historical-pattern';

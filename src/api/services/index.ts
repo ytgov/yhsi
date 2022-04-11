@@ -3,6 +3,7 @@ export * from './boat-owner-service';
 export * from './boat-service';
 export * from './burial-service';
 export * from './catalog-service';
+export * from './date-service';
 export * from './historical-pattern-service';
 export * from './name-service';
 export * from './people-service';

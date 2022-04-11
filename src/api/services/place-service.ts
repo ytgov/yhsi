@@ -3,6 +3,7 @@ import moment from 'moment';
 import { get, uniq, cloneDeep, pick } from 'lodash';
 
 import {
+	DateService,
 	HistoricalPatternService,
 	NameService,
 	PhotoService,
@@ -16,7 +17,6 @@ import {
 	CONSTRUCTION_PERIODS,
 	ConstructionPeriod,
 	Contact,
-	Dates,
 	Description,
 	DESCRIPTION_TYPES,
 	DESCRIPTION_TYPE_ENUMS,
@@ -34,7 +34,7 @@ import {
 	WebLink,
 } from '../data';
 import {
-	DATE_TYPES,
+	Date,
 	GenericEnum,
 	HistoricalPattern,
 	HISTORICAL_PATTERN_TYPES,
@@ -83,6 +83,7 @@ function injectRelationshipData(
 
 export class PlaceService {
 	private db: Knex;
+	private dateService: DateService;
 	private historicalPatternService: HistoricalPatternService;
 	private nameService: NameService;
 	private photoService: PhotoService;
@@ -91,6 +92,7 @@ export class PlaceService {
 
 	constructor(config: Knex.Config<any>) {
 		this.db = knex(config);
+		this.dateService = new DateService(config);
 		this.historicalPatternService = new HistoricalPatternService();
 		this.nameService = new NameService();
 		this.photoService = new PhotoService(config);
@@ -155,17 +157,11 @@ export class PlaceService {
 					'description'
 				);
 
-				place.names = await this.nameService.getFor(id);
+				place.dates = await this.dateService.getFor(id);
 				place.historicalPatterns = await this.historicalPatternService.getFor(
 					id
 				);
-				const dates = combine(
-					await this.getDatesFor(id),
-					this.getDateTypes(),
-					'value',
-					'type',
-					'text'
-				);
+				place.names = await this.nameService.getFor(id);
 				const constructionPeriods = combine(
 					await this.getConstructionPeriodsFor(id),
 					this.getConstructionPeriodTypes(),
@@ -248,7 +244,6 @@ export class PlaceService {
 				const relationships = {
 					associations: { data: associations },
 					firstNationAssociations: { data: fnAssociations },
-					dates: { data: dates },
 					constructionPeriods: { data: constructionPeriods },
 					themes: { data: themes },
 					functionalUses: { data: functionalUses },
@@ -404,20 +399,7 @@ export class PlaceService {
 		return this.db('historicalpattern').where({ id }).delete();
 	}
 
-	async getDatesFor(id: number): Promise<Dates[]> {
-		return this.db('dates')
-			.where({ placeId: id })
-			.select<Dates[]>([
-				'id',
-				'placeId',
-				'type',
-				'fromDate',
-				'toDate',
-				'details',
-			]);
-	}
-
-	async addDate(name: Dates) {
+	async addDate(name: Date) {
 		return this.db('dates').insert(name);
 	}
 
@@ -593,10 +575,6 @@ export class PlaceService {
 
 	getFNAssociationTypes(): GenericEnum[] {
 		return FIRST_NATION_ASSOCIATION_TYPES;
-	}
-
-	getDateTypes(): readonly GenericEnum[] {
-		return DATE_TYPES;
 	}
 
 	getConstructionPeriodTypes(): GenericEnum[] {
