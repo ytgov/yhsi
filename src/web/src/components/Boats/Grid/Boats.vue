@@ -146,10 +146,12 @@ export default {
       },
       deep: true,
     },
-    selectedFilters(newv) {
-      ////console.log(newv);
-      this.filterOptions = newv;
-      this.getDataFromApi();
+    selectedFilters: {
+      handler(newv) {
+        this.filterOptions = newv;
+        this.getDataFromApi();
+      },
+      deep: true
     },
     search() {
       this.getDataFromApi();

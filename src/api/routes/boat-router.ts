@@ -210,7 +210,6 @@ boatsRouter.post('/pdf', async (req: Request, res: Response) => {
 			sort = 'asc',
 			page = 0, limit = 0
 		} =  req.body;
-		const offset = page * limit || 0;
 		
 		const boats = await boatService.doSearch(page, limit, 0, { 
 			textToMatch, Owner, ConstructionDate, ServiceStart, ServiceEnd, sortBy, sort 
@@ -241,6 +240,7 @@ boatsRouter.post('/export', async (req: Request, res: Response) => {
 	const boats = await boatService.doSearch(page, limit, 0, { 
 		textToMatch, Owner, ConstructionDate, ServiceStart, ServiceEnd, sortBy, sort 
 	});
+	//console.log("data retrieved");
 
 	res.status(200).send(boats.body);
 });
