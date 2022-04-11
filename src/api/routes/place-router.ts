@@ -176,21 +176,6 @@ placeRouter.post(
 );
 
 placeRouter.put(
-	'/:id/location',
-	[param('id').isInt().notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		let { id } = req.params;
-		let updater = req.body;
-
-		await placeService.updatePlace(parseInt(id), updater);
-		return res.json({
-			messages: [{ variant: 'success', text: 'Site updated' }],
-		});
-	}
-);
-
-placeRouter.put(
 	'/:id/dates',
 	[param('id').isInt().notEmpty()],
 	ReturnValidationErrors,
