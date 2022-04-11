@@ -1,7 +1,7 @@
 <template>
   <v-card
     tag="section"
-    class="default mb-5"
+    class="default mb-4"
   >
     <v-card-title
       tag="h3"

@@ -16,13 +16,10 @@
         v-model="place.dates"
         :place-id="placeId"
       />
-      <v-divider class="mt-2 mb-4" />
       <ConstructionPeriodsEditor
         v-model="place.constructionPeriods"
         :place-id="placeId"
       />
-      <v-divider class="mt-2 mb-2" />
-
       <v-card
         class="default"
         tag="section"
