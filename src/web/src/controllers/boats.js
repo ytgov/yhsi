@@ -1,7 +1,7 @@
 import { api } from './config';
 
 export default {
-  async get(page, limit, textToMatch, sortBy, sort){
+  async get(page, limit, textToMatch, sortBy, sort,  Owner, ConstructionDate, ServiceStart, ServiceEnd, VesselType){
       return await api.get(`boats/`, {
         crossdomain: true,
         params: {
@@ -9,7 +9,8 @@ export default {
           limit,
           textToMatch,
           sortBy,
-          sort
+          sort,
+          Owner, ConstructionDate, ServiceStart, ServiceEnd, VesselType
         }
       })
       .then(res => {
@@ -52,9 +53,9 @@ export default {
       return error;
     });
   },
-  async getExport(textToMatch, sortBy, sort){
+  async getExport(textToMatch, sortBy, sort, Owner, ConstructionDate, ServiceStart, ServiceEnd, VesselType){
     return await api.post('boats/export', {
-      textToMatch, sortBy, sort, page: 0, limit: 0
+      textToMatch, sortBy, sort, page: 0, limit: 0, Owner, ConstructionDate, ServiceStart, ServiceEnd, VesselType
     })
     .then( res => {
       return res.data;
@@ -62,12 +63,12 @@ export default {
       return err;
     })
   },
-  async getGridPdf(textToMatch, sortBy, sort){
+  async getGridPdf(textToMatch, sortBy, sort, Owner, ConstructionDate, ServiceStart, ServiceEnd, VesselType){//textToMatch, Owner, ConstructionDate, ServiceStart, ServiceEnd, sortBy, sort
     return await api({
       url: 'boats/pdf',
       method: 'POST',
       responseType: 'blob',
-      data: { textToMatch, sortBy, sort, page: 0, limit: 0 }
+      data: { textToMatch, sortBy, sort, page: 0, limit: 0, Owner, ConstructionDate, ServiceStart, ServiceEnd, VesselType }
     })
     .then( res => {
       return res.data;

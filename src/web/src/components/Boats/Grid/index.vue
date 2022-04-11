@@ -61,10 +61,10 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item v-for="(item, i) in filterOptions" :key="i" link>
+            <v-list-item v-for="(item, i) in filterOptions" :key="`filter-list-opt-${i}`" link>
               <v-text-field
                 clearable
-                @input="filterChange"
+                @blur="filterChange"
                 v-model="item.value"
                 :label="item.name"
               ></v-text-field>
@@ -164,11 +164,11 @@ export default {
     searchOwner: "",
     searchBoat: "",
     filterOptions: [
-      { name: "Owner", value: "" },
-      { name: "Construction Date", value: "" },
-      { name: "Service Start", value: "" },
-      { name: "Service End", value: "" },
-      { name: "Vessel Type", value: "" },
+      { name: "Owner", value: "", dataAccess: "Owner"},
+      { name: "Construction Date", value: "", dataAccess: "ConstructionDate" },
+      { name: "Service Start", value: "", dataAccess: "ServiceStart" },
+      { name: "Service End", value: "", dataAccess: "ServiceEnd" },
+      { name: "Vessel Type", value: "", dataAccess: "VesselType" },
     ],
     selectedItem: 1,
     items: [
@@ -210,6 +210,7 @@ export default {
     }, 400),
     filterChange() {
       this.$store.commit("boats/setSelectedFilters", this.filterOptions);
+      this.getBoatExport();
     },
     isActive(route) {
       //this function helps to show certain classes depending on the route
@@ -223,8 +224,8 @@ export default {
     },
     async getBoatExport(){
       this.loadingExport = true;
-      let b = this.boatTableOptions;
-      this.boatsData = await boats.getExport(this.searchBoat, b.sortBy[0] ? b.sortBy[0] : "Name", b.sortDesc[0] ? "desc" : "asc");
+      //let b = this.boatTableOptions;
+      //this.boatsData = await boats.getExport(this.searchBoat, b.sortBy[0] ? b.sortBy[0] : "Name", b.sortDesc[0] ? "desc" : "asc");
       this.loadingExport = false;
     },
     async downloadPdf(){

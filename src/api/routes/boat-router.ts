@@ -22,14 +22,22 @@ boatsRouter.get(
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const textToMatch = req.query.textToMatch as string;
+		const { 
+			textToMatch = '', 
+			Owner = '', 
+			ConstructionDate = '', 
+			ServiceStart = '', 
+			ServiceEnd = '', 
+			sortBy = 'Name', 
+			sort = 'asc' 
+		} =  req.query;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
-		const sortBy = req.query.sortBy as string;
-		const sort = req.query.sort as string;
 		const offset = page * limit || 0;
 		
-		const data = await boatService.doSearch(textToMatch, page, limit, offset, sortBy, sort);
+		const data = await boatService.doSearch(page, limit, offset, { 
+			textToMatch, Owner, ConstructionDate, ServiceStart, ServiceEnd, sortBy, sort 
+		});
 
 		res.status(200).send(data);
 	}
@@ -173,7 +181,7 @@ boatsRouter.put('/:boatId', async (req: Request, res: Response) => {
 
 //PDF AND EXPORTS
 boatsRouter.post(
-	'/pdf/:boatId',
+	'/pdf/:boatId', 
 	[param('boatId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
@@ -192,8 +200,21 @@ boatsRouter.post(
 });
 
 boatsRouter.post('/pdf', async (req: Request, res: Response) => {
-		const { page = 0, limit = 0, textToMatch = '', sortBy = 'Name', sort = 'asc' } = req.body;
-		let boats = await boatService.doSearch(textToMatch, page, limit, 0, sortBy, sort);
+		const { 
+			textToMatch = '', 
+			Owner = '', 
+			ConstructionDate = '', 
+			ServiceStart = '', 
+			ServiceEnd = '', 
+			sortBy = 'Name', 
+			sort = 'asc',
+			page = 0, limit = 0
+		} =  req.body;
+		const offset = page * limit || 0;
+		
+		const boats = await boatService.doSearch(page, limit, 0, { 
+			textToMatch, Owner, ConstructionDate, ServiceStart, ServiceEnd, sortBy, sort 
+		});
 		let data = renderFile('./templates/boats/boatGrid.pug', {
 			data: boats.body
 		});
@@ -206,7 +227,20 @@ boatsRouter.post('/pdf', async (req: Request, res: Response) => {
 );
 
 boatsRouter.post('/export', async (req: Request, res: Response) => {
-	const { page = 0, limit = 0, textToMatch = '', sortBy = 'Name', sort= 'asc' } = req.body;
-	let boats = await boatService.doSearch(textToMatch, page, limit, 0, sortBy, sort);
+	const { 
+		textToMatch = '', 
+		Owner = '', 
+		ConstructionDate = '', 
+		ServiceStart = '', 
+		ServiceEnd = '', 
+		sortBy = 'Name', 
+		sort = 'asc',
+		page = 0, limit = 0
+	} =  req.body;
+	
+	const boats = await boatService.doSearch(page, limit, 0, { 
+		textToMatch, Owner, ConstructionDate, ServiceStart, ServiceEnd, sortBy, sort 
+	});
+
 	res.status(200).send(boats.body);
 });
