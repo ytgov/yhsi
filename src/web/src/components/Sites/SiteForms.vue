@@ -148,7 +148,9 @@ export default {
   },
   mounted() {
     this.initializePlace(this.id).then(() => {
-      goTo(this.$route.hash, { offset: 75 });
+      if (this.$route.hash) {
+        goTo(this.$route.hash, { offset: 75 });
+      }
     });
   },
   methods: {
