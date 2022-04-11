@@ -10,11 +10,9 @@ import {
 import { pick } from 'lodash';
 
 import { DB_CONFIG } from '../config';
-import { buildDatabaseSort, DateService, PlaceService } from '../services';
+import { buildDatabaseSort, PlaceService } from '../services';
 import {
 	Place,
-	Date,
-	ConstructionPeriod,
 	Theme,
 	FunctionalUse,
 	Association,
@@ -30,7 +28,6 @@ import { ReturnValidationErrors } from '../middleware';
 import { authorize, UserRoles } from '../middleware/authorization';
 
 const placeService = new PlaceService(DB_CONFIG);
-const dateService = new DateService(DB_CONFIG);
 const PAGE_SIZE = 10;
 
 export const placeRouter = express.Router();
@@ -172,46 +169,6 @@ placeRouter.post(
 			});
 
 		return res.json({ data: result });
-	}
-);
-
-placeRouter.put(
-	'/:id/dates',
-	[param('id').isInt().notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		let { id } = req.params;
-		let { constructionPeriods } = req.body;
-		let updater = req.body;
-
-		delete updater.constructionPeriods;
-
-		await placeService.updatePlace(parseInt(id), updater);
-
-		let oldConst = await placeService.getConstructionPeriodsFor(parseInt(id));
-
-		for (let on of oldConst) {
-			let match = constructionPeriods.filter(
-				(n: ConstructionPeriod) => n.type == on.type
-			);
-
-			if (match.length == 0) {
-				await placeService.removeConstructionPeriod(on.id);
-			}
-		}
-
-		for (let on of constructionPeriods) {
-			let match = oldConst.filter((n: ConstructionPeriod) => n.type == on.type);
-
-			if (match.length == 0) {
-				delete on.id;
-				delete on.typeText;
-				await placeService.addConstructionPeriod(on);
-			}
-		}
-		return res.json({
-			messages: [{ variant: 'success', text: 'Site updated' }],
-		});
 	}
 );
 
@@ -593,6 +550,7 @@ placeRouter.patch(
 		body('category').isInt().optional(),
 		body('communityId').isInt().optional(),
 		body('conditionComment').isString().optional({ nullable: true }),
+		body('constructionPeriods').isArray().optional({ nullable: true }),
 		body('contributingResources').isArray().optional({ nullable: true }),
 		body('coordinateDetermination').isInt().optional(),
 		body('dates').isArray().optional({ nullable: true }),

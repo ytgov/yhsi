@@ -3,6 +3,7 @@ import moment from 'moment';
 import { get, uniq, cloneDeep, pick } from 'lodash';
 
 import {
+	ConstructionPeriodService,
 	DateService,
 	HistoricalPatternService,
 	NameService,
@@ -83,6 +84,7 @@ function injectRelationshipData(
 
 export class PlaceService {
 	private db: Knex;
+	private constructionPeriodService: ConstructionPeriodService;
 	private dateService: DateService;
 	private historicalPatternService: HistoricalPatternService;
 	private nameService: NameService;
@@ -92,6 +94,7 @@ export class PlaceService {
 
 	constructor(config: Knex.Config<any>) {
 		this.db = knex(config);
+		this.constructionPeriodService = new ConstructionPeriodService(config);
 		this.dateService = new DateService(config);
 		this.historicalPatternService = new HistoricalPatternService();
 		this.nameService = new NameService();
@@ -157,18 +160,15 @@ export class PlaceService {
 					'description'
 				);
 
+				place.constructionPeriods = await this.constructionPeriodService.getFor(
+					id
+				);
 				place.dates = await this.dateService.getFor(id);
 				place.historicalPatterns = await this.historicalPatternService.getFor(
 					id
 				);
 				place.names = await this.nameService.getFor(id);
-				const constructionPeriods = combine(
-					await this.getConstructionPeriodsFor(id),
-					this.getConstructionPeriodTypes(),
-					'value',
-					'type',
-					'text'
-				);
+
 				const themes = combine(
 					combine(
 						await this.getThemesFor(id),
@@ -244,7 +244,6 @@ export class PlaceService {
 				const relationships = {
 					associations: { data: associations },
 					firstNationAssociations: { data: fnAssociations },
-					constructionPeriods: { data: constructionPeriods },
 					themes: { data: themes },
 					functionalUses: { data: functionalUses },
 					ownerships: { data: ownerships },
@@ -297,6 +296,12 @@ export class PlaceService {
 
 	updateRelations(id: number, attributes: PlainObject) {
 		return Promise.resolve(attributes).then(async (attrs) => {
+			if (attrs.hasOwnProperty('constructionPeriods')) {
+				await this.constructionPeriodService.upsertFor(
+					id,
+					attrs['constructionPeriods']
+				);
+			}
 			if (attrs.hasOwnProperty('dates')) {
 				await this.dateService.upsertFor(id, attrs['dates']);
 			}
@@ -384,20 +389,6 @@ export class PlaceService {
 
 	async removeFNAssociation(id: number) {
 		return this.db('FirstNationAssociation').where({ id }).delete();
-	}
-
-	async getConstructionPeriodsFor(id: number): Promise<ConstructionPeriod[]> {
-		return this.db('constructionperiod')
-			.where({ placeId: id })
-			.select<ConstructionPeriod[]>(['id', 'placeId', 'type']);
-	}
-
-	async addConstructionPeriod(name: ConstructionPeriod) {
-		return this.db('constructionperiod').insert(name);
-	}
-
-	async removeConstructionPeriod(id: number) {
-		return this.db('constructionperiod').where({ id }).delete();
 	}
 
 	async getThemesFor(id: number): Promise<Theme[]> {

@@ -1,3 +1,4 @@
+export * from '../models/construction-period';
 export * from '../models/date';
 export * from '../models/historical-pattern';
 export * from '../models/name';
@@ -93,12 +94,6 @@ export class Association {
 	type!: number;
 	type_name?: string;
 	description!: string;
-}
-
-export class ConstructionPeriod {
-	id!: number;
-	placeId!: number;
-	type!: number;
 }
 
 export class Contact {
