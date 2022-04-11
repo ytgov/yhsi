@@ -383,22 +383,6 @@ export class PlaceService {
 		return this.db('FirstNationAssociation').where({ id }).delete();
 	}
 
-	async addSecondaryName(name: Name) {
-		return this.db('name').insert(name);
-	}
-
-	async removeSecondaryName(id: number) {
-		return this.db('name').where({ id }).delete();
-	}
-
-	async addHistoricalPattern(name: Name) {
-		return this.db('historicalpattern').insert(name);
-	}
-
-	async removeHistoricalPattern(id: number) {
-		return this.db('historicalpattern').where({ id }).delete();
-	}
-
 	async addDate(name: Date) {
 		return this.db('dates').insert(name);
 	}
