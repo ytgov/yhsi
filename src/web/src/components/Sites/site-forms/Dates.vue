@@ -75,8 +75,6 @@
 
               <v-text-field
                 v-model="place.buildingSize"
-                item-text="name"
-                item-value="id"
                 label="Building size"
                 dense
                 outlined
@@ -85,8 +83,6 @@
 
               <v-text-field
                 v-model="place.resourceType"
-                item-text="name"
-                item-value="id"
                 label="All other resource types"
                 dense
                 outlined
@@ -95,8 +91,6 @@
 
               <v-textarea
                 v-model="place.conditionComment"
-                item-text="name"
-                item-value="id"
                 label="Condition notes"
                 dense
                 outlined
