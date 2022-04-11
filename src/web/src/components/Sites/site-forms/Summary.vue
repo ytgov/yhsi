@@ -15,7 +15,7 @@
       <v-row>
         <v-col cols="6">
           <v-text-field
-            v-model="yHSIId"
+            v-model="place.yHSIId"
             dense
             outlined
             label="YHSI ID"
@@ -25,41 +25,41 @@
           />
 
           <DesignationTypesSelect
-            v-model="designations"
+            v-model="place.designations"
             dense
             outlined
             clearable
           />
 
           <CategoryTypesSelect
-            v-model="category"
+            v-model="place.category"
             dense
             outlined
           />
 
           <SiteCategoryTypesSelect
-            v-model="siteCategories"
+            v-model="place.siteCategories"
             dense
             outlined
             clearable
           />
 
           <RecordTypesSelect
-            v-model="records"
+            v-model="place.records"
             dense
             outlined
             clearable
           />
 
           <ContributingResourceTypesSelect
-            v-model="contributingResources"
+            v-model="place.contributingResources"
             dense
             outlined
             required
           />
 
           <v-checkbox
-            v-model="showInRegister"
+            v-model="place.showInRegister"
             dense
             outlined
             label="Show in Register?"
@@ -67,7 +67,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            v-model="primaryName"
+            v-model="place.primaryName"
             dense
             outlined
             label="Primary name"
@@ -82,7 +82,7 @@
             </v-card-title>
             <v-card-text>
               <v-row
-                v-for="(item, i) in names"
+                v-for="(item, i) in place.names"
                 :key="i"
               >
                 <v-col cols="10">
@@ -124,7 +124,7 @@
             <v-card-text>
               <h3>Historical Patterns</h3>
               <v-row
-                v-for="(item, i) of historicalPatterns"
+                v-for="(item, i) of place.historicalPatterns"
                 :key="i"
                 class="row"
               >
@@ -160,7 +160,7 @@
                 </v-col>
 
                 <v-col
-                  v-if="i < historicalPatterns.length - 1"
+                  v-if="i < place.historicalPatterns.length - 1"
                   cols="12"
                 >
                   <hr />
@@ -171,7 +171,7 @@
               <v-btn
                 class="my-0"
                 color="info"
-                @click="addPattern()"
+                @click="addPattern"
               >
                 Add Historical Pattern
               </v-btn>
@@ -194,21 +194,15 @@
 </template>
 
 <script>
-import { pickBy } from 'lodash';
+import { pick } from 'lodash';
 import { mapActions, mapGetters } from 'vuex';
 
-import store from '@/store';
-import { UserRoles } from '@/authorization';
-
-import placeEditsApi from '@/apis/place-edits-api';
-import placesSummaryApi from '@/apis/places-summary-api';
-
-import CategoryTypesSelect from '@/components/Sites/CategoryTypesSelect';
-import ContributingResourceTypesSelect from '@/components/Sites/ContributingResourceTypesSelect';
-import DesignationTypesSelect from '@/components/Sites/DesignationTypesSelect';
-import HistoricalPatternTypesSelect from '@/components/Sites/HistoricalPatternTypesSelect';
-import RecordTypesSelect from '@/components/Sites/RecordTypesSelect';
-import SiteCategoryTypesSelect from '@/components/Sites/SiteCategoryTypesSelect';
+import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSelect';
+import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
+import DesignationTypesSelect from '@/components/Sites/site-forms/DesignationTypesSelect';
+import HistoricalPatternTypesSelect from '@/components/Sites/site-forms/HistoricalPatternTypesSelect';
+import RecordTypesSelect from '@/components/Sites/site-forms/RecordTypesSelect';
+import SiteCategoryTypesSelect from '@/components/Sites/site-forms/SiteCategoryTypesSelect';
 
 export default {
   name: 'Summary',
@@ -226,117 +220,47 @@ export default {
       required: true,
     },
   },
-  data: () => ({
-    category: '',
-    contributingResources: [],
-    designations: [],
-    historicalPatterns: [],
-    names: [],
-    primaryName: '',
-    records: [],
-    showInRegister: false,
-    siteCategories: [],
-    yHSIId: '',
-  }),
+  data: () => ({}),
   computed: {
     ...mapGetters({
-      currentUserRoles: 'profile/role_list',
       place: 'places/place',
     }),
   },
-  mounted() {
-    this.loadProfile();
-    this.initializeOrGetCachedPlace(this.placeId).then((place) => {
-      this.updateFormFields(place);
-      store.dispatch('addSiteHistory', place);
-    });
-  },
+  mounted() {},
   methods: {
     ...mapActions({
-      initializeOrGetCachedPlace: 'places/initializeOrGetCached',
-      refreshPlace: 'places/refresh',
-      loadProfile: 'profile/loadProfile',
+      savePlace: 'places/save',
     }),
-    updateFormFields(place) {
-      this.category = place.category;
-      this.contributingResources = place.contributingResources;
-      this.designations = place.designations;
-      this.historicalPatterns = place.historicalPatterns;
-      this.names = place.names;
-      this.primaryName = place.primaryName;
-      this.records = place.records;
-      this.showInRegister = place.showInRegister;
-      this.siteCategories = place.siteCategories;
-      this.yHSIId = place.yHSIId;
-    },
-    refresh() {
-      return this.refreshPlace(this.placeId).then(this.updateFormFields);
-    },
     addName() {
-      this.names.push({ description: '', placeId: this.placeId });
+      this.place.names.push({ description: '', placeId: this.placeId });
     },
     removeName(index) {
-      this.names.splice(index, 1);
+      this.place.names.splice(index, 1);
     },
     addPattern() {
-      this.historicalPatterns.push({
+      this.place.historicalPatterns.push({
         historicalPatternType: 1,
         comments: '',
         placeId: this.placeId,
       });
     },
     removePattern(index) {
-      this.historicalPatterns.splice(index, 1);
+      this.place.historicalPatterns.splice(index, 1);
     },
     saveChanges() {
-      const data = {
-        yHSIId: this.yHSIId,
-        primaryName: this.primaryName,
-        designations: this.designations,
-        category: this.category,
-        siteCategories: this.siteCategories,
-        records: this.records,
-        showInRegister: this.showInRegister,
-        names: this.names,
-        contributingResources: this.contributingResources,
-        historicalPatterns: this.historicalPatterns,
-      };
-      if (
-        this.currentUserRoles.some((role) =>
-          [UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR].includes(role)
-        )
-      ) {
-        return this.saveDirectly(data);
-      }
-
-      return this.saveAsChangeRequest(data);
-    },
-    saveAsChangeRequest(data) {
-      const safePlaceData = pickBy(this.place, (_value, key) => {
-        return !['id', 'recognitionDateDisplay', 'hasPendingChanges'].includes(
-          key
-        );
-      });
-      return placeEditsApi
-        .post({ ...safePlaceData, ...data, placeId: this.placeId })
-        .then((data) => {
-          this.refresh();
-          this.$emit('showAPIMessages', data);
-        })
-        .catch((error) => {
-          this.$emit('showError', error);
-        });
-    },
-    saveDirectly(data) {
-      return placesSummaryApi
-        .put(this.placeId, data)
-        .then((data) => {
-          this.refresh();
-          this.$emit('showAPIMessages', data);
-        })
-        .catch((error) => {
-          this.$emit('showError', error);
-        });
+      const data = pick(this.place, [
+        'yHSIId',
+        'primaryName',
+        'designations',
+        'category',
+        'siteCategories',
+        'records',
+        'showInRegister',
+        'names',
+        'contributingResources',
+        'historicalPatterns',
+      ]);
+      return this.savePlace(data);
     },
   },
 };

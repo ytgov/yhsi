@@ -1,11 +1,11 @@
 import http from '@/apis/http-client';
 
-const placeSummaryUrl = (placeId) => `/api/place/${placeId}/summary`;
+const coordinateDeterminationTypesUrl = '/api/coordinate-determination-types';
 
 export default {
-	put(placeId, data) {
+	getAll() {
 		return http
-			.put(placeSummaryUrl(placeId), data)
+			.get(coordinateDeterminationTypesUrl)
 			.then((response) => response.data)
 			.catch((error) => {
 				console.error(error);

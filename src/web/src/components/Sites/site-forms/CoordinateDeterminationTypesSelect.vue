@@ -1,0 +1,47 @@
+<template lang="pug">
+v-select(
+	label="Coordinate determination",
+	:items="coordinateDeterminationTypeOptions",
+	:loading="loading"
+	v-bind="$attrs"
+	v-on="$listeners"
+)
+	template(
+		v-for="(_, slot) of $scopedSlots"
+		v-slot:[slot]="scope"
+	)
+		slot(
+			:name="slot"
+			v-bind="scope"
+		)
+</template>
+
+<script>
+import api from '@/apis/coordinate-determination-types-api';
+
+export default {
+	name: 'CoordinateDeterminationTypesSelect',
+	data: () => ({
+		coordinateDeterminationTypeOptions: [],
+		loading: false,
+	}),
+	mounted() {
+		this.getCoordinateDeterminationTypes();
+	},
+	methods: {
+		getCoordinateDeterminationTypes() {
+			this.loading = true;
+			api
+				.getAll()
+				.then(({ data }) => {
+					this.coordinateDeterminationTypeOptions = data;
+				})
+				.finally(() => {
+					this.loading = false;
+				});
+		},
+	},
+};
+</script>
+
+<style scoped></style>

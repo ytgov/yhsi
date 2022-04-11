@@ -1,4 +1,4 @@
-import { isEmpty, keyBy } from 'lodash';
+import { keyBy } from 'lodash';
 
 import api from '@/apis/communities-api';
 
@@ -39,9 +39,7 @@ export default {
 					commit('setLoading', false);
 				});
 		},
-		initialize({ state, dispatch }) {
-			if (!isEmpty(state.communities) && !state.loading) return;
-
+		initialize({ dispatch }) {
 			return dispatch('getAll');
 		},
 		refresh({ dispatch }) {

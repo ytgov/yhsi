@@ -1,0 +1,116 @@
+@startuml
+
+entity "Place" as place {
+  * Id : int <<generated>>
+  --
+  * Category : int
+  * CommunityId : int
+  * CoordinateDetermination : int
+  * PrimaryName : nvarchar
+  * ShowInRegister : bit
+  * YHSIId : nvarchar
+  BordenNumber : nvarchar
+  ContributingResources : nvarchar : <<comma delimited array>>
+  Designations : nvarchar : <<comma delimited array>>
+  HectareArea : nvarchar
+  Latitude : nvarchar
+  LocationComment : nvarchar
+  LocationContext : nvarchar
+  Longitude : nvarchar
+  NTSMapSheet: nvarchar
+  OtherCommunity : nvarchar
+  OtherLocality : nvarchar
+  PhysicalAddress : nvarchar
+  PhysicalProvince : nvarchar
+  PhysicalCountry : nvarchar
+  PhysicalPostalCode : nvarchar
+  PreviousAddress : nvarchar
+  Records : nvarchar : <<comma delimited array>>
+  SiteCategories : nvarchar : <<comma delimited array>>
+}
+
+enum "Category" as category {
+  0 : None Selected
+  1 : Building
+  2 : District
+  3 : Place
+  4 : Structure
+}
+
+enum "Community" as community {
+  * Id : int <<generated>>
+  --
+  * Name : nvarchar
+}
+
+enum "CoordinateDetermination" as coordinate_determination {
+  1 : GPS
+  2 : Paper Maps
+  3 : Unknown
+  4 : Digital Maps
+  5 : Geocoding
+}
+
+enum "ContributingResources" as contributing_resources {
+  Archaeological : Archaeological
+  Building : Building
+  Collection : Collection
+  Landscapes : Landscapes
+  Structure : Structure
+}
+
+enum "Designations" as designations {
+  Federal : Federal
+  Municipal : Municipal
+  Territorial : Territorial
+  World : World
+  NotDesignated : Not Designated
+}
+
+entity "HistoricalPattern" as historical_pattern {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * HistoricalPatternType : int
+  Comments : nvarchar
+}
+
+enum "HistoricalPatternType" as historical_pattern_type {
+  1 : Political
+  2 : Economic
+  3 : Social
+  4 : Geographic
+}
+
+entity "Name" as name {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  Description : nvarchar
+}
+
+enum "Records" as records {
+  CRHP : CRHP
+  WHBR : WHBR
+}
+
+enum "SiteCategories" as site_categories {
+  Architecture : Architecture
+  FirstNation : First Nation
+  Gravesite : Gravesite
+  Industrial : Industrial
+  Landscape : Landscape
+}
+
+place }|--o| category
+place ||--o{ community
+place }o--o| contributing_resources
+place ||--o{ coordinate_determination
+place }o--o| designations
+place }o--|| historical_pattern
+place }o--|| name
+place }o--o| records
+place }o--o| site_categories
+historical_pattern }|--|| historical_pattern_type
+
+@enduml

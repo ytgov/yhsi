@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express';
-import { query, param } from 'express-validator';
+import { body, query, param } from 'express-validator';
 import moment from 'moment';
 
 import { ReturnValidationErrors } from '../middleware';
 import { PlaceEditService } from '../services';
+import { authorize, UserRoles } from '../middleware/authorization';
 
 export const placeEditsRouter = express.Router();
 const placeEditService = new PlaceEditService();
@@ -47,27 +48,64 @@ placeEditsRouter.get(
 	}
 );
 
-placeEditsRouter.post('/', (req: Request, res: Response) => {
-	const data = req.body;
-	const currentUser = req.user;
+placeEditsRouter.post(
+	'/',
+	authorize([
+		UserRoles.SITE_EDITOR,
+		UserRoles.SITE_ADMIN,
+		UserRoles.ADMINISTRATOR,
+	]),
+	[
+		body('placeId').notEmpty().toInt().isInt({ gt: 0 }),
+		body('bordenNumber').isString().optional({ nullable: true }),
+		body('category').isInt(),
+		body('communityId').isInt(),
+		body('contributingResources').isArray().optional({ nullable: true }),
+		body('coordinateDetermination').isInt(),
+		body('designations').isArray().optional({ nullable: true }),
+		body('hectareArea').isString().optional({ nullable: true }),
+		body('historicalPatterns').isArray().optional({ nullable: true }),
+		body('latitude').isString().optional({ nullable: true }),
+		body('locationComment').isString().optional({ nullable: true }),
+		body('locationContext').isString().optional({ nullable: true }),
+		body('longitude').isString().optional({ nullable: true }),
+		body('names').isArray().optional({ nullable: true }),
+		body('nTSMapSheet').isString().optional({ nullable: true }),
+		body('otherCommunity').isString().optional({ nullable: true }),
+		body('otherLocality').isString().optional({ nullable: true }),
+		body('physicalAddress').isString().optional({ nullable: true }),
+		body('physicalCountry').isString().optional({ nullable: true }),
+		body('physicalPostalCode').isString().optional({ nullable: true }),
+		body('physicalProvince').isString().optional({ nullable: true }),
+		body('previousAddress').isString().optional({ nullable: true }),
+		body('primaryName').isString(),
+		body('records').isArray().optional({ nullable: true }),
+		body('showInRegister').isBoolean(),
+		body('siteCategories').isArray().optional({ nullable: true }),
+	],
+	ReturnValidationErrors,
+	(req: Request, res: Response) => {
+		const data = req.body;
+		const currentUser = req.user;
 
-	return placeEditService
-		.create({
-			...data,
-			editorUserId: currentUser.id,
-			editDate: moment().format('YYYY-MM-DD'),
-		})
-		.then((result) => {
-			return res.json({
-				data: result,
+		return placeEditService
+			.create({
+				...data,
+				editorUserId: currentUser.id,
+				editDate: moment().format('YYYY-MM-DD'),
+			})
+			.then((result) => {
+				return res.json({
+					data: result,
+				});
+			})
+			.catch((error) => {
+				return res.status(422).json({
+					messages: [{ variant: 'error', text: error.message }],
+				});
 			});
-		})
-		.catch((error) => {
-			return res.status(422).json({
-				messages: [{ variant: 'error', text: error.message }],
-			});
-		});
-});
+	}
+);
 
 placeEditsRouter.get(
 	'/:id',

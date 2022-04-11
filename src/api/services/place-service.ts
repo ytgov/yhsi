@@ -1,6 +1,6 @@
 import knex, { Knex } from 'knex';
 import moment from 'moment';
-import { uniq, cloneDeep, pick } from 'lodash';
+import { get, uniq, cloneDeep, pick } from 'lodash';
 
 import {
 	HistoricalPatternService,
@@ -34,13 +34,12 @@ import {
 	WebLink,
 } from '../data';
 import {
-	decodeCommaDelimitedArray,
-	encodeCommaDelimitedArray,
 	GenericEnum,
 	HistoricalPattern,
 	HISTORICAL_PATTERN_TYPES,
 	Name,
 	Place,
+	PlainObject,
 } from '../models';
 
 function combine(
@@ -61,6 +60,24 @@ function combine(
 	});
 
 	return list1;
+}
+
+// This function can go away when the back-end serves the
+// relationship data as part of the data directly.
+// e.g. { data: { names: [{ id: 1, placeId: 1, description: "SomeName" }] } }
+// instead of { data: {}, relationships: { names: { data: [{ id: 1, placeId: 1, description: "SomeName" }] } } }
+function injectRelationshipData(
+	attributes: PlainObject,
+	relationships: PlainObject
+) {
+	Object.keys(relationships).forEach((key) => {
+		if (attributes.hasOwnProperty(key)) {
+			console.error('Relationship data conflicts with source data.');
+			return;
+		}
+
+		attributes[key] = get(relationships, `${key}.data`, []);
+	});
 }
 
 export class PlaceService {
@@ -101,6 +118,7 @@ export class PlaceService {
 		return this.db('place')
 			.first<Place>(PLACE_FIELDS)
 			.where({ id: id })
+			.then(Place.decodeCommaDelimitedArrayColumns)
 			.then(async (place) => {
 				if (!place) {
 					return Promise.reject(new Error(`Could not find Place for id=${id}`));
@@ -113,13 +131,6 @@ export class PlaceService {
 				place.hasPendingChanges = await this.placeEditService.existsForPlace(
 					id
 				);
-
-				place.contributingResources = decodeCommaDelimitedArray(
-					place.contributingResources
-				);
-				place.designations = decodeCommaDelimitedArray(place.designations);
-				place.records = decodeCommaDelimitedArray(place.records);
-				place.siteCategories = decodeCommaDelimitedArray(place.siteCategories);
 
 				const associations = combine(
 					await this.getAssociationsFor(id),
@@ -143,13 +154,9 @@ export class PlaceService {
 					'description'
 				);
 
-				const names = await this.getNamesFor(id);
-				const historicalPatterns = combine(
-					await this.getHistoricalPatternsFor(id),
-					this.getHistoricalPatterns(),
-					'value',
-					'historicalPatternType',
-					'text'
+				place.names = await this.nameService.getFor(id);
+				place.historicalPatterns = await this.historicalPatternService.getFor(
+					id
 				);
 				const dates = combine(
 					await this.getDatesFor(id),
@@ -240,8 +247,6 @@ export class PlaceService {
 				const relationships = {
 					associations: { data: associations },
 					firstNationAssociations: { data: fnAssociations },
-					names: { data: names },
-					historicalPatterns: { data: historicalPatterns },
 					dates: { data: dates },
 					constructionPeriods: { data: constructionPeriods },
 					themes: { data: themes },
@@ -294,35 +299,39 @@ export class PlaceService {
 		return this.db('place').insert(item).returning<Place>(PLACE_FIELDS);
 	}
 
-	updatePlace(id: number, item: Place): Promise<Place | undefined> {
-		return this.db('place').where({ id }).update(item);
+	updateRelations(id: number, attributes: PlainObject) {
+		return Promise.resolve(attributes).then(async (attrs) => {
+			if (attrs.hasOwnProperty('names')) {
+				await this.nameService.upsertFor(id, attrs['names']);
+			}
+			if (attrs.hasOwnProperty('historicalPatterns')) {
+				await this.historicalPatternService.upsertFor(
+					id,
+					attrs['historicalPatterns']
+				);
+			}
+			return attrs;
+		});
 	}
 
-	updatePlaceSummary(id: number, attributes: Place) {
-		const names = attributes.names || [];
-		const historicalPatterns = attributes.historicalPatterns || [];
-		delete attributes['names'];
-		delete attributes['historicalPatterns'];
+	update(id: number, attributes: PlainObject): Promise<Place | undefined> {
+		return Promise.resolve(attributes)
+			.then((attrs) => this.updateRelations(id, attrs))
+			.then(Place.stripOutNonColumnAttributes)
+			.then(Place.encodeCommaDelimitedArrayColumns)
+			.then((encodedAttributes) => {
+				return this.db('place').where({ id }).update(encodedAttributes);
+			})
+			.then(() => {
+				return this.getById(id).then(({ place, relationships }) => {
+					injectRelationshipData(place, relationships);
+					return place;
+				});
+			});
+	}
 
-		return new Promise(async (resolve, reject) => {
-			attributes.contributingResources = encodeCommaDelimitedArray(
-				attributes.contributingResources
-			);
-			attributes.designations = encodeCommaDelimitedArray(
-				attributes.designations
-			);
-			attributes.records = encodeCommaDelimitedArray(attributes.records);
-			attributes.siteCategories = encodeCommaDelimitedArray(
-				attributes.siteCategories
-			);
-
-			return this.updatePlace(id, attributes).then(resolve).catch(reject);
-		}).then(async (result) => {
-			await this.nameService.upsertFor(id, names);
-			await this.historicalPatternService.upsertFor(id, historicalPatterns);
-
-			return result;
-		});
+	updatePlace(id: number, item: Place): Promise<Place | undefined> {
+		return this.db('place').where({ id }).update(item);
 	}
 
 	async generateIdFor(nTSMapSheet: string): Promise<string> {
@@ -378,29 +387,12 @@ export class PlaceService {
 		return this.db('FirstNationAssociation').where({ id }).delete();
 	}
 
-	async getNamesFor(id: number) {
-		return this.db('name')
-			.where({ placeId: id })
-			.select<Name[]>(['id', 'placeId', 'description']);
-	}
-
 	async addSecondaryName(name: Name) {
 		return this.db('name').insert(name);
 	}
 
 	async removeSecondaryName(id: number) {
 		return this.db('name').where({ id }).delete();
-	}
-
-	async getHistoricalPatternsFor(id: number): Promise<HistoricalPattern[]> {
-		return this.db('historicalpattern')
-			.where({ placeId: id })
-			.select<HistoricalPattern[]>([
-				'id',
-				'placeId',
-				'comments',
-				'historicalPatternType',
-			]);
 	}
 
 	async addHistoricalPattern(name: Name) {
@@ -600,10 +592,6 @@ export class PlaceService {
 
 	getFNAssociationTypes(): GenericEnum[] {
 		return FIRST_NATION_ASSOCIATION_TYPES;
-	}
-
-	getHistoricalPatterns(): readonly GenericEnum[] {
-		return HISTORICAL_PATTERN_TYPES;
 	}
 
 	getDateTypes(): GenericEnum[] {

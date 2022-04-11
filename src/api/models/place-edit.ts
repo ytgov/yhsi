@@ -1,3 +1,8 @@
+import { camelCase, mapKeys, pick } from 'lodash';
+
+import { mapKeysDeep, pascalCase } from '../utils/lodash-extensions';
+import { PlainObject } from './simple-types';
+
 export class PlaceEdit {
 	id?: number;
 	placeId?: number;
@@ -80,4 +85,123 @@ export class PlaceEdit {
 	themeJSON?: string;
 	webLinkJSON?: string;
 	ownershipJSON?: string;
+
+	static FIELDS: ReadonlyArray<string> = Object.freeze([
+		'id',
+		'placeId',
+		'editorUserId',
+		'editDate',
+		'primaryName',
+		'yHSIId',
+		'jurisdiction',
+		'statuteId',
+		'statute2Id',
+		'recognitionDate',
+		'ownerConsent',
+		'category',
+		'isPubliclyAccessible',
+		'nTSMapSheet',
+		'bordenNumber',
+		'geocode',
+		'hectareArea',
+		'latitude',
+		'longitude',
+		'locationComment',
+		'resourceType',
+		'buildingSize',
+		'conditionComment',
+		'currentUseComment',
+		'yHSPastUse',
+		'cIHBNumber',
+		'groupYHSI',
+		'yGBuildingNumber',
+		'yGReserveNumber',
+		'fHBRONumber',
+		'zoning',
+		'yownSiteMapNumber',
+		'siteDistrictNumber',
+		'planNumber',
+		'block',
+		'lot',
+		'slideNegativeIndex',
+		'otherCommunity',
+		'otherLocality',
+		'previousAddress',
+		'yHSThemes',
+		'rollNumber',
+		'locationContext',
+		'communityId',
+		'lAGroup',
+		'siteStatus',
+		'floorCondition',
+		'wallCondition',
+		'doorCondition',
+		'roofCondition',
+		'coordinateDetermination',
+		'physicalAddress',
+		'physicalProvince',
+		'physicalCountry',
+		'physicalPostalCode',
+		'mailingAddress',
+		'mailingProvince',
+		'mailingCountry',
+		'mailingPostalCode',
+		'showInRegister',
+		'siteCategories',
+		'designations',
+		'contributingResources',
+		'records',
+		'associationJSON',
+		'constructionPeriodJSON',
+		'contactJSON',
+		'contributingResourceJSON',
+		'datesJSON',
+		'descriptionJSON',
+		'firstNationAssociationJSON',
+		'functionalUseJSON',
+		'historicalPatternJSON',
+		'nameJSON',
+		'previousOwnershipJSON',
+		'recordJSON',
+		'revisionLogJSON',
+		'siteCategoryJSON',
+		'themeJSON',
+		'webLinkJSON',
+		'ownershipJSON',
+	]);
+
+	static JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } =
+		Object.freeze({
+			names: 'nameJSON',
+			historicalPatterns: 'historicalPatternJSON',
+		});
+
+	static encodeAndDenormalizeJSONColumns(object: PlainObject) {
+		Object.keys(object).forEach((key) => {
+			if (PlaceEdit.JS_TO_JSON_COLUMN_TRANSLATIONS[key]) {
+				const encodedKey = PlaceEdit.JS_TO_JSON_COLUMN_TRANSLATIONS[key];
+				const encodedValue = mapKeysDeep(object[key], pascalCase);
+				const jsonObjectAsString = JSON.stringify(encodedValue);
+				object[encodedKey] = jsonObjectAsString;
+				delete object[key];
+			}
+		});
+		return object;
+	}
+
+	static parseAndNormalizeJSONColumns(object: PlainObject) {
+		Object.keys(object).forEach((key) => {
+			if (key.endsWith('JSON')) {
+				const cleanedKey = key.replace(/JSON$/, '');
+				const objectAsJson = JSON.parse(object[key]);
+				object[cleanedKey] = mapKeysDeep(objectAsJson, camelCase);
+				delete object[key];
+			}
+		});
+		return object;
+	}
+
+	static stripOutNonColumnAttributes(object: PlainObject) {
+		return pick(object, PlaceEdit.FIELDS);
+	}
 }

@@ -230,16 +230,6 @@ export class StaticService {
 		];
 	}
 
-	getCoordinateDeterminations(): GenericEnum[] {
-		return [
-			{ value: 4, text: 'Digital Maps' },
-			{ value: 5, text: 'Geocoding' },
-			{ value: 1, text: 'GPS' },
-			{ value: 2, text: 'Paper Maps' },
-			{ value: 3, text: 'Unknown' },
-		];
-	}
-
 	getSiteStatuses(): GenericEnum[] {
 		return [
 			{ value: 1, text: 'Standing' },

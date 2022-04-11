@@ -7,7 +7,7 @@ export default {
 	name: 'JsonViewer',
 	props: {
 		value: {
-			type: [Object, Array],
+			type: [Object, Array, Number, String],
 			default: () => undefined,
 		},
 	},

@@ -61,7 +61,7 @@ describe('pascalCase', () => {
       ['__FOO_BAR__', 'FooBar'],
     ].forEach(([input, output]) => {
       it(`transforms ${input} to ${output}`, () => {
-        expect(pascalCase(input)).eq(output);
+        expect(pascalCase(input)).to.eq(output);
       });
     });
   });
