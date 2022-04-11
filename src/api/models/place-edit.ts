@@ -170,18 +170,17 @@ export class PlaceEdit {
 		'ownershipJSON',
 	]);
 
-	static JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } =
-		Object.freeze({
-			constructionPeriods: 'ConstructionPeriodJSON',
-			dates: 'DatesJSON',
-			historicalPatterns: 'historicalPatternJSON',
-			names: 'nameJSON',
-		});
+	static RELATIONSHIPS_TO_FIELDS: { [key: string]: string } = Object.freeze({
+		constructionPeriods: 'constructionPeriodJSON',
+		dates: 'datesJSON',
+		historicalPatterns: 'historicalPatternJSON',
+		names: 'nameJSON',
+	});
 
 	static encodeAndDenormalizeJSONColumns(object: PlainObject) {
 		Object.keys(object).forEach((key) => {
-			if (PlaceEdit.JS_TO_JSON_COLUMN_TRANSLATIONS[key]) {
-				const encodedKey = PlaceEdit.JS_TO_JSON_COLUMN_TRANSLATIONS[key];
+			if (PlaceEdit.RELATIONSHIPS_TO_FIELDS[key]) {
+				const encodedKey = PlaceEdit.RELATIONSHIPS_TO_FIELDS[key];
 				const encodedValue = mapKeysDeep(object[key], pascalCase);
 				const jsonObjectAsString = JSON.stringify(encodedValue);
 				object[encodedKey] = jsonObjectAsString;
