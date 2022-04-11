@@ -172,6 +172,7 @@ export class PlaceEdit {
 
 	static JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } =
 		Object.freeze({
+			constructionPeriods: 'ConstructionPeriodJSON',
 			dates: 'DatesJSON',
 			historicalPatterns: 'historicalPatternJSON',
 			names: 'nameJSON',

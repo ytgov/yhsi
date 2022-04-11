@@ -54,6 +54,7 @@ export class PlaceEditService {
 				bordenNumber: 'BordenNumber',
 				category: 'Category',
 				communityId: 'CommunityId',
+				constructionPeriodsJSON: 'ConstructionPeriodJSON',
 				contributingResources: 'ContributingResources',
 				coordinateDetermination: 'CoordinateDetermination',
 				datesJSON: 'DatesJSON',

@@ -99,6 +99,7 @@ import { cloneDeep, isEqual } from 'lodash';
 
 import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSelect';
 import CommunitySelect from '@/components/Sites/site-forms/CommunitySelect';
+import ConstructionPeriodsViewer from '@/components/Sites/site-change-request/ConstructionPeriodsViewer';
 import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
 import CoordinateDeterminationTypesSelect from '@/components/Sites/site-forms/CoordinateDeterminationTypesSelect';
 import DatesViewer from '@/components/Sites/site-change-request/DatesViewer';
@@ -265,6 +266,10 @@ const FIELD_TYPES = Object.freeze([
 		key: 'dates',
 		type: DatesViewer,
 	},
+	{
+		key: 'constructionPeriods',
+		type: ConstructionPeriodsViewer,
+	},
 ]);
 
 export default {
@@ -272,6 +277,7 @@ export default {
 	components: {
 		CategoryTypesSelect,
 		CommunitySelect,
+		ConstructionPeriodsViewer,
 		ContributingResourceTypesSelect,
 		CoordinateDeterminationTypesSelect,
 		DatesViewer,

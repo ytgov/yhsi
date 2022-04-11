@@ -60,6 +60,7 @@ placeEditsRouter.post(
 		body('bordenNumber').isString().optional({ nullable: true }),
 		body('category').isInt(),
 		body('communityId').isInt(),
+		body('constructionPeriods').isArray().optional({ nullable: true }),
 		body('contributingResources').isArray().optional({ nullable: true }),
 		body('coordinateDetermination').isInt(),
 		body('dates').isArray().optional({ nullable: true }),
