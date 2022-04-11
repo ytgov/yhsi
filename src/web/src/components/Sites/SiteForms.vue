@@ -43,7 +43,13 @@
         @showAPIMessages="showAPIMessages"
       />
       <div>
-        <template v-if="loading" />
+        <template v-if="loading">
+          <v-skeleton-loader
+            v-for="n in 3"
+            :key="n"
+            type="card"
+          />
+        </template>
         <template v-else>
           <component
             :is="summaryComponent"
