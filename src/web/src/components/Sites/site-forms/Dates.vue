@@ -13,12 +13,12 @@
     </v-card-title>
     <v-card-text>
       <DatesEditor
-        v-model="dates"
+        v-model="place.dates"
         :place-id="placeId"
       />
       <v-divider class="mt-2 mb-4" />
       <ConstructionPeriodsEditor
-        v-model="constructionPeriods"
+        v-model="place.constructionPeriods"
         :place-id="placeId"
       />
       <v-divider class="mt-2 mb-2" />
@@ -37,28 +37,28 @@
           <v-row>
             <v-col cols="6">
               <ConditionTypesSelect
-                v-model="fields.floorCondition"
+                v-model="place.floorCondition"
                 label="Floor condition"
                 dense
                 outlined
                 background-color="white"
               />
               <ConditionTypesSelect
-                v-model="fields.roofCondition"
+                v-model="place.roofCondition"
                 label="Roof condition"
                 dense
                 outlined
                 background-color="white"
               />
               <ConditionTypesSelect
-                v-model="fields.wallCondition"
+                v-model="place.wallCondition"
                 label="Wall condition"
                 dense
                 outlined
                 background-color="white"
               />
               <ConditionTypesSelect
-                v-model="fields.doorCondition"
+                v-model="place.doorCondition"
                 label="Door condition"
                 dense
                 outlined
@@ -67,14 +67,14 @@
             </v-col>
             <v-col cols="6">
               <SiteStatusTypesSelect
-                v-model="fields.siteStatus"
+                v-model="place.siteStatus"
                 dense
                 outlined
                 background-color="white"
               />
 
               <v-text-field
-                v-model="fields.buildingSize"
+                v-model="place.buildingSize"
                 item-text="name"
                 item-value="id"
                 label="Building size"
@@ -84,7 +84,7 @@
               />
 
               <v-text-field
-                v-model="fields.resourceType"
+                v-model="place.resourceType"
                 item-text="name"
                 item-value="id"
                 label="All other resource types"
@@ -94,7 +94,7 @@
               />
 
               <v-textarea
-                v-model="fields.conditionComment"
+                v-model="place.conditionComment"
                 item-text="name"
                 item-value="id"
                 label="Condition notes"
@@ -121,17 +121,14 @@
 </template>
 
 <script>
-import axios from 'axios';
-
-import store from '@/store';
-import { PLACE_URL } from '@/urls';
+import { mapActions, mapGetters } from 'vuex';
+import { pick } from 'lodash';
 
 import ConditionTypesSelect from '@/components/Sites/site-forms/ConditionTypesSelect';
 import ConstructionPeriodsEditor from '@/components/Sites/site-forms/dates/ConstructionPeriodsEditor';
 import DatesEditor from '@/components/Sites/site-forms/dates/DatesEditor';
 import SiteStatusTypesSelect from '@/components/Sites/site-forms/SiteStatusTypesSelect';
 
-/* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'Dates',
   components: {
@@ -146,59 +143,32 @@ export default {
       required: true,
     },
   },
-  data: () => ({
-    constructionPeriods: [],
-    dates: [],
-
-    fields: {
-      /* Placeholder variables below this line **Read above** */
-      /*Field data from the swaggerhub api docs below this line*/
-      buildingSize: '', //
-      conditionComment: '', //
-      doorCondition: '', //
-      floorCondition: '', //
-      resourceType: '', //
-      roofCondition: '', //
-      siteStatus: '', //
-      wallCondition: '', //
-    },
-  }),
-  mounted() {
-    axios
-      .get(`${PLACE_URL}/${this.placeId}`)
-      .then((resp) => {
-        this.fields = resp.data.data;
-        this.constructionPeriods =
-          resp.data.relationships.constructionPeriods.data;
-        this.dates = resp.data.relationships.dates.data;
-
-        store.dispatch('addSiteHistory', resp.data.data);
-      })
-      .catch((error) => console.error(error));
+  data: () => ({}),
+  computed: {
+    ...mapGetters({
+      place: 'places/place',
+    }),
   },
+  mounted() {},
   methods: {
+    ...mapActions({
+      savePlace: 'places/save',
+    }),
     saveChanges() {
-      let body = {
-        buildingSize: this.fields.buildingSize,
-        conditionComment: this.fields.conditionComment,
-        doorCondition: this.fields.doorCondition,
-        floorCondition: this.fields.floorCondition,
-        resourceType: this.fields.resourceType,
-        roofCondition: this.fields.roofCondition,
-        siteStatus: this.fields.siteStatus,
-        wallCondition: this.fields.wallCondition,
-        dates: this.dates,
-        constructionPeriods: this.constructionPeriods,
-      };
+      const data = pick(this.place, [
+        'buildingSize',
+        'conditionComment',
+        'doorCondition',
+        'floorCondition',
+        'resourceType',
+        'roofCondition',
+        'siteStatus',
+        'wallCondition',
+        'dates',
+        'constructionPeriods',
+      ]);
 
-      axios
-        .put(`${PLACE_URL}/${this.placeId}/dates`, body)
-        .then((resp) => {
-          this.$emit('showAPIMessages', resp.data);
-        })
-        .catch((err) => {
-          this.$emit('showError', err);
-        });
+      return this.savePlace(data);
     },
   },
 };
