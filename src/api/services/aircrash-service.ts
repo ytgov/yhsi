@@ -43,7 +43,39 @@ export class AircrashService {
 		let counter = [{ count: 0 }];
 		let aircrashes = [];
 
-		if (textToMatch) {
+		if(limit === 0){
+			counter = await db
+				.from('dbo.vAircrash')
+				.where('yacsinumber', 'like', `%${textToMatch}%`)
+				.orWhere('crashdate', 'like', `%${textToMatch}%`)
+				.orWhere('aircrafttype', 'like', `%${textToMatch}%`)
+				.orWhere('aircraftregistration', 'like', `%${textToMatch}%`)
+				.orWhere('nation', 'like', `%${textToMatch}%`)
+				.orWhere('militarycivilian', 'like', `%${textToMatch}%`)
+				.orWhere('crashlocation', 'like', `%${textToMatch}%`)
+				.orWhere('pilot', 'like', `%${textToMatch}%`)
+				.orWhere('soulsonboard', 'like', `%${textToMatch}%`)
+				.orWhere('injuries', 'like', `%${textToMatch}%`)
+				.orWhere('fatalities', 'like', `%${textToMatch}%`)
+				.count('yacsinumber', { as: 'count' });
+
+			aircrashes = await db
+				.select('*')
+				.from('dbo.vAircrash')
+				.where('yacsinumber', 'like', `%${textToMatch}%`)
+				.orWhere('crashdate', 'like', `%${textToMatch}%`)
+				.orWhere('aircrafttype', 'like', `%${textToMatch}%`)
+				.orWhere('aircraftregistration', 'like', `%${textToMatch}%`)
+				.orWhere('nation', 'like', `%${textToMatch}%`)
+				.orWhere('militarycivilian', 'like', `%${textToMatch}%`)
+				.orWhere('crashlocation', 'like', `%${textToMatch}%`)
+				.orWhere('pilot', 'like', `%${textToMatch}%`)
+				.orWhere('soulsonboard', 'like', `%${textToMatch}%`)
+				.orWhere('injuries', 'like', `%${textToMatch}%`)
+				.orWhere('fatalities', 'like', `%${textToMatch}%`)
+				.orderBy(`${sortBy}`, `${sort}`);
+		}
+		else if (textToMatch) {
 			counter = await db
 				.from('dbo.vAircrash')
 				.where('yacsinumber', 'like', `%${textToMatch}%`)

@@ -210,12 +210,12 @@ aircrashRouter.post(
 });
 
 aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
-
-	let aircrashes = await aircrashService.getAll();
+	const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
+	let aircrashes = await aircrashService.doSearch(page, limit, 0, { sortBy, sort, textToMatch });
 
 	// Compile template.pug, and render a set of data
 	let data = renderFile('./templates/aircrashes/aircrashGrid.pug', {
-		data: aircrashes
+		data: aircrashes.body
 	});
 
 	let pdf = await generatePDF(data);
@@ -225,8 +225,9 @@ aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
 });
 
 aircrashRouter.post('/export', async (req: Request, res: Response) => {
-	
-	let aircrashes = await aircrashService.getAll();
+	const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
 
-	res.status(200).send(aircrashes);
+	let aircrashes = await aircrashService.doSearch(page, limit, 0, { sortBy, sort, textToMatch });
+
+	res.status(200).send(aircrashes.body);
 });

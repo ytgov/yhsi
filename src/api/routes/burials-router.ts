@@ -295,10 +295,44 @@ burialsRouter.post(
 
 
 burialsRouter.post('/pdf', async (req: Request, res: Response) => {
-	let burials = await burialService.getAll();
+	const { 
+		page = 0,
+		limit = 0,
+		textToMatch = '',
+		sortBy = 'LastName',
+		sort = 'asc',
+		BirthYear = '',
+		BirthMonth = '',
+		BirthDay = '',
+		DeathYear = '',
+		DeathMonth = '',
+		DeathDay = '',
+		Gender = '',
+		Cause = '',
+		Manner = '',
+		Cemetary = '',
+		OriginCountry = '' } = req.body;
+
+	const burials = await burialService.doSearch(Number(page), Number(limit), 0,
+		{
+			textToMatch,
+			sortBy,
+			sort,
+			BirthYear,
+			BirthMonth,
+			BirthDay,
+			DeathYear,
+			DeathMonth,
+			DeathDay,
+			Gender,
+			Cause,
+			Manner,
+			Cemetary,
+			OriginCountry
+		});
 
 	let data = renderFile('./templates/burials/burialGrid.pug', {
-		data: burials
+		data: burials.body
 	});
 
 	let pdf = await generatePDF(data, "a3")
@@ -308,8 +342,41 @@ burialsRouter.post('/pdf', async (req: Request, res: Response) => {
 });
 
 burialsRouter.post('/export', async (req: Request, res: Response) => {
-	let burials = await burialService.getAll();
 
-	res.status(200).send(burials);
+	const { 
+		page = 0,
+		limit = 0,
+		textToMatch = '',
+		sortBy = 'LastName',
+		sort = 'asc',
+		BirthYear = '',
+		BirthMonth = '',
+		BirthDay = '',
+		DeathYear = '',
+		DeathMonth = '',
+		DeathDay = '',
+		Gender = '',
+		Cause = '',
+		Manner = '',
+		Cemetary = '',
+		OriginCountry = '' } = req.body;
+	const burials = await burialService.doSearch(Number(page), Number(limit), 0,
+		{
+			textToMatch,
+			sortBy,
+			sort,
+			BirthYear,
+			BirthMonth,
+			BirthDay,
+			DeathYear,
+			DeathMonth,
+			DeathDay,
+			Gender,
+			Cause,
+			Manner,
+			Cemetary,
+			OriginCountry
+		});
+	res.status(200).send(burials.body);
 }
 );
