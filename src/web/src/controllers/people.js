@@ -86,11 +86,14 @@ export default {
 				console.error(error);
 			});
 	},
-	async getGridPdf(){
+	async getGridPdf(textToMatch, sortBy, sort){
 		return await api({
 			url: 'people/pdf',
 			method: 'POST',
 			responseType: 'blob',
+			data: {
+				page: 0, limit: 0, textToMatch, sortBy, sort
+			}
 		})
 		.then( res => {
 			return res.data;

@@ -51,31 +51,53 @@ export class BoatService {
         return boat;
     }
 
-    async doSearch(textToMatch: any, page: number, limit: number, offset: number, sortBy: string, sort: string){
+    async doSearch( page: number, limit: number, offset: number, filters: any){
 		let counter = [{ count: 0 }];
 		let boats = [];
-
-        if (textToMatch) {
+		const { textToMatch = '', Owner, ConstructionDate = '', ServiceStart = '', ServiceEnd = '', VesselType = '', sortBy, sort } = filters;
+		//console.log("FILTERS", filters, limit);
+		if(limit === 0){
 			counter = await db
 				.from('boat.boat')
-				.where('name', 'like', `%${textToMatch}%`)
+				.where(builder => {
+					if(textToMatch !== '') builder.where('Name', 'like', `%${textToMatch}%`);
+					if(ConstructionDate !== '') builder.where('ConstructionDate', 'like', `%${ConstructionDate}%`);
+					if(ServiceStart !== '') builder.where('ServiceStart', 'like', `%${ServiceStart}%`);
+					if(ServiceEnd !== '') builder.where('ServiceEnd', 'like', `%${ServiceEnd}%`);
+				})
 				.count('Id', { as: 'count' });
 
 			boats = await db
 				.select('*')
 				.from('boat.boat')
-				.where('name', 'like', `%${textToMatch}%`)
-				//.orderBy('boat.boat.id', 'asc')
-				.orderBy(`${sortBy}`, `${sort}`)
-				.limit(limit)
-				.offset(offset);
-		} else {
-			counter = await db.from('boat.boat').count('Id', { as: 'count' });
+				.where(builder => {
+					if(textToMatch !== '') builder.where('Name', 'like', `%${textToMatch}%`);
+					if(ConstructionDate !== '') builder.where('ConstructionDate', 'like', `%${ConstructionDate}%`);
+					if(ServiceStart !== '') builder.where('ServiceStart', 'like', `%${ServiceStart}%`);
+					if(ServiceEnd !== '') builder.where('ServiceEnd', 'like', `%${ServiceEnd}%`);
+				})
+				.orderBy(`${sortBy}`, `${sort}`);
+		}
+        else {
+			counter = await db
+				.from('boat.boat')
+				.where(builder => {
+					if(textToMatch !== '') builder.where('Name', 'like', `%${textToMatch}%`);
+					if(ConstructionDate !== '') builder.where('ConstructionDate', 'like', `%${ConstructionDate}%`);
+					if(ServiceStart !== '') builder.where('ServiceStart', 'like', `%${ServiceStart}%`);
+					if(ServiceEnd !== '') builder.where('ServiceEnd', 'like', `%${ServiceEnd}%`);
+				})
+				.count('Id', { as: 'count' });
 
 			boats = await db
 				.select('*')
 				.from('boat.boat')
-				//.orderBy('boat.boat.id', 'asc')
+				.where(builder => {
+					if(textToMatch !== '') builder.where('Name', 'like', `%${textToMatch}%`);
+					if(ConstructionDate !== '') builder.where('ConstructionDate', 'like', `%${ConstructionDate}%`);
+					if(ServiceStart !== '') builder.where('ServiceStart', 'like', `%${ServiceStart}%`);
+					if(ServiceEnd !== '') builder.where('ServiceEnd', 'like', `%${ServiceEnd}%`);
+				})
 				.orderBy(`${sortBy}`, `${sort}`)
 				.limit(limit)
 				.offset(offset);
@@ -88,7 +110,7 @@ export class BoatService {
 				.join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
 				.where('boat.boatowner.boatid', boat.Id);
 		}
-
+		//console.log("BOATS", boats.length);
         return { count: counter[0].count, body: boats };
 
     }
