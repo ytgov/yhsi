@@ -61,7 +61,8 @@
             id="location"
             :place-id="id"
           />
-          <DatesAndConditions
+          <component
+            :is="datesComponent"
             id="dates-and-condition"
             :place-id="id"
           />
@@ -83,6 +84,7 @@ import goTo from 'vuetify/lib/services/goto';
 
 import Associations from '@/components/Sites/site-forms/Associations';
 import DatesAndConditions from '@/components/Sites/site-forms/DatesAndConditions';
+import DatesAndConditionsViewer from '@/components/Sites/site-forms/DatesAndConditionsViewer';
 import Description from '@/components/Sites/site-forms/Description';
 import LegalAndZoning from '@/components/Sites/site-forms/LegalAndZoning';
 import Location from '@/components/Sites/site-forms/Location';
@@ -100,6 +102,7 @@ export default {
   components: {
     Associations,
     DatesAndConditions,
+    DatesAndConditionsViewer,
     Description,
     LegalAndZoning,
     Location,
@@ -127,15 +130,20 @@ export default {
       loading: 'loading',
       siteName: 'primaryName',
     }),
-    summaryComponent() {
-      if (this.hasPendingChanges) return SummaryReadonly;
+    datesComponent() {
+      if (this.hasPendingChanges) return DatesAndConditionsViewer;
 
-      return Summary;
+      return DatesAndConditions;
     },
     locationComponent() {
       if (this.hasPendingChanges) return LocationReadonly;
 
       return Location;
+    },
+    summaryComponent() {
+      if (this.hasPendingChanges) return SummaryReadonly;
+
+      return Summary;
     },
   },
   mounted() {
