@@ -66,12 +66,8 @@
               />
             </v-col>
             <v-col cols="6">
-              <v-select
+              <SiteStatusTypesSelect
                 v-model="fields.siteStatus"
-                :items="siteStatusOptions"
-                item-text="text"
-                item-value="value"
-                label="Site status"
                 dense
                 outlined
                 background-color="white"
@@ -128,11 +124,12 @@
 import axios from 'axios';
 
 import store from '@/store';
-import { PLACE_URL, STATIC_URL } from '@/urls';
+import { PLACE_URL } from '@/urls';
 
 import ConditionTypesSelect from '@/components/Sites/site-forms/ConditionTypesSelect';
 import ConstructionPeriodsEditor from '@/components/Sites/site-forms/dates/ConstructionPeriodsEditor';
 import DatesEditor from '@/components/Sites/site-forms/dates/DatesEditor';
+import SiteStatusTypesSelect from '@/components/Sites/site-forms/SiteStatusTypesSelect';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
@@ -141,6 +138,7 @@ export default {
     ConditionTypesSelect,
     ConstructionPeriodsEditor,
     DatesEditor,
+    SiteStatusTypesSelect,
   },
   props: {
     placeId: {
@@ -151,7 +149,6 @@ export default {
   data: () => ({
     constructionPeriods: [],
     dates: [],
-    siteStatusOptions: [],
 
     fields: {
       /* Placeholder variables below this line **Read above** */
@@ -178,10 +175,6 @@ export default {
         store.dispatch('addSiteHistory', resp.data.data);
       })
       .catch((error) => console.error(error));
-
-    axios.get(`${STATIC_URL}/site-status`).then((resp) => {
-      this.siteStatusOptions = resp.data.data;
-    });
   },
   methods: {
     saveChanges() {

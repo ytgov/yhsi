@@ -141,11 +141,6 @@ staticRouter.get('/designation-type', async (req: Request, res: Response) => {
 	return res.json({ data: list });
 });
 
-staticRouter.get('/site-status', async (req: Request, res: Response) => {
-	let list = staticService.getSiteStatuses();
-	return res.json({ data: list });
-});
-
 staticRouter.get('/record-type', async (req: Request, res: Response) => {
 	let list = staticService.getRecordTypes();
 	return res.json({ data: list });
