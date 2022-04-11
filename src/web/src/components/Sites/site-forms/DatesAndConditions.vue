@@ -124,7 +124,7 @@ import DatesEditor from '@/components/Sites/site-forms/dates/DatesEditor';
 import SiteStatusTypesSelect from '@/components/Sites/site-forms/SiteStatusTypesSelect';
 
 export default {
-  name: 'Dates',
+  name: 'DatesAndConditions',
   components: {
     ConditionTypesSelect,
     ConstructionPeriodsEditor,

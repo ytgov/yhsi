@@ -61,7 +61,7 @@
             id="location"
             :place-id="id"
           />
-          <Dates
+          <DatesAndConditions
             id="dates-and-condition"
             :place-id="id"
           />
@@ -82,7 +82,7 @@ import { mapActions, mapGetters } from 'vuex';
 import goTo from 'vuetify/lib/services/goto';
 
 import Associations from '@/components/Sites/site-forms/Associations';
-import Dates from '@/components/Sites/site-forms/Dates';
+import DatesAndConditions from '@/components/Sites/site-forms/DatesAndConditions';
 import Description from '@/components/Sites/site-forms/Description';
 import LegalAndZoning from '@/components/Sites/site-forms/LegalAndZoning';
 import Location from '@/components/Sites/site-forms/Location';
@@ -99,7 +99,7 @@ export default {
   name: 'SiteForms',
   components: {
     Associations,
-    Dates,
+    DatesAndConditions,
     Description,
     LegalAndZoning,
     Location,
