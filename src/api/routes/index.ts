@@ -30,7 +30,7 @@ export * from './record-types-router';
 export * from './register-router';
 export * from './revision-log-types-router';
 export * from './site-category-types-router';
-export * from './site-statuses-router';
+export * from './site-status-types-router';
 export * from './static-router';
 export * from './user-router';
 export * from './users-extras-router';

@@ -35,7 +35,7 @@ import {
 	registerRouter,
 	revisionLogTypesRouter,
 	siteCategoryTypesRouter,
-	siteStatusesRouter,
+	siteStatusTypesRouter,
 	staticRouter,
 	userRouter,
 	usersExtraRouter,
@@ -137,7 +137,7 @@ app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRoute
 app.use('/api/place-edits', RequiresAuthentication, placeEditsRouter);
 app.use('/api/record-types', RequiresAuthentication, recordTypesRouter);
 app.use('/api/site-category-types', RequiresAuthentication, siteCategoryTypesRouter);
-app.use('/api/site-statuses', RequiresAuthentication, siteStatusesRouter);
+app.use('/api/site-status-types', RequiresAuthentication, siteStatusTypesRouter);
 app.use('/api/users', usersExtraRouter);
 app.use('/api/people', peopleRouter);
 app.use('/api/burials', burialsRouter);
