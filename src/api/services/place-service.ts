@@ -3,6 +3,8 @@ import moment from 'moment';
 import { get, uniq, cloneDeep, pick } from 'lodash';
 
 import {
+	ConstructionPeriodService,
+	DateService,
 	HistoricalPatternService,
 	NameService,
 	PhotoService,
@@ -16,7 +18,6 @@ import {
 	CONSTRUCTION_PERIODS,
 	ConstructionPeriod,
 	Contact,
-	Dates,
 	Description,
 	DESCRIPTION_TYPES,
 	DESCRIPTION_TYPE_ENUMS,
@@ -34,6 +35,7 @@ import {
 	WebLink,
 } from '../data';
 import {
+	Date,
 	GenericEnum,
 	HistoricalPattern,
 	HISTORICAL_PATTERN_TYPES,
@@ -82,6 +84,8 @@ function injectRelationshipData(
 
 export class PlaceService {
 	private db: Knex;
+	private constructionPeriodService: ConstructionPeriodService;
+	private dateService: DateService;
 	private historicalPatternService: HistoricalPatternService;
 	private nameService: NameService;
 	private photoService: PhotoService;
@@ -90,6 +94,8 @@ export class PlaceService {
 
 	constructor(config: Knex.Config<any>) {
 		this.db = knex(config);
+		this.constructionPeriodService = new ConstructionPeriodService(config);
+		this.dateService = new DateService(config);
 		this.historicalPatternService = new HistoricalPatternService();
 		this.nameService = new NameService();
 		this.photoService = new PhotoService(config);
@@ -154,24 +160,15 @@ export class PlaceService {
 					'description'
 				);
 
-				place.names = await this.nameService.getFor(id);
+				place.constructionPeriods = await this.constructionPeriodService.getFor(
+					id
+				);
+				place.dates = await this.dateService.getFor(id);
 				place.historicalPatterns = await this.historicalPatternService.getFor(
 					id
 				);
-				const dates = combine(
-					await this.getDatesFor(id),
-					this.getDateTypes(),
-					'value',
-					'type',
-					'text'
-				);
-				const constructionPeriods = combine(
-					await this.getConstructionPeriodsFor(id),
-					this.getConstructionPeriodTypes(),
-					'value',
-					'type',
-					'text'
-				);
+				place.names = await this.nameService.getFor(id);
+
 				const themes = combine(
 					combine(
 						await this.getThemesFor(id),
@@ -247,8 +244,6 @@ export class PlaceService {
 				const relationships = {
 					associations: { data: associations },
 					firstNationAssociations: { data: fnAssociations },
-					dates: { data: dates },
-					constructionPeriods: { data: constructionPeriods },
 					themes: { data: themes },
 					functionalUses: { data: functionalUses },
 					ownerships: { data: ownerships },
@@ -301,14 +296,23 @@ export class PlaceService {
 
 	updateRelations(id: number, attributes: PlainObject) {
 		return Promise.resolve(attributes).then(async (attrs) => {
-			if (attrs.hasOwnProperty('names')) {
-				await this.nameService.upsertFor(id, attrs['names']);
+			if (attrs.hasOwnProperty('constructionPeriods')) {
+				await this.constructionPeriodService.upsertFor(
+					id,
+					attrs['constructionPeriods']
+				);
+			}
+			if (attrs.hasOwnProperty('dates')) {
+				await this.dateService.upsertFor(id, attrs['dates']);
 			}
 			if (attrs.hasOwnProperty('historicalPatterns')) {
 				await this.historicalPatternService.upsertFor(
 					id,
 					attrs['historicalPatterns']
 				);
+			}
+			if (attrs.hasOwnProperty('names')) {
+				await this.nameService.upsertFor(id, attrs['names']);
 			}
 			return attrs;
 		});
@@ -385,57 +389,6 @@ export class PlaceService {
 
 	async removeFNAssociation(id: number) {
 		return this.db('FirstNationAssociation').where({ id }).delete();
-	}
-
-	async addSecondaryName(name: Name) {
-		return this.db('name').insert(name);
-	}
-
-	async removeSecondaryName(id: number) {
-		return this.db('name').where({ id }).delete();
-	}
-
-	async addHistoricalPattern(name: Name) {
-		return this.db('historicalpattern').insert(name);
-	}
-
-	async removeHistoricalPattern(id: number) {
-		return this.db('historicalpattern').where({ id }).delete();
-	}
-
-	async getDatesFor(id: number): Promise<Dates[]> {
-		return this.db('dates')
-			.where({ placeId: id })
-			.select<Dates[]>([
-				'id',
-				'placeId',
-				'type',
-				'fromDate',
-				'toDate',
-				'details',
-			]);
-	}
-
-	async addDate(name: Dates) {
-		return this.db('dates').insert(name);
-	}
-
-	async removeDate(id: number) {
-		return this.db('dates').where({ id }).delete();
-	}
-
-	async getConstructionPeriodsFor(id: number): Promise<ConstructionPeriod[]> {
-		return this.db('constructionperiod')
-			.where({ placeId: id })
-			.select<ConstructionPeriod[]>(['id', 'placeId', 'type']);
-	}
-
-	async addConstructionPeriod(name: ConstructionPeriod) {
-		return this.db('constructionperiod').insert(name);
-	}
-
-	async removeConstructionPeriod(id: number) {
-		return this.db('constructionperiod').where({ id }).delete();
 	}
 
 	async getThemesFor(id: number): Promise<Theme[]> {
@@ -592,14 +545,6 @@ export class PlaceService {
 
 	getFNAssociationTypes(): GenericEnum[] {
 		return FIRST_NATION_ASSOCIATION_TYPES;
-	}
-
-	getDateTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Construction' },
-			{ value: 2, text: 'Significant Date' },
-			{ value: 8, text: 'Construction Circa' },
-		];
 	}
 
 	getConstructionPeriodTypes(): GenericEnum[] {

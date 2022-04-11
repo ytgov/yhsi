@@ -1,9 +1,8 @@
 <template lang="pug">
 v-select(
-	label="Contributing resources",
-	:items="contributingResourceTypeOptions",
+	label="Site status",
+	:items="siteStatusTypeOptions",
 	:loading="loading"
-	multiple
 	v-bind="$attrs"
 	v-on="$listeners"
 )
@@ -18,24 +17,24 @@ v-select(
 </template>
 
 <script>
-import api from '@/apis/contributing-resource-types-api';
+import api from '@/apis/site-status-types-api';
 
 export default {
-	name: 'ContributingResourceTypesSelect',
+	name: 'SiteStatusTypesSelect',
 	data: () => ({
-		contributingResourceTypeOptions: [],
+		siteStatusTypeOptions: [],
 		loading: false,
 	}),
 	mounted() {
-		this.getRecordTypes();
+		this.getSiteStatusTypes();
 	},
 	methods: {
-		getRecordTypes() {
+		getSiteStatusTypes() {
 			this.loading = true;
 			return api
 				.getAll()
 				.then(({ data }) => {
-					this.contributingResourceTypeOptions = data;
+					this.siteStatusTypeOptions = data;
 					return data;
 				})
 				.finally(() => {

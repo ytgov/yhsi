@@ -10,9 +10,11 @@ import {
 	catalogsRouter,
 	categoryTypesRouter,
 	communitiesRouter,
+	conditionTypesRouter,
 	constructionPeriodsRouter,
 	contributingResourceTypesRouter,
 	coordinateDeterminationTypesRouter,
+	dateTypesRouter,
 	designationTypesRouter,
 	firstNationAssociationTypesRouter,
 	firstNationsRouter,
@@ -33,7 +35,7 @@ import {
 	registerRouter,
 	revisionLogTypesRouter,
 	siteCategoryTypesRouter,
-	siteStatusesRouter,
+	siteStatusTypesRouter,
 	staticRouter,
 	userRouter,
 	usersExtraRouter,
@@ -112,9 +114,11 @@ app.use('/api/register', registerRouter);
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
 app.use('/api/category-types', RequiresAuthentication, categoryTypesRouter);
 app.use('/api/communities', RequiresAuthentication, communitiesRouter);
+app.use('/api/condition-types', RequiresAuthentication, conditionTypesRouter);
 app.use('/api/construction-periods', RequiresAuthentication, constructionPeriodsRouter);
 app.use('/api/contributing-resource-types', RequiresAuthentication, contributingResourceTypesRouter);
 app.use('/api/coordinate-determination-types', RequiresAuthentication, coordinateDeterminationTypesRouter);
+app.use('/api/date-types', RequiresAuthentication, dateTypesRouter);
 app.use('/api/designation-types', RequiresAuthentication, designationTypesRouter);
 app.use('/api/first-nation-association-types', RequiresAuthentication, firstNationAssociationTypesRouter);
 app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);
@@ -133,7 +137,7 @@ app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRoute
 app.use('/api/place-edits', RequiresAuthentication, placeEditsRouter);
 app.use('/api/record-types', RequiresAuthentication, recordTypesRouter);
 app.use('/api/site-category-types', RequiresAuthentication, siteCategoryTypesRouter);
-app.use('/api/site-statuses', RequiresAuthentication, siteStatusesRouter);
+app.use('/api/site-status-types', RequiresAuthentication, siteStatusTypesRouter);
 app.use('/api/users', usersExtraRouter);
 app.use('/api/people', peopleRouter);
 app.use('/api/burials', burialsRouter);

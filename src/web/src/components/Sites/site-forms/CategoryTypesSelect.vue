@@ -31,10 +31,11 @@ export default {
 	methods: {
 		getCategoryTypes() {
 			this.loading = true;
-			api
+			return api
 				.getAll()
 				.then(({ data }) => {
 					this.categoryTypeOptions = data;
+					return data;
 				})
 				.finally(() => {
 					this.loading = false;

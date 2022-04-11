@@ -32,10 +32,11 @@ export default {
 	methods: {
 		getRecordTypes() {
 			this.loading = true;
-			api
+			return api
 				.getAll()
 				.then(({ data }) => {
 					this.recordTypeOptions = data;
+					return data;
 				})
 				.finally(() => {
 					this.loading = false;

@@ -32,10 +32,11 @@ export default {
 	methods: {
 		getSiteCategoryTypes() {
 			this.loading = true;
-			api
+			return api
 				.getAll()
 				.then(({ data }) => {
 					this.siteCategoryTypeOptions = data;
+					return data;
 				})
 				.finally(() => {
 					this.loading = false;

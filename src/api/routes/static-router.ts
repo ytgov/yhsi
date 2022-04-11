@@ -26,19 +26,6 @@ staticRouter.get(
 	}
 );
 
-staticRouter.get(
-	'/construction-period',
-	async (req: Request, res: Response) => {
-		let list = await placeService.getConstructionPeriodTypes();
-		return res.json({ data: list });
-	}
-);
-
-staticRouter.get('/date-type', async (req: Request, res: Response) => {
-	let list = await placeService.getDateTypes();
-	return res.json({ data: list });
-});
-
 staticRouter.get('/first-nation', async (req: Request, res: Response) => {
 	let list = await staticService.getFirstNations();
 	return res.json({ data: list });
@@ -151,16 +138,6 @@ staticRouter.get('/category', async (req: Request, res: Response) => {
 
 staticRouter.get('/designation-type', async (req: Request, res: Response) => {
 	let list = staticService.getDesignationTypes();
-	return res.json({ data: list });
-});
-
-staticRouter.get('/condition', async (req: Request, res: Response) => {
-	let list = staticService.getConditions();
-	return res.json({ data: list });
-});
-
-staticRouter.get('/site-status', async (req: Request, res: Response) => {
-	let list = staticService.getSiteStatuses();
 	return res.json({ data: list });
 });
 

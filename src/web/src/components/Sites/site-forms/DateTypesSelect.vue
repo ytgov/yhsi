@@ -1,9 +1,8 @@
 <template lang="pug">
 v-select(
-	label="Contributing resources",
-	:items="contributingResourceTypeOptions",
+	label="Date type",
+	:items="dateTypeOptions",
 	:loading="loading"
-	multiple
 	v-bind="$attrs"
 	v-on="$listeners"
 )
@@ -18,24 +17,24 @@ v-select(
 </template>
 
 <script>
-import api from '@/apis/contributing-resource-types-api';
+import api from '@/apis/date-types-api';
 
 export default {
-	name: 'ContributingResourceTypesSelect',
+	name: 'DateTypesSelect',
 	data: () => ({
-		contributingResourceTypeOptions: [],
+		dateTypeOptions: [],
 		loading: false,
 	}),
 	mounted() {
-		this.getRecordTypes();
+		this.getDateTypes();
 	},
 	methods: {
-		getRecordTypes() {
+		getDateTypes() {
 			this.loading = true;
 			return api
 				.getAll()
 				.then(({ data }) => {
-					this.contributingResourceTypeOptions = data;
+					this.dateTypeOptions = data;
 					return data;
 				})
 				.finally(() => {

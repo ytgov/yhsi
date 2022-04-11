@@ -1,11 +1,11 @@
 import http from '@/apis/http-client';
 
-const siteStatusesUrl = '/api/site-statuses';
+const siteStatusTypesUrl = '/api/site-status-types';
 
 export default {
 	getAll() {
 		return http
-			.get(siteStatusesUrl)
+			.get(siteStatusTypesUrl)
 			.then((response) => response.data)
 			.catch(console.error);
 	},

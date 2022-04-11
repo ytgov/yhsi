@@ -43,7 +43,13 @@
         @showAPIMessages="showAPIMessages"
       />
       <div>
-        <template v-if="loading" />
+        <template v-if="loading">
+          <v-skeleton-loader
+            v-for="n in 3"
+            :key="n"
+            type="card"
+          />
+        </template>
         <template v-else>
           <component
             :is="summaryComponent"
@@ -55,8 +61,12 @@
             id="location"
             :place-id="id"
           />
+          <component
+            :is="datesComponent"
+            id="dates-and-condition"
+            :place-id="id"
+          />
         </template>
-        <Dates id="dates-and-condition" />
         <Themes id="themes-and-function" />
         <Associations id="associations" />
         <LegalAndZoning id="legal-and-zoning" />
@@ -70,9 +80,11 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import goTo from 'vuetify/lib/services/goto';
 
 import Associations from '@/components/Sites/site-forms/Associations';
-import Dates from '@/components/Sites/site-forms/Dates';
+import DatesAndConditions from '@/components/Sites/site-forms/DatesAndConditions';
+import DatesAndConditionsViewer from '@/components/Sites/site-forms/DatesAndConditionsViewer';
 import Description from '@/components/Sites/site-forms/Description';
 import LegalAndZoning from '@/components/Sites/site-forms/LegalAndZoning';
 import Location from '@/components/Sites/site-forms/Location';
@@ -89,7 +101,8 @@ export default {
   name: 'SiteForms',
   components: {
     Associations,
-    Dates,
+    DatesAndConditions,
+    DatesAndConditionsViewer,
     Description,
     LegalAndZoning,
     Location,
@@ -117,19 +130,28 @@ export default {
       loading: 'loading',
       siteName: 'primaryName',
     }),
-    summaryComponent() {
-      if (this.hasPendingChanges) return SummaryReadonly;
+    datesComponent() {
+      if (this.hasPendingChanges) return DatesAndConditionsViewer;
 
-      return Summary;
+      return DatesAndConditions;
     },
     locationComponent() {
       if (this.hasPendingChanges) return LocationReadonly;
 
       return Location;
     },
+    summaryComponent() {
+      if (this.hasPendingChanges) return SummaryReadonly;
+
+      return Summary;
+    },
   },
   mounted() {
-    this.initializePlace(this.id);
+    this.initializePlace(this.id).then(() => {
+      if (this.$route.hash) {
+        goTo(this.$route.hash, { offset: 75 });
+      }
+    });
   },
   methods: {
     ...mapActions({ initializePlace: 'places/initialize' }),

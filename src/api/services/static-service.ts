@@ -221,26 +221,6 @@ export class StaticService {
 		return DESIGNATION_TYPES;
 	}
 
-	getConditions(): GenericEnum[] {
-		return [
-			{ value: 0, text: 'Not Applicable' },
-			{ value: 3, text: 'Poor' },
-			{ value: 1, text: 'Fair' },
-			{ value: 2, text: 'Good' },
-		];
-	}
-
-	getSiteStatuses(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Standing' },
-			{ value: 2, text: 'Demolished' },
-			{ value: 3, text: 'Burned' },
-			{ value: 4, text: 'Moved' },
-			{ value: 5, text: 'Dimantled' },
-			{ value: 6, text: 'Reconstruction' },
-		];
-	}
-
 	getRecordTypes(): readonly GenericStringEnum[] {
 		return RECORD_TYPES;
 	}

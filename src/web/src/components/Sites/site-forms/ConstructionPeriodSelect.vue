@@ -1,9 +1,8 @@
 <template lang="pug">
 v-select(
-	label="Contributing resources",
-	:items="contributingResourceTypeOptions",
+	label="Construction period",
+	:items="constructionPeriodOptions",
 	:loading="loading"
-	multiple
 	v-bind="$attrs"
 	v-on="$listeners"
 )
@@ -18,24 +17,24 @@ v-select(
 </template>
 
 <script>
-import api from '@/apis/contributing-resource-types-api';
+import api from '@/apis/construction-periods-api';
 
 export default {
-	name: 'ContributingResourceTypesSelect',
+	name: 'ConstructionPeriodSelect',
 	data: () => ({
-		contributingResourceTypeOptions: [],
+		constructionPeriodOptions: [],
 		loading: false,
 	}),
 	mounted() {
-		this.getRecordTypes();
+		this.getConstructionPeriods();
 	},
 	methods: {
-		getRecordTypes() {
+		getConstructionPeriods() {
 			this.loading = true;
 			return api
 				.getAll()
 				.then(({ data }) => {
-					this.contributingResourceTypeOptions = data;
+					this.constructionPeriodOptions = data;
 					return data;
 				})
 				.finally(() => {

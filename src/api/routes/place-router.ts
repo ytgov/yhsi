@@ -10,20 +10,9 @@ import {
 import { pick } from 'lodash';
 
 import { DB_CONFIG } from '../config';
+import { buildDatabaseSort, PlaceService } from '../services';
 import {
-	buildDatabaseSort,
-	PlaceService,
-	SortDirection,
-	SortStatement,
-	StaticService,
-} from '../services';
-import {
-	HistoricalPattern,
-	Name,
 	Place,
-	Dates,
-	PLACE_FIELDS,
-	ConstructionPeriod,
 	Theme,
 	FunctionalUse,
 	Association,
@@ -180,99 +169,6 @@ placeRouter.post(
 			});
 
 		return res.json({ data: result });
-	}
-);
-
-placeRouter.put(
-	'/:id/location',
-	[param('id').isInt().notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		let { id } = req.params;
-		let updater = req.body;
-
-		await placeService.updatePlace(parseInt(id), updater);
-		return res.json({
-			messages: [{ variant: 'success', text: 'Site updated' }],
-		});
-	}
-);
-
-placeRouter.put(
-	'/:id/dates',
-	[param('id').isInt().notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		let { id } = req.params;
-		let { dates, constructionPeriods } = req.body;
-		let updater = req.body;
-
-		delete updater.dates;
-		delete updater.constructionPeriods;
-
-		await placeService.updatePlace(parseInt(id), updater);
-
-		let oldDates = await placeService.getDatesFor(parseInt(id));
-		dates = dates.map((n: Dates) =>
-			Object.assign(n, { details: n.details.trim() })
-		);
-
-		for (let on of oldDates) {
-			let match = dates.filter(
-				(n: Dates) =>
-					n.type == on.type &&
-					n.details == on.details &&
-					n.fromDate == on.fromDate &&
-					n.toDate == on.toDate
-			);
-
-			if (match.length == 0) {
-				await placeService.removeDate(on.id);
-			}
-		}
-
-		for (let on of dates) {
-			let match = oldDates.filter(
-				(n: Dates) =>
-					n.type == on.type &&
-					n.details == on.details &&
-					n.fromDate == on.fromDate &&
-					n.toDate == on.toDate
-			);
-
-			if (match.length == 0) {
-				delete on.id;
-				delete on.from_menu;
-				delete on.to_menu;
-				delete on.typeText;
-				await placeService.addDate(on);
-			}
-		}
-
-		let oldConst = await placeService.getConstructionPeriodsFor(parseInt(id));
-
-		for (let on of oldConst) {
-			let match = constructionPeriods.filter(
-				(n: ConstructionPeriod) => n.type == on.type
-			);
-
-			if (match.length == 0) {
-				await placeService.removeConstructionPeriod(on.id);
-			}
-		}
-
-		for (let on of constructionPeriods) {
-			let match = oldConst.filter((n: ConstructionPeriod) => n.type == on.type);
-
-			if (match.length == 0) {
-				delete on.id;
-				delete on.typeText;
-				await placeService.addConstructionPeriod(on);
-			}
-		}
-		return res.json({
-			messages: [{ variant: 'success', text: 'Site updated' }],
-		});
 	}
 );
 
@@ -650,11 +546,17 @@ placeRouter.patch(
 	[
 		param('id').isInt({ gt: 0 }),
 		body('bordenNumber').isString().optional({ nullable: true }),
+		body('buildingSize').isString().optional({ nullable: true }),
 		body('category').isInt().optional(),
 		body('communityId').isInt().optional(),
+		body('conditionComment').isString().optional({ nullable: true }),
+		body('constructionPeriods').isArray().optional({ nullable: true }),
 		body('contributingResources').isArray().optional({ nullable: true }),
 		body('coordinateDetermination').isInt().optional(),
+		body('dates').isArray().optional({ nullable: true }),
 		body('designations').isArray().optional({ nullable: true }),
+		body('doorCondition').isInt().optional(),
+		body('floorCondition').isInt().optional(),
 		body('hectareArea').isString().optional({ nullable: true }),
 		body('historicalPatterns').isArray().optional({ nullable: true }),
 		body('latitude').isString().optional({ nullable: true }),
@@ -672,8 +574,12 @@ placeRouter.patch(
 		body('previousAddress').isString().optional({ nullable: true }),
 		body('primaryName').isString().optional(),
 		body('records').isArray().optional({ nullable: true }),
+		body('resourceType').isString().optional({ nullable: true }),
+		body('roofCondition').isInt().optional(),
 		body('showInRegister').isBoolean().optional(),
 		body('siteCategories').isArray().optional({ nullable: true }),
+		body('siteStatus').isInt().optional(),
+		body('wallCondition').isInt().optional(),
 	],
 	ReturnValidationErrors,
 	(req: Request, res: Response) => {

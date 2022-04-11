@@ -21,6 +21,7 @@ v-card(:loading="loading")
 		v-data-table.mb-5(
 			:headers="headers",
 			:items="hideUnchanged ? changedFieldTypes : fieldTypes",
+			:items-per-page="fieldTypes.length",
 			:loading="loading"
 			disable-sort
 			hide-default-footer
@@ -98,28 +99,239 @@ import { cloneDeep, isEqual } from 'lodash';
 
 import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSelect';
 import CommunitySelect from '@/components/Sites/site-forms/CommunitySelect';
+import ConditionTypesSelect from '@/components/Sites/site-forms/ConditionTypesSelect';
+import ConstructionPeriodsViewer from '@/components/Sites/site-change-request/ConstructionPeriodsViewer';
 import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
 import CoordinateDeterminationTypesSelect from '@/components/Sites/site-forms/CoordinateDeterminationTypesSelect';
+import DatesViewer from '@/components/Sites/site-change-request/DatesViewer';
 import DesignationTypesSelect from '@/components/Sites/site-forms/DesignationTypesSelect';
 import HistoricalPatternsViewer from '@/components/Sites/site-change-request/HistoricalPatternsViewer';
 import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
 import NamesViewer from '@/components/Sites/site-change-request/NamesViewer';
 import RecordTypesSelect from '@/components/Sites/site-forms/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/site-forms/SiteCategoryTypesSelect';
+import SiteStatusTypesSelect from '@/components/Sites/site-forms/SiteStatusTypesSelect';
+
+const FIELD_TYPES = Object.freeze([
+	// Summary Form Fields
+	{
+		key: 'yHSIId',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'YHSI ID',
+		},
+	},
+	{
+		key: 'designations',
+		type: DesignationTypesSelect,
+	},
+	{
+		key: 'category',
+		type: CategoryTypesSelect,
+	},
+	{
+		key: 'siteCategories',
+		type: SiteCategoryTypesSelect,
+	},
+	{
+		key: 'records',
+		type: RecordTypesSelect,
+	},
+	{
+		key: 'contributingResources',
+		type: ContributingResourceTypesSelect,
+	},
+	{
+		key: 'showInRegister',
+		type: 'v-checkbox',
+		fieldAttrs: {
+			label: 'Show in Register?',
+		},
+	},
+	{
+		key: 'primaryName',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Primary name',
+		},
+	},
+	{
+		key: 'names',
+		type: NamesViewer,
+	},
+	{
+		key: 'historicalPatterns',
+		type: HistoricalPatternsViewer,
+	},
+	// Location Form Fields
+	{
+		key: 'communityId',
+		type: CommunitySelect,
+	},
+	{
+		key: 'otherCommunity',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Other community',
+		},
+	},
+	{
+		key: 'otherLocality',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Other locality',
+		},
+	},
+	{
+		key: 'physicalAddress',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Address',
+		},
+	},
+	{
+		key: 'physicalProvince',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Province',
+		},
+	},
+	{
+		key: 'physicalCountry',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Country',
+		},
+	},
+	{
+		key: 'physicalPostalCode',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Postal code',
+		},
+	},
+	{
+		key: 'previousAddress',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Previous address',
+		},
+	},
+	{
+		key: 'locationContext',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Context',
+		},
+	},
+	{
+		key: 'latitude',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Latitude',
+		},
+	},
+	{
+		key: 'longitude',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Longitude',
+		},
+	},
+	{
+		key: 'coordinateDetermination',
+		type: CoordinateDeterminationTypesSelect,
+	},
+	{
+		key: 'nTSMapSheet',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'NTS map sheet',
+		},
+	},
+	{
+		key: 'bordenNumber',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Border number',
+		},
+	},
+	{
+		key: 'locationComment',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Misc. info',
+		},
+	},
+	// Dates & Condition form fields
+	{
+		key: 'dates',
+		type: DatesViewer,
+	},
+	{
+		key: 'constructionPeriods',
+		type: ConstructionPeriodsViewer,
+	},
+	{
+		key: 'floorCondition',
+		type: ConditionTypesSelect,
+	},
+	{
+		key: 'roofCondition',
+		type: ConditionTypesSelect,
+	},
+	{
+		key: 'wallCondition',
+		type: ConditionTypesSelect,
+	},
+	{
+		key: 'doorCondition',
+		type: ConditionTypesSelect,
+	},
+	{
+		key: 'siteStatus',
+		type: SiteStatusTypesSelect,
+	},
+	{
+		key: 'buildingSize',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Building size',
+		},
+	},
+	{
+		key: 'resourceType',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'All other resource types',
+		},
+	},
+	{
+		key: 'conditionComment',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Condition notes',
+		},
+	},
+]);
 
 export default {
 	name: 'SiteChangeRequest',
 	components: {
 		CategoryTypesSelect,
 		CommunitySelect,
+		ConditionTypesSelect,
+		ConstructionPeriodsViewer,
 		ContributingResourceTypesSelect,
 		CoordinateDeterminationTypesSelect,
+		DatesViewer,
 		DesignationTypesSelect,
 		HistoricalPatternsViewer,
 		JsonViewer,
 		NamesViewer,
 		RecordTypesSelect,
 		SiteCategoryTypesSelect,
+		SiteStatusTypesSelect,
 	},
 	props: {
 		placeEditId: {
@@ -165,158 +377,7 @@ export default {
 			];
 		},
 		fieldTypes() {
-			return [
-				// Summary Form Fields
-				{
-					key: 'yHSIId',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'YHSI ID',
-					},
-				},
-				{
-					key: 'designations',
-					type: DesignationTypesSelect,
-				},
-				{
-					key: 'category',
-					type: CategoryTypesSelect,
-				},
-				{
-					key: 'siteCategories',
-					type: SiteCategoryTypesSelect,
-				},
-				{
-					key: 'records',
-					type: RecordTypesSelect,
-				},
-				{
-					key: 'contributingResources',
-					type: ContributingResourceTypesSelect,
-				},
-				{
-					key: 'showInRegister',
-					type: 'v-checkbox',
-					fieldAttrs: {
-						label: 'Show in Register?',
-					},
-				},
-				{
-					key: 'primaryName',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Primary name',
-					},
-				},
-				{
-					key: 'names',
-					type: NamesViewer,
-				},
-				{
-					key: 'historicalPatterns',
-					type: HistoricalPatternsViewer,
-				},
-				// Location Form Fields
-				{
-					key: 'communityId',
-					type: CommunitySelect,
-				},
-				{
-					key: 'otherCommunity',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Other community',
-					},
-				},
-				{
-					key: 'otherLocality',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Other locality',
-					},
-				},
-				{
-					key: 'physicalAddress',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Address',
-					},
-				},
-				{
-					key: 'physicalProvince',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Province',
-					},
-				},
-				{
-					key: 'physicalCountry',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Country',
-					},
-				},
-				{
-					key: 'physicalPostalCode',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Postal code',
-					},
-				},
-				{
-					key: 'previousAddress',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Previous address',
-					},
-				},
-				{
-					key: 'locationContext',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Context',
-					},
-				},
-				{
-					key: 'latitude',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Latitude',
-					},
-				},
-				{
-					key: 'longitude',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Longitude',
-					},
-				},
-				{
-					key: 'coordinateDetermination',
-					type: CoordinateDeterminationTypesSelect,
-				},
-				{
-					key: 'nTSMapSheet',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'NTS map sheet',
-					},
-				},
-				{
-					key: 'bordenNumber',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Border number',
-					},
-				},
-				{
-					key: 'locationComment',
-					type: 'v-text-field',
-					fieldAttrs: {
-						label: 'Misc. info',
-					},
-				},
-			];
+			return FIELD_TYPES;
 		},
 		loading() {
 			return this.internalLoading || this.placeLoading || this.placeEditLoading;

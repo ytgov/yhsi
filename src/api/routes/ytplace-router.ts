@@ -14,7 +14,6 @@ import {
 	Name,
 	Place,
 	PlaceType,
-	Dates,
 	PLACE_FIELDS,
 	ConstructionPeriod,
 	Theme,
