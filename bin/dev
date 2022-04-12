@@ -58,6 +58,10 @@ class DevHelper
       *args,
     )
   end
+
+  define_method('ts-node') do |*args|
+    dc(*%w[exec api npx ts-node], *args)
+  end
 end
 
 # Only execute main function when file is executed

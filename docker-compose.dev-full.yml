@@ -1,51 +1,52 @@
-version: "3.7"
+version: '3.7'
 
 services:
-    web:
-      build:
-        context: ./src/web
-        dockerfile: development.Dockerfile
-      environment:
-        NODE_ENV: development
-      ports:
-        - "8080:8080"
-      volumes:
-        - ./src/web:/usr/src/web
-      depends_on:
-        - api
-        - db
-    api:
-      build:
-        context: ./src/api
-        dockerfile: development.Dockerfile
-      env_file:
-        - ./src/api/.env.development
-      environment:
-        NODE_ENV: development
-        DB_HOST: db
-        MAIL_HOST: 'host.docker.internal'
-      ports:
-        - "3000:3000"
-      extra_hosts:
-        - "host.docker.internal:host-gateway"
-        - "host.docker.internal:172.17.0.1"
-      volumes:
-        - ./src/api:/usr/src/api
-      depends_on:
-        - db
-    db:
-        image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
-        restart: unless-stopped
-        environment: 
-            - "ACCEPT_EULA=Y"
-            - "SA_PASSWORD=1m5ecure!"
-            - "MSSQL_PID=Express"
-        ports: 
-            - "1433:1433"
-        volumes: 
-            - yhsi_sqlvolume:/var/opt/mssql
-            - ./db/backups/:/backups
+  web:
+    build:
+      context: ./src/web
+      dockerfile: development.Dockerfile
+    environment:
+      NODE_ENV: development
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./src/web:/usr/src/web
+    depends_on:
+      - api
+      - db
+  api:
+    build:
+      context: ./src/api
+      dockerfile: development.Dockerfile
+    env_file:
+      - ./src/api/.env.development
+    environment:
+      NODE_ENV: development
+      DB_HOST: db
+      MAIL_HOST: 'host.docker.internal'
+      TS_NODE_HISTORY: '/tmp/.ts_node_repl_history'
+    ports:
+      - '3000:3000'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+      - 'host.docker.internal:172.17.0.1'
+    volumes:
+      - ./src/api:/usr/src/api
+    depends_on:
+      - db
+  db:
+    image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+    restart: unless-stopped
+    environment:
+      - 'ACCEPT_EULA=Y'
+      - 'SA_PASSWORD=1m5ecure!'
+      - 'MSSQL_PID=Express'
+    ports:
+      - '1433:1433'
+    volumes:
+      - yhsi_sqlvolume:/var/opt/mssql
+      - ./db/backups/:/backups
 
-volumes: 
-    yhsi_sqlvolume:
-        external: true
+volumes:
+  yhsi_sqlvolume:
+    external: true
