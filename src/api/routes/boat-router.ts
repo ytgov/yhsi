@@ -6,7 +6,7 @@ import { param, query } from 'express-validator';
 import { BoatService } from "../services";
 import { renderFile } from "pug";
 import { generatePDF } from "../utils/pdf-generator";
-
+let fs = require('fs');
 export const boatsRouter = express.Router();
 const db = knex(DB_CONFIG);
 const boatService = new BoatService();
@@ -225,6 +225,20 @@ boatsRouter.post('/pdf', async (req: Request, res: Response) => {
 	}
 );
 
+
+const { Parser, transforms: { unwind } } = require('json2csv');
+
+let boatHeaders = [
+    { text: "Name", dataAccess: "Name" },
+    { text: "Owner", dataAccess: "owners", sortable: false },
+    { text: "Vessel Type", dataAccess: "VesselType" },
+    { text: "Construction Date", dataAccess: "ConstructionDate" },
+    { text: "Service Start Date", dataAccess: "ServiceStart" },
+    { text: "Service End Date", dataAccess: "ServiceEnd" },
+    { text: "Current Location Description", dataAccess: "CurrentLocation" },
+    { text: "Req Number", dataAccess: "RegistrationNumber" },
+  ];
+
 boatsRouter.post('/export', async (req: Request, res: Response) => {
 	const { 
 		textToMatch = '', 
@@ -240,7 +254,24 @@ boatsRouter.post('/export', async (req: Request, res: Response) => {
 	const boats = await boatService.doSearch(page, limit, 0, { 
 		textToMatch, Owner, ConstructionDate, ServiceStart, ServiceEnd, sortBy, sort 
 	});
-	//console.log("data retrieved");
+	// const fields = ['carModel', 'price', 'colors'];
+	// const transforms = [unwind({ paths: ['colors'] })];
+	
+	const json2csvParser = new Parser();
 
-	res.status(200).send(boats.body);
+	const csv = json2csvParser.parse(boats.body);
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", "attachment; filename=boats.csv");
+	fs.writeFile('./boats.csv', csv, 'utf8', function(err: any) {
+		if (err) {
+		  console.log('Some error occured - file either not saved or corrupted file saved.');
+		} else {
+			console.log("entro");
+			res.download('./boats.csv');
+			return;
+		}
+	  });
+    //res.status(200).end(csv);
+
+	//res.status(200).send(csv);
 });

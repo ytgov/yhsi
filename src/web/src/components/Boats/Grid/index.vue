@@ -108,16 +108,13 @@
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
           Add Boat
         </v-btn>
-        <!-- <v-btn class="black--text mx-1" :loading="true"  @click="testExport">
-            <v-icon class="mr-1"> mdi-export </v-icon>
-            Export
-          </v-btn>
-        <JsonCSV style="display: none;" :data="boatsData"  name="boat_data.csv" ref="csvBtn">
+
+        <!-- <JsonCSV style="display: none;" :data="boatsData"  name="boat_data.csv" ref="csvBtn">
           <v-btn class="black--text mx-1" :disabled="boatsData.length == 0">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
           </v-btn>
-        </JsonCSV> -->
+        </JsonCSV>  -->
         <v-btn @click="downloadPdf()" class="black--text mx-1" :loading="loadingPdf">
             <v-icon class="mr-1">
               mdi-printer
@@ -209,8 +206,17 @@ export default {
   methods: {
     async testExport(){
       await this.getBoatExport();
-      downloadCsv(this.boatsData, this.boatHeaders);
-      
+      console.log(this.boatsData);
+      downloadCsv(this.boatsData, "test");
+      // let name = "test";
+      // let url = window.URL || window.webkitURL;
+      // let link = url.createObjectURL(csv);
+      // let a = document.createElement("a");
+      // a.setAttribute("download", `${name}.csv`);
+      // a.setAttribute("href", link);
+      // document.body.appendChild(a);
+      // a.click();
+      // document.body.removeChild(a);
       //console.log(this.$refs.csvBtn);
     },
     addNewBoat() {
