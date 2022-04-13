@@ -197,7 +197,7 @@ import { PLACE_URL, STATIC_URL } from '@/urls';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
-  name: 'Themes',
+  name: 'ThemesAndFunctions',
   data: () => ({
     valid: false,
     loadedId: -1,

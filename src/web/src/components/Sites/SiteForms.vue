@@ -67,7 +67,7 @@
             :place-id="id"
           />
         </template>
-        <Themes id="themes-and-function" />
+        <ThemesAndFunctions id="themes-and-function" />
         <Associations id="associations" />
         <LegalAndZoning id="legal-and-zoning" />
         <Photos id="photos" />
@@ -95,7 +95,7 @@ import PrintDialog from '@/components/Sites/SiteFormsPrintDialog';
 import SiteFormsSidebar from '@/components/Sites/SiteFormsSidebar';
 import Summary from '@/components/Sites/site-forms/Summary';
 import SummaryReadonly from '@/components/Sites/site-forms/SummaryReadonly';
-import Themes from '@/components/Sites/site-forms/Themes';
+import ThemesAndFunctions from '@/components/Sites/site-forms/ThemesAndFunctions';
 
 export default {
   name: 'SiteForms',
@@ -113,7 +113,7 @@ export default {
     SiteFormsSidebar,
     Summary,
     SummaryReadonly,
-    Themes,
+    ThemesAndFunctions,
   },
   props: {
     id: {
