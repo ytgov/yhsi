@@ -18,6 +18,8 @@ import {
 	designationTypesRouter,
 	firstNationAssociationTypesRouter,
 	firstNationsRouter,
+	functionalTypesRouter,
+	functionalUseTypesRouter,
 	historicalPatternTypesRouter,
 	historiesRouter,
 	mapsRouter,
@@ -123,6 +125,8 @@ app.use('/api/date-types', RequiresAuthentication, dateTypesRouter);
 app.use('/api/designation-types', RequiresAuthentication, designationTypesRouter);
 app.use('/api/first-nation-association-types', RequiresAuthentication, firstNationAssociationTypesRouter);
 app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);
+app.use('/api/functional-types', RequiresAuthentication, functionalTypesRouter);
+app.use('/api/functional-use-types', RequiresAuthentication, functionalUseTypesRouter);
 app.use('/api/historical-pattern-types', RequiresAuthentication, historicalPatternTypesRouter);
 app.use('/api/nts-map-sheets', RequiresAuthentication, ntsMapSheetsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);

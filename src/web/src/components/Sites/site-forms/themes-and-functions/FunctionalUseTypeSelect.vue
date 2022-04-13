@@ -1,0 +1,48 @@
+<template lang="pug">
+v-select(
+	label="Use type",
+	:items="functionalUseTypeOptions",
+	:loading="loading"
+	v-bind="$attrs"
+	v-on="$listeners"
+)
+	template(
+		v-for="(_, slot) of $scopedSlots"
+		v-slot:[slot]="scope"
+	)
+		slot(
+			:name="slot"
+			v-bind="scope"
+		)
+</template>
+
+<script>
+import api from '@/apis/functional-use-types-api';
+
+export default {
+	name: 'FunctionalUseTypeSelect',
+	data: () => ({
+		functionalUseTypeOptions: [],
+		loading: false,
+	}),
+	mounted() {
+		this.getFunctionalUseTypes();
+	},
+	methods: {
+		getFunctionalUseTypes() {
+			this.loading = true;
+			return api
+				.getAll()
+				.then(({ data }) => {
+					this.functionalUseTypeOptions = data;
+					return data;
+				})
+				.finally(() => {
+					this.loading = false;
+				});
+		},
+	},
+};
+</script>
+
+<style scoped></style>

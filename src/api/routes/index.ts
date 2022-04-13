@@ -12,6 +12,8 @@ export * from './date-types-router';
 export * from './designation-types-router';
 export * from './first-nation-association-types-router';
 export * from './first-nations-router';
+export * from './functional-types-router';
+export * from './functional-use-types-router';
 export * from './historical-pattern-types-router';
 export * from './histories-router';
 export * from './map-router';

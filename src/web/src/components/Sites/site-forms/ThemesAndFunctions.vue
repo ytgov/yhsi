@@ -32,76 +32,10 @@
       </v-col>
 
       <v-col cols="12">
-        <v-card
-          class="default mb-0"
-          tag="section"
-        >
-          <v-card-title
-            tag="h3"
-            class="mb-0 text-h6"
-          >
-            Functional Uses
-          </v-card-title>
-          <v-card-text tag="form">
-            <v-row
-              v-for="(item, i) in functionalUses"
-              :key="i"
-            >
-              <v-col cols="10">
-                <v-row>
-                  <v-col cols="4">
-                    <v-select
-                      v-model="item.functionalUseType"
-                      label="Use type"
-                      :items="useTypeOptions"
-                      item-text="text"
-                      item-value="value"
-                      dense
-                      outlined
-                      hide-details
-                      background-color="white"
-                    />
-                  </v-col>
-                  <v-col cols="8">
-                    <v-autocomplete
-                      v-model="item.functionalTypeId"
-                      :items="functionalCategoryOptions"
-                      item-text="description"
-                      item-value="id"
-                      label="Functional Category / Type"
-                      dense
-                      outlined
-                      hide-details
-                      background-color="white"
-                    />
-                  </v-col>
-                </v-row>
-              </v-col>
-
-              <v-col cols="2">
-                <v-btn
-                  color="warning"
-                  x-small
-                  fab
-                  title="Remove"
-                  class="my-0 float-right"
-                  @click="removeUse(i)"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn
-              class="my-0"
-              color="info"
-              @click="addUse"
-            >
-              Add Functional Use
-            </v-btn>
-          </v-card-actions>
-        </v-card>
+        <FunctionalUsesEditor
+          v-model="functionalUses"
+          :place-id="placeId"
+        />
       </v-col>
       <v-col cols="6">
         <v-textarea
@@ -141,14 +75,15 @@
 import axios from 'axios';
 
 import store from '@/store';
-import { PLACE_URL, STATIC_URL } from '@/urls';
+import { PLACE_URL } from '@/urls';
 
+import FunctionalUsesEditor from '@/components/Sites/site-forms/themes-and-functions/FunctionalUsesEditor';
 import ThemesEditor from '@/components/Sites/site-forms/themes-and-functions/ThemesEditor';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'ThemesAndFunctions',
-  components: { ThemesEditor },
+  components: { FunctionalUsesEditor, ThemesEditor },
   props: {
     placeId: {
       type: [Number, String],
@@ -158,9 +93,6 @@ export default {
   data: () => ({
     themes: [],
     functionalUses: [],
-
-    useTypeOptions: [],
-    functionalCategoryOptions: [],
 
     fields: {
       /*Field data from the swaggerhub api docs below this line*/
@@ -179,26 +111,8 @@ export default {
         store.dispatch('addSiteHistory', resp.data.data);
       })
       .catch((error) => console.error(error));
-
-    axios.get(`${STATIC_URL}/functional-use-type`).then((resp) => {
-      this.useTypeOptions = resp.data.data;
-    });
-
-    axios.get(`${STATIC_URL}/functional-type`).then((resp) => {
-      this.functionalCategoryOptions = resp.data.data;
-    });
   },
   methods: {
-    addUse() {
-      this.functionalUses.push({
-        placeId: this.placeId,
-        functionalUseType: 2,
-        functionalTypeId: 1,
-      });
-    },
-    removeUse(index) {
-      this.functionalUses.splice(index, 1);
-    },
     saveChanges() {
       let body = {
         themes: this.themes,
