@@ -1,6 +1,5 @@
 <template>
   <v-container fluid>
-    {{this.filterOptions}}
     <v-row>
       <v-col cols="12">
         <h2 v-if="boats">{{ boats.length }} results out of {{ totalLength }}</h2>

@@ -101,20 +101,16 @@
 
       </v-col>
       <v-col cols="auto" v-else class="d-flex">
-        <v-btn class="black--text mx-1" :loading="loadingExport" @click="testExport()">
-          TEST EXPORT
-        </v-btn>
         <v-btn class="black--text mx-1" @click="addNewBoat">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
           Add Boat
         </v-btn>
 
-        <!-- <JsonCSV style="display: none;" :data="boatsData"  name="boat_data.csv" ref="csvBtn">
-          <v-btn class="black--text mx-1" :disabled="boatsData.length == 0">
-            <v-icon class="mr-1"> mdi-export </v-icon>
-            Export
-          </v-btn>
-        </JsonCSV>  -->
+        <v-btn class="black--text mx-1" @click="getBoatExport()" :loading="loadingExport">
+          <v-icon class="mr-1"> mdi-export </v-icon>
+          Export
+        </v-btn>
+
         <v-btn @click="downloadPdf()" class="black--text mx-1" :loading="loadingPdf">
             <v-icon class="mr-1">
               mdi-printer
@@ -204,21 +200,6 @@ export default {
 
   },
   methods: {
-    async testExport(){
-      await this.getBoatExport();
-      console.log(this.boatsData);
-      downloadCsv(this.boatsData, "test");
-      // let name = "test";
-      // let url = window.URL || window.webkitURL;
-      // let link = url.createObjectURL(csv);
-      // let a = document.createElement("a");
-      // a.setAttribute("download", `${name}.csv`);
-      // a.setAttribute("href", link);
-      // document.body.appendChild(a);
-      // a.click();
-      // document.body.removeChild(a);
-      //console.log(this.$refs.csvBtn);
-    },
     addNewBoat() {
       this.$router.push(`/boats/new`);
     },
@@ -249,13 +230,13 @@ export default {
     },
     async getBoatExport(){
       this.loadingExport = true;
-      let textToMatch = this.search;
+      let textToMatch = this.searchBoat;
       const prefilters = {};
       let b = this.boatTableOptions;
       this.filterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
       })
-      this.boatsData = await boats.getExport(
+      let data = await boats.getExport(
         textToMatch,
         b.sortBy[0] ? b.sortBy[0] : "Name",
         b.sortDesc[0] ? "desc" : "asc",
@@ -265,6 +246,8 @@ export default {
         prefilters.ServiceEnd,
         prefilters.VesselType
       );
+
+      downloadCsv(data, "boats");
       
       //this.boatsData = await boats.getExport(this.searchBoat, b.sortBy[0] ? b.sortBy[0] : "Name", b.sortDesc[0] ? "desc" : "asc");
       this.loadingExport = false;

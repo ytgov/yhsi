@@ -29,13 +29,22 @@ let download = function( csv, name = 'test' ){
     // document.body.appendChild(a);
     // a.click();
     // document.body.removeChild(a);
-    let encodedUri = encodeURI(csv);
-    let link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `${name}.csv`);
-    document.body.appendChild(link); 
-    link.click();
-    document.body.removeChild(link);
+
+
+    // let encodedUri = encodeURI(csv);
+    // let link = document.createElement("a");
+    // link.setAttribute("href", encodedUri);
+    // link.setAttribute("download", `${name}.csv`);
+    // document.body.appendChild(link); 
+    // link.click();
+    // document.body.removeChild(link);
+
+
+    const anchor = document.createElement('a');
+    anchor.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    anchor.target = '_blank';
+    anchor.download = `${name}.csv`;
+    anchor.click();
 }
 
 export default download;
