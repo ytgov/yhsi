@@ -8,7 +8,6 @@ import {
 	Description,
 	FirstNationName,
 	FnAssociation,
-	FunctionalUse,
 	HistoricalPattern,
 	Name,
 	Ownership,

@@ -5,6 +5,7 @@ import { get, uniq, cloneDeep, pick } from 'lodash';
 import {
 	ConstructionPeriodService,
 	DateService,
+	FunctionalUseService,
 	HistoricalPatternService,
 	NameService,
 	PhotoService,
@@ -24,7 +25,6 @@ import {
 	DESCRIPTION_TYPE_ENUMS,
 	FIRST_NATION_ASSOCIATION_TYPES,
 	FirstNationAssociation,
-	FunctionalUse,
 	Ownership,
 	OWNERSHIP_TYPES,
 	PLACE_FIELDS,
@@ -78,6 +78,7 @@ export class PlaceService {
 	private db: Knex;
 	private constructionPeriodService: ConstructionPeriodService;
 	private dateService: DateService;
+	private functionalUseService: FunctionalUseService;
 	private historicalPatternService: HistoricalPatternService;
 	private nameService: NameService;
 	private photoService: PhotoService;
@@ -89,6 +90,7 @@ export class PlaceService {
 		this.db = knex(config);
 		this.constructionPeriodService = new ConstructionPeriodService(config);
 		this.dateService = new DateService(config);
+		this.functionalUseService = new FunctionalUseService(config);
 		this.historicalPatternService = new HistoricalPatternService();
 		this.nameService = new NameService();
 		this.photoService = new PhotoService(config);
@@ -125,8 +127,6 @@ export class PlaceService {
 				}
 
 				const fnList = await this.staticService.getFirstNations();
-				const functionalTypes = await this.staticService.getFunctionalTypes();
-
 				place.hasPendingChanges = await this.placeEditService.existsForPlace(
 					id
 				);
@@ -157,28 +157,13 @@ export class PlaceService {
 					id
 				);
 				place.dates = await this.dateService.getFor(id);
+				place.functionalUses = await this.functionalUseService.getFor(id);
 				place.historicalPatterns = await this.historicalPatternService.getFor(
 					id
 				);
 				place.names = await this.nameService.getFor(id);
 				place.themes = await this.themeService.getFor(id);
 
-				let functionalUses = combine(
-					await this.getFunctionUsesFor(id),
-					this.getFunctionalUseTypes(),
-					'value',
-					'functionalUseType',
-					'text',
-					'functionalUseTypeText'
-				);
-				functionalUses = combine(
-					functionalUses,
-					functionalTypes,
-					'id',
-					'functionalTypeId',
-					'description',
-					'functionalTypeText'
-				);
 				const ownerships = combine(
 					await this.getOwnershipsFor(id),
 					this.getOwnershipTypes(),
@@ -223,7 +208,6 @@ export class PlaceService {
 				const relationships = {
 					associations: { data: associations },
 					firstNationAssociations: { data: fnAssociations },
-					functionalUses: { data: functionalUses },
 					ownerships: { data: ownerships },
 					previousOwnerships: { data: previousOwnerships },
 					photos: { data: photos },
@@ -282,6 +266,9 @@ export class PlaceService {
 			}
 			if (attrs.hasOwnProperty('dates')) {
 				await this.dateService.upsertFor(id, attrs['dates']);
+			}
+			if (attrs.hasOwnProperty('functionalUses')) {
+				await this.functionalUseService.upsertFor(id, attrs['functionalUses']);
 			}
 			if (attrs.hasOwnProperty('historicalPatterns')) {
 				await this.historicalPatternService.upsertFor(
@@ -370,26 +357,6 @@ export class PlaceService {
 
 	async removeFNAssociation(id: number) {
 		return this.db('FirstNationAssociation').where({ id }).delete();
-	}
-
-	async getFunctionUsesFor(id: number): Promise<FunctionalUse[]> {
-		return this.db('FunctionalUse')
-			.where({ placeId: id })
-			.select<FunctionalUse[]>([
-				'id',
-				'placeId',
-				'functionalTypeId',
-				'functionalUseType',
-				'description',
-			]);
-	}
-
-	async addFunctionalUse(name: FunctionalUse) {
-		return this.db('FunctionalUse').insert(name);
-	}
-
-	async removeFunctionalUse(id: number) {
-		return this.db('FunctionalUse').where({ id }).delete();
 	}
 
 	async getOwnershipsFor(id: number): Promise<Ownership[]> {
@@ -516,13 +483,6 @@ export class PlaceService {
 
 	getConstructionPeriodTypes(): GenericEnum[] {
 		return CONSTRUCTION_PERIODS;
-	}
-
-	getFunctionalUseTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Current' },
-			{ value: 2, text: 'Historic' },
-		];
 	}
 
 	getOwnershipTypes(): GenericEnum[] {

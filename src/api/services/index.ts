@@ -5,6 +5,7 @@ export * from './burial-service';
 export * from './catalog-service';
 export * from './construction-period-service';
 export * from './date-service';
+export * from './functional-use-service';
 export * from './historical-pattern-service';
 export * from './name-service';
 export * from './people-service';

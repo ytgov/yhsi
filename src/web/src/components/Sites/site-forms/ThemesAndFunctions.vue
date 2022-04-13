@@ -78,7 +78,6 @@ import { pick } from 'lodash';
 import FunctionalUsesEditor from '@/components/Sites/site-forms/themes-and-functions/FunctionalUsesEditor';
 import ThemesEditor from '@/components/Sites/site-forms/themes-and-functions/ThemesEditor';
 
-/* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'ThemesAndFunctions',
   components: { FunctionalUsesEditor, ThemesEditor },
@@ -88,13 +87,11 @@ export default {
       required: true,
     },
   },
-  data: () => ({}),
   computed: {
     ...mapGetters({
       place: 'places/place',
     }),
   },
-  mounted() {},
   methods: {
     ...mapActions({
       savePlace: 'places/save',
