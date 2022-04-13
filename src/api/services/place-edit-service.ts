@@ -60,10 +60,12 @@ export class PlaceEditService {
 				constructionPeriodJSON: 'ConstructionPeriodJSON',
 				contributingResources: 'ContributingResources',
 				coordinateDetermination: 'CoordinateDetermination',
+				currentUseComment: 'CurrentUseComment',
 				datesJSON: 'DatesJSON',
 				designations: 'Designations',
 				doorCondition: 'DoorCondition',
 				floorCondition: 'FloorCondition',
+				functionalUseJSON: 'FunctionalUseJSON',
 				hectareArea: 'HectareArea',
 				historicalPatternJSON: 'HistoricalPatternJSON',
 				latitude: 'Latitude',
@@ -85,7 +87,10 @@ export class PlaceEditService {
 				showInRegister: 'ShowInRegister',
 				siteCategories: 'SiteCategories',
 				siteStatus: 'SiteStatus',
+				themeJSON: 'ThemeJSON',
 				wallCondition: 'WallCondition',
+				yHSPastUse: 'YHSPastUse',
+				yHSThemes: 'YHSThemes',
 			})
 			.where({ 'PlaceEdit.Id': id })
 			.then((attributes) => {
