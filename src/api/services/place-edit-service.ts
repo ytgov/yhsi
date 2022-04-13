@@ -1,7 +1,8 @@
 import knex, { Knex } from 'knex';
 
 import { DB_CONFIG } from '../config';
-import { Place, PlaceEdit } from '../models';
+import { Place, PlaceEdit, PlainObject } from '../models';
+import PlaceEditSerializer from '../serializers/place-edit-serializer';
 
 interface CountQuery {
 	count: number;
@@ -16,6 +17,7 @@ export class PlaceEditService {
 		this._defaultScope = this.db
 			.select({
 				id: 'PlaceEdit.Id',
+				placeId: 'PlaceId',
 				yHSIId: 'YHSIId',
 				primaryName: 'PrimaryName',
 				editorId: 'EditorUserId',
@@ -50,13 +52,12 @@ export class PlaceEditService {
 	buildDetailedView(id: number) {
 		return this.defaultScope
 			.first({
-				placeId: 'PlaceId',
 				bordenNumber: 'BordenNumber',
 				buildingSize: 'BuildingSize',
 				category: 'Category',
 				communityId: 'CommunityId',
 				conditionComment: 'ConditionComment',
-				constructionPeriodsJSON: 'ConstructionPeriodJSON',
+				constructionPeriodJSON: 'ConstructionPeriodJSON',
 				contributingResources: 'ContributingResources',
 				coordinateDetermination: 'CoordinateDetermination',
 				datesJSON: 'DatesJSON',
@@ -64,12 +65,12 @@ export class PlaceEditService {
 				doorCondition: 'DoorCondition',
 				floorCondition: 'FloorCondition',
 				hectareArea: 'HectareArea',
-				historicalPatternsJSON: 'HistoricalPatternJSON',
+				historicalPatternJSON: 'HistoricalPatternJSON',
 				latitude: 'Latitude',
 				locationComment: 'LocationComment',
 				locationContext: 'LocationContext',
 				longitude: 'Longitude',
-				namesJSON: 'NameJSON',
+				nameJSON: 'NameJSON',
 				nTSMapSheet: 'NTSMapSheet',
 				otherCommunity: 'OtherCommunity',
 				otherLocality: 'OtherLocality',
@@ -78,7 +79,6 @@ export class PlaceEditService {
 				physicalPostalCode: 'PhysicalPostalCode',
 				physicalProvince: 'PhysicalProvince',
 				previousAddress: 'PreviousAddress',
-				// primaryName is in default scope
 				records: 'Records',
 				resourceType: 'ResourceType',
 				roofCondition: 'RoofCondition',
@@ -88,10 +88,10 @@ export class PlaceEditService {
 				wallCondition: 'WallCondition',
 			})
 			.where({ 'PlaceEdit.Id': id })
-			.then(PlaceEdit.parseAndNormalizeJSONColumns)
-			.then(Place.decodeCommaDelimitedArrayColumns)
-			.then((place) => {
-				return place;
+			.then((attributes) => {
+				const placeEdit = new PlaceEdit(attributes);
+				const placeEditSerializer = new PlaceEditSerializer(placeEdit);
+				return placeEditSerializer.detailedView();
 			});
 	}
 
@@ -103,24 +103,24 @@ export class PlaceEditService {
 			.limit(itemsPerPage)
 			.offset(offset)
 			.orderBy('EditDate', 'desc')
-			.then((results) => {
+			.then((rows) => {
+				const serializedResults = rows.map((attributes: PlainObject) => {
+					const placeEdit = new PlaceEdit(attributes);
+					const placeEditSerializer = new PlaceEditSerializer(placeEdit);
+					return placeEditSerializer.tableView();
+				});
+
 				return {
-					results,
+					results: serializedResults,
 					totalCount,
 				};
 			});
 	}
 
-	create(data: PlaceEdit) {
-		return Promise.resolve(data)
-			.then(PlaceEdit.encodeAndDenormalizeJSONColumns)
-			.then(Place.encodeCommaDelimitedArrayColumns)
-			.then(PlaceEdit.stripOutNonColumnAttributes)
-			.then((normalizedData) => {
-				delete normalizedData['id'];
-
-				return this.db('PlaceEdit').insert(normalizedData);
-			});
+	create(data: PlainObject) {
+		return Promise.resolve(new PlaceEdit(data)).then((placeEdit) => {
+			return this.db('PlaceEdit').insert(placeEdit.toDbObject());
+		});
 	}
 
 	delete(id: number) {

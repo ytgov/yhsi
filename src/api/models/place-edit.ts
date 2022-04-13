@@ -1,7 +1,7 @@
-import { camelCase, mapKeys, pick } from 'lodash';
+import { pick } from 'lodash';
 
 import { mapKeysDeep, pascalCase } from '../utils/lodash-extensions';
-import { PlainObject } from './simple-types';
+import { ColumnRemaping, PlainObject, Place } from '.';
 
 export class PlaceEdit {
 	id?: number;
@@ -85,9 +85,11 @@ export class PlaceEdit {
 	yHSThemes?: string;
 	townSiteMapNumber?: string;
 	zoning?: string;
+	[key: string]: any;
 
-	static FIELDS: ReadonlyArray<string> = Object.freeze([
+	private fields: ReadonlyArray<string> = Object.freeze([
 		'id',
+		'placeId',
 		'associationJSON',
 		'block',
 		'bordenNumber',
@@ -138,7 +140,6 @@ export class PlaceEdit {
 		'physicalCountry',
 		'physicalPostalCode',
 		'physicalProvince',
-		'placeId',
 		'planNumber',
 		'previousAddress',
 		'previousOwnershipJSON',
@@ -159,7 +160,6 @@ export class PlaceEdit {
 		'statute2Id',
 		'statuteId',
 		'themeJSON',
-		'townSiteMapNumber',
 		'wallCondition',
 		'webLinkJSON',
 		'yGBuildingNumber',
@@ -167,42 +167,61 @@ export class PlaceEdit {
 		'yHSIId',
 		'yHSPastUse',
 		'yHSThemes',
+		'townSiteMapNumber',
 		'zoning',
 	]);
 
-	static RELATIONSHIPS_TO_FIELDS: { [key: string]: string } = Object.freeze({
+	private associationsColumns: ColumnRemaping = Object.freeze({
+		associations: 'associationJSON',
 		constructionPeriods: 'constructionPeriodJSON',
+		contacts: 'contactJSON',
 		dates: 'datesJSON',
+		descriptions: 'descriptionJSON',
+		firstNationAssociations: 'firstNationAssociationJSON',
+		functionalUses: 'functionalUseJSON',
 		historicalPatterns: 'historicalPatternJSON',
 		names: 'nameJSON',
+		ownerships: 'ownershipJSON',
+		previousOwnerships: 'previousOwnershipJSON',
+		revisionLogs: 'revisionLogJSON',
+		themes: 'themeJSON',
+		webLink: 'webLinkJSON',
 	});
 
-	static encodeAndDenormalizeJSONColumns(object: PlainObject) {
-		Object.keys(object).forEach((key) => {
-			if (PlaceEdit.RELATIONSHIPS_TO_FIELDS[key]) {
-				const encodedKey = PlaceEdit.RELATIONSHIPS_TO_FIELDS[key];
-				const encodedValue = mapKeysDeep(object[key], pascalCase);
-				const jsonObjectAsString = JSON.stringify(encodedValue);
-				object[encodedKey] = jsonObjectAsString;
-				delete object[key];
+	private commaDelimitedArrayColumns = Object.freeze([
+		'contributingResources',
+		'designations',
+		'records',
+		'siteCategories',
+	]);
+
+	constructor(attributes: PlainObject) {
+		Object.entries(attributes).forEach(([key, value]) => {
+			if (key in this.associationsColumns) {
+				const associationName = this.associationsColumns[key];
+				this[associationName] = this.pascalCaseAndJsonStringify(value);
+			} else if (this.commaDelimitedArrayColumns.includes(key)) {
+				this[key] = Place.encodeCommaDelimitedArray(value);
+			} else {
+				this[key] = value;
 			}
 		});
-		return object;
 	}
 
-	static parseAndNormalizeJSONColumns(object: PlainObject) {
-		Object.keys(object).forEach((key) => {
-			if (key.endsWith('JSON')) {
-				const cleanedKey = key.replace(/JSON$/, '');
-				const objectAsJson = JSON.parse(object[key]);
-				object[cleanedKey] = mapKeysDeep(objectAsJson, camelCase);
-				delete object[key];
+	pascalCaseAndJsonStringify(value: PlainObject): string {
+		const pascalizedValue = mapKeysDeep(value, pascalCase);
+		return JSON.stringify(pascalizedValue);
+	}
+
+	toDbObject() {
+		const dbObject: PlainObject = {};
+		this.fields.forEach((field) => {
+			if (field === 'id') {
+				// drop the id column
+			} else if (this[field] !== undefined) {
+				dbObject[field] = this[field];
 			}
 		});
-		return object;
-	}
-
-	static stripOutNonColumnAttributes(object: PlainObject) {
-		return pick(object, PlaceEdit.FIELDS);
+		return dbObject;
 	}
 }
