@@ -135,6 +135,13 @@ entity Name {
   Description : nvarchar
 }
 
+entity PlaceTheme {
+  * Id : int <<generated>>
+  --
+  * Category : nvarchar
+  * Type : nvarchar
+}
+
 enum Records {
   CRHP : CRHP
   WHBR : WHBR
@@ -157,6 +164,13 @@ enum SiteStatus {
   6 : Reconstruction
 }
 
+entity Theme {
+  * Id: int <<generated>>
+  --
+  * PlaceId : int
+  * PlaceThemeId : int
+}
+
 Place::Category }|--o{ Category
 Place::CommunityId ||--o{ Community
 Place::DoorCondition }|--o{ ConditionType
@@ -173,8 +187,10 @@ Place }o--|| Name::PlaceId
 Place::Records }o--o{ Records
 Place::SiteCategories }o--o{ SiteCategories
 Place::SiteStatus ||--o{ SiteStatus
-HistoricalPattern::HistoricalPatternType ||--o{ HistoricalPatternType
-Dates::Type ||--o{ DateType
+Place }o--|| Theme::PlaceId
 ConstructionPeriod::Type ||--o{ ConstructionPeriodType
+Dates::Type ||--o{ DateType
+HistoricalPattern::HistoricalPatternType ||--o{ HistoricalPatternType
+Theme::PlaceThemeId ||--o{ PlaceTheme::Id
 
 @enduml
