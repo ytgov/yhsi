@@ -198,14 +198,13 @@ import { PLACE_URL, STATIC_URL } from '@/urls';
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'ThemesAndFunctions',
+  props: {
+    placeId: {
+      type: [Number, String],
+      required: true,
+    },
+  },
   data: () => ({
-    valid: false,
-    loadedId: -1,
-    generalRules: [
-      (v) => !!v || 'This input is required',
-      (v) => v.length <= 20 || 'This input must be less than 20 characters',
-    ],
-
     themes: [],
     themeCategoryOptions: [],
     functionalUses: [],
@@ -220,12 +219,9 @@ export default {
       yHSThemes: '', //
     },
   }),
-  created: function () {
-    let id = (this.loadedId = this.$route.params.id);
-    this.loadedId = id;
-
+  mounted() {
     axios
-      .get(`${PLACE_URL}/${id}`)
+      .get(`${PLACE_URL}/${this.placeId}`)
       .then((resp) => {
         this.fields = resp.data.data;
         this.themes = resp.data.relationships.themes.data;
@@ -248,14 +244,14 @@ export default {
   },
   methods: {
     addTheme() {
-      this.themes.push({ placeId: this.loadedId, placeThemeId: 1 });
+      this.themes.push({ placeId: this.placeId, placeThemeId: 1 });
     },
     removeTheme(index) {
       this.themes.splice(index, 1);
     },
     addUse() {
       this.functionalUses.push({
-        placeId: this.loadedId,
+        placeId: this.placeId,
         functionalUseType: 2,
         functionalTypeId: 1,
       });
@@ -273,7 +269,7 @@ export default {
       };
 
       axios
-        .put(`${PLACE_URL}/${this.loadedId}/themes`, body)
+        .put(`${PLACE_URL}/${this.placeId}/themes`, body)
         .then((resp) => {
           //this.setPlace(resp.data);
           this.$emit('showAPIMessages', resp.data);

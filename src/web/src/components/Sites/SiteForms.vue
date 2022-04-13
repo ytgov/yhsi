@@ -66,8 +66,11 @@
             id="dates-and-condition"
             :place-id="id"
           />
+          <ThemesAndFunctions
+            id="themes-and-function"
+            :place-id="id"
+          />
         </template>
-        <ThemesAndFunctions id="themes-and-function" />
         <Associations id="associations" />
         <LegalAndZoning id="legal-and-zoning" />
         <Photos id="photos" />
