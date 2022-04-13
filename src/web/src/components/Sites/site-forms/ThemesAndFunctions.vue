@@ -25,62 +25,10 @@
       </v-col>
 
       <v-col cols="12">
-        <v-card
-          class="default mb-0"
-          tag="section"
-        >
-          <v-card-title
-            tag="h3"
-            class="mb-0 text-h6"
-          >
-            Themes
-          </v-card-title>
-          <v-card-text
-            v-model="valid"
-            tag="form"
-          >
-            <v-row
-              v-for="(item, i) in themes"
-              :key="i"
-            >
-              <v-col cols="10">
-                <v-select
-                  v-model="item.placeThemeId"
-                  :items="themeCategoryOptions"
-                  item-text="display"
-                  item-value="id"
-                  label="Category / Type"
-                  dense
-                  hide-details
-                  outlined
-                  background-color="white"
-                />
-              </v-col>
-
-              <v-col cols="2">
-                <v-btn
-                  color="warning"
-                  x-small
-                  fab
-                  title="Remove"
-                  class="my-0 float-right"
-                  @click="removeTheme(i)"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn
-              class="my-0"
-              color="info"
-              @click="addTheme"
-            >
-              Add Theme
-            </v-btn>
-          </v-card-actions>
-        </v-card>
+        <ThemesEditor
+          v-model="themes"
+          :place-id="placeId"
+        />
       </v-col>
 
       <v-col cols="12">
@@ -195,9 +143,12 @@ import axios from 'axios';
 import store from '@/store';
 import { PLACE_URL, STATIC_URL } from '@/urls';
 
+import ThemesEditor from '@/components/Sites/site-forms/themes-and-functions/ThemesEditor';
+
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'ThemesAndFunctions',
+  components: { ThemesEditor },
   props: {
     placeId: {
       type: [Number, String],
@@ -206,7 +157,6 @@ export default {
   },
   data: () => ({
     themes: [],
-    themeCategoryOptions: [],
     functionalUses: [],
 
     useTypeOptions: [],
@@ -230,10 +180,6 @@ export default {
       })
       .catch((error) => console.error(error));
 
-    axios.get(`${STATIC_URL}/place-theme`).then((resp) => {
-      this.themeCategoryOptions = resp.data.data;
-    });
-
     axios.get(`${STATIC_URL}/functional-use-type`).then((resp) => {
       this.useTypeOptions = resp.data.data;
     });
@@ -243,12 +189,6 @@ export default {
     });
   },
   methods: {
-    addTheme() {
-      this.themes.push({ placeId: this.placeId, placeThemeId: 1 });
-    },
-    removeTheme(index) {
-      this.themes.splice(index, 1);
-    },
     addUse() {
       this.functionalUses.push({
         placeId: this.placeId,

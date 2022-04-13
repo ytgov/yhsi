@@ -26,6 +26,7 @@ export * from './photo-router';
 export * from './photos-extra-router';
 export * from './place-edits-router';
 export * from './place-router';
+export * from './place-themes-router';
 export * from './record-types-router';
 export * from './register-router';
 export * from './revision-log-types-router';

@@ -97,14 +97,6 @@ staticRouter.get('/usage-right', async (req: Request, res: Response) => {
 	return res.json({ data: list });
 });
 
-staticRouter.get('/place-theme', async (req: Request, res: Response) => {
-	let list = await staticService.getPlaceThemes();
-	list = list.map((l) =>
-		Object.assign(l, { display: `${l.category} / ${l.type}` })
-	);
-	return res.json({ data: list });
-});
-
 staticRouter.get('/statute', async (req: Request, res: Response) => {
 	let list = await staticService.getStatutes();
 
