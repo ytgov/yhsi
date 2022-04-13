@@ -13,7 +13,6 @@ import { DB_CONFIG } from '../config';
 import { buildDatabaseSort, PlaceService } from '../services';
 import {
 	Place,
-	Theme,
 	FunctionalUse,
 	Association,
 	FirstNationAssociation,
@@ -178,36 +177,12 @@ placeRouter.put(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		let { id } = req.params;
-		let { themes, functionalUses } = req.body;
+		let { functionalUses } = req.body;
 		let updater = req.body;
 
-		delete updater.themes;
 		delete updater.functionalUses;
 
 		await placeService.updatePlace(parseInt(id), updater);
-
-		let oldThemes = await placeService.getThemesFor(parseInt(id));
-
-		for (let on of oldThemes) {
-			let match = themes.filter(
-				(n: Theme) => n.placeThemeId == on.placeThemeId
-			);
-
-			if (match.length == 0) {
-				await placeService.removeTheme(on.id);
-			}
-		}
-
-		for (let on of themes) {
-			let match = oldThemes.filter(
-				(n: Theme) => n.placeThemeId == on.placeThemeId
-			);
-
-			if (match.length == 0) {
-				delete on.typeName;
-				await placeService.addTheme(on);
-			}
-		}
 
 		let oldFunctions = await placeService.getFunctionUsesFor(parseInt(id));
 
@@ -579,6 +554,7 @@ placeRouter.patch(
 		body('showInRegister').isBoolean().optional(),
 		body('siteCategories').isArray().optional({ nullable: true }),
 		body('siteStatus').isInt().optional(),
+		body('themes').isArray().optional({ nullable: true }),
 		body('wallCondition').isInt().optional(),
 	],
 	ReturnValidationErrors,

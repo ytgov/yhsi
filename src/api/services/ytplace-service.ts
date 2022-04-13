@@ -21,7 +21,6 @@ import {
 	PreviousOwnership,
 	REGISTER_FIELDS,
 	RevisionLog,
-	Theme,
 	WebLink,
 	YtPlace,
 	YTPLACE_FIELDS,

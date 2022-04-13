@@ -14,7 +14,7 @@
     <v-card-text tag="section">
       <v-col cols="12">
         <v-textarea
-          v-model="fields.yHSThemes"
+          v-model="place.yHSThemes"
           label="YHS Themes"
           dense
           rows="4"
@@ -26,20 +26,20 @@
 
       <v-col cols="12">
         <ThemesEditor
-          v-model="themes"
+          v-model="place.themes"
           :place-id="placeId"
         />
       </v-col>
 
       <v-col cols="12">
         <FunctionalUsesEditor
-          v-model="functionalUses"
+          v-model="place.functionalUses"
           :place-id="placeId"
         />
       </v-col>
       <v-col cols="6">
         <v-textarea
-          v-model="fields.currentUseComment"
+          v-model="place.currentUseComment"
           label="YHS Current Use"
           dense
           outlined
@@ -49,7 +49,7 @@
       </v-col>
       <v-col cols="6">
         <v-textarea
-          v-model="fields.yHSPastUse"
+          v-model="place.yHSPastUse"
           label="YHS Past Use"
           dense
           outlined
@@ -72,10 +72,8 @@
 </template>
 
 <script>
-import axios from 'axios';
-
-import store from '@/store';
-import { PLACE_URL } from '@/urls';
+import { mapActions, mapGetters } from 'vuex';
+import { pick } from 'lodash';
 
 import FunctionalUsesEditor from '@/components/Sites/site-forms/themes-and-functions/FunctionalUsesEditor';
 import ThemesEditor from '@/components/Sites/site-forms/themes-and-functions/ThemesEditor';
@@ -90,47 +88,27 @@ export default {
       required: true,
     },
   },
-  data: () => ({
-    themes: [],
-    functionalUses: [],
-
-    fields: {
-      /*Field data from the swaggerhub api docs below this line*/
-      currentUseComment: '', //
-      yHSPastUse: '', //
-      yHSThemes: '', //
-    },
-  }),
-  mounted() {
-    axios
-      .get(`${PLACE_URL}/${this.placeId}`)
-      .then((resp) => {
-        this.fields = resp.data.data;
-        this.themes = resp.data.relationships.themes.data;
-        this.functionalUses = resp.data.relationships.functionalUses.data;
-        store.dispatch('addSiteHistory', resp.data.data);
-      })
-      .catch((error) => console.error(error));
+  data: () => ({}),
+  computed: {
+    ...mapGetters({
+      place: 'places/place',
+    }),
   },
+  mounted() {},
   methods: {
+    ...mapActions({
+      savePlace: 'places/save',
+    }),
     saveChanges() {
-      let body = {
-        themes: this.themes,
-        functionalUses: this.functionalUses,
-        currentUseComment: this.fields.currentUseComment,
-        yHSPastUse: this.fields.yHSPastUse,
-        yHSThemes: this.fields.yHSThemes,
-      };
+      const data = pick(this.place, [
+        'themes',
+        'functionalUses',
+        'currentUseComment',
+        'yHSPastUse',
+        'yHSThemes',
+      ]);
 
-      axios
-        .put(`${PLACE_URL}/${this.placeId}/themes`, body)
-        .then((resp) => {
-          //this.setPlace(resp.data);
-          this.$emit('showAPIMessages', resp.data);
-        })
-        .catch((err) => {
-          this.$emit('showError', err);
-        });
+      return this.savePlace(data);
     },
   },
 };

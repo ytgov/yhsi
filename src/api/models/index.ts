@@ -18,3 +18,4 @@ export * from './security';
 export * from './simple-types';
 export * from './site-category-types';
 export * from './site-status-types';
+export * from './theme';

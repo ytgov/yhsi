@@ -16,7 +16,6 @@ import {
 	PlaceType,
 	PLACE_FIELDS,
 	ConstructionPeriod,
-	Theme,
 	FunctionalUse,
 	Association,
 	FnAssociation,

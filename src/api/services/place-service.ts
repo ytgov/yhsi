@@ -12,6 +12,7 @@ import {
 	QueryStatement,
 	SortStatement,
 	StaticService,
+	ThemeService,
 } from './';
 import {
 	Association,
@@ -31,18 +32,9 @@ import {
 	REGISTER_FIELDS,
 	REVISION_LOG_TYPES,
 	RevisionLog,
-	Theme,
 	WebLink,
 } from '../data';
-import {
-	Date,
-	GenericEnum,
-	HistoricalPattern,
-	HISTORICAL_PATTERN_TYPES,
-	Name,
-	Place,
-	PlainObject,
-} from '../models';
+import { GenericEnum, Place, PlainObject } from '../models';
 
 function combine(
 	list1: Array<any>,
@@ -91,6 +83,7 @@ export class PlaceService {
 	private photoService: PhotoService;
 	private placeEditService: PlaceEditService;
 	private staticService: StaticService;
+	private themeService: ThemeService;
 
 	constructor(config: Knex.Config<any>) {
 		this.db = knex(config);
@@ -101,6 +94,7 @@ export class PlaceService {
 		this.photoService = new PhotoService(config);
 		this.placeEditService = new PlaceEditService();
 		this.staticService = new StaticService(config);
+		this.themeService = new ThemeService(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Place>> {
@@ -131,7 +125,6 @@ export class PlaceService {
 				}
 
 				const fnList = await this.staticService.getFirstNations();
-				const themeList = await this.staticService.getPlaceThemes();
 				const functionalTypes = await this.staticService.getFunctionalTypes();
 
 				place.hasPendingChanges = await this.placeEditService.existsForPlace(
@@ -168,22 +161,8 @@ export class PlaceService {
 					id
 				);
 				place.names = await this.nameService.getFor(id);
+				place.themes = await this.themeService.getFor(id);
 
-				const themes = combine(
-					combine(
-						await this.getThemesFor(id),
-						themeList,
-						'id',
-						'placeThemeId',
-						'type',
-						'typeName'
-					),
-					themeList,
-					'id',
-					'placeThemeId',
-					'category',
-					'categoryName'
-				);
 				let functionalUses = combine(
 					await this.getFunctionUsesFor(id),
 					this.getFunctionalUseTypes(),
@@ -244,7 +223,6 @@ export class PlaceService {
 				const relationships = {
 					associations: { data: associations },
 					firstNationAssociations: { data: fnAssociations },
-					themes: { data: themes },
 					functionalUses: { data: functionalUses },
 					ownerships: { data: ownerships },
 					previousOwnerships: { data: previousOwnerships },
@@ -313,6 +291,9 @@ export class PlaceService {
 			}
 			if (attrs.hasOwnProperty('names')) {
 				await this.nameService.upsertFor(id, attrs['names']);
+			}
+			if (attrs.hasOwnProperty('themes')) {
+				await this.themeService.upsertFor(id, attrs['themes']);
 			}
 			return attrs;
 		});
@@ -389,20 +370,6 @@ export class PlaceService {
 
 	async removeFNAssociation(id: number) {
 		return this.db('FirstNationAssociation').where({ id }).delete();
-	}
-
-	async getThemesFor(id: number): Promise<Theme[]> {
-		return this.db('theme')
-			.where({ placeId: id })
-			.select<Theme[]>(['id', 'placeId', 'placeThemeId']);
-	}
-
-	async addTheme(name: Theme) {
-		return this.db('theme').insert(name);
-	}
-
-	async removeTheme(id: number) {
-		return this.db('theme').where({ id }).delete();
 	}
 
 	async getFunctionUsesFor(id: number): Promise<FunctionalUse[]> {

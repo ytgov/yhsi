@@ -155,12 +155,6 @@ export class RevisionLog {
 	details!: string;
 }
 
-export class Theme {
-	id!: number;
-	placeId!: number;
-	placeThemeId!: number;
-}
-
 export class WebLink {
 	id!: number;
 	placeId!: number;
