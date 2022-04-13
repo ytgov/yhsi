@@ -45,11 +45,12 @@ export default {
         console.error(error);
       });
   },
-  async getGridPdf(){
+  async getGridPdf(textToMatch, sortBy, sort){
     return await api({
       url: 'owners/pdf',
       method: 'POST',
       responseType: 'blob',
+      data: { textToMatch, sortBy, sort, page: 0, limit: 0 }
     })
     .then( res => {
       return res.data;
@@ -57,8 +58,10 @@ export default {
       return err;
     })
   },
-  async getExport() {
-    return await api.post(`owners/export`)
+  async getExport(textToMatch, sortBy, sort) {
+    return await api.post(`owners/export`, {
+      textToMatch, sortBy, sort, page: 0, limit: 0
+    })
       .then(res => {
         return res.data;
       }).catch(error => {

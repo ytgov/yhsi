@@ -174,12 +174,12 @@ export default {
       //console.log(data);
       this.totalLength = _.get(data, "count", 0);
       this.peopleData = await people.getExport(textToMatch, sortBy[0] ? sortBy[0] : 'GivenName', sortDesc[0] ? "desc" : "asc");
-      console.log(this.peopleData);
       this.loading = false;
     },
     async downloadPdf(){
       this.loadingPdf = true;
-      let res = await people.getGridPdf();
+      let { sortBy, sortDesc } = this.options;
+      let res = await people.getGridPdf(this.search, sortBy[0] ? sortBy[0] : 'GivenName', sortDesc[0] ? "desc" : "asc");
       let blob = new Blob([res], { type: "application/octetstream" });
       let url = window.URL || window.webkitURL;
       let link = url.createObjectURL(blob);

@@ -55,19 +55,26 @@ export default {
       return error;
     });
   },
-  async getExport(){
-    return await api.post('aircrash/export')
+  async getExport(textToMatch, sortBy, sort ){
+    return await api.post('aircrash/export', {
+      textToMatch,
+      sort,
+      sortBy,
+      page: 0,
+      limit: 0
+    })
     .then( res => {
       return res.data;
     }).catch( err => {
       return err;
     })
   },
-  async getGridPdf(){
+  async getGridPdf(textToMatch, sortBy, sort){
     return await api({
       url: 'aircrash/pdf',
       method: 'POST',
       responseType: 'blob',
+      data: { page: 0, limit: 0, textToMatch, sortBy, sort }
     })
     .then( res => {
       return res.data;

@@ -51,7 +51,7 @@ export class BoatOwnerService {
         return owner;
     }
 
-    async doSearch( page: number, limit: number, offset: number, filters: any){
+    async doSearch(page: number, limit: number, offset: number, filters: any){
         const {
 			textToMatch = '',
 			sortBy = 'ownername',
@@ -60,7 +60,21 @@ export class BoatOwnerService {
 		let counter = [{ count: 0 }];
 		let owners = [];
 
-		if (textToMatch) {
+		if(limit === 0){
+			counter = await db
+				.from('boat.Owner AS BO')
+				.where('BO.OwnerName', 'like', `%${textToMatch}%`)
+				.count('BO.id', { as: 'count' });
+
+			owners = await db
+				.select(
+					'OW.OwnerName',
+					'OW.id'
+				)
+				.from('boat.Owner AS OW')
+				.orderBy(`${sortBy}`, `${sort}`)
+				.where('OW.OwnerName', 'like', `%${textToMatch}%`);
+		} else if (textToMatch) {
 			counter = await db
 				.from('boat.Owner AS BO')
 				.where('BO.OwnerName', 'like', `%${textToMatch}%`)

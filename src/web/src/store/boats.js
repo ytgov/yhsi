@@ -4,6 +4,8 @@ const state = {
     selectedFilters: [],
     ownerSearch: "",
     boatSearch: "",
+    boatTableOptions: { sortBy: ["Name"], sortDesc: [false]},
+    ownerTableOptions: { sortBy: ["OwnerName"], sortDesc: [false]},
     boats: [],
     owners: [],
 };
@@ -12,7 +14,9 @@ const getters = {
     ownerSearch: state => state.ownerSearch,
     boatSearch: state => state.boatSearch,
     boats: state => state.boats,
-    owners: state => state.owners
+    owners: state => state.owners,
+    boatTableOptions: state => state.boatTableOptions,
+    ownerTableOptions: state => state.ownerTableOptions
 };
 const mutations = {
     setBoatSearch(state, search) {
@@ -29,6 +33,12 @@ const mutations = {
     },
     setOwners(state, arr){
         state.owners = arr;
+    },
+    setBoatTableOptions(state, obj){
+        state.boatTableOptions = obj;
+    },
+    setOwnerTableOptions(state, obj){
+        state.ownerTableOptions = obj;
     }
 };
 

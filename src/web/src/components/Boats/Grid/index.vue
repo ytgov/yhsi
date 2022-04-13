@@ -61,10 +61,10 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item v-for="(item, i) in filterOptions" :key="i" link>
+            <v-list-item v-for="(item, i) in filterOptions" :key="`filter-list-opt-${i}`" link>
               <v-text-field
                 clearable
-                @input="filterChange"
+                @blur="filterChange"
                 v-model="item.value"
                 :label="item.name"
               ></v-text-field>
@@ -80,13 +80,13 @@
         </v-btn>
 
 
-
+        
         <v-btn class="black--text mx-1" :loading="true" v-if="loadingExport">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
         </v-btn>
         <JsonCSV v-else :data="ownersData"  name="owner_data.csv">
-          <v-btn class="black--text mx-1" :disabled="owners.length == 0">
+          <v-btn class="black--text mx-1" :disabled="ownersData.length == 0">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
           </v-btn>
@@ -101,20 +101,23 @@
 
       </v-col>
       <v-col cols="auto" v-else class="d-flex">
+        <v-btn class="black--text mx-1" :loading="loadingExport" @click="testExport()">
+          TEST EXPORT
+        </v-btn>
         <v-btn class="black--text mx-1" @click="addNewBoat">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
           Add Boat
         </v-btn>
-        <v-btn class="black--text mx-1" :loading="true" v-if="loadingExport">
+        <!-- <v-btn class="black--text mx-1" :loading="true"  @click="testExport">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
           </v-btn>
-        <JsonCSV v-else :data="boatsData"  name="boat_data.csv" ref="csvBtn">
-          <v-btn class="black--text mx-1">
+        <JsonCSV style="display: none;" :data="boatsData"  name="boat_data.csv" ref="csvBtn">
+          <v-btn class="black--text mx-1" :disabled="boatsData.length == 0">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
           </v-btn>
-        </JsonCSV>
+        </JsonCSV> -->
         <v-btn @click="downloadPdf()" class="black--text mx-1" :loading="loadingPdf">
             <v-icon class="mr-1">
               mdi-printer
@@ -150,7 +153,7 @@
 <script>
 import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
-//import PrintButton from "./PrintButton";
+import downloadCsv from "../../../utils/dataToCsv";
 import _ from "lodash";
 import boats from "../../../controllers/boats";
 import owners from "../../../controllers/owners";
@@ -164,11 +167,11 @@ export default {
     searchOwner: "",
     searchBoat: "",
     filterOptions: [
-      { name: "Owner", value: "" },
-      { name: "Construction Date", value: "" },
-      { name: "Service Start", value: "" },
-      { name: "Service End", value: "" },
-      { name: "Vessel Type", value: "" },
+      { name: "Owner", value: "", dataAccess: "Owner"},
+      { name: "Construction Date", value: "", dataAccess: "ConstructionDate" },
+      { name: "Service Start", value: "", dataAccess: "ServiceStart" },
+      { name: "Service End", value: "", dataAccess: "ServiceEnd" },
+      { name: "Vessel Type", value: "", dataAccess: "VesselType" },
     ],
     selectedItem: 1,
     items: [
@@ -176,23 +179,40 @@ export default {
       { text: "Audience", icon: "mdi-account" },
       { text: "Conversions", icon: "mdi-flag" },
     ],
-    boats: [],
+    boatsData: [],
     ownersData: [],
     loadingPdf: false,
-    loadingExport: false
+    loadingExport: false,
+    boatHeaders: [
+      { text: "Name", dataAccess: "Name" },
+      { text: "Owner", dataAccess: "owners", sortable: false },
+      { text: "Vessel Type", dataAccess: "VesselType" },
+      { text: "Construction Date", dataAccess: "ConstructionDate" },
+      { text: "Service Start Date", dataAccess: "ServiceStart" },
+      { text: "Service End Date", dataAccess: "ServiceEnd" },
+      { text: "Current Location Description", dataAccess: "CurrentLocation" },
+      { text: "Req Number", dataAccess: "RegistrationNumber" },
+    ],
   }),
   async mounted() {
     if (this.$route.path.includes("owner")) {
       //shows the buttons for owner
-      
       this.route = "owner";
     } else {
       //shows the buttons for boats
       this.route = "boats";
     }
-    this.getExports();
+    // await this.getBoatExport();
+    // await this.getOwnerExport();
+
   },
   methods: {
+    async testExport(){
+      await this.getBoatExport();
+      downloadCsv(this.boatsData, this.boatHeaders);
+      
+      //console.log(this.$refs.csvBtn);
+    },
     addNewBoat() {
       this.$router.push(`/boats/new`);
     },
@@ -201,26 +221,53 @@ export default {
     },
     ownerSearchChange: _.debounce(function () {
       this.$store.commit("boats/setOwnerSearch", this.searchOwner);
+      //this.getOwnerExport();
     }, 400),
     boatSearchChange: _.debounce(function () {
       this.$store.commit("boats/setBoatSearch", this.searchBoat);
+      //this.getBoatExport();
     }, 400),
     filterChange() {
       this.$store.commit("boats/setSelectedFilters", this.filterOptions);
+      //this.getBoatExport();
     },
     isActive(route) {
       //this function helps to show certain classes depending on the route
       return route.includes("owner") ? "notActive" : "";
     },
-    async getExports(){
+    async getOwnerExport(){
       this.loadingExport = true;
-      this.boats = await boats.getExport();
-      this.ownersData = await owners.getExport();
+      let o = this.ownerTableOptions;
+      this.ownersData = await owners.getExport(this.searchBoat, o.sortBy[0] ? o.sortBy[0] : "OwnerName", o.sortDesc[0] ? "desc" : "asc");
+      this.loadingExport = false;
+    },
+    async getBoatExport(){
+      this.loadingExport = true;
+      let textToMatch = this.search;
+      const prefilters = {};
+      let b = this.boatTableOptions;
+      this.filterOptions.map( x => {
+        prefilters[x.dataAccess] = x.value;
+      })
+      this.boatsData = await boats.getExport(
+        textToMatch,
+        b.sortBy[0] ? b.sortBy[0] : "Name",
+        b.sortDesc[0] ? "desc" : "asc",
+        prefilters.Owner,
+        prefilters.ConstructionDate, 
+        prefilters.ServiceStart, 
+        prefilters.ServiceEnd,
+        prefilters.VesselType
+      );
+      
+      //this.boatsData = await boats.getExport(this.searchBoat, b.sortBy[0] ? b.sortBy[0] : "Name", b.sortDesc[0] ? "desc" : "asc");
       this.loadingExport = false;
     },
     async downloadPdf(){
       this.loadingPdf = true;
-      let res = await boats.getGridPdf();
+      let b = this.boatTableOptions;
+      
+      let res = await boats.getGridPdf(this.searchBoat, b.sortBy[0] ? b.sortBy[0] : "Name", b.sortDesc[0] ? "desc" : "asc");
       let blob = new Blob([res], { type: "application/octetstream" });
       let url = window.URL || window.webkitURL;
       let link = url.createObjectURL(blob);
@@ -234,7 +281,8 @@ export default {
     },
     async downloadPdfOwners(){
       this.loadingPdf = true;
-      let res = await owners.getGridPdf();
+      let o = this.ownerTableOptions;
+      let res = await owners.getGridPdf(this.searchBoat, o.sortBy[0] ? o.sortBy[0] : "OwnerName", o.sortDesc[0] ? "desc" : "asc");
       let blob = new Blob([res], { type: "application/octetstream" });
       let url = window.URL || window.webkitURL;
       let link = url.createObjectURL(blob);
@@ -248,13 +296,16 @@ export default {
     },
   },
   computed: {
-    boatsData() {
-      return this.boats;
+    boatTableOptions(){
+      return this.$store.getters["boats/boatTableOptions"];
     },
-    owners() {
-      return this.$store.getters["boats/owners"];
+    ownerTableOptions(){
+      return this.$store.getters["boats/ownerTableOptions"];
     },
   },
+  watch: {
+
+  }
 };
 </script>
 

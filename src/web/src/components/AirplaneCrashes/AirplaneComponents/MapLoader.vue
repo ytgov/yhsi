@@ -177,6 +177,33 @@
     <!-- SELECTED PROJECITON IS NOT WSG -->
                 <v-row v-if="selectedProjection.id != 1">
                     <v-col cols="2.4">
+                        <h4>Latitude</h4>
+                    </v-col>
+                    <v-col cols="9">
+                        <h4>Degrees</h4>
+                        <v-text-field outlined dense
+                            @change="changedLocation"
+                            v-model="nad83.lat"
+                            :readonly="mode == 'view'"
+                            type="number"
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row v-if="selectedProjection.id != 1">
+                    <v-col cols="2.4">
+                        <h4>Longitude</h4>
+                    </v-col>
+                    <v-col cols="9">
+                        <v-text-field outlined dense
+                            @change="changedLocation"
+                            v-model="nad83.lng"
+                            :readonly="mode == 'view'"
+                            type="number"
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+                <!-- <v-row v-if="selectedProjection.id != 1">
+                    <v-col cols="2.4">
                         <h4>X</h4>
                     </v-col>
                     <v-col cols="9">
@@ -200,7 +227,7 @@
                             type="number"
                         ></v-text-field>
                     </v-col>
-                </v-row>
+                </v-row> -->
                  <v-row v-if="isEmpty">
                     <v-col>
                         <v-alert
@@ -520,27 +547,26 @@ export default {
         },
         // this method  applies cordinate projection to the 'display cordinates' according to the selected projection
         applyCoordinateProjection(){
-            let { lat, long } = this.modifiableFields;
+            //let { lat, long } = this.modifiableFields;
             let { id } = this.selectedProjection;
-            let transformed_coordinates;
+            //let transformed_coordinates;
             switch(id){
                 case 1:
                     this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
                     break;
                 case 2://NAD83 
-                    transformed_coordinates = proj4(proj4('EPSG:3978'), [long,lat]);
-                    this.nad83 = { x: transformed_coordinates[0], y: transformed_coordinates[1] };
+                    this.nad83 = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
                     break;
                 case 3://NAD83 CRS
-                    transformed_coordinates = proj4(proj4('EPSG:3979'), [long,lat]);
-                    this.nad83 = { x: transformed_coordinates[0], y: transformed_coordinates[1] };
+                    //transformed_coordinates = proj4(proj4('EPSG:3979'), [long,lat]);
+                    this.nad83 = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
                     break;
             }
         },
-        //this transform the projected coordinats
+        //this transforms the projected coordinates
         transformProjectedCoordinates(){
-            let { x, y } = this.nad83;
-            let transformed_coordinates;
+            let { lat, lng } = this.nad83;
+            //let transformed_coordinates;
             switch(this.selectedProjection.id){
                 case 1:
                     this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
@@ -548,14 +574,14 @@ export default {
                     this.modifiableFields.long = this.dd.lng;
                     break;
                 case 2://NAD83 
-                    transformed_coordinates = proj4(proj4('EPSG:3978'),proj4('EPSG:4326'), [parseFloat(x),parseFloat(y)]);
-                    this.modifiableFields.lat = transformed_coordinates[1];
-                    this.modifiableFields.long = transformed_coordinates[0];
+                    //transformed_coordinates = proj4(proj4('EPSG:3978'),proj4('EPSG:4326'), [parseFloat(x),parseFloat(y)]);
+                    this.modifiableFields.lat =  lat;//transformed_coordinates[1];
+                    this.modifiableFields.long = lng;//transformed_coordinates[0];
                     break;
                 case 3://NAD83 CRS
-                    transformed_coordinates = proj4(proj4('EPSG:3978'),proj4('EPSG:4326'), [parseFloat(x),parseFloat(y)]);
-                    this.modifiableFields.lat = transformed_coordinates[1];
-                    this.modifiableFields.long = transformed_coordinates[0];
+                    //transformed_coordinates = proj4(proj4('EPSG:3978'),proj4('EPSG:4326'), [parseFloat(x),parseFloat(y)]);
+                    this.modifiableFields.lat =  lat;//transformed_coordinates[1];
+                    this.modifiableFields.long = lng;//transformed_coordinates[0];
                     break;
             }
         },
@@ -585,7 +611,7 @@ export default {
             this.updateDisplayCoordinates();
             this.applyCoordinateProjection();
         }, 
-        updateDisplayCoordinates(){// TESTING
+        updateDisplayCoordinates(){
             let { id } = this.selectedSystem;
 
             if(!id)
