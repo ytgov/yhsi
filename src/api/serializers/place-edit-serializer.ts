@@ -32,9 +32,11 @@ export default class PlaceEditSerializer {
 
 	constructor(placeEdit: PlaceEdit) {
 		Object.entries(placeEdit).forEach(([key, value]) => {
-			if (value === undefined) {
-				// nop don't serialize this value
-			} else if (key in this.associationsColumns) {
+			if (['associationsColumns', 'commaDelimitedArrayColumns'].includes(key))
+				return;
+			if (value === undefined) return;
+
+			if (key in this.associationsColumns) {
 				const associationName = this.associationsColumns[key];
 				this[associationName] = this.jsonParseAndCamelCase(value);
 			} else if (this.commaDelimitedArrayColumns.includes(key)) {
