@@ -1,6 +1,6 @@
 import knex, { Knex } from 'knex';
 import moment from 'moment';
-import { get, uniq, cloneDeep, pick } from 'lodash';
+import { get, isEmpty, uniq, cloneDeep, pick } from 'lodash';
 
 import {
 	AssociationService,
@@ -281,6 +281,8 @@ export class PlaceService {
 			.then(Place.stripOutNonColumnAttributes)
 			.then(Place.encodeCommaDelimitedArrayColumns)
 			.then((encodedAttributes) => {
+				if (isEmpty(encodedAttributes)) return;
+
 				return this.db('place').where({ id }).update(encodedAttributes);
 			})
 			.then(() => {
