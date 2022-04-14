@@ -158,14 +158,18 @@ export default {
     },
   },
   mounted() {
-    this.initializePlace(this.id).then(() => {
+    this.initializePlace(this.id).then((place) => {
+      this.addSiteHistory(place);
       if (this.$route.hash) {
         goTo(this.$route.hash, { offset: 75 });
       }
     });
   },
   methods: {
-    ...mapActions({ initializePlace: 'places/initialize' }),
+    ...mapActions({
+      initializePlace: 'places/initialize',
+      addSiteHistory: 'addSiteHistory',
+    }),
     showDialog() {
       this.dialog = true;
     },
