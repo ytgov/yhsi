@@ -23,7 +23,6 @@ import {
 	Description,
 	DESCRIPTION_TYPES,
 	DESCRIPTION_TYPE_ENUMS,
-	FIRST_NATION_ASSOCIATION_TYPES,
 	FirstNationAssociation,
 	Ownership,
 	OWNERSHIP_TYPES,
@@ -478,7 +477,10 @@ export class PlaceService {
 	}
 
 	getFNAssociationTypes(): GenericEnum[] {
-		return FIRST_NATION_ASSOCIATION_TYPES;
+		return [
+			{ value: 1, text: 'Settlement Lands' },
+			{ value: 2, text: 'Traditional Territory' },
+		];
 	}
 
 	getConstructionPeriodTypes(): GenericEnum[] {
