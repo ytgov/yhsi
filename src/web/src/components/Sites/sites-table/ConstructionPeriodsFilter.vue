@@ -18,9 +18,9 @@
 </template>
 
 <script>
-import { isEmpty } from 'lodash'
+import { isEmpty } from 'lodash';
 
-import api from '@/apis/construction-periods-api';
+import api from '@/apis/construction-period-types-api';
 
 export default {
 	name: 'ConstructionPeriodsFilter',
@@ -32,14 +32,16 @@ export default {
 	}),
 	computed: {
 		filter() {
-			if (isEmpty(this.constructionPeriodValues)) return {}
+			if (isEmpty(this.constructionPeriodValues)) return {};
 
 			return {
 				[this.queryName]: this.constructionPeriodValues,
 			};
 		},
-		queryName () {
-			return this.includeFilter ? 'includingConstructionPeriodValues' : 'excludingConstructionPeriodValues'
+		queryName() {
+			return this.includeFilter
+				? 'includingConstructionPeriodValues'
+				: 'excludingConstructionPeriodValues';
 		},
 		filterTypeIcon() {
 			return this.includeFilter
@@ -60,8 +62,8 @@ export default {
 	},
 	methods: {
 		toggleFilterType() {
-			this.includeFilter = !this.includeFilter
-			this.$emit('input', this.filter)
+			this.includeFilter = !this.includeFilter;
+			this.$emit('input', this.filter);
 		},
 	},
 };

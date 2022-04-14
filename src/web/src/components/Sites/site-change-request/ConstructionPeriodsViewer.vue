@@ -9,18 +9,18 @@
 			:key="i"
 		)
 			v-col
-				ConstructionPeriodSelect(
+				ConstructionPeriodTypesSelect(
 					:value="constructionPeriod.type"
 					readonly
 				)
 </template>
 
 <script>
-import ConstructionPeriodSelect from '@/components/Sites/site-forms/ConstructionPeriodSelect';
+import ConstructionPeriodTypesSelect from '@/components/Sites/site-forms/ConstructionPeriodTypesSelect';
 
 export default {
 	name: 'ConstructionPeriodsViewer',
-	components: { ConstructionPeriodSelect },
+	components: { ConstructionPeriodTypesSelect },
 	props: {
 		value: {
 			type: Array,

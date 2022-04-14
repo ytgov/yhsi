@@ -15,7 +15,6 @@ import {
 	Place,
 	PlaceType,
 	PLACE_FIELDS,
-	ConstructionPeriod,
 	FnAssociation,
 	FirstNationName,
 	Ownership,

@@ -4,6 +4,7 @@ export * from './auth';
 export * from './category-types';
 export * from './condition-types';
 export * from './construction-period';
+export * from './construction-period-types';
 export * from './contributing-resource-types';
 export * from './coordinate-determination-types';
 export * from './date';

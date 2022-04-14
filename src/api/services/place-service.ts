@@ -18,8 +18,6 @@ import {
 	ThemeService,
 } from './';
 import {
-	CONSTRUCTION_PERIODS,
-	ConstructionPeriod,
 	Contact,
 	Description,
 	DESCRIPTION_TYPES,
@@ -422,10 +420,6 @@ export class PlaceService {
 
 	async removeDescription(id: number) {
 		return this.db('Description').where({ id }).delete();
-	}
-
-	getConstructionPeriodTypes(): GenericEnum[] {
-		return CONSTRUCTION_PERIODS;
 	}
 
 	getOwnershipTypes(): GenericEnum[] {

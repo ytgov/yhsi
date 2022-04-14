@@ -17,10 +17,10 @@ v-select(
 </template>
 
 <script>
-import api from '@/apis/construction-periods-api';
+import api from '@/apis/construction-period-types-api';
 
 export default {
-	name: 'ConstructionPeriodSelect',
+	name: 'ConstructionPeriodTypesSelect',
 	data: () => ({
 		constructionPeriodOptions: [],
 		loading: false,

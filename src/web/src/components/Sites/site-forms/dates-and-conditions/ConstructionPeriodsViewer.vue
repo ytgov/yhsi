@@ -11,7 +11,7 @@ v-card.default.mb-4(tag="section")
 				:key="i"
 			)
 				v-col
-					ConstructionPeriodSelect(
+					ConstructionPeriodTypesSelect(
 						:value="constructionPeriod.type"
 						readonly
 						label=""
@@ -23,11 +23,11 @@ v-card.default.mb-4(tag="section")
 </template>
 
 <script>
-import ConstructionPeriodSelect from '@/components/Sites/site-forms/ConstructionPeriodSelect';
+import ConstructionPeriodTypesSelect from '@/components/Sites/site-forms/ConstructionPeriodTypesSelect';
 
 export default {
 	name: 'ConstructionPeriodsViewer',
-	components: { ConstructionPeriodSelect },
+	components: { ConstructionPeriodTypesSelect },
 	props: {
 		value: {
 			type: Array,
