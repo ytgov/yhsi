@@ -7,13 +7,19 @@ export default {
 		return http
 			.get(placeUrl)
 			.then((response) => response.data)
-			.catch(console.error);
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
 	},
 	get(id) {
 		return http
 			.get(`${placeUrl}/${id}`)
 			.then((response) => response.data)
-			.catch(console.error);
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
 	},
 	patch(id, data) {
 		return http
@@ -28,6 +34,9 @@ export default {
 		return http
 			.post(`${placeUrl}/search`, data)
 			.then((response) => response.data)
-			.catch(console.error);
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
 	},
 };
