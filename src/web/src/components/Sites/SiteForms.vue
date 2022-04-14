@@ -66,7 +66,8 @@
             id="dates-and-condition"
             :place-id="id"
           />
-          <ThemesAndFunctions
+          <component
+            :is="themesAndFunctionsComponent"
             id="themes-and-function"
             :place-id="id"
           />
@@ -99,6 +100,7 @@ import SiteFormsSidebar from '@/components/Sites/SiteFormsSidebar';
 import Summary from '@/components/Sites/site-forms/Summary';
 import SummaryReadonly from '@/components/Sites/site-forms/SummaryReadonly';
 import ThemesAndFunctions from '@/components/Sites/site-forms/ThemesAndFunctions';
+import ThemesAndFunctionsViewer from '@/components/Sites/site-forms/ThemesAndFunctionsViewer';
 
 export default {
   name: 'SiteForms',
@@ -117,6 +119,7 @@ export default {
     Summary,
     SummaryReadonly,
     ThemesAndFunctions,
+    ThemesAndFunctionsViewer,
   },
   props: {
     id: {
@@ -147,6 +150,11 @@ export default {
       if (this.hasPendingChanges) return SummaryReadonly;
 
       return Summary;
+    },
+    themesAndFunctionsComponent() {
+      if (this.hasPendingChanges) return ThemesAndFunctionsViewer;
+
+      return ThemesAndFunctions;
     },
   },
   mounted() {
