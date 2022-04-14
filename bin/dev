@@ -6,44 +6,45 @@ class DevHelper
   end
 
   # Core logic
-  def call(*args)
+  def call(*args, **kwargs)
     if args.length.zero?
-      dc(*args)
+      dc(*args, **kwargs)
     elsif respond_to?(args[0])
-      public_send(args[0], args.drop(1))
+      public_send(args[0], *args.drop(1), **kwargs)
     else
-      dc(*args)
+      dc(*args, **kwargs)
     end
   end
 
-  def dc(*args)
-    puts "Running: docker-compose -f docker-compose.development.yml #{args.join(' ')}"
-    exec("docker-compose -f docker-compose.development.yml #{args.join(' ')}")
+  def dc(*args, **kwargs)
+    environment = kwargs.fetch(:environment, 'development')
+    puts "Running: docker-compose -f docker-compose.#{environment}.yml #{args.join(' ')}"
+    exec("docker-compose -f docker-compose.#{environment}.yml #{args.join(' ')}")
   end
 
-  def build(*args)
-    dc(%w[build], *args)
+  def build(*args, **kwargs)
+    dc(%w[build], *args, **kwargs)
   end
 
-  def up(*args)
-    dc(*%w[up --remove-orphans], *args)
+  def up(*args, **kwargs)
+    dc(*%w[up --remove-orphans], *args, **kwargs)
   end
 
-  def down(*args)
-    dc(*%w[down --remove-orphans], *args)
+  def down(*args, **kwargs)
+    dc(*%w[down --remove-orphans], *args, **kwargs)
   end
 
   def logs(*args)
-    dc(*%w[logs -f], *args)
+    dc(*%w[logs -f], *args, **kwargs)
   end
 
   # Custom helpers
-  def refresh
-    down
-    up
+  def refresh(*args, **kwargs)
+    down(*args, **kwargs)
+    up(*args, **kwargs)
   end
 
-  def sqlcmd(*args)
+  def sqlcmd(*args, **kwargs)
     db_host = ENV.fetch('DB_HOST', 'localhost')
     db_user = ENV.fetch('DB_USER', 'sa')
     db_pass = ENV.fetch('DB_PASS', '1m5ecure!')
@@ -56,11 +57,16 @@ class DevHelper
       *%W[-d #{db_name}],
       '-I', # enable quoted identifiers, e.g. "table"."column"
       *args,
+      **kwargs
     )
   end
 
   define_method('ts-node') do |*args|
     dc(*%w[exec api npx ts-node], *args)
+  end
+
+  def test(*args)
+    call(*args, environment: 'test')
   end
 end
 
