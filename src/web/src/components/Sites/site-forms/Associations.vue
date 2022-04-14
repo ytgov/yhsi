@@ -24,12 +24,12 @@
         </v-card-title>
         <v-card-text tag="form">
           <v-row
-            v-for="(item, i) in associations"
+            v-for="(association, i) in associations"
             :key="i"
           >
             <v-col cols="5">
               <v-select
-                v-model="item.type"
+                v-model="association.type"
                 label="Association type"
                 :items="associationTypeOptions"
                 dense
@@ -41,7 +41,7 @@
 
             <v-col cols="5">
               <v-text-field
-                v-model="item.description"
+                v-model="association.description"
                 label="Association name"
                 dense
                 outlined
@@ -69,7 +69,7 @@
           <v-btn
             class="my-0"
             color="info"
-            @click="addAssociation()"
+            @click="addAssociation"
           >
             Add Association
           </v-btn>
@@ -87,16 +87,14 @@
         </v-card-title>
         <v-card-text tag="form">
           <v-row
-            v-for="(item, i) in firstNationAssociations"
+            v-for="(firstNationAssociation, i) in firstNationAssociations"
             :key="i"
           >
             <v-col cols="5">
               <v-select
-                v-model="item.firstNationAssociationType"
+                v-model="firstNationAssociation.firstNationAssociationType"
                 label="Association"
                 :items="firstNationAssociationTypeOptions"
-                item-text="text"
-                item-value="value"
                 dense
                 outlined
                 hide-details
@@ -105,11 +103,9 @@
             </v-col>
             <v-col cols="5">
               <v-select
-                v-model="item.firstNationId"
+                v-model="firstNationAssociation.firstNationId"
                 label="First Nation"
                 :items="firstNationOptions"
-                item-value="id"
-                item-text="description"
                 dense
                 outlined
                 hide-details
@@ -130,7 +126,7 @@
             </v-col>
             <v-col cols="10">
               <v-text-field
-                v-model="item.comments"
+                v-model="firstNationAssociation.comments"
                 label="Comments"
                 dense
                 outlined
@@ -143,7 +139,7 @@
               v-if="i < firstNationAssociations.length - 1"
               cols="12"
             >
-              <hr />
+              <v-divider class="black" />
             </v-col>
           </v-row>
         </v-card-text>
@@ -151,7 +147,7 @@
           <v-btn
             class="my-0"
             color="info"
-            @click="addFNAssociation()"
+            @click="addFNAssociation"
           >
             Add Association
           </v-btn>
@@ -173,19 +169,18 @@
 
 <script>
 import axios from 'axios';
-import store from '../../../store';
+
 import { PLACE_URL, STATIC_URL } from '../../../urls';
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'Associations',
+  props: {
+    placeId: {
+      type: [Number, String],
+      required: true,
+    },
+  },
   data: () => ({
-    /* input-fields */
-    valid: false,
-    loadedId: -1,
-    generalRules: [
-      (v) => !!v || 'This input is required',
-      (v) => v.length <= 20 || 'This input must be less than 20 characters',
-    ],
     associations: [],
     firstNationAssociations: [],
 
@@ -194,17 +189,13 @@ export default {
     firstNationOptions: [],
   }),
 
-  created: function () {
-    let id = this.$route.params.id;
-    this.loadedId = id;
-
+  mounted() {
     axios
-      .get(`${PLACE_URL}/${id}`)
+      .get(`${PLACE_URL}/${this.placeId}`)
       .then((resp) => {
         this.associations = resp.data.relationships.associations.data;
         this.firstNationAssociations =
           resp.data.relationships.firstNationAssociations.data;
-        store.dispatch('addSiteHistory', resp.data.data);
       })
       .catch((error) => console.error(error));
 
@@ -220,14 +211,14 @@ export default {
   },
   methods: {
     addAssociation() {
-      this.associations.push({ placeId: this.loadedId, type: 1 });
+      this.associations.push({ placeId: this.placeId, type: 1 });
     },
     removeAssociation(index) {
       this.associations.splice(index, 1);
     },
     addFNAssociation() {
       this.firstNationAssociations.push({
-        placeId: this.loadedId,
+        placeId: this.placeId,
         firstNationAssociationType: 1,
         firstNationId: 1,
       });
@@ -242,7 +233,7 @@ export default {
       };
 
       axios
-        .put(`${PLACE_URL}/${this.loadedId}/associations`, body)
+        .put(`${PLACE_URL}/${this.placeId}/associations`, body)
         .then((resp) => {
           this.$emit('showAPIMessages', resp.data);
         })

@@ -71,8 +71,11 @@
             id="themes-and-function"
             :place-id="id"
           />
+          <Associations
+            id="associations"
+            :place-id="id"
+          />
         </template>
-        <Associations id="associations" />
         <LegalAndZoning id="legal-and-zoning" />
         <Photos id="photos" />
         <Management id="management" />
