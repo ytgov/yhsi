@@ -36,6 +36,7 @@
             <v-list-item v-for="(item, i) in filterOptions" :key="i" link>
               <v-text-field
                 clearable
+                @blur="getDataFromApi"
                 v-model="item.value"
                 :label="item.name"
               ></v-text-field>
@@ -50,16 +51,11 @@
           Add Crash Site
         </v-btn>
 
-        <v-btn v-if="loading" class="black--text mx-1" :loading="true">
+        <v-btn @click="exportData()" class="black--text mx-1" :loading="loadingExport">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
           </v-btn>
-        <JsonCSV v-else :data="aircrashesData" name="airplane_crash_data.csv">
-          <v-btn class="black--text mx-1" :disabled="aircrashesData.length == 0">
-            <v-icon class="mr-1"> mdi-export </v-icon>
-            Export
-          </v-btn>
-        </JsonCSV>
+
         <v-btn @click="downloadPdf()" class="black--text mx-1" :loading="loadingPdf">
             <v-icon class="mr-1">
               mdi-printer
@@ -109,6 +105,7 @@
 <script>
 import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
+import downloadCsv from "../../../utils/dataToCsv";
 import _ from "lodash";
 import aircrash from "../../../controllers/aircrash";
 export default {
@@ -139,15 +136,15 @@ export default {
     totalLength: 0,
     options: { itemsPerPage: 50},
     filterOptions: [
-      { name: "Crash Date", value: "" },
-      { name: "Maker", value: "" },
-      { name: "Aircraft Registration", value: "" },
-      { name: "Country of Registration", value: "" },
-      { name: "Registration Type", value: "" },
-      { name: "Pilot", value: "" },
-      { name: "Souls Onboard", value: "" },
-      { name: "Injuries", value: "" },
-      { name: "Fatalities", value: "" },
+      { name: "Crash Date", value: "", dataAccess: "crashdate"},
+      { name: "Maker", value: "", dataAccess: "aircrafttype" },
+      { name: "Aircraft Registration", value: "",dataAccess: "aircraftregistration" },
+      { name: "Country of Registration", value: "", dataAccess: "nation" },
+      { name: "Registration Type", value: "", dataAccess: "militarycivilian" },
+      { name: "Pilot", value: "", dataAccess: "pilot" },
+      { name: "Souls Onboard", value: "", dataAccess: "soulsonboard" },
+      { name: "Injuries", value: "", dataAccess: "injuries" },
+      { name: "Fatalities", value: "", dataAccess: "fatalities" },
     ],
     selectedItem: 1,
     items: [
@@ -156,7 +153,8 @@ export default {
       { text: "Conversions", icon: "mdi-flag" },
     ],
     aircrashesData: [],
-    loadingPdf: false
+    loadingPdf: false,
+    loadingExport: false
   }),
   mounted() {
     this.getDataFromApi();
@@ -181,19 +179,33 @@ export default {
       page = page > 0 ? page - 1 : 0;
       itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
       let textToMatch = this.search;
+      const prefilters = {};
+      this.filterOptions.map( x => {
+        prefilters[x.dataAccess] = x.value;
+      })
+
       let data = await aircrash.get(
         page,
         itemsPerPage,
         textToMatch,
         sortBy[0],
-        sortDesc[0] ? "desc" : "asc"
+        sortDesc[0] ? "desc" : "asc",
+        prefilters.crashdate,
+        prefilters.aircrafttype,
+        prefilters.aircraftregistration,
+        prefilters.nation,
+        prefilters.militarycivilian,
+        prefilters.crashlocation,
+        prefilters.pilot,
+        prefilters.soulsonboard,
+        prefilters.injuries,
+        prefilters.fatalities
       );
       this.crashsites = data.body;
       this.totalLength = data.count;
       this.crashsites.map((x) => {
         x.crashdate = this.formatDate(x.crashdate);
       });
-      this.aircrashesData = await aircrash.getExport(textToMatch, sortBy[0] ? sortBy[0] : "YACSINumber", sortDesc[0] ? "desc" : "asc");
       this.loading = false;
     },
     formatDate(date) {
@@ -208,10 +220,57 @@ export default {
 
       return `${name}, ${lastname}`;
     },
+    async exportData(){
+      this.loadingExport = true;
+      let { sortBy, sortDesc } = this.options;
+      let textToMatch = this.search;
+      const prefilters = {};
+      this.filterOptions.map( x => {
+        prefilters[x.dataAccess] = x.value;
+      })
+
+      let data = await aircrash.getExport(
+        textToMatch,
+        sortBy[0] ? sortBy[0] : "YACSINumber",
+        sortDesc[0] ? "desc" : "asc",
+        prefilters.crashdate,
+        prefilters.aircrafttype,
+        prefilters.aircraftregistration,
+        prefilters.nation,
+        prefilters.militarycivilian,
+        prefilters.crashlocation,
+        prefilters.pilot,
+        prefilters.soulsonboard,
+        prefilters.injuries,
+        prefilters.fatalities
+      );
+      downloadCsv(data, "aircrashes");
+      this.loadingExport = false;
+    },
     async downloadPdf(){
       this.loadingPdf = true;
       let { sortBy, sortDesc } = this.options;
-      let res = await aircrash.getGridPdf(this.search, sortBy[0] ? sortBy[0] : "YACSINumber", sortDesc[0] ? "desc" : "asc");
+      let textToMatch = this.search;
+      const prefilters = {};
+      this.filterOptions.map( x => {
+        prefilters[x.dataAccess] = x.value;
+      })
+
+      let res = await aircrash.getGridPdf(
+        textToMatch,
+        sortBy[0] ? sortBy[0] : "YACSINumber",
+        sortDesc[0] ? "desc" : "asc",
+        prefilters.crashdate,
+        prefilters.aircrafttype,
+        prefilters.aircraftregistration,
+        prefilters.nation,
+        prefilters.militarycivilian,
+        prefilters.crashlocation,
+        prefilters.pilot,
+        prefilters.soulsonboard,
+        prefilters.injuries,
+        prefilters.fatalities
+      );
       let blob = new Blob([res], { type: "application/octetstream" });
       let url = window.URL || window.webkitURL;
       let link = url.createObjectURL(blob);
@@ -241,87 +300,7 @@ export default {
       return this.$store.getters["boats/selectedFilters"];
     },
     filteredData() {
-      // returns a filtered users array depending on the selected filters
-      if (this.filterOptions) {
-        //the name should actually be 'filters'
-        let sorters = JSON.parse(JSON.stringify(this.filterOptions));
-        let data = JSON.parse(JSON.stringify(this.crashsites));
-        data =
-          sorters[0].value == null || sorters[0].value == ""
-            ? data
-            : data.filter((x) =>
-                x.crashdate
-                  ? x.crashdate
-                      .toLowerCase()
-                      .includes(sorters[0].value.toLowerCase())
-                  : false
-              );
-        data =
-          sorters[1].value === null || sorters[1].value === ""
-            ? data
-            : data.filter((x) =>
-                x.aircrafttype
-                  ? x.aircrafttype
-                      .toLowerCase()
-                      .includes(sorters[1].value.toLowerCase())
-                  : false
-              );
-        data =
-          sorters[2].value === null || sorters[2].value === ""
-            ? data
-            : data.filter((x) =>
-                x.aircraftregistration
-                  ? x.aircraftregistration
-                      .toLowerCase()
-                      .includes(sorters[2].value.toLowerCase())
-                  : false
-              );
-        data =
-          sorters[3].value === null || sorters[3].value === ""
-            ? data
-            : data.filter((x) =>
-                x.nation
-                  ? x.nation
-                      .toLowerCase()
-                      .includes(sorters[3].value.toLowerCase())
-                  : false
-              );
-        data =
-          sorters[4].value === null || sorters[4].value === ""
-            ? data
-            : data.filter((x) =>
-                x.militarycivilian
-                  ? x.militarycivilian
-                      .toLowerCase()
-                      .includes(sorters[4].value.toLowerCase())
-                  : false
-              );
-        data =
-          sorters[5].value === null || sorters[5].value === ""
-            ? data
-            : data.filter((x) => this.filterPilot(x, sorters[5].value));
-        data =
-          sorters[6].value === null || sorters[6].value === ""
-            ? data
-            : data.filter((x) =>
-                x.soulsonboard ? x.soulsonboard == sorters[6].value : false
-              );
-        data =
-          sorters[7].value === null || sorters[7].value === ""
-            ? data
-            : data.filter((x) =>
-                x.injuries ? x.injuries == sorters[7].value : false
-              );
-        data =
-          sorters[8].value === null || sorters[8].value === ""
-            ? data
-            : data.filter((x) =>
-                x.fatalities ? x.fatalities == sorters[8].value : false
-              );
-        return data;
-      } else {
         return this.crashsites;
-      }
     },
   },
   watch: {
