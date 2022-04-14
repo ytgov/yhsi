@@ -211,7 +211,23 @@ export default {
       this.burials.map((x) => {
         x.crashdate = this.formatDate(x.crashdate);
       });
-      this.burialsData = await burials.getExport();
+      this.burialsData = await burials.getExport(
+        textToMatch,
+        sortBy[0],
+        sortDesc[0] ? "desc" : "asc",
+        prefilters.BirthYear,
+        prefilters.BirthMonth,
+        prefilters.BirthDay,
+        prefilters.DeathYear,
+        prefilters.DeathMonth,
+        prefilters.DeathDay,
+        prefilters.Gender,
+        prefilters.Cause,
+        prefilters.Manner,
+        prefilters.Cemetary,
+        prefilters.OriginCountry
+      );
+      console.log(this.burialsData);
       this.loading = false;
     },
     removeCurrentBurial(){
@@ -219,7 +235,27 @@ export default {
     },
     async downloadPdf(){
       this.loadingPdf = true;
-      let res = await burials.getGridPdf();
+      let { sortBy, sortDesc } = this.options;
+      const prefilters = {};
+      this.filterOptions.map( x => {
+        prefilters[x.dataAccess] = x.value;
+      })
+      let res = await burials.getGridPdf(
+        this.search,
+        sortBy[0],
+        sortDesc[0] ? "desc" : "asc",
+        prefilters.BirthYear,
+        prefilters.BirthMonth,
+        prefilters.BirthDay,
+        prefilters.DeathYear,
+        prefilters.DeathMonth,
+        prefilters.DeathDay,
+        prefilters.Gender,
+        prefilters.Cause,
+        prefilters.Manner,
+        prefilters.Cemetary,
+        prefilters.OriginCountry
+      );
       let blob = new Blob([res], { type: "application/octetstream" });
       let url = window.URL || window.webkitURL;
       let link = url.createObjectURL(blob);
