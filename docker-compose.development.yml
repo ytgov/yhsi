@@ -7,6 +7,7 @@ services:
       dockerfile: development.Dockerfile
     environment:
       NODE_ENV: development
+    tty: true
     ports:
       - '8080:8080'
     volumes:
@@ -25,6 +26,7 @@ services:
       DB_HOST: db
       MAIL_HOST: 'host.docker.internal'
       TS_NODE_HISTORY: '/tmp/.ts_node_repl_history'
+    tty: true
     ports:
       - '3000:3000'
     extra_hosts:
@@ -41,6 +43,7 @@ services:
       - 'ACCEPT_EULA=Y'
       - 'SA_PASSWORD=1m5ecure!'
       - 'MSSQL_PID=Express'
+    tty: true
     ports:
       - '1433:1433'
     volumes:

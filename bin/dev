@@ -17,8 +17,8 @@ class DevHelper
   end
 
   def dc(*args)
-    puts "Running: docker-compose -f docker-compose.dev-full.yml #{args.join(' ')}"
-    exec("docker-compose -f docker-compose.dev-full.yml #{args.join(' ')}")
+    puts "Running: docker-compose -f docker-compose.development.yml #{args.join(' ')}"
+    exec("docker-compose -f docker-compose.development.yml #{args.join(' ')}")
   end
 
   def build(*args)
