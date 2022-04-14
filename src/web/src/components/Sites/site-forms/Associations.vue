@@ -13,11 +13,11 @@
     </v-card-title>
     <v-card-text>
       <AssociationsViewer
-        v-model="associations"
+        v-model="place.associations"
         :place-id="placeId"
       />
       <FirstNationAssociationsViewer
-        v-model="associations"
+        v-model="place.firstNationAssociations"
         :place-id="placeId"
       />
     </v-card-text>
@@ -35,9 +35,9 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { mapActions, mapGetters } from 'vuex';
+import { pick } from 'lodash';
 
-import { PLACE_URL } from '../../../urls';
 import AssociationsViewer from '@/components/Sites/site-forms/associations/AssociationsViewer';
 import FirstNationAssociationsViewer from '@/components/Sites/site-forms/associations/FirstNationAssociationsViewer';
 
@@ -50,35 +50,24 @@ export default {
       required: true,
     },
   },
-  data: () => ({
-    associations: [],
-    firstNationAssociations: [],
-  }),
-  mounted() {
-    axios
-      .get(`${PLACE_URL}/${this.placeId}`)
-      .then((resp) => {
-        this.associations = resp.data.relationships.associations.data;
-        this.firstNationAssociations =
-          resp.data.relationships.firstNationAssociations.data;
-      })
-      .catch((error) => console.error(error));
+  data: () => ({}),
+  computed: {
+    ...mapGetters({
+      place: 'places/place',
+    }),
   },
+  mounted() {},
   methods: {
+    ...mapActions({
+      savePlace: 'places/save',
+    }),
     saveChanges() {
-      let body = {
-        associations: this.associations,
-        firstNationAssociations: this.firstNationAssociations,
-      };
+      const data = pick(this.place, [
+        'associations',
+        'firstNationAssociations',
+      ]);
 
-      axios
-        .put(`${PLACE_URL}/${this.placeId}/associations`, body)
-        .then((resp) => {
-          this.$emit('showAPIMessages', resp.data);
-        })
-        .catch((err) => {
-          this.$emit('showError', err);
-        });
+      return this.savePlace(data);
     },
   },
 };

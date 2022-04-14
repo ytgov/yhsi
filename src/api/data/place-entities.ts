@@ -88,14 +88,6 @@ export const CONSTRUCTION_PERIODS = [
 	{ value: 5, text: 'Post 1965' },
 ];
 
-export class Association {
-	id!: number;
-	placeId!: number;
-	type!: number;
-	type_name?: string;
-	description!: string;
-}
-
 export class Contact {
 	id!: number;
 	placeId!: number;
@@ -113,14 +105,6 @@ export class Description {
 	placeId!: number;
 	descriptionText!: string;
 	type!: number;
-}
-
-export class FirstNationAssociation {
-	id!: number;
-	placeId!: number;
-	firstNationId!: number;
-	firstNationAssociationType!: number;
-	comments!: string;
 }
 
 export class Ownership {

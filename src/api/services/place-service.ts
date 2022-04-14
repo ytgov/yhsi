@@ -3,8 +3,10 @@ import moment from 'moment';
 import { get, uniq, cloneDeep, pick } from 'lodash';
 
 import {
+	AssociationService,
 	ConstructionPeriodService,
 	DateService,
+	FirstNationAssociationService,
 	FunctionalUseService,
 	HistoricalPatternService,
 	NameService,
@@ -16,14 +18,12 @@ import {
 	ThemeService,
 } from './';
 import {
-	Association,
 	CONSTRUCTION_PERIODS,
 	ConstructionPeriod,
 	Contact,
 	Description,
 	DESCRIPTION_TYPES,
 	DESCRIPTION_TYPE_ENUMS,
-	FirstNationAssociation,
 	Ownership,
 	OWNERSHIP_TYPES,
 	PLACE_FIELDS,
@@ -75,8 +75,10 @@ function injectRelationshipData(
 
 export class PlaceService {
 	private db: Knex;
+	private assocationService: AssociationService;
 	private constructionPeriodService: ConstructionPeriodService;
 	private dateService: DateService;
+	private firstNationAssociationService: FirstNationAssociationService;
 	private functionalUseService: FunctionalUseService;
 	private historicalPatternService: HistoricalPatternService;
 	private nameService: NameService;
@@ -87,8 +89,12 @@ export class PlaceService {
 
 	constructor(config: Knex.Config<any>) {
 		this.db = knex(config);
+		this.assocationService = new AssociationService(config);
 		this.constructionPeriodService = new ConstructionPeriodService(config);
 		this.dateService = new DateService(config);
+		this.firstNationAssociationService = new FirstNationAssociationService(
+			config
+		);
 		this.functionalUseService = new FunctionalUseService(config);
 		this.historicalPatternService = new HistoricalPatternService();
 		this.nameService = new NameService();
@@ -125,37 +131,16 @@ export class PlaceService {
 					return Promise.reject(new Error(`Could not find Place for id=${id}`));
 				}
 
-				const fnList = await this.staticService.getFirstNations();
 				place.hasPendingChanges = await this.placeEditService.existsForPlace(
 					id
 				);
-
-				const associations = combine(
-					await this.getAssociationsFor(id),
-					this.getAssociationTypes(),
-					'value',
-					'type',
-					'text'
-				);
-				let fnAssociations = combine(
-					await this.getFNAssociationsFor(id),
-					this.getFNAssociationTypes(),
-					'value',
-					'firstNationAssociationType',
-					'text'
-				);
-				fnAssociations = combine(
-					fnAssociations,
-					fnList,
-					'id',
-					'firstNationId',
-					'description'
-				);
-
+				place.associations = await this.assocationService.getFor(id);
 				place.constructionPeriods = await this.constructionPeriodService.getFor(
 					id
 				);
 				place.dates = await this.dateService.getFor(id);
+				place.firstNationAssociations =
+					await this.firstNationAssociationService.getFor(id);
 				place.functionalUses = await this.functionalUseService.getFor(id);
 				place.historicalPatterns = await this.historicalPatternService.getFor(
 					id
@@ -205,8 +190,6 @@ export class PlaceService {
 				const photos = await this.photoService.getAllForPlace(id);
 
 				const relationships = {
-					associations: { data: associations },
-					firstNationAssociations: { data: fnAssociations },
 					ownerships: { data: ownerships },
 					previousOwnerships: { data: previousOwnerships },
 					photos: { data: photos },
@@ -257,6 +240,9 @@ export class PlaceService {
 
 	updateRelations(id: number, attributes: PlainObject) {
 		return Promise.resolve(attributes).then(async (attrs) => {
+			if (attrs.hasOwnProperty('associations')) {
+				await this.assocationService.upsertFor(id, attrs['associations']);
+			}
 			if (attrs.hasOwnProperty('constructionPeriods')) {
 				await this.constructionPeriodService.upsertFor(
 					id,
@@ -265,6 +251,12 @@ export class PlaceService {
 			}
 			if (attrs.hasOwnProperty('dates')) {
 				await this.dateService.upsertFor(id, attrs['dates']);
+			}
+			if (attrs.hasOwnProperty('firstNationAssociations')) {
+				await this.firstNationAssociationService.upsertFor(
+					id,
+					attrs['firstNationAssociations']
+				);
 			}
 			if (attrs.hasOwnProperty('functionalUses')) {
 				await this.functionalUseService.upsertFor(id, attrs['functionalUses']);
@@ -322,40 +314,6 @@ export class PlaceService {
 		}
 
 		return `${nTSMapSheet}/001`;
-	}
-
-	async getAssociationsFor(id: number): Promise<Association[]> {
-		return this.db('association')
-			.where({ placeId: id })
-			.select<Association[]>(['id', 'placeId', 'type', 'description']);
-	}
-
-	async addAssociation(name: Association) {
-		return this.db('association').insert(name);
-	}
-
-	async removeAssociation(id: number) {
-		return this.db('association').where({ id }).delete();
-	}
-
-	async getFNAssociationsFor(id: number): Promise<FirstNationAssociation[]> {
-		return this.db('FirstNationAssociation')
-			.where({ placeId: id })
-			.select<FirstNationAssociation[]>([
-				'id',
-				'placeId',
-				'firstNationId',
-				'firstNationAssociationType',
-				'comments',
-			]);
-	}
-
-	async addFNAssociation(name: FirstNationAssociation) {
-		return this.db('FirstNationAssociation').insert(name);
-	}
-
-	async removeFNAssociation(id: number) {
-		return this.db('FirstNationAssociation').where({ id }).delete();
 	}
 
 	async getOwnershipsFor(id: number): Promise<Ownership[]> {
@@ -464,23 +422,6 @@ export class PlaceService {
 
 	async removeDescription(id: number) {
 		return this.db('Description').where({ id }).delete();
-	}
-
-	getAssociationTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Event' },
-			{ value: 2, text: 'Person' },
-			{ value: 3, text: 'Organization' },
-			{ value: 4, text: 'Architect Designer' },
-			{ value: 5, text: 'Builder' },
-		];
-	}
-
-	getFNAssociationTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Settlement Lands' },
-			{ value: 2, text: 'Traditional Territory' },
-		];
 	}
 
 	getConstructionPeriodTypes(): GenericEnum[] {

@@ -1,3 +1,4 @@
+export * from './association';
 export * from './association-types';
 export * from './auth';
 export * from './category-types';
@@ -8,6 +9,7 @@ export * from './coordinate-determination-types';
 export * from './date';
 export * from './date-types';
 export * from './designation-types';
+export * from './first-nation-association';
 export * from './first-nation-association-types';
 export * from './functional-use';
 export * from './functional-use-types';
