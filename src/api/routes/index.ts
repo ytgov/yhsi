@@ -1,4 +1,5 @@
 export * from './aircrash-router';
+export * from './association-types-router';
 export * from './boat-router';
 export * from './burials-router';
 export * from './catalogs-router';

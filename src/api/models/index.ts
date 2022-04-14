@@ -1,3 +1,4 @@
+export * from './association-types';
 export * from './auth';
 export * from './category-types';
 export * from './condition-types';
