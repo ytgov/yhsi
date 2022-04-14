@@ -81,16 +81,10 @@
 
 
         
-        <v-btn class="black--text mx-1" :loading="true" v-if="loadingExport">
+        <v-btn class="black--text mx-1" @click="getOwnerExport()" :loading="loadingExport">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
         </v-btn>
-        <JsonCSV v-else :data="ownersData"  name="owner_data.csv">
-          <v-btn class="black--text mx-1" :disabled="ownersData.length == 0">
-            <v-icon class="mr-1"> mdi-export </v-icon>
-            Export
-          </v-btn>
-        </JsonCSV>
 
         <v-btn @click="downloadPdfOwners()" class="black--text mx-1" :loading="loadingPdf">
             <v-icon class="mr-1">
@@ -225,7 +219,8 @@ export default {
     async getOwnerExport(){
       this.loadingExport = true;
       let o = this.ownerTableOptions;
-      this.ownersData = await owners.getExport(this.searchBoat, o.sortBy[0] ? o.sortBy[0] : "OwnerName", o.sortDesc[0] ? "desc" : "asc");
+      let data = await owners.getExport(this.searchOwner, o.sortBy[0] ? o.sortBy[0] : "OwnerName", o.sortDesc[0] ? "desc" : "asc");
+      downloadCsv(data, "owners");
       this.loadingExport = false;
     },
     async getBoatExport(){
@@ -271,7 +266,7 @@ export default {
     async downloadPdfOwners(){
       this.loadingPdf = true;
       let o = this.ownerTableOptions;
-      let res = await owners.getGridPdf(this.searchBoat, o.sortBy[0] ? o.sortBy[0] : "OwnerName", o.sortDesc[0] ? "desc" : "asc");
+      let res = await owners.getGridPdf(this.searchOwner, o.sortBy[0] ? o.sortBy[0] : "OwnerName", o.sortDesc[0] ? "desc" : "asc");
       let blob = new Blob([res], { type: "application/octetstream" });
       let url = window.URL || window.webkitURL;
       let link = url.createObjectURL(blob);
