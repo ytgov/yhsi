@@ -105,12 +105,14 @@ import ContributingResourceTypesSelect from '@/components/Sites/site-forms/Contr
 import CoordinateDeterminationTypesSelect from '@/components/Sites/site-forms/CoordinateDeterminationTypesSelect';
 import DatesViewer from '@/components/Sites/site-change-request/DatesViewer';
 import DesignationTypesSelect from '@/components/Sites/site-forms/DesignationTypesSelect';
+import FunctionalUsesViewer from '@/components/Sites/site-change-request/FunctionalUsesViewer';
 import HistoricalPatternsViewer from '@/components/Sites/site-change-request/HistoricalPatternsViewer';
 import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
 import NamesViewer from '@/components/Sites/site-change-request/NamesViewer';
 import RecordTypesSelect from '@/components/Sites/site-forms/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/site-forms/SiteCategoryTypesSelect';
 import SiteStatusTypesSelect from '@/components/Sites/site-forms/SiteStatusTypesSelect';
+import ThemesViewer from '@/components/Sites/site-change-request/ThemesViewer';
 
 const FIELD_TYPES = Object.freeze([
 	// Summary Form Fields
@@ -313,6 +315,36 @@ const FIELD_TYPES = Object.freeze([
 			label: 'Condition notes',
 		},
 	},
+	// Themes & Function form fields
+	{
+		key: 'yHSThemes',
+		type: 'v-textarea',
+		fieldAttrs: {
+			label: 'YHS Themes',
+		},
+	},
+	{
+		key: 'themes',
+		type: ThemesViewer,
+	},
+	{
+		key: 'functionalUses',
+		type: FunctionalUsesViewer,
+	},
+	{
+		key: 'currentUseComment',
+		type: 'v-textarea',
+		fieldAttrs: {
+			label: 'YHS Current Use',
+		},
+	},
+	{
+		key: 'yHSPastUse',
+		type: 'v-textarea',
+		fieldAttrs: {
+			label: 'YHS Past Use',
+		},
+	},
 ]);
 
 export default {
@@ -326,12 +358,14 @@ export default {
 		CoordinateDeterminationTypesSelect,
 		DatesViewer,
 		DesignationTypesSelect,
+		FunctionalUsesViewer,
 		HistoricalPatternsViewer,
 		JsonViewer,
 		NamesViewer,
 		RecordTypesSelect,
 		SiteCategoryTypesSelect,
 		SiteStatusTypesSelect,
+		ThemesViewer,
 	},
 	props: {
 		placeEditId: {
