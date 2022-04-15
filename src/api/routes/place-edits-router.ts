@@ -132,12 +132,23 @@ placeEditsRouter.get(
 		return placeEditService
 			.buildDetailedView(id)
 			.then((result) => {
+				if (result === undefined) {
+					return res.status(404).json({
+						messages: [
+							{
+								variant: 'error',
+								text: `Could not find PlaceEdit with id=${id}`,
+							},
+						],
+					});
+				}
+
 				return res.json({
 					data: result,
 				});
 			})
 			.catch((error) => {
-				return res.status(422).json({
+				return res.status(error.code || 422).json({
 					messages: [{ variant: 'error', text: error.message }],
 				});
 			});

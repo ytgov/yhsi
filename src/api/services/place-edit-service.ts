@@ -94,6 +94,8 @@ export class PlaceEditService {
 			})
 			.where({ 'PlaceEdit.Id': id })
 			.then((attributes) => {
+				if (attributes === undefined) return;
+
 				const placeEdit = new PlaceEdit(attributes);
 				const placeEditSerializer = new PlaceEditSerializer(placeEdit);
 				return placeEditSerializer.detailedView();
