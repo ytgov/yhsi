@@ -2,7 +2,7 @@ import { PlaceEdit } from '../../models/place-edit';
 import PlaceEditSerializer from '../../serializers/place-edit-serializer';
 
 describe('PlaceEditSerializer', () => {
-	describe('#constructor', () => {
+	describe('#extractAssociations', () => {
 		context('when creating a new PlaceEditSerializer object', () => {
 			it('transforms and sets the association columns correctly', () => {
 				const placeEdit = new PlaceEdit({
@@ -11,7 +11,11 @@ describe('PlaceEditSerializer', () => {
 					],
 				});
 				const placeEditSerializer = new PlaceEditSerializer(placeEdit);
-				expect(placeEditSerializer).to.deep.include({
+				expect(
+					placeEditSerializer.extractAssociations({
+						associations: 'associationJSON',
+					})
+				).to.deep.include({
 					associations: [
 						{ id: 1, placeId: 1543, type: 3, description: 'Field Force' },
 					],
