@@ -91,7 +91,7 @@ export class PeopleService {
                 .offset(offset);
         }
 
-        return { count: counter[0].count, body: people };
+        return { count: people.length, body: people };
 
     }
 

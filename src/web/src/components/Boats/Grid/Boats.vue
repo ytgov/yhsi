@@ -106,6 +106,7 @@ export default {
         prefilters.VesselType
       );
       this.boats = _.get(data, "body", []);
+      console.log(data);
       this.totalLength = _.get(data, "count", 0);
       this.boats.map((x) => {
         x.ConstructionDate = this.formatDate(x.ConstructionDate);

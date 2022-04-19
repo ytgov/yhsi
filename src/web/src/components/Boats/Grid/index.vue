@@ -138,7 +138,6 @@
 </template>
 
 <script>
-import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
 import downloadCsv from "../../../utils/dataToCsv";
 import downloadPdf from "../../../utils/dataToPdf";
@@ -148,7 +147,7 @@ import owners from "../../../controllers/owners";
 //import jsPDF from "jspdf";
 export default {
   name: "boatsgrid-index",
-  components: { Breadcrumbs, JsonCSV },
+  components: { Breadcrumbs },
   data: () => ({
     route: "",
     active_tab: "",

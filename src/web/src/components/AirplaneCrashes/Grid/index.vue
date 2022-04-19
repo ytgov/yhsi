@@ -103,14 +103,13 @@
 </template>
 
 <script>
-import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
 import downloadCsv from "../../../utils/dataToCsv";
 import _ from "lodash";
 import aircrash from "../../../controllers/aircrash";
 export default {
   name: "boatsgrid-index",
-  components: { Breadcrumbs, JsonCSV },
+  components: { Breadcrumbs },
   data: () => ({
     route: "",
     loading: false,
