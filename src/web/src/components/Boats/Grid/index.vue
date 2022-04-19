@@ -141,6 +141,7 @@
 import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
 import downloadCsv from "../../../utils/dataToCsv";
+import downloadPdf from "../../../utils/dataToPdf";
 import _ from "lodash";
 import boats from "../../../controllers/boats";
 import owners from "../../../controllers/owners";
@@ -243,8 +244,6 @@ export default {
       );
 
       downloadCsv(data, "boats");
-      
-      //this.boatsData = await boats.getExport(this.searchBoat, b.sortBy[0] ? b.sortBy[0] : "Name", b.sortDesc[0] ? "desc" : "asc");
       this.loadingExport = false;
     },
     async downloadPdf(){
@@ -252,30 +251,14 @@ export default {
       let b = this.boatTableOptions;
       
       let res = await boats.getGridPdf(this.searchBoat, b.sortBy[0] ? b.sortBy[0] : "Name", b.sortDesc[0] ? "desc" : "asc");
-      let blob = new Blob([res], { type: "application/octetstream" });
-      let url = window.URL || window.webkitURL;
-      let link = url.createObjectURL(blob);
-      let a = document.createElement("a");
-      a.setAttribute("download", "Boats.pdf");
-      a.setAttribute("href", link);
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      downloadPdf(res, "Boats");
       this.loadingPdf = false;
     },
     async downloadPdfOwners(){
       this.loadingPdf = true;
       let o = this.ownerTableOptions;
       let res = await owners.getGridPdf(this.searchOwner, o.sortBy[0] ? o.sortBy[0] : "OwnerName", o.sortDesc[0] ? "desc" : "asc");
-      let blob = new Blob([res], { type: "application/octetstream" });
-      let url = window.URL || window.webkitURL;
-      let link = url.createObjectURL(blob);
-      let a = document.createElement("a");
-      a.setAttribute("download", "Owners.pdf");
-      a.setAttribute("href", link);
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      downloadPdf(res, "Owners");
       this.loadingPdf = false;
     },
   },
