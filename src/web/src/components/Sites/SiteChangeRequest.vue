@@ -111,6 +111,8 @@ import FunctionalUsesViewer from '@/components/Sites/site-change-request/Functio
 import HistoricalPatternsViewer from '@/components/Sites/site-change-request/HistoricalPatternsViewer';
 import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
 import NamesViewer from '@/components/Sites/site-change-request/NamesViewer';
+import OwnershipsViewer from '@/components/Sites/site-change-request/OwnershipsViewer';
+import PreviousOwnershipsViewer from '@/components/Sites/site-change-request/PreviousOwnershipsViewer';
 import RecordTypesSelect from '@/components/Sites/site-forms/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/site-forms/SiteCategoryTypesSelect';
 import SiteStatusTypesSelect from '@/components/Sites/site-forms/SiteStatusTypesSelect';
@@ -356,6 +358,71 @@ const FIELD_TYPES = Object.freeze([
 		key: 'firstNationAssociations',
 		type: FirstNationAssociationsViewer,
 	},
+	// Legal & Zoning form fields
+	{
+		key: 'ownerships',
+		type: OwnershipsViewer,
+	},
+	{
+		key: 'zoning',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Zoning',
+		},
+	},
+	{
+		key: 'townSiteMapNumber',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Town site map number',
+		},
+	},
+	{
+		key: 'siteDistrictNumber',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Site district',
+		},
+	},
+	{
+		key: 'groupYHSI',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Group YHSI',
+		},
+	},
+	{
+		key: 'lAGroup',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Group',
+		},
+	},
+	{
+		key: 'lot',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Lot',
+		},
+	},
+	{
+		key: 'block',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Block',
+		},
+	},
+	{
+		key: 'planNumber',
+		type: 'v-text-field',
+		fieldAttrs: {
+			label: 'Plan number',
+		},
+	},
+	{
+		key: 'previousOwnerships',
+		type: PreviousOwnershipsViewer,
+	},
 ]);
 
 export default {
@@ -375,6 +442,8 @@ export default {
 		HistoricalPatternsViewer,
 		JsonViewer,
 		NamesViewer,
+		OwnershipsViewer,
+		PreviousOwnershipsViewer,
 		RecordTypesSelect,
 		SiteCategoryTypesSelect,
 		SiteStatusTypesSelect,
