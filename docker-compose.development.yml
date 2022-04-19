@@ -1,15 +1,28 @@
-version: '3'
+version: '3.7'
 
 services:
+  web:
+    build:
+      context: ./src/web
+      dockerfile: development.Dockerfile
+    environment:
+      NODE_ENV: development
+    tty: true
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./src/web:/usr/src/web
+    depends_on:
+      - api
+      - db
   api:
     build:
       context: ./src/api
       dockerfile: development.Dockerfile
-    command: ['npm', 'run', 'test']
     env_file:
       - ./src/api/.env.development
     environment:
-      NODE_ENV: test
+      NODE_ENV: development
       DB_HOST: db
       MAIL_HOST: 'host.docker.internal'
       TS_NODE_HISTORY: '/tmp/.ts_node_repl_history'

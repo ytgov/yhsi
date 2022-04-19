@@ -1,3 +1,7 @@
+export interface ColumnRemaping {
+	[key: string]: string;
+}
+
 export interface GenericEnum {
 	value: number;
 	text: string;

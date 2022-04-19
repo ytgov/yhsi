@@ -96,8 +96,8 @@ v-card.mb-0(
 import { mapGetters } from 'vuex';
 
 import ConditionTypesSelect from '@/components/Sites/site-forms/ConditionTypesSelect';
-import ConstructionPeriodsViewer from '@/components/Sites/site-forms/dates/ConstructionPeriodsViewer';
-import DatesViewer from '@/components/Sites/site-forms/dates/DatesViewer';
+import ConstructionPeriodsViewer from '@/components/Sites/site-forms/dates-and-conditions/ConstructionPeriodsViewer';
+import DatesViewer from '@/components/Sites/site-forms/dates-and-conditions/DatesViewer';
 import SiteStatusTypesSelect from '@/components/Sites/site-forms/SiteStatusTypesSelect';
 
 export default {

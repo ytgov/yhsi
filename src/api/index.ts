@@ -18,6 +18,8 @@ import {
 	designationTypesRouter,
 	firstNationAssociationTypesRouter,
 	firstNationsRouter,
+	functionalTypesRouter,
+	functionalUseTypesRouter,
 	historicalPatternTypesRouter,
 	historiesRouter,
 	mapsRouter,
@@ -31,6 +33,7 @@ import {
 	photosExtraRouter,
 	placeEditsRouter,
 	placeRouter,
+	placeThemesRouter,
 	recordTypesRouter,
 	registerRouter,
 	revisionLogTypesRouter,
@@ -122,6 +125,8 @@ app.use('/api/date-types', RequiresAuthentication, dateTypesRouter);
 app.use('/api/designation-types', RequiresAuthentication, designationTypesRouter);
 app.use('/api/first-nation-association-types', RequiresAuthentication, firstNationAssociationTypesRouter);
 app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);
+app.use('/api/functional-types', RequiresAuthentication, functionalTypesRouter);
+app.use('/api/functional-use-types', RequiresAuthentication, functionalUseTypesRouter);
 app.use('/api/historical-pattern-types', RequiresAuthentication, historicalPatternTypesRouter);
 app.use('/api/nts-map-sheets', RequiresAuthentication, ntsMapSheetsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
@@ -135,6 +140,7 @@ app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
 app.use('/api/photos', photosExtraRouter);
 app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
 app.use('/api/place-edits', RequiresAuthentication, placeEditsRouter);
+app.use('/api/place-themes', RequiresAuthentication, placeThemesRouter);
 app.use('/api/record-types', RequiresAuthentication, recordTypesRouter);
 app.use('/api/site-category-types', RequiresAuthentication, siteCategoryTypesRouter);
 app.use('/api/site-status-types', RequiresAuthentication, siteStatusTypesRouter);

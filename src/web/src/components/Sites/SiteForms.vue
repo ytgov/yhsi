@@ -66,8 +66,12 @@
             id="dates-and-condition"
             :place-id="id"
           />
+          <component
+            :is="themesAndFunctionsComponent"
+            id="themes-and-function"
+            :place-id="id"
+          />
         </template>
-        <Themes id="themes-and-function" />
         <Associations id="associations" />
         <LegalAndZoning id="legal-and-zoning" />
         <Photos id="photos" />
@@ -95,7 +99,8 @@ import PrintDialog from '@/components/Sites/SiteFormsPrintDialog';
 import SiteFormsSidebar from '@/components/Sites/SiteFormsSidebar';
 import Summary from '@/components/Sites/site-forms/Summary';
 import SummaryReadonly from '@/components/Sites/site-forms/SummaryReadonly';
-import Themes from '@/components/Sites/site-forms/Themes';
+import ThemesAndFunctions from '@/components/Sites/site-forms/ThemesAndFunctions';
+import ThemesAndFunctionsViewer from '@/components/Sites/site-forms/ThemesAndFunctionsViewer';
 
 export default {
   name: 'SiteForms',
@@ -113,7 +118,8 @@ export default {
     SiteFormsSidebar,
     Summary,
     SummaryReadonly,
-    Themes,
+    ThemesAndFunctions,
+    ThemesAndFunctionsViewer,
   },
   props: {
     id: {
@@ -144,6 +150,11 @@ export default {
       if (this.hasPendingChanges) return SummaryReadonly;
 
       return Summary;
+    },
+    themesAndFunctionsComponent() {
+      if (this.hasPendingChanges) return ThemesAndFunctionsViewer;
+
+      return ThemesAndFunctions;
     },
   },
   mounted() {

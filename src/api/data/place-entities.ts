@@ -123,14 +123,6 @@ export class FirstNationAssociation {
 	comments!: string;
 }
 
-export class FunctionalUse {
-	id!: number;
-	placeId!: number;
-	functionalTypeId!: number;
-	functionalUseType!: number;
-	description!: string;
-}
-
 export class Ownership {
 	id!: number;
 	placeId!: number;
@@ -153,12 +145,6 @@ export class RevisionLog {
 	revisionDate!: Date;
 	revisedBy!: string;
 	details!: string;
-}
-
-export class Theme {
-	id!: number;
-	placeId!: number;
-	placeThemeId!: number;
 }
 
 export class WebLink {

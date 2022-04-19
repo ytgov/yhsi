@@ -13,8 +13,6 @@ import { DB_CONFIG } from '../config';
 import { buildDatabaseSort, PlaceService } from '../services';
 import {
 	Place,
-	Theme,
-	FunctionalUse,
 	Association,
 	FirstNationAssociation,
 	Ownership,
@@ -177,76 +175,6 @@ placeRouter.post(
 			});
 
 		return res.json({ data: result });
-	}
-);
-
-placeRouter.put(
-	'/:id/themes',
-	[param('id').isInt().notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		let { id } = req.params;
-		let { themes, functionalUses } = req.body;
-		let updater = req.body;
-
-		delete updater.themes;
-		delete updater.functionalUses;
-
-		await placeService.updatePlace(parseInt(id), updater);
-
-		let oldThemes = await placeService.getThemesFor(parseInt(id));
-
-		for (let on of oldThemes) {
-			let match = themes.filter(
-				(n: Theme) => n.placeThemeId == on.placeThemeId
-			);
-
-			if (match.length == 0) {
-				await placeService.removeTheme(on.id);
-			}
-		}
-
-		for (let on of themes) {
-			let match = oldThemes.filter(
-				(n: Theme) => n.placeThemeId == on.placeThemeId
-			);
-
-			if (match.length == 0) {
-				delete on.typeName;
-				await placeService.addTheme(on);
-			}
-		}
-
-		let oldFunctions = await placeService.getFunctionUsesFor(parseInt(id));
-
-		for (let on of oldFunctions) {
-			let match = functionalUses.filter(
-				(n: FunctionalUse) =>
-					n.functionalTypeId == on.functionalTypeId &&
-					n.functionalUseType == on.functionalUseType
-			);
-
-			if (match.length == 0) {
-				await placeService.removeFunctionalUse(on.id);
-			}
-		}
-
-		for (let on of functionalUses) {
-			let match = oldFunctions.filter(
-				(n: FunctionalUse) =>
-					n.functionalTypeId == on.functionalTypeId &&
-					n.functionalUseType == on.functionalUseType
-			);
-
-			if (match.length == 0) {
-				delete on.typeName;
-				await placeService.addFunctionalUse(on);
-			}
-		}
-
-		return res.json({
-			messages: [{ variant: 'success', text: 'Site updated' }],
-		});
 	}
 );
 
@@ -561,10 +489,12 @@ placeRouter.patch(
 		body('constructionPeriods').isArray().optional({ nullable: true }),
 		body('contributingResources').isArray().optional({ nullable: true }),
 		body('coordinateDetermination').isInt().optional(),
+		body('currentUseComment').isString().optional({ nullable: true }),
 		body('dates').isArray().optional({ nullable: true }),
 		body('designations').isArray().optional({ nullable: true }),
 		body('doorCondition').isInt().optional(),
 		body('floorCondition').isInt().optional(),
+		body('functionalUses').isArray().optional({ nullable: true }),
 		body('hectareArea').isString().optional({ nullable: true }),
 		body('historicalPatterns').isArray().optional({ nullable: true }),
 		body('latitude').isString().optional({ nullable: true }),
@@ -587,7 +517,10 @@ placeRouter.patch(
 		body('showInRegister').isBoolean().optional(),
 		body('siteCategories').isArray().optional({ nullable: true }),
 		body('siteStatus').isInt().optional(),
+		body('themes').isArray().optional({ nullable: true }),
 		body('wallCondition').isInt().optional(),
+		body('yHSPastUse').isString().optional({ nullable: true }),
+		body('yHSThemes').isString().optional({ nullable: true }),
 	],
 	ReturnValidationErrors,
 	(req: Request, res: Response) => {

@@ -31,19 +31,6 @@ staticRouter.get('/first-nation', async (req: Request, res: Response) => {
 	return res.json({ data: list });
 });
 
-staticRouter.get('/functional-type', async (req: Request, res: Response) => {
-	let list = await staticService.getFunctionalTypes();
-	return res.json({ data: list });
-});
-
-staticRouter.get(
-	'/functional-use-type',
-	async (req: Request, res: Response) => {
-		let list = await placeService.getFunctionalUseTypes();
-		return res.json({ data: list });
-	}
-);
-
 staticRouter.get('/contact-type', async (req: Request, res: Response) => {
 	let list = await placeService.getContactTypes();
 	return res.json({ data: list });
@@ -94,14 +81,6 @@ staticRouter.get('/photo-copyright', async (req: Request, res: Response) => {
 
 staticRouter.get('/usage-right', async (req: Request, res: Response) => {
 	let list = await staticService.getUsageRights();
-	return res.json({ data: list });
-});
-
-staticRouter.get('/place-theme', async (req: Request, res: Response) => {
-	let list = await staticService.getPlaceThemes();
-	list = list.map((l) =>
-		Object.assign(l, { display: `${l.category} / ${l.type}` })
-	);
 	return res.json({ data: list });
 });
 
