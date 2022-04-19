@@ -52,6 +52,7 @@ export class PlaceEditService {
 	buildDetailedView(id: number) {
 		return this.defaultScope
 			.first({
+				associationJSON: 'AssociationJSON',
 				bordenNumber: 'BordenNumber',
 				buildingSize: 'BuildingSize',
 				category: 'Category',
@@ -64,6 +65,7 @@ export class PlaceEditService {
 				datesJSON: 'DatesJSON',
 				designations: 'Designations',
 				doorCondition: 'DoorCondition',
+				firstNationAssociationJSON: 'FirstNationAssociationJSON',
 				floorCondition: 'FloorCondition',
 				functionalUseJSON: 'FunctionalUseJSON',
 				hectareArea: 'HectareArea',
