@@ -17,6 +17,7 @@ export * from './functional-use-types';
 export * from './historical-pattern';
 export * from './historical-pattern-types';
 export * from './name';
+export * from './ownership-types';
 export * from './place';
 export * from './place-edit';
 export * from './record-types';

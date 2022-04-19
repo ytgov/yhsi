@@ -12,68 +12,10 @@
       Legal &amp; Zoning
     </v-card-title>
     <v-card-text tag="section">
-      <v-card
-        class="default mb-0"
-        tag="section"
-      >
-        <v-card-title
-          tag="h3"
-          class="mb-0 text-h6"
-        >
-          Ownerships
-        </v-card-title>
-        <v-card-text tag="form">
-          <v-row
-            v-for="(item, i) in ownerships"
-            :key="i"
-          >
-            <v-col cols="5">
-              <v-select
-                v-model="item.ownershipType"
-                :items="categoryOptions"
-                label="Category of Property"
-                dense
-                outlined
-                background-color="white"
-                hide-details
-              />
-            </v-col>
-            <v-col cols="5">
-              <v-text-field
-                v-model="item.comments"
-                label="Comments"
-                dense
-                outlined
-                background-color="white"
-                hide-details
-              />
-            </v-col>
-
-            <v-col cols="2">
-              <v-btn
-                color="warning"
-                x-small
-                fab
-                title="Remove"
-                class="my-0 float-right"
-                @click="removeOwner(i)"
-              >
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn
-            class="my-0"
-            color="info"
-            @click="addOwner"
-          >
-            Add Ownership
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-
+      <OwnershipsEditor
+        v-model="ownerships"
+        :place-id="placeId"
+      />
       <v-divider class="my-3" />
       <v-row>
         <v-col cols="6">
@@ -261,11 +203,14 @@
 <script>
 import axios from 'axios';
 
-import { PLACE_URL, STATIC_URL } from '@/urls';
+import { PLACE_URL } from '@/urls';
+
+import OwnershipsEditor from '@/components/Sites/site-forms/legal-and-zoning/OwnershipsEditor';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'LegalAndZoning',
+  components: { OwnershipsEditor },
   props: {
     placeId: {
       type: [Number, String],
@@ -274,7 +219,6 @@ export default {
   },
   data: () => ({
     ownerships: [],
-    categoryOptions: [],
     prevOwnerships: [],
     fields: {
       /*Field data from the swaggerhub api docs below this line*/
@@ -297,21 +241,8 @@ export default {
         this.prevOwnerships = resp.data.relationships.previousOwnerships.data;
       })
       .catch((error) => console.error(error));
-
-    axios.get(`${STATIC_URL}/ownership-types`).then((resp) => {
-      this.categoryOptions = resp.data.data;
-    });
   },
   methods: {
-    addOwner() {
-      this.ownerships.push({
-        ownershipType: 1,
-        placeId: this.placeId,
-      });
-    },
-    removeOwner(index) {
-      this.ownerships.splice(index, 1);
-    },
     addPrevOwner() {
       this.prevOwnerships.push({
         ownershipDate: '',

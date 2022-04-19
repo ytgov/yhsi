@@ -1,5 +1,4 @@
 export * from './description-entities';
-export * from './ownership-entities';
 export * from './photo-entities';
 export * from './place-entities';
 export * from './revision-log-entities';
