@@ -177,6 +177,9 @@ export class Place {
 	}
 
 	static decodeCommaDelimitedArrayColumns(object: PlainObject) {
+		if (!object)
+			return object;
+
 		Place.COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
 			if (!object.hasOwnProperty(column)) return;
 

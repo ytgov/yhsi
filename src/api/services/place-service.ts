@@ -42,7 +42,9 @@ import {
 	Name,
 	Place,
 	PlainObject,
+	User,
 } from '../models';
+import { NotFoundError } from '../utils/validation';
 
 function combine(
 	list1: Array<any>,
@@ -120,14 +122,17 @@ export class PlaceService {
 			.select(this.db.raw("'French teaser' as teaserFrench"));
 	}
 
-	async getById(id: number) {
-		return this.db('place')
-			.first<Place>(PLACE_FIELDS)
-			.where({ id: id })
-			.then(Place.decodeCommaDelimitedArrayColumns)
+	async getById(id: number, user?: User) {
+		let selectStatement = this.db('place')
+			.first(PLACE_FIELDS)
+			.where({ id: id });
+
+		this.scopeSitesToUser(selectStatement, user);
+
+		return selectStatement.then(Place.decodeCommaDelimitedArrayColumns)
 			.then(async (place) => {
 				if (!place) {
-					return Promise.reject(new Error(`Could not find Place for id=${id}`));
+					return Promise.reject(new NotFoundError(`Could not find Place for id=${id}`));
 				}
 
 				const fnList = await this.staticService.getFirstNations();
@@ -594,7 +599,8 @@ export class PlaceService {
 		page: number,
 		itemsPerPage: number,
 		skip: number,
-		take: number
+		take: number,
+		user: User
 	): Promise<any> {
 		return new Promise(async (resolve, reject) => {
 			const selectStatement = this.db('place')
@@ -617,18 +623,15 @@ export class PlaceService {
 					this.db('Place')
 						.select({
 							PlaceId: 'Place.Id',
-							Status: this.db.raw(`
-								CASE
-									WHEN PlaceEdit.PlaceId IS NULL THEN ''
-									ELSE 'Editing'
-								END
-							`),
+							Status: this.db.raw(`CASE WHEN PlaceEdit.PlaceId IS NULL THEN '' ELSE 'Editing' END`),
 						})
 						.as('StatusTable')
 						.innerJoin('PlaceEdit', 'PlaceEdit.PlaceId', 'Place.Id'),
 					'Place.Id',
 					'StatusTable.PlaceId'
 				);
+
+			this.scopeSitesToUser(selectStatement, user);
 
 			type QueryBuilder = {
 				(base: Knex.QueryInterface, value: any): Knex.QueryInterface;
@@ -780,5 +783,31 @@ export class PlaceService {
 
 			resolve(results);
 		});
+	}
+
+	async scopeSitesToUser(query: Knex.QueryInterface, user?: User) {
+		if (!user)
+			return;
+
+		//console.log("SCOPING SITES FOR: ", user.site_access)
+
+		if (user.site_access) {
+			let mapSheets = user.site_access.filter(a => a.access_type_id == 1).map(a => a.access_text);
+			let communities = user.site_access.filter(a => a.access_type_id == 2).map(a => a.access_text);
+			let firstNations = user.site_access.filter(a => a.access_type_id == 3).map(a => a.access_text);
+
+			let scope = "(1=0"
+
+			if (mapSheets.length > 0)
+				scope += ` OR NTSMapSheet IN ('${mapSheets.join("','")}')`;
+			if (communities.length > 0)
+				scope += ` OR CommunityId IN (${communities.join(",")})`;
+			if (firstNations.length > 0)
+				scope += ` OR [FirstNationAssociation].[FirstNationId] IN (${firstNations.join(",")})`;
+
+			scope += ")"
+
+			query.whereRaw(scope);
+		}
 	}
 }
