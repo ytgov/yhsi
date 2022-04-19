@@ -1,45 +1,31 @@
 import { camelCase, pick } from 'lodash';
 
 import { mapKeysDeep } from '../utils/lodash-extensions';
-import { ColumnRemaping, PlainObject, Place, PlaceEdit } from '../models';
+import { PlainObject, Place, PlaceEdit } from '../models';
+import BaseSerializer from './base-serializer';
 
-export default class PlaceEditSerializer {
-	placeEdit: PlaceEdit;
-
+export default class PlaceEditSerializer extends BaseSerializer<PlaceEdit> {
 	constructor(placeEdit: PlaceEdit) {
-		this.placeEdit = placeEdit;
+		super(placeEdit);
 	}
 
-	extractAssociations(associationsColumns: PlainObject): PlainObject {
-		const associations: PlainObject = {};
-		Object.entries(associationsColumns).forEach(([name, fieldName]) => {
-			const associationAsString = this.placeEdit[fieldName];
-			if (associationAsString === undefined) return;
+	decodeCommaDelimitedArray(
+		value: string | undefined
+	): PlainObject | undefined {
+		if (value === undefined) return undefined;
 
-			associations[name] = this.jsonParseAndCamelCase(associationAsString);
-		});
-
-		return associations;
+		return Place.decodeCommaDelimitedArray(value);
 	}
 
-	extractCommaDelimitedArray(columns: string[]): PlainObject {
-		const columnData: PlainObject = {};
-		columns.forEach((column) => {
-			const columnAsString = this.placeEdit[column];
-			if (columnAsString === undefined) return;
+	jsonParseAndCamelCase(value: string | undefined): PlainObject | undefined {
+		if (value === undefined) return undefined;
 
-			columnData[column] = Place.decodeCommaDelimitedArray(column);
-		});
-		return columnData;
-	}
-
-	jsonParseAndCamelCase(value: string): PlainObject {
 		const objectAsJson = JSON.parse(value);
 		return mapKeysDeep(objectAsJson, camelCase);
 	}
 
 	defaultView(): PlainObject {
-		return pick(this.placeEdit, [
+		return this.fields([
 			'id',
 			'placeId',
 			'yHSIId',
@@ -53,7 +39,7 @@ export default class PlaceEditSerializer {
 	detailedView(): PlainObject {
 		return {
 			...this.defaultView(),
-			...pick(this.placeEdit, [
+			...this.fields([
 				'block',
 				'bordenNumber',
 				'buildingSize',
@@ -111,28 +97,60 @@ export default class PlaceEditSerializer {
 				'yHSThemes',
 				'zoning',
 			]),
-			...this.extractCommaDelimitedArray([
-				'contributingResources',
-				'designations',
-				'records',
-				'siteCategories',
-			]),
-			...this.extractAssociations({
-				associations: 'associationJSON',
-				constructionPeriods: 'constructionPeriodJSON',
-				contacts: 'contactJSON',
-				dates: 'datesJSON',
-				descriptions: 'descriptionJSON',
-				firstNationAssociations: 'firstNationAssociationJSON',
-				functionalUses: 'functionalUseJSON',
-				historicalPatterns: 'historicalPatternJSON',
-				names: 'nameJSON',
-				ownerships: 'ownershipJSON',
-				previousOwnerships: 'previousOwnershipJSON',
-				revisionLogs: 'revisionLogJSON',
-				themes: 'themeJSON',
-				webLinks: 'webLinkJSON',
-			}),
+			...this.field('contributingResources', (placeEdit) =>
+				this.decodeCommaDelimitedArray(placeEdit.contributingResources)
+			),
+			...this.field('designations', (placeEdit) =>
+				this.decodeCommaDelimitedArray(placeEdit.designations)
+			),
+			...this.field('records', (placeEdit) =>
+				this.decodeCommaDelimitedArray(placeEdit.records)
+			),
+			...this.field('siteCategories', (placeEdit) =>
+				this.decodeCommaDelimitedArray(placeEdit.siteCategories)
+			),
+			...this.field('associations', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.associationJSON)
+			),
+			...this.field('constructionPeriods', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.constructionPeriodJSON)
+			),
+			...this.field('contacts', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.contactJSON)
+			),
+			...this.field('dates', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.datesJSON)
+			),
+			...this.field('descriptions', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.descriptionJSON)
+			),
+			...this.field('firstNationAssociations', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.firstNationAssociationJSON)
+			),
+			...this.field('functionalUses', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.functionalUseJSON)
+			),
+			...this.field('historicalPatterns', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.historicalPatternJSON)
+			),
+			...this.field('names', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.nameJSON)
+			),
+			...this.field('ownerships', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.ownershipJSON)
+			),
+			...this.field('previousOwnerships', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.previousOwnershipJSON)
+			),
+			...this.field('revisionLogs', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.revisionLogJSON)
+			),
+			...this.field('themes', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.themeJSON)
+			),
+			...this.field('webLinks', (placeEdit) =>
+				this.jsonParseAndCamelCase(placeEdit.webLinkJSON)
+			),
 		};
 	}
 
