@@ -40,6 +40,22 @@ entity Place {
   YHSThemes: nvarchar
 }
 
+entity Association {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * Type : int
+  Description : varchar
+}
+
+enum AssociationType {
+  1 : Event
+  2 : Person
+  3 : Organization
+  4 : Architect Designer
+  5 : Builder
+}
+
 enum Category {
   0 : None Selected
   1 : Building
@@ -114,6 +130,26 @@ enum Designations {
   Territorial : Territorial
   World : World
   NotDesignated : Not Designated
+}
+
+entity FirstNation {
+  * Id : int <<generated>>
+  --
+  Description : varchar
+}
+
+entity FirstNationAssociation {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * FirstNationId : int
+  * FirstNationAssociationType : int
+  Comments : varchar
+}
+
+enum FirstNationAssociationType {
+  1 : Settlement Lands
+  2 : Traditional Territory
 }
 
 entity FunctionalType {
@@ -206,14 +242,19 @@ Place::RoofCondition }|--o{ ConditionType
 Place::SiteCategories }o--o{ SiteCategories
 Place::SiteStatus ||--o{ SiteStatus
 Place::WallCondition }|--o{ ConditionType
+Place }o--|| Association::PlaceId
 Place }o--|| ConstructionPeriod::PlaceId
 Place }o--|| Dates::PlaceId
+Place }o--|| FirstNationAssociation::PlaceId
 Place }o--|| HistoricalPattern::PlaceId
 Place }o--|| Name::PlaceId
 Place }o--|| Theme::PlaceId
 Place }o--|| FunctionalUse::PlaceId
+Association::Type ||--o{ AssociationType
 ConstructionPeriod::Type ||--o{ ConstructionPeriodType
 Dates::Type ||--o{ DateType
+FirstNationAssociation::FirstNationAssociationType ||--o{ FirstNationAssociationType
+FirstNationAssociation::FirstNationId ||--o{ FirstNation::Id
 FunctionalUse::FunctionalTypeId ||--o{ FunctionalType::Id
 FunctionalUse::FunctionalUseType ||--o{ FunctionalUseType
 HistoricalPattern::HistoricalPatternType ||--o{ HistoricalPatternType

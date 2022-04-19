@@ -52,6 +52,7 @@ export class PlaceEditService {
 	buildDetailedView(id: number) {
 		return this.defaultScope
 			.first({
+				associationJSON: 'AssociationJSON',
 				bordenNumber: 'BordenNumber',
 				buildingSize: 'BuildingSize',
 				category: 'Category',
@@ -64,6 +65,7 @@ export class PlaceEditService {
 				datesJSON: 'DatesJSON',
 				designations: 'Designations',
 				doorCondition: 'DoorCondition',
+				firstNationAssociationJSON: 'FirstNationAssociationJSON',
 				floorCondition: 'FloorCondition',
 				functionalUseJSON: 'FunctionalUseJSON',
 				hectareArea: 'HectareArea',
@@ -94,6 +96,8 @@ export class PlaceEditService {
 			})
 			.where({ 'PlaceEdit.Id': id })
 			.then((attributes) => {
+				if (attributes === undefined) return;
+
 				const placeEdit = new PlaceEdit(attributes);
 				const placeEditSerializer = new PlaceEditSerializer(placeEdit);
 				return placeEditSerializer.detailedView();

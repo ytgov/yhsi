@@ -2,8 +2,6 @@ import knex, { Knex } from 'knex';
 import { QueryStatement, SortStatement } from './';
 import {
 	AlternateName,
-	Association,
-	ConstructionPeriod,
 	Contact,
 	Description,
 	FirstNationName,

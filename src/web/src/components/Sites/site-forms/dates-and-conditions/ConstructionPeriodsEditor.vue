@@ -15,7 +15,7 @@
         :key="i"
       >
         <v-col cols="10">
-          <ConstructionPeriodSelect
+          <ConstructionPeriodTypesSelect
             v-model="constructionPeriod.type"
             label=""
             dense
@@ -51,12 +51,12 @@
 </template>
 
 <script>
-import ConstructionPeriodSelect from '@/components/Sites/site-forms/ConstructionPeriodSelect';
+import ConstructionPeriodTypesSelect from '@/components/Sites/site-forms/ConstructionPeriodTypesSelect';
 
 export default {
   name: 'ConstructionPeriodsEditor',
   components: {
-    ConstructionPeriodSelect,
+    ConstructionPeriodTypesSelect,
   },
   props: {
     value: {

@@ -5,13 +5,14 @@ import helmet from 'helmet';
 
 import {
 	aircrashRouter,
+	associationTypesRouter,
 	boatsRouter,
 	burialsRouter,
 	catalogsRouter,
 	categoryTypesRouter,
 	communitiesRouter,
 	conditionTypesRouter,
-	constructionPeriodsRouter,
+	constructionPeriodTypesRouter,
 	contributingResourceTypesRouter,
 	coordinateDeterminationTypesRouter,
 	dateTypesRouter,
@@ -112,13 +113,12 @@ app.use('/api/photo', RequiresAuthentication, photoRouter);
 app.use('/api/photobatch', RequiresAuthentication, photoBatchRouter);
 app.use('/api/register', registerRouter);
 
-////console.log("B", boats)
-
+app.use('/api/association-types', RequiresAuthentication, associationTypesRouter);
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
 app.use('/api/category-types', RequiresAuthentication, categoryTypesRouter);
 app.use('/api/communities', RequiresAuthentication, communitiesRouter);
 app.use('/api/condition-types', RequiresAuthentication, conditionTypesRouter);
-app.use('/api/construction-periods', RequiresAuthentication, constructionPeriodsRouter);
+app.use('/api/construction-period-types', RequiresAuthentication, constructionPeriodTypesRouter);
 app.use('/api/contributing-resource-types', RequiresAuthentication, contributingResourceTypesRouter);
 app.use('/api/coordinate-determination-types', RequiresAuthentication, coordinateDeterminationTypesRouter);
 app.use('/api/date-types', RequiresAuthentication, dateTypesRouter);
@@ -147,8 +147,6 @@ app.use('/api/site-status-types', RequiresAuthentication, siteStatusTypesRouter)
 app.use('/api/users', usersExtraRouter);
 app.use('/api/people', peopleRouter);
 app.use('/api/burials', burialsRouter);
-// app.use('/api/extras/photos', RequiresAuthentication, photosExtraRouter);
-// app.use('/api/extras/users', RequiresAuthentication, usersExtraRouter);
 app.use("/api/maps", mapsRouter)
 
 app.use('/api', RequiresAuthentication, staticRouter);

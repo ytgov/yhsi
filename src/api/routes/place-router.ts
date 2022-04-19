@@ -13,8 +13,6 @@ import { DB_CONFIG } from '../config';
 import { buildDatabaseSort, PlaceService } from '../services';
 import {
 	Place,
-	Association,
-	FirstNationAssociation,
 	Ownership,
 	PreviousOwnership,
 	WebLink,
@@ -175,74 +173,6 @@ placeRouter.post(
 			});
 
 		return res.json({ data: result });
-	}
-);
-
-placeRouter.put(
-	'/:id/associations',
-	[param('id').isInt().notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		let { id } = req.params;
-		let { associations, firstNationAssociations } = req.body;
-
-		let oldAssoc = await placeService.getAssociationsFor(parseInt(id));
-
-		for (let on of oldAssoc) {
-			let match = associations.filter(
-				(n: Association) => n.type == on.type && n.description == on.description
-			);
-
-			if (match.length == 0) {
-				await placeService.removeAssociation(on.id);
-			}
-		}
-
-		for (let on of associations) {
-			let match = oldAssoc.filter(
-				(n: Association) => n.type == on.type && n.description == on.description
-			);
-
-			if (match.length == 0) {
-				delete on.typeText;
-				delete on.id;
-				await placeService.addAssociation(on);
-			}
-		}
-
-		let oldFunctions = await placeService.getFNAssociationsFor(parseInt(id));
-		for (let on of oldFunctions) {
-			let match = firstNationAssociations.filter(
-				(n: FirstNationAssociation) =>
-					n.firstNationAssociationType == on.firstNationAssociationType &&
-					n.firstNationId == on.firstNationId &&
-					n.comments == on.comments
-			);
-
-			if (match.length == 0) {
-				await placeService.removeFNAssociation(on.id);
-			}
-		}
-
-		for (let on of firstNationAssociations) {
-			let match = oldFunctions.filter(
-				(n: FirstNationAssociation) =>
-					n.firstNationAssociationType == on.firstNationAssociationType &&
-					n.firstNationId == on.firstNationId &&
-					n.comments == on.comments
-			);
-
-			if (match.length == 0) {
-				//console.log(on)
-				delete on.id;
-				delete on.typeText;
-				await placeService.addFNAssociation(on);
-			}
-		}
-
-		return res.json({
-			messages: [{ variant: 'success', text: 'Site updated' }],
-		});
 	}
 );
 
@@ -481,6 +411,7 @@ placeRouter.patch(
 	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
 	[
 		param('id').isInt({ gt: 0 }),
+		body('associations').isArray().optional({ nullable: true }),
 		body('bordenNumber').isString().optional({ nullable: true }),
 		body('buildingSize').isString().optional({ nullable: true }),
 		body('category').isInt().optional(),
@@ -493,6 +424,7 @@ placeRouter.patch(
 		body('dates').isArray().optional({ nullable: true }),
 		body('designations').isArray().optional({ nullable: true }),
 		body('doorCondition').isInt().optional(),
+		body('firstNationAssociations').isArray().optional({ nullable: true }),
 		body('floorCondition').isInt().optional(),
 		body('functionalUses').isArray().optional({ nullable: true }),
 		body('hectareArea').isString().optional({ nullable: true }),

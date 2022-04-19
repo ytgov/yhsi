@@ -57,6 +57,7 @@ placeEditsRouter.post(
 	]),
 	[
 		body('placeId').notEmpty().toInt().isInt({ gt: 0 }),
+		body('associations').isArray().optional({ nullable: true }),
 		body('bordenNumber').isString().optional({ nullable: true }),
 		body('buildingSize').isString().optional({ nullable: true }),
 		body('category').isInt(),
@@ -69,6 +70,7 @@ placeEditsRouter.post(
 		body('dates').isArray().optional({ nullable: true }),
 		body('designations').isArray().optional({ nullable: true }),
 		body('doorCondition').isInt(),
+		body('firstNationAssociations').isArray().optional({ nullable: true }),
 		body('floorCondition').isInt(),
 		body('functionalUses').isArray().optional({ nullable: true }),
 		body('hectareArea').isString().optional({ nullable: true }),
@@ -132,12 +134,23 @@ placeEditsRouter.get(
 		return placeEditService
 			.buildDetailedView(id)
 			.then((result) => {
+				if (result === undefined) {
+					return res.status(404).json({
+						messages: [
+							{
+								variant: 'error',
+								text: `Could not find PlaceEdit with id=${id}`,
+							},
+						],
+					});
+				}
+
 				return res.json({
 					data: result,
 				});
 			})
 			.catch((error) => {
-				return res.status(422).json({
+				return res.status(error.code || 422).json({
 					messages: [{ variant: 'error', text: error.message }],
 				});
 			});

@@ -2,19 +2,31 @@ import { PlaceEdit } from '../../models/place-edit';
 import PlaceEditSerializer from '../../serializers/place-edit-serializer';
 
 describe('PlaceEditSerializer', () => {
-	describe('#constructor', () => {
-		context('when creating a new PlaceEditSerializer object', () => {
-			it('transforms and sets the association columns correctly', () => {
+	describe('#detailedView', () => {
+		context('when extracting associations', () => {
+			it('transforms and sets the association column correctly', () => {
 				const placeEdit = new PlaceEdit({
 					associations: [
 						{ id: 1, placeId: 1543, type: 3, description: 'Field Force' },
 					],
 				});
 				const placeEditSerializer = new PlaceEditSerializer(placeEdit);
-				expect(placeEditSerializer).to.deep.include({
+				expect(placeEditSerializer.detailedView()).to.deep.eq({
 					associations: [
 						{ id: 1, placeId: 1543, type: 3, description: 'Field Force' },
 					],
+				});
+			});
+		});
+
+		context('when extracting comma delimited array fields', () => {
+			it('transforms and sets the contributingResources column correctly', () => {
+				const placeEdit = new PlaceEdit({
+					contributingResources: ['Archaeological', 'Building', 'Collection'],
+				});
+				const placeEditSerializer = new PlaceEditSerializer(placeEdit);
+				expect(placeEditSerializer.detailedView()).to.deep.eq({
+					contributingResources: ['Archaeological', 'Building', 'Collection'],
 				});
 			});
 		});
