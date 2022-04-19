@@ -42,7 +42,7 @@ import AssociationsEditor from '@/components/Sites/site-forms/associations/Assoc
 import FirstNationAssociationsEditor from '@/components/Sites/site-forms/associations/FirstNationAssociationsEditor';
 
 export default {
-  name: 'Associations',
+  name: 'AssociationsSiteFormEditor',
   components: { AssociationsEditor, FirstNationAssociationsEditor },
   props: {
     placeId: {

@@ -71,7 +71,8 @@
             id="themes-and-function"
             :place-id="id"
           />
-          <Associations
+          <component
+            :is="associationsComponent"
             id="associations"
             :place-id="id"
           />
@@ -89,7 +90,8 @@
 import { mapActions, mapGetters } from 'vuex';
 import goTo from 'vuetify/lib/services/goto';
 
-import Associations from '@/components/Sites/site-forms/Associations';
+import AssociationsSiteFormEditor from '@/components/Sites/site-forms/AssociationsSiteFormEditor';
+import AssociationsSiteFormViewer from '@/components/Sites/site-forms/AssociationsSiteFormViewer';
 import DatesAndConditions from '@/components/Sites/site-forms/DatesAndConditions';
 import DatesAndConditionsViewer from '@/components/Sites/site-forms/DatesAndConditionsViewer';
 import Description from '@/components/Sites/site-forms/Description';
@@ -108,7 +110,8 @@ import ThemesAndFunctionsViewer from '@/components/Sites/site-forms/ThemesAndFun
 export default {
   name: 'SiteForms',
   components: {
-    Associations,
+    AssociationsSiteFormEditor,
+    AssociationsSiteFormViewer,
     DatesAndConditions,
     DatesAndConditionsViewer,
     Description,
@@ -139,6 +142,11 @@ export default {
       loading: 'loading',
       siteName: 'primaryName',
     }),
+    associationsComponent() {
+      if (this.hasPendingChanges) return AssociationsSiteFormViewer;
+
+      return AssociationsSiteFormEditor;
+    },
     datesComponent() {
       if (this.hasPendingChanges) return DatesAndConditionsViewer;
 

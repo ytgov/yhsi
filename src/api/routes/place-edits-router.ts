@@ -57,6 +57,7 @@ placeEditsRouter.post(
 	]),
 	[
 		body('placeId').notEmpty().toInt().isInt({ gt: 0 }),
+		body('associations').isArray().optional({ nullable: true }),
 		body('bordenNumber').isString().optional({ nullable: true }),
 		body('buildingSize').isString().optional({ nullable: true }),
 		body('category').isInt(),
@@ -69,6 +70,7 @@ placeEditsRouter.post(
 		body('dates').isArray().optional({ nullable: true }),
 		body('designations').isArray().optional({ nullable: true }),
 		body('doorCondition').isInt(),
+		body('firstNationAssociations').isArray().optional({ nullable: true }),
 		body('floorCondition').isInt(),
 		body('functionalUses').isArray().optional({ nullable: true }),
 		body('hectareArea').isString().optional({ nullable: true }),
