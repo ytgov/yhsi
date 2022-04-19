@@ -6,7 +6,7 @@ interface SerializerFunction<Type> {
 	(model: Type): PlainObject | undefined;
 }
 
-export default class BaseSerializer<Type> {
+export default abstract class BaseSerializer<Type> {
 	model: Type;
 
 	constructor(model: Type) {
