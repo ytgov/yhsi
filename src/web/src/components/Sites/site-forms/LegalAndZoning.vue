@@ -230,7 +230,7 @@
               v-if="i < prevOwnerships.length - 1"
               cols="12"
             >
-              <hr />
+              <v-divider class="black" />
             </v-col>
           </v-row>
         </v-card-text>
@@ -261,15 +261,18 @@
 <script>
 import axios from 'axios';
 
-import store from '@/store';
 import { PLACE_URL, STATIC_URL } from '@/urls';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'LegalAndZoning',
+  props: {
+    placeId: {
+      type: [Number, String],
+      required: true,
+    },
+  },
   data: () => ({
-    valid: false,
-    loadedId: -1,
     ownerships: [],
     categoryOptions: [],
     prevOwnerships: [],
@@ -285,17 +288,13 @@ export default {
       zoning: '', //
     },
   }),
-  created: function () {
-    let id = this.$route.params.id;
-    this.loadedId = id;
-
+  mounted() {
     axios
-      .get(`${PLACE_URL}/${id}`)
+      .get(`${PLACE_URL}/${this.placeId}`)
       .then((resp) => {
         this.fields = resp.data.data;
         this.ownerships = resp.data.relationships.ownerships.data;
         this.prevOwnerships = resp.data.relationships.previousOwnerships.data;
-        store.dispatch('addSiteHistory', resp.data.data);
       })
       .catch((error) => console.error(error));
 
@@ -307,7 +306,7 @@ export default {
     addOwner() {
       this.ownerships.push({
         ownershipType: 1,
-        placeId: this.loadedId,
+        placeId: this.placeId,
       });
     },
     removeOwner(index) {
@@ -318,7 +317,7 @@ export default {
         ownershipDate: '',
         ownershipNumber: '',
         ownershipName: '',
-        placeId: this.loadedId,
+        placeId: this.placeId,
       });
     },
     removePrevOwner(index) {
@@ -339,7 +338,7 @@ export default {
       };
 
       axios
-        .put(`${PLACE_URL}/${this.loadedId}/legal`, body)
+        .put(`${PLACE_URL}/${this.placeId}/legal`, body)
         .then((resp) => {
           this.$emit('showAPIMessages', resp.data);
         })

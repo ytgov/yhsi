@@ -76,8 +76,11 @@
             id="associations"
             :place-id="id"
           />
+          <LegalAndZoning
+            id="legal-and-zoning"
+            :place-id="id"
+          />
         </template>
-        <LegalAndZoning id="legal-and-zoning" />
         <Photos id="photos" />
         <Management id="management" />
         <Description id="description" />
