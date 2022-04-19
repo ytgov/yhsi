@@ -33,6 +33,7 @@ import {
 } from '../data';
 import { GenericEnum, Place, PlainObject } from '../models';
 import { NotFoundError } from '../utils/validation';
+import { UserRoles } from '../middleware/authorization';
 
 function combine(
 	list1: Array<any>,
@@ -118,6 +119,15 @@ export class PlaceService {
 			.select(REGISTER_FIELDS)
 			.select(this.db.raw("'English teaser' as teaserEnglish"))
 			.select(this.db.raw("'French teaser' as teaserFrench"));
+	}
+
+	async getIdsForUser(user?: User) {
+		let selectStatement = this.db('place').select('yHSIId');
+
+		this.scopeSitesToUser(selectStatement, user);
+
+		return selectStatement
+			.then(list => list);
 	}
 
 	async getById(id: number, user?: User) {
@@ -651,17 +661,29 @@ export class PlaceService {
 	}
 
 	async scopeSitesToUser(query: Knex.QueryInterface, user?: User) {
-		if (!user)
+
+		// without a user passed in, you see nothing
+		if (!user) {
+			query.whereRaw("(1=0)");
+			return;
+		}
+
+		// Administrators see everything
+		if (user.role_list && user.role_list.indexOf(UserRoles.ADMINISTRATOR) >= 0)
 			return;
 
-		//console.log("SCOPING SITES FOR: ", user.site_access)
+		// If you don't have one of the site roles, you see nothing
+		if (user.roles && user.roles.indexOf("Site") == -1) {
+			query.whereRaw("(1=0)");
+			return;
+		}
 
 		if (user.site_access) {
 			let mapSheets = user.site_access.filter(a => a.access_type_id == 1).map(a => a.access_text);
 			let communities = user.site_access.filter(a => a.access_type_id == 2).map(a => a.access_text);
 			let firstNations = user.site_access.filter(a => a.access_type_id == 3).map(a => a.access_text);
 
-			let scope = "(1=0"
+			let scope = "(1=0";
 
 			if (mapSheets.length > 0)
 				scope += ` OR NTSMapSheet IN ('${mapSheets.join("','")}')`;
@@ -670,7 +692,7 @@ export class PlaceService {
 			if (firstNations.length > 0)
 				scope += ` OR [FirstNationAssociation].[FirstNationId] IN (${firstNations.join(",")})`;
 
-			scope += ")"
+			scope += ")";
 
 			query.whereRaw(scope);
 		}
