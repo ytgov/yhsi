@@ -13,14 +13,14 @@
     </v-card-title>
     <v-card-text tag="section">
       <OwnershipsEditor
-        v-model="ownerships"
+        v-model="place.ownerships"
         :place-id="placeId"
       />
       <v-divider class="my-3" />
       <v-row>
         <v-col cols="6">
           <v-text-field
-            v-model="fields.zoning"
+            v-model="place.zoning"
             label="Zoning"
             dense
             outlined
@@ -30,7 +30,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            v-model="fields.townSiteMapNumber"
+            v-model="place.townSiteMapNumber"
             label="Town site map number"
             dense
             outlined
@@ -42,7 +42,7 @@
       <v-row>
         <v-col cols="6">
           <v-text-field
-            v-model="fields.siteDistrictNumber"
+            v-model="place.siteDistrictNumber"
             label="Site district"
             dense
             outlined
@@ -52,7 +52,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            v-model="fields.groupYHSI"
+            v-model="place.groupYHSI"
             label="Group YHSI"
             dense
             outlined
@@ -64,7 +64,7 @@
       <v-row>
         <v-col cols="6">
           <v-text-field
-            v-model="fields.lAGroup"
+            v-model="place.lAGroup"
             label="Group"
             dense
             outlined
@@ -74,7 +74,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            v-model="fields.lot"
+            v-model="place.lot"
             label="Lot"
             dense
             outlined
@@ -86,7 +86,7 @@
       <v-row>
         <v-col cols="6">
           <v-text-field
-            v-model="fields.block"
+            v-model="place.block"
             label="Block"
             dense
             outlined
@@ -97,7 +97,7 @@
 
         <v-col cols="6">
           <v-text-field
-            v-model="fields.planNumber"
+            v-model="place.planNumber"
             label="Plan number"
             dense
             outlined
@@ -110,7 +110,7 @@
       <v-divider class="my-3" />
 
       <PreviousOwnershipsEditor
-        v-model="previousOwnerships"
+        v-model="place.previousOwnerships"
         :place-id="placeId"
       />
     </v-card-text>
@@ -128,6 +128,8 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex';
+import { pick } from 'lodash';
 import axios from 'axios';
 
 import { PLACE_URL } from '@/urls';
@@ -135,7 +137,6 @@ import { PLACE_URL } from '@/urls';
 import OwnershipsEditor from '@/components/Sites/site-forms/legal-and-zoning/OwnershipsEditor';
 import PreviousOwnershipsEditor from '@/components/Sites/site-forms/legal-and-zoning/PreviousOwnershipsEditor';
 
-/* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'LegalAndZoning',
   components: {
@@ -148,45 +149,28 @@ export default {
       required: true,
     },
   },
-  data: () => ({
-    ownerships: [],
-    prevOwnerships: [],
-    fields: {
-      /*Field data from the swaggerhub api docs below this line*/
-      block: '', //
-      groupYHSI: '', //
-      lAGroup: '', //
-      lot: '', //
-      planNumber: '', //
-      siteDistrictNumber: '', //
-      townSiteMapNumber: '', //
-      zoning: '', //
-    },
-  }),
-  mounted() {
-    axios
-      .get(`${PLACE_URL}/${this.placeId}`)
-      .then((resp) => {
-        this.fields = resp.data.data;
-        this.ownerships = resp.data.relationships.ownerships.data;
-        this.prevOwnerships = resp.data.relationships.previousOwnerships.data;
-      })
-      .catch((error) => console.error(error));
+  computed: {
+    ...mapGetters({
+      place: 'places/place',
+    }),
   },
   methods: {
+    ...mapActions({
+      savePlace: 'places/save',
+    }),
     saveChanges() {
-      let body = {
-        block: this.fields.block,
-        groupYHSI: this.fields.groupYHSI,
-        lAGroup: this.fields.lAGroup,
-        lot: this.fields.lot,
-        planNumber: this.fields.planNumber,
-        siteDistrictNumber: this.fields.siteDistrictNumber,
-        townSiteMapNumber: this.fields.townSiteMapNumber,
-        zoning: this.fields.zoning,
-        ownerships: this.ownerships,
-        prevOwnerships: this.prevOwnerships,
-      };
+      const body = pick(this.place, [
+        'block',
+        'groupYHSI',
+        'lAGroup',
+        'lot',
+        'planNumber',
+        'siteDistrictNumber',
+        'townSiteMapNumber',
+        'zoning',
+        'ownerships',
+        'previousOwnerships',
+      ]);
 
       axios
         .put(`${PLACE_URL}/${this.placeId}/legal`, body)

@@ -143,16 +143,10 @@ export class PlaceService {
 					id
 				);
 				place.names = await this.nameService.getFor(id);
+				place.ownerships = await this.getOwnershipsFor(id);
 				place.themes = await this.themeService.getFor(id);
+				place.previousOwnerships = await this.getPreviousOwnershipsFor(id);
 
-				const ownerships = combine(
-					await this.getOwnershipsFor(id),
-					this.getOwnershipTypes(),
-					'value',
-					'ownershipType',
-					'text'
-				);
-				const previousOwnerships = await this.getPreviousOwnershipsFor(id);
 				const contacts = combine(
 					await this.getContactsFor(id),
 					this.getContactTypes(),
@@ -187,8 +181,6 @@ export class PlaceService {
 				const photos = await this.photoService.getAllForPlace(id);
 
 				const relationships = {
-					ownerships: { data: ownerships },
-					previousOwnerships: { data: previousOwnerships },
 					photos: { data: photos },
 					contacts: { data: contacts },
 					revisionLogs: { data: revisionLogs },
@@ -421,22 +413,6 @@ export class PlaceService {
 
 	async removeDescription(id: number) {
 		return this.db('Description').where({ id }).delete();
-	}
-
-	getOwnershipTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Private' },
-			{ value: 2, text: 'Public Local' },
-			{ value: 3, text: 'Public Territorial' },
-			{ value: 4, text: 'Settlement Lands' },
-			{ value: 5, text: 'Public Federal' },
-			{ value: 6, text: 'Not For Profit' },
-			{ value: 7, text: 'Crown' },
-			{ value: 8, text: 'Unknown' },
-			{ value: 17, text: 'Gov Yukon' },
-			{ value: 18, text: 'First Nations Reserve' },
-			{ value: 19, text: 'Aboriginal Public Lands' },
-		];
 	}
 
 	getContactTypes(): GenericEnum[] {
