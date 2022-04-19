@@ -85,6 +85,7 @@ export default {
 					'esri/widgets/LayerList',
 					'esri/widgets/Legend',
 					'esri/layers/FeatureLayer',
+					'esri/config',
 				],
 				{ css: true }
 			).then(
@@ -96,6 +97,7 @@ export default {
 					LayerList,
 					Legend,
 					FeatureLayer,
+					config,
 				]) => {
 					IdentityManager.registerToken({
 						server: 'https://yukon.maps.arcgis.com',
@@ -104,6 +106,13 @@ export default {
 					IdentityManager.registerToken({
 						server: `${MAPS_URL}/sites`,
 						token: resp.access_token,
+					});
+
+					config.request.interceptors.push({
+						urls: `${MAPS_URL}/sites`,
+						before: function (params) {
+							params.requestOptions.withCredentials = true;
+						},
 					});
 
 					const webmap = new WebMap({
