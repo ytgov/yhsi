@@ -130,9 +130,6 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { pick } from 'lodash';
-import axios from 'axios';
-
-import { PLACE_URL } from '@/urls';
 
 import OwnershipsEditor from '@/components/Sites/site-forms/legal-and-zoning/OwnershipsEditor';
 import PreviousOwnershipsEditor from '@/components/Sites/site-forms/legal-and-zoning/PreviousOwnershipsEditor';
@@ -159,7 +156,7 @@ export default {
       savePlace: 'places/save',
     }),
     saveChanges() {
-      const body = pick(this.place, [
+      const data = pick(this.place, [
         'block',
         'groupYHSI',
         'lAGroup',
@@ -172,14 +169,7 @@ export default {
         'previousOwnerships',
       ]);
 
-      axios
-        .put(`${PLACE_URL}/${this.placeId}/legal`, body)
-        .then((resp) => {
-          this.$emit('showAPIMessages', resp.data);
-        })
-        .catch((err) => {
-          this.$emit('showError', err);
-        });
+      return this.savePlace(data);
     },
   },
 };

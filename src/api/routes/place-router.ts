@@ -11,15 +11,7 @@ import { pick } from 'lodash';
 
 import { DB_CONFIG } from '../config';
 import { buildDatabaseSort, PlaceService } from '../services';
-import {
-	Place,
-	Ownership,
-	PreviousOwnership,
-	WebLink,
-	RevisionLog,
-	Contact,
-	Description,
-} from '../data';
+import { Place, WebLink, RevisionLog, Contact, Description } from '../data';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize, UserRoles } from '../middleware/authorization';
 
@@ -165,81 +157,6 @@ placeRouter.post(
 			});
 
 		return res.json({ data: result });
-	}
-);
-
-placeRouter.put(
-	'/:id/legal',
-	[param('id').isInt().notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		let { id } = req.params;
-		let { ownerships, prevOwnerships } = req.body;
-		let updater = req.body;
-
-		delete updater.ownerships;
-		delete updater.prevOwnerships;
-
-		await placeService.updatePlace(parseInt(id), updater);
-
-		let oldOwners = await placeService.getOwnershipsFor(parseInt(id));
-
-		for (let on of oldOwners) {
-			let match = ownerships.filter(
-				(n: Ownership) =>
-					n.ownershipType == on.ownershipType && n.comments == on.comments
-			);
-
-			if (match.length == 0) {
-				await placeService.removeOwnership(on.id);
-			}
-		}
-
-		for (let on of ownerships) {
-			let match = oldOwners.filter(
-				(n: Ownership) =>
-					n.ownershipType == on.ownershipType && n.comments == on.comments
-			);
-
-			if (match.length == 0) {
-				await placeService.addOwnership(on);
-			}
-		}
-
-		let oldFunctions = await placeService.getPreviousOwnershipsFor(
-			parseInt(id)
-		);
-
-		for (let on of oldFunctions) {
-			let match = prevOwnerships.filter(
-				(n: PreviousOwnership) =>
-					n.ownershipDate == on.ownershipDate &&
-					n.ownershipNumber == on.ownershipNumber &&
-					n.ownershipName == on.ownershipName
-			);
-
-			if (match.length == 0) {
-				await placeService.removePreviousOwnership(on.id);
-			}
-		}
-
-		for (let on of prevOwnerships) {
-			let match = oldFunctions.filter(
-				(n: PreviousOwnership) =>
-					n.ownershipDate == on.ownershipDate &&
-					n.ownershipNumber == on.ownershipNumber &&
-					n.ownershipName == on.ownershipName
-			);
-
-			if (match.length == 0) {
-				delete on.typeName;
-				await placeService.addPreviousOwnership(on);
-			}
-		}
-
-		return res.json({
-			messages: [{ variant: 'success', text: 'Site updated' }],
-		});
 	}
 );
 
@@ -404,6 +321,7 @@ placeRouter.patch(
 	[
 		param('id').isInt({ gt: 0 }),
 		body('associations').isArray().optional({ nullable: true }),
+		body('block').isString().optional({ nullable: true }),
 		body('bordenNumber').isString().optional({ nullable: true }),
 		body('buildingSize').isString().optional({ nullable: true }),
 		body('category').isInt().optional(),
@@ -419,32 +337,41 @@ placeRouter.patch(
 		body('firstNationAssociations').isArray().optional({ nullable: true }),
 		body('floorCondition').isInt().optional(),
 		body('functionalUses').isArray().optional({ nullable: true }),
+		body('groupYHSI').isString().optional({ nullable: true }),
 		body('hectareArea').isString().optional({ nullable: true }),
 		body('historicalPatterns').isArray().optional({ nullable: true }),
+		body('lAGroup').isString().optional({ nullable: true }),
 		body('latitude').isString().optional({ nullable: true }),
 		body('locationComment').isString().optional({ nullable: true }),
 		body('locationContext').isString().optional({ nullable: true }),
 		body('longitude').isString().optional({ nullable: true }),
+		body('lot').isString().optional({ nullable: true }),
 		body('names').isArray().optional({ nullable: true }),
 		body('nTSMapSheet').isString().optional({ nullable: true }),
 		body('otherCommunity').isString().optional({ nullable: true }),
 		body('otherLocality').isString().optional({ nullable: true }),
+		body('ownerships').isArray().optional({ nullable: true }),
 		body('physicalAddress').isString().optional({ nullable: true }),
 		body('physicalCountry').isString().optional({ nullable: true }),
 		body('physicalPostalCode').isString().optional({ nullable: true }),
 		body('physicalProvince').isString().optional({ nullable: true }),
+		body('planNumber').isString().optional({ nullable: true }),
 		body('previousAddress').isString().optional({ nullable: true }),
+		body('previousOwnerships').isArray().optional({ nullable: true }),
 		body('primaryName').isString().optional(),
 		body('records').isArray().optional({ nullable: true }),
 		body('resourceType').isString().optional({ nullable: true }),
 		body('roofCondition').isInt().optional(),
 		body('showInRegister').isBoolean().optional(),
 		body('siteCategories').isArray().optional({ nullable: true }),
+		body('siteDistrictNumber').isString().optional({ nullable: true }),
 		body('siteStatus').isInt().optional(),
 		body('themes').isArray().optional({ nullable: true }),
+		body('townSiteMapNumber').isString().optional({ nullable: true }),
 		body('wallCondition').isInt().optional(),
 		body('yHSPastUse').isString().optional({ nullable: true }),
 		body('yHSThemes').isString().optional({ nullable: true }),
+		body('zoning').isString().optional({ nullable: true }),
 	],
 	ReturnValidationErrors,
 	(req: Request, res: Response) => {

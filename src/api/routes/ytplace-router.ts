@@ -17,8 +17,6 @@ import {
 	PLACE_FIELDS,
 	FnAssociation,
 	FirstNationName,
-	Ownership,
-	PreviousOwnership,
 	Photo,
 	WebLink,
 	RevisionLog,

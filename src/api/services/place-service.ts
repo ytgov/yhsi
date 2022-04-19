@@ -10,8 +10,10 @@ import {
 	FunctionalUseService,
 	HistoricalPatternService,
 	NameService,
+	OwnershipService,
 	PhotoService,
 	PlaceEditService,
+	PreviousOwnershipService,
 	QueryStatement,
 	SortStatement,
 	StaticService,
@@ -22,9 +24,7 @@ import {
 	Description,
 	DESCRIPTION_TYPES,
 	DESCRIPTION_TYPE_ENUMS,
-	Ownership,
 	PLACE_FIELDS,
-	PreviousOwnership,
 	REGISTER_FIELDS,
 	REVISION_LOG_TYPES,
 	RevisionLog,
@@ -79,8 +79,10 @@ export class PlaceService {
 	private functionalUseService: FunctionalUseService;
 	private historicalPatternService: HistoricalPatternService;
 	private nameService: NameService;
+	private ownershipService: OwnershipService;
 	private photoService: PhotoService;
 	private placeEditService: PlaceEditService;
+	private previousOwnershipService: PreviousOwnershipService;
 	private staticService: StaticService;
 	private themeService: ThemeService;
 
@@ -95,8 +97,10 @@ export class PlaceService {
 		this.functionalUseService = new FunctionalUseService(config);
 		this.historicalPatternService = new HistoricalPatternService();
 		this.nameService = new NameService();
+		this.ownershipService = new OwnershipService(config);
 		this.photoService = new PhotoService(config);
 		this.placeEditService = new PlaceEditService();
+		this.previousOwnershipService = new PreviousOwnershipService(config);
 		this.staticService = new StaticService(config);
 		this.themeService = new ThemeService(config);
 	}
@@ -143,9 +147,11 @@ export class PlaceService {
 					id
 				);
 				place.names = await this.nameService.getFor(id);
-				place.ownerships = await this.getOwnershipsFor(id);
+				place.ownerships = await this.ownershipService.getFor(id);
 				place.themes = await this.themeService.getFor(id);
-				place.previousOwnerships = await this.getPreviousOwnershipsFor(id);
+				place.previousOwnerships = await this.previousOwnershipService.getFor(
+					id
+				);
 
 				const contacts = combine(
 					await this.getContactsFor(id),
@@ -259,6 +265,15 @@ export class PlaceService {
 			if (attrs.hasOwnProperty('names')) {
 				await this.nameService.upsertFor(id, attrs['names']);
 			}
+			if (attrs.hasOwnProperty('ownerships')) {
+				await this.ownershipService.upsertFor(id, attrs['ownerships']);
+			}
+			if (attrs.hasOwnProperty('previousOwnerships')) {
+				await this.previousOwnershipService.upsertFor(
+					id,
+					attrs['previousOwnerships']
+				);
+			}
 			if (attrs.hasOwnProperty('themes')) {
 				await this.themeService.upsertFor(id, attrs['themes']);
 			}
@@ -305,40 +320,6 @@ export class PlaceService {
 		}
 
 		return `${nTSMapSheet}/001`;
-	}
-
-	async getOwnershipsFor(id: number): Promise<Ownership[]> {
-		return this.db('Ownership')
-			.where({ placeId: id })
-			.select<Ownership[]>(['id', 'placeId', 'ownershipType', 'comments']);
-	}
-
-	async addOwnership(name: Ownership) {
-		return this.db('Ownership').insert(name);
-	}
-
-	async removeOwnership(id: number) {
-		return this.db('Ownership').where({ id }).delete();
-	}
-
-	async getPreviousOwnershipsFor(id: number): Promise<PreviousOwnership[]> {
-		return this.db('PreviousOwnership')
-			.where({ placeId: id })
-			.select<PreviousOwnership[]>([
-				'id',
-				'placeId',
-				'ownershipNumber',
-				'ownershipName',
-				'ownershipDate',
-			]);
-	}
-
-	async addPreviousOwnership(name: PreviousOwnership) {
-		return this.db('PreviousOwnership').insert(name);
-	}
-
-	async removePreviousOwnership(id: number) {
-		return this.db('PreviousOwnership').where({ id }).delete();
 	}
 
 	async getContactsFor(id: number): Promise<Contact[]> {
