@@ -59,7 +59,7 @@ import FirstNationAssociationTypesSelect from '@/components/Sites/site-forms/ass
 import FirstNationSelect from '@/components/Sites/site-forms/associations/FirstNationSelect';
 
 export default {
-  name: 'FirstNationAssociationsViewer',
+  name: 'FirstNationAssociationsEditor',
   components: { FirstNationAssociationTypesSelect, FirstNationSelect },
   props: {
     value: {

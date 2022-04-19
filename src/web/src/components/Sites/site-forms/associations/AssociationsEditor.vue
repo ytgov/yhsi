@@ -46,7 +46,7 @@ v-card.default.mb-5(tag="section")
 import AssociationTypesSelect from '@/components/Sites/site-forms/associations/AssociationTypesSelect';
 
 export default {
-	name: 'AssociationsViewer',
+	name: 'AssociationsEditor',
 	components: {
 		AssociationTypesSelect,
 	},

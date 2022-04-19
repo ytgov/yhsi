@@ -12,11 +12,11 @@
       Associations
     </v-card-title>
     <v-card-text>
-      <AssociationsViewer
+      <AssociationsEditor
         v-model="place.associations"
         :place-id="placeId"
       />
-      <FirstNationAssociationsViewer
+      <FirstNationAssociationsEditor
         v-model="place.firstNationAssociations"
         :place-id="placeId"
       />
@@ -38,12 +38,12 @@
 import { mapActions, mapGetters } from 'vuex';
 import { pick } from 'lodash';
 
-import AssociationsViewer from '@/components/Sites/site-forms/associations/AssociationsViewer';
-import FirstNationAssociationsViewer from '@/components/Sites/site-forms/associations/FirstNationAssociationsViewer';
+import AssociationsEditor from '@/components/Sites/site-forms/associations/AssociationsEditor';
+import FirstNationAssociationsEditor from '@/components/Sites/site-forms/associations/FirstNationAssociationsEditor';
 
 export default {
   name: 'Associations',
-  components: { AssociationsViewer, FirstNationAssociationsViewer },
+  components: { AssociationsEditor, FirstNationAssociationsEditor },
   props: {
     placeId: {
       type: [Number, String],
