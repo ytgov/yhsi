@@ -24,6 +24,8 @@ import {
 } from '../data';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize, UserRoles } from '../middleware/authorization';
+import { User } from 'models';
+import { NotFoundError } from '../utils/validation';
 
 const placeService = new PlaceService(DB_CONFIG);
 const PAGE_SIZE = 10;
@@ -73,13 +75,14 @@ placeRouter.post(
 	[body('page').isInt().default(1)],
 	async (req: Request, res: Response, next: NextFunction) => {
 		let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
+		let currentUser = req.user as User;
 		const sort = buildDatabaseSort(sortBy, sortDesc);
 
 		let skip = (page - 1) * itemsPerPage;
 		let take = itemsPerPage;
 
 		return placeService
-			.doSearch(query, sort, page, itemsPerPage, skip, take)
+			.doSearch(query, sort, page, itemsPerPage, skip, take, currentUser)
 			.then((results) => {
 				return res.json(results);
 			})
@@ -115,9 +118,10 @@ placeRouter.get(
 	ReturnValidationErrors,
 	(req: Request, res: Response) => {
 		const id = parseInt(req.params.id);
+		let currentUser = req.user as User;
 
 		return placeService
-			.getById(id)
+			.getById(id, currentUser)
 			.then(({ place, relationships }) => {
 				return res.json({
 					data: place,
@@ -125,6 +129,10 @@ placeRouter.get(
 				});
 			})
 			.catch((error) => {
+				if (error instanceof NotFoundError) {
+					return res.status(404).send("Not found")
+				}
+
 				return res.status(422).json({
 					messages: [{ variant: 'error', text: error.message }],
 				});

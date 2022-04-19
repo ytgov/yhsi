@@ -162,6 +162,10 @@ export default {
       if (this.$route.hash) {
         goTo(this.$route.hash, { offset: 75 });
       }
+    })
+    .catch(err => {
+      console.log("ERROR LOADING PLACE", err.message)
+      this.$router.push("/sites")
     });
   },
   methods: {
