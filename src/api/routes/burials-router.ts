@@ -6,6 +6,7 @@ import { param, query } from 'express-validator';
 import { BurialService } from "../services";
 import { renderFile } from "pug";
 import { generatePDF } from "../utils/pdf-generator";
+const { Parser, transforms: { unwind } } = require('json2csv');
 export const burialsRouter = express.Router();
 const db = knex(DB_CONFIG);
 const burialService = new BurialService();
@@ -377,6 +378,10 @@ burialsRouter.post('/export', async (req: Request, res: Response) => {
 			Cemetary,
 			OriginCountry
 		});
-	res.status(200).send(burials.body);
+	const json2csvParser = new Parser();
+
+	const csv = json2csvParser.parse(burials.body);
+	res.setHeader("Content-Type", "text/csv");
+	res.attachment('boats.csv').send(csv);
 }
 );
