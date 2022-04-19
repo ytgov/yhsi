@@ -57,6 +57,7 @@ placeEditsRouter.post(
 	]),
 	[
 		body('placeId').notEmpty().toInt().isInt({ gt: 0 }),
+		body('associations').isArray().optional({ nullable: true }),
 		body('bordenNumber').isString().optional({ nullable: true }),
 		body('buildingSize').isString().optional({ nullable: true }),
 		body('category').isInt(),
@@ -65,10 +66,13 @@ placeEditsRouter.post(
 		body('constructionPeriods').isArray().optional({ nullable: true }),
 		body('contributingResources').isArray().optional({ nullable: true }),
 		body('coordinateDetermination').isInt(),
+		body('currentUseComment').isString().optional(),
 		body('dates').isArray().optional({ nullable: true }),
 		body('designations').isArray().optional({ nullable: true }),
 		body('doorCondition').isInt(),
+		body('firstNationAssociations').isArray().optional({ nullable: true }),
 		body('floorCondition').isInt(),
+		body('functionalUses').isArray().optional({ nullable: true }),
 		body('hectareArea').isString().optional({ nullable: true }),
 		body('historicalPatterns').isArray().optional({ nullable: true }),
 		body('latitude').isString().optional({ nullable: true }),
@@ -91,7 +95,10 @@ placeEditsRouter.post(
 		body('showInRegister').isBoolean(),
 		body('siteCategories').isArray().optional({ nullable: true }),
 		body('siteStatus').isInt(),
+		body('themes').isArray().optional({ nullable: true }),
 		body('wallCondition').isInt(),
+		body('yHSPastUse').isString().optional({ nullable: true }),
+		body('yHSThemes').isString().optional({ nullable: true }),
 	],
 	ReturnValidationErrors,
 	(req: Request, res: Response) => {
@@ -127,12 +134,23 @@ placeEditsRouter.get(
 		return placeEditService
 			.buildDetailedView(id)
 			.then((result) => {
+				if (result === undefined) {
+					return res.status(404).json({
+						messages: [
+							{
+								variant: 'error',
+								text: `Could not find PlaceEdit with id=${id}`,
+							},
+						],
+					});
+				}
+
 				return res.json({
 					data: result,
 				});
 			})
 			.catch((error) => {
-				return res.status(422).json({
+				return res.status(error.code || 422).json({
 					messages: [{ variant: 'error', text: error.message }],
 				});
 			});

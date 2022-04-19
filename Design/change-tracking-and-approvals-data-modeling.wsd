@@ -18,6 +18,7 @@ entity Place {
   BuildingSize : nvarchar
   ConditionComment : nvarchar
   ContributingResources : nvarchar : <<comma delimited array>>
+  CurrentUseComment: nvarchar
   Designations : nvarchar : <<comma delimited array>>
   HectareArea : nvarchar
   Latitude : nvarchar
@@ -35,6 +36,24 @@ entity Place {
   Records : nvarchar : <<comma delimited array>>
   ResourceType : nvarchar
   SiteCategories : nvarchar : <<comma delimited array>>
+  YHSPastUse: nvarchar
+  YHSThemes: nvarchar
+}
+
+entity Association {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * Type : int
+  Description : varchar
+}
+
+enum AssociationType {
+  1 : Event
+  2 : Person
+  3 : Organization
+  4 : Architect Designer
+  5 : Builder
 }
 
 enum Category {
@@ -113,6 +132,46 @@ enum Designations {
   NotDesignated : Not Designated
 }
 
+entity FirstNation {
+  * Id : int <<generated>>
+  --
+  Description : varchar
+}
+
+entity FirstNationAssociation {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * FirstNationId : int
+  * FirstNationAssociationType : int
+  Comments : varchar
+}
+
+enum FirstNationAssociationType {
+  1 : Settlement Lands
+  2 : Traditional Territory
+}
+
+entity FunctionalType {
+  * Id : int <<generated>>
+  --
+  Description : nvarchar
+}
+
+entity FunctionalUse {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * FunctionalTypeId : int
+  * FunctionalUseType : int
+  Description : nvarchar
+}
+
+enum FunctionalUseType {
+  1 : Current
+  2 : Historic
+}
+
 entity HistoricalPattern {
   * Id : int <<generated>>
   --
@@ -133,6 +192,13 @@ entity Name {
   --
   * PlaceId : int
   Description : nvarchar
+}
+
+entity PlaceTheme {
+  * Id : int <<generated>>
+  --
+  * Category : nvarchar
+  * Type : nvarchar
 }
 
 enum Records {
@@ -157,24 +223,41 @@ enum SiteStatus {
   6 : Reconstruction
 }
 
+entity Theme {
+  * Id: int <<generated>>
+  --
+  * PlaceId : int
+  * PlaceThemeId : int
+}
+
 Place::Category }|--o{ Category
 Place::CommunityId ||--o{ Community
-Place::DoorCondition }|--o{ ConditionType
-Place::FloorCondition }|--o{ ConditionType
-Place::RoofCondition }|--o{ ConditionType
-Place::WallCondition }|--o{ ConditionType
-Place }o--|| ConstructionPeriod::PlaceId
 Place::ContributingResources }o--o{ ContributingResources
 Place::CoordinateDetermination ||--o{ CoordinateDetermination
-Place }o--|| Dates::PlaceId
 Place::Designations }o--o{ Designations
-Place }o--|| HistoricalPattern::PlaceId
-Place }o--|| Name::PlaceId
+Place::DoorCondition }|--o{ ConditionType
+Place::FloorCondition }|--o{ ConditionType
 Place::Records }o--o{ Records
+Place::RoofCondition }|--o{ ConditionType
 Place::SiteCategories }o--o{ SiteCategories
 Place::SiteStatus ||--o{ SiteStatus
-HistoricalPattern::HistoricalPatternType ||--o{ HistoricalPatternType
-Dates::Type ||--o{ DateType
+Place::WallCondition }|--o{ ConditionType
+Place }o--|| Association::PlaceId
+Place }o--|| ConstructionPeriod::PlaceId
+Place }o--|| Dates::PlaceId
+Place }o--|| FirstNationAssociation::PlaceId
+Place }o--|| HistoricalPattern::PlaceId
+Place }o--|| Name::PlaceId
+Place }o--|| Theme::PlaceId
+Place }o--|| FunctionalUse::PlaceId
+Association::Type ||--o{ AssociationType
 ConstructionPeriod::Type ||--o{ ConstructionPeriodType
+Dates::Type ||--o{ DateType
+FirstNationAssociation::FirstNationAssociationType ||--o{ FirstNationAssociationType
+FirstNationAssociation::FirstNationId ||--o{ FirstNation::Id
+FunctionalUse::FunctionalTypeId ||--o{ FunctionalType::Id
+FunctionalUse::FunctionalUseType ||--o{ FunctionalUseType
+HistoricalPattern::HistoricalPatternType ||--o{ HistoricalPatternType
+Theme::PlaceThemeId ||--o{ PlaceTheme::Id
 
 @enduml

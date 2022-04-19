@@ -1,10 +1,13 @@
 export * from './aircrash-service';
+export * from './association-service';
 export * from './boat-owner-service';
 export * from './boat-service';
 export * from './burial-service';
 export * from './catalog-service';
 export * from './construction-period-service';
 export * from './date-service';
+export * from './first-nation-association-service';
+export * from './functional-use-service';
 export * from './historical-pattern-service';
 export * from './name-service';
 export * from './people-service';
@@ -13,6 +16,7 @@ export * from './photo-service';
 export * from './place-edit-service';
 export * from './place-service';
 export * from './static-service';
+export * from './theme-service';
 export * from './user-service';
 export * from './ytplace-service';
 

@@ -2,13 +2,10 @@ import knex, { Knex } from 'knex';
 import { QueryStatement, SortStatement } from './';
 import {
 	AlternateName,
-	Association,
-	ConstructionPeriod,
 	Contact,
 	Description,
 	FirstNationName,
 	FnAssociation,
-	FunctionalUse,
 	HistoricalPattern,
 	Name,
 	Ownership,
@@ -21,7 +18,6 @@ import {
 	PreviousOwnership,
 	REGISTER_FIELDS,
 	RevisionLog,
-	Theme,
 	WebLink,
 	YtPlace,
 	YTPLACE_FIELDS,

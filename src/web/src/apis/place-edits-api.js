@@ -7,13 +7,19 @@ export default {
 		return http
 			.get(placeEditsUrl, { params })
 			.then((response) => response.data)
-			.catch(console.error);
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
 	},
 	get(id) {
 		return http
 			.get(`${placeEditsUrl}/${id}`)
 			.then((response) => response.data)
-			.catch(console.error);
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
 	},
 	post(data) {
 		return http

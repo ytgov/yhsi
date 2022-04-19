@@ -13,36 +13,10 @@ staticRouter.get('/community', async (req: Request, res: Response) => {
 	return res.json({ data: list });
 });
 
-staticRouter.get('/association-type', async (req: Request, res: Response) => {
-	let list = await placeService.getAssociationTypes();
-	return res.json({ data: list });
-});
-
-staticRouter.get(
-	'/first-nation-association-type',
-	async (req: Request, res: Response) => {
-		let list = await placeService.getFNAssociationTypes();
-		return res.json({ data: list });
-	}
-);
-
 staticRouter.get('/first-nation', async (req: Request, res: Response) => {
 	let list = await staticService.getFirstNations();
 	return res.json({ data: list });
 });
-
-staticRouter.get('/functional-type', async (req: Request, res: Response) => {
-	let list = await staticService.getFunctionalTypes();
-	return res.json({ data: list });
-});
-
-staticRouter.get(
-	'/functional-use-type',
-	async (req: Request, res: Response) => {
-		let list = await placeService.getFunctionalUseTypes();
-		return res.json({ data: list });
-	}
-);
 
 staticRouter.get('/contact-type', async (req: Request, res: Response) => {
 	let list = await placeService.getContactTypes();
@@ -94,14 +68,6 @@ staticRouter.get('/photo-copyright', async (req: Request, res: Response) => {
 
 staticRouter.get('/usage-right', async (req: Request, res: Response) => {
 	let list = await staticService.getUsageRights();
-	return res.json({ data: list });
-});
-
-staticRouter.get('/place-theme', async (req: Request, res: Response) => {
-	let list = await staticService.getPlaceThemes();
-	list = list.map((l) =>
-		Object.assign(l, { display: `${l.category} / ${l.type}` })
-	);
 	return res.json({ data: list });
 });
 

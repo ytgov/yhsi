@@ -1,7 +1,9 @@
 <template lang="pug">
-v-select(
-	label="Construction period",
-	:items="constructionPeriodOptions",
+v-autocomplete(
+	label="Functional Category / Type",
+	:items="functionalTypeOptions"
+	item-value="id"
+	item-text="description",
 	:loading="loading"
 	v-bind="$attrs"
 	v-on="$listeners"
@@ -17,24 +19,24 @@ v-select(
 </template>
 
 <script>
-import api from '@/apis/construction-periods-api';
+import api from '@/apis/functional-types-api';
 
 export default {
-	name: 'ConstructionPeriodSelect',
+	name: 'FunctionalTypeSelect',
 	data: () => ({
-		constructionPeriodOptions: [],
+		functionalTypeOptions: [],
 		loading: false,
 	}),
 	mounted() {
-		this.getConstructionPeriods();
+		this.getFunctionalTypes();
 	},
 	methods: {
-		getConstructionPeriods() {
+		getFunctionalTypes() {
 			this.loading = true;
 			return api
 				.getAll()
 				.then(({ data }) => {
-					this.constructionPeriodOptions = data;
+					this.functionalTypeOptions = data;
 					return data;
 				})
 				.finally(() => {

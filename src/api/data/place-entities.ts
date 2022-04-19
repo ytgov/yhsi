@@ -1,4 +1,3 @@
-export * from '../models/construction-period';
 export * from '../models/date';
 export * from '../models/historical-pattern';
 export * from '../models/name';
@@ -80,22 +79,6 @@ export const REGISTER_FIELDS = [
 	'designations',
 ];
 
-export const CONSTRUCTION_PERIODS = [
-	{ value: 1, text: 'Pre 1895' },
-	{ value: 2, text: 'From 1896 to 1905' },
-	{ value: 3, text: 'From 1906 to 1939' },
-	{ value: 4, text: 'From 1940 to 1965' },
-	{ value: 5, text: 'Post 1965' },
-];
-
-export class Association {
-	id!: number;
-	placeId!: number;
-	type!: number;
-	type_name?: string;
-	description!: string;
-}
-
 export class Contact {
 	id!: number;
 	placeId!: number;
@@ -113,22 +96,6 @@ export class Description {
 	placeId!: number;
 	descriptionText!: string;
 	type!: number;
-}
-
-export class FirstNationAssociation {
-	id!: number;
-	placeId!: number;
-	firstNationId!: number;
-	firstNationAssociationType!: number;
-	comments!: string;
-}
-
-export class FunctionalUse {
-	id!: number;
-	placeId!: number;
-	functionalTypeId!: number;
-	functionalUseType!: number;
-	description!: string;
 }
 
 export class Ownership {
@@ -153,12 +120,6 @@ export class RevisionLog {
 	revisionDate!: Date;
 	revisedBy!: string;
 	details!: string;
-}
-
-export class Theme {
-	id!: number;
-	placeId!: number;
-	placeThemeId!: number;
 }
 
 export class WebLink {

@@ -116,8 +116,8 @@ import { mapActions, mapGetters } from 'vuex';
 import { pick } from 'lodash';
 
 import ConditionTypesSelect from '@/components/Sites/site-forms/ConditionTypesSelect';
-import ConstructionPeriodsEditor from '@/components/Sites/site-forms/dates/ConstructionPeriodsEditor';
-import DatesEditor from '@/components/Sites/site-forms/dates/DatesEditor';
+import ConstructionPeriodsEditor from '@/components/Sites/site-forms/dates-and-conditions/ConstructionPeriodsEditor';
+import DatesEditor from '@/components/Sites/site-forms/dates-and-conditions/DatesEditor';
 import SiteStatusTypesSelect from '@/components/Sites/site-forms/SiteStatusTypesSelect';
 
 export default {
