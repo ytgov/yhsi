@@ -14,30 +14,38 @@ entity Place {
   * SiteStatus : int
   * WallCondition : int
   * YHSIId : nvarchar
+  Block : nvarchar
   BordenNumber : nvarchar
   BuildingSize : nvarchar
   ConditionComment : nvarchar
   ContributingResources : nvarchar : <<comma delimited array>>
-  CurrentUseComment: nvarchar
+  CurrentUseComment : nvarchar
   Designations : nvarchar : <<comma delimited array>>
+  GroupYHSI : nvarchar
   HectareArea : nvarchar
+  LAGroup : nvarchar
   Latitude : nvarchar
   LocationComment : nvarchar
   LocationContext : nvarchar
   Longitude : nvarchar
-  NTSMapSheet: nvarchar
+  Lot : nvarchar
+  NTSMapSheet : nvarchar
   OtherCommunity : nvarchar
   OtherLocality : nvarchar
   PhysicalAddress : nvarchar
   PhysicalCountry : nvarchar
   PhysicalPostalCode : nvarchar
   PhysicalProvince : nvarchar
+  PlanNumber : nvarchar
   PreviousAddress : nvarchar
   Records : nvarchar : <<comma delimited array>>
   ResourceType : nvarchar
   SiteCategories : nvarchar : <<comma delimited array>>
-  YHSPastUse: nvarchar
-  YHSThemes: nvarchar
+  SiteDistrictNumber: nvarchar
+  TownSiteMapNumber: nvarchar
+  YHSPastUse : nvarchar
+  YHSThemes : nvarchar
+  Zoning : nvarchar
 }
 
 entity Association {
@@ -194,11 +202,42 @@ entity Name {
   Description : nvarchar
 }
 
+entity Ownership {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * OwnershipType : int
+  Comments : nvarchar
+}
+
+enum OwnershipType {
+  1 : Private
+  2 : Public Local
+  3 : Public Territorial
+  4 : Settlement Lands
+  5 : Public Federal
+  6 : Not For Profit
+  7 : Crown
+  8 : Unknown
+  17 : Gov Yukon
+  18 : First Nations Reserve
+  19 : Aboriginal Public Lands
+}
+
 entity PlaceTheme {
   * Id : int <<generated>>
   --
   * Category : nvarchar
   * Type : nvarchar
+}
+
+entity PreviousOwnership {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  OwnershipNumber : nvarchar
+  OwnershipName : nvarchar
+  OwnershipDate : nvarchar
 }
 
 enum Records {
@@ -248,6 +287,8 @@ Place }o--|| Dates::PlaceId
 Place }o--|| FirstNationAssociation::PlaceId
 Place }o--|| HistoricalPattern::PlaceId
 Place }o--|| Name::PlaceId
+Place }o--|| Ownership::PlaceId
+Place }o--|| PreviousOwnership::PlaceId
 Place }o--|| Theme::PlaceId
 Place }o--|| FunctionalUse::PlaceId
 Association::Type ||--o{ AssociationType
@@ -258,6 +299,7 @@ FirstNationAssociation::FirstNationId ||--o{ FirstNation::Id
 FunctionalUse::FunctionalTypeId ||--o{ FunctionalType::Id
 FunctionalUse::FunctionalUseType ||--o{ FunctionalUseType
 HistoricalPattern::HistoricalPatternType ||--o{ HistoricalPatternType
+Ownership::OwnershipType ||--o{ OwnershipType
 Theme::PlaceThemeId ||--o{ PlaceTheme::Id
 
 @enduml
