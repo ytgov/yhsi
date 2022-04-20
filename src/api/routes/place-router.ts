@@ -15,7 +15,7 @@ import { Place, WebLink, RevisionLog, Contact, Description } from '../data';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize, UserRoles } from '../middleware/authorization';
 import { User } from 'models';
-import { NotFoundError } from '../utils/validation';
+import PlacesController from '../controllers/places-controller';
 
 const placeService = new PlaceService(DB_CONFIG);
 const PAGE_SIZE = 10;
@@ -106,28 +106,7 @@ placeRouter.get(
 	'/:id',
 	[check('id').notEmpty()],
 	ReturnValidationErrors,
-	(req: Request, res: Response) => {
-		const id = parseInt(req.params.id);
-		let currentUser = req.user as User;
-
-		return placeService
-			.getById(id, currentUser)
-			.then(({ place, relationships }) => {
-				return res.json({
-					data: place,
-					relationships,
-				});
-			})
-			.catch((error) => {
-				if (error instanceof NotFoundError) {
-					return res.status(404).send("Not found")
-				}
-
-				return res.status(422).json({
-					messages: [{ variant: 'error', text: error.message }],
-				});
-			});
-	}
+	PlacesController.getPlace
 );
 
 placeRouter.post(
