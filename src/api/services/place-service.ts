@@ -31,7 +31,7 @@ import {
 	RevisionLog,
 	WebLink,
 } from '../data';
-import { GenericEnum, Place, PlainObject } from '../models';
+import { GenericEnum, Place, PlainObject, User } from '../models';
 import { NotFoundError } from '../utils/validation';
 import { UserRoles } from '../middleware/authorization';
 
