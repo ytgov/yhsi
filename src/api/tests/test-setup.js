@@ -1,3 +1,6 @@
-const { expect } = require('chai');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 
-global.expect = expect;
+chai.use(chaiAsPromised);
+
+global.expect = chai.expect;
