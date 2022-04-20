@@ -1,4 +1,6 @@
-export const OWNERSHIP_TYPES = [
+import { GenericEnum } from './simple-types';
+
+export const OWNERSHIP_TYPES: ReadonlyArray<GenericEnum> = Object.freeze([
 	{ value: 1, text: 'Private' },
 	{ value: 2, text: 'Public Local' },
 	{ value: 3, text: 'Public Territorial' },
@@ -10,4 +12,4 @@ export const OWNERSHIP_TYPES = [
 	{ value: 17, text: 'Gov Yukon' },
 	{ value: 18, text: 'First Nations Reserve' },
 	{ value: 19, text: 'Aboriginal Public Lands' },
-];
+]);

@@ -98,21 +98,6 @@ export class Description {
 	type!: number;
 }
 
-export class Ownership {
-	id!: number;
-	placeId!: number;
-	ownershipType!: number;
-	comments!: string;
-}
-
-export class PreviousOwnership {
-	id!: number;
-	placeId!: number;
-	ownershipNumber!: string;
-	ownershipName!: string;
-	ownershipDate!: string;
-}
-
 export class RevisionLog {
 	id!: number;
 	placeId!: number;

@@ -45,7 +45,7 @@
       <div>
         <template v-if="loading">
           <v-skeleton-loader
-            v-for="n in 3"
+            v-for="n in 6"
             :key="n"
             type="card"
           />
@@ -76,8 +76,12 @@
             id="associations"
             :place-id="id"
           />
+          <component
+            :is="legalAndZoningComponent"
+            id="legal-and-zoning"
+            :place-id="id"
+          />
         </template>
-        <LegalAndZoning id="legal-and-zoning" />
         <Photos id="photos" />
         <Management id="management" />
         <Description id="description" />
@@ -96,6 +100,7 @@ import DatesAndConditions from '@/components/Sites/site-forms/DatesAndConditions
 import DatesAndConditionsViewer from '@/components/Sites/site-forms/DatesAndConditionsViewer';
 import Description from '@/components/Sites/site-forms/Description';
 import LegalAndZoning from '@/components/Sites/site-forms/LegalAndZoning';
+import LegalAndZoningViewer from '@/components/Sites/site-forms/LegalAndZoningViewer';
 import Location from '@/components/Sites/site-forms/Location';
 import LocationReadonly from '@/components/Sites/site-forms/LocationReadonly';
 import Management from '@/components/Sites/site-forms/Management';
@@ -116,6 +121,7 @@ export default {
     DatesAndConditionsViewer,
     Description,
     LegalAndZoning,
+    LegalAndZoningViewer,
     Location,
     LocationReadonly,
     Management,
@@ -151,6 +157,11 @@ export default {
       if (this.hasPendingChanges) return DatesAndConditionsViewer;
 
       return DatesAndConditions;
+    },
+    legalAndZoningComponent() {
+      if (this.hasPendingChanges) return LegalAndZoningViewer;
+
+      return LegalAndZoning;
     },
     locationComponent() {
       if (this.hasPendingChanges) return LocationReadonly;
