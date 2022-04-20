@@ -34,7 +34,7 @@ class DevHelper
     dc(*%w[down --remove-orphans], *args, **kwargs)
   end
 
-  def logs(*args)
+  def logs(*args, **kwargs)
     dc(*%w[logs -f], *args, **kwargs)
   end
 
