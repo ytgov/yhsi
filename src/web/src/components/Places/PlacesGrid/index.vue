@@ -54,14 +54,14 @@
               Add Place
             </v-btn>
 
-            <JsonCSV :data="placesCsv" >
+            <!-- <JsonCSV :data="placesCsv" >
               <v-btn  class="black--text mx-1" :disabled="places.length == 0">
                 <v-icon class="mr-1">
                   mdi-export
                 </v-icon>
                 Export
               </v-btn>
-            </JsonCSV>
+            </JsonCSV> -->
 
             <PrintButton key="prt-2" :data="{places: placesCsv}" :disabled="places.length == 0"/>
         </v-col>
