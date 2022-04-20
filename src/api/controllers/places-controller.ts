@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 
 import { DB_CONFIG } from '../config';
 import { PlaceService } from '../services';
+import { User } from '../models';
 import { NotFoundError } from '../utils/validation';
 
 const placeService = new PlaceService(DB_CONFIG);

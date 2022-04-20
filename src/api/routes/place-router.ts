@@ -13,8 +13,8 @@ import { DB_CONFIG } from '../config';
 import { buildDatabaseSort, PlaceService } from '../services';
 import { Place, WebLink, RevisionLog, Contact, Description } from '../data';
 import { ReturnValidationErrors } from '../middleware';
-import { authorize, UserRoles } from '../middleware/authorization';
-import { User } from 'models';
+import { authorize } from '../middleware/authorization';
+import { User, UserRoles } from '../models';
 import PlacesController from '../controllers/places-controller';
 
 const placeService = new PlaceService(DB_CONFIG);

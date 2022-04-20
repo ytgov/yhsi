@@ -30,9 +30,8 @@ import {
 	RevisionLog,
 	WebLink,
 } from '../data';
-import { GenericEnum, Place, PlainObject, User } from '../models';
+import { GenericEnum, Place, PlainObject, User, UserRoles } from '../models';
 import { NotFoundError } from '../utils/validation';
-import { UserRoles } from '../middleware/authorization';
 
 function combine(
 	list1: Array<any>,

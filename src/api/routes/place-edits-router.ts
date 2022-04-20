@@ -4,7 +4,8 @@ import moment from 'moment';
 
 import { ReturnValidationErrors } from '../middleware';
 import { PlaceEditService } from '../services';
-import { authorize, UserRoles } from '../middleware/authorization';
+import { UserRoles } from '../models';
+import { authorize } from '../middleware/authorization';
 
 export const placeEditsRouter = express.Router();
 const placeEditService = new PlaceEditService();
