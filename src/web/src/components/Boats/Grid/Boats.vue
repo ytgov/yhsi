@@ -1,6 +1,5 @@
 <template>
   <v-container fluid>
-    {{this.filterOptions}}
     <v-row>
       <v-col cols="12">
         <h2 v-if="boats">{{ boats.length }} results out of {{ totalLength }}</h2>
@@ -107,7 +106,8 @@ export default {
         prefilters.VesselType
       );
       this.boats = _.get(data, "body", []);
-      this.totalLength = _.get(data, "count", 0).count;
+      console.log(data);
+      this.totalLength = _.get(data, "count", 0);
       this.boats.map((x) => {
         x.ConstructionDate = this.formatDate(x.ConstructionDate);
         x.ServiceStart = this.formatDate(x.ServiceStart);
