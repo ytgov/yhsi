@@ -88,7 +88,7 @@ export class UserService {
 			}
 		}
 
-		return user;
+		return new User(user);
 	}
 
 	async update(id: any, value: any) {

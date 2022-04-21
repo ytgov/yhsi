@@ -31,4 +31,12 @@ export class User {
 		this.role_list = attributes.role_list;
 		this.site_access = attributes.site_access;
 	}
+
+	get roleList() {
+		return this.role_list || [];
+	}
+
+	get siteAccess() {
+		return this.site_access || [];
+	}
 }

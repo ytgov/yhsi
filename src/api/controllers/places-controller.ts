@@ -4,6 +4,7 @@ import { DB_CONFIG } from '../config';
 import { PlaceService } from '../services';
 import { User } from '../models';
 import { NotFoundError } from '../utils/validation';
+import PlacePolicy from '../policies/place-policy';
 
 const placeService = new PlaceService(DB_CONFIG);
 
@@ -14,6 +15,18 @@ export function getPlace(req: Request, res: Response) {
 	return placeService
 		.getById(id, currentUser)
 		.then(({ place, relationships }) => {
+			const policy = new PlacePolicy(currentUser, place);
+			if (!policy.show()) {
+				return res.status(403).json({
+					messages: [
+						{
+							variant: 'error',
+							text: 'You are not authorized to access this content.',
+						},
+					],
+				});
+			}
+
 			return res.json({
 				data: place,
 				relationships,

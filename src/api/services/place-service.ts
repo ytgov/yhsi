@@ -128,21 +128,19 @@ export class PlaceService {
 
 		this.scopeSitesToUser(selectStatement, user);
 
-		return selectStatement
-			.then(list => list);
+		return selectStatement.then((list) => list);
 	}
 
 	async getById(id: number, user?: User) {
-		let selectStatement = this.db('place')
+		return this.db('place')
 			.first(PLACE_FIELDS)
-			.where({ id: id });
-
-		this.scopeSitesToUser(selectStatement, user);
-
-		return selectStatement.then(Place.decodeCommaDelimitedArrayColumns)
+			.where({ id: id })
+			.then(Place.decodeCommaDelimitedArrayColumns)
 			.then(async (place) => {
 				if (!place) {
-					return Promise.reject(new NotFoundError(`Could not find Place for id=${id}`));
+					return Promise.reject(
+						new NotFoundError(`Could not find Place for id=${id}`)
+					);
 				}
 
 				place.hasPendingChanges = await this.placeEditService.existsForPlace(
@@ -465,7 +463,9 @@ export class PlaceService {
 					this.db('Place')
 						.select({
 							PlaceId: 'Place.Id',
-							Status: this.db.raw(`CASE WHEN PlaceEdit.PlaceId IS NULL THEN '' ELSE 'Editing' END`),
+							Status: this.db.raw(
+								`CASE WHEN PlaceEdit.PlaceId IS NULL THEN '' ELSE 'Editing' END`
+							),
 						})
 						.as('StatusTable')
 						.innerJoin('PlaceEdit', 'PlaceEdit.PlaceId', 'Place.Id'),
