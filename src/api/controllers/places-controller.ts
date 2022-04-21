@@ -4,7 +4,7 @@ import { DB_CONFIG } from '../config';
 import { PlaceService } from '../services';
 import { User } from '../models';
 import { NotFoundError } from '../utils/validation';
-import PlacePolicy from '../policies/place-policy';
+import { PlacePolicy } from '../policies';
 
 const placeService = new PlaceService(DB_CONFIG);
 

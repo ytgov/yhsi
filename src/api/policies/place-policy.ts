@@ -1,9 +1,9 @@
 import { isEmpty, intersection, toInteger } from 'lodash';
 
-import BasePolicy from './base-policy';
+import { BasePolicy } from '.';
 import { User, Place, UserRoles } from '../models';
 
-export default class PlacePolicy extends BasePolicy<Place> {
+export class PlacePolicy extends BasePolicy<Place> {
 	constructor(user: User, place: Place) {
 		super(user, place);
 	}
@@ -72,3 +72,5 @@ export default class PlacePolicy extends BasePolicy<Place> {
 		);
 	}
 }
+
+export default PlacePolicy;

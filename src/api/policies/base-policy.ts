@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 
 import { User } from '../models';
 
-export default abstract class BasePolicy<Type> {
+export abstract class BasePolicy<Type> {
 	record: Type;
 	user: User;
 
@@ -31,3 +31,5 @@ export default abstract class BasePolicy<Type> {
 		throw new Error('not implemented');
 	}
 }
+
+export default BasePolicy;
