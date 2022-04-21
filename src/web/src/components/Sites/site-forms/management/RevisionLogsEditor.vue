@@ -9,10 +9,8 @@ v-card.default(tag="section")
     )
       v-row
         v-col(cols="5")
-          v-select(
-            v-model="item.revisionLogType",
-            :items="revisionTypeOptions"
-            label="Revision Type"
+          RevisionLogTypeSelect(
+            v-model="item.revisionLogType"
             outlined
             dense
             background-color="white"
@@ -68,13 +66,12 @@ v-card.default(tag="section")
 
 <script>
 import { mapGetters } from 'vuex';
-import axios from 'axios';
 
-import { STATIC_URL } from '@/urls';
+import RevisionLogTypeSelect from '@/components/Sites/site-forms/management/RevisionLogTypeSelect';
 
 export default {
   name: 'RevisionLogEditor',
-  components: {},
+  components: { RevisionLogTypeSelect },
   props: {
     value: {
       type: Array,
@@ -85,19 +82,11 @@ export default {
       required: true,
     },
   },
-  data: () => ({
-    revisionTypeOptions: [],
-  }),
   computed: {
     ...mapGetters({ currentUserFullName: 'fullName' }),
     revisionLogs() {
       return this.value;
     },
-  },
-  mounted() {
-    axios.get(`${STATIC_URL}/revision-log-type`).then((resp) => {
-      this.revisionTypeOptions = resp.data.data;
-    });
   },
   methods: {
     addLog() {

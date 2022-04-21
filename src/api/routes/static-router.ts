@@ -41,11 +41,6 @@ staticRouter.get(
 	}
 );
 
-staticRouter.get('/revision-log-type', async (req: Request, res: Response) => {
-	let list = await placeService.getRevisionLogTypes();
-	return res.json({ data: list });
-});
-
 staticRouter.get('/description-type', async (req: Request, res: Response) => {
 	let list = await placeService.getDescriptionTypes();
 	return res.json({ data: list });

@@ -13,7 +13,7 @@
     </v-card-title>
     <v-card-text>
       <RevisionLogsEditor
-        v-model="revisionLogs"
+        v-model="fields.revisionLogs"
         :place-id="placeId"
       />
 
@@ -352,11 +352,9 @@ export default {
     date: null,
     menu: false,
 
-    revisionLogs: [],
     contacts: [],
     links: [],
 
-    revisionTypeOptions: [],
     contactTypeOptions: [],
     linkTypeOptions: [],
     jurisdictionOptions: [],
@@ -383,7 +381,6 @@ export default {
       .then((resp) => {
         this.fields = resp.data.data;
         this.fields.recognitionDate = this.fields.recognitionDate || '';
-        this.revisionLogs = resp.data.relationships.revisionLogs.data;
         this.contacts = resp.data.relationships.contacts.data;
         this.links = resp.data.relationships.webLinks.data;
       })
@@ -436,7 +433,7 @@ export default {
         yGReserveNumber: this.fields.yGReserveNumber,
         links: this.links,
         contacts: this.contacts,
-        revisionLogs: this.revisionLogs,
+        revisionLogs: this.fields.revisionLogs,
       };
 
       axios

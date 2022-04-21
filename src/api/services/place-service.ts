@@ -26,7 +26,6 @@ import {
 	DESCRIPTION_TYPE_ENUMS,
 	PLACE_FIELDS,
 	REGISTER_FIELDS,
-	REVISION_LOG_TYPES,
 	RevisionLog,
 	WebLink,
 } from '../data';
@@ -159,6 +158,7 @@ export class PlaceService {
 				);
 				place.names = await this.nameService.getFor(id);
 				place.ownerships = await this.ownershipService.getFor(id);
+				place.revisionLogs = await this.getRevisionLogFor(id);
 				place.themes = await this.themeService.getFor(id);
 				place.previousOwnerships = await this.previousOwnershipService.getFor(
 					id
@@ -171,14 +171,6 @@ export class PlaceService {
 					'contactType',
 					'text',
 					'contactTypeText'
-				);
-				const revisionLogs = combine(
-					await this.getRevisionLogFor(id),
-					this.getRevisionLogTypes(),
-					'value',
-					'revisionLogType',
-					'text',
-					'revisionLogTypeText'
 				);
 				const webLinks = combine(
 					await this.getWebLinksFor(id),
@@ -200,7 +192,6 @@ export class PlaceService {
 				const relationships = {
 					photos: { data: photos },
 					contacts: { data: contacts },
-					revisionLogs: { data: revisionLogs },
 					webLinks: { data: webLinks },
 					descriptions: { data: descriptions },
 				};
@@ -414,10 +405,6 @@ export class PlaceService {
 			{ value: 3, text: 'Heritage Planner' },
 			{ value: 4, text: 'Other' },
 		];
-	}
-
-	getRevisionLogTypes(): GenericEnum[] {
-		return REVISION_LOG_TYPES;
 	}
 
 	getWebLinkTypes(): GenericEnum[] {
