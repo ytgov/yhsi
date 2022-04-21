@@ -8,6 +8,7 @@ export class PlacePolicyScope extends BasePolicyScope {
 	constructor(scope: Knex.QueryBuilder, user: User) {
 		super(scope, user);
 		this.scope = scope
+			.clone()
 			.select(['Place.Id'])
 			.leftOuterJoin(
 				'FirstNationAssociation',
