@@ -87,7 +87,7 @@ export class User {
 	}
 
 	get roleList(): string[] {
-		return this.roles?.split(',') || [];
+		return this.roles?.split(',').map((role) => role.trim()) || [];
 	}
 	set roleList(value: string[]) {
 		this.role_list = value;
