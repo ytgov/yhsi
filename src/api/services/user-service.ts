@@ -1,5 +1,5 @@
-import knex, { Knex } from "knex";
-import { User } from "../models";
+import knex, { Knex } from 'knex';
+import { User, SiteAccesType, UserSiteAccess } from '../models';
 
 export class UserService {
 	private knex: Knex;
@@ -60,7 +60,17 @@ export class UserService {
 		else
 			user.role_list = [];
 
-		user.site_access = await this.knex("Security.UserSiteAccess").where({ user_id: user.id }).orderBy("access_type_id").orderBy("access_text");
+		user.site_access = await this.knex('Security.UserSiteAccess')
+			.where({ user_id: user.id })
+			.orderBy('access_type_id')
+			.orderBy('access_text')
+			.then((results) => {
+				return results.map((result) => new UserSiteAccess(result));
+			})
+			.catch((error) => {
+				console.error(error);
+				return [];
+			});
 
 		let allCommunities = await this.knex("Community");
 		let allFirstNations = await this.knex("FirstNation")

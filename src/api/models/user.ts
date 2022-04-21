@@ -42,17 +42,17 @@ export class User {
 		this.create_date = value;
 	}
 
-	get expireDate() {
+	get expireDate(): Date | undefined {
 		return this.expire_date;
 	}
-	set expireDate(value: Date) {
+	set expireDate(value: Date | undefined) {
 		this.expire_date = value;
 	}
 
-	get expireDateDisplay() {
+	get expireDateDisplay(): string | undefined {
 		return this.expire_date_display;
 	}
-	set expireDateDisplay(value: string) {
+	set expireDateDisplay(value: string | undefined) {
 		this.expire_date_display = value;
 	}
 
@@ -63,17 +63,17 @@ export class User {
 		this.first_name = value;
 	}
 
-	get lastLoginDate() {
+	get lastLoginDate(): Date | undefined {
 		return this.last_login_date;
 	}
-	set lastLoginDate(value: Date) {
+	set lastLoginDate(value: Date | undefined) {
 		this.last_login_date = value;
 	}
 
-	get lastLoginDateDisplay() {
+	get lastLoginDateDisplay(): string | undefined {
 		return this.last_login_date_display;
 	}
-	set lastLoginDateDisplay(value: string) {
+	set lastLoginDateDisplay(value: string | undefined) {
 		this.last_login_date_display = value;
 	}
 

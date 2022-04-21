@@ -41,17 +41,17 @@ export class UserSiteAccess {
 		this.access_text = value;
 	}
 
-	get accessTypeName(): string {
+	get accessTypeName(): string | undefined {
 		return this.access_type_name;
 	}
-	set accessTypeName(value: string) {
+	set accessTypeName(value: string | undefined) {
 		this.access_type_name = value;
 	}
 
-	get accessTextName(): string {
+	get accessTextName(): string | undefined {
 		return this.access_text_name;
 	}
-	set accessTextName(value: string) {
+	set accessTextName(value: string | undefined) {
 		this.access_text_name = value;
 	}
 }
