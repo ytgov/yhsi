@@ -627,10 +627,9 @@ export class PlaceService {
 	}
 
 	async scopeSitesToUser(query: Knex.QueryInterface, user?: User) {
-
 		// without a user passed in, you see nothing
 		if (!user) {
-			query.whereRaw("(1=0)");
+			query.whereRaw('(1=0)');
 			return;
 		}
 
@@ -639,26 +638,34 @@ export class PlaceService {
 			return;
 
 		// If you don't have one of the site roles, you see nothing
-		if (user.roles && user.roles.indexOf("Site") == -1) {
-			query.whereRaw("(1=0)");
+		if (user.roles && user.roles.indexOf('Site') == -1) {
+			query.whereRaw('(1=0)');
 			return;
 		}
 
 		if (user.site_access) {
-			let mapSheets = user.site_access.filter(a => a.access_type_id == 1).map(a => a.access_text);
-			let communities = user.site_access.filter(a => a.access_type_id == 2).map(a => a.access_text);
-			let firstNations = user.site_access.filter(a => a.access_type_id == 3).map(a => a.access_text);
+			let mapSheets = user.site_access
+				.filter((a) => a.access_type_id == 1)
+				.map((a) => a.access_text);
+			let communities = user.site_access
+				.filter((a) => a.access_type_id == 2)
+				.map((a) => a.access_text);
+			let firstNations = user.site_access
+				.filter((a) => a.access_type_id == 3)
+				.map((a) => a.access_text);
 
-			let scope = "(1=0";
+			let scope = '(1=0';
 
 			if (mapSheets.length > 0)
 				scope += ` OR NTSMapSheet IN ('${mapSheets.join("','")}')`;
 			if (communities.length > 0)
-				scope += ` OR CommunityId IN (${communities.join(",")})`;
+				scope += ` OR CommunityId IN (${communities.join(',')})`;
 			if (firstNations.length > 0)
-				scope += ` OR [FirstNationAssociation].[FirstNationId] IN (${firstNations.join(",")})`;
+				scope += ` OR [FirstNationAssociation].[FirstNationId] IN (${firstNations.join(
+					','
+				)})`;
 
-			scope += ")";
+			scope += ')';
 
 			query.whereRaw(scope);
 		}
