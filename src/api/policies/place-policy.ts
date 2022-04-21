@@ -50,20 +50,20 @@ export class PlacePolicy extends BasePolicy<Place> {
 	// helpers
 	get permittedMapSheets(): string[] {
 		return this.user.siteAccess
-			.filter((a) => a.access_type_id == 1)
-			.map((a) => a.access_text.toString());
+			.filter((a) => a.accessTypeId == 1)
+			.map((a) => a.accessText.toString());
 	}
 
 	get permittedCommunityIds(): number[] {
 		return this.user.siteAccess
-			.filter((a) => a.access_type_id == 2)
-			.map((a) => toInteger(a.access_text));
+			.filter((a) => a.accessTypeId == 2)
+			.map((a) => toInteger(a.accessText));
 	}
 
 	get permittedFirstNationsIds(): number[] {
 		return this.user.siteAccess
-			.filter((a) => a.access_type_id == 3)
-			.map((a) => toInteger(a.access_text));
+			.filter((a) => a.accessTypeId == 3)
+			.map((a) => toInteger(a.accessText));
 	}
 
 	get firstNationsIds(): number[] {
