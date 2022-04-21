@@ -3,11 +3,11 @@ import { Knex } from 'knex';
 import { User } from '../models';
 
 export abstract class BasePolicyScope {
-	scope: Knex.QueryBuilder;
+	_scope: Knex.QueryBuilder;
 	user: User;
 
 	constructor(scope: Knex.QueryBuilder, user: User) {
-		this.scope = scope.clone();
+		this._scope = scope.clone();
 		this.user = user;
 	}
 
@@ -17,5 +17,12 @@ export abstract class BasePolicyScope {
 
 	get emptyScope(): Knex.QueryBuilder {
 		return this.scope.whereRaw('(1=0)');
+	}
+
+	get scope(): Knex.QueryBuilder {
+		return this._scope.clone();
+	}
+	set scope(value: Knex.QueryBuilder) {
+		this._scope = value;
 	}
 }

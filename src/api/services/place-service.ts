@@ -443,10 +443,9 @@ export class PlaceService {
 		take: number
 	): Promise<any> {
 		return new Promise(async (resolve, reject) => {
-			const selectStatement = this.db('place')
+			const selectStatement = scope
 				.distinct()
 				.select(...PLACE_FIELDS, { status: 'StatusTable.Status' })
-				.innerJoin(scope.as('ScopedPlace'), 'Place.Id', 'ScopedPlace.Id')
 				.leftOuterJoin(
 					'FirstNationAssociation',
 					'Place.Id',

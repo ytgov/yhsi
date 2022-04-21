@@ -5,18 +5,6 @@ import { BasePolicyScope } from '.';
 import { User, UserRoles } from '../models';
 
 export class PlacePolicyScope extends BasePolicyScope {
-	constructor(scope: Knex.QueryBuilder, user: User) {
-		super(scope, user);
-		this.scope = scope
-			.clone()
-			.select(['Place.Id'])
-			.leftOuterJoin(
-				'FirstNationAssociation',
-				'Place.Id',
-				'FirstNationAssociation.PlaceId'
-			);
-	}
-
 	resolve() {
 		// without a user passed in, you see nothing
 		if (!this.user) {
@@ -60,7 +48,19 @@ export class PlacePolicyScope extends BasePolicyScope {
 
 		if (!isEmpty(clauses)) {
 			let query = clauses.join(' OR ');
-			return this.scope.whereRaw(`(${query})`);
+			return this.scope.innerJoin(
+				this.scope
+					.select(['Place.Id'])
+					.leftOuterJoin(
+						'FirstNationAssociation',
+						'Place.Id',
+						'FirstNationAssociation.PlaceId'
+					)
+					.whereRaw(`(${query})`)
+					.as('ScopedPlace'),
+				'Place.Id',
+				'ScopedPlace.Id'
+			);
 		}
 
 		return this.emptyScope;
