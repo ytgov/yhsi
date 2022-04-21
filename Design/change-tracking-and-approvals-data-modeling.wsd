@@ -245,6 +245,24 @@ enum Records {
   WHBR : WHBR
 }
 
+entity RevisionLog {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * RevisionLogType : int
+  RevisionDate : nvarchar
+  RevisedBy : nvarchar
+  Details : nvarchar
+}
+
+enum RevisionLogType {
+  1 : Initial Recording
+  2 : Monitoring Visit
+  3 : Research
+  4 : Designation Assessment
+  5 : Record Update
+}
+
 enum SiteCategories {
   Architecture : Architecture
   FirstNation : First Nation
@@ -289,6 +307,7 @@ Place }o--|| HistoricalPattern::PlaceId
 Place }o--|| Name::PlaceId
 Place }o--|| Ownership::PlaceId
 Place }o--|| PreviousOwnership::PlaceId
+Place }o--|| RevisionLog::PlaceId
 Place }o--|| Theme::PlaceId
 Place }o--|| FunctionalUse::PlaceId
 Association::Type ||--o{ AssociationType
@@ -300,6 +319,7 @@ FunctionalUse::FunctionalTypeId ||--o{ FunctionalType::Id
 FunctionalUse::FunctionalUseType ||--o{ FunctionalUseType
 HistoricalPattern::HistoricalPatternType ||--o{ HistoricalPatternType
 Ownership::OwnershipType ||--o{ OwnershipType
+RevisionLog::RevisionLogType ||--o{ RevisionLogType
 Theme::PlaceThemeId ||--o{ PlaceTheme::Id
 
 @enduml
