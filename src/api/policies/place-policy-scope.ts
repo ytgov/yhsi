@@ -47,19 +47,19 @@ export class PlacePolicyScope extends BasePolicyScope {
 		}
 
 		if (!isEmpty(clauses)) {
-			let query = clauses.join(' OR ');
+			const condition = clauses.join(' OR ');
+			const restrictedScope = this.scope
+				.select(['Place.Id'])
+				.leftOuterJoin(
+					'FirstNationAssociation',
+					'Place.Id',
+					'FirstNationAssociation.PlaceId'
+				)
+				.whereRaw(`(${condition})`);
 			return this.scope.innerJoin(
-				this.scope
-					.select(['Place.Id'])
-					.leftOuterJoin(
-						'FirstNationAssociation',
-						'Place.Id',
-						'FirstNationAssociation.PlaceId'
-					)
-					.whereRaw(`(${query})`)
-					.as('ScopedPlace'),
+				restrictedScope.as('RestrictedPlace'),
 				'Place.Id',
-				'ScopedPlace.Id'
+				'RestrictedPlace.Id'
 			);
 		}
 
