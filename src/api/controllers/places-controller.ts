@@ -16,20 +16,20 @@ export function getPlace(req: Request, res: Response) {
 		.getById(id, currentUser)
 		.then(({ place, relationships }) => {
 			const policy = new PlacePolicy(currentUser, place);
-			if (!policy.show()) {
-				return res.status(403).json({
-					messages: [
-						{
-							variant: 'error',
-							text: 'You are not authorized to access this content.',
-						},
-					],
+			if (policy.show()) {
+				return res.json({
+					data: place,
+					relationships,
 				});
 			}
 
-			return res.json({
-				data: place,
-				relationships,
+			return res.status(403).json({
+				messages: [
+					{
+						variant: 'error',
+						text: 'You are not authorized to access this content.',
+					},
+				],
 			});
 		})
 		.catch((error) => {
