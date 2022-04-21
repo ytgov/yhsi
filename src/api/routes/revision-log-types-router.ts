@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 
-import { REVISION_LOG_TYPES } from '../data';
+import { REVISION_LOG_TYPES } from '../models';
 
 export const revisionLogTypesRouter = express.Router();
 

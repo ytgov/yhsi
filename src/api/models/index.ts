@@ -23,6 +23,7 @@ export * from './place';
 export * from './place-edit';
 export * from './previous-ownership';
 export * from './record-types';
+export * from './revision-log-types';
 export * from './simple-types';
 export * from './site-access-type';
 export * from './site-category-types';
