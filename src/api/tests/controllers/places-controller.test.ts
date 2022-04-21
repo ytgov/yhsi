@@ -3,7 +3,7 @@ import reqresnext from 'reqresnext';
 import { User, UserRoles } from '../../models';
 import { PlaceService } from '../../services';
 
-describe('placesController', () => {
+describe('PlacesController', () => {
 	def('user', () => new User({ firstName: 'marlen' }));
 	def('place', () => ({ id: 1, yHSIId: '116B/03/600' }));
 	def('PlaceServiceMock', () => td.constructor(PlaceService));
