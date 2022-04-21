@@ -3,6 +3,8 @@
   "compilerOptions": {
     "baseUrl": "./",
     "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
     "typeRoots": ["../node_modules/@types"]
   },
   "exclude": ["../node_modules"],
