@@ -22,6 +22,16 @@ describe('PlacePolicy', () => {
 			});
 
 			context('when user has a site access role', () => {
+				def(
+					'user',
+					() =>
+						new User({
+							firstName: 'marlen',
+							roles: $roles,
+							siteAccess: $siteAccess,
+						})
+				);
+				def('siteAccess', () => []);
 				def('roles', () =>
 					faker.random
 						.arrayElements([
@@ -41,12 +51,33 @@ describe('PlacePolicy', () => {
 					});
 				});
 
-				context('when user has specific access via the NTS Map Sheet', () => {
+				context('when user has specific access via a NTS Map Sheet', () => {
 					def('nTSMapSheet', () => '115O/03');
 					def('siteAccess', () => [
 						new UserSiteAccess({
 							accessTypeId: SiteAccesType.MAP_SHEET,
 							accessText: $nTSMapSheet,
+						}),
+					]);
+					def('place', () => ({
+						id: 1,
+						yHSIId: '116B/03/600',
+						nTSMapSheet: $nTSMapSheet,
+					}));
+
+					it('permits access', () => {
+						expect($policy.show()).to.be.true;
+					});
+				});
+
+				context('when user has specific access via a community Id', () => {
+					def('communityId', () =>
+						faker.datatype.number({ min: 1, max: 1000 })
+					);
+					def('siteAccess', () => [
+						new UserSiteAccess({
+							accessTypeId: SiteAccesType.COMMUNITY,
+							accessText: $communityId,
 						}),
 					]);
 					def(
@@ -61,7 +92,44 @@ describe('PlacePolicy', () => {
 					def('place', () => ({
 						id: 1,
 						yHSIId: '116B/03/600',
-						nTSMapSheet: $nTSMapSheet,
+						communityId: $communityId,
+					}));
+
+					it('permits access', () => {
+						expect($policy.show()).to.be.true;
+					});
+				});
+
+				context('when user has specific access via a first nations Id', () => {
+					def('placeId', () => faker.datatype.number({ min: 1, max: 1000 }));
+					def('firstNation', () => ({
+						id: faker.datatype.number({ min: 1, max: 1000 }),
+						name: 'Liard First Nation',
+					}));
+					def('firstNationAssociation', () => ({
+						id: faker.datatype.number({ min: 1, max: 1000 }),
+						placeId: $placeId,
+						firstNationId: $firstNation.id,
+					}));
+					def('siteAccess', () => [
+						new UserSiteAccess({
+							accessTypeId: SiteAccesType.FIRST_NATION,
+							accessText: $firstNation.id,
+						}),
+					]);
+					def(
+						'user',
+						() =>
+							new User({
+								firstName: 'marlen',
+								roles: $roles,
+								siteAccess: $siteAccess,
+							})
+					);
+					def('place', () => ({
+						id: $placeId,
+						yHSIId: '116B/03/600',
+						firstNationAssociations: [$firstNationAssociation],
 					}));
 
 					it('permits access', () => {
