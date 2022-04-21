@@ -56,6 +56,9 @@ import Religion from "../components/Administration/LookupTableManagement/Religio
 
 import MapRoutes from "@/modules/map/router";
 
+import InterpretiveSitesGrid from "../components/InterpretiveSites/Grid";
+import InterpretiveSitesForm from "../components/InterpretiveSites/InterpetiveSiteComponents/Form";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -391,6 +394,26 @@ const routes = [
 		component: BurialsForm,
 		props: true,
 		meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
+	},
+	{
+		path: "/interpretive-sites",
+		name: "InterpretiveSitesGrid",
+		component: InterpretiveSitesGrid,
+		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
+	},
+	{
+		path: "/interpretive-sites/view/:id",
+		name: "InterpretiveSitesView",
+		component: InterpretiveSitesForm,
+		props: true
+		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
+	},
+	{
+		path: "/interpretive-sites/edit/:id",
+		name: "InterpretiveSitesEdit",
+		component: InterpretiveSitesForm,
+		props: true
+		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
 	},
 	{
 		path: "/places",

@@ -86,6 +86,11 @@
 							<v-list-item-title>Burials</v-list-item-title>
 						</v-list-item>
 						<v-list-item
+							to="/interpretive-sites"
+						>
+							<v-list-item-title>Interpretive Sites</v-list-item-title>
+						</v-list-item>
+						<v-list-item
 							to="/places"
 							v-if="userInRole(UserRoles.PLACE_EDITOR)"
 						>
