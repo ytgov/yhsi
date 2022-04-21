@@ -40,24 +40,26 @@ export class PlacePolicyScope extends BasePolicyScope {
 			return this.emptyScope;
 		}
 
-		let query = '';
+		let clauses = [];
 		if (!isEmpty(this.user.permittedMapSheets)) {
-			const permittedMapSheets = this.user.permittedMapSheets.join("','");
-			query += ` OR NTSMapSheet IN ('${permittedMapSheets}')`;
+			const permittedMapSheets = this.user.permittedMapSheets.join(', ');
+			clauses.push(`NTSMapSheet IN ('${permittedMapSheets}')`);
 		}
 		if (!isEmpty(this.user.permittedCommunityIds)) {
-			const permittedCommunityIds = this.user.permittedCommunityIds.join("','");
-			query += ` OR CommunityId IN (${permittedCommunityIds})`;
+			const permittedCommunityIds = this.user.permittedCommunityIds.join(', ');
+			clauses.push(`CommunityId IN (${permittedCommunityIds})`);
 		}
 		if (!isEmpty(this.user.permittedFirstNationsIds)) {
 			const permittedFirstNationsIds =
-				this.user.permittedFirstNationsIds.join("','");
-			query += ` OR [FirstNationAssociation].[FirstNationId] IN (${permittedFirstNationsIds})`;
+				this.user.permittedFirstNationsIds.join(', ');
+			clauses.push(
+				`[FirstNationAssociation].[FirstNationId] IN (${permittedFirstNationsIds})`
+			);
 		}
 
-		if (!isEmpty(query)) {
-			query += `(${query})`;
-			return this.scope.whereRaw(query);
+		if (!isEmpty(clauses)) {
+			let query = clauses.join(' OR ');
+			return this.scope.whereRaw(`(${query})`);
 		}
 
 		return this.emptyScope;
