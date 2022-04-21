@@ -434,18 +434,19 @@ export class PlaceService {
 	}
 
 	async doSearch(
+		scope: Knex.QueryBuilder,
 		query: { [key: string]: any },
 		sort: Array<SortStatement>,
 		page: number,
 		itemsPerPage: number,
 		skip: number,
-		take: number,
-		user: User
+		take: number
 	): Promise<any> {
 		return new Promise(async (resolve, reject) => {
 			const selectStatement = this.db('place')
 				.distinct()
 				.select(...PLACE_FIELDS, { status: 'StatusTable.Status' })
+				.innerJoin(scope.as('ScopedPlace'), 'Place.Id', 'ScopedPlace.Id')
 				.leftOuterJoin(
 					'FirstNationAssociation',
 					'Place.Id',
@@ -472,8 +473,6 @@ export class PlaceService {
 					'Place.Id',
 					'StatusTable.PlaceId'
 				);
-
-			this.scopeSitesToUser(selectStatement, user);
 
 			type QueryBuilder = {
 				(base: Knex.QueryInterface, value: any): Knex.QueryInterface;

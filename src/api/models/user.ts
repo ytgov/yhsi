@@ -1,4 +1,6 @@
-import { PlainObject, UserSiteAccess } from '.';
+import { toInteger } from 'lodash';
+
+import { PlainObject, UserSiteAccess, SiteAccesType } from '.';
 
 export class User {
 	id: number;
@@ -97,5 +99,24 @@ export class User {
 	}
 	set siteAccess(value: UserSiteAccess[]) {
 		this.site_access = value || [];
+	}
+
+	// helpers
+	get permittedMapSheets(): string[] {
+		return this.siteAccess
+			.filter((a) => a.accessTypeId == SiteAccesType.MAP_SHEET)
+			.map((a) => a.accessText.toString());
+	}
+
+	get permittedCommunityIds(): number[] {
+		return this.siteAccess
+			.filter((a) => a.accessTypeId == SiteAccesType.COMMUNITY)
+			.map((a) => toInteger(a.accessText));
+	}
+
+	get permittedFirstNationsIds(): number[] {
+		return this.siteAccess
+			.filter((a) => a.accessTypeId == SiteAccesType.FIRST_NATION)
+			.map((a) => toInteger(a.accessText));
 	}
 }

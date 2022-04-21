@@ -1,11 +1,13 @@
+import knex from 'knex';
 import { Request, Response } from 'express';
 
 import { DB_CONFIG } from '../config';
-import { PlaceService } from '../services';
+import { buildDatabaseSort, PlaceService } from '../services';
 import { User } from '../models';
 import { NotFoundError } from '../utils/validation';
-import { PlacePolicy } from '../policies';
+import { PlacePolicy, PlacePolicyScope } from '../policies';
 
+const db = knex(DB_CONFIG);
 const placeService = new PlaceService(DB_CONFIG);
 
 export function getPlace(req: Request, res: Response) {
@@ -45,6 +47,31 @@ export function getPlace(req: Request, res: Response) {
 		});
 }
 
+export function searchPlaces(req: Request, res: Response) {
+	let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
+	let currentUser = req.user as User;
+	const sort = buildDatabaseSort(sortBy, sortDesc);
+
+	let skip = (page - 1) * itemsPerPage;
+	let take = itemsPerPage;
+
+	const allPlaces = db('Place');
+	const placePolicyScope = new PlacePolicyScope(allPlaces, currentUser);
+	const permittedPlaces = placePolicyScope.resolve();
+
+	return placeService
+		.doSearch(permittedPlaces, query, sort, page, itemsPerPage, skip, take)
+		.then((results) => {
+			return res.json(results);
+		})
+		.catch((error) => {
+			return res.status(422).json({
+				messages: [{ variant: 'error', text: error.message }],
+			});
+		});
+}
+
 export default {
 	getPlace,
+	searchPlaces,
 };

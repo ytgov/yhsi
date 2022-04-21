@@ -10,7 +10,7 @@ import {
 import { pick } from 'lodash';
 
 import { DB_CONFIG } from '../config';
-import { buildDatabaseSort, PlaceService } from '../services';
+import { PlaceService } from '../services';
 import { Place, WebLink, RevisionLog, Contact, Description } from '../data';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
@@ -63,25 +63,7 @@ placeRouter.get(
 placeRouter.post(
 	'/search',
 	[body('page').isInt().default(1)],
-	async (req: Request, res: Response, next: NextFunction) => {
-		let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
-		let currentUser = req.user as User;
-		const sort = buildDatabaseSort(sortBy, sortDesc);
-
-		let skip = (page - 1) * itemsPerPage;
-		let take = itemsPerPage;
-
-		return placeService
-			.doSearch(query, sort, page, itemsPerPage, skip, take, currentUser)
-			.then((results) => {
-				return res.json(results);
-			})
-			.catch((error) => {
-				return res.status(422).json({
-					messages: [{ variant: 'error', text: error.message }],
-				});
-			});
-	}
+	PlacesController.searchPlaces
 );
 
 placeRouter.post(
