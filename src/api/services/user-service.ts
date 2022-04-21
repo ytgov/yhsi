@@ -77,19 +77,19 @@ export class UserService {
 
 		for (let access of user.site_access) {
 			switch (access.access_type_id) {
-				case 1:
-					access.access_type_name = "Map sheet number";
+				case SiteAccesType.MAP_SHEET:
+					access.access_type_name = 'Map sheet number';
 					access.access_text_name = access.access_text.toString();
 					break;
-				case 2:
-					access.access_type_name = "Community";
+				case SiteAccesType.COMMUNITY:
+					access.access_type_name = 'Community';
 					access.access_text = parseInt(access.access_text.toString());
 					let cm = allCommunities.filter((c: any) => c.Id == access.access_text)
 					if (cm.length > 0)
 						access.access_text_name = cm[0].Name;
 					break;
-				case 3:
-					access.access_type_name = "First Nation";
+				case SiteAccesType.FIRST_NATION:
+					access.access_type_name = 'First Nation';
 					access.access_text = parseInt(access.access_text.toString());
 					let fn = allFirstNations.filter((c: any) => c.Id == access.access_text)
 					if (fn.length > 0)
