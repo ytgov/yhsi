@@ -1,7 +1,7 @@
 import { isEmpty, intersection, toInteger } from 'lodash';
 
 import { BasePolicy } from '.';
-import { User, Place, UserRoles } from '../models';
+import { User, Place, UserRoles, SiteAccesType } from '../models';
 
 export class PlacePolicy extends BasePolicy<Place> {
 	constructor(user: User, place: Place) {
@@ -50,19 +50,19 @@ export class PlacePolicy extends BasePolicy<Place> {
 	// helpers
 	get permittedMapSheets(): string[] {
 		return this.user.siteAccess
-			.filter((a) => a.accessTypeId == 1)
+			.filter((a) => a.accessTypeId == SiteAccesType.MAP_SHEET)
 			.map((a) => a.accessText.toString());
 	}
 
 	get permittedCommunityIds(): number[] {
 		return this.user.siteAccess
-			.filter((a) => a.accessTypeId == 2)
+			.filter((a) => a.accessTypeId == SiteAccesType.COMMUNITY)
 			.map((a) => toInteger(a.accessText));
 	}
 
 	get permittedFirstNationsIds(): number[] {
 		return this.user.siteAccess
-			.filter((a) => a.accessTypeId == 3)
+			.filter((a) => a.accessTypeId == SiteAccesType.FIRST_NATION)
 			.map((a) => toInteger(a.accessText));
 	}
 
