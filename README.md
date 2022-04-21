@@ -97,6 +97,35 @@ e.g.
 `dev down` will stop the app in development mode.
 `dev test down` will stop the app in test mode.
 
+### Helful Git Hooks
+
+A helpful git hook that will prevent you from accidentally disabling the test suite is below.
+
+1. Add the following to the `<project-root>/.git/hooks/pre-commit` file, or create it if it doesn't exist.
+
+```bash
+# Redirect output to stderr.
+exec 1>&2
+
+# prevent it.only context.only or describe.only commited
+if [ "$allowonlytests" != "true" ] &&
+    test $(git diff --cached | grep -E "\b(it|context|describe).only\("  | wc -l) != 0
+then
+    cat <<\EOF
+Error: Attempt to add it.only or describe.only - which may disable all other tests
+
+If you know what you are doing you can disable this check using:
+
+    git config hooks.allowonlytests true
+EOF
+    exit 1
+fi
+
+exit 0
+```
+
+2. Make the file executable vai `chmod +x .git/hooks/pre-commit`
+
 ## Running the application production
 
 Since the database for this system is managed externally, PRODUCTION version only needs to run the API and Web services.
