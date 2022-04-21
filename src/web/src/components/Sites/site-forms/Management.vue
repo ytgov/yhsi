@@ -12,92 +12,10 @@
       Management
     </v-card-title>
     <v-card-text>
-      <v-card
-        class="default"
-        tag="section"
-      >
-        <v-card-title
-          tag="h3"
-          class="mb-0 text-h6"
-        >
-          Revision Logs
-        </v-card-title>
-        <v-card-text tag="form">
-          <div
-            v-for="(item, i) in revisionLogs"
-            :key="`log-${i + 1}`"
-          >
-            <v-row>
-              <v-col cols="5">
-                <v-combobox
-                  v-model="item.revisionType"
-                  label="Revision Type"
-                  outlined
-                  dense
-                  background-color="white"
-                />
-
-                <v-text-field
-                  v-model="item.revisedBy"
-                  label="Revised By"
-                  required
-                  outlined
-                  dense
-                  hide-details
-                  background-color="white"
-                />
-              </v-col>
-              <v-col cols="5">
-                <v-text-field
-                  v-model="item.date"
-                  label="Date"
-                  required
-                  outlined
-                  dense
-                  background-color="white"
-                />
-
-                <v-text-field
-                  v-model="item.details"
-                  label="Details"
-                  required
-                  outlined
-                  dense
-                  hide-details
-                  background-color="white"
-                />
-              </v-col>
-              <v-col cols="2">
-                <v-btn
-                  color="warning"
-                  x-small
-                  fab
-                  title="Remove"
-                  class="my-0 float-right"
-                  @click="removeLog(i)"
-                >
-                  <v-icon dark>mdi-close</v-icon>
-                </v-btn>
-              </v-col>
-              <v-col
-                v-if="i < revisionLogs.length - 1"
-                cols="12"
-              >
-                <v-divider class="black" />
-              </v-col>
-            </v-row>
-          </div>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn
-            class="my-0"
-            color="info"
-            @click="addLog"
-          >
-            Add New
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+      <RevisionLogsEditor
+        v-model="revisionLogs"
+        :place-id="placeId"
+      />
 
       <v-divider class="my-3" />
 
@@ -416,12 +334,14 @@
 <script>
 import axios from 'axios';
 
-import store from '@/store';
 import { PLACE_URL, STATIC_URL } from '@/urls';
+
+import RevisionLogsEditor from '@/components/Sites/site-forms/management/RevisionLogsEditor';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'Management',
+  components: { RevisionLogsEditor },
   props: {
     placeId: {
       type: [Number, String],
@@ -431,7 +351,6 @@ export default {
   data: () => ({
     date: null,
     menu: false,
-    currentUser: 'asd',
 
     revisionLogs: [],
     contacts: [],
@@ -459,8 +378,6 @@ export default {
     },
   }),
   mounted() {
-    this.currentUser = store.getters.fullName;
-
     axios
       .get(`${PLACE_URL}/${this.placeId}`)
       .then((resp) => {
@@ -472,9 +389,6 @@ export default {
       })
       .catch((error) => console.error(error));
 
-    axios.get(`${STATIC_URL}/revision-log-type`).then((resp) => {
-      this.revisionTypeOptions = resp.data.data;
-    });
     axios.get(`${STATIC_URL}/contact-type`).then((resp) => {
       this.contactTypeOptions = resp.data.data;
     });
@@ -494,21 +408,6 @@ export default {
   methods: {
     save(date) {
       this.$refs.menu.save(date);
-    },
-    addLog() {
-      let date = new Date();
-      let month = ('0' + (date.getMonth() + 1)).slice(-2);
-      let day = ('0' + date.getDate()).slice(-2);
-
-      this.revisionLogs.push({
-        placeId: this.placeId,
-        revisionLogType: 5,
-        revisionDate: `${date.getFullYear()}-${month}-${day}`,
-        revisedBy: this.currentUser,
-      });
-    },
-    removeLog(index) {
-      this.revisionLogs.splice(index, 1);
     },
     addContact() {
       this.contacts.push({ placeId: this.placeId, contactType: 1 });
