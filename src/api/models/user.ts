@@ -54,8 +54,8 @@ export class User {
 		return this.last_name;
 	}
 
-	get roleList() {
-		return this.role_list || [];
+	get roleList(): string[] {
+		return this.roles?.split(',') || [];
 	}
 
 	get siteAccess() {
