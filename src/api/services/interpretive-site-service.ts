@@ -102,6 +102,38 @@ export class InterpretiveSiteService {
 		return res;
 	}
 
+	async modifySite(SiteID: number, item: any, assets: any, actions: any, inspections: any){
+		const res = await db('InterpretiveSite.Sites')
+			.update(item)
+			.where('InterpretiveSite.Sites.SiteID', SiteID);
+
+		if(!res){
+			return null;
+		}
+			//assets
+			// await db
+			// .insert(assets.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationLupID })))
+			// .into('Burial.Occupation')
+			// .then((rows: any) => {
+			// 	return rows;
+			// });
+
+			// const deletedAssets = assets.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
+			// for (const item of deletedOccupations) {
+			// 	await db('Burial.Occupation')
+			// 		.where('Burial.Occupation.ID', item.ID).del();
+			// }
+
+			// const editAssets = assets.filter((x: any) => x.edited == true && x.deleted == undefined).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
+			// ////console.log("occupations to edit",editOccupations);
+			// for (const item of editOccupations) {
+			// 	await db('Burial.Occupation')
+			// 		.update({ BurialID: burialId, OccupationID: item.OccupationID })
+			// 		.where('Burial.Occupation.ID', item.ID);
+			// }
+		return res;
+	}
+
     async doSiteSearch( page: number, limit: number, offset: number, filters: any){
 		let counter = [{ count: 0 }];
 		let sites = [];
@@ -118,7 +150,7 @@ export class InterpretiveSiteService {
                     // if(MapSheet !== '') builder.where('MapSheet', 'like', `%${ServiceEnd}%`);
                     // if(MapSheet !== '') builder.where('MapSheet', 'like', `%${ServiceEnd}%`);
 				})
-				.count('Id', { as: 'count' });
+				.count('SiteID', { as: 'count' });
 
             sites = await db
 				.select('*')
@@ -140,7 +172,7 @@ export class InterpretiveSiteService {
 					if(KMNum !== '') builder.where('KMNum', 'like', `%${KMNum}%`);
 					if(MapSheet !== '') builder.where('MapSheet', 'like', `%${MapSheet}%`);
 				})
-				.count('Id', { as: 'count' });
+				.count('SiteID', { as: 'count' });
 
             sites = await db
 				.select('*')
@@ -161,6 +193,11 @@ export class InterpretiveSiteService {
 
     //ACTIONS
 
+	async getActionById(ActionID: number){
+		const res = await db.select('*').from('InterpretiveSites.Actions').where('InterpretiveSite.Actions.ActionID', ActionID);
+		return res;
+	}
+
 	async addAction(item: any){
 		const res = await db
 		.insert(item)
@@ -170,6 +207,12 @@ export class InterpretiveSiteService {
 			const newAction = rows[0];		
 			return newAction;
 		});
+		return res;
+	}
+
+	async modifyAction(item: any, ActionID: number){
+		const res = await db('InterpretiveSite.Action').update(item).where('InterpretiveSite.Action.ActionID', ActionID);
+		console.log(res);
 		return res;
 	}
 
@@ -260,13 +303,22 @@ export class InterpretiveSiteService {
     }
 
     //ASSETS
+	async getAssetById(AssetID: number){
+		const res = await db.select('*').from('InterpretiveSites.Assets').where('InterpretiveSite.Assets.AssetID', AssetID);
+		return res;
+	}
 
-	async addAssets(item: any){
+	async addAsset(item: any){
 		const res = await db
 		.insert(item)
 		.into('InterpretiveSite.Assets')
 		.returning('*');
 
+		return res;
+	}
+
+	async modifyAsset(item: any, AssetId: number){
+		const res = await db('InterpretiveSite.Assets').update(item).where('InterpretiveSite.Assets.AssetID', AssetId);
 		return res;
 	}
 
