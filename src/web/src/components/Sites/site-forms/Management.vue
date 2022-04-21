@@ -422,13 +422,13 @@ import { PLACE_URL, STATIC_URL } from '@/urls';
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'Management',
+  props: {
+    placeId: {
+      type: [Number, String],
+      required: true,
+    },
+  },
   data: () => ({
-    valid: false,
-    loadedId: -1,
-    generalRules: [
-      (v) => !!v || 'This input is required',
-      (v) => v.length <= 20 || 'This input must be less than 20 characters',
-    ],
     date: null,
     menu: false,
     currentUser: 'asd',
@@ -445,33 +445,30 @@ export default {
     statuteOptions: [],
 
     fields: {
-      cIHBNumber: '', //
+      cIHBNumber: '',
       doorCondition: '',
-      fHBRONumber: '', //
-      jurisdiction: '', //
-      ownerConsent: '', //
-      recognitionDate: '', //
-      isPubliclyAccessible: false, //
-      statute2Id: '', //
-      statuteId: '', //
-      yGBuildingNumber: '', //
-      yGReserveNumber: '', //
+      fHBRONumber: '',
+      jurisdiction: '',
+      ownerConsent: '',
+      recognitionDate: '',
+      isPubliclyAccessible: false,
+      statute2Id: '',
+      statuteId: '',
+      yGBuildingNumber: '',
+      yGReserveNumber: '',
     },
   }),
-  created: function () {
-    let id = this.$route.params.id;
-    this.loadedId = id;
+  mounted() {
     this.currentUser = store.getters.fullName;
 
     axios
-      .get(`${PLACE_URL}/${id}`)
+      .get(`${PLACE_URL}/${this.placeId}`)
       .then((resp) => {
         this.fields = resp.data.data;
         this.fields.recognitionDate = this.fields.recognitionDate || '';
         this.revisionLogs = resp.data.relationships.revisionLogs.data;
         this.contacts = resp.data.relationships.contacts.data;
         this.links = resp.data.relationships.webLinks.data;
-        store.dispatch('addSiteHistory', resp.data.data);
       })
       .catch((error) => console.error(error));
 
@@ -504,7 +501,7 @@ export default {
       let day = ('0' + date.getDate()).slice(-2);
 
       this.revisionLogs.push({
-        placeId: this.loadedId,
+        placeId: this.placeId,
         revisionLogType: 5,
         revisionDate: `${date.getFullYear()}-${month}-${day}`,
         revisedBy: this.currentUser,
@@ -514,13 +511,13 @@ export default {
       this.revisionLogs.splice(index, 1);
     },
     addContact() {
-      this.contacts.push({ placeId: this.loadedId, contactType: 1 });
+      this.contacts.push({ placeId: this.placeId, contactType: 1 });
     },
     removeContact(index) {
       this.contacts.splice(index, 1);
     },
     addLink() {
-      this.links.push({ type: 1, address: 'https://', placeId: this.loadedId });
+      this.links.push({ type: 1, address: 'https://', placeId: this.placeId });
     },
     removeLink(index) {
       this.links.splice(index, 1);
@@ -544,7 +541,7 @@ export default {
       };
 
       axios
-        .put(`${PLACE_URL}/${this.loadedId}/management`, body)
+        .put(`${PLACE_URL}/${this.placeId}/management`, body)
         .then((resp) => {
           this.$emit('showAPIMessages', resp.data);
         })

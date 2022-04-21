@@ -45,7 +45,7 @@
       <div>
         <template v-if="loading">
           <v-skeleton-loader
-            v-for="n in 6"
+            v-for="n in 8"
             :key="n"
             type="card"
           />
@@ -81,9 +81,12 @@
             id="legal-and-zoning"
             :place-id="id"
           />
+          <Photos id="photos" />
+          <Management
+            id="management"
+            :place-id="id"
+          />
         </template>
-        <Photos id="photos" />
-        <Management id="management" />
         <Description id="description" />
       </div>
     </div>
@@ -180,16 +183,17 @@ export default {
     },
   },
   mounted() {
-    this.initializePlace(this.id).then((place) => {
-      this.addSiteHistory(place);
-      if (this.$route.hash) {
-        goTo(this.$route.hash, { offset: 75 });
-      }
-    })
-    .catch(err => {
-      console.log("ERROR LOADING PLACE", err.message)
-      this.$router.push("/sites")
-    });
+    this.initializePlace(this.id)
+      .then((place) => {
+        this.addSiteHistory(place);
+        if (this.$route.hash) {
+          goTo(this.$route.hash, { offset: 75 });
+        }
+      })
+      .catch((error) => {
+        console.log('ERROR LOADING PLACE', error.message);
+        this.$router.push('/sites');
+      });
   },
   methods: {
     ...mapActions({
