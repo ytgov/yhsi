@@ -79,11 +79,13 @@
                   <v-icon dark>mdi-close</v-icon>
                 </v-btn>
               </v-col>
+              <v-col
+                v-if="i < revisionLogs.length - 1"
+                cols="12"
+              >
+                <v-divider class="black" />
+              </v-col>
             </v-row>
-            <hr
-              v-if="i < revisionLogs.length - 1"
-              class="my-3"
-            />
           </div>
         </v-card-text>
         <v-card-actions>
@@ -196,11 +198,13 @@
                   background-color="white"
                 />
               </v-col>
+              <v-col
+                v-if="i < contacts.length - 1"
+                cols="12"
+              >
+                <v-divider class="black" />
+              </v-col>
             </v-row>
-            <hr
-              v-if="i < contacts.length - 1"
-              class="my-3"
-            />
           </div>
         </v-card-text>
         <v-card-actions>
@@ -260,11 +264,13 @@
                   <v-icon dark>mdi-close</v-icon>
                 </v-btn>
               </v-col>
+              <v-col
+                v-if="i < links.length - 1"
+                cols="12"
+              >
+                <v-divider class="black" />
+              </v-col>
             </v-row>
-            <hr
-              v-if="i < links.length - 1"
-              class="my-4"
-            />
           </div>
         </v-card-text>
         <v-card-actions>
