@@ -55,64 +55,18 @@ intSitesRouter.get(
 intSitesRouter.post('/', async (req: Request, res: Response) => {
 	const {
 		item = {},
-		ownerNewArray = [],
-		histories = [],
-		pastNamesNewArray = [],
+		actions = [],
+		assets = [],
+		inspections = [],
 	} = req.body;
 
-	const response = await db
-		.insert(item)
-		.into('boat.boat')
-		.returning('*')
-		.then(async (rows: any) => {
-			const newBoat = rows[0];
-
-			if (ownerNewArray.length) {
-				const newOwners = ownerNewArray.map((owner: any) => ({
-					...owner,
-					BoatId: newBoat.Id,
-				}));
-
-				await db
-					.insert(newOwners)
-					.into('boat.boatowner')
-					.returning('*')
-					.then((rows: any) => {
-						return rows;
-					});
-			}
-
-			//Add the new past names (done)
-			await db
-				.insert(
-					pastNamesNewArray.map((name: any) => ({
-						BoatId: newBoat.Id,
-						...name,
-					}))
-				)
-				.into('boat.pastnames')
-				.then((rows: any) => {
-					return rows;
-				});
-
-			if (histories.length) {
-				const newHistories = histories.map((history: any) => ({
-					...history,
-					UID: newBoat.Id,
-				}));
-				await db
-					.insert(newHistories)
-					.into('boat.history')
-					.returning('*')
-					.then((rows: any) => {
-						return rows;
-					});
-			}
-
-			return newBoat;
-		});
-
-	res.send(response);
+	const resObj = await intSiteService.addSite(item, assets, actions, inspections);
+	if(!resObj){
+		res.status(401).send({ message: "Conflict"});
+		return;
+	}
+	
+	res.send(resObj);
 });
 
 intSitesRouter.put('/:boatId', async (req: Request, res: Response) => {

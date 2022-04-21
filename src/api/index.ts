@@ -38,6 +38,7 @@ import {
 	usersExtraRouter,
 	ytPlaceHistoryRouter,
 	ytPlaceRouter,
+	intSitesRouter
 } from './routes';
 
 import * as config from './config';
@@ -108,6 +109,7 @@ app.use('/api/register', registerRouter);
 
 ////console.log("B", boats)
 
+app.use('/api/interpretive-sites', intSitesRouter);
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
 app.use('/api/category-types', RequiresAuthentication, categoryTypesRouter);
 app.use('/api/communities', RequiresAuthentication, communitiesRouter);
