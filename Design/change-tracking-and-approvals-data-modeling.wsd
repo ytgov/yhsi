@@ -8,6 +8,7 @@ entity Place {
   * CoordinateDetermination : int
   * DoorCondition : int
   * FloorCondition : int
+  * IsPubliclyAccessible : bit
   * Jurisdiction : int
   * OwnerConsent : int
   * PrimaryName : nvarchar

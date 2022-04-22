@@ -70,7 +70,7 @@ v-card.mb-0(
               )
               .rounded.white.px-2.pt-1.pb-2
                 v-checkbox(
-                  v-model="place.showInRegister"
+                  v-model="place.isPubliclyAccessible"
                   label="Publicly Accessible?"
                   dense
                   outlined
@@ -91,7 +91,7 @@ v-card.mb-0(
         )
         v-text-field(
           v-model="place.cIHBNumber"
-          label=" CIHB Number"
+          label="CIHB Number"
           required
         )
         v-text-field(
@@ -164,19 +164,18 @@ export default {
     saveChanges() {
       const data = pick(this.place, [
         'cIHBNumber',
-        'doorCondition',
+        'contacts',
         'fHBRONumber',
+        'isPubliclyAccessible',
         'jurisdiction',
         'ownerConsent',
         'recognitionDate',
-        'isPubliclyAccessible',
+        'revisionLogs',
         'statute2Id',
         'statuteId',
+        'webLinks',
         'yGBuildingNumber',
         'yGReserveNumber',
-        'links',
-        'contacts',
-        'revisionLogs',
       ]);
 
       return this.savePlace(data);
