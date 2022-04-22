@@ -7,6 +7,7 @@ import ntsMapSheets from '@/store/nts-map-sheets';
 import places from '@/store/places';
 import profile from './profile';
 import boats from './boats';
+import interpretiveSites from './interpretive-sites';
 import alerts from './alerts';
 import photos from './photos';
 import users from './users';
@@ -64,5 +65,6 @@ export default new Vuex.Store({
     places,
     profile,
     users,
+    interpretiveSites
   },
 });

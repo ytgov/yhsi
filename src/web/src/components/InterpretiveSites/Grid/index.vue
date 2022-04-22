@@ -5,7 +5,7 @@
     <v-row>
       <v-col cols="6" class="d-flex">
         <v-text-field
-          v-if="$route.path.includes('action')"
+          v-if="actionRoute"
           flat
           prepend-icon="mdi-magnify"
           class="mx-4"
@@ -17,7 +17,7 @@
         ></v-text-field>
 
         <v-text-field
-          v-else-if="$route.path.includes('asset')"
+          v-else-if="assetRoute"
           flat
           prepend-icon="mdi-magnify"
           class="mx-4"
@@ -59,24 +59,32 @@
 
               <v-icon class="black--text">mdi-chevron-right</v-icon>
             </v-btn>
-            <v-btn
-              v-else
-              color="transparent"
-              class="black--text"
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon class="black--text mr-1">mdi-filter</v-icon>
-              Filter
-
-              <v-icon class="black--text">mdi-chevron-right</v-icon>
-            </v-btn>
           </template>
-          <v-list>
+          <v-list v-if="siteRoute">
             <v-list-item v-for="(item, i) in actionFilterOptions" :key="`action-filter-list-opt-${i}`" link>
               <v-text-field
                 clearable
-                @blur="filterChange"
+                @blur="siteFilterChange"
+                v-model="item.value"
+                :label="item.name"
+              ></v-text-field>
+            </v-list-item>
+          </v-list>
+          <v-list v-else-if="actionRoute">
+            <v-list-item v-for="(item, i) in actionFilterOptions" :key="`action-filter-list-opt-${i}`" link>
+              <v-text-field
+                clearable
+                @blur="actionFilterChange"
+                v-model="item.value"
+                :label="item.name"
+              ></v-text-field>
+            </v-list-item>
+          </v-list>
+          <v-list v-else>
+            <v-list-item v-for="(item, i) in actionFilterOptions" :key="`action-filter-list-opt-${i}`" link>
+              <v-text-field
+                clearable
+                @blur="assetFilterChange"
                 v-model="item.value"
                 :label="item.name"
               ></v-text-field>
@@ -85,10 +93,10 @@
         </v-menu>
       </v-col>
       <v-spacer></v-spacer>
-      <v-col cols="auto" v-if="$route.path.includes('action')" class="d-flex">
+      <v-col cols="auto" v-if="actionRoute" class="d-flex">
         <v-btn class="black--text mx-1" @click="addNewAction">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-          Add Owner
+          Add Action
         </v-btn>
 
 
@@ -106,10 +114,10 @@
         </v-btn>
 
       </v-col>
-      <v-col cols="auto" v-else-if="$route.path.includes('asset')" class="d-flex">
+      <v-col cols="auto" v-else-if="assetRoute" class="d-flex">
         <v-btn class="black--text mx-1" @click="addNewAsset">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-          Add Site
+          Add Asset
         </v-btn>
 
         <v-btn class="black--text mx-1" @click="getAssetsExport()" :loading="loadingExport">
@@ -131,7 +139,7 @@
           Add Site
         </v-btn>
 
-        <v-btn class="black--text mx-1" @click="getSiteExport()" :loading="loadingExport">
+        <v-btn class="black--text mx-1" @click="getSitesExport()" :loading="loadingExport">
           <v-icon class="mr-1"> mdi-export </v-icon>
           Export
         </v-btn>
@@ -151,17 +159,17 @@
           <v-tab
             key="1"
             :to="{ path: '/interpretive-sites/' }"
-            :class="`${isActive($route.path)}`"
+            :class="siteRoute ? '' : 'notActive'"
           >
-            <v-icon class="mr-1">mdi-ferry</v-icon>
+            <v-icon class="mr-1">mdi-clipboard-check</v-icon>
             Sites
           </v-tab>
           <v-tab key="2" :to="{ path: '/interpretive-sites/actions' }">
-            <v-icon class="mr-1">mdi-account-tie</v-icon>
+            <v-icon class="mr-1">mdi-gesture-tap</v-icon>
             Actions
           </v-tab>
           <v-tab key="3" :to="{ path: '/interpretive-sites/assets' }">
-            <v-icon class="mr-1">mdi-account-tie</v-icon>
+            <v-icon class="mr-1">mdi-database</v-icon>
             Assets
           </v-tab>
         </v-tabs>
@@ -231,13 +239,7 @@ export default {
     loadingExport: false,
   }),
   async mounted() {
-    if (this.$route.path.includes("actions")) {
-      this.route = "actions";
-    } else if(this.$route.path.includes("assets")){
-      this.route = "assets";
-    } else {
-      this.route = "sites"
-    }
+
 
   },
   methods: {
@@ -251,20 +253,28 @@ export default {
       this.$router.push(`/interpretive-sites/asset/new`);
     },
     siteSearchChange: _.debounce(function () {
-      this.$store.commit("boats/setOwnerSearch", this.searchOwner);
-      //this.getOwnerExport();
+      this.$store.commit("interpretiveSites/setSiteSearch", this.searchSite);
     }, 400),
     actionSearchChange: _.debounce(function () {
-      this.$store.commit("boats/setBoatSearch", this.searchBoat);
-      //this.getBoatExport();
+      this.$store.commit("interpretiveSites/setActionSearch", this.searchAtion);
     }, 400),
-    filterChange() {
-      this.$store.commit("boats/setSelectedFilters", this.filterOptions);
-      //this.getBoatExport();
+    assetSearchChange: _.debounce(function () {
+      this.$store.commit("interpretiveSites/setAssetSearch", this.searchAsset);
+    }, 400),
+    siteFilterChange() {
+      this.$store.commit("boats/setSiteFilters", this.siteFilterOptions);
+    },
+    actionFilterChange() {
+      this.$store.commit("boats/setActionFilters", this.actionFilterOptions);
+    },
+    assetFilterChange() {
+      this.$store.commit("boats/setAssetFilters", this.assetFilterOptions);
     },
     isActive(route) {
       //this function helps to show certain classes depending on the route
-      return route.includes("owner") ? "notActive" : "";
+      //route.includes("sites") ? "notActive" : route.includes("actions") ? : ;
+      console.log(route);
+      return "notActive"
     },
     async getSitesExport(){
       let { sortBy, sortDesc } = this.options;
@@ -409,6 +419,37 @@ export default {
     },
   },
   computed: {
+    currentRoute(){
+      if (this.$route.path.includes("actions")) {
+        return "actions";
+      } if(this.$route.path.includes("assets")){
+        return "assets";
+      } else {
+        return "sites";
+      }
+      
+    },  
+    actionRoute(){
+      if (this.$route.path.includes("actions")) {
+        //this.route = "actions";
+        return true;
+      }
+      return false
+    },
+    assetRoute(){
+      if(this.$route.path.includes("assets")){
+        //this.route = "assets";
+        return true;
+      }
+      return false
+    },
+    siteRoute(){
+      if(!this.$route.path.includes("actions") && !this.$route.path.includes("assets")) {
+        //this.route = "sites"
+        return true;
+      }
+      return false
+    },
     siteTableOptions(){
       return this.$store.getters["boats/boatTableOptions"];
     },
