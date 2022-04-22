@@ -196,14 +196,6 @@ export class StaticService {
 		];
 	}
 
-	getJurisdictions(): GenericEnum[] {
-		return [
-			{ value: 0, text: 'None Selected' },
-			{ value: 1, text: 'Yukon' },
-			{ value: 2, text: 'Federal' },
-		];
-	}
-
 	getOwnerConsents(): GenericEnum[] {
 		return [
 			{ value: 0, text: 'None Selected' },

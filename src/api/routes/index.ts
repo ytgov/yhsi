@@ -18,6 +18,7 @@ export * from './functional-types-router';
 export * from './functional-use-types-router';
 export * from './historical-pattern-types-router';
 export * from './histories-router';
+export * from './jurisdiction-types-router';
 export * from './map-router';
 export * from './nts-map-sheets-router';
 export * from './owner-router';

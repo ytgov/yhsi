@@ -18,11 +18,6 @@ staticRouter.get('/first-nation', async (req: Request, res: Response) => {
 	return res.json({ data: list });
 });
 
-staticRouter.get('/jurisdiction', async (req: Request, res: Response) => {
-	let list = await staticService.getJurisdictions();
-	return res.json({ data: list });
-});
-
 staticRouter.get(
 	'/photo-project-section',
 	async (req: Request, res: Response) => {

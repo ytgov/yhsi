@@ -18,6 +18,7 @@ export * from './functional-use';
 export * from './functional-use-types';
 export * from './historical-pattern';
 export * from './historical-pattern-types';
+export * from './jurisdiction-types';
 export * from './name';
 export * from './ownership';
 export * from './ownership-types';

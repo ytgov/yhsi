@@ -29,9 +29,8 @@ v-card.mb-0(
             | Designation Information
           v-card-text
             v-col(cols="12")
-              v-combobox(
+              JurisdictionTypeSelect(
                 v-model="fields.jurisdiction"
-                label="Jurisdiction"
                 dense
                 outlined
                 background-color="white"
@@ -127,6 +126,7 @@ import axios from 'axios';
 import { PLACE_URL, STATIC_URL } from '@/urls';
 
 import ContactsEditor from '@/components/Sites/site-forms/management/ContactsEditor';
+import JurisdictionTypeSelect from '@/components/Sites/site-forms/management/JurisdictionTypeSelect';
 import RevisionLogsEditor from '@/components/Sites/site-forms/management/RevisionLogsEditor';
 import WebLinksEditor from '@/components/Sites/site-forms/management/WebLinksEditor';
 
@@ -135,6 +135,7 @@ export default {
   name: 'Management',
   components: {
     ContactsEditor,
+    JurisdictionTypeSelect,
     RevisionLogsEditor,
     WebLinksEditor,
   },
@@ -147,7 +148,6 @@ export default {
   data: () => ({
     recognitionDateMenu: false,
 
-    jurisdictionOptions: [],
     ownerConsentOptions: [],
     statuteOptions: [],
 
@@ -180,9 +180,6 @@ export default {
       })
       .catch((error) => console.error(error));
 
-    axios.get(`${STATIC_URL}/jurisdiction`).then((resp) => {
-      this.jurisdictionOptions = resp.data.data;
-    });
     axios.get(`${STATIC_URL}/statute`).then((resp) => {
       this.statuteOptions = resp.data.data;
     });

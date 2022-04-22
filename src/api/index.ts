@@ -24,6 +24,7 @@ import {
 	functionalUseTypesRouter,
 	historicalPatternTypesRouter,
 	historiesRouter,
+	jurisdictionTypesRouter,
 	mapsRouter,
 	ntsMapSheetsRouter,
 	ownerRouter,
@@ -133,6 +134,7 @@ app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);
 app.use('/api/functional-types', RequiresAuthentication, functionalTypesRouter);
 app.use('/api/functional-use-types', RequiresAuthentication, functionalUseTypesRouter);
 app.use('/api/historical-pattern-types', RequiresAuthentication, historicalPatternTypesRouter);
+app.use('/api/jurisdiction-types', RequiresAuthentication, jurisdictionTypesRouter);
 app.use('/api/nts-map-sheets', RequiresAuthentication, ntsMapSheetsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/owners', RequiresAuthentication, ownerRouter);
