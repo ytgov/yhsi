@@ -175,14 +175,8 @@ export class PlaceService {
 				place.previousOwnerships = await this.previousOwnershipService.getFor(
 					id
 				);
+				place.webLinks = await this.getWebLinksFor(id);
 
-				const webLinks = combine(
-					await this.getWebLinksFor(id),
-					this.getWebLinkTypes(),
-					'value',
-					'type',
-					'text'
-				);
 				const descriptions = combine(
 					await this.getDescriptionsFor(id),
 					this.getDescriptionTypes(),
@@ -195,7 +189,6 @@ export class PlaceService {
 
 				const relationships = {
 					photos: { data: photos },
-					webLinks: { data: webLinks },
 					descriptions: { data: descriptions },
 				};
 
@@ -405,15 +398,6 @@ export class PlaceService {
 
 	async removeDescription(id: number) {
 		return this.db('Description').where({ id }).delete();
-	}
-
-	getWebLinkTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Historic Place' },
-			{ value: 2, text: 'Local Government' },
-			{ value: 3, text: 'Federal/Provicial/Territorial' },
-			{ value: 4, text: 'Other' },
-		];
 	}
 
 	getDescriptionTypes(): GenericEnum[] {

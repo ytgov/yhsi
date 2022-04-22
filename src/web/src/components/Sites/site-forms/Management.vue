@@ -23,7 +23,7 @@
       />
       <v-divider class="my-3" />
       <WebLinksEditor
-        v-model="links"
+        v-model="fields.webLinks"
         :place-id="placeId"
       />
       <v-divider class="my-3" />
@@ -183,8 +183,6 @@ export default {
     date: null,
     menu: false,
 
-    links: [],
-
     jurisdictionOptions: [],
     ownerConsentOptions: [],
     statuteOptions: [],
@@ -200,6 +198,7 @@ export default {
       isPubliclyAccessible: false,
       statute2Id: '',
       statuteId: '',
+      webLinks: [],
       yGBuildingNumber: '',
       yGReserveNumber: '',
     },
@@ -210,7 +209,6 @@ export default {
       .then((resp) => {
         this.fields = resp.data.data;
         this.fields.recognitionDate = this.fields.recognitionDate || '';
-        this.links = resp.data.relationships.webLinks.data;
       })
       .catch((error) => console.error(error));
 
@@ -241,7 +239,7 @@ export default {
         statuteId: this.fields.statuteId,
         yGBuildingNumber: this.fields.yGBuildingNumber,
         yGReserveNumber: this.fields.yGReserveNumber,
-        links: this.links,
+        links: this.fields.webLinks,
         contacts: this.fields.contacts,
         revisionLogs: this.fields.revisionLogs,
       };
