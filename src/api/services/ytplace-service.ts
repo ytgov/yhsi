@@ -14,7 +14,6 @@ import {
 	PlaceTypeLookup,
 	PlaceHistory,
 	REGISTER_FIELDS,
-	WebLink,
 	YtPlace,
 	YTPLACE_FIELDS,
 } from '../data';

@@ -11,10 +11,10 @@ import { pick } from 'lodash';
 
 import { DB_CONFIG } from '../config';
 import { PlaceService } from '../services';
-import { Place, WebLink, Description } from '../data';
+import { Place, Description } from '../data';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
-import { Contact, RevisionLog, User, UserRoles } from '../models';
+import { Contact, RevisionLog, User, UserRoles, WebLink } from '../models';
 import PlacesController from '../controllers/places-controller';
 
 const placeService = new PlaceService(DB_CONFIG);
@@ -340,6 +340,7 @@ placeRouter.patch(
 		body('themes').isArray().optional({ nullable: true }),
 		body('townSiteMapNumber').isString().optional({ nullable: true }),
 		body('wallCondition').isInt().optional(),
+		body('webLinks').isArray().optional({ nullable: true }),
 		body('yHSPastUse').isString().optional({ nullable: true }),
 		body('yHSThemes').isString().optional({ nullable: true }),
 		body('zoning').isString().optional({ nullable: true }),

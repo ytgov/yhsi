@@ -22,6 +22,7 @@ export * from './revision-log-service';
 export * from './static-service';
 export * from './theme-service';
 export * from './user-service';
+export * from './web-link-service';
 export * from './ytplace-service';
 export * from './interpretive-site-service';
 

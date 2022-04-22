@@ -85,10 +85,3 @@ export class Description {
 	descriptionText!: string;
 	type!: number;
 }
-
-export class WebLink {
-	id!: number;
-	placeId!: number;
-	type!: number;
-	address!: string;
-}

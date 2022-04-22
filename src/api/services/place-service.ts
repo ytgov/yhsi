@@ -19,6 +19,7 @@ import {
 	SortStatement,
 	StaticService,
 	ThemeService,
+	WebLinkService,
 } from './';
 import {
 	Description,
@@ -26,7 +27,6 @@ import {
 	DESCRIPTION_TYPE_ENUMS,
 	PLACE_FIELDS,
 	REGISTER_FIELDS,
-	WebLink,
 } from '../data';
 import {
 	Contact,
@@ -36,6 +36,7 @@ import {
 	RevisionLog,
 	User,
 	UserRoles,
+	WebLink,
 } from '../models';
 import { NotFoundError } from '../utils/validation';
 
@@ -94,6 +95,7 @@ export class PlaceService {
 	private revisionLogService: RevisionLogService;
 	private staticService: StaticService;
 	private themeService: ThemeService;
+	private webLinkService: WebLinkService;
 
 	constructor(config: Knex.Config<any>) {
 		this.db = knex(config);
@@ -114,6 +116,7 @@ export class PlaceService {
 		this.revisionLogService = new RevisionLogService(config);
 		this.staticService = new StaticService(config);
 		this.themeService = new ThemeService(config);
+		this.webLinkService = new WebLinkService(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Place>> {
@@ -175,7 +178,7 @@ export class PlaceService {
 				place.previousOwnerships = await this.previousOwnershipService.getFor(
 					id
 				);
-				place.webLinks = await this.getWebLinksFor(id);
+				place.webLinks = await this.webLinkService.getForPlace(id);
 
 				const descriptions = combine(
 					await this.getDescriptionsFor(id),
@@ -280,6 +283,9 @@ export class PlaceService {
 			}
 			if (attrs.hasOwnProperty('themes')) {
 				await this.themeService.upsertFor(id, attrs['themes']);
+			}
+			if (attrs.hasOwnProperty('webLinks')) {
+				await this.webLinkService.upsertForPlace(id, attrs['webLinks']);
 			}
 			return attrs;
 		});

@@ -35,4 +35,5 @@ export * from './theme';
 export * from './user';
 export * from './user-roles';
 export * from './user-site-access';
+export * from './web-link';
 export * from './web-link-types';
