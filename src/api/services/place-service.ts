@@ -150,6 +150,7 @@ export class PlaceService {
 				place.constructionPeriods = await this.constructionPeriodService.getFor(
 					id
 				);
+				place.contacts = await this.getContactsFor(id);
 				place.dates = await this.dateService.getFor(id);
 				place.firstNationAssociations =
 					await this.firstNationAssociationService.getFor(id);
@@ -165,14 +166,6 @@ export class PlaceService {
 					id
 				);
 
-				const contacts = combine(
-					await this.getContactsFor(id),
-					this.getContactTypes(),
-					'value',
-					'contactType',
-					'text',
-					'contactTypeText'
-				);
 				const webLinks = combine(
 					await this.getWebLinksFor(id),
 					this.getWebLinkTypes(),
@@ -192,7 +185,6 @@ export class PlaceService {
 
 				const relationships = {
 					photos: { data: photos },
-					contacts: { data: contacts },
 					webLinks: { data: webLinks },
 					descriptions: { data: descriptions },
 				};
@@ -400,15 +392,6 @@ export class PlaceService {
 
 	async removeDescription(id: number) {
 		return this.db('Description').where({ id }).delete();
-	}
-
-	getContactTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Owner' },
-			{ value: 2, text: 'Administrator' },
-			{ value: 3, text: 'Heritage Planner' },
-			{ value: 4, text: 'Other' },
-		];
 	}
 
 	getWebLinkTypes(): GenericEnum[] {

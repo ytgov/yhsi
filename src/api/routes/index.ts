@@ -7,6 +7,7 @@ export * from './category-types-router';
 export * from './communities-router';
 export * from './condition-types-router';
 export * from './construction-period-types-router';
+export * from './contact-types-router';
 export * from './contributing-resource-types-router';
 export * from './coordinate-determination-types-router';
 export * from './date-types-router';

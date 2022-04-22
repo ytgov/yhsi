@@ -18,7 +18,7 @@
       />
       <v-divider class="my-3" />
       <ContactsEditor
-        v-model="contacts"
+        v-model="fields.contacts"
         :place-id="placeId"
       />
       <v-divider class="my-3" />
@@ -242,7 +242,6 @@ export default {
     date: null,
     menu: false,
 
-    contacts: [],
     links: [],
 
     linkTypeOptions: [],
@@ -252,6 +251,7 @@ export default {
 
     fields: {
       cIHBNumber: '',
+      contacts: [],
       doorCondition: '',
       fHBRONumber: '',
       jurisdiction: '',
@@ -270,7 +270,6 @@ export default {
       .then((resp) => {
         this.fields = resp.data.data;
         this.fields.recognitionDate = this.fields.recognitionDate || '';
-        this.contacts = resp.data.relationships.contacts.data;
         this.links = resp.data.relationships.webLinks.data;
       })
       .catch((error) => console.error(error));
@@ -312,7 +311,7 @@ export default {
         yGBuildingNumber: this.fields.yGBuildingNumber,
         yGReserveNumber: this.fields.yGReserveNumber,
         links: this.links,
-        contacts: this.contacts,
+        contacts: this.fields.contacts,
         revisionLogs: this.fields.revisionLogs,
       };
 

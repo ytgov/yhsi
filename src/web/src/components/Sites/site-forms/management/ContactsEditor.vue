@@ -9,10 +9,8 @@ v-card.default.mb-0(tag="section")
     )
       v-row
         v-col(cols="6")
-          v-select(
-            v-model="item.contactType",
-            :items="contactTypeOptions"
-            label="Type"
+          ContactTypeSelect(
+            v-model="item.contactType"
             background-color="white"
             dense
             outlined
@@ -91,13 +89,13 @@ v-card.default.mb-0(tag="section")
 </template>
 
 <script>
-import axios from 'axios';
-
-import { STATIC_URL } from '@/urls';
+import ContactTypeSelect from '@/components/Sites/site-forms/management/ContactTypeSelect';
 
 export default {
   name: 'ContactsEditor',
-  components: {},
+  components: {
+    ContactTypeSelect,
+  },
   props: {
     value: {
       type: Array,
@@ -108,19 +106,10 @@ export default {
       required: true,
     },
   },
-  data: () => ({
-    contactTypeOptions: [],
-  }),
   computed: {
     contacts() {
       return this.value;
     },
-  },
-  watch: {},
-  mounted() {
-    axios.get(`${STATIC_URL}/contact-type`).then((resp) => {
-      this.contactTypeOptions = resp.data.data;
-    });
   },
   methods: {
     addContact() {

@@ -18,11 +18,6 @@ staticRouter.get('/first-nation', async (req: Request, res: Response) => {
 	return res.json({ data: list });
 });
 
-staticRouter.get('/contact-type', async (req: Request, res: Response) => {
-	let list = await placeService.getContactTypes();
-	return res.json({ data: list });
-});
-
 staticRouter.get('/link-type', async (req: Request, res: Response) => {
 	let list = await placeService.getWebLinkTypes();
 	return res.json({ data: list });
