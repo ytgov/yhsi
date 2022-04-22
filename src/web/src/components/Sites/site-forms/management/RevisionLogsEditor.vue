@@ -51,11 +51,9 @@ v-card.default(tag="section")
             @click="removeLog(i)"
           )
             v-icon(dark) mdi-close
-        v-col(
-          v-if="i < revisionLogs.length - 1"
-          cols="12"
-        )
-          v-divider.black
+      v-row.my-0(v-if="i < revisionLogs.length - 1")
+        v-col(cols="10")
+          v-divider.my-1.black
   v-card-actions
     v-btn.my-0(
       color="info"
