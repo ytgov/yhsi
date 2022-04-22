@@ -236,55 +236,57 @@ export class PlaceService {
 
 	updateRelations(id: number, attributes: PlainObject) {
 		return Promise.resolve(attributes).then(async (attrs) => {
-			if (attrs.hasOwnProperty('associations')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'associations')) {
 				await this.assocationService.upsertFor(id, attrs['associations']);
 			}
-			if (attrs.hasOwnProperty('constructionPeriods')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'constructionPeriods')) {
 				await this.constructionPeriodService.upsertFor(
 					id,
 					attrs['constructionPeriods']
 				);
 			}
-			if (attrs.hasOwnProperty('contacts')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'contacts')) {
 				await this.contactService.upsertFor(id, attrs['contacts']);
 			}
-			if (attrs.hasOwnProperty('dates')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'dates')) {
 				await this.dateService.upsertFor(id, attrs['dates']);
 			}
-			if (attrs.hasOwnProperty('firstNationAssociations')) {
+			if (
+				Object.prototype.hasOwnProperty.call(attrs, 'firstNationAssociations')
+			) {
 				await this.firstNationAssociationService.upsertFor(
 					id,
 					attrs['firstNationAssociations']
 				);
 			}
-			if (attrs.hasOwnProperty('functionalUses')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'functionalUses')) {
 				await this.functionalUseService.upsertFor(id, attrs['functionalUses']);
 			}
-			if (attrs.hasOwnProperty('historicalPatterns')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'historicalPatterns')) {
 				await this.historicalPatternService.upsertFor(
 					id,
 					attrs['historicalPatterns']
 				);
 			}
-			if (attrs.hasOwnProperty('names')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'names')) {
 				await this.nameService.upsertFor(id, attrs['names']);
 			}
-			if (attrs.hasOwnProperty('ownerships')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'ownerships')) {
 				await this.ownershipService.upsertFor(id, attrs['ownerships']);
 			}
-			if (attrs.hasOwnProperty('previousOwnerships')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'previousOwnerships')) {
 				await this.previousOwnershipService.upsertFor(
 					id,
 					attrs['previousOwnerships']
 				);
 			}
-			if (attrs.hasOwnProperty('revisionLogs')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'revisionLogs')) {
 				await this.revisionLogService.upsertFor(id, attrs['revisionLogs']);
 			}
-			if (attrs.hasOwnProperty('themes')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'themes')) {
 				await this.themeService.upsertFor(id, attrs['themes']);
 			}
-			if (attrs.hasOwnProperty('webLinks')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'webLinks')) {
 				await this.webLinkService.upsertForPlace(id, attrs['webLinks']);
 			}
 			return attrs;
