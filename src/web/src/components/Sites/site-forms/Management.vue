@@ -50,8 +50,8 @@
                 />
 
                 <v-menu
-                  ref="menu"
-                  v-model="menu"
+                  ref="recognitionDateMenu"
+                  v-model="recognitionDateMenu"
                   :close-on-content-click="false"
                   transition="scale-transition"
                   offset-y
@@ -73,9 +73,9 @@
                   <v-date-picker
                     ref="picker"
                     v-model="fields.recognitionDate"
-                    :max="new Date().toISOString().substr(0, 10)"
+                    :max="todaysDate"
                     min="1950-01-01"
-                    @change="save"
+                    @change="updateRecognitionDate"
                   />
                 </v-menu>
 
@@ -180,8 +180,7 @@ export default {
     },
   },
   data: () => ({
-    date: null,
-    menu: false,
+    recognitionDateMenu: false,
 
     jurisdictionOptions: [],
     ownerConsentOptions: [],
@@ -203,6 +202,11 @@ export default {
       yGReserveNumber: '',
     },
   }),
+  computed: {
+    todaysDate() {
+      return new Date().toISOString().substr(0, 10);
+    },
+  },
   mounted() {
     axios
       .get(`${PLACE_URL}/${this.placeId}`)
@@ -223,8 +227,8 @@ export default {
     });
   },
   methods: {
-    save(date) {
-      this.$refs.menu.save(date);
+    updateRecognitionDate(date) {
+      this.$refs.recognitionDateMenu.save(date);
     },
     saveChanges() {
       let body = {
