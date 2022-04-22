@@ -72,10 +72,9 @@ export default {
   },
   methods: {
     handleClick(value) {
-      //Redirects the user to the edit user form
       this.$router.push({
-        name: "boatView",
-        params: { name: value.Name, id: value.Id },
+        name: "siteView",
+        params: { id: value.Id },
       });
     },
     async getDataFromApi() {
@@ -105,13 +104,12 @@ export default {
         prefilters.AdvancedNotification,
         prefilters.NotificationDesc,
       );
-      console.log(data);
       this.list = data.body;
       this.totalLength = data.count;
 
 
       // this.$store.commit("boats/setBoats", this.boats);
-      // this.$store.commit("boats/setBoatTableOptions", this.options);
+      this.$store.commit("interpretiveSites/setSiteTableOptions", this.options);
       this.loading = false;
     },
     formatDate(date) {
@@ -129,10 +127,10 @@ export default {
   },
   computed: {
     selectedFilters() {
-      return this.$store.getters["boats/selectedFilters"];
+      return this.$store.getters["interpretiveSites/selectedSiteFilters"];
     },
     search() {
-      return this.$store.getters["boats/boatSearch"];
+      return this.$store.getters["interpretiveSites/siteSearch"];
     },
   },
   watch: {

@@ -256,19 +256,19 @@ export default {
       this.$store.commit("interpretiveSites/setSiteSearch", this.searchSite);
     }, 400),
     actionSearchChange: _.debounce(function () {
-      this.$store.commit("interpretiveSites/setActionSearch", this.searchAtion);
+      this.$store.commit("interpretiveSites/setActionSearch", this.searchAction);
     }, 400),
     assetSearchChange: _.debounce(function () {
       this.$store.commit("interpretiveSites/setAssetSearch", this.searchAsset);
     }, 400),
     siteFilterChange() {
-      this.$store.commit("boats/setSiteFilters", this.siteFilterOptions);
+      this.$store.commit("interpretiveSites/setSiteFilters", this.siteFilterOptions);
     },
     actionFilterChange() {
-      this.$store.commit("boats/setActionFilters", this.actionFilterOptions);
+      this.$store.commit("interpretiveSites/setActionFilters", this.actionFilterOptions);
     },
     assetFilterChange() {
-      this.$store.commit("boats/setAssetFilters", this.assetFilterOptions);
+      this.$store.commit("interpretiveSites/setAssetFilters", this.assetFilterOptions);
     },
     isActive(route) {
       //this function helps to show certain classes depending on the route
@@ -277,13 +277,14 @@ export default {
       return "notActive"
     },
     async getSitesExport(){
-      let { sortBy, sortDesc } = this.options;
-      let textToMatch = this.search;
+      this.loadingExport = true;
+      let { sortBy, sortDesc } = this.siteTableOptions;
+      let textToMatch = this.searchSite;
       const prefilters = {};
       this.siteFilterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
       })
-      let data = await interpretiveSites.getExport(
+      let data = await interpretiveSites.getSitesExport(
         sortBy[0],
         sortDesc[0] ? "desc" : "asc",
         textToMatch,//prefilters.SiteName,
@@ -298,10 +299,11 @@ export default {
         prefilters.NotificationDesc,
       );
       downloadCsv(data, "sites");
+      this.loadingExport = false;
     },
     async downloadSitesPdf(){
       this.loadingPdf = true;
-      let { sortBy, sortDesc } = this.options;
+      let { sortBy, sortDesc } = this.siteTableOptions;
       const prefilters = {};
       this.siteFilterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
@@ -309,7 +311,7 @@ export default {
       let res = await interpretiveSites.getGridPdf(
         sortBy[0],
         sortDesc[0] ? "desc" : "asc",
-        this.search,//prefilters.SiteName,
+        this.searchSite,//prefilters.SiteName,
         prefilters.LocationDesc,
         prefilters.RouteName,
         prefilters.KMNum,
@@ -324,8 +326,9 @@ export default {
       this.loadingPdf = false;
     },
     async getActionsExport(){
-      let { sortBy, sortDesc } = this.options;
-      let textToMatch = this.search;
+      this.loadingExport = true;
+      let { sortBy, sortDesc } = this.actionTableOptions;
+      let textToMatch = this.searchAction;
       const prefilters = {};
       this.siteFilterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
@@ -345,10 +348,11 @@ export default {
         prefilters.NotificationDesc,
       );
       downloadCsv(data, "actions");
+      this.loadingExport = false;
     },
     async downloadActionsPdf(){
       this.loadingPdf = true;
-      let { sortBy, sortDesc } = this.options;
+      let { sortBy, sortDesc } = this.actionTableOptions;
       const prefilters = {};
       this.siteFilterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
@@ -356,7 +360,7 @@ export default {
       let res = await interpretiveSites.getGridPdf(
         sortBy[0],
         sortDesc[0] ? "desc" : "asc",
-        this.search,//prefilters.SiteName,
+        this.searchAction,//prefilters.SiteName,
         prefilters.LocationDesc,
         prefilters.RouteName,
         prefilters.KMNum,
@@ -371,8 +375,9 @@ export default {
       this.loadingPdf = false;
     },
     async getAssetsExport(){
-      let { sortBy, sortDesc } = this.options;
-      let textToMatch = this.search;
+      this.loadingExport = true;
+      let { sortBy, sortDesc } = this.assetTableOptions;
+      let textToMatch = this.searchAsset;
       const prefilters = {};
       this.siteFilterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
@@ -392,10 +397,11 @@ export default {
         prefilters.NotificationDesc,
       );
       downloadCsv(data, "assets");
+      this.loadingExport = false;
     },
     async downloadAssetsPdf(){
       this.loadingPdf = true;
-      let { sortBy, sortDesc } = this.options;
+      let { sortBy, sortDesc } = this.assetTableOptions;
       const prefilters = {};
       this.siteFilterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
@@ -403,7 +409,7 @@ export default {
       let res = await interpretiveSites.getGridPdf(
         sortBy[0],
         sortDesc[0] ? "desc" : "asc",
-        this.search,//prefilters.SiteName,
+        this.searchAsset,//prefilters.SiteName,
         prefilters.LocationDesc,
         prefilters.RouteName,
         prefilters.KMNum,
@@ -451,13 +457,13 @@ export default {
       return false
     },
     siteTableOptions(){
-      return this.$store.getters["boats/boatTableOptions"];
+      return this.$store.getters["interpretiveSites/siteTableOptions"];
     },
     actionTableOptions(){
-      return this.$store.getters["boats/ownerTableOptions"];
+      return this.$store.getters["interpretiveSites/actionTableOptions"];
     },
     assetTableOptions(){
-      return this.$store.getters["boats/ownerTableOptions"];
+      return this.$store.getters["interpretiveSites/assetTableOptions"];
     },
   },
   watch: {

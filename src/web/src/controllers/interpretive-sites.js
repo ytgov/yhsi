@@ -68,15 +68,7 @@ export default {
       return error;
     });
   },
-  async getAvailableRegNumber(data){
-    return await api.get(`interpretive-sites/available_number/${data}`)
-    .then(res => {
-      return res.data;
-    }).catch(error =>{
-      return error;
-    });
-  },
-  async getExport(
+  async getSitesExport(
     sortBy,
     sort,
     SiteName,

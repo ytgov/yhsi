@@ -137,13 +137,13 @@ export class InterpretiveSiteService {
     async doSiteSearch( page: number, limit: number, offset: number, filters: any){
 		let counter = [{ count: 0 }];
 		let sites = [];
-		const { textToMatch = '', RouteName = '', KMNum = '', MapSheet = '', sortBy, sort } = filters;
+		const { SiteName = '', RouteName = '', KMNum = '', MapSheet = '', sortBy, sort } = filters;
 		//name,  route, km, mapsheet, established and maintained by
 		if(limit === 0){
 			counter = await db
 				.from('InterpretiveSite.Sites')
 				.where(builder => {
-					if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
+					if(SiteName !== '') builder.where('SiteName', 'like', `%${SiteName}%`);
 					if(RouteName !== '') builder.where('RouteName', 'like', `%${RouteName}%`);
 					if(KMNum !== '') builder.where('KMNum', 'like', `%${KMNum}%`);
 					if(MapSheet !== '') builder.where('MapSheet', 'like', `%${MapSheet}%`);
@@ -156,7 +156,7 @@ export class InterpretiveSiteService {
 				.select('*')
 				.from('InterpretiveSite.Sites')
 				.where(builder => {
-					if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
+					if(SiteName !== '') builder.where('SiteName', 'like', `%${SiteName}%`);
 					if(RouteName !== '') builder.where('RouteName', 'like', `%${RouteName}%`);
 					if(KMNum !== '') builder.where('KMNum', 'like', `%${KMNum}%`);
 					if(MapSheet !== '') builder.where('MapSheet', 'like', `%${MapSheet}%`);
@@ -167,7 +167,7 @@ export class InterpretiveSiteService {
 			counter = await db
 				.from('InterpretiveSite.Sites')
 				.where(builder => {
-					if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
+					if(SiteName !== '') builder.where('SiteName', 'like', `%${SiteName}%`);
 					if(RouteName !== '') builder.where('RouteName', 'like', `%${RouteName}%`);
 					if(KMNum !== '') builder.where('KMNum', 'like', `%${KMNum}%`);
 					if(MapSheet !== '') builder.where('MapSheet', 'like', `%${MapSheet}%`);
@@ -178,7 +178,7 @@ export class InterpretiveSiteService {
 				.select('*')
 				.from('InterpretiveSite.Sites')
 				.where(builder => {
-					if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
+					if(SiteName !== '') builder.where('SiteName', 'like', `%${SiteName}%`);
 					if(RouteName !== '') builder.where('RouteName', 'like', `%${RouteName}%`);
 					if(KMNum !== '') builder.where('KMNum', 'like', `%${KMNum}%`);
 					if(MapSheet !== '') builder.where('MapSheet', 'like', `%${MapSheet}%`);
