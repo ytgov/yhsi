@@ -22,71 +22,10 @@
         :place-id="placeId"
       />
       <v-divider class="my-3" />
-      <v-card class="default">
-        <v-card-title
-          tag="h3"
-          class="mb-0 text-h6"
-        >
-          Web Links
-        </v-card-title>
-        <v-card-text tag="form">
-          <div
-            v-for="(item, i) in links"
-            :key="`link-${i + 1}`"
-          >
-            <v-row>
-              <v-col cols="5">
-                <v-combobox
-                  v-model="item.type"
-                  label="Link Type"
-                  dense
-                  outlined
-                  hide-details
-                  background-color="white"
-                />
-              </v-col>
-              <v-col cols="5">
-                <v-text-field
-                  v-model="item.webAddress"
-                  label="Web Address"
-                  required
-                  dense
-                  outlined
-                  hide-details
-                  background-color="white"
-                />
-              </v-col>
-              <v-col cols="2">
-                <v-btn
-                  color="warning"
-                  x-small
-                  fab
-                  title="Remove"
-                  class="my-0 float-right"
-                  @click="removeLink(i)"
-                >
-                  <v-icon dark>mdi-close</v-icon>
-                </v-btn>
-              </v-col>
-              <v-col
-                v-if="i < links.length - 1"
-                cols="12"
-              >
-                <v-divider class="black" />
-              </v-col>
-            </v-row>
-          </div>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn
-            class="my-0"
-            color="info"
-            @click="addLink"
-          >
-            Add New
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+      <WebLinksEditor
+        v-model="links"
+        :place-id="placeId"
+      />
       <v-divider class="my-3" />
       <v-row>
         <v-col cols="6">
@@ -224,6 +163,7 @@ import { PLACE_URL, STATIC_URL } from '@/urls';
 
 import ContactsEditor from '@/components/Sites/site-forms/management/ContactsEditor';
 import RevisionLogsEditor from '@/components/Sites/site-forms/management/RevisionLogsEditor';
+import WebLinksEditor from '@/components/Sites/site-forms/management/WebLinksEditor';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
@@ -231,6 +171,7 @@ export default {
   components: {
     ContactsEditor,
     RevisionLogsEditor,
+    WebLinksEditor,
   },
   props: {
     placeId: {
@@ -244,7 +185,6 @@ export default {
 
     links: [],
 
-    linkTypeOptions: [],
     jurisdictionOptions: [],
     ownerConsentOptions: [],
     statuteOptions: [],
@@ -274,9 +214,6 @@ export default {
       })
       .catch((error) => console.error(error));
 
-    axios.get(`${STATIC_URL}/link-type`).then((resp) => {
-      this.linkTypeOptions = resp.data.data;
-    });
     axios.get(`${STATIC_URL}/jurisdiction`).then((resp) => {
       this.jurisdictionOptions = resp.data.data;
     });
@@ -290,12 +227,6 @@ export default {
   methods: {
     save(date) {
       this.$refs.menu.save(date);
-    },
-    addLink() {
-      this.links.push({ type: 1, address: 'https://', placeId: this.placeId });
-    },
-    removeLink(index) {
-      this.links.splice(index, 1);
     },
     saveChanges() {
       let body = {
