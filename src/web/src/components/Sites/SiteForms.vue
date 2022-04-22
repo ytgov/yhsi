@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex">
     <SiteFormsSidebar :site-id="id" />
-    <div>
+    <div class="flex-grow-1">
       <v-app-bar
         color="primary"
         dark
