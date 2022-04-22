@@ -100,6 +100,26 @@ enum ConstructionPeriodType {
   5 : Post 1965
 }
 
+entity Contact {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * ContactType : int
+  Description : nvarchar
+  Email : nvarchar
+  FirstName : nvarchar
+  LastName : nvarchar
+  MailingAddress : nvarchar
+  PhoneNumber : nvarchar
+}
+
+enum ContactType {
+  1 : Owner
+  2 : Administrator
+  3 : Heritage Planner
+  4 : Other
+}
+
 enum ContributingResources {
   Archaeological : Archaeological
   Building : Building
@@ -301,6 +321,7 @@ Place::SiteStatus ||--o{ SiteStatus
 Place::WallCondition }|--o{ ConditionType
 Place }o--|| Association::PlaceId
 Place }o--|| ConstructionPeriod::PlaceId
+Place }o--|| Contact::PlaceId
 Place }o--|| Dates::PlaceId
 Place }o--|| FirstNationAssociation::PlaceId
 Place }o--|| HistoricalPattern::PlaceId
@@ -313,6 +334,7 @@ Place }o--|| FunctionalUse::PlaceId
 Association::Type ||--o{ AssociationType
 ConstructionPeriod::Type ||--o{ ConstructionPeriodType
 Dates::Type ||--o{ DateType
+Contact::ContactType ||--o{ ContactType
 FirstNationAssociation::FirstNationAssociationType ||--o{ FirstNationAssociationType
 FirstNationAssociation::FirstNationId ||--o{ FirstNation::Id
 FunctionalUse::FunctionalTypeId ||--o{ FunctionalType::Id
