@@ -98,15 +98,6 @@ export class Description {
 	type!: number;
 }
 
-export class RevisionLog {
-	id!: number;
-	placeId!: number;
-	revisionLogType!: number;
-	revisionDate!: Date;
-	revisedBy!: string;
-	details!: string;
-}
-
 export class WebLink {
 	id!: number;
 	placeId!: number;

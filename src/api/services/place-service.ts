@@ -15,6 +15,7 @@ import {
 	PlaceEditService,
 	PreviousOwnershipService,
 	QueryStatement,
+	RevisionLogService,
 	SortStatement,
 	StaticService,
 	ThemeService,
@@ -26,10 +27,9 @@ import {
 	DESCRIPTION_TYPE_ENUMS,
 	PLACE_FIELDS,
 	REGISTER_FIELDS,
-	RevisionLog,
 	WebLink,
 } from '../data';
-import { GenericEnum, Place, PlainObject, User, UserRoles } from '../models';
+import { GenericEnum, Place, PlainObject, RevisionLog, User, UserRoles } from '../models';
 import { NotFoundError } from '../utils/validation';
 
 function combine(
@@ -83,6 +83,7 @@ export class PlaceService {
 	private photoService: PhotoService;
 	private placeEditService: PlaceEditService;
 	private previousOwnershipService: PreviousOwnershipService;
+	private revisionLogService: RevisionLogService;
 	private staticService: StaticService;
 	private themeService: ThemeService;
 
@@ -101,6 +102,7 @@ export class PlaceService {
 		this.photoService = new PhotoService(config);
 		this.placeEditService = new PlaceEditService();
 		this.previousOwnershipService = new PreviousOwnershipService(config);
+		this.revisionLogService = new RevisionLogService(config);
 		this.staticService = new StaticService(config);
 		this.themeService = new ThemeService(config);
 	}
@@ -158,7 +160,7 @@ export class PlaceService {
 				);
 				place.names = await this.nameService.getFor(id);
 				place.ownerships = await this.ownershipService.getFor(id);
-				place.revisionLogs = await this.getRevisionLogFor(id);
+				place.revisionLogs = await this.revisionLogService.getFor(id);
 				place.themes = await this.themeService.getFor(id);
 				place.previousOwnerships = await this.previousOwnershipService.getFor(
 					id
@@ -275,6 +277,9 @@ export class PlaceService {
 					id,
 					attrs['previousOwnerships']
 				);
+			}
+			if (attrs.hasOwnProperty('revisionLogs')) {
+				await this.revisionLogService.upsertFor(id, attrs['revisionLogs']);
 			}
 			if (attrs.hasOwnProperty('themes')) {
 				await this.themeService.upsertFor(id, attrs['themes']);

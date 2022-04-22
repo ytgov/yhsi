@@ -19,7 +19,6 @@ import {
 	FirstNationName,
 	Photo,
 	WebLink,
-	RevisionLog,
 	Contact,
 	Description,
 	YtPlace,

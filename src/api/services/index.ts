@@ -17,6 +17,7 @@ export * from './photo-service';
 export * from './place-edit-service';
 export * from './place-service';
 export * from './previous-ownership-service';
+export * from './revision-log-service';
 export * from './static-service';
 export * from './theme-service';
 export * from './user-service';

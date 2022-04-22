@@ -15,7 +15,6 @@ import {
 	PlaceTypeLookup,
 	PlaceHistory,
 	REGISTER_FIELDS,
-	RevisionLog,
 	WebLink,
 	YtPlace,
 	YTPLACE_FIELDS,
