@@ -5,6 +5,7 @@ import { get, isEmpty, uniq } from 'lodash';
 import {
 	AssociationService,
 	ConstructionPeriodService,
+	ContactService,
 	DateService,
 	FirstNationAssociationService,
 	FunctionalUseService,
@@ -20,7 +21,6 @@ import {
 	ThemeService,
 } from './';
 import {
-	Contact,
 	Description,
 	DESCRIPTION_TYPES,
 	DESCRIPTION_TYPE_ENUMS,
@@ -28,7 +28,15 @@ import {
 	REGISTER_FIELDS,
 	WebLink,
 } from '../data';
-import { GenericEnum, Place, PlainObject, RevisionLog, User, UserRoles } from '../models';
+import {
+	Contact,
+	GenericEnum,
+	Place,
+	PlainObject,
+	RevisionLog,
+	User,
+	UserRoles,
+} from '../models';
 import { NotFoundError } from '../utils/validation';
 
 function combine(
@@ -73,6 +81,7 @@ export class PlaceService {
 	private db: Knex;
 	private assocationService: AssociationService;
 	private constructionPeriodService: ConstructionPeriodService;
+	private contactService: ContactService;
 	private dateService: DateService;
 	private firstNationAssociationService: FirstNationAssociationService;
 	private functionalUseService: FunctionalUseService;
@@ -90,6 +99,7 @@ export class PlaceService {
 		this.db = knex(config);
 		this.assocationService = new AssociationService(config);
 		this.constructionPeriodService = new ConstructionPeriodService(config);
+		this.contactService = new ContactService(config);
 		this.dateService = new DateService(config);
 		this.firstNationAssociationService = new FirstNationAssociationService(
 			config
@@ -150,7 +160,7 @@ export class PlaceService {
 				place.constructionPeriods = await this.constructionPeriodService.getFor(
 					id
 				);
-				place.contacts = await this.getContactsFor(id);
+				place.contacts = await this.contactService.getFor(id);
 				place.dates = await this.dateService.getFor(id);
 				place.firstNationAssociations =
 					await this.firstNationAssociationService.getFor(id);
@@ -238,6 +248,9 @@ export class PlaceService {
 					id,
 					attrs['constructionPeriods']
 				);
+			}
+			if (attrs.hasOwnProperty('contacts')) {
+				await this.contactService.upsertFor(id, attrs['contacts']);
 			}
 			if (attrs.hasOwnProperty('dates')) {
 				await this.dateService.upsertFor(id, attrs['dates']);

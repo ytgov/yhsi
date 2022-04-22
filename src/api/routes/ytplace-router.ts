@@ -19,7 +19,6 @@ import {
 	FirstNationName,
 	Photo,
 	WebLink,
-	Contact,
 	Description,
 	YtPlace,
 } from '../data';

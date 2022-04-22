@@ -5,6 +5,7 @@ export * from './boat-service';
 export * from './burial-service';
 export * from './catalog-service';
 export * from './construction-period-service';
+export * from './contact-service';
 export * from './date-service';
 export * from './first-nation-association-service';
 export * from './functional-use-service';
