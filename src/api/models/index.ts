@@ -33,6 +33,7 @@ export * from './simple-types';
 export * from './site-access-type';
 export * from './site-category-types';
 export * from './site-status-types';
+export * from './statute';
 export * from './theme';
 export * from './user';
 export * from './user-roles';

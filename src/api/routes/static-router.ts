@@ -46,22 +46,6 @@ staticRouter.get('/usage-right', async (req: Request, res: Response) => {
 	return res.json({ data: list });
 });
 
-staticRouter.get('/statute', async (req: Request, res: Response) => {
-	let list = await staticService.getStatutes();
-
-	for (let item of list) {
-		(item as any).display = item.recognitionAuthority;
-
-		if (item.recognitionType && item.recognitionType.length > 0)
-			(item as any).display += ` / ${item.recognitionType}`;
-
-		if (item.allStatute && item.allStatute.length > 0)
-			(item as any).display += ` / ${item.allStatute}`;
-	}
-
-	return res.json({ data: list });
-});
-
 staticRouter.get('/category', async (req: Request, res: Response) => {
 	let list = staticService.getCategories();
 	return res.json({ data: list });

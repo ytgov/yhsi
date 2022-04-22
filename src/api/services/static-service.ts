@@ -138,16 +138,6 @@ export class StaticService {
 		return this.knex<PlaceTheme>('PlaceTheme').select('id', 'category', 'type');
 	}
 
-	async getStatutes(): Promise<Array<Statute>> {
-		return this.knex<Statute>('Statute').select(
-			'id',
-			'recognitionAuthority',
-			'recognitionType',
-			'description',
-			'allStatute'
-		);
-	}
-
 	async getMapSheets(): Promise<Array<MapSheetLookup>> {
 		return this.knex<MapSheetLookup>('YHIS.MapSheetLookup')
 			.select('id', 'map50k', 'map250k')

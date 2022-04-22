@@ -101,13 +101,13 @@ v-card.mb-0(
         )
     v-row
       v-col(cols="12")
-        v-combobox(
+        StatuteSelect(
           v-model="fields.statuteId"
-          label="Recognition Authority / Recognition Type / Statute"
+          label="Statute - Recognition Authority / Recognition Type / Statute"
         )
-        v-combobox(
+        StatuteSelect(
           v-model="fields.statute2Id"
-          label="Recognition Authority / Recognition Type / Statute 2"
+          label="Secondary Statute - Recognition Authority / Recognition Type / Statute"
           hide-details
         )
   v-card-actions
@@ -122,12 +122,13 @@ v-card.mb-0(
 <script>
 import axios from 'axios';
 
-import { PLACE_URL, STATIC_URL } from '@/urls';
+import { PLACE_URL } from '@/urls';
 
 import ContactsEditor from '@/components/Sites/site-forms/management/ContactsEditor';
 import JurisdictionTypeSelect from '@/components/Sites/site-forms/management/JurisdictionTypeSelect';
 import OwnerConsentTypeSelect from '@/components/Sites/site-forms/management/OwnerConsentTypeSelect';
 import RevisionLogsEditor from '@/components/Sites/site-forms/management/RevisionLogsEditor';
+import StatuteSelect from '@/components/Sites/site-forms/management/StatuteSelect';
 import WebLinksEditor from '@/components/Sites/site-forms/management/WebLinksEditor';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
@@ -138,6 +139,7 @@ export default {
     JurisdictionTypeSelect,
     OwnerConsentTypeSelect,
     RevisionLogsEditor,
+    StatuteSelect,
     WebLinksEditor,
   },
   props: {
@@ -148,8 +150,6 @@ export default {
   },
   data: () => ({
     recognitionDateMenu: false,
-
-    statuteOptions: [],
 
     fields: {
       cIHBNumber: '',
@@ -179,10 +179,6 @@ export default {
         this.fields = resp.data.data;
       })
       .catch((error) => console.error(error));
-
-    axios.get(`${STATIC_URL}/statute`).then((resp) => {
-      this.statuteOptions = resp.data.data;
-    });
   },
   methods: {
     saveChanges() {

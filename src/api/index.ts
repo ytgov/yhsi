@@ -44,6 +44,7 @@ import {
 	siteCategoryTypesRouter,
 	siteStatusTypesRouter,
 	staticRouter,
+	statutesRouter,
 	userRouter,
 	usersExtraRouter,
 	webLinkTypesRouter,
@@ -153,6 +154,7 @@ app.use('/api/place-themes', RequiresAuthentication, placeThemesRouter);
 app.use('/api/record-types', RequiresAuthentication, recordTypesRouter);
 app.use('/api/site-category-types', RequiresAuthentication, siteCategoryTypesRouter);
 app.use('/api/site-status-types', RequiresAuthentication, siteStatusTypesRouter);
+app.use('/api/statutes', RequiresAuthentication, statutesRouter);
 app.use('/api/users', RequiresAuthentication, usersExtraRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/burials', RequiresAuthentication, burialsRouter);

@@ -39,6 +39,7 @@ export * from './revision-log-types-router';
 export * from './site-category-types-router';
 export * from './site-status-types-router';
 export * from './static-router';
+export * from './statutes-router';
 export * from './user-router';
 export * from './users-extras-router';
 export * from './web-link-types-router';

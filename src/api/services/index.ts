@@ -20,6 +20,7 @@ export * from './place-service';
 export * from './previous-ownership-service';
 export * from './revision-log-service';
 export * from './static-service';
+export * from './statute-service';
 export * from './theme-service';
 export * from './user-service';
 export * from './web-link-service';
