@@ -72,16 +72,6 @@ staticRouter.get('/statute', async (req: Request, res: Response) => {
 	return res.json({ data: list });
 });
 
-staticRouter.get('/jurisdiction', async (req: Request, res: Response) => {
-	let list = staticService.getJurisdictions();
-	return res.json({ data: list });
-});
-
-staticRouter.get('/owner-consent', async (req: Request, res: Response) => {
-	let list = staticService.getOwnerConsents();
-	return res.json({ data: list });
-});
-
 staticRouter.get('/category', async (req: Request, res: Response) => {
 	let list = staticService.getCategories();
 	return res.json({ data: list });
