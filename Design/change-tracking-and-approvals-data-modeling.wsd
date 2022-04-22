@@ -8,6 +8,8 @@ entity Place {
   * CoordinateDetermination : int
   * DoorCondition : int
   * FloorCondition : int
+  * Jurisdiction : int
+  * OwnerConsent : int
   * PrimaryName : nvarchar
   * RoofCondition : int
   * ShowInRegister : bit
@@ -38,6 +40,7 @@ entity Place {
   PhysicalProvince : nvarchar
   PlanNumber : nvarchar
   PreviousAddress : nvarchar
+  RecognitionDate : date
   Records : nvarchar : <<comma delimited array>>
   ResourceType : nvarchar
   SiteCategories : nvarchar : <<comma delimited array>>
@@ -215,11 +218,24 @@ enum HistoricalPatternType {
   4 : Geographic
 }
 
+enum JurisdictionType {
+  0 : None Selected
+  1 : Yukon
+  2 : Federal
+}
+
 entity Name {
   * Id : int <<generated>>
   --
   * PlaceId : int
   Description : nvarchar
+}
+
+enum OwnerConsentType {
+  0 : None Selected
+  1 : Consent
+  2 : No Response
+  3 : Objection
 }
 
 entity Ownership {
@@ -329,6 +345,8 @@ Place::CoordinateDetermination ||--o{ CoordinateDetermination
 Place::Designations }o--o{ Designations
 Place::DoorCondition }|--o{ ConditionType
 Place::FloorCondition }|--o{ ConditionType
+Place::Jurisdiction }|--o{ JurisdictionType
+Place::OwnerConsent }|--o{ OwnerConsentType
 Place::Records }o--o{ Records
 Place::RoofCondition }|--o{ ConditionType
 Place::SiteCategories }o--o{ SiteCategories
