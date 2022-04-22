@@ -307,6 +307,21 @@ entity Theme {
   * PlaceThemeId : int
 }
 
+entity WebLink {
+  * Id: int <<generated>>
+  --
+  * PlaceId : int
+  * Type : int
+  Address : varchar
+}
+
+enum WebLinkType {
+  1 : Historic Place
+  2 : Local Government
+  3 : Federal/Provicial/Territorial
+  4 : Other
+}
+
 Place::Category }|--o{ Category
 Place::CommunityId ||--o{ Community
 Place::ContributingResources }o--o{ ContributingResources
@@ -331,6 +346,7 @@ Place }o--|| PreviousOwnership::PlaceId
 Place }o--|| RevisionLog::PlaceId
 Place }o--|| Theme::PlaceId
 Place }o--|| FunctionalUse::PlaceId
+Place }o--|| WebLink::PlaceId
 Association::Type ||--o{ AssociationType
 ConstructionPeriod::Type ||--o{ ConstructionPeriodType
 Dates::Type ||--o{ DateType
@@ -342,6 +358,7 @@ FunctionalUse::FunctionalUseType ||--o{ FunctionalUseType
 HistoricalPattern::HistoricalPatternType ||--o{ HistoricalPatternType
 Ownership::OwnershipType ||--o{ OwnershipType
 RevisionLog::RevisionLogType ||--o{ RevisionLogType
+WebLink::Type ||--o{ WebLinkType
 Theme::PlaceThemeId ||--o{ PlaceTheme::Id
 
 @enduml
