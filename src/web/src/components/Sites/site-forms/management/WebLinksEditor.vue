@@ -9,10 +9,8 @@ v-card.default
     )
       v-row.mb-2
         v-col(cols="5")
-          v-select(
-            v-model="item.type",
-            :items="linkTypeOptions"
-            label="Link Type"
+          WebLinkTypeSelect(
+            v-model="item.type"
             dense
             outlined
             hide-details
@@ -46,13 +44,13 @@ v-card.default
 </template>
 
 <script>
-import axios from 'axios';
-
-import { STATIC_URL } from '@/urls';
+import WebLinkTypeSelect from '@/components/Sites/site-forms/management/WebLinkTypeSelect';
 
 export default {
   name: 'WebLinksEditor',
-  components: {},
+  components: {
+    WebLinkTypeSelect,
+  },
   props: {
     value: {
       type: Array,
@@ -63,19 +61,10 @@ export default {
       required: true,
     },
   },
-  data: () => ({
-    linkTypeOptions: [],
-  }),
   computed: {
     webLinks() {
       return this.value;
     },
-  },
-  watch: {},
-  mounted() {
-    axios.get(`${STATIC_URL}/link-type`).then((resp) => {
-      this.linkTypeOptions = resp.data.data;
-    });
   },
   methods: {
     addLink() {

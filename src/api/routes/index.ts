@@ -39,6 +39,7 @@ export * from './site-status-types-router';
 export * from './static-router';
 export * from './user-router';
 export * from './users-extras-router';
+export * from './web-link-types-router';
 export * from './ytplace-history-router';
 export * from './ytplace-router';
 export * from './interpretive-sites-router';

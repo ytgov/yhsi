@@ -44,6 +44,7 @@ import {
 	staticRouter,
 	userRouter,
 	usersExtraRouter,
+	webLinkTypesRouter,
 	ytPlaceHistoryRouter,
 	ytPlaceRouter,
 	intSitesRouter
@@ -152,6 +153,7 @@ app.use('/api/users', RequiresAuthentication, usersExtraRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/burials', RequiresAuthentication, burialsRouter);
 app.use("/api/maps", mapsRouter)
+app.use("/api/web-link-types", webLinkTypesRouter)
 
 app.use('/api', RequiresAuthentication, staticRouter);
 
