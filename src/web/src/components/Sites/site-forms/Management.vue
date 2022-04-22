@@ -1,159 +1,124 @@
-<template>
-  <v-card
-    class="mb-0"
-    tag="section"
-    outlined
-    tile
-  >
-    <v-card-title
-      class="mb-0 text-h4"
-      tag="h2"
-    >
-      Management
-    </v-card-title>
-    <v-card-text>
-      <RevisionLogsEditor
-        v-model="fields.revisionLogs"
-        :place-id="placeId"
-      />
-      <v-divider class="my-3" />
-      <ContactsEditor
-        v-model="fields.contacts"
-        :place-id="placeId"
-      />
-      <v-divider class="my-3" />
-      <WebLinksEditor
-        v-model="fields.webLinks"
-        :place-id="placeId"
-      />
-      <v-divider class="my-3" />
-      <v-row>
-        <v-col cols="6">
-          <v-card
-            class="default mb-0"
-            tag="section"
-          >
-            <v-card-title
-              tag="h3"
-              class="mb-0 text-h6"
-            >
-              Designation Information
-            </v-card-title>
-            <v-card-text>
-              <v-col cols="12">
-                <v-combobox
-                  v-model="fields.jurisdiction"
-                  label="Jurisdiction"
-                  dense
-                  outlined
-                  background-color="white"
-                />
-
-                <v-menu
-                  ref="recognitionDateMenu"
-                  v-model="recognitionDateMenu"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="fields.recognitionDate"
-                      label="Recognition Date"
-                      append-icon="mdi-calendar"
-                      readonly
-                      dense
-                      outlined
-                      background-color="white"
-                      v-bind="attrs"
-                      v-on="on"
-                    />
-                  </template>
-                  <v-date-picker
-                    ref="picker"
+<template lang="pug">
+v-card.mb-0(
+  tag="section"
+  outlined
+  tile
+)
+  v-card-title.mb-0.text-h4(tag="h2")
+    | Management
+  v-card-text
+    RevisionLogsEditor(
+      v-model="fields.revisionLogs",
+      :place-id="placeId"
+    )
+    v-divider.my-3
+    ContactsEditor(
+      v-model="fields.contacts",
+      :place-id="placeId"
+    )
+    v-divider.my-3
+    WebLinksEditor(
+      v-model="fields.webLinks",
+      :place-id="placeId"
+    )
+    v-divider.my-3
+    v-row
+      v-col(cols="6")
+        v-card.default.mb-0(tag="section")
+          v-card-title.mb-0.text-h6(tag="h3")
+            | Designation Information
+          v-card-text
+            v-col(cols="12")
+              v-combobox(
+                v-model="fields.jurisdiction"
+                label="Jurisdiction"
+                dense
+                outlined
+                background-color="white"
+              )
+              v-menu(
+                ref="recognitionDateMenu",
+                :close-on-content-click="false"
+                transition="scale-transition"
+                nudge-top="26"
+                offset-y
+                min-width="auto"
+              )
+                template(v-slot:activator="{ on, attrs }")
+                  v-text-field(
                     v-model="fields.recognitionDate"
-                    :max="todaysDate"
-                    min="1950-01-01"
-                    @change="updateRecognitionDate"
-                  />
-                </v-menu>
-
-                <v-combobox
-                  v-model="fields.ownerConsent"
-                  label="Owner Consent"
-                  dense
-                  outlined
-                  background-color="white"
-                />
-
-                <div class="rounded white px-2 pt-1 pb-2">
-                  <v-checkbox
-                    v-model="fields.showInRegister"
-                    label="Publicly Accessible?"
+                    label="Recognition Date"
+                    append-icon="mdi-calendar"
+                    readonly
                     dense
                     outlined
-                    hide-details
-                    color="info"
                     background-color="white"
-                  />
-                </div>
-              </v-col>
-            </v-card-text>
-          </v-card>
-        </v-col>
-        <v-col cols="6">
-          <v-text-field
-            v-model="fields.yGBuildingNumber"
-            label="YG Building Number"
-            required
-          />
-
-          <v-text-field
-            v-model="fields.yGReserveNumber"
-            label="YG Reserve Number"
-            required
-          />
-
-          <v-text-field
-            v-model="fields.cIHBNumber"
-            label=" CIHB Number"
-            required
-          />
-
-          <v-text-field
-            v-model="fields.fHBRONumber"
-            label="FHBRO Number"
-            required
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12">
-          <v-combobox
-            v-model="fields.statuteId"
-            label="Recognition Authority / Recognition Type / Statute"
-          />
-
-          <v-combobox
-            v-model="fields.statute2Id"
-            label="Recognition Authority / Recognition Type / Statute 2"
-            hide-details
-          />
-        </v-col>
-      </v-row>
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer />
-      <v-btn
-        class="my-0"
-        color="primary"
-        @click="saveChanges"
-      >
-        Save
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+                    v-bind="attrs"
+                    v-on="on"
+                  )
+                v-date-picker(
+                  ref="picker"
+                  v-model="fields.recognitionDate",
+                  :max="todaysDate"
+                  min="1950-01-01"
+                  @input="recognitionDateMenu = false"
+                )
+              v-combobox(
+                v-model="fields.ownerConsent"
+                label="Owner Consent"
+                dense
+                outlined
+                background-color="white"
+              )
+              .rounded.white.px-2.pt-1.pb-2
+                v-checkbox(
+                  v-model="fields.showInRegister"
+                  label="Publicly Accessible?"
+                  dense
+                  outlined
+                  hide-details
+                  color="info"
+                  background-color="white"
+                )
+      v-col(cols="6")
+        v-text-field(
+          v-model="fields.yGBuildingNumber"
+          label="YG Building Number"
+          required
+        )
+        v-text-field(
+          v-model="fields.yGReserveNumber"
+          label="YG Reserve Number"
+          required
+        )
+        v-text-field(
+          v-model="fields.cIHBNumber"
+          label=" CIHB Number"
+          required
+        )
+        v-text-field(
+          v-model="fields.fHBRONumber"
+          label="FHBRO Number"
+          required
+        )
+    v-row
+      v-col(cols="12")
+        v-combobox(
+          v-model="fields.statuteId"
+          label="Recognition Authority / Recognition Type / Statute"
+        )
+        v-combobox(
+          v-model="fields.statute2Id"
+          label="Recognition Authority / Recognition Type / Statute 2"
+          hide-details
+        )
+  v-card-actions
+    v-spacer
+    v-btn.my-0(
+      color="primary"
+      @click="saveChanges"
+    )
+      | Save
 </template>
 
 <script>
@@ -212,7 +177,6 @@ export default {
       .get(`${PLACE_URL}/${this.placeId}`)
       .then((resp) => {
         this.fields = resp.data.data;
-        this.fields.recognitionDate = this.fields.recognitionDate || '';
       })
       .catch((error) => console.error(error));
 
@@ -227,9 +191,6 @@ export default {
     });
   },
   methods: {
-    updateRecognitionDate(date) {
-      this.$refs.recognitionDateMenu.save(date);
-    },
     saveChanges() {
       let body = {
         cIHBNumber: this.fields.cIHBNumber,
@@ -237,7 +198,7 @@ export default {
         fHBRONumber: this.fields.fHBRONumber,
         jurisdiction: this.fields.jurisdiction,
         ownerConsent: this.fields.ownerConsent,
-        recognitionDate: this.fields.recognitionDateDisplay,
+        recognitionDate: this.fields.recognitionDate,
         isPubliclyAccessible: this.fields.isPubliclyAccessible,
         statute2Id: this.fields.statute2Id,
         statuteId: this.fields.statuteId,
@@ -256,11 +217,6 @@ export default {
         .catch((err) => {
           this.$emit('showError', err);
         });
-    },
-  },
-  watch: {
-    menu(val) {
-      val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'));
     },
   },
 };

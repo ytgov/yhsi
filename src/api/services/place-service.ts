@@ -195,7 +195,7 @@ export class PlaceService {
 					descriptions: { data: descriptions },
 				};
 
-				place.recognitionDateDisplay = place.recognitionDate
+				place.recognitionDate = place.recognitionDate
 					? moment(place.recognitionDate).add(7, 'hours').format('YYYY-MM-DD')
 					: '';
 				return { place, relationships };
