@@ -55,11 +55,7 @@ export class UserService {
 	}
 
 	async loadDetails(user: User): Promise<User> {
-		if (user.roles)
-			user.role_list = user.roles.split(", ");
-		else
-			user.role_list = [];
-
+		user.role_list = user.roles?.split(',').map((role) => role.trim()) || [];
 		user.site_access = await this.knex('Security.UserSiteAccess')
 			.where({ user_id: user.id })
 			.orderBy('access_type_id')
