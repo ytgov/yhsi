@@ -14,15 +14,19 @@ entity Place {
   * RoofCondition : int
   * ShowInRegister : bit
   * SiteStatus : int
+  * Statute2Id : int
+  * StatuteId : int
   * WallCondition : int
   * YHSIId : nvarchar
   Block : nvarchar
   BordenNumber : nvarchar
   BuildingSize : nvarchar
+  CIHBNumber : nvarchar
   ConditionComment : nvarchar
   ContributingResources : nvarchar : <<comma delimited array>>
   CurrentUseComment : nvarchar
   Designations : nvarchar : <<comma delimited array>>
+  FHBRONumber : nvarchar
   GroupYHSI : nvarchar
   HectareArea : nvarchar
   LAGroup : nvarchar
@@ -44,8 +48,10 @@ entity Place {
   Records : nvarchar : <<comma delimited array>>
   ResourceType : nvarchar
   SiteCategories : nvarchar : <<comma delimited array>>
-  SiteDistrictNumber: nvarchar
-  TownSiteMapNumber: nvarchar
+  SiteDistrictNumber : nvarchar
+  TownSiteMapNumber : nvarchar
+  YGBuildingNumber : nvarchar
+  YGReserveNumber : nvarchar
   YHSPastUse : nvarchar
   YHSThemes : nvarchar
   Zoning : nvarchar
@@ -316,15 +322,24 @@ enum SiteStatus {
   6 : Reconstruction
 }
 
+entity Statute {
+  * Id : int <<generated>>
+  --
+  RecognitionAuthority
+  RecognitionType
+  Description
+  AllStatute
+}
+
 entity Theme {
-  * Id: int <<generated>>
+  * Id : int <<generated>>
   --
   * PlaceId : int
   * PlaceThemeId : int
 }
 
 entity WebLink {
-  * Id: int <<generated>>
+  * Id : int <<generated>>
   --
   * PlaceId : int
   * Type : int
@@ -351,6 +366,8 @@ Place::Records }o--o{ Records
 Place::RoofCondition }|--o{ ConditionType
 Place::SiteCategories }o--o{ SiteCategories
 Place::SiteStatus ||--o{ SiteStatus
+Place::StatuteId ||--o{ Statute::Id
+Place::Statute2Id ||--o{ Statute::Id
 Place::WallCondition }|--o{ ConditionType
 Place }o--|| Association::PlaceId
 Place }o--|| ConstructionPeriod::PlaceId
