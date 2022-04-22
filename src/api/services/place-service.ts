@@ -1,6 +1,6 @@
 import knex, { Knex } from 'knex';
 import moment from 'moment';
-import { get, isEmpty, uniq, cloneDeep, pick } from 'lodash';
+import { get, isEmpty, uniq } from 'lodash';
 
 import {
 	AssociationService,
@@ -14,7 +14,6 @@ import {
 	PhotoService,
 	PlaceEditService,
 	PreviousOwnershipService,
-	QueryStatement,
 	RevisionLogService,
 	SortStatement,
 	StaticService,
