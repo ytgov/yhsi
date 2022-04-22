@@ -16,125 +16,11 @@
         v-model="fields.revisionLogs"
         :place-id="placeId"
       />
-
       <v-divider class="my-3" />
-
-      <v-card
-        class="default mb-0"
-        tag="section"
-      >
-        <v-card-title
-          tag="h3"
-          class="mb-0 text-h6"
-        >
-          Contacts
-        </v-card-title>
-        <v-card-text tag="form">
-          <div
-            v-for="(item, i) in contacts"
-            :key="`contact-${i + 1}`"
-          >
-            <v-row>
-              <v-col cols="6">
-                <v-combobox
-                  v-model="item.type"
-                  label="Type"
-                  background-color="white"
-                  dense
-                  outlined
-                  hide-details
-                />
-              </v-col>
-              <v-col cols="6">
-                <v-btn
-                  color="warning"
-                  x-small
-                  fab
-                  title="Remove"
-                  class="my-0 float-right"
-                  background-color="white"
-                  @click="removeContact(i)"
-                >
-                  <v-icon dark>mdi-close</v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="6">
-                <v-text-field
-                  v-model="item.firstName"
-                  label="First Name"
-                  required
-                  dense
-                  outlined
-                  background-color="white"
-                />
-
-                <v-text-field
-                  v-model="item.phone"
-                  label="Phone"
-                  required
-                  dense
-                  outlined
-                  background-color="white"
-                />
-
-                <v-textarea
-                  v-model="item.mailingAddress"
-                  label="Mailing Address"
-                  dense
-                  outlined
-                  hide-details
-                  background-color="white"
-                />
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
-                  v-model="item.lastName"
-                  label="Last Name"
-                  required
-                  dense
-                  outlined
-                  background-color="white"
-                />
-
-                <v-text-field
-                  v-model="item.email"
-                  label="Email"
-                  required
-                  dense
-                  outlined
-                  background-color="white"
-                />
-
-                <v-textarea
-                  v-model="item.description"
-                  label="Description"
-                  dense
-                  outlined
-                  hide-details
-                  background-color="white"
-                />
-              </v-col>
-              <v-col
-                v-if="i < contacts.length - 1"
-                cols="12"
-              >
-                <v-divider class="black" />
-              </v-col>
-            </v-row>
-          </div>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn
-            color="info"
-            class="my-0"
-            @click="addContact"
-          >
-            Add New
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+      <ContactsEditor
+        v-model="contacts"
+        :place-id="placeId"
+      />
       <v-divider class="my-3" />
       <v-card class="default">
         <v-card-title
@@ -336,12 +222,16 @@ import axios from 'axios';
 
 import { PLACE_URL, STATIC_URL } from '@/urls';
 
+import ContactsEditor from '@/components/Sites/site-forms/management/ContactsEditor';
 import RevisionLogsEditor from '@/components/Sites/site-forms/management/RevisionLogsEditor';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: 'Management',
-  components: { RevisionLogsEditor },
+  components: {
+    ContactsEditor,
+    RevisionLogsEditor,
+  },
   props: {
     placeId: {
       type: [Number, String],
@@ -355,7 +245,6 @@ export default {
     contacts: [],
     links: [],
 
-    contactTypeOptions: [],
     linkTypeOptions: [],
     jurisdictionOptions: [],
     ownerConsentOptions: [],
@@ -386,9 +275,6 @@ export default {
       })
       .catch((error) => console.error(error));
 
-    axios.get(`${STATIC_URL}/contact-type`).then((resp) => {
-      this.contactTypeOptions = resp.data.data;
-    });
     axios.get(`${STATIC_URL}/link-type`).then((resp) => {
       this.linkTypeOptions = resp.data.data;
     });
@@ -405,12 +291,6 @@ export default {
   methods: {
     save(date) {
       this.$refs.menu.save(date);
-    },
-    addContact() {
-      this.contacts.push({ placeId: this.placeId, contactType: 1 });
-    },
-    removeContact(index) {
-      this.contacts.splice(index, 1);
     },
     addLink() {
       this.links.push({ type: 1, address: 'https://', placeId: this.placeId });
