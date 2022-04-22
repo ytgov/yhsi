@@ -5,13 +5,39 @@
     <v-row>
       <v-col cols="6" class="d-flex">
         <v-text-field
+          v-if="$route.path.includes('action')"
           flat
           prepend-icon="mdi-magnify"
           class="mx-4"
           hide-details
-          label="Search by name"
-          v-model="search"
-          v-on:input="searchChange()"
+          label="Search"
+          v-model="searchAction"
+          @keyup.enter="actionSearchChange()"
+          v-on:input="actionSearchChange()"
+        ></v-text-field>
+
+        <v-text-field
+          v-else-if="$route.path.includes('asset')"
+          flat
+          prepend-icon="mdi-magnify"
+          class="mx-4"
+          hide-details
+          label="Search"
+          v-model="searchAsset"
+          @keyup.enter="assetSearchChange()"
+          v-on:input="assetSearchChange()"
+        ></v-text-field>
+
+        <v-text-field
+          v-else
+          flat
+          prepend-icon="mdi-magnify"
+          class="mx-4"
+          hide-details
+          label="Search by site name"
+          v-model="searchSite"
+          @keyup.enter="siteSearchChange()"
+          v-on:input="siteSearchChange()"
         ></v-text-field>
 
         <v-menu
@@ -21,6 +47,20 @@
         >
           <template v-slot:activator="{ on, attrs }">
             <v-btn
+              v-if="$route.path.includes('action')"
+              color="transparent"
+              class="black--text"
+              v-bind="attrs"
+              v-on="on"
+              disabled
+            >
+              <v-icon class="black--text mr-1">mdi-filter</v-icon>
+              Filter
+
+              <v-icon class="black--text">mdi-chevron-right</v-icon>
+            </v-btn>
+            <v-btn
+              v-else
               color="transparent"
               class="black--text"
               v-bind="attrs"
@@ -33,120 +73,153 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item v-for="(item, i) in filterOptions" :key="i" link>
+            <v-list-item v-for="(item, i) in actionFilterOptions" :key="`action-filter-list-opt-${i}`" link>
               <v-text-field
                 clearable
+                @blur="filterChange"
                 v-model="item.value"
-                :label="item.text"
-                @change="searchChange()"
+                :label="item.name"
               ></v-text-field>
             </v-list-item>
           </v-list>
         </v-menu>
       </v-col>
       <v-spacer></v-spacer>
-      <v-col cols="auto" class="d-flex">
-        <v-btn class="black--text mx-1" @click="addNew">
+      <v-col cols="auto" v-if="$route.path.includes('action')" class="d-flex">
+        <v-btn class="black--text mx-1" @click="addNewAction">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-          Add Burial
+          Add Owner
         </v-btn>
 
-        <v-btn class="black--text mx-1" v-if="loading" :loading="loading">
+
+        
+        <v-btn class="black--text mx-1" @click="getActionsExport()" :loading="loadingExport">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
         </v-btn>
-        <JsonCSV v-else :data="burialsData">
-          <v-btn class="black--text mx-1" :disabled="burialsData.length == 0">
-            <v-icon class="mr-1"> mdi-export </v-icon>
-            Export
-          </v-btn>
-        </JsonCSV>
 
-        <v-btn class="black--text mx-1" @click="downloadPdf" :loading="loadingPdf">
-            <v-icon class="mr-1"> mdi-printer </v-icon>
+        <v-btn @click="downloadActionsPdf()" class="black--text mx-1" :loading="loadingPdf">
+            <v-icon class="mr-1">
+              mdi-printer
+            </v-icon>
             Print
         </v-btn>
+
+      </v-col>
+      <v-col cols="auto" v-else-if="$route.path.includes('asset')" class="d-flex">
+        <v-btn class="black--text mx-1" @click="addNewAsset">
+          <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
+          Add Site
+        </v-btn>
+
+        <v-btn class="black--text mx-1" @click="getAssetsExport()" :loading="loadingExport">
+          <v-icon class="mr-1"> mdi-export </v-icon>
+          Export
+        </v-btn>
+
+        <v-btn @click="downloadAssetsPdf()" class="black--text mx-1" :loading="loadingPdf">
+            <v-icon class="mr-1">
+              mdi-printer
+            </v-icon>
+            Print
+        </v-btn>
+
+      </v-col>
+      <v-col cols="auto" v-else class="d-flex">
+        <v-btn class="black--text mx-1" @click="addNewSite">
+          <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
+          Add Site
+        </v-btn>
+
+        <v-btn class="black--text mx-1" @click="getSiteExport()" :loading="loadingExport">
+          <v-icon class="mr-1"> mdi-export </v-icon>
+          Export
+        </v-btn>
+
+        <v-btn @click="downloadSitesPdf()" class="black--text mx-1" :loading="loadingPdf">
+            <v-icon class="mr-1">
+              mdi-printer
+            </v-icon>
+            Print
+        </v-btn>
+
       </v-col>
     </v-row>
     <div class="mt-2">
       <v-card>
-        <v-container fluid>
-          <v-row>
-            <v-col cols="12">
-              <h2 v-if="burials" class="ma-2">
-                {{ filteredData.length }} results out of {{ totalLength }}
-              </h2>
-            </v-col>
-          </v-row>
-          <v-divider inset class="mb-4"></v-divider>
-          <v-row>
-            <v-col>
-              <v-data-table
-                :items="filteredData"
-                :headers="headers"
-                :loading="loading"
-                :search="search"
-                :options.sync="options"
-                :server-items-length="totalLength"
-                @click:row="handleClick"
-                :footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
-              >
-              </v-data-table>
-            </v-col>
-          </v-row>
-        </v-container>
+        <v-tabs v-model="active_tab">
+          <v-tab
+            key="1"
+            :to="{ path: '/interpretive-sites/' }"
+            :class="`${isActive($route.path)}`"
+          >
+            <v-icon class="mr-1">mdi-ferry</v-icon>
+            Sites
+          </v-tab>
+          <v-tab key="2" :to="{ path: '/interpretive-sites/actions' }">
+            <v-icon class="mr-1">mdi-account-tie</v-icon>
+            Actions
+          </v-tab>
+          <v-tab key="3" :to="{ path: '/interpretive-sites/assets' }">
+            <v-icon class="mr-1">mdi-account-tie</v-icon>
+            Assets
+          </v-tab>
+        </v-tabs>
+        <v-divider class="mb-4"></v-divider>
+        <router-view id="rv-int-sitesW" />
       </v-card>
     </div>
   </div>
 </template>
 
 <script>
-import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
+import downloadCsv from "../../../utils/dataToCsv";
+import downloadPdf from "../../../utils/dataToPdf";
 import _ from "lodash";
-import burials from "../../../controllers/burials";
+import interpretiveSites from "../../../controllers/interpretive-sites";
+//import jsPDF from "jspdf";
 export default {
-  name: "boatsgrid-index",
-  components: { Breadcrumbs, JsonCSV },
+  name: "int-sites-grid-index",
+  components: { Breadcrumbs },
   data: () => ({
     route: "",
-    loading: false,
-    burials: [],
-    search: "",
-    headers: [
-      { text: "LastName", value: "LastName" },
-      { text: "FirstName", value: "FirstName" },
-      { text: "Gender", value: "Gender" },
-      { text: "BirthYear", value: "BirthYear" },
-      { text: "DeathYear", value: "DeathYear" },
-      { text: "Manner", value: "Manner" },
-      { text: "Cause", value: "Cause" },
-      { text: "Cementary", value: "Cemetary" },
-      { text: "OtherCemetaryDesc", value: "OtherCemetaryDesc" },
-      { text: "OriginCity", value: "OriginCity" },
-      { text: "OriginState", value: "OriginState" },
-      { text: "OriginCountry", value: "OriginCountry" },
-      { text: "OtherCountry", value: "OtherCountry" },
-
+    active_tab: "",
+    searchSite: "",
+    searchAction: "",
+    searchAsset: "",
+    siteFilterOptions: [
+          { text: "Location Description", value: "", dataAccess: "LocationDesc"},
+          { text: "Route Name", value: "", dataAccess: "RouteName"},
+          { text: "KMNum", value: "",  dataAccess: "KMNum"},
+          { text: "MapSheet", value: "", dataAccess: "MapSheet"},
+          { text: "Latitude", value: "", dataAccess:  "Latitude" },
+          { text: "Longitude", value: "", dataAccess: "Longitude"},
+          { text: "Established Year", value: "", dataAccess:  "EstablishedYear"},
+          { text: "Advanced Notification", value: "", dataAccess:  "AdvancedNotification"},
+          { text: "Notification Description", value: "", dataAccess:  "NotificationDesc"},
     ],
-    //table options
-    page: 0,
-    pageCount: 6,
-    totalLength: 0,
-    options: { itemsPerPage: 50 },
-    // filter by names, birth and death dates, gender, cause and manner of death, cemetery, other location, country of origin
-    filterOptions: [
-          { text: "Birth Year", value: "", dataAccess: "BirthYear"},
-          { text: "Birth Month", value: "", dataAccess: "BirthMonth"},
-          { text: "Birth Day", value: "", dataAccess: "BirthDay"},
-          { text: "Death Year", value: "",  dataAccess: "DeathYear"},
-          { text: "Death Month", value: "", dataAccess: "DeathMonth"},
-          { text: "Death Day", value: "", dataAccess:  "DeathDay" },
-          { text: "Gender", value: "", dataAccess: "Gender"},
-          { text: "Cause", value: "", dataAccess:  "Cause"},
-          { text: "Manner", value: "", dataAccess:  "Manner"},
-          { text: "Cemetary", value: "", dataAccess:  "Cemetary"},
-          { text: "Origin Country", value: "", dataAccess:  "OriginCountry"},
+    actionFilterOptions: [
+          { text: "Location Description", value: "", dataAccess: "LocationDesc"},
+          { text: "Route Name", value: "", dataAccess: "RouteName"},
+          { text: "KMNum", value: "",  dataAccess: "KMNum"},
+          { text: "MapSheet", value: "", dataAccess: "MapSheet"},
+          { text: "Latitude", value: "", dataAccess:  "Latitude" },
+          { text: "Longitude", value: "", dataAccess: "Longitude"},
+          { text: "Established Year", value: "", dataAccess:  "EstablishedYear"},
+          { text: "Advanced Notification", value: "", dataAccess:  "AdvancedNotification"},
+          { text: "Notification Description", value: "", dataAccess:  "NotificationDesc"},
+    ],
+    assetFilterOptions: [
+          { text: "Location Description", value: "", dataAccess: "LocationDesc"},
+          { text: "Route Name", value: "", dataAccess: "RouteName"},
+          { text: "KMNum", value: "",  dataAccess: "KMNum"},
+          { text: "MapSheet", value: "", dataAccess: "MapSheet"},
+          { text: "Latitude", value: "", dataAccess:  "Latitude" },
+          { text: "Longitude", value: "", dataAccess: "Longitude"},
+          { text: "Established Year", value: "", dataAccess:  "EstablishedYear"},
+          { text: "Advanced Notification", value: "", dataAccess:  "AdvancedNotification"},
+          { text: "Notification Description", value: "", dataAccess:  "NotificationDesc"},
     ],
     selectedItem: 1,
     items: [
@@ -154,141 +227,201 @@ export default {
       { text: "Audience", icon: "mdi-account" },
       { text: "Conversions", icon: "mdi-flag" },
     ],
-    burialsData: [],
-    loadingPdf: false
+    loadingPdf: false,
+    loadingExport: false,
   }),
-  mounted() {
-    this.getDataFromApi();
+  async mounted() {
+    if (this.$route.path.includes("actions")) {
+      this.route = "actions";
+    } else if(this.$route.path.includes("assets")){
+      this.route = "assets";
+    } else {
+      this.route = "sites"
+    }
+
   },
   methods: {
-    addNew() {
-      this.removeCurrentBurial();
-      this.$router.push(`/burials/new`);
+    addNewSite() {
+      this.$router.push(`/interpretive-sites/new`);
     },
-    searchChange: _.debounce(function () {
-      this.getDataFromApi();
+    addNewAction() {
+      this.$router.push(`/interpretive-sites/action/new`);
+    },
+    addNewAsset(){
+      this.$router.push(`/interpretive-sites/asset/new`);
+    },
+    siteSearchChange: _.debounce(function () {
+      this.$store.commit("boats/setOwnerSearch", this.searchOwner);
+      //this.getOwnerExport();
     }, 400),
-    handleClick(value) {
-      //Redirects the user to the airplane form component
-      this.$router.push({
-        name: "BurialsViewForm",
-        params: { name: value.BurialID, id: value.BurialID },
-      });
+    actionSearchChange: _.debounce(function () {
+      this.$store.commit("boats/setBoatSearch", this.searchBoat);
+      //this.getBoatExport();
+    }, 400),
+    filterChange() {
+      this.$store.commit("boats/setSelectedFilters", this.filterOptions);
+      //this.getBoatExport();
     },
-    async getDataFromApi() {
-      this.loading = true;
-      let { page, itemsPerPage, sortBy, sortDesc } = this.options;
-      page = page > 0 ? page - 1 : 0;
-      itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
+    isActive(route) {
+      //this function helps to show certain classes depending on the route
+      return route.includes("owner") ? "notActive" : "";
+    },
+    async getSitesExport(){
+      let { sortBy, sortDesc } = this.options;
       let textToMatch = this.search;
       const prefilters = {};
-      this.filterOptions.map( x => {
+      this.siteFilterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
       })
-      ////console.log("TEST",JSON.stringify(prefilters));
-      let data = await burials.get(
-        page,
-        itemsPerPage,
-        textToMatch,
+      let data = await interpretiveSites.getExport(
         sortBy[0],
         sortDesc[0] ? "desc" : "asc",
-        prefilters.BirthYear,
-        prefilters.BirthMonth,
-        prefilters.BirthDay,
-        prefilters.DeathYear,
-        prefilters.DeathMonth,
-        prefilters.DeathDay,
-        prefilters.Gender,
-        prefilters.Cause,
-        prefilters.Manner,
-        prefilters.Cemetary,
-        prefilters.OriginCountry
+        textToMatch,//prefilters.SiteName,
+        prefilters.LocationDesc,
+        prefilters.RouteName,
+        prefilters.KMNum,
+        prefilters.MapSheet,
+        prefilters.Latitude,
+        prefilters.Longitude,
+        prefilters.EstablishedYear,
+        prefilters.AdvancedNotification,
+        prefilters.NotificationDesc,
       );
-
-     // {"BirthYear":"","BirthMonth":"","BirthDay":"","DeathYear":"","DeathMonth":"","DeathDay":"","Gender":"","Cause":"","Manner":"","Cemetary":"","OriginCountry":""}
-      this.burials = data.body;
-      this.totalLength = data.count;
-      this.burials.map((x) => {
-        x.crashdate = this.formatDate(x.crashdate);
-      });
-      this.burialsData = await burials.getExport(
-        textToMatch,
-        sortBy[0],
-        sortDesc[0] ? "desc" : "asc",
-        prefilters.BirthYear,
-        prefilters.BirthMonth,
-        prefilters.BirthDay,
-        prefilters.DeathYear,
-        prefilters.DeathMonth,
-        prefilters.DeathDay,
-        prefilters.Gender,
-        prefilters.Cause,
-        prefilters.Manner,
-        prefilters.Cemetary,
-        prefilters.OriginCountry
-      );
-      console.log(this.burialsData);
-      this.loading = false;
+      downloadCsv(data, "sites");
     },
-    removeCurrentBurial(){
-      localStorage.currentBurialID = null;
-    },
-    async downloadPdf(){
+    async downloadSitesPdf(){
       this.loadingPdf = true;
       let { sortBy, sortDesc } = this.options;
       const prefilters = {};
-      this.filterOptions.map( x => {
+      this.siteFilterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
       })
-      let res = await burials.getGridPdf(
-        this.search,
+      let res = await interpretiveSites.getGridPdf(
         sortBy[0],
         sortDesc[0] ? "desc" : "asc",
-        prefilters.BirthYear,
-        prefilters.BirthMonth,
-        prefilters.BirthDay,
-        prefilters.DeathYear,
-        prefilters.DeathMonth,
-        prefilters.DeathDay,
-        prefilters.Gender,
-        prefilters.Cause,
-        prefilters.Manner,
-        prefilters.Cemetary,
-        prefilters.OriginCountry
+        this.search,//prefilters.SiteName,
+        prefilters.LocationDesc,
+        prefilters.RouteName,
+        prefilters.KMNum,
+        prefilters.MapSheet,
+        prefilters.Latitude,
+        prefilters.Longitude,
+        prefilters.EstablishedYear,
+        prefilters.AdvancedNotification,
+        prefilters.NotificationDesc,
       );
-      let blob = new Blob([res], { type: "application/octetstream" });
-      let url = window.URL || window.webkitURL;
-      let link = url.createObjectURL(blob);
-      let a = document.createElement("a");
-      a.setAttribute("download", "Burials.pdf");
-      a.setAttribute("href", link);
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      downloadPdf(res, "sites");
       this.loadingPdf = false;
     },
-    formatDate(date) {
-      if (!date) return null;
-      date = date.substr(0, 10);
-      const [year, month, day] = date.split("-");
-      return `${month}/${day}/${year}`;
+    async getActionsExport(){
+      let { sortBy, sortDesc } = this.options;
+      let textToMatch = this.search;
+      const prefilters = {};
+      this.siteFilterOptions.map( x => {
+        prefilters[x.dataAccess] = x.value;
+      })
+      let data = await interpretiveSites.getExport(
+        sortBy[0],
+        sortDesc[0] ? "desc" : "asc",
+        textToMatch,//prefilters.SiteName,
+        prefilters.LocationDesc,
+        prefilters.RouteName,
+        prefilters.KMNum,
+        prefilters.MapSheet,
+        prefilters.Latitude,
+        prefilters.Longitude,
+        prefilters.EstablishedYear,
+        prefilters.AdvancedNotification,
+        prefilters.NotificationDesc,
+      );
+      downloadCsv(data, "actions");
     },
-
+    async downloadActionsPdf(){
+      this.loadingPdf = true;
+      let { sortBy, sortDesc } = this.options;
+      const prefilters = {};
+      this.siteFilterOptions.map( x => {
+        prefilters[x.dataAccess] = x.value;
+      })
+      let res = await interpretiveSites.getGridPdf(
+        sortBy[0],
+        sortDesc[0] ? "desc" : "asc",
+        this.search,//prefilters.SiteName,
+        prefilters.LocationDesc,
+        prefilters.RouteName,
+        prefilters.KMNum,
+        prefilters.MapSheet,
+        prefilters.Latitude,
+        prefilters.Longitude,
+        prefilters.EstablishedYear,
+        prefilters.AdvancedNotification,
+        prefilters.NotificationDesc,
+      );
+      downloadPdf(res, "actions");
+      this.loadingPdf = false;
+    },
+    async getAssetsExport(){
+      let { sortBy, sortDesc } = this.options;
+      let textToMatch = this.search;
+      const prefilters = {};
+      this.siteFilterOptions.map( x => {
+        prefilters[x.dataAccess] = x.value;
+      })
+      let data = await interpretiveSites.getExport(
+        sortBy[0],
+        sortDesc[0] ? "desc" : "asc",
+        textToMatch,//prefilters.SiteName,
+        prefilters.LocationDesc,
+        prefilters.RouteName,
+        prefilters.KMNum,
+        prefilters.MapSheet,
+        prefilters.Latitude,
+        prefilters.Longitude,
+        prefilters.EstablishedYear,
+        prefilters.AdvancedNotification,
+        prefilters.NotificationDesc,
+      );
+      downloadCsv(data, "assets");
+    },
+    async downloadAssetsPdf(){
+      this.loadingPdf = true;
+      let { sortBy, sortDesc } = this.options;
+      const prefilters = {};
+      this.siteFilterOptions.map( x => {
+        prefilters[x.dataAccess] = x.value;
+      })
+      let res = await interpretiveSites.getGridPdf(
+        sortBy[0],
+        sortDesc[0] ? "desc" : "asc",
+        this.search,//prefilters.SiteName,
+        prefilters.LocationDesc,
+        prefilters.RouteName,
+        prefilters.KMNum,
+        prefilters.MapSheet,
+        prefilters.Latitude,
+        prefilters.Longitude,
+        prefilters.EstablishedYear,
+        prefilters.AdvancedNotification,
+        prefilters.NotificationDesc,
+      );
+      downloadPdf(res, "assets");
+      this.loadingPdf = false;
+    },
   },
   computed: {
-    filteredData(){
-      return this.burials;
-    }
-  },
-  watch: {
-    /* eslint-disable */
-    options: {
-      handler() {
-        this.getDataFromApi();
-      },
-      deep: true,
+    siteTableOptions(){
+      return this.$store.getters["boats/boatTableOptions"];
+    },
+    actionTableOptions(){
+      return this.$store.getters["boats/ownerTableOptions"];
+    },
+    assetTableOptions(){
+      return this.$store.getters["boats/ownerTableOptions"];
     },
   },
+  watch: {
+
+  }
 };
 </script>
 
