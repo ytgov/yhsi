@@ -21,6 +21,7 @@ export * from './histories-router';
 export * from './jurisdiction-types-router';
 export * from './map-router';
 export * from './nts-map-sheets-router';
+export * from './owner-consent-types-router';
 export * from './owner-router';
 export * from './ownership-types-router';
 export * from './people-router';

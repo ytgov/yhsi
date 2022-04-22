@@ -62,9 +62,8 @@ v-card.mb-0(
                   min="1950-01-01"
                   @input="recognitionDateMenu = false"
                 )
-              v-combobox(
+              OwnerConsentTypeSelect(
                 v-model="fields.ownerConsent"
-                label="Owner Consent"
                 dense
                 outlined
                 background-color="white"
@@ -127,6 +126,7 @@ import { PLACE_URL, STATIC_URL } from '@/urls';
 
 import ContactsEditor from '@/components/Sites/site-forms/management/ContactsEditor';
 import JurisdictionTypeSelect from '@/components/Sites/site-forms/management/JurisdictionTypeSelect';
+import OwnerConsentTypeSelect from '@/components/Sites/site-forms/management/OwnerConsentTypeSelect';
 import RevisionLogsEditor from '@/components/Sites/site-forms/management/RevisionLogsEditor';
 import WebLinksEditor from '@/components/Sites/site-forms/management/WebLinksEditor';
 
@@ -136,6 +136,7 @@ export default {
   components: {
     ContactsEditor,
     JurisdictionTypeSelect,
+    OwnerConsentTypeSelect,
     RevisionLogsEditor,
     WebLinksEditor,
   },
@@ -148,7 +149,6 @@ export default {
   data: () => ({
     recognitionDateMenu: false,
 
-    ownerConsentOptions: [],
     statuteOptions: [],
 
     fields: {
@@ -182,9 +182,6 @@ export default {
 
     axios.get(`${STATIC_URL}/statute`).then((resp) => {
       this.statuteOptions = resp.data.data;
-    });
-    axios.get(`${STATIC_URL}/owner-consent`).then((resp) => {
-      this.ownerConsentOptions = resp.data.data;
     });
   },
   methods: {

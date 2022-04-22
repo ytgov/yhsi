@@ -20,6 +20,7 @@ export * from './historical-pattern';
 export * from './historical-pattern-types';
 export * from './jurisdiction-types';
 export * from './name';
+export * from './owner-consent-types';
 export * from './ownership';
 export * from './ownership-types';
 export * from './place';

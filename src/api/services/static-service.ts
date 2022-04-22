@@ -196,15 +196,6 @@ export class StaticService {
 		];
 	}
 
-	getOwnerConsents(): GenericEnum[] {
-		return [
-			{ value: 0, text: 'None Selected' },
-			{ value: 1, text: 'Consent' },
-			{ value: 2, text: 'No Response' },
-			{ value: 3, text: 'Objection' },
-		];
-	}
-
 	getCategories(): readonly GenericEnum[] {
 		return CATEGORY_TYPES;
 	}

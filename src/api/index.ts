@@ -27,6 +27,7 @@ import {
 	jurisdictionTypesRouter,
 	mapsRouter,
 	ntsMapSheetsRouter,
+	ownerConsentTypesRouter,
 	ownerRouter,
 	ownershipTypesRouter,
 	peopleRouter,
@@ -136,6 +137,7 @@ app.use('/api/functional-use-types', RequiresAuthentication, functionalUseTypesR
 app.use('/api/historical-pattern-types', RequiresAuthentication, historicalPatternTypesRouter);
 app.use('/api/jurisdiction-types', RequiresAuthentication, jurisdictionTypesRouter);
 app.use('/api/nts-map-sheets', RequiresAuthentication, ntsMapSheetsRouter);
+app.use('/api/owner-consent-types', RequiresAuthentication, ownerConsentTypesRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/owners', RequiresAuthentication, ownerRouter);
 app.use('/api/ownership-types', RequiresAuthentication, ownershipTypesRouter);

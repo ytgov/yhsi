@@ -31,11 +31,6 @@ staticRouter.get('/description-type', async (req: Request, res: Response) => {
 	return res.json({ data: list });
 });
 
-staticRouter.get('/owner-consent', async (req: Request, res: Response) => {
-	let list = await staticService.getOwnerConsents();
-	return res.json({ data: list });
-});
-
 staticRouter.get('/original-media', async (req: Request, res: Response) => {
 	let list = await staticService.getOriginalMedias();
 	return res.json({ data: list });
