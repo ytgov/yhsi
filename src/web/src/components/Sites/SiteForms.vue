@@ -82,7 +82,8 @@
             :place-id="id"
           />
           <Photos id="photos" />
-          <Management
+          <component
+            :is="managementComponent"
             id="management"
             :place-id="id"
           />
@@ -107,6 +108,7 @@ import LegalAndZoningViewer from '@/components/Sites/site-forms/LegalAndZoningVi
 import Location from '@/components/Sites/site-forms/Location';
 import LocationReadonly from '@/components/Sites/site-forms/LocationReadonly';
 import Management from '@/components/Sites/site-forms/Management';
+import ManagementViewer from '@/components/Sites/site-forms/ManagementViewer';
 import Photos from '@/components/Sites/site-forms/Photos';
 import PrintDialog from '@/components/Sites/SiteFormsPrintDialog';
 import SiteFormsSidebar from '@/components/Sites/SiteFormsSidebar';
@@ -170,6 +172,11 @@ export default {
       if (this.hasPendingChanges) return LocationReadonly;
 
       return Location;
+    },
+    managementComponent() {
+      if (this.hasPendingChanges) return ManagementViewer;
+
+      return Management;
     },
     summaryComponent() {
       if (this.hasPendingChanges) return SummaryReadonly;
