@@ -1,4 +1,5 @@
-import { camelCase, pick } from 'lodash';
+import { camelCase } from 'lodash';
+import moment from 'moment';
 
 import { mapKeysDeep } from '../utils/lodash-extensions';
 import { PlainObject, Place, PlaceEdit } from '../models';
@@ -78,7 +79,6 @@ export default class PlaceEditSerializer extends BaseSerializer<PlaceEdit> {
 				'physicalProvince',
 				'planNumber',
 				'previousAddress',
-				'recognitionDate',
 				'resourceType',
 				'rollNumber',
 				'roofCondition',
@@ -97,6 +97,14 @@ export default class PlaceEditSerializer extends BaseSerializer<PlaceEdit> {
 				'yHSThemes',
 				'zoning',
 			]),
+			...this.field('recognitionDate', (placeEdit) => {
+				if (placeEdit.recognitionDate === undefined) return undefined;
+				if (placeEdit.recognitionDate === null) return null;
+
+				return moment(placeEdit.recognitionDate)
+					.add(7, 'hours')
+					.format('YYYY-MM-DD');
+			}),
 			...this.field('contributingResources', (placeEdit) =>
 				this.decodeCommaDelimitedArray(placeEdit.contributingResources)
 			),
