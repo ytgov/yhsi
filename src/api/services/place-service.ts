@@ -21,35 +21,15 @@ import {
 	ThemeService,
 	WebLinkService,
 } from './';
+import { Description, PLACE_FIELDS, REGISTER_FIELDS } from '../data';
 import {
-	Description,
-	DESCRIPTION_TYPES,
 	DescriptionTypeEnums,
-	PLACE_FIELDS,
-	REGISTER_FIELDS,
-} from '../data';
-import { GenericEnum, Place, PlainObject, User, UserRoles } from '../models';
+	Place,
+	PlainObject,
+	User,
+	UserRoles,
+} from '../models';
 import { NotFoundError } from '../utils/validation';
-
-function combine(
-	list1: Array<any>,
-	list2: Array<any> | ReadonlyArray<any>,
-	linker: any,
-	linker2: any,
-	value: any,
-	typeText: any = 'typeText'
-): any[] {
-	list1.forEach((item) => {
-		let match = list2.filter((i) => i[linker] == item[linker2]);
-
-		if (match && match[0]) {
-			let add = { [typeText]: match[0][value] };
-			item = Object.assign(item, add);
-		} else item = Object.assign(item, { [typeText]: null });
-	});
-
-	return list1;
-}
 
 // This function can go away when the back-end serves the
 // relationship data as part of the data directly.
@@ -156,6 +136,7 @@ export class PlaceService {
 				);
 				place.contacts = await this.contactService.getFor(id);
 				place.dates = await this.dateService.getFor(id);
+				place.descriptions = await this.getDescriptionsFor(id);
 				place.firstNationAssociations =
 					await this.firstNationAssociationService.getFor(id);
 				place.functionalUses = await this.functionalUseService.getFor(id);
@@ -174,19 +155,10 @@ export class PlaceService {
 				);
 				place.webLinks = await this.webLinkService.getForPlace(id);
 
-				const descriptions = combine(
-					await this.getDescriptionsFor(id),
-					this.getDescriptionTypes(),
-					'value',
-					'type',
-					'text'
-				);
-
 				const photos = await this.photoService.getAllForPlace(id);
 
 				const relationships = {
 					photos: { data: photos },
-					descriptions: { data: descriptions },
 				};
 
 				return { place, relationships };
@@ -337,10 +309,6 @@ export class PlaceService {
 
 	async removeDescription(id: number) {
 		return this.db('Description').where({ id }).delete();
-	}
-
-	getDescriptionTypes(): GenericEnum[] {
-		return DESCRIPTION_TYPES;
 	}
 
 	async doSearch(

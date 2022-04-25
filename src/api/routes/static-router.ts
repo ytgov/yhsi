@@ -2,10 +2,9 @@ import express, { Request, Response } from 'express';
 import { body, check, validationResult } from 'express-validator';
 import { nullIfEmpty } from '../utils/validation';
 import { DB_CONFIG } from '../config';
-import { PlaceService, StaticService } from '../services';
+import { StaticService } from '../services';
 
 const staticService = new StaticService(DB_CONFIG);
-const placeService = new PlaceService(DB_CONFIG);
 export const staticRouter = express.Router();
 
 staticRouter.get('/community', async (req: Request, res: Response) => {
@@ -25,11 +24,6 @@ staticRouter.get(
 		return res.json({ data: list });
 	}
 );
-
-staticRouter.get('/description-type', async (req: Request, res: Response) => {
-	let list = await placeService.getDescriptionTypes();
-	return res.json({ data: list });
-});
 
 staticRouter.get('/original-media', async (req: Request, res: Response) => {
 	let list = await staticService.getOriginalMedias();

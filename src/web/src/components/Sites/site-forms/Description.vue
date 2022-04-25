@@ -12,7 +12,7 @@
     </v-card-title>
     <v-card-text tag="section">
       <DescriptionsEditor
-        v-model="descriptions"
+        v-model="place.descriptions"
         :place-id="placeId"
       />
     </v-card-text>
@@ -44,22 +44,19 @@ export default {
       required: true,
     },
   },
-  data: () => ({
-    descriptions: [],
-  }),
+  data: () => ({ place: {} }),
   mounted() {
     axios
       .get(`${PLACE_URL}/${this.placeId}`)
       .then((resp) => {
-        this.fields = resp.data.data;
-        this.descriptions = resp.data.relationships.descriptions.data;
+        this.place = resp.data.data;
       })
       .catch((error) => console.error(error));
   },
   methods: {
     saveChanges() {
       let body = {
-        descriptions: this.descriptions,
+        descriptions: this.place.descriptions,
       };
 
       axios

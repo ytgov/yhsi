@@ -4,15 +4,13 @@ v-card.default
 		| Descriptions
 	v-card-text(tag="form")
 		div(
-			v-for="(item, i) in descriptions",
+			v-for="(description, i) in descriptions",
 			:key="`description-${i + 1}`"
 		)
 			v-row
 				v-col(cols="6")
-					v-select(
-						v-model="item.type",
-						:items="typeOptions"
-						label="Decription type"
+					DescriptionTypeSelect(
+						v-model="description.type"
 						dense
 						outlined
 						background-color="white"
@@ -30,7 +28,7 @@ v-card.default
 			v-row
 				v-col(cols="10")
 					v-textarea(
-						v-model="item.descriptionText"
+						v-model="description.descriptionText"
 						label
 						dense
 						outlined
@@ -49,12 +47,11 @@ v-card.default
 </template>
 
 <script>
-import axios from 'axios';
-import { STATIC_URL } from '@/urls';
+import DescriptionTypeSelect from '@/components/Sites/site-forms/descriptions/DescriptionTypeSelect';
 
 export default {
 	name: 'DescriptionsEditor',
-	components: {},
+	components: { DescriptionTypeSelect },
 	props: {
 		placeId: {
 			type: [Number, String],
@@ -65,18 +62,10 @@ export default {
 			default: () => [],
 		},
 	},
-	data: () => ({
-		typeOptions: [],
-	}),
 	computed: {
 		descriptions() {
 			return this.value;
 		},
-	},
-	mounted() {
-		axios.get(`${STATIC_URL}/description-type`).then((resp) => {
-			this.typeOptions = resp.data.data;
-		});
 	},
 	methods: {
 		addDescription() {

@@ -1,3 +1,5 @@
+import { GenericEnum } from './simple-types';
+
 export enum DescriptionTypeEnums {
 	AdditionalInformation = 1,
 	CharacterDefiningElements = 2,
@@ -16,7 +18,7 @@ export enum DescriptionTypeEnums {
 	YrhpAdditionalInformation = 30,
 }
 
-export const DESCRIPTION_TYPES = [
+export const DESCRIPTION_TYPES: ReadonlyArray<GenericEnum> = Object.freeze([
 	{
 		value: DescriptionTypeEnums.AdditionalInformation,
 		text: 'Additional Information',
@@ -65,4 +67,4 @@ export const DESCRIPTION_TYPES = [
 		value: DescriptionTypeEnums.YrhpAdditionalInformation,
 		text: 'YRHP Additional Information',
 	},
-];
+]);
