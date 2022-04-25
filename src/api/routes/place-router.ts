@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import {
 	body,
 	check,
@@ -7,14 +7,13 @@ import {
 	validationResult,
 	matchedData,
 } from 'express-validator';
-import { pick } from 'lodash';
 
 import { DB_CONFIG } from '../config';
 import { PlaceService } from '../services';
 import { Place, Description } from '../data';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
-import { Contact, RevisionLog, User, UserRoles, WebLink } from '../models';
+import { UserRoles } from '../models';
 import PlacesController from '../controllers/places-controller';
 
 const placeService = new PlaceService(DB_CONFIG);
@@ -126,121 +125,6 @@ placeRouter.post(
 			});
 
 		return res.json({ data: result });
-	}
-);
-
-placeRouter.put(
-	'/:id/management',
-	[param('id').isInt().notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		let { id } = req.params;
-		let { links, contacts, revisionLogs } = req.body;
-		let updater = req.body;
-
-		delete updater.links;
-		delete updater.contacts;
-		delete updater.revisionLogs;
-
-		await placeService.updatePlace(parseInt(id), updater);
-
-		let oldLinks = await placeService.getWebLinksFor(parseInt(id));
-
-		for (let on of oldLinks) {
-			let match = links.filter(
-				(n: WebLink) => n.type == on.type && n.address == on.address
-			);
-
-			if (match.length == 0) {
-				await placeService.removeWebLink(on.id);
-			}
-		}
-
-		for (let on of links) {
-			let match = oldLinks.filter(
-				(n: WebLink) => n.type == on.type && n.address == on.address
-			);
-
-			if (match.length == 0) {
-				delete on.id;
-				delete on.typeText;
-				await placeService.addWebLink(on);
-			}
-		}
-
-		let oldLogs = await placeService.getRevisionLogFor(parseInt(id));
-
-		for (let on of oldLogs) {
-			let match = revisionLogs.filter(
-				(n: RevisionLog) =>
-					n.revisionLogType == on.revisionLogType &&
-					n.revisionDate == on.revisionDate &&
-					n.revisedBy == on.revisedBy &&
-					n.details == on.details
-			);
-
-			if (match.length == 0) {
-				await placeService.removeRevisionLog(on.id);
-			}
-		}
-
-		for (let on of revisionLogs) {
-			let match = oldLogs.filter(
-				(n: RevisionLog) =>
-					n.revisionLogType == on.revisionLogType &&
-					n.revisionDate == on.revisionDate &&
-					n.revisedBy == on.revisedBy &&
-					n.details == on.details
-			);
-
-			if (match.length == 0) {
-				delete on.revisionLogTypeText;
-				delete on.id;
-				await placeService.addRevisionLog(on);
-			}
-		}
-
-		let oldContacts = await placeService.getContactsFor(parseInt(id));
-
-		for (let on of oldContacts) {
-			let match = contacts.filter(
-				(n: Contact) =>
-					n.contactType == on.contactType &&
-					n.firstName == on.firstName &&
-					n.lastName == on.lastName &&
-					n.phoneNumber == on.phoneNumber &&
-					n.email == on.email &&
-					n.mailingAddress == on.mailingAddress &&
-					n.description == on.description
-			);
-
-			if (match.length == 0) {
-				await placeService.removeContact(on.id);
-			}
-		}
-
-		for (let on of contacts) {
-			let match = oldContacts.filter(
-				(n: Contact) =>
-					n.contactType == on.contactType &&
-					n.firstName == on.firstName &&
-					n.lastName == on.lastName &&
-					n.phoneNumber == on.phoneNumber &&
-					n.email == on.email &&
-					n.mailingAddress == on.mailingAddress &&
-					n.description == on.description
-			);
-
-			if (match.length == 0) {
-				delete on.id;
-				delete on.contactTypeText;
-				await placeService.addContact(on);
-			}
-		}
-
-		return res.json({
-			messages: [{ variant: 'success', text: 'Site updated' }],
-		});
 	}
 );
 

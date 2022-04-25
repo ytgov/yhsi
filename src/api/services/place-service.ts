@@ -28,16 +28,7 @@ import {
 	PLACE_FIELDS,
 	REGISTER_FIELDS,
 } from '../data';
-import {
-	Contact,
-	GenericEnum,
-	Place,
-	PlainObject,
-	RevisionLog,
-	User,
-	UserRoles,
-	WebLink,
-} from '../models';
+import { GenericEnum, Place, PlainObject, User, UserRoles } from '../models';
 import { NotFoundError } from '../utils/validation';
 
 function combine(
@@ -332,66 +323,6 @@ export class PlaceService {
 		}
 
 		return `${nTSMapSheet}/001`;
-	}
-
-	async getContactsFor(id: number): Promise<Contact[]> {
-		return this.db('Contact')
-			.where({ placeId: id })
-			.select<Contact[]>([
-				'id',
-				'placeId',
-				'firstName',
-				'lastName',
-				'phoneNumber',
-				'email',
-				'mailingAddress',
-				'description',
-				'contactType',
-			]);
-	}
-
-	async addContact(name: Contact) {
-		return this.db('Contact').insert(name);
-	}
-
-	async removeContact(id: number) {
-		return this.db('Contact').where({ id }).delete();
-	}
-
-	async getRevisionLogFor(id: number): Promise<RevisionLog[]> {
-		return this.db('RevisionLog')
-			.where({ placeId: id })
-			.select<RevisionLog[]>([
-				'id',
-				'placeId',
-				'revisionLogType',
-				'revisionDate',
-				'revisedBy',
-				'details',
-			])
-			.orderBy('revisionDate');
-	}
-
-	async addRevisionLog(name: RevisionLog) {
-		return this.db('RevisionLog').insert(name);
-	}
-
-	async removeRevisionLog(id: number) {
-		return this.db('RevisionLog').where({ id }).delete();
-	}
-
-	async getWebLinksFor(id: number): Promise<WebLink[]> {
-		return this.db('WebLink')
-			.where({ placeId: id })
-			.select<WebLink[]>(['id', 'placeId', 'type', 'address']);
-	}
-
-	async addWebLink(name: WebLink) {
-		return this.db('WebLink').insert(name);
-	}
-
-	async removeWebLink(id: number) {
-		return this.db('WebLink').where({ id }).delete();
 	}
 
 	async getDescriptionsFor(id: number): Promise<Description[]> {
