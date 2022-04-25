@@ -30,8 +30,8 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { PLACE_URL } from '@/urls';
+import { mapActions, mapGetters } from 'vuex';
+import { pick } from 'lodash';
 
 import DescriptionsEditor from '@/components/Sites/site-forms/descriptions/DescriptionsEditor';
 
@@ -44,29 +44,19 @@ export default {
       required: true,
     },
   },
-  data: () => ({ place: {} }),
-  mounted() {
-    axios
-      .get(`${PLACE_URL}/${this.placeId}`)
-      .then((resp) => {
-        this.place = resp.data.data;
-      })
-      .catch((error) => console.error(error));
+  computed: {
+    ...mapGetters({
+      place: 'places/place',
+    }),
   },
   methods: {
+    ...mapActions({
+      savePlace: 'places/save',
+    }),
     saveChanges() {
-      let body = {
-        descriptions: this.place.descriptions,
-      };
+      const data = pick(this.place, 'descriptions');
 
-      axios
-        .put(`${PLACE_URL}/${this.placeId}/description`, body)
-        .then((resp) => {
-          this.$emit('showAPIMessages', resp.data);
-        })
-        .catch((err) => {
-          this.$emit('showError', err);
-        });
+      return this.savePlace(data);
     },
   },
 };

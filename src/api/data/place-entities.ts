@@ -78,10 +78,3 @@ export const REGISTER_FIELDS = [
 	'community.name as communityName',
 	'designations',
 ];
-
-export class Description {
-	id!: number;
-	placeId!: number;
-	descriptionText!: string;
-	type!: number;
-}

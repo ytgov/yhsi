@@ -18,7 +18,6 @@ import {
 	FnAssociation,
 	FirstNationName,
 	Photo,
-	Description,
 	YtPlace,
 } from '../data';
 import { ReturnValidationErrors } from '../middleware';

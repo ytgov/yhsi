@@ -7,6 +7,7 @@ import {
 	ConstructionPeriodService,
 	ContactService,
 	DateService,
+	DescriptionService,
 	FirstNationAssociationService,
 	FunctionalUseService,
 	HistoricalPatternService,
@@ -21,7 +22,7 @@ import {
 	ThemeService,
 	WebLinkService,
 } from './';
-import { Description, PLACE_FIELDS, REGISTER_FIELDS } from '../data';
+import { PLACE_FIELDS, REGISTER_FIELDS } from '../data';
 import {
 	DescriptionTypeEnums,
 	Place,
@@ -55,6 +56,7 @@ export class PlaceService {
 	private constructionPeriodService: ConstructionPeriodService;
 	private contactService: ContactService;
 	private dateService: DateService;
+	private descriptionService: DescriptionService;
 	private firstNationAssociationService: FirstNationAssociationService;
 	private functionalUseService: FunctionalUseService;
 	private historicalPatternService: HistoricalPatternService;
@@ -74,6 +76,7 @@ export class PlaceService {
 		this.constructionPeriodService = new ConstructionPeriodService(config);
 		this.contactService = new ContactService(config);
 		this.dateService = new DateService(config);
+		this.descriptionService = new DescriptionService(config);
 		this.firstNationAssociationService = new FirstNationAssociationService(
 			config
 		);
@@ -136,7 +139,7 @@ export class PlaceService {
 				);
 				place.contacts = await this.contactService.getFor(id);
 				place.dates = await this.dateService.getFor(id);
-				place.descriptions = await this.getDescriptionsFor(id);
+				place.descriptions = await this.descriptionService.getForPlace(id);
 				place.firstNationAssociations =
 					await this.firstNationAssociationService.getFor(id);
 				place.functionalUses = await this.functionalUseService.getFor(id);
@@ -213,6 +216,9 @@ export class PlaceService {
 			}
 			if (Object.prototype.hasOwnProperty.call(attrs, 'dates')) {
 				await this.dateService.upsertFor(id, attrs['dates']);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'descriptions')) {
+				await this.descriptionService.upsertForPlace(id, attrs['descriptions']);
 			}
 			if (
 				Object.prototype.hasOwnProperty.call(attrs, 'firstNationAssociations')
@@ -295,20 +301,6 @@ export class PlaceService {
 		}
 
 		return `${nTSMapSheet}/001`;
-	}
-
-	async getDescriptionsFor(id: number): Promise<Description[]> {
-		return this.db('Description')
-			.where({ placeId: id })
-			.select<Description[]>(['id', 'placeId', 'descriptionText', 'type']);
-	}
-
-	async addDescription(name: Description) {
-		return this.db('Description').insert(name);
-	}
-
-	async removeDescription(id: number) {
-		return this.db('Description').where({ id }).delete();
 	}
 
 	async doSearch(
