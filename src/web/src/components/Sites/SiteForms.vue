@@ -45,7 +45,7 @@
       <div>
         <template v-if="loading">
           <v-skeleton-loader
-            v-for="n in 8"
+            v-for="n in 9"
             :key="n"
             type="card"
           />
@@ -87,8 +87,11 @@
             id="management"
             :place-id="id"
           />
+          <Description
+            id="description"
+            :place-id="id"
+          />
         </template>
-        <Description id="description" />
       </div>
     </div>
   </div>
