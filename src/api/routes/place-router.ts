@@ -10,10 +10,9 @@ import {
 
 import { DB_CONFIG } from '../config';
 import { PlaceService } from '../services';
-import { Place } from '../data';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
-import { UserRoles } from '../models';
+import { Place, UserRoles } from '../models';
 import PlacesController from '../controllers/places-controller';
 
 const placeService = new PlaceService(DB_CONFIG);
