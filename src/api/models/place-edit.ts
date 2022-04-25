@@ -185,7 +185,7 @@ export class PlaceEdit {
 		previousOwnerships: 'previousOwnershipJSON',
 		revisionLogs: 'revisionLogJSON',
 		themes: 'themeJSON',
-		webLink: 'webLinkJSON',
+		webLinks: 'webLinkJSON',
 	});
 
 	private commaDelimitedArrayColumns = Object.freeze([
