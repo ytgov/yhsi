@@ -42,22 +42,23 @@ v-card(:loading="loading")
 				)
 			template(#item.actions="{ item }")
 				template(v-if="hasChanges(item.key)")
-					v-btn(
-						color="success"
-						title="Accept"
-						icon,
-						:input-value="acceptedChanges[item.key]"
-						@click="acceptChange(item.key)"
-					)
-						v-icon mdi-check
-					v-btn.ml-4(
-						color="warning"
-						title="Reject"
-						icon,
-						:input-value="rejectedChanges[item.key]"
-						@click="rejectChange(item.key)"
-					)
-						v-icon mdi-close
+					.d-flex
+						v-btn(
+							color="success"
+							title="Accept"
+							icon,
+							:input-value="acceptedChanges[item.key]"
+							@click="acceptChange(item.key)"
+						)
+							v-icon mdi-check
+						v-btn.ml-4(
+							color="warning"
+							title="Reject"
+							icon,
+							:input-value="rejectedChanges[item.key]"
+							@click="rejectChange(item.key)"
+						)
+							v-icon mdi-close
 		v-row
 			v-spacer
 			v-col(cols="2")
