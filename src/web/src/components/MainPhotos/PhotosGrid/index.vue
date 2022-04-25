@@ -1,11 +1,45 @@
 <template>
-
   <div>
-    <v-app-bar color="primary" flat dark>
-      <v-toolbar-title class="mr-2"> Photos {{this.filterText}} {{this.photoCountText}}</v-toolbar-title>
+    <!-- <v-row>
+      <v-col cols="6" class="d-flex">
+        <h1>Photos {{this.filterText}} {{this.photoCountText}}</h1>
+        <v-menu transition="slide-y-transition" bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn class="black--text ml-4" v-bind="attrs" v-on="on">
+            <v-icon>mdi-swap-vertical</v-icon>
+            Sort
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item-group v-model="selectedSorter" color="primary">
+            <v-list-item v-for="(item, i) in sortOptions" :key="i" link>
+              <v-list-item-title>{{ item.name }}</v-list-item-title>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-menu>
+      </v-col>
+      <v-spacer></v-spacer>
+      <v-col cols="auto" class="d-flex">
+        <v-btn class="black--text mx-1" @click="handleClick('add')">
+          <v-icon class="mr-1">mdi-plus</v-icon>
+          Add Photo
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <Breadcrumbs />
+      </v-col>
+      
+    </v-row> -->
+
+
+    <v-app-bar color="white" flat dark>
+      <v-toolbar-title class="black--text mr-2"> Photos {{this.filterText}} {{this.photoCountText}}</v-toolbar-title>
       <v-menu transition="slide-y-transition" bottom>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn color="primary" dark v-bind="attrs" v-on="on">
+          <v-btn class="black--text" light v-bind="attrs" v-on="on">
             <v-icon>mdi-swap-vertical</v-icon>
             Sort
           </v-btn>
@@ -20,7 +54,7 @@
       </v-menu>
       <v-spacer></v-spacer>
       <!--<Search :data="photos" />-->
-      <v-btn color="primary" @click="handleClick('add')">
+      <v-btn class="black--text" light @click="handleClick('add')">
         <v-icon>mdi-plus</v-icon>
         <div>Add Photo</div>
       </v-btn>
@@ -165,7 +199,7 @@
 </template>
 
 <script>
-
+// import Breadcrumbs from "../../Breadcrumbs.vue";
 import axios from "axios";
 //import Search from "../PhotosComponents/Search";
 import QueryMultiSelect from "./QueryMultiSelect";

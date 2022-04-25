@@ -86,6 +86,11 @@
 							<v-list-item-title>Burials</v-list-item-title>
 						</v-list-item>
 						<v-list-item
+							to="/interpretive-sites"
+						>
+							<v-list-item-title>Interpretive Sites</v-list-item-title>
+						</v-list-item>
+						<v-list-item
 							to="/places"
 							v-if="userInRole(UserRoles.PLACE_EDITOR)"
 						>
@@ -151,11 +156,11 @@
 		</v-app-bar>
 
 		<v-main>
-			<v-container fluid :class="`${isSites($route.path, true)}`">
+			<v-container fluid >
 				<v-row>
-					<v-col :class="`${isSites($route.path, false)}`">
+					<v-col >
 						<!-- 
-              <router-view
+              <router-view :class="`${isSites($route.path, false)}`" :class="`${isSites($route.path, true)}`"
                 v-on:showError="showError"
                 v-on:showSuccess="showSuccess"
                 v-on:showAPIMessages="showAPIMessages"

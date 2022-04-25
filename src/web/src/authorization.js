@@ -14,5 +14,5 @@ export const UserRoles = {
     BURIALS_EDITOR: "Burials Editor",
     PEOPLE_EDITOR: "People Editor",
     YRHP_EDITOR: "YRHP Editor",
-    ADVANCED_MAPS: "Advanced Mapping"
+    ADVANCED_MAPS: "Advanced Mapping",
 };

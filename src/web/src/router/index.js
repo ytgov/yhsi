@@ -56,6 +56,12 @@ import Religion from "../components/Administration/LookupTableManagement/Religio
 
 import MapRoutes from "@/modules/map/router";
 
+import InterpretiveSitesIndex from "../components/InterpretiveSites/Grid";
+import InterpretiveSitesGrid from "../components/InterpretiveSites/Grid/Sites";
+import ActionGrid from "../components/InterpretiveSites/Grid/Actions";
+import AssetGrid from "../components/InterpretiveSites/Grid/Assets";
+import InterpretiveSitesForm from "../components/InterpretiveSites/InterpetiveSiteComponents/Form";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -391,6 +397,49 @@ const routes = [
 		component: BurialsForm,
 		props: true,
 		meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
+	},
+	{
+		path: "/interpretive-sites",
+		name: "InterpretiveSitesGrid",
+		component: InterpretiveSitesIndex,
+		meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] },
+		children: [
+			{
+				path: "",
+				name: "InterpretiveSitesGrid",
+				component: InterpretiveSitesGrid
+			},
+			{
+				path: "actions",
+				name: "ActionGrid",
+				component: ActionGrid
+			},
+			{
+				path: "assets",
+				name: "AssetGrid",
+				component: AssetGrid
+			}
+		]
+	},
+	{
+		path: "/interpretive-sites/view/:id",
+		name: "InterpretiveSitesView",
+		component: InterpretiveSitesForm,
+		props: true
+		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
+	},
+	{
+		path: "/interpretive-sites/edit/:id",
+		name: "InterpretiveSitesEdit",
+		component: InterpretiveSitesForm,
+		props: true
+		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
+	},
+	{
+		path: "/interpretive-sites/new",
+		name: "InterpretiveSitesNew",
+		component: InterpretiveSitesForm,
+		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
 	},
 	{
 		path: "/places",
