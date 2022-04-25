@@ -280,10 +280,6 @@ export class PlaceService {
 			});
 	}
 
-	updatePlace(id: number, item: Place): Promise<Place | undefined> {
-		return this.db('place').where({ id }).update(item);
-	}
-
 	async generateIdFor(nTSMapSheet: string): Promise<string> {
 		let maxPlace = await this.db('place')
 			.where({ nTSMapSheet })
