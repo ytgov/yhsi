@@ -16,7 +16,7 @@ const intSiteService = new InterpretiveSiteService();
 intSitesRouter.get(
 	'/',
 	[
-		query('textToMatch').default('').isString(),
+		query('SiteName').default('').isString(),
 		query('sortBy').default('SiteName').isString(),
 		query('sort').default('asc').isString(),
 		query('page').default(0).isInt(), 
@@ -24,13 +24,14 @@ intSitesRouter.get(
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { textToMatch = '', RouteName = '', KMNum = '', MapSheet = '', sortBy, sort } =  req.query;
+		const { SiteName = '', RouteName = '', KMNum = '', MapSheet = '', sortBy, sort } =  req.query;
+		console.log(req.query);
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
 		
 		const data = await intSiteService.doSiteSearch(page, limit, offset, { 
-			textToMatch, RouteName, KMNum, MapSheet,  sortBy, sort
+			SiteName, RouteName, KMNum, MapSheet,  sortBy, sort
 		});
 
 		res.status(200).send(data);
@@ -108,12 +109,12 @@ intSitesRouter.post(
 });
 
 intSitesRouter.post('/pdf', async (req: Request, res: Response) => {
-        const { textToMatch = '', RouteName = '', KMNum = '', MapSheet = '', sortBy = 'Name', 
+        const { SiteName = '', RouteName = '', KMNum = '', MapSheet = '', sortBy = 'SiteName', 
             sort = 'asc',
             page = 0, limit = 0 } =  req.body;
         
         const data = await intSiteService.doSiteSearch(page, limit, 0, { 
-            textToMatch, RouteName, KMNum, MapSheet,  sortBy, sort
+            SiteName, RouteName, KMNum, MapSheet,  sortBy, sort
         });
 		let pdfData = renderFile('./templates/boats/boatGrid.pug', {
 			data: data.body
@@ -128,12 +129,12 @@ intSitesRouter.post('/pdf', async (req: Request, res: Response) => {
 
 intSitesRouter.post('/export', async (req: Request, res: Response) => {
 
-    const { textToMatch = '', RouteName = '', KMNum = '', MapSheet = '', sortBy = 'Name', 
+    const { SiteName = '', RouteName = '', KMNum = '', MapSheet = '', sortBy = 'SiteName', 
         sort = 'asc',
         page = 0, limit = 0 } =  req.body;
     
     const data = await intSiteService.doSiteSearch(page, limit, 0, { 
-        textToMatch, RouteName, KMNum, MapSheet,  sortBy, sort
+        SiteName, RouteName, KMNum, MapSheet,  sortBy, sort
     });
 	const json2csvParser = new Parser();
 

@@ -114,7 +114,7 @@
 </template>
 
 <script>
-import JsonCSV from 'vue-json-csv'
+// import JsonCSV from 'vue-json-csv'
 import Breadcrumbs from "../../Breadcrumbs";
 import PrintButton from "./PrintButton";
 import _ from 'lodash';
@@ -126,7 +126,7 @@ import { YTPLACE_URL } from "../../../urls";
 
 export default {
   name: "placesgrid-index",
-  components: { Breadcrumbs, JsonCSV, PrintButton },
+  components: { Breadcrumbs, PrintButton },
   data: () => ({
     route: "",
     loading: false,
