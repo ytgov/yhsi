@@ -24,7 +24,7 @@ import {
 import {
 	Description,
 	DESCRIPTION_TYPES,
-	DESCRIPTION_TYPE_ENUMS,
+	DescriptionTypeEnums,
 	PLACE_FIELDS,
 	REGISTER_FIELDS,
 } from '../data';
@@ -475,7 +475,7 @@ export class PlaceService {
 						.whereILike('[Description].[DescriptionText]', `%${value}%`)
 						.where(
 							'[Description].[Type]',
-							DESCRIPTION_TYPE_ENUMS.CONSTRUCTION_STYLE
+							DescriptionTypeEnums.ConstructionStyle
 						);
 				},
 				culturalHistoryContains(base: Knex.QueryInterface, value: any) {
@@ -483,7 +483,7 @@ export class PlaceService {
 						.whereILike('[Description].[DescriptionText]', `%${value}%`)
 						.where(
 							'[Description].[Type]',
-							DESCRIPTION_TYPE_ENUMS.CULTURAL_HISTORY
+							DescriptionTypeEnums.CulturalHistory
 						);
 				},
 				includingOwnershipTypes(base: Knex.QueryInterface, value: any) {
