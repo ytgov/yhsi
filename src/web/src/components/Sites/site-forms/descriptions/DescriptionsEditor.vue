@@ -41,7 +41,7 @@ v-card.default
 	v-card-actions
 		v-btn.my-0(
 			color="info"
-			@click="addDescription()"
+			@click="addDescription"
 		)
 			| Add Description
 </template>

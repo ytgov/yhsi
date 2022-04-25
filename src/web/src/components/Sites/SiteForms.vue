@@ -87,7 +87,8 @@
             id="management"
             :place-id="id"
           />
-          <Description
+          <component
+            :is="descriptionComponent"
             id="description"
             :place-id="id"
           />
@@ -106,6 +107,7 @@ import AssociationsSiteFormViewer from '@/components/Sites/site-forms/Associatio
 import DatesAndConditions from '@/components/Sites/site-forms/DatesAndConditions';
 import DatesAndConditionsViewer from '@/components/Sites/site-forms/DatesAndConditionsViewer';
 import Description from '@/components/Sites/site-forms/Description';
+import DescriptionViewer from '@/components/Sites/site-forms/DescriptionViewer';
 import LegalAndZoning from '@/components/Sites/site-forms/LegalAndZoning';
 import LegalAndZoningViewer from '@/components/Sites/site-forms/LegalAndZoningViewer';
 import Location from '@/components/Sites/site-forms/Location';
@@ -128,6 +130,7 @@ export default {
     DatesAndConditions,
     DatesAndConditionsViewer,
     Description,
+    DescriptionViewer,
     LegalAndZoning,
     LegalAndZoningViewer,
     Location,
@@ -165,6 +168,11 @@ export default {
       if (this.hasPendingChanges) return DatesAndConditionsViewer;
 
       return DatesAndConditions;
+    },
+    descriptionComponent() {
+      if (this.hasPendingChanges) return DescriptionViewer;
+
+      return Description;
     },
     legalAndZoningComponent() {
       if (this.hasPendingChanges) return LegalAndZoningViewer;
