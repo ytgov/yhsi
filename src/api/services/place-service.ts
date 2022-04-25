@@ -1,6 +1,6 @@
 import knex, { Knex } from 'knex';
 import moment from 'moment';
-import { get, isEmpty, uniq } from 'lodash';
+import { get, isEmpty, isNull, uniq } from 'lodash';
 
 import {
 	AssociationService,
@@ -173,6 +173,9 @@ export class PlaceService {
 				);
 				place.names = await this.nameService.getFor(id);
 				place.ownerships = await this.ownershipService.getFor(id);
+				place.recognitionDate = isNull(place.recognitionDate)
+					? null
+					: moment(place.recognitionDate).add(7, 'hours').format('YYYY-MM-DD');
 				place.revisionLogs = await this.revisionLogService.getFor(id);
 				place.themes = await this.themeService.getFor(id);
 				place.previousOwnerships = await this.previousOwnershipService.getFor(
@@ -195,9 +198,6 @@ export class PlaceService {
 					descriptions: { data: descriptions },
 				};
 
-				place.recognitionDate = place.recognitionDate
-					? moment(place.recognitionDate).add(7, 'hours').format('YYYY-MM-DD')
-					: '';
 				return { place, relationships };
 			});
 	}
