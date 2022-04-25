@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <h1>Burials</h1>
+    <h1>Interpretive Sites</h1>
     <Breadcrumbs />
     <v-row>
       <v-col cols="6" class="d-flex">
@@ -9,7 +9,7 @@
           prepend-icon="mdi-magnify"
           class="mx-4"
           hide-details
-          label="Search by name"
+          label="Search by site name"
           v-model="search"
           v-on:input="searchChange()"
         ></v-text-field>
@@ -48,19 +48,13 @@
       <v-col cols="auto" class="d-flex">
         <v-btn class="black--text mx-1" @click="addNew">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-          Add Burial
+          Add Site
         </v-btn>
 
-        <v-btn class="black--text mx-1" v-if="loading" :loading="loading">
+        <v-btn class="black--text mx-1">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
         </v-btn>
-        <JsonCSV v-else :data="burialsData">
-          <v-btn class="black--text mx-1" :disabled="burialsData.length == 0">
-            <v-icon class="mr-1"> mdi-export </v-icon>
-            Export
-          </v-btn>
-        </JsonCSV>
 
         <v-btn class="black--text mx-1" @click="downloadPdf" :loading="loadingPdf">
             <v-icon class="mr-1"> mdi-printer </v-icon>
@@ -101,32 +95,28 @@
 </template>
 
 <script>
-import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
 import _ from "lodash";
-import burials from "../../../controllers/burials";
+import interpretiveSites from "../../../controllers/interpretive-sites";
 export default {
   name: "boatsgrid-index",
-  components: { Breadcrumbs, JsonCSV },
+  components: { Breadcrumbs },
   data: () => ({
     route: "",
     loading: false,
-    burials: [],
+    list: [],
     search: "",
     headers: [
-      { text: "LastName", value: "LastName" },
-      { text: "FirstName", value: "FirstName" },
-      { text: "Gender", value: "Gender" },
-      { text: "BirthYear", value: "BirthYear" },
-      { text: "DeathYear", value: "DeathYear" },
-      { text: "Manner", value: "Manner" },
-      { text: "Cause", value: "Cause" },
-      { text: "Cementary", value: "Cemetary" },
-      { text: "OtherCemetaryDesc", value: "OtherCemetaryDesc" },
-      { text: "OriginCity", value: "OriginCity" },
-      { text: "OriginState", value: "OriginState" },
-      { text: "OriginCountry", value: "OriginCountry" },
-      { text: "OtherCountry", value: "OtherCountry" },
+          { text: "SiteName",  value: "SiteName"},
+          { text: "Location Description",  value: "LocationDesc"},
+          { text: "RouteName",  value: "RouteName"},
+          { text: "KMNum",   value: "KMNum"},
+          { text: "MapSheet",  value: "MapSheet"},
+          { text: "Latitude",  value:  "Latitude" },
+          { text: "Longitude",  value: "Longitude"},
+          { text: "EstablishedYear",  value:  "EstablishedYear"},
+          { text: "AdvancedNotification",  value:  "AdvancedNotification"},
+          { text: "NotificationDescription",  value:  "NotificationDesc"},
 
     ],
     //table options
@@ -134,19 +124,16 @@ export default {
     pageCount: 6,
     totalLength: 0,
     options: { itemsPerPage: 50 },
-    // filter by names, birth and death dates, gender, cause and manner of death, cemetery, other location, country of origin
     filterOptions: [
-          { text: "Birth Year", value: "", dataAccess: "BirthYear"},
-          { text: "Birth Month", value: "", dataAccess: "BirthMonth"},
-          { text: "Birth Day", value: "", dataAccess: "BirthDay"},
-          { text: "Death Year", value: "",  dataAccess: "DeathYear"},
-          { text: "Death Month", value: "", dataAccess: "DeathMonth"},
-          { text: "Death Day", value: "", dataAccess:  "DeathDay" },
-          { text: "Gender", value: "", dataAccess: "Gender"},
-          { text: "Cause", value: "", dataAccess:  "Cause"},
-          { text: "Manner", value: "", dataAccess:  "Manner"},
-          { text: "Cemetary", value: "", dataAccess:  "Cemetary"},
-          { text: "Origin Country", value: "", dataAccess:  "OriginCountry"},
+          { text: "Location Description", value: "", dataAccess: "LocationDesc"},
+          { text: "Route Name", value: "", dataAccess: "RouteName"},
+          { text: "KMNum", value: "",  dataAccess: "KMNum"},
+          { text: "MapSheet", value: "", dataAccess: "MapSheet"},
+          { text: "Latitude", value: "", dataAccess:  "Latitude" },
+          { text: "Longitude", value: "", dataAccess: "Longitude"},
+          { text: "Established Year", value: "", dataAccess:  "EstablishedYear"},
+          { text: "Advanced Notification", value: "", dataAccess:  "AdvancedNotification"},
+          { text: "Notification Description", value: "", dataAccess:  "NotificationDesc"},
     ],
     selectedItem: 1,
     items: [
@@ -186,52 +173,55 @@ export default {
         prefilters[x.dataAccess] = x.value;
       })
       ////console.log("TEST",JSON.stringify(prefilters));
-      let data = await burials.get(
+      let data = await interpretiveSites.get(
         page,
         itemsPerPage,
-        textToMatch,
         sortBy[0],
         sortDesc[0] ? "desc" : "asc",
-        prefilters.BirthYear,
-        prefilters.BirthMonth,
-        prefilters.BirthDay,
-        prefilters.DeathYear,
-        prefilters.DeathMonth,
-        prefilters.DeathDay,
-        prefilters.Gender,
-        prefilters.Cause,
-        prefilters.Manner,
-        prefilters.Cemetary,
-        prefilters.OriginCountry
+        textToMatch,//prefilters.SiteName,
+        prefilters.LocationDesc,
+        prefilters.RouteName,
+        prefilters.KMNum,
+        prefilters.MapSheet,
+        prefilters.Latitude,
+        prefilters.Longitude,
+        prefilters.EstablishedYear,
+        prefilters.AdvancedNotification,
+        prefilters.NotificationDesc,
       );
 
      // {"BirthYear":"","BirthMonth":"","BirthDay":"","DeathYear":"","DeathMonth":"","DeathDay":"","Gender":"","Cause":"","Manner":"","Cemetary":"","OriginCountry":""}
-      this.burials = data.body;
+      this.list = data.body;
       this.totalLength = data.count;
-      this.burials.map((x) => {
+      this.list.map((x) => {
         x.crashdate = this.formatDate(x.crashdate);
       });
-      this.burialsData = await burials.getExport(
-        textToMatch,
-        sortBy[0],
-        sortDesc[0] ? "desc" : "asc",
-        prefilters.BirthYear,
-        prefilters.BirthMonth,
-        prefilters.BirthDay,
-        prefilters.DeathYear,
-        prefilters.DeathMonth,
-        prefilters.DeathDay,
-        prefilters.Gender,
-        prefilters.Cause,
-        prefilters.Manner,
-        prefilters.Cemetary,
-        prefilters.OriginCountry
-      );
-      console.log(this.burialsData);
       this.loading = false;
     },
     removeCurrentBurial(){
-      localStorage.currentBurialID = null;
+      localStorage.currentInterpretiveSiteID = null;
+    },
+    async getExport(){
+      let { sortBy, sortDesc } = this.options;
+      let textToMatch = this.search;
+      const prefilters = {};
+      this.filterOptions.map( x => {
+        prefilters[x.dataAccess] = x.value;
+      })
+      this.burialsData = await interpretiveSites.getExport(
+        sortBy[0],
+        sortDesc[0] ? "desc" : "asc",
+        textToMatch,//prefilters.SiteName,
+        prefilters.LocationDesc,
+        prefilters.RouteName,
+        prefilters.KMNum,
+        prefilters.MapSheet,
+        prefilters.Latitude,
+        prefilters.Longitude,
+        prefilters.EstablishedYear,
+        prefilters.AdvancedNotification,
+        prefilters.NotificationDesc,
+      );
     },
     async downloadPdf(){
       this.loadingPdf = true;
@@ -240,21 +230,19 @@ export default {
       this.filterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
       })
-      let res = await burials.getGridPdf(
-        this.search,
+      let res = await interpretiveSites.getGridPdf(
         sortBy[0],
         sortDesc[0] ? "desc" : "asc",
-        prefilters.BirthYear,
-        prefilters.BirthMonth,
-        prefilters.BirthDay,
-        prefilters.DeathYear,
-        prefilters.DeathMonth,
-        prefilters.DeathDay,
-        prefilters.Gender,
-        prefilters.Cause,
-        prefilters.Manner,
-        prefilters.Cemetary,
-        prefilters.OriginCountry
+        this.search,//prefilters.SiteName,
+        prefilters.LocationDesc,
+        prefilters.RouteName,
+        prefilters.KMNum,
+        prefilters.MapSheet,
+        prefilters.Latitude,
+        prefilters.Longitude,
+        prefilters.EstablishedYear,
+        prefilters.AdvancedNotification,
+        prefilters.NotificationDesc,
       );
       let blob = new Blob([res], { type: "application/octetstream" });
       let url = window.URL || window.webkitURL;
@@ -277,7 +265,7 @@ export default {
   },
   computed: {
     filteredData(){
-      return this.burials;
+      return this.list;
     }
   },
   watch: {

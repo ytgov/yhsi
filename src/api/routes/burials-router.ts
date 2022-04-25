@@ -6,6 +6,7 @@ import { param, query } from 'express-validator';
 import { BurialService } from "../services";
 import { renderFile } from "pug";
 import { generatePDF } from "../utils/pdf-generator";
+const { Parser, transforms: { unwind } } = require('json2csv');
 export const burialsRouter = express.Router();
 const db = knex(DB_CONFIG);
 const burialService = new BurialService();
@@ -295,10 +296,44 @@ burialsRouter.post(
 
 
 burialsRouter.post('/pdf', async (req: Request, res: Response) => {
-	let burials = await burialService.getAll();
+	const { 
+		page = 0,
+		limit = 0,
+		textToMatch = '',
+		sortBy = 'LastName',
+		sort = 'asc',
+		BirthYear = '',
+		BirthMonth = '',
+		BirthDay = '',
+		DeathYear = '',
+		DeathMonth = '',
+		DeathDay = '',
+		Gender = '',
+		Cause = '',
+		Manner = '',
+		Cemetary = '',
+		OriginCountry = '' } = req.body;
+
+	const burials = await burialService.doSearch(Number(page), Number(limit), 0,
+		{
+			textToMatch,
+			sortBy,
+			sort,
+			BirthYear,
+			BirthMonth,
+			BirthDay,
+			DeathYear,
+			DeathMonth,
+			DeathDay,
+			Gender,
+			Cause,
+			Manner,
+			Cemetary,
+			OriginCountry
+		});
 
 	let data = renderFile('./templates/burials/burialGrid.pug', {
-		data: burials
+		data: burials.body
 	});
 
 	let pdf = await generatePDF(data, "a3")
@@ -308,8 +343,45 @@ burialsRouter.post('/pdf', async (req: Request, res: Response) => {
 });
 
 burialsRouter.post('/export', async (req: Request, res: Response) => {
-	let burials = await burialService.getAll();
 
-	res.status(200).send(burials);
+	const { 
+		page = 0,
+		limit = 0,
+		textToMatch = '',
+		sortBy = 'LastName',
+		sort = 'asc',
+		BirthYear = '',
+		BirthMonth = '',
+		BirthDay = '',
+		DeathYear = '',
+		DeathMonth = '',
+		DeathDay = '',
+		Gender = '',
+		Cause = '',
+		Manner = '',
+		Cemetary = '',
+		OriginCountry = '' } = req.body;
+	const burials = await burialService.doSearch(Number(page), Number(limit), 0,
+		{
+			textToMatch,
+			sortBy,
+			sort,
+			BirthYear,
+			BirthMonth,
+			BirthDay,
+			DeathYear,
+			DeathMonth,
+			DeathDay,
+			Gender,
+			Cause,
+			Manner,
+			Cemetary,
+			OriginCountry
+		});
+	const json2csvParser = new Parser();
+
+	const csv = json2csvParser.parse(burials.body);
+	res.setHeader("Content-Type", "text/csv");
+	res.attachment('boats.csv').send(csv);
 }
 );

@@ -38,6 +38,7 @@ import {
 	usersExtraRouter,
 	ytPlaceHistoryRouter,
 	ytPlaceRouter,
+	intSitesRouter
 } from './routes';
 
 import * as config from './config';
@@ -108,6 +109,7 @@ app.use('/api/register', registerRouter);
 
 ////console.log("B", boats)
 
+app.use('/api/interpretive-sites', intSitesRouter);
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
 app.use('/api/category-types', RequiresAuthentication, categoryTypesRouter);
 app.use('/api/communities', RequiresAuthentication, communitiesRouter);
@@ -126,15 +128,15 @@ app.use('/api/histories', RequiresAuthentication, historiesRouter);
 app.use('/api/catalogs', RequiresAuthentication, catalogsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
-app.use('/api/photos', photosExtraRouter);
+app.use('/api/photos', RequiresAuthentication, photosExtraRouter);
 app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
 app.use('/api/place-edits', RequiresAuthentication, placeEditsRouter);
 app.use('/api/record-types', RequiresAuthentication, recordTypesRouter);
 app.use('/api/site-category-types', RequiresAuthentication, siteCategoryTypesRouter);
 app.use('/api/site-statuses', RequiresAuthentication, siteStatusesRouter);
-app.use('/api/users', usersExtraRouter);
-app.use('/api/people', peopleRouter);
-app.use('/api/burials', burialsRouter);
+app.use('/api/users',RequiresAuthentication, usersExtraRouter);
+app.use('/api/people', RequiresAuthentication, peopleRouter);
+app.use('/api/burials', RequiresAuthentication, burialsRouter);
 // app.use('/api/extras/photos', RequiresAuthentication, photosExtraRouter);
 // app.use('/api/extras/users', RequiresAuthentication, usersExtraRouter);
 app.use("/api/maps", mapsRouter)

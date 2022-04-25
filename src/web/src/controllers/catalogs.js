@@ -406,6 +406,15 @@ export default {
       // handle error
       console.error(error);
     });
-  }
-
+  },
+  //ROUTES
+  async getRoutes() {
+    return await api.get(`catalogs/route`)
+      .then(res => {
+        return res.data;
+      }).catch(error => {
+        // handle error
+        console.error(error);
+      });
+  },
 } 

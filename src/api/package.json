@@ -20,6 +20,7 @@
     "express-session": "^1.17.1",
     "express-validator": "^6.12.1",
     "helmet": "^5.0.2",
+    "json2csv": "^5.0.7",
     "knex": "^1.0.4",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
