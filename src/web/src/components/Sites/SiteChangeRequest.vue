@@ -102,6 +102,7 @@ import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSele
 import CommunitySelect from '@/components/Sites/site-forms/CommunitySelect';
 import ConditionTypesSelect from '@/components/Sites/site-forms/ConditionTypesSelect';
 import ConstructionPeriodsViewer from '@/components/Sites/site-change-request/ConstructionPeriodsViewer';
+import ContactsViewer from '@/components/Sites/site-change-request/ContactsViewer';
 import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
 import CoordinateDeterminationTypesSelect from '@/components/Sites/site-forms/CoordinateDeterminationTypesSelect';
 import DatesViewer from '@/components/Sites/site-change-request/DatesViewer';
@@ -110,13 +111,18 @@ import FirstNationAssociationsViewer from '@/components/Sites/site-change-reques
 import FunctionalUsesViewer from '@/components/Sites/site-change-request/FunctionalUsesViewer';
 import HistoricalPatternsViewer from '@/components/Sites/site-change-request/HistoricalPatternsViewer';
 import JsonViewer from '@/components/Sites/site-change-request/JsonViewer';
+import JurisdictionTypeSelect from '@/components/Sites/site-forms/management/JurisdictionTypeSelect';
 import NamesViewer from '@/components/Sites/site-change-request/NamesViewer';
+import OwnerConsentTypeSelect from '@/components/Sites/site-forms/management/OwnerConsentTypeSelect';
 import OwnershipsViewer from '@/components/Sites/site-change-request/OwnershipsViewer';
 import PreviousOwnershipsViewer from '@/components/Sites/site-change-request/PreviousOwnershipsViewer';
 import RecordTypesSelect from '@/components/Sites/site-forms/RecordTypesSelect';
+import RevisionLogsViewer from '@/components/Sites/site-change-request/RevisionLogsViewer';
 import SiteCategoryTypesSelect from '@/components/Sites/site-forms/SiteCategoryTypesSelect';
 import SiteStatusTypesSelect from '@/components/Sites/site-forms/SiteStatusTypesSelect';
+import StatuteSelect from '@/components/Sites/site-forms/management/StatuteSelect';
 import ThemesViewer from '@/components/Sites/site-change-request/ThemesViewer';
+import WebLinksViewer from '@/components/Sites/site-change-request/WebLinksViewer';
 
 const FIELD_TYPES = Object.freeze([
 	// Summary Form Fields
@@ -423,6 +429,72 @@ const FIELD_TYPES = Object.freeze([
 		key: 'previousOwnerships',
 		type: PreviousOwnershipsViewer,
 	},
+	// Management form fields
+	{
+		key: 'revisionLogs',
+		type: RevisionLogsViewer,
+	},
+	{
+		key: 'contacts',
+		type: ContactsViewer,
+	},
+	{
+		key: 'webLinks',
+		type: WebLinksViewer,
+	},
+	{
+		key: 'jurisdiction',
+		type: JurisdictionTypeSelect,
+	},
+	{
+		key: 'recognitionDate',
+		type: 'v-text-field',
+		fieldAttrs: { label: 'Recognition Date' },
+	},
+	{
+		key: 'ownerConsent',
+		type: OwnerConsentTypeSelect,
+	},
+	{
+		key: 'isPubliclyAccessible',
+		type: 'v-checkbox',
+		fieldAttrs: { label: 'Publicly Accessible?' },
+	},
+	{
+		key: 'yGBuildingNumber',
+		type: 'v-text-field',
+		fieldAttrs: { label: 'YG Building Number' },
+	},
+	{
+		key: 'yGReserveNumber',
+		type: 'v-text-field',
+		fieldAttrs: { label: 'YG Reserve Number' },
+	},
+	{
+		key: 'cIHBNumber',
+		type: 'v-text-field',
+		fieldAttrs: { label: 'CIHB Number' },
+	},
+	{
+		key: 'fHBRONumber',
+		type: 'v-text-field',
+		fieldAttrs: { label: 'FHBRO Number' },
+	},
+	{
+		key: 'statuteId',
+		type: StatuteSelect,
+		fieldAttrs: {
+			label: 'Statute - Recognition Authority / Recognition Type / Statute',
+		},
+	},
+	{
+		key: 'statute2Id',
+		type: StatuteSelect,
+		fieldAttrs: {
+			label:
+				'Secondary Statute - Recognition Authority / Recognition Type / Statute',
+		},
+	},
 ]);
 
 export default {
@@ -433,6 +505,7 @@ export default {
 		CommunitySelect,
 		ConditionTypesSelect,
 		ConstructionPeriodsViewer,
+		ContactsViewer,
 		ContributingResourceTypesSelect,
 		CoordinateDeterminationTypesSelect,
 		DatesViewer,
@@ -441,13 +514,18 @@ export default {
 		FunctionalUsesViewer,
 		HistoricalPatternsViewer,
 		JsonViewer,
+		JurisdictionTypeSelect,
 		NamesViewer,
+		OwnerConsentTypeSelect,
 		OwnershipsViewer,
 		PreviousOwnershipsViewer,
 		RecordTypesSelect,
+		RevisionLogsViewer,
 		SiteCategoryTypesSelect,
 		SiteStatusTypesSelect,
+		StatuteSelect,
 		ThemesViewer,
+		WebLinksViewer,
 	},
 	props: {
 		placeEditId: {

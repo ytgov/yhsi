@@ -58,7 +58,7 @@ v-card.default(tag="section")
 import RevisionLogTypeSelect from '@/components/Sites/site-forms/management/RevisionLogTypeSelect';
 
 export default {
-	name: 'RevisionLogViewer',
+	name: 'RevisionLogsViewer',
 	components: { RevisionLogTypeSelect },
 	props: {
 		value: {

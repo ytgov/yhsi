@@ -68,7 +68,7 @@ import { mapGetters } from 'vuex';
 import RevisionLogTypeSelect from '@/components/Sites/site-forms/management/RevisionLogTypeSelect';
 
 export default {
-  name: 'RevisionLogEditor',
+  name: 'RevisionLogsEditor',
   components: { RevisionLogTypeSelect },
   props: {
     value: {
