@@ -451,7 +451,6 @@ export default {
     },
     siteRoute(){
       if(!this.$route.path.includes("actions") && !this.$route.path.includes("assets")) {
-        //this.route = "sites"
         return true;
       }
       return false

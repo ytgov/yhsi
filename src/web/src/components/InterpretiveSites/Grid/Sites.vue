@@ -73,8 +73,8 @@ export default {
   methods: {
     handleClick(value) {
       this.$router.push({
-        name: "siteView",
-        params: { id: value.Id },
+        name: "InterpretiveSitesView",
+        params: { id: value.SiteID },
       });
     },
     async getDataFromApi() {
@@ -105,6 +105,7 @@ export default {
         prefilters.NotificationDesc,
       );
       this.list = data.body;
+      console.log(data);
       this.totalLength = data.count;
 
 

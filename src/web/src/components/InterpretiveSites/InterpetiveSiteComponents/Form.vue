@@ -1,11 +1,11 @@
 <template>
       <v-container fluid>
-        <h3>Burial</h3>
+        <h3>Interpretvie Site Information</h3>
         <Breadcrumbs/>
         <v-row>
           <v-col cols="12" class="d-flex">
             <div class="d-flex mb-2">
-              <h1 class="mt-auto mb-auto ">{{fields.FirstName}} {{fields.LastName}}</h1>
+              <h1 class="mt-auto mb-auto ">{{fields.SiteName}}</h1>
             </div>
             <v-spacer></v-spacer>
             <!-- buttons for the view state -->
@@ -28,169 +28,69 @@
                 </v-btn>
           </v-col>
         </v-row>
-
-
         <v-row>
           <v-col cols="12">
             <v-expansion-panels v-model="panel" multiple>
               <v-expansion-panel>
                 <v-expansion-panel-header>
-                  <h2>Information</h2>
+                  <h2>Site Information</h2>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                     <v-row>
                       <v-col cols="8">
                         <v-row>
                           <v-col cols="6">
-                            <h4>Name</h4>
                               <v-text-field
-                                name="FirstName"
-                                label="First Name"
+                                name="SiteName"
+                                label="Site Name"
                                 outlined dense
-                                v-model="fields.FirstName"
+                                v-model="fields.SiteName"
                                 :readonly="isView"
                               ></v-text-field>
                               <v-text-field
-                                name="LastName"
-                                label="Last Name"
+                                name="EstablishedYear"
+                                label="Established Year"
                                 outlined dense
-                                v-model="fields.LastName"
+                                v-model="fields.EstablishedYear"
                                 :readonly="isView"
                               ></v-text-field>
+                               <v-text-field
+                                name="MaintainedBy"
+                                label="Maintained"
+                                outlined dense
+                                v-model="fields.SiteName"
+                                :readonly="isView"
+                              ></v-text-field>
+                               
                           </v-col>
                           <v-col cols="6">
-                            <h4>Origin</h4>
-                           
-                            <v-autocomplete
-                              v-model="fields.OriginCountry"
-                              :items="getCountries"
-                              outlined dense
-                              :readonly="isView"
-                              item-text="label"
-                              item-value="label"
-                              label="Origin Country"
-                            >
-                            <template v-slot:selection="data">
-                              <v-img
-                                  :src="`https://flagcdn.com/w20/${data.item.code.toLowerCase()}.png`"
-                                  :lazy-src="`https://flagcdn.com/w20/${data.item.code.toLowerCase()}.png`"
-                                  class="mr-2"
-                                  max-width="20"
-                                ></v-img>
-                                {{ data.item.label }}
-                            </template>
-                            <template v-slot:item="data">
-                                  <v-img
-                                  :src="`https://flagcdn.com/w20/${data.item.code.toLowerCase()}.png`"
-                                  :lazy-src="`https://flagcdn.com/w20/${data.item.code.toLowerCase()}.png`"
-                                  class="mr-2"
-                                  max-width="20"
-                                ></v-img>
-                                <v-list-item-content>
-                                  <v-list-item-title v-html="data.item.label"></v-list-item-title>
-                                </v-list-item-content>
-                            </template>
-                              
-                            </v-autocomplete>
-                              
                               <v-text-field
-                                name="Province"
+                                name="NotificationSigns"
                                 outlined dense
-                                label="Province/State of Origin"
-                                v-model="fields.OriginState"
+                                label="Advanced notification signs"
+                                v-model="fields.AdvancedNotification"
                                 :readonly="isView"
                               ></v-text-field>
-                              <v-text-field
-                                name="City"
+                              <v-textarea
+                                name="NotificationDesc"
                                 outlined dense
-                                label="City of Origin"
+                                label="Advanced Notification Description"
                                 :readonly="isView"
-                                v-model="fields.OriginCity"
-                              ></v-text-field>
+                                v-model="fields.NotificationDesc"
+                              ></v-textarea>
                           </v-col>
-                        </v-row>
-                        <v-row>
-                          <v-col cols="6">
-                              <h4>Birth / Death</h4>
-                                <v-row>
-                                    <v-col cols="4">
-                                        <v-text-field outlined dense
-                                          name="Birth Day"
-                                          label="Birth Day"
-                                          v-model="fields.BirthDay"
-                                          :readonly="isView"
-                                        ></v-text-field>
-                                        
-                                    </v-col>
-                                    <v-col cols="4">
-                                        <v-text-field outlined dense
-                                          name="Birth Month"
-                                          label="Birth Month"
-                                          v-model="fields.BirthMonth"
-                                          :readonly="isView"
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="4">
-                                        <v-text-field outlined dense
-                                          name="Birth Year"
-                                          label="Birth Year"
-                                          v-model="fields.BirthYear"
-                                          :readonly="isView"
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row>
-                                    <v-col cols="4">
-                                        <v-text-field outlined dense
-                                          name="Death Day"
-                                          label="Death Day"
-                                          v-model="fields.DeathDay"
-                                          :readonly="isView"
-                                        ></v-text-field>
-                                        
-                                    </v-col>
-                                    <v-col cols="4">
-                                        <v-text-field outlined dense
-                                          name="Death Month"
-                                          label="Death Month"
-                                          v-model="fields.DeathMonth"
-                                          :readonly="isView"
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="4">
-                                        <v-text-field outlined dense
-                                          name="Death Year"
-                                          label="Death Year"
-                                          v-model="fields.DeathYear"
-                                          :readonly="isView"
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                          
-                            </v-col>
-                            <v-col cols="6">
-                              <h4>Age</h4>
-                                <v-text-field
-                                  name="Age"
-                                  outlined dense
-                                  label="Age"
-                                  v-model="fields.Age"
-                                  :readonly="isView"
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="4"></v-col>
                         </v-row>
                       </v-col>
                         <v-col cols="4">
                           <h4>Photos</h4>
-                          <Photos 
+                          <!-- <Photos 
                           v-if="true" 
                           :showDefault="isNew" 
                           :photoType="'burial'"
-                          :itemId="currentBurialID"
+                          :itemId="currentIntSiteID"
                           @updateSelectedImage="selectedImageChanged" 
                           :selectedImage="selectedImage" 
-                          @loadingPhotosChange="loadingPhotosChange"/>   
+                          @loadingPhotosChange="loadingPhotosChange"/>    -->
                         </v-col>
                     </v-row>
 
@@ -198,241 +98,68 @@
               </v-expansion-panel>
               <v-expansion-panel>
                 <v-expansion-panel-header>
-                  <h2>History</h2>
+                  <h2>Location</h2>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                    <v-row>
-                      <v-col cols="3">
-                        <v-row>
-                          <v-col cols="12" class="d-flex flex-row align-center">
-                            <h4 class="mt-5 mb-5">Religion</h4>
-                          </v-col>
-                        </v-row>
+                      <v-row>
+                          <v-col cols="4">
+                              <v-textarea
+                                name="LocationDesc"
+                                outlined dense
+                                label="Location Description"
+                                :readonly="isView"
+                                v-model="fields.LocationDesc"
+                              ></v-textarea>
 
-                        <v-select
-                          :items="religions"
-                          v-model="fields.Religion"
-                          outlined dense
-                          item-value="ReligionLUpID"
-                          item-text="Religion"
-                          label="Religion"
-                          :readonly="isView"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="3">
-                        <v-row>
-                          <v-col cols="12" class="d-flex flex-row align-center">
-                            <h4 class="mt-5 mb-5">Occupations</h4>
-                            <OccupationDialog class="ml-auto mr-1" v-if="!isView" :mode="'new'" :data="filteredOccupations" @newOccupation="newOccupation"/>
-                          </v-col>
-                        </v-row>
-                        <v-row>
-                          <v-col cols="12">
-                          <v-card v-if="fields.Occupations">
-                            <v-list class="pa-0" >
-                                <template v-for="(item, index) in fields.Occupations">
-                                    <v-list-item :key="`nl-${index}`" v-if="!item.deleted">                            
-                                        <v-list-item-content>
-                                            <v-list-item-title >{{item.Occupation}}</v-list-item-title>   
-                                        </v-list-item-content>
-                                        <v-list-item-action class="d-flex flex-row">
-                                            <OccupationDialog v-if="!isView" :mode="'edit'" :data="filteredOccupations" @editOccupation="editOccupation" :occupationToEdit="{ index, Occupation: item}"/>
-                                            <v-tooltip bottom v-if="!isView">
-                                                <template v-slot:activator="{ on, attrs }">
-                                                        <v-btn 
-                                                        v-bind="attrs"
-                                                        v-on="on"
-                                                        icon class="grey--text text--darken-2"  @click="deleteOccupation(index)">
-                                                            <v-icon
-                                                            small
-                                                            >mdi-trash-can</v-icon>  
-                                                        </v-btn>
-                                                </template>
-                                                <span>Delete</span>
-                                            </v-tooltip> 
-                                        </v-list-item-action>
-                                    </v-list-item>
-                                    <v-divider :key="`divider-${index}`"></v-divider>
-                                </template>
-                            </v-list>
-                        </v-card>
-                          </v-col>
-                        </v-row>
+                              <v-select
+                                :items="routes"
+                                v-model="fields.RouteName"
+                                item-text="RouteName"
+                                outlined dense
+                                label="Route Name"
+                                :readonly="isView"
+                              ></v-select>
 
-                      </v-col>
-                      <v-col cols="6">
-                        <v-row>
-                          <v-col cols="12" class="d-flex flex-row align-center">
-                            <h4 class="mt-5 mb-5">Memberships</h4>
-                            <MembershipDialog class="ml-auto mr-1" v-if="!isView" :mode="'new'" :data="filteredMemberships" @newMembership="newMembership"/>
+                              <v-text-field outlined dense
+                                name="KMNumber"
+                                label="KMNumber"
+                                v-model="fields.KMNum"
+                                :readonly="isView"
+                              ></v-text-field>
+
+                              <v-select
+                                :items="['test1', 'test2']"
+                                v-model="fields.MapSheet"
+                                outlined dense
+                                label="MapSheet"
+                                :readonly="isView"
+                              ></v-select>
+                              
+                          </v-col>
+                          <v-col cols="8">
+                              MapComponent
+                              <!-- item-value="ReligionLUpID"
+                                item-text="Religion" -->
+                              
                           </v-col>
                         </v-row>
-                          <v-data-table
-                          :headers="membershipHeaders"
-                          :items="fields.Memberships"
-                          :items-per-page="5"
-                          class="elevation-0"
-                        >
-                          <template v-slot:item="{ item, index }">
-                            <tr v-if="item.deleted != true">
-                                <td class="parent-row">{{ item.Membership }}</td>
-                                <td class="child-row">{{ item.Chapter }}</td>
-                                <td class="child-row">{{ item.Notes }}</td>
-                                <td class="child-row">
-                                  <div class="d-flex flex-row">
-                                    <MembershipDialog v-if="!isView" :mode="'edit'" :data="filteredMemberships.concat(item)" @editMembership="editMembership" :membershipToEdit="{ index, Membership: item}"/>
-                                    <v-tooltip bottom v-if="!isView">
-                                        <template v-slot:activator="{ on, attrs }">
-                                                <v-btn 
-                                                v-bind="attrs"
-                                                v-on="on"
-                                                icon class="grey--text text--darken-2"  @click="deleteMembership(index)">
-                                                    <v-icon
-                                                    small
-                                                    >mdi-trash-can</v-icon>  
-                                                </v-btn>
-                                        </template>
-                                        <span>Delete</span>
-                                    </v-tooltip>
-                                  </div>
-                                </td>   
-                            </tr>            
-                          </template>   
-                        </v-data-table>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="6">
-                        <h4 class="mt-5 mb-5">Person Notes</h4>
-                        <v-textarea
-                          label="Notes"
-                          name="Notes"
-                          v-model="fields.PersonNotes"
-                          outlined dense
-                          :readonly="isView"
-                        ></v-textarea>
-                      </v-col>
-                      <v-col cols="6">
-                        <h4 class="mt-5 mb-5">Gender</h4>
-                        <v-radio-group v-model="fields.Gender" row :readonly="isView">
-                          <v-radio
-                            label="Male"
-                            value="Male"
-                          ></v-radio>
-                          <v-radio
-                            label="Female"
-                            value="Female"
-                          ></v-radio>
-                          <v-radio
-                            label="Other"
-                            value="Other"
-                          ></v-radio>
-                        </v-radio-group>
-                      </v-col>
-                    </v-row>
                 </v-expansion-panel-content>
               </v-expansion-panel>
-              <v-expansion-panel>
+              <v-expansion-panel v-if="!isNew">
                 <v-expansion-panel-header>
-                  <h2>Death</h2>
+                  <h2>Assets</h2>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-row>
-                      <v-col cols="3">
-                        <v-row>
-                          <v-col cols="12" class="d-flex flex-row align-center">
-                            <h4 class="mt-5 mb-5">Circumstance of Death</h4>
-                          </v-col>
-                        </v-row>
-                        <v-select
-                          :items="['Natural', 'Accidental', 'Murder', 'Unknown']"
-                          v-model="fields.Manner"
-                          outlined dense
-                          label="Manner"
-                          :readonly="isView"
-                        ></v-select>
-
-                        <v-select
-                          :items="causes"
-                          v-model="fields.Cause"
-                          outlined dense
-                          return-object
-                          item-text="Cause"
-                          label="Cause"
-                          :readonly="isView"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="3">
-
-                        <v-row>
-                          <v-col cols="12" class="d-flex flex-row align-center">
-                            <h4 class="mt-5 mb-5">Funeral and Obituaries</h4>
-                          </v-col>
-                        </v-row>
-
-                        <v-text-field outlined dense
-                          name="FunneralPaidBy"
-                          v-model="fields.FuneralPaidBy"
-                          label="Funneral paid by"
-                          :readonly="isView"
-                        ></v-text-field>
-
-                        <v-row>
-                          <v-col cols="12" class="d-flex flex-row align-center">
-                            <h4 class="mt-5 mb-5">Sources</h4>
-                            <SourceDialog class="ml-auto mr-1" @newSource="newSource" :mode="'new'" />
-                          </v-col>
-                        </v-row>
-
-                        <v-row>
-                          <v-col cols="12">
-                             <v-card v-if="fields.Sources">
-                            <v-list class="pa-0" >
-                                <template v-for="(item, index) in fields.Sources">
-                                    <v-list-item :key="`nl-${index}`" v-if="item.deleted == undefined">
-                                        <v-list-item-content>
-                                            <v-list-item-title >{{item.Source}}</v-list-item-title>   
-                                        </v-list-item-content>
-                                        <v-list-item-action class="d-flex flex-row">
-                                            <SourceDialog v-if="!isView" :mode="'edit'"  @editSource="editSource" :sourceToEdit="{ index, Source: item}"/>
-                                            <v-tooltip bottom v-if="!isView">
-                                                <template v-slot:activator="{ on, attrs }">
-                                                        <v-btn 
-                                                        v-bind="attrs"
-                                                        v-on="on"
-                                                        icon class="grey--text text--darken-2"  @click="deleteSource(index)">
-                                                            <v-icon
-                                                            small
-                                                            >mdi-trash-can</v-icon>  
-                                                        </v-btn>
-                                                </template>
-                                                <span>Delete</span>
-                                            </v-tooltip> 
-                                        </v-list-item-action>
-                                    </v-list-item>
-                                    <v-divider :key="`divider-${index}`"></v-divider>
-                                </template>
-                            </v-list>
-                        </v-card>
-                          </v-col>
-                        </v-row>
-
-                      </v-col>
-                      <v-col cols="6">
-                        <v-row>
-                          <v-col cols="12" class="d-flex flex-row align-center">
-                            <h4 class="mt-5 mb-5">Next of Kin</h4>
-                            <KinDialog class="ml-auto mr-1" v-if="!isView" :mode="'new'" :data="relationships" :BurialID="currentBurialID" @newKinship="newKinship" />
-                          </v-col>
-                        </v-row>
-                          <v-data-table
-                            :headers="kinshipHeaders"
-                            :items="fields.Kinships"
+                      <v-col cols="12">
+                        <v-data-table
+                            :headers="assetHeaders"
+                            :items="fields.assets"
                             :items-per-page="5"
                             class="elevation-0"
                             
                           >
-                            <template v-slot:item="{ item, index }">
+                            <!-- <template v-slot:item="{ item, index }">
                             <tr v-if="item.deleted != true">
                                 <td class="parent-row">{{ item.Name }}</td>
                                 <td class="child-row">{{ item.Location }}</td>
@@ -457,99 +184,41 @@
                                   </div>
                                 </td>   
                             </tr>            
-                          </template>  
+                          </template>   -->
                           </v-data-table>
                       </v-col>
                     </v-row>
                   </v-expansion-panel-content>
               </v-expansion-panel>
-              <v-expansion-panel>
+              <v-expansion-panel v-if="!isNew">
                 <v-expansion-panel-header>
-                  <h2>Burial</h2>
+                  <h2>Actions</h2>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                    <v-row>
-                        <v-col cols="4">
-                          <v-row>
-                            <v-col cols="6" class="d-flex flex-row align-center">
-                              <h4 class="mt-5 mb-5">Buried in Yukon?</h4>
-                            </v-col>
-                            <v-col cols="6" >
-                              <v-radio-group
-                                v-model="fields.BuriedInYukon"
-                                row
-                                :readonly="isView"
-                              >
-                                <v-radio
-                                  label="Yes"
-                                  value="y"
-                                ></v-radio>
-                                <v-radio
-                                  label="No"
-                                  value="n"
-                                ></v-radio>
-                              </v-radio-group>
-                            </v-col>
-                          </v-row>
-                        
-                          <v-text-field
-                            name="DestinationBodyShipped"
-                            label="if No, Destination body shipped"
-                            v-model="fields.DestinationShipped"
-                            outlined dense
-                            :readonly="isView"
-                          ></v-text-field>
-                          <v-text-field
-                            name="YukonBurialLocation"
-                            v-model="fields.BurialLocation"
-                            label="Yukon Burial Location"
-                            outlined dense
-                            :readonly="isView"
-                          ></v-text-field>
-                          <v-text-field
-                            name="Other"
-                            label="if Other, Please specify"
-                            v-model="fields.Other"
-                            outlined dense
-                            :readonly="isView"
-                          ></v-text-field>
-                          <v-text-field
-                            name="PlotDescription"
-                            label="Plot description"
-                            v-model="fields.PlotDescription"
-                            outlined dense
-                            :readonly="isView"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="8">
-                          <v-row>
-                            <v-col cols="12" class="d-flex flex-row align-center">
-                              <h4 class="mt-5 mb-5">Site Visit</h4>
-                              <SiteVisitDialog class="ml-auto mr-1" v-if="!isView" :mode="'new'" @newSiteVisit="newSiteVisit" />
-                            </v-col>
-                          </v-row>
-                          <v-data-table
-                            :headers="siteVisitHeaders"
-                            :items="fields.SiteVisits"
+                  <v-row>
+                      <v-col cols="12">
+                        <v-data-table
+                            :headers="actionHeaders"
+                            :items="fields.actions"
                             :items-per-page="5"
                             class="elevation-0"
+                            
                           >
-                          <template v-slot:item="{ item, index }">
+                            <!-- <template v-slot:item="{ item, index }">
                             <tr v-if="item.deleted != true">
-                                <td class="parent-row">{{ item.Inscription }}</td>
-                                <td class="child-row">{{ item.MarkerDescription }}</td>
-                                <td class="child-row">{{ item.Condition }}</td>
-                                <td class="child-row">{{ item.RecordedBy }}</td>
-                                <td class="child-row">{{ item.VisitYear }}</td>
+                                <td class="parent-row">{{ item.Name }}</td>
+                                <td class="child-row">{{ item.Location }}</td>
+                                <td class="child-row">{{ item.Quantity }}</td>
+                                <td class="child-row">{{ item.Relationship }}</td>
                                 <td class="child-row">
                                   <div class="d-flex flex-row">
-                                    <SiteVisitDialog v-if="!isView" :mode="'edit'" @editSiteVisit="editSiteVisit" :visitToEdit="{ index, SiteVisit: item}"/>
+                                    <KinDialog v-if="!isView" :mode="'edit'" :data="relationships" @editKinship="editKinship" :kinToEdit="{ index, Kinship: item}"/>
                                     <v-tooltip bottom v-if="!isView">
                                         <template v-slot:activator="{ on, attrs }">
                                                 <v-btn 
                                                 v-bind="attrs"
                                                 v-on="on"
-                                                icon class="grey--text text--darken-2"  @click="deleteSiteVisit(index)">
+                                                icon class="grey--text text--darken-2"  @click="deleteKinship(index)">
                                                     <v-icon
                                                     small
                                                     >mdi-trash-can</v-icon>  
@@ -560,11 +229,56 @@
                                   </div>
                                 </td>   
                             </tr>            
-                          </template>
+                          </template>   -->
                           </v-data-table>
-                        </v-col>
+                      </v-col>
                     </v-row>
-                </v-expansion-panel-content>
+                  </v-expansion-panel-content>
+              </v-expansion-panel>
+              <v-expansion-panel>
+                <v-expansion-panel-header>
+                  <h2>Inspections</h2>
+                </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                  <v-row>
+                      <v-col cols="12">
+                        <v-data-table
+                            :headers="inspectionHeaders"
+                            :items="fields.inspections"
+                            :items-per-page="5"
+                            class="elevation-0"
+                            
+                          >
+                            <!-- <template v-slot:item="{ item, index }">
+                            <tr v-if="item.deleted != true">
+                                <td class="parent-row">{{ item.Name }}</td>
+                                <td class="child-row">{{ item.Location }}</td>
+                                <td class="child-row">{{ item.Quantity }}</td>
+                                <td class="child-row">{{ item.Relationship }}</td>
+                                <td class="child-row">
+                                  <div class="d-flex flex-row">
+                                    <KinDialog v-if="!isView" :mode="'edit'" :data="relationships" @editKinship="editKinship" :kinToEdit="{ index, Kinship: item}"/>
+                                    <v-tooltip bottom v-if="!isView">
+                                        <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                v-bind="attrs"
+                                                v-on="on"
+                                                icon class="grey--text text--darken-2"  @click="deleteKinship(index)">
+                                                    <v-icon
+                                                    small
+                                                    >mdi-trash-can</v-icon>  
+                                                </v-btn>
+                                        </template>
+                                        <span>Delete</span>
+                                    </v-tooltip>
+                                  </div>
+                                </td>   
+                            </tr>            
+                          </template>   -->
+                          </v-data-table>
+                      </v-col>
+                    </v-row>
+                  </v-expansion-panel-content>
               </v-expansion-panel>
             </v-expansion-panels>
           </v-col>
@@ -580,25 +294,25 @@
 
 <script>
 import Breadcrumbs from "../../Breadcrumbs";
-import burials from "../../../controllers/burials";
+import interpretiveSites from "../../../controllers/interpretive-sites";
 import catalogs from "../../../controllers/catalogs";
-import MembershipDialog from "./Dialogs/MembershipDialog.vue";
-import OccupationDialog from "./Dialogs/OccupationDialog.vue";
-import SourceDialog from "./Dialogs/SourceDialog.vue";
-import KinDialog from "./Dialogs/KinDialog.vue";
-import SiteVisitDialog from "./Dialogs/SiteVisitDialog.vue";
-import Photos from "../../PhotoEditor/Photos";
+// import MembershipDialog from "./Dialogs/MembershipDialog.vue";
+// import OccupationDialog from "./Dialogs/OccupationDialog.vue";
+// import SourceDialog from "./Dialogs/SourceDialog.vue";
+// import KinDialog from "./Dialogs/KinDialog.vue";
+// import SiteVisitDialog from "./Dialogs/SiteVisitDialog.vue";
+// import Photos from "../../PhotoEditor/Photos";
 import countries from "../../../misc/countries";
 export default {
   name: "BurialComponent",
   components: {
     Breadcrumbs,
-    MembershipDialog,
-    OccupationDialog,
-    SiteVisitDialog,
-    KinDialog,
-    SourceDialog,
-    Photos
+    // MembershipDialog,
+    // OccupationDialog,
+    // SiteVisitDialog,
+    // KinDialog,
+    // SourceDialog,
+    //Photos
   },
   data: () => ({
     username: 'username',
@@ -620,33 +334,30 @@ export default {
     menu: false,
     menu2: false,
     showSave: 0,
-    membershipHeaders: [
-          { text: 'Membership',value: 'Membership'},
-          { text: 'Chapter', value: 'Chapter' },
-          { text: 'Membership Notes', value: 'Notes' },
-          { text: 'Actions', value: 'actions', sortable: false },
+    actionHeaders: [
+          { text: 'Action Required',value: 'Membership'},
+          { text: 'To be Completed by', value: 'Chapter' },
+          { text: 'Priority', value: 'Notes' },
+          { text: 'Completed date', value: 'actions' },
+          { text: 'Completion Notes', value: 'actions' },
         ],
-    siteVisitHeaders: [
-          { text: 'Inscription', value: 'Inscription' },
-          { text: 'Marker description', value: 'MarkerDescription' },
-          { text: 'Condition',value: 'Condition'},
-          { text: 'Recorded by', value: 'RecordedBy' },
-          { text: 'Visit year', value: 'VisitYear' },
-          { text: 'Actions', value: 'actions', sortable: false },
+    inspectionHeaders: [
+          { text: 'Inspection Date', value: 'Inscription' },
+          { text: 'Description', value: 'MarkerDescription' },
+          { text: 'Inspected by',value: 'Condition'},
+          { text: 'Actions', value: 'RecordedBy' },
         ],
-    kinshipHeaders: [
-          { text: 'Name', value: 'Name' },
-          { text: 'Location', value: 'Location' },
-          { text: 'Quantity',value: 'Quantity'},
-          { text: 'Relationship', value: 'Relationship' },
-          { text: 'Actions', value: 'actions', sortable: false },
+    assetHeaders: [
+          { text: 'Category', value: 'Category' },
+          { text: 'Type', value: 'Type' },
+          { text: 'Size',value: 'Size'},
+          { text: 'Sign Text', value: 'SignText' },
+          { text: 'Description', value: 'Description' },
+          { text: 'Maintained', value: 'Maintained' },
+          { text: 'Install Date', value: 'InstallDate' },
+          { text: 'Active', value: 'Status' },
         ],
-    causes: [],
-    cemetaries: [],
-    religions: [],
-    occupations: [],
-    memberships: [],
-    relationships: [],
+    routes: [],
     //photos
     selectedImage: null,
     loadingPhotos: false,
@@ -720,32 +431,35 @@ export default {
         SiteVisits: [],
       }
     },
-    saveCurrentBurial(){
-        localStorage.currentBurialID = this.$route.params.id;
+    saveCurrentIntSiteID(){
+        localStorage.currentIntSiteID = this.$route.params.id;
     },
     async getDataFromApi(){
         this.overlay = true;
         if(this.$route.params.id){
-            this.saveCurrentBurial();
+            this.saveCurrentIntSiteID();
         }
-        this.fields = await burials.getById(localStorage.currentBurialID);
-        this.cemetaries = await catalogs.getCemetaries();
-        this.causes = await catalogs.getCauses();
-        this.religions = await catalogs.getReligions();
-        this.occupations = await catalogs.getOccupations();
-        this.memberships = await catalogs.getMemberships();
-        this.relationships = await catalogs.getRelationships();
-        //console.log(this.fields);
+        this.fields = await interpretiveSites.getById(localStorage.currentIntSiteID);
+        this.routes =  await catalogs.getRoutes();
+        console.log(this.routes);
+        // this.fields = await burials.getById(localStorage.currentBurialID);
+        // this.cemetaries = await catalogs.getCemetaries();
+        // this.causes = await catalogs.getCauses();
+        // this.religions = await catalogs.getReligions();
+        // this.occupations = await catalogs.getOccupations();
+        // this.memberships = await catalogs.getMemberships();
+        // this.relationships = await catalogs.getRelationships();
+        console.log(this.fields);
         this.overlay = false;
     },
     viewMode(){
         this.mode="view";
-        this.$router.push(`/burials/view/${localStorage.currentBurialID}`);
+        this.$router.push(`/interpretive-sites/view/${localStorage.currentIntSiteID}`);
     },
     editMode(){
         this.fieldsHistory = {...this.fields};
         this.mode="edit";
-        this.$router.push(`/burials/edit/${localStorage.currentBurialID}`);
+        this.$router.push(`/interpretive-sites/edit/${localStorage.currentIntSiteID}`);
         this.showSave = 0;
     },
     cancelEdit(){
@@ -754,7 +468,7 @@ export default {
         }
         this.mode="view";
         //this.resetListVariables();
-        this.$router.push(`/burials/view/${localStorage.currentBurialID}`);
+        this.$router.push(`/interpretive-sites/view/${localStorage.currentIntSiteID}`);
     },
     selectedImageChanged(val){
             this.selectedImage = val;
@@ -956,7 +670,7 @@ export default {
     },
     async downloadPdf(){
       this.loadingPdf = true;
-      let res = await burials.getPdf(parseInt(localStorage.currentBurialID));
+      let res = await burials.getPdf(parseInt(localStorage.currentIntSiteID));
       let blob = new Blob([res], { type: "application/octetstream" });
       let url = window.URL || window.webkitURL;
       let link = url.createObjectURL(blob);
@@ -997,10 +711,10 @@ export default {
     isNew(){
       return this.mode == 'new';
     },
-    currentBurialID(){
+    currentIntSiteID(){
       if(this.mode == 'new') return false;
 
-      return localStorage.currentBurialID;
+      return localStorage.currentIntSiteID;
     },
     getCountries(){
       return countries;

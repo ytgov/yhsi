@@ -36,7 +36,7 @@ export class InterpretiveSiteService {
         item.assets = await db
 			.select('*')
 			.from('InterpretiveSite.Assets')
-			.where('InterpretiveSite.Actions.SiteID', siteId);
+			.where('InterpretiveSite.Assets.SiteID', siteId);
 
         item.maintainer = await db
 			.select('*')

@@ -436,6 +436,12 @@ const routes = [
 		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
 	},
 	{
+		path: "/interpretive-sites/new",
+		name: "InterpretiveSitesNew",
+		component: InterpretiveSitesForm,
+		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
+	},
+	{
 		path: "/places",
 		name: "PlacesGrid",
 		component: PlacesGrid,

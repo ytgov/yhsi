@@ -409,3 +409,10 @@ catalogsRouter.post("/relationship", async (req: Request, res: Response) => {
 
   res.status(200).send(response);
 });
+
+//ROUTES
+catalogsRouter.get("/route", async (req: Request, res: Response) => {
+  const response = await catalogService.getAllRoutes();
+
+  res.status(200).send(response);
+})

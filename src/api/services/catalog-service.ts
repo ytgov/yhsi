@@ -233,4 +233,12 @@ export class CatalogService {
           );
 	}
 
+	//ROUTES
+	async getAllRoutes(){
+		return await db("InterpretiveSite.RouteLookup").orderBy(
+			"InterpretiveSite.RouteLookup.RouteName",
+			"asc"
+		);
+	}
+
 }

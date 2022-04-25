@@ -26,12 +26,12 @@
 </template>
 
 <script>
-import owners from "../../../controllers/owners";
+import interpretiveSites from "../../../controllers/interpretive-sites";
 export default {
   name: "boatsGrid",
   data: () => ({
     loading: false,
-    owners: [],
+    list: [],
     headers: [{ text: "Owner", value: "OwnerName" }],
     filterOptions: [
       { name: "Boat Name" },
@@ -65,7 +65,7 @@ export default {
       page = page > 0 ? page - 1 : 0;
       itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
       let textToMatch = this.search;
-      let data = await owners.get(
+      let data = await interpretiveSites.get(
         page,
         itemsPerPage,
         textToMatch,
@@ -73,17 +73,16 @@ export default {
         sortDesc[0] ? "desc" : "asc"
       );
 
-      this.owners = data.body;
+      this.list = data.body;
       this.totalLength = data.count;
       //console.log(data);
-      this.$store.commit("boats/setOwners", this.owners);
-      this.$store.commit("boats/setOwnerTableOptions", this.options);
+      this.$store.commit("interpretiveSites/setActionTableOptions", this.options);
       this.loading = false;
     },
   },
   computed: {
     search() {
-      return this.$store.getters["boats/ownerSearch"];
+      return this.$store.getters["interpretiveSites/actionSearch"];
     },
     filteredData() {
       // returns a filtered users array depending on the selected filters
