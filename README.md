@@ -13,7 +13,7 @@ Writing code and developing in this application requires running three services:
 Boot the three app services:
 
 ```bash
-docker-compose -f docker-compose.dev-full.yml up
+docker-compose -f docker-compose.development.yml up
 ```
 
 Or if you have `ruby` installed
