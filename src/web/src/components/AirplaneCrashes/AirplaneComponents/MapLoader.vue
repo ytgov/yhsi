@@ -113,8 +113,7 @@
 				</v-row>
 				<!-- SELECTED SYSTEM  == DMS -->
 				<v-row v-if="selectedSystem.id == 3 && selectedProjection.id == 1">
-					<v-col cols="2.4"
-						><!-- Decides how many 'cols' its going to have -->
+					<v-col cols="2.4">
 						<h4>Latitude</h4>
 					</v-col>
 					<v-col>

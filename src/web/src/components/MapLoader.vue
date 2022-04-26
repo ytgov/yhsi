@@ -283,6 +283,37 @@
 				<!-- SELECTED PROJECITON IS NOT WSG -->
 				<v-row v-if="selectedProjection.id != 1">
 					<v-col cols="2.4">
+						<h4>Latitude</h4>
+					</v-col>
+					<v-col cols="9">
+						<h4>Degrees</h4>
+						<v-text-field
+							outlined
+							dense
+							@change="changedLocation"
+							v-model="nad83.lat"
+							:readonly="mode == 'view'"
+							type="number"
+						></v-text-field>
+					</v-col>
+				</v-row>
+				<v-row v-if="selectedProjection.id != 1">
+					<v-col cols="2.4">
+						<h4>Longitude</h4>
+					</v-col>
+					<v-col cols="9">
+						<v-text-field
+							outlined
+							dense
+							@change="changedLocation"
+							v-model="nad83.lng"
+							:readonly="mode == 'view'"
+							type="number"
+						></v-text-field>
+					</v-col>
+				</v-row>
+				<!-- <v-row v-if="selectedProjection.id != 1">
+					<v-col cols="2.4">
 						<h4>X</h4>
 					</v-col>
 					<v-col cols="9">
@@ -314,7 +345,7 @@
 							hide-details
 						></v-text-field>
 					</v-col>
-				</v-row>
+				</v-row> -->
 				<v-row v-if="isEmpty">
 					<v-col>
 						<v-alert
@@ -393,14 +424,26 @@
 			<div>
 				<l-map
 					class="map"
-					:center="map.center"
-					:zoom="map.zoom"
+					ref="myMap"
+					:center="center"
+					:zoom="zoom"
 					style="height: 350px; width: 100%"
 				>
+					<l-control-layers position="topright"></l-control-layers>
+					<!-- <l-tile-layer
+                    :url="layer.url"
+                    :attribution="layer.attribution"
+                    /> -->
 					<l-tile-layer
+						v-for="map in maps"
+						:key="map.name"
+						:name="map.name"
+						:visible="map.visible"
 						:url="map.url"
 						:attribution="map.attribution"
+						layer-type="base"
 					/>
+
 					<l-polygon
 						:lat-lngs="yukonPolygon.latlngs"
 						:color="yukonPolygon.color"
@@ -408,11 +451,11 @@
 					>
 						<l-tooltip content="Yukon" />
 					</l-polygon>
+
 					<l-marker
 						:lat-lng="[63.6333308, -135.7666636]"
 						:visible="!marker.visible"
 					></l-marker>
-
 					<l-marker
 						:visible="marker.visible"
 						:draggable="false"
@@ -421,10 +464,29 @@
 						<l-popup :content="marker.tooltip" />
 						<l-tooltip :content="marker.tooltip" />
 					</l-marker>
+
+					<l-control :position="'bottomright'">
+						<v-card class="pa-2">
+							<v-tooltip left>
+								<template v-slot:activator="{ on, attrs }">
+									<v-icon
+										color="primary"
+										dark
+										v-bind="attrs"
+										v-on="on"
+										@click="recenterMap()"
+									>
+										mdi-home
+									</v-icon>
+								</template>
+								<span>Home</span>
+							</v-tooltip>
+						</v-card>
+					</l-control>
 					<l-control
 						:position="'bottomleft'"
 						class="custom-control-watermark"
-						>{{ mapTypeNoun }} {{ fields.dataReady }}
+						>{{ mapTypeNoun }}
 					</l-control>
 				</l-map>
 			</div>
@@ -450,6 +512,7 @@ import {
 	LMarker,
 	LTooltip,
 	LPopup,
+	LControlLayers,
 } from 'vue2-leaflet';
 import { yukonPolygon } from '../misc/yukon_territory_polygon';
 import proj4 from 'proj4';
@@ -471,6 +534,7 @@ export default {
 		LMarker,
 		LPopup,
 		LTooltip,
+		LControlLayers,
 	},
 	data: () => ({
 		flag: 1, // tells the component if it should accept new prop data
@@ -559,14 +623,25 @@ export default {
 			tooltip: '',
 		},
 		//predefined map & marker
-		map: {
-			zoom: 4,
-			center: latLng(64.0, -135.0), //latLng(64.000000, -135.000000),
-			url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-			attribution:
-				'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-		},
+		maps: [
+			{
+				url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', //https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
+				attribution:
+					'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+				name: 'OpenStreetMap',
+				visible: true,
+			},
+			{
+				url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+				attribution:
+					'&copy; <a href="http://osm.org/copyright">OpenTopoMap</a> contributors',
+				name: 'OpenTopoMap',
+				visible: false,
+			},
+		],
 		yukonPolygon,
+		zoom: 8,
+		center: [64.0, -135.0],
 		routes: [],
 	}),
 	async mounted() {
@@ -634,6 +709,10 @@ export default {
 				shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 			});
 		},
+		recenterMap() {
+			this.$refs.myMap.mapObject.panTo(latLng(64.0, -135.0));
+			//this.maps[ this.showTopographicMap ? 1 : 0].center = latLng(lat, lng);
+		},
 		// Determine any shared verbage based on mapType
 		setSharedVerbage() {
 			this.mapTypeNoun =
@@ -650,7 +729,8 @@ export default {
 			//This method sets the center focus of the map
 			if (isNaN(lat) || isNaN(lng)) return;
 
-			this.map.center = latLng(lat, lng);
+			//this.map.center = latLng(lat, lng);
+			this.maps[this.showTopographicMap ? 1 : 0].center = latLng(lat, lng);
 		},
 		addMarker(lat, lng) {
 			if (isNaN(lat) || isNaN(lng)) return;
