@@ -66,6 +66,7 @@ export class PlaceEditService {
 				coordinateDetermination: 'CoordinateDetermination',
 				currentUseComment: 'CurrentUseComment',
 				datesJSON: 'DatesJSON',
+				descriptionJSON: 'DescriptionJSON',
 				designations: 'Designations',
 				doorCondition: 'DoorCondition',
 				fHBRONumber: 'FHBRONumber',

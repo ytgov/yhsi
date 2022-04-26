@@ -10,10 +10,9 @@ import {
 
 import { DB_CONFIG } from '../config';
 import { PlaceService } from '../services';
-import { Place, Description } from '../data';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
-import { UserRoles } from '../models';
+import { Place, UserRoles } from '../models';
 import PlacesController from '../controllers/places-controller';
 
 const placeService = new PlaceService(DB_CONFIG);
@@ -128,46 +127,6 @@ placeRouter.post(
 	}
 );
 
-placeRouter.put(
-	'/:id/description',
-	[param('id').isInt().notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		let { id } = req.params;
-		let { descriptions } = req.body;
-
-		let oldDescs = await placeService.getDescriptionsFor(parseInt(id));
-
-		for (let on of oldDescs) {
-			let match = descriptions.filter(
-				(n: Description) =>
-					n.type == on.type && n.descriptionText == on.descriptionText
-			);
-
-			if (match.length == 0) {
-				await placeService.removeDescription(on.id);
-			}
-		}
-
-		for (let on of descriptions) {
-			let match = oldDescs.filter(
-				(n: Description) =>
-					n.type == on.type && n.descriptionText == on.descriptionText
-			);
-
-			if (match.length == 0) {
-				delete on.typeText;
-				delete on.id;
-				await placeService.addDescription(on);
-			}
-		}
-
-		return res.json({
-			messages: [{ variant: 'success', text: 'Site updated' }],
-		});
-	}
-);
-
 placeRouter.patch(
 	'/:id',
 	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
@@ -187,6 +146,7 @@ placeRouter.patch(
 		body('coordinateDetermination').isInt().optional(),
 		body('currentUseComment').isString().optional({ nullable: true }),
 		body('dates').isArray().optional({ nullable: true }),
+		body('descriptions').isArray().optional({ nullable: true }),
 		body('designations').isArray().optional({ nullable: true }),
 		body('doorCondition').isInt().optional(),
 		body('fHBRONumber').isString().optional({ nullable: true }),

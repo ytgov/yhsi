@@ -11,6 +11,8 @@ export * from './contributing-resource-types';
 export * from './coordinate-determination-types';
 export * from './date';
 export * from './date-types';
+export * from './description';
+export * from './description-types';
 export * from './designation-types';
 export * from './first-nation-association';
 export * from './first-nation-association-types';

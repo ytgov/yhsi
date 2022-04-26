@@ -1,9 +1,3 @@
-export * from '../models/date';
-export * from '../models/historical-pattern';
-export * from '../models/name';
-export * from '../models/place';
-export * from '../models/place-edit';
-
 export const PLACE_FIELDS = [
 	'place.id',
 	'primaryName',
@@ -78,10 +72,3 @@ export const REGISTER_FIELDS = [
 	'community.name as communityName',
 	'designations',
 ];
-
-export class Description {
-	id!: number;
-	placeId!: number;
-	descriptionText!: string;
-	type!: number;
-}

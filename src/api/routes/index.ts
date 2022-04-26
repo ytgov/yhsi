@@ -11,6 +11,7 @@ export * from './contact-types-router';
 export * from './contributing-resource-types-router';
 export * from './coordinate-determination-types-router';
 export * from './date-types-router';
+export * from './description-types-router';
 export * from './designation-types-router';
 export * from './first-nation-association-types-router';
 export * from './first-nations-router';

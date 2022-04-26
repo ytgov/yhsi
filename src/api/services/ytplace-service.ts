@@ -2,18 +2,12 @@ import knex, { Knex } from 'knex';
 import { QueryStatement, SortStatement } from './';
 import {
 	AlternateName,
-	Description,
 	FirstNationName,
 	FnAssociation,
-	HistoricalPattern,
-	Name,
-	Place,
-	PLACE_FIELDS,
 	PlacePhoto,
 	PlaceType,
 	PlaceTypeLookup,
 	PlaceHistory,
-	REGISTER_FIELDS,
 	YtPlace,
 	YTPLACE_FIELDS,
 } from '../data';

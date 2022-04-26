@@ -17,6 +17,7 @@ import {
 	contributingResourceTypesRouter,
 	coordinateDeterminationTypesRouter,
 	dateTypesRouter,
+	descriptionTypesRouter,
 	designationTypesRouter,
 	firstNationAssociationTypesRouter,
 	firstNationsRouter,
@@ -130,6 +131,7 @@ app.use('/api/contact-types', RequiresAuthentication, contactTypesRouter);
 app.use('/api/contributing-resource-types', RequiresAuthentication, contributingResourceTypesRouter);
 app.use('/api/coordinate-determination-types', RequiresAuthentication, coordinateDeterminationTypesRouter);
 app.use('/api/date-types', RequiresAuthentication, dateTypesRouter);
+app.use('/api/description-types', RequiresAuthentication, descriptionTypesRouter);
 app.use('/api/designation-types', RequiresAuthentication, designationTypesRouter);
 app.use('/api/first-nation-association-types', RequiresAuthentication, firstNationAssociationTypesRouter);
 app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);

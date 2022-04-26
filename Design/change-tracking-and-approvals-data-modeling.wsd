@@ -162,6 +162,32 @@ enum DateType {
   8 : Construction Circa
 }
 
+entity Description {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * Type : int
+  DescriptionText : varchar
+}
+
+enum DescriptionType {
+  1 : Additional Information
+  2 : Character Defining Elements
+  3 : Cultural Period
+  4 : Heritage Value
+  5 : Place Description
+  6 : 'Description of Boundaries'
+  8 : Historical Sources Location
+  9 : Renovation Information
+  10 : Construction Style
+  11 : Demolition Information
+  12 : Cultural History
+  13 : Documentation Location
+  27 : Archaeological Collections
+  29 : Building Style
+  30 : YRHP Additional Information
+}
+
 enum Designations {
   Federal : Federal
   Municipal : Municipal
@@ -374,6 +400,7 @@ Place }o--|| Association::PlaceId
 Place }o--|| ConstructionPeriod::PlaceId
 Place }o--|| Contact::PlaceId
 Place }o--|| Dates::PlaceId
+Place }o--|| Description::PlaceId
 Place }o--|| FirstNationAssociation::PlaceId
 Place }o--|| HistoricalPattern::PlaceId
 Place }o--|| Name::PlaceId
@@ -385,8 +412,9 @@ Place }o--|| FunctionalUse::PlaceId
 Place }o--|| WebLink::PlaceId
 Association::Type ||--o{ AssociationType
 ConstructionPeriod::Type ||--o{ ConstructionPeriodType
-Dates::Type ||--o{ DateType
 Contact::ContactType ||--o{ ContactType
+Dates::Type ||--o{ DateType
+Description::Type ||--o{ DescriptionType
 FirstNationAssociation::FirstNationAssociationType ||--o{ FirstNationAssociationType
 FirstNationAssociation::FirstNationId ||--o{ FirstNation::Id
 FunctionalUse::FunctionalTypeId ||--o{ FunctionalType::Id

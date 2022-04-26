@@ -107,6 +107,7 @@ import ContactsViewer from '@/components/Sites/site-change-request/ContactsViewe
 import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
 import CoordinateDeterminationTypesSelect from '@/components/Sites/site-forms/CoordinateDeterminationTypesSelect';
 import DatesViewer from '@/components/Sites/site-change-request/DatesViewer';
+import DescriptionsViewer from '@/components/Sites/site-change-request/DescriptionsViewer';
 import DesignationTypesSelect from '@/components/Sites/site-forms/DesignationTypesSelect';
 import FirstNationAssociationsViewer from '@/components/Sites/site-change-request/FirstNationAssociationsViewer';
 import FunctionalUsesViewer from '@/components/Sites/site-change-request/FunctionalUsesViewer';
@@ -496,6 +497,11 @@ const FIELD_TYPES = Object.freeze([
 				'Secondary Statute - Recognition Authority / Recognition Type / Statute',
 		},
 	},
+	// Description form fields
+	{
+		key: 'descriptions',
+		type: DescriptionsViewer,
+	},
 ]);
 
 export default {
@@ -510,6 +516,7 @@ export default {
 		ContributingResourceTypesSelect,
 		CoordinateDeterminationTypesSelect,
 		DatesViewer,
+		DescriptionsViewer,
 		DesignationTypesSelect,
 		FirstNationAssociationsViewer,
 		FunctionalUsesViewer,

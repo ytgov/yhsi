@@ -72,6 +72,7 @@ placeEditsRouter.post(
 		body('coordinateDetermination').isInt(),
 		body('currentUseComment').isString().optional({ nullable: true }),
 		body('dates').isArray().optional({ nullable: true }),
+		body('descriptions').isArray().optional({ nullable: true }),
 		body('designations').isArray().optional({ nullable: true }),
 		body('doorCondition').isInt(),
 		body('fHBRONumber').isString().optional({ nullable: true }),

@@ -7,6 +7,7 @@ import {
 	ConstructionPeriodService,
 	ContactService,
 	DateService,
+	DescriptionService,
 	FirstNationAssociationService,
 	FunctionalUseService,
 	HistoricalPatternService,
@@ -21,35 +22,15 @@ import {
 	ThemeService,
 	WebLinkService,
 } from './';
+import { PLACE_FIELDS, REGISTER_FIELDS } from '../data';
 import {
-	Description,
-	DESCRIPTION_TYPES,
-	DESCRIPTION_TYPE_ENUMS,
-	PLACE_FIELDS,
-	REGISTER_FIELDS,
-} from '../data';
-import { GenericEnum, Place, PlainObject, User, UserRoles } from '../models';
+	DescriptionTypeEnums,
+	Place,
+	PlainObject,
+	User,
+	UserRoles,
+} from '../models';
 import { NotFoundError } from '../utils/validation';
-
-function combine(
-	list1: Array<any>,
-	list2: Array<any> | ReadonlyArray<any>,
-	linker: any,
-	linker2: any,
-	value: any,
-	typeText: any = 'typeText'
-): any[] {
-	list1.forEach((item) => {
-		let match = list2.filter((i) => i[linker] == item[linker2]);
-
-		if (match && match[0]) {
-			let add = { [typeText]: match[0][value] };
-			item = Object.assign(item, add);
-		} else item = Object.assign(item, { [typeText]: null });
-	});
-
-	return list1;
-}
 
 // This function can go away when the back-end serves the
 // relationship data as part of the data directly.
@@ -75,6 +56,7 @@ export class PlaceService {
 	private constructionPeriodService: ConstructionPeriodService;
 	private contactService: ContactService;
 	private dateService: DateService;
+	private descriptionService: DescriptionService;
 	private firstNationAssociationService: FirstNationAssociationService;
 	private functionalUseService: FunctionalUseService;
 	private historicalPatternService: HistoricalPatternService;
@@ -94,6 +76,7 @@ export class PlaceService {
 		this.constructionPeriodService = new ConstructionPeriodService(config);
 		this.contactService = new ContactService(config);
 		this.dateService = new DateService(config);
+		this.descriptionService = new DescriptionService(config);
 		this.firstNationAssociationService = new FirstNationAssociationService(
 			config
 		);
@@ -156,6 +139,7 @@ export class PlaceService {
 				);
 				place.contacts = await this.contactService.getFor(id);
 				place.dates = await this.dateService.getFor(id);
+				place.descriptions = await this.descriptionService.getForPlace(id);
 				place.firstNationAssociations =
 					await this.firstNationAssociationService.getFor(id);
 				place.functionalUses = await this.functionalUseService.getFor(id);
@@ -174,19 +158,10 @@ export class PlaceService {
 				);
 				place.webLinks = await this.webLinkService.getForPlace(id);
 
-				const descriptions = combine(
-					await this.getDescriptionsFor(id),
-					this.getDescriptionTypes(),
-					'value',
-					'type',
-					'text'
-				);
-
 				const photos = await this.photoService.getAllForPlace(id);
 
 				const relationships = {
 					photos: { data: photos },
-					descriptions: { data: descriptions },
 				};
 
 				return { place, relationships };
@@ -241,6 +216,9 @@ export class PlaceService {
 			}
 			if (Object.prototype.hasOwnProperty.call(attrs, 'dates')) {
 				await this.dateService.upsertFor(id, attrs['dates']);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'descriptions')) {
+				await this.descriptionService.upsertForPlace(id, attrs['descriptions']);
 			}
 			if (
 				Object.prototype.hasOwnProperty.call(attrs, 'firstNationAssociations')
@@ -302,10 +280,6 @@ export class PlaceService {
 			});
 	}
 
-	updatePlace(id: number, item: Place): Promise<Place | undefined> {
-		return this.db('place').where({ id }).update(item);
-	}
-
 	async generateIdFor(nTSMapSheet: string): Promise<string> {
 		let maxPlace = await this.db('place')
 			.where({ nTSMapSheet })
@@ -323,24 +297,6 @@ export class PlaceService {
 		}
 
 		return `${nTSMapSheet}/001`;
-	}
-
-	async getDescriptionsFor(id: number): Promise<Description[]> {
-		return this.db('Description')
-			.where({ placeId: id })
-			.select<Description[]>(['id', 'placeId', 'descriptionText', 'type']);
-	}
-
-	async addDescription(name: Description) {
-		return this.db('Description').insert(name);
-	}
-
-	async removeDescription(id: number) {
-		return this.db('Description').where({ id }).delete();
-	}
-
-	getDescriptionTypes(): GenericEnum[] {
-		return DESCRIPTION_TYPES;
 	}
 
 	async doSearch(
@@ -475,7 +431,7 @@ export class PlaceService {
 						.whereILike('[Description].[DescriptionText]', `%${value}%`)
 						.where(
 							'[Description].[Type]',
-							DESCRIPTION_TYPE_ENUMS.CONSTRUCTION_STYLE
+							DescriptionTypeEnums.ConstructionStyle
 						);
 				},
 				culturalHistoryContains(base: Knex.QueryInterface, value: any) {
@@ -483,7 +439,7 @@ export class PlaceService {
 						.whereILike('[Description].[DescriptionText]', `%${value}%`)
 						.where(
 							'[Description].[Type]',
-							DESCRIPTION_TYPE_ENUMS.CULTURAL_HISTORY
+							DescriptionTypeEnums.CulturalHistory
 						);
 				},
 				includingOwnershipTypes(base: Knex.QueryInterface, value: any) {
