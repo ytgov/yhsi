@@ -4,8 +4,6 @@
 		:items="siteStatuses"
 		:loading="loading"
 		label="Sites Status"
-		item-text="description"
-		item-value="id"
 		:prepend-icon="filterTypeIcon"
 		clearable
 		dense
@@ -20,9 +18,9 @@
 </template>
 
 <script>
-import { isEmpty } from 'lodash'
+import { isEmpty } from 'lodash';
 
-import api from '@/apis/site-statuses-api';
+import api from '@/apis/site-status-types-api';
 
 export default {
 	name: 'SiteStatusesFilter',
@@ -34,14 +32,16 @@ export default {
 	}),
 	computed: {
 		filter() {
-			if (isEmpty(this.siteStatusIds)) return {}
+			if (isEmpty(this.siteStatusIds)) return {};
 
 			return {
 				[this.queryName]: this.siteStatusIds,
 			};
 		},
-		queryName () {
-			return this.includeFilter ? 'includingSiteStatusIds' : 'excludingSiteStatusIds'
+		queryName() {
+			return this.includeFilter
+				? 'includingSiteStatusIds'
+				: 'excludingSiteStatusIds';
 		},
 		filterTypeIcon() {
 			return this.includeFilter
@@ -62,8 +62,8 @@ export default {
 	},
 	methods: {
 		toggleFilterType() {
-			this.includeFilter = !this.includeFilter
-			this.$emit('input', this.filter)
+			this.includeFilter = !this.includeFilter;
+			this.$emit('input', this.filter);
 		},
 	},
 };

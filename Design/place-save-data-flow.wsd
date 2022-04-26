@@ -1,0 +1,16 @@
+@startuml
+
+start
+: Summary#save;
+: build data package;
+: check user roles;
+if (role is admin) then (true)
+	: build place summary specific data package;
+	: Save via PATCH to /place/:id;
+	stop
+else (false)
+	: build place-edit specific data package;
+	: Save via POST to /place-edits;
+stop
+
+@enduml

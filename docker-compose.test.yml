@@ -1,10 +1,42 @@
-version: "3"
+version: '3'
 
 services:
- web:
-    build: .
+  api:
+    build:
+      context: ./src/api
+      dockerfile: development.Dockerfile
+    command: ['npm', 'run', 'test']
+    env_file:
+      - ./src/api/.env.development
+    environment:
+      NODE_ENV: test
+      DB_HOST: db
+      MAIL_HOST: 'host.docker.internal'
+      TS_NODE_HISTORY: '/tmp/.ts_node_repl_history'
+    tty: true
+    ports:
+      - '3000:3000'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+      - 'host.docker.internal:172.17.0.1'
+    volumes:
+      - ./src/api:/usr/src/api
+    depends_on:
+      - db
+  db:
+    image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
     restart: unless-stopped
     environment:
-      - "NODE_ENV=test"
+      - 'ACCEPT_EULA=Y'
+      - 'SA_PASSWORD=1m5ecure!'
+      - 'MSSQL_PID=Express'
+    tty: true
     ports:
-      - 27639:3000
+      - '1433:1433'
+    volumes:
+      - yhsi_sqlvolume:/var/opt/mssql
+      - ./db/backups/:/backups
+
+volumes:
+  yhsi_sqlvolume:
+    external: true
