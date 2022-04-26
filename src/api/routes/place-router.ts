@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import {
 	body,
 	check,
@@ -7,14 +7,13 @@ import {
 	validationResult,
 	matchedData,
 } from 'express-validator';
-import { pick } from 'lodash';
 
 import { DB_CONFIG } from '../config';
 import { PlaceService } from '../services';
-import { Place, WebLink, RevisionLog, Contact, Description } from '../data';
+import { Place, Description } from '../data';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
-import { User, UserRoles } from '../models';
+import { UserRoles } from '../models';
 import PlacesController from '../controllers/places-controller';
 
 const placeService = new PlaceService(DB_CONFIG);
@@ -130,121 +129,6 @@ placeRouter.post(
 );
 
 placeRouter.put(
-	'/:id/management',
-	[param('id').isInt().notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		let { id } = req.params;
-		let { links, contacts, revisionLogs } = req.body;
-		let updater = req.body;
-
-		delete updater.links;
-		delete updater.contacts;
-		delete updater.revisionLogs;
-
-		await placeService.updatePlace(parseInt(id), updater);
-
-		let oldLinks = await placeService.getWebLinksFor(parseInt(id));
-
-		for (let on of oldLinks) {
-			let match = links.filter(
-				(n: WebLink) => n.type == on.type && n.address == on.address
-			);
-
-			if (match.length == 0) {
-				await placeService.removeWebLink(on.id);
-			}
-		}
-
-		for (let on of links) {
-			let match = oldLinks.filter(
-				(n: WebLink) => n.type == on.type && n.address == on.address
-			);
-
-			if (match.length == 0) {
-				delete on.id;
-				delete on.typeText;
-				await placeService.addWebLink(on);
-			}
-		}
-
-		let oldLogs = await placeService.getRevisionLogFor(parseInt(id));
-
-		for (let on of oldLogs) {
-			let match = revisionLogs.filter(
-				(n: RevisionLog) =>
-					n.revisionLogType == on.revisionLogType &&
-					n.revisionDate == on.revisionDate &&
-					n.revisedBy == on.revisedBy &&
-					n.details == on.details
-			);
-
-			if (match.length == 0) {
-				await placeService.removeRevisionLog(on.id);
-			}
-		}
-
-		for (let on of revisionLogs) {
-			let match = oldLogs.filter(
-				(n: RevisionLog) =>
-					n.revisionLogType == on.revisionLogType &&
-					n.revisionDate == on.revisionDate &&
-					n.revisedBy == on.revisedBy &&
-					n.details == on.details
-			);
-
-			if (match.length == 0) {
-				delete on.revisionLogTypeText;
-				delete on.id;
-				await placeService.addRevisionLog(on);
-			}
-		}
-
-		let oldContacts = await placeService.getContactsFor(parseInt(id));
-
-		for (let on of oldContacts) {
-			let match = contacts.filter(
-				(n: Contact) =>
-					n.contactType == on.contactType &&
-					n.firstName == on.firstName &&
-					n.lastName == on.lastName &&
-					n.phoneNumber == on.phoneNumber &&
-					n.email == on.email &&
-					n.mailingAddress == on.mailingAddress &&
-					n.description == on.description
-			);
-
-			if (match.length == 0) {
-				await placeService.removeContact(on.id);
-			}
-		}
-
-		for (let on of contacts) {
-			let match = oldContacts.filter(
-				(n: Contact) =>
-					n.contactType == on.contactType &&
-					n.firstName == on.firstName &&
-					n.lastName == on.lastName &&
-					n.phoneNumber == on.phoneNumber &&
-					n.email == on.email &&
-					n.mailingAddress == on.mailingAddress &&
-					n.description == on.description
-			);
-
-			if (match.length == 0) {
-				delete on.id;
-				delete on.contactTypeText;
-				await placeService.addContact(on);
-			}
-		}
-
-		return res.json({
-			messages: [{ variant: 'success', text: 'Site updated' }],
-		});
-	}
-);
-
-placeRouter.put(
 	'/:id/description',
 	[param('id').isInt().notEmpty()],
 	ReturnValidationErrors,
@@ -294,21 +178,26 @@ placeRouter.patch(
 		body('bordenNumber').isString().optional({ nullable: true }),
 		body('buildingSize').isString().optional({ nullable: true }),
 		body('category').isInt().optional(),
+		body('cIHBNumber').isString().optional({ nullable: true }),
 		body('communityId').isInt().optional(),
 		body('conditionComment').isString().optional({ nullable: true }),
 		body('constructionPeriods').isArray().optional({ nullable: true }),
+		body('contacts').isArray().optional({ nullable: true }),
 		body('contributingResources').isArray().optional({ nullable: true }),
 		body('coordinateDetermination').isInt().optional(),
 		body('currentUseComment').isString().optional({ nullable: true }),
 		body('dates').isArray().optional({ nullable: true }),
 		body('designations').isArray().optional({ nullable: true }),
 		body('doorCondition').isInt().optional(),
+		body('fHBRONumber').isString().optional({ nullable: true }),
 		body('firstNationAssociations').isArray().optional({ nullable: true }),
 		body('floorCondition').isInt().optional(),
 		body('functionalUses').isArray().optional({ nullable: true }),
 		body('groupYHSI').isString().optional({ nullable: true }),
 		body('hectareArea').isString().optional({ nullable: true }),
 		body('historicalPatterns').isArray().optional({ nullable: true }),
+		body('isPubliclyAccessible').isBoolean().optional(),
+		body('jurisdiction').isInt().optional(),
 		body('lAGroup').isString().optional({ nullable: true }),
 		body('latitude').isString().optional({ nullable: true }),
 		body('locationComment').isString().optional({ nullable: true }),
@@ -319,6 +208,7 @@ placeRouter.patch(
 		body('nTSMapSheet').isString().optional({ nullable: true }),
 		body('otherCommunity').isString().optional({ nullable: true }),
 		body('otherLocality').isString().optional({ nullable: true }),
+		body('ownerConsent').isInt().optional(),
 		body('ownerships').isArray().optional({ nullable: true }),
 		body('physicalAddress').isString().optional({ nullable: true }),
 		body('physicalCountry').isString().optional({ nullable: true }),
@@ -328,16 +218,23 @@ placeRouter.patch(
 		body('previousAddress').isString().optional({ nullable: true }),
 		body('previousOwnerships').isArray().optional({ nullable: true }),
 		body('primaryName').isString().optional(),
+		body('recognitionDate').isDate().optional({ nullable: true }),
 		body('records').isArray().optional({ nullable: true }),
 		body('resourceType').isString().optional({ nullable: true }),
+		body('revisionLogs').isArray().optional({ nullable: true }),
 		body('roofCondition').isInt().optional(),
 		body('showInRegister').isBoolean().optional(),
 		body('siteCategories').isArray().optional({ nullable: true }),
 		body('siteDistrictNumber').isString().optional({ nullable: true }),
 		body('siteStatus').isInt().optional(),
+		body('statute2Id').isInt().optional(),
+		body('statuteId').isInt().optional(),
 		body('themes').isArray().optional({ nullable: true }),
 		body('townSiteMapNumber').isString().optional({ nullable: true }),
 		body('wallCondition').isInt().optional(),
+		body('webLinks').isArray().optional({ nullable: true }),
+		body('yGBuildingNumber').isString().optional({ nullable: true }),
+		body('yGReserveNumber').isString().optional({ nullable: true }),
 		body('yHSPastUse').isString().optional({ nullable: true }),
 		body('yHSThemes').isString().optional({ nullable: true }),
 		body('zoning').isString().optional({ nullable: true }),

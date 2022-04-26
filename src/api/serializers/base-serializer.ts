@@ -3,7 +3,7 @@ import { pick } from 'lodash';
 import { PlainObject } from '../models';
 
 interface SerializerFunction<Type> {
-	(model: Type): PlainObject | undefined;
+	(model: Type): any | undefined;
 }
 
 export default abstract class BaseSerializer<Type> {

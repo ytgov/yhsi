@@ -18,9 +18,6 @@ import {
 	FnAssociation,
 	FirstNationName,
 	Photo,
-	WebLink,
-	RevisionLog,
-	Contact,
 	Description,
 	YtPlace,
 } from '../data';

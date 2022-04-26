@@ -8,19 +8,26 @@ entity Place {
   * CoordinateDetermination : int
   * DoorCondition : int
   * FloorCondition : int
+  * IsPubliclyAccessible : bit
+  * Jurisdiction : int
+  * OwnerConsent : int
   * PrimaryName : nvarchar
   * RoofCondition : int
   * ShowInRegister : bit
   * SiteStatus : int
+  * Statute2Id : int
+  * StatuteId : int
   * WallCondition : int
   * YHSIId : nvarchar
   Block : nvarchar
   BordenNumber : nvarchar
   BuildingSize : nvarchar
+  CIHBNumber : nvarchar
   ConditionComment : nvarchar
   ContributingResources : nvarchar : <<comma delimited array>>
   CurrentUseComment : nvarchar
   Designations : nvarchar : <<comma delimited array>>
+  FHBRONumber : nvarchar
   GroupYHSI : nvarchar
   HectareArea : nvarchar
   LAGroup : nvarchar
@@ -38,11 +45,14 @@ entity Place {
   PhysicalProvince : nvarchar
   PlanNumber : nvarchar
   PreviousAddress : nvarchar
+  RecognitionDate : date
   Records : nvarchar : <<comma delimited array>>
   ResourceType : nvarchar
   SiteCategories : nvarchar : <<comma delimited array>>
-  SiteDistrictNumber: nvarchar
-  TownSiteMapNumber: nvarchar
+  SiteDistrictNumber : nvarchar
+  TownSiteMapNumber : nvarchar
+  YGBuildingNumber : nvarchar
+  YGReserveNumber : nvarchar
   YHSPastUse : nvarchar
   YHSThemes : nvarchar
   Zoning : nvarchar
@@ -98,6 +108,26 @@ enum ConstructionPeriodType {
   3 : From 1906 to 1939
   4 : From 1940 to 1965
   5 : Post 1965
+}
+
+entity Contact {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * ContactType : int
+  Description : nvarchar
+  Email : nvarchar
+  FirstName : nvarchar
+  LastName : nvarchar
+  MailingAddress : nvarchar
+  PhoneNumber : nvarchar
+}
+
+enum ContactType {
+  1 : Owner
+  2 : Administrator
+  3 : Heritage Planner
+  4 : Other
 }
 
 enum ContributingResources {
@@ -195,11 +225,24 @@ enum HistoricalPatternType {
   4 : Geographic
 }
 
+enum JurisdictionType {
+  0 : None Selected
+  1 : Yukon
+  2 : Federal
+}
+
 entity Name {
   * Id : int <<generated>>
   --
   * PlaceId : int
   Description : nvarchar
+}
+
+enum OwnerConsentType {
+  0 : None Selected
+  1 : Consent
+  2 : No Response
+  3 : Objection
 }
 
 entity Ownership {
@@ -245,6 +288,24 @@ enum Records {
   WHBR : WHBR
 }
 
+entity RevisionLog {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * RevisionLogType : int
+  RevisionDate : nvarchar
+  RevisedBy : nvarchar
+  Details : nvarchar
+}
+
+enum RevisionLogType {
+  1 : Initial Recording
+  2 : Monitoring Visit
+  3 : Research
+  4 : Designation Assessment
+  5 : Record Update
+}
+
 enum SiteCategories {
   Architecture : Architecture
   FirstNation : First Nation
@@ -262,11 +323,35 @@ enum SiteStatus {
   6 : Reconstruction
 }
 
+entity Statute {
+  * Id : int <<generated>>
+  --
+  RecognitionAuthority
+  RecognitionType
+  Description
+  AllStatute
+}
+
 entity Theme {
-  * Id: int <<generated>>
+  * Id : int <<generated>>
   --
   * PlaceId : int
   * PlaceThemeId : int
+}
+
+entity WebLink {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * Type : int
+  Address : varchar
+}
+
+enum WebLinkType {
+  1 : Historic Place
+  2 : Local Government
+  3 : Federal/Provicial/Territorial
+  4 : Other
 }
 
 Place::Category }|--o{ Category
@@ -276,30 +361,40 @@ Place::CoordinateDetermination ||--o{ CoordinateDetermination
 Place::Designations }o--o{ Designations
 Place::DoorCondition }|--o{ ConditionType
 Place::FloorCondition }|--o{ ConditionType
+Place::Jurisdiction }|--o{ JurisdictionType
+Place::OwnerConsent }|--o{ OwnerConsentType
 Place::Records }o--o{ Records
 Place::RoofCondition }|--o{ ConditionType
 Place::SiteCategories }o--o{ SiteCategories
 Place::SiteStatus ||--o{ SiteStatus
+Place::StatuteId ||--o{ Statute::Id
+Place::Statute2Id ||--o{ Statute::Id
 Place::WallCondition }|--o{ ConditionType
 Place }o--|| Association::PlaceId
 Place }o--|| ConstructionPeriod::PlaceId
+Place }o--|| Contact::PlaceId
 Place }o--|| Dates::PlaceId
 Place }o--|| FirstNationAssociation::PlaceId
 Place }o--|| HistoricalPattern::PlaceId
 Place }o--|| Name::PlaceId
 Place }o--|| Ownership::PlaceId
 Place }o--|| PreviousOwnership::PlaceId
+Place }o--|| RevisionLog::PlaceId
 Place }o--|| Theme::PlaceId
 Place }o--|| FunctionalUse::PlaceId
+Place }o--|| WebLink::PlaceId
 Association::Type ||--o{ AssociationType
 ConstructionPeriod::Type ||--o{ ConstructionPeriodType
 Dates::Type ||--o{ DateType
+Contact::ContactType ||--o{ ContactType
 FirstNationAssociation::FirstNationAssociationType ||--o{ FirstNationAssociationType
 FirstNationAssociation::FirstNationId ||--o{ FirstNation::Id
 FunctionalUse::FunctionalTypeId ||--o{ FunctionalType::Id
 FunctionalUse::FunctionalUseType ||--o{ FunctionalUseType
 HistoricalPattern::HistoricalPatternType ||--o{ HistoricalPatternType
 Ownership::OwnershipType ||--o{ OwnershipType
+RevisionLog::RevisionLogType ||--o{ RevisionLogType
+WebLink::Type ||--o{ WebLinkType
 Theme::PlaceThemeId ||--o{ PlaceTheme::Id
 
 @enduml

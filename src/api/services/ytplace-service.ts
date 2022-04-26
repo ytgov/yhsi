@@ -2,7 +2,6 @@ import knex, { Knex } from 'knex';
 import { QueryStatement, SortStatement } from './';
 import {
 	AlternateName,
-	Contact,
 	Description,
 	FirstNationName,
 	FnAssociation,
@@ -15,8 +14,6 @@ import {
 	PlaceTypeLookup,
 	PlaceHistory,
 	REGISTER_FIELDS,
-	RevisionLog,
-	WebLink,
 	YtPlace,
 	YTPLACE_FIELDS,
 } from '../data';

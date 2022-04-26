@@ -18,21 +18,6 @@ staticRouter.get('/first-nation', async (req: Request, res: Response) => {
 	return res.json({ data: list });
 });
 
-staticRouter.get('/contact-type', async (req: Request, res: Response) => {
-	let list = await placeService.getContactTypes();
-	return res.json({ data: list });
-});
-
-staticRouter.get('/link-type', async (req: Request, res: Response) => {
-	let list = await placeService.getWebLinkTypes();
-	return res.json({ data: list });
-});
-
-staticRouter.get('/jurisdiction', async (req: Request, res: Response) => {
-	let list = await staticService.getJurisdictions();
-	return res.json({ data: list });
-});
-
 staticRouter.get(
 	'/photo-project-section',
 	async (req: Request, res: Response) => {
@@ -41,18 +26,8 @@ staticRouter.get(
 	}
 );
 
-staticRouter.get('/revision-log-type', async (req: Request, res: Response) => {
-	let list = await placeService.getRevisionLogTypes();
-	return res.json({ data: list });
-});
-
 staticRouter.get('/description-type', async (req: Request, res: Response) => {
 	let list = await placeService.getDescriptionTypes();
-	return res.json({ data: list });
-});
-
-staticRouter.get('/owner-consent', async (req: Request, res: Response) => {
-	let list = await staticService.getOwnerConsents();
 	return res.json({ data: list });
 });
 
@@ -68,32 +43,6 @@ staticRouter.get('/photo-copyright', async (req: Request, res: Response) => {
 
 staticRouter.get('/usage-right', async (req: Request, res: Response) => {
 	let list = await staticService.getUsageRights();
-	return res.json({ data: list });
-});
-
-staticRouter.get('/statute', async (req: Request, res: Response) => {
-	let list = await staticService.getStatutes();
-
-	for (let item of list) {
-		(item as any).display = item.recognitionAuthority;
-
-		if (item.recognitionType && item.recognitionType.length > 0)
-			(item as any).display += ` / ${item.recognitionType}`;
-
-		if (item.allStatute && item.allStatute.length > 0)
-			(item as any).display += ` / ${item.allStatute}`;
-	}
-
-	return res.json({ data: list });
-});
-
-staticRouter.get('/jurisdiction', async (req: Request, res: Response) => {
-	let list = staticService.getJurisdictions();
-	return res.json({ data: list });
-});
-
-staticRouter.get('/owner-consent', async (req: Request, res: Response) => {
-	let list = staticService.getOwnerConsents();
 	return res.json({ data: list });
 });
 

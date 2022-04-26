@@ -79,37 +79,9 @@ export const REGISTER_FIELDS = [
 	'designations',
 ];
 
-export class Contact {
-	id!: number;
-	placeId!: number;
-	firstName!: string;
-	lastName!: string;
-	phoneNumber!: string;
-	email!: string;
-	mailingAddress!: string;
-	description!: string;
-	contactType!: number;
-}
-
 export class Description {
 	id!: number;
 	placeId!: number;
 	descriptionText!: string;
 	type!: number;
-}
-
-export class RevisionLog {
-	id!: number;
-	placeId!: number;
-	revisionLogType!: number;
-	revisionDate!: Date;
-	revisedBy!: string;
-	details!: string;
-}
-
-export class WebLink {
-	id!: number;
-	placeId!: number;
-	type!: number;
-	address!: string;
 }

@@ -138,16 +138,6 @@ export class StaticService {
 		return this.knex<PlaceTheme>('PlaceTheme').select('id', 'category', 'type');
 	}
 
-	async getStatutes(): Promise<Array<Statute>> {
-		return this.knex<Statute>('Statute').select(
-			'id',
-			'recognitionAuthority',
-			'recognitionType',
-			'description',
-			'allStatute'
-		);
-	}
-
 	async getMapSheets(): Promise<Array<MapSheetLookup>> {
 		return this.knex<MapSheetLookup>('YHIS.MapSheetLookup')
 			.select('id', 'map50k', 'map250k')
@@ -193,23 +183,6 @@ export class StaticService {
 			{ value: 2, text: 'Archaeology' },
 			{ value: 3, text: 'Palaeontology' },
 			{ value: 4, text: 'Historic Sites' },
-		];
-	}
-
-	getJurisdictions(): GenericEnum[] {
-		return [
-			{ value: 0, text: 'None Selected' },
-			{ value: 1, text: 'Yukon' },
-			{ value: 2, text: 'Federal' },
-		];
-	}
-
-	getOwnerConsents(): GenericEnum[] {
-		return [
-			{ value: 0, text: 'None Selected' },
-			{ value: 1, text: 'Consent' },
-			{ value: 2, text: 'No Response' },
-			{ value: 3, text: 'Objection' },
 		];
 	}
 

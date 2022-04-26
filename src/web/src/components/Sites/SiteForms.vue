@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex">
     <SiteFormsSidebar :site-id="id" />
-    <div>
+    <div class="flex-grow-1">
       <v-app-bar
         color="primary"
         dark
@@ -45,7 +45,7 @@
       <div>
         <template v-if="loading">
           <v-skeleton-loader
-            v-for="n in 6"
+            v-for="n in 8"
             :key="n"
             type="card"
           />
@@ -81,9 +81,13 @@
             id="legal-and-zoning"
             :place-id="id"
           />
+          <Photos id="photos" />
+          <component
+            :is="managementComponent"
+            id="management"
+            :place-id="id"
+          />
         </template>
-        <Photos id="photos" />
-        <Management id="management" />
         <Description id="description" />
       </div>
     </div>
@@ -104,6 +108,7 @@ import LegalAndZoningViewer from '@/components/Sites/site-forms/LegalAndZoningVi
 import Location from '@/components/Sites/site-forms/Location';
 import LocationReadonly from '@/components/Sites/site-forms/LocationReadonly';
 import Management from '@/components/Sites/site-forms/Management';
+import ManagementViewer from '@/components/Sites/site-forms/ManagementViewer';
 import Photos from '@/components/Sites/site-forms/Photos';
 import PrintDialog from '@/components/Sites/SiteFormsPrintDialog';
 import SiteFormsSidebar from '@/components/Sites/SiteFormsSidebar';
@@ -168,6 +173,11 @@ export default {
 
       return Location;
     },
+    managementComponent() {
+      if (this.hasPendingChanges) return ManagementViewer;
+
+      return Management;
+    },
     summaryComponent() {
       if (this.hasPendingChanges) return SummaryReadonly;
 
@@ -180,16 +190,17 @@ export default {
     },
   },
   mounted() {
-    this.initializePlace(this.id).then((place) => {
-      this.addSiteHistory(place);
-      if (this.$route.hash) {
-        goTo(this.$route.hash, { offset: 75 });
-      }
-    })
-    .catch(err => {
-      console.log("ERROR LOADING PLACE", err.message)
-      this.$router.push("/sites")
-    });
+    this.initializePlace(this.id)
+      .then((place) => {
+        this.addSiteHistory(place);
+        if (this.$route.hash) {
+          goTo(this.$route.hash, { offset: 75 });
+        }
+      })
+      .catch((error) => {
+        console.log('ERROR LOADING PLACE', error.message);
+        this.$router.push('/sites');
+      });
   },
   methods: {
     ...mapActions({

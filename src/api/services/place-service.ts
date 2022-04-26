@@ -1,10 +1,11 @@
 import knex, { Knex } from 'knex';
 import moment from 'moment';
-import { get, isEmpty, uniq, cloneDeep, pick } from 'lodash';
+import { get, isEmpty, isNull, uniq } from 'lodash';
 
 import {
 	AssociationService,
 	ConstructionPeriodService,
+	ContactService,
 	DateService,
 	FirstNationAssociationService,
 	FunctionalUseService,
@@ -14,21 +15,18 @@ import {
 	PhotoService,
 	PlaceEditService,
 	PreviousOwnershipService,
-	QueryStatement,
+	RevisionLogService,
 	SortStatement,
 	StaticService,
 	ThemeService,
+	WebLinkService,
 } from './';
 import {
-	Contact,
 	Description,
 	DESCRIPTION_TYPES,
 	DESCRIPTION_TYPE_ENUMS,
 	PLACE_FIELDS,
 	REGISTER_FIELDS,
-	REVISION_LOG_TYPES,
-	RevisionLog,
-	WebLink,
 } from '../data';
 import { GenericEnum, Place, PlainObject, User, UserRoles } from '../models';
 import { NotFoundError } from '../utils/validation';
@@ -75,6 +73,7 @@ export class PlaceService {
 	private db: Knex;
 	private assocationService: AssociationService;
 	private constructionPeriodService: ConstructionPeriodService;
+	private contactService: ContactService;
 	private dateService: DateService;
 	private firstNationAssociationService: FirstNationAssociationService;
 	private functionalUseService: FunctionalUseService;
@@ -84,13 +83,16 @@ export class PlaceService {
 	private photoService: PhotoService;
 	private placeEditService: PlaceEditService;
 	private previousOwnershipService: PreviousOwnershipService;
+	private revisionLogService: RevisionLogService;
 	private staticService: StaticService;
 	private themeService: ThemeService;
+	private webLinkService: WebLinkService;
 
 	constructor(config: Knex.Config<any>) {
 		this.db = knex(config);
 		this.assocationService = new AssociationService(config);
 		this.constructionPeriodService = new ConstructionPeriodService(config);
+		this.contactService = new ContactService(config);
 		this.dateService = new DateService(config);
 		this.firstNationAssociationService = new FirstNationAssociationService(
 			config
@@ -102,8 +104,10 @@ export class PlaceService {
 		this.photoService = new PhotoService(config);
 		this.placeEditService = new PlaceEditService();
 		this.previousOwnershipService = new PreviousOwnershipService(config);
+		this.revisionLogService = new RevisionLogService(config);
 		this.staticService = new StaticService(config);
 		this.themeService = new ThemeService(config);
+		this.webLinkService = new WebLinkService(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Place>> {
@@ -150,6 +154,7 @@ export class PlaceService {
 				place.constructionPeriods = await this.constructionPeriodService.getFor(
 					id
 				);
+				place.contacts = await this.contactService.getFor(id);
 				place.dates = await this.dateService.getFor(id);
 				place.firstNationAssociations =
 					await this.firstNationAssociationService.getFor(id);
@@ -159,34 +164,16 @@ export class PlaceService {
 				);
 				place.names = await this.nameService.getFor(id);
 				place.ownerships = await this.ownershipService.getFor(id);
+				place.recognitionDate = isNull(place.recognitionDate)
+					? null
+					: moment(place.recognitionDate).add(7, 'hours').format('YYYY-MM-DD');
+				place.revisionLogs = await this.revisionLogService.getFor(id);
 				place.themes = await this.themeService.getFor(id);
 				place.previousOwnerships = await this.previousOwnershipService.getFor(
 					id
 				);
+				place.webLinks = await this.webLinkService.getForPlace(id);
 
-				const contacts = combine(
-					await this.getContactsFor(id),
-					this.getContactTypes(),
-					'value',
-					'contactType',
-					'text',
-					'contactTypeText'
-				);
-				const revisionLogs = combine(
-					await this.getRevisionLogFor(id),
-					this.getRevisionLogTypes(),
-					'value',
-					'revisionLogType',
-					'text',
-					'revisionLogTypeText'
-				);
-				const webLinks = combine(
-					await this.getWebLinksFor(id),
-					this.getWebLinkTypes(),
-					'value',
-					'type',
-					'text'
-				);
 				const descriptions = combine(
 					await this.getDescriptionsFor(id),
 					this.getDescriptionTypes(),
@@ -199,15 +186,9 @@ export class PlaceService {
 
 				const relationships = {
 					photos: { data: photos },
-					contacts: { data: contacts },
-					revisionLogs: { data: revisionLogs },
-					webLinks: { data: webLinks },
 					descriptions: { data: descriptions },
 				};
 
-				place.recognitionDateDisplay = place.recognitionDate
-					? moment(place.recognitionDate).add(7, 'hours').format('YYYY-MM-DD')
-					: '';
 				return { place, relationships };
 			});
 	}
@@ -246,47 +227,58 @@ export class PlaceService {
 
 	updateRelations(id: number, attributes: PlainObject) {
 		return Promise.resolve(attributes).then(async (attrs) => {
-			if (attrs.hasOwnProperty('associations')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'associations')) {
 				await this.assocationService.upsertFor(id, attrs['associations']);
 			}
-			if (attrs.hasOwnProperty('constructionPeriods')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'constructionPeriods')) {
 				await this.constructionPeriodService.upsertFor(
 					id,
 					attrs['constructionPeriods']
 				);
 			}
-			if (attrs.hasOwnProperty('dates')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'contacts')) {
+				await this.contactService.upsertFor(id, attrs['contacts']);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'dates')) {
 				await this.dateService.upsertFor(id, attrs['dates']);
 			}
-			if (attrs.hasOwnProperty('firstNationAssociations')) {
+			if (
+				Object.prototype.hasOwnProperty.call(attrs, 'firstNationAssociations')
+			) {
 				await this.firstNationAssociationService.upsertFor(
 					id,
 					attrs['firstNationAssociations']
 				);
 			}
-			if (attrs.hasOwnProperty('functionalUses')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'functionalUses')) {
 				await this.functionalUseService.upsertFor(id, attrs['functionalUses']);
 			}
-			if (attrs.hasOwnProperty('historicalPatterns')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'historicalPatterns')) {
 				await this.historicalPatternService.upsertFor(
 					id,
 					attrs['historicalPatterns']
 				);
 			}
-			if (attrs.hasOwnProperty('names')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'names')) {
 				await this.nameService.upsertFor(id, attrs['names']);
 			}
-			if (attrs.hasOwnProperty('ownerships')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'ownerships')) {
 				await this.ownershipService.upsertFor(id, attrs['ownerships']);
 			}
-			if (attrs.hasOwnProperty('previousOwnerships')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'previousOwnerships')) {
 				await this.previousOwnershipService.upsertFor(
 					id,
 					attrs['previousOwnerships']
 				);
 			}
-			if (attrs.hasOwnProperty('themes')) {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'revisionLogs')) {
+				await this.revisionLogService.upsertFor(id, attrs['revisionLogs']);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'themes')) {
 				await this.themeService.upsertFor(id, attrs['themes']);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'webLinks')) {
+				await this.webLinkService.upsertForPlace(id, attrs['webLinks']);
 			}
 			return attrs;
 		});
@@ -333,66 +325,6 @@ export class PlaceService {
 		return `${nTSMapSheet}/001`;
 	}
 
-	async getContactsFor(id: number): Promise<Contact[]> {
-		return this.db('Contact')
-			.where({ placeId: id })
-			.select<Contact[]>([
-				'id',
-				'placeId',
-				'firstName',
-				'lastName',
-				'phoneNumber',
-				'email',
-				'mailingAddress',
-				'description',
-				'contactType',
-			]);
-	}
-
-	async addContact(name: Contact) {
-		return this.db('Contact').insert(name);
-	}
-
-	async removeContact(id: number) {
-		return this.db('Contact').where({ id }).delete();
-	}
-
-	async getRevisionLogFor(id: number): Promise<RevisionLog[]> {
-		return this.db('RevisionLog')
-			.where({ placeId: id })
-			.select<RevisionLog[]>([
-				'id',
-				'placeId',
-				'revisionLogType',
-				'revisionDate',
-				'revisedBy',
-				'details',
-			])
-			.orderBy('revisionDate');
-	}
-
-	async addRevisionLog(name: RevisionLog) {
-		return this.db('RevisionLog').insert(name);
-	}
-
-	async removeRevisionLog(id: number) {
-		return this.db('RevisionLog').where({ id }).delete();
-	}
-
-	async getWebLinksFor(id: number): Promise<WebLink[]> {
-		return this.db('WebLink')
-			.where({ placeId: id })
-			.select<WebLink[]>(['id', 'placeId', 'type', 'address']);
-	}
-
-	async addWebLink(name: WebLink) {
-		return this.db('WebLink').insert(name);
-	}
-
-	async removeWebLink(id: number) {
-		return this.db('WebLink').where({ id }).delete();
-	}
-
 	async getDescriptionsFor(id: number): Promise<Description[]> {
 		return this.db('Description')
 			.where({ placeId: id })
@@ -405,28 +337,6 @@ export class PlaceService {
 
 	async removeDescription(id: number) {
 		return this.db('Description').where({ id }).delete();
-	}
-
-	getContactTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Owner' },
-			{ value: 2, text: 'Administrator' },
-			{ value: 3, text: 'Heritage Planner' },
-			{ value: 4, text: 'Other' },
-		];
-	}
-
-	getRevisionLogTypes(): GenericEnum[] {
-		return REVISION_LOG_TYPES;
-	}
-
-	getWebLinkTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Historic Place' },
-			{ value: 2, text: 'Local Government' },
-			{ value: 3, text: 'Federal/Provicial/Territorial' },
-			{ value: 4, text: 'Other' },
-		];
 	}
 
 	getDescriptionTypes(): GenericEnum[] {
