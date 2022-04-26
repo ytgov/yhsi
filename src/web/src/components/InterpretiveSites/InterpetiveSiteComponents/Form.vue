@@ -21,6 +21,7 @@
 					Edit
 				</v-btn>
 				<v-btn
+					v-if="isView"
 					class="black--text mx-1"
 					@click="downloadPdf"
 					:loading="loadingPdf"
@@ -37,9 +38,10 @@
 					<v-icon>mdi-close</v-icon>
 					Cancel
 				</v-btn>
+
 				<v-btn
 					color="success"
-					:disabled="showSave < 1"
+					:disabled="showSave < 1 || !valid"
 					v-if="!isView"
 					@click="saveChanges"
 				>
@@ -50,67 +52,73 @@
 		</v-row>
 		<v-row>
 			<v-col cols="12">
-				<v-expansion-panels
-					v-model="panel"
-					multiple
+				<v-form
+					lazy-validation
+					v-model="valid"
+					ref="intSiteForm"
 				>
-					<v-expansion-panel>
-						<v-expansion-panel-header>
-							<h2>Site Information</h2>
-						</v-expansion-panel-header>
-						<v-expansion-panel-content>
-							<v-row>
-								<v-col cols="8">
-									<v-row>
-										<v-col cols="6">
-											<v-text-field
-												name="SiteName"
-												label="Site Name"
-												outlined
-												dense
-												v-model="fields.SiteName"
-												:readonly="isView"
-											></v-text-field>
-											<v-text-field
-												name="EstablishedYear"
-												label="Established Year"
-												outlined
-												dense
-												v-model="fields.EstablishedYear"
-												:readonly="isView"
-											></v-text-field>
-											<v-text-field
-												name="MaintainedBy"
-												label="Maintained"
-												outlined
-												dense
-												v-model="fields.SiteName"
-												:readonly="isView"
-											></v-text-field>
-										</v-col>
-										<v-col cols="6">
-											<v-text-field
-												name="NotificationSigns"
-												outlined
-												dense
-												label="Advanced notification signs"
-												v-model="fields.AdvancedNotification"
-												:readonly="isView"
-											></v-text-field>
-											<v-textarea
-												name="NotificationDesc"
-												outlined
-												dense
-												label="Advanced Notification Description"
-												:readonly="isView"
-												v-model="fields.NotificationDesc"
-											></v-textarea>
-										</v-col>
-									</v-row>
-								</v-col>
-								<v-col cols="4">
-									<h4>Photos</h4>
-									<!-- <Photos 
+					<v-expansion-panels
+						v-model="panel"
+						multiple
+					>
+						<v-expansion-panel>
+							<v-expansion-panel-header>
+								<h2>Site Information</h2>
+							</v-expansion-panel-header>
+							<v-expansion-panel-content>
+								<v-row>
+									<v-col cols="8">
+										<v-row>
+											<v-col cols="6">
+												<v-text-field
+													name="SiteName"
+													label="Site Name"
+													outlined
+													dense
+													v-model="fields.SiteName"
+													:readonly="isView"
+												></v-text-field>
+												<v-text-field
+													name="EstablishedYear"
+													label="Established Year"
+													outlined
+													dense
+													v-model="fields.EstablishedYear"
+													:readonly="isView"
+												></v-text-field>
+												<v-text-field
+													name="MaintainedBy"
+													label="Maintained"
+													outlined
+													dense
+													v-model="fields.SiteName"
+													:readonly="isView"
+												></v-text-field>
+											</v-col>
+											<v-col cols="6">
+												<v-text-field
+													name="NotificationSigns"
+													outlined
+													dense
+													:rules="notifRules"
+													label="Advanced notification signs"
+													v-model="fields.AdvancedNotification"
+													:readonly="isView"
+												></v-text-field>
+												<v-textarea
+													name="NotificationDesc"
+													outlined
+													dense
+													label="Advanced Notification Description"
+													:readonly="isView"
+													v-model="fields.NotificationDesc"
+												></v-textarea>
+											</v-col>
+										</v-row>
+									</v-col>
+									<v-col cols="4">
+										<h4>Photos</h4>
+										<!-- <Photos 
                           v-if="true" 
                           :showDefault="isNew" 
                           :photoType="'burial'"
@@ -118,50 +126,50 @@
                           @updateSelectedImage="selectedImageChanged" 
                           :selectedImage="selectedImage" 
                           @loadingPhotosChange="loadingPhotosChange"/>    -->
-								</v-col>
-							</v-row>
-						</v-expansion-panel-content>
-					</v-expansion-panel>
-					<v-expansion-panel>
-						<v-expansion-panel-header>
-							<h2>Location</h2>
-						</v-expansion-panel-header>
-						<v-expansion-panel-content>
-							<v-row>
-								<v-col cols="12">
-									<MapLoader
-										v-if="true"
-										:mode="mode"
-										:mapType="'intSite'"
-										@modifiedDataCoordinates="modifiedDataCoordinates"
-										:fields="{
-											RouteName: fields.RouteName,
-											KMNum: fields.KMNum,
-											LocationDesc: fields.LocationDesc,
-											lat: fields.Latitude,
-											long: fields.Longitude,
-											MapSheet: fields.MapSheet,
-											dataReady: overlay,
-										}"
-									/>
-								</v-col>
-							</v-row>
-						</v-expansion-panel-content>
-					</v-expansion-panel>
-					<v-expansion-panel v-if="!isNew">
-						<v-expansion-panel-header>
-							<h2>Assets</h2>
-						</v-expansion-panel-header>
-						<v-expansion-panel-content>
-							<v-row>
-								<v-col cols="12">
-									<v-data-table
-										:headers="assetHeaders"
-										:items="fields.assets"
-										:items-per-page="5"
-										class="elevation-0"
-									>
-										<!-- <template v-slot:item="{ item, index }">
+									</v-col>
+								</v-row>
+							</v-expansion-panel-content>
+						</v-expansion-panel>
+						<v-expansion-panel>
+							<v-expansion-panel-header>
+								<h2>Location</h2>
+							</v-expansion-panel-header>
+							<v-expansion-panel-content>
+								<v-row>
+									<v-col cols="12">
+										<MapLoader
+											v-if="true"
+											:mode="mode"
+											:mapType="'intSite'"
+											@modifiedDataCoordinates="modifiedDataCoordinates"
+											:fields="{
+												RouteName: fields.RouteName,
+												KMNum: fields.KMNum,
+												LocationDesc: fields.LocationDesc,
+												lat: fields.Latitude,
+												long: fields.Longitude,
+												MapSheet: fields.MapSheet,
+												dataReady: overlay,
+											}"
+										/>
+									</v-col>
+								</v-row>
+							</v-expansion-panel-content>
+						</v-expansion-panel>
+						<v-expansion-panel v-if="!isNew">
+							<v-expansion-panel-header>
+								<h2>Assets</h2>
+							</v-expansion-panel-header>
+							<v-expansion-panel-content>
+								<v-row>
+									<v-col cols="12">
+										<v-data-table
+											:headers="assetHeaders"
+											:items="fields.assets"
+											:items-per-page="5"
+											class="elevation-0"
+										>
+											<!-- <template v-slot:item="{ item, index }">
                             <tr v-if="item.deleted != true">
                                 <td class="parent-row">{{ item.Name }}</td>
                                 <td class="child-row">{{ item.Location }}</td>
@@ -187,25 +195,25 @@
                                 </td>   
                             </tr>            
                           </template>   -->
-									</v-data-table>
-								</v-col>
-							</v-row>
-						</v-expansion-panel-content>
-					</v-expansion-panel>
-					<v-expansion-panel v-if="!isNew">
-						<v-expansion-panel-header>
-							<h2>Actions</h2>
-						</v-expansion-panel-header>
-						<v-expansion-panel-content>
-							<v-row>
-								<v-col cols="12">
-									<v-data-table
-										:headers="actionHeaders"
-										:items="fields.actions"
-										:items-per-page="5"
-										class="elevation-0"
-									>
-										<!-- <template v-slot:item="{ item, index }">
+										</v-data-table>
+									</v-col>
+								</v-row>
+							</v-expansion-panel-content>
+						</v-expansion-panel>
+						<v-expansion-panel v-if="!isNew">
+							<v-expansion-panel-header>
+								<h2>Actions</h2>
+							</v-expansion-panel-header>
+							<v-expansion-panel-content>
+								<v-row>
+									<v-col cols="12">
+										<v-data-table
+											:headers="actionHeaders"
+											:items="fields.actions"
+											:items-per-page="5"
+											class="elevation-0"
+										>
+											<!-- <template v-slot:item="{ item, index }">
                             <tr v-if="item.deleted != true">
                                 <td class="parent-row">{{ item.Name }}</td>
                                 <td class="child-row">{{ item.Location }}</td>
@@ -231,37 +239,37 @@
                                 </td>   
                             </tr>            
                           </template>   -->
-									</v-data-table>
-								</v-col>
-							</v-row>
-						</v-expansion-panel-content>
-					</v-expansion-panel>
-					<v-expansion-panel>
-						<v-expansion-panel-header>
-							<h2>Inspections</h2>
-						</v-expansion-panel-header>
-						<v-expansion-panel-content>
-							<v-row>
-								<v-col
-									cols="12"
-									class="d-flex flex-row"
-								>
-									<InspectionDialog
-										:mode="'new'"
-										class="ml-auto mr-1"
-										@newInspection="newInspection"
-									/>
-								</v-col>
-							</v-row>
-							<v-row>
-								<v-col cols="12">
-									<v-data-table
-										:headers="inspectionHeaders"
-										:items="fields.inspections"
-										:items-per-page="5"
-										class="elevation-0"
+										</v-data-table>
+									</v-col>
+								</v-row>
+							</v-expansion-panel-content>
+						</v-expansion-panel>
+						<v-expansion-panel>
+							<v-expansion-panel-header>
+								<h2>Inspections</h2>
+							</v-expansion-panel-header>
+							<v-expansion-panel-content>
+								<v-row>
+									<v-col
+										cols="12"
+										class="d-flex flex-row"
 									>
-										<!-- <template v-slot:item="{ item, index }">
+										<InspectionDialog
+											:mode="'new'"
+											class="ml-auto mr-1"
+											@newInspection="newInspection"
+										/>
+									</v-col>
+								</v-row>
+								<v-row>
+									<v-col cols="12">
+										<v-data-table
+											:headers="inspectionHeaders"
+											:items="fields.inspections"
+											:items-per-page="5"
+											class="elevation-0"
+										>
+											<!-- <template v-slot:item="{ item, index }">
                             <tr v-if="item.deleted != true">
                                 <td class="parent-row">{{ item.Name }}</td>
                                 <td class="child-row">{{ item.Location }}</td>
@@ -287,12 +295,13 @@
                                 </td>   
                             </tr>            
                           </template>   -->
-									</v-data-table>
-								</v-col>
-							</v-row>
-						</v-expansion-panel-content>
-					</v-expansion-panel>
-				</v-expansion-panels>
+										</v-data-table>
+									</v-col>
+								</v-row>
+							</v-expansion-panel-content>
+						</v-expansion-panel>
+					</v-expansion-panels>
+				</v-form>
 			</v-col>
 		</v-row>
 		<v-overlay :value="overlay">
@@ -330,7 +339,9 @@ export default {
 	},
 	data: () => ({
 		username: 'username',
-		panel: [0, 1, 2, 3],
+		//form
+		valid: false,
+		panel: [0, 1, 2, 3, 4],
 		overlay: false,
 		items: null,
 		selectedItem: null,
@@ -366,7 +377,14 @@ export default {
 			{ text: 'Install Date', value: 'InstallDate' },
 			{ text: 'Status', value: 'Status' },
 		],
+		//rules
+		notifRules: [
+			//(value) => !!value || 'Required.',
+			(value) => value.length <= 7 || 'Length must be less than 7 characters',
+		],
+
 		routes: [],
+		modifiedMapFields: {},
 		//photos
 		selectedImage: null,
 		loadingPhotos: false,
@@ -400,7 +418,6 @@ export default {
 			}
 			return false;
 		},
-		modifiedDataCoordinates() {},
 		resetValidation() {
 			this.$refs.sForm.reset();
 		},
@@ -470,6 +487,11 @@ export default {
 				`/interpretive-sites/view/${localStorage.currentIntSiteID}`
 			);
 		},
+		modifiedDataCoordinates(val) {
+			console.log('coord', val);
+			this.modifiedMapFields = val;
+			this.showSave = this.showSave + 1;
+		},
 		selectedImageChanged(val) {
 			this.selectedImage = val;
 		},
@@ -479,69 +501,44 @@ export default {
 		async saveChanges() {
 			this.overlay = true;
 			console.log(this.fields);
-			// let {
-			// 	SiteName,
-			// 	EstablishedYear,
-			// 	Maintainer,
-			// 	NotificationDesc,
-			// 	AdvancedNotification,
-			// 	LocationDesc,
-			// 	RouteName,
-			// 	KMNum,
-			// 	MapSheet,
-			// 	Latitude,
-			// 	Longitude,
-			// 	//lists
-			// 	inspections,
-			// 	actions,
-			// 	assets,
-			// } = this.fields;
-			// //BurialID
-			// const burial = {
-			// 	Age,
-			// 	BirthDateNotes,
-			// 	BirthDay,
-			// 	BirthMonth,
-			// 	BirthYear,
-			// 	DeathDateNotes,
-			// 	DeathDay,
-			// 	DeathMonth,
-			// 	DeathYear,
-			// 	DestinationShipped,
-			// 	FirstName,
-			// 	FuneralPaidBy,
-			// 	Gender,
-			// 	GenderOther,
-			// 	LastName,
-			// 	Manner,
-			// 	OriginCity,
-			// 	OriginCountry,
-			// 	OriginState,
-			// 	OtherCemetaryDesc,
-			// 	OtherCountry,
-			// 	PersonNotes,
-			// 	PlotDescription,
-			// 	ShippedIndicator,
-			// 	//Ids directly on the burial table
-			// 	CauseID: Cause.CauseLUpID,
-			// 	CemetaryID: Cemetary.CemetaryLUpID,
-			// 	ReligionID: Religion.ReligionLUpID,
-			// };
-			// ////console.log(data);
-			// const data = {
-			// 	burial,
-			// 	Memberships,
-			// 	SiteVisits,
-			// 	Kinships,
-			// 	Sources,
-			// 	Occupations,
-			// };
+			let {
+				SiteName,
+				EstablishedYear,
+				//Maintainer,
+				NotificationDesc,
+				AdvancedNotification,
+				//lists
+				inspections,
+				actions,
+				assets,
+			} = this.fields;
+			let { LocationDesc, RouteName, KMNum, MapSheet, lat, long } =
+				this.modifiedMapFields;
+			const item = {
+				SiteName,
+				EstablishedYear,
+				//Maintainer,
+				NotificationDesc,
+				AdvancedNotification,
+				LocationDesc,
+				RouteName,
+				KMNum,
+				MapSheet,
+				Latitude: lat,
+				Longitude: long,
+			};
+			const data = {
+				item,
+				inspections,
+				actions,
+				assets,
+			};
 			//console.log(JSON.stringify(data));
 
 			if (this.isNew) {
-				await interpretiveSites.post(this.fields);
+				await interpretiveSites.post(data);
 			} else {
-				await interpretiveSites.put(localStorage.currentIntSiteID, this.fields);
+				await interpretiveSites.put(localStorage.currentIntSiteID, data);
 			}
 			this.overlay = false;
 			this.$router.push({ name: 'InterpretiveSitesGrid' });

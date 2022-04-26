@@ -11,12 +11,12 @@
 				dense
 				label="Location Description"
 				:readonly="mode == 'view'"
-				v-model="fields.LocationDesc"
+				v-model="modifiableFields.LocationDesc"
 			></v-textarea>
 
 			<v-select
 				:items="routes"
-				v-model="fields.RouteName"
+				v-model="modifiableFields.RouteName"
 				item-text="RouteName"
 				outlined
 				dense
@@ -29,13 +29,13 @@
 				dense
 				name="KMNumber"
 				label="KMNumber"
-				v-model="fields.KMNum"
+				v-model="modifiableFields.KMNum"
 				:readonly="mode == 'view'"
 			></v-text-field>
 
 			<v-select
 				:items="['test1', 'test2']"
-				v-model="fields.MapSheet"
+				v-model="modifiableFields.MapSheet"
 				outlined
 				dense
 				label="MapSheet"

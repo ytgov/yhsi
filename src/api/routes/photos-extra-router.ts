@@ -304,6 +304,28 @@ photosExtraRouter.get(
 	}
 );
 
+// GET INTERPRETIVE SITE PHOTOS
+photosExtraRouter.get(
+	'/interpretive-site/:siteID',
+	[param('siteID').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { siteID } = req.params;
+
+		const page = parseInt(req.query.page as string);
+		const limit = parseInt(req.query.limit as string);
+		const offset = page * limit || 0;
+		const photos = await db
+			.select('*')
+			.from('InterpretiveSite.Photos as IP')
+			.join('dbo.photo AS PH', 'IP.Photo_RowID', '=', 'PH.RowID')
+			.where('IP.SiteID', siteID)
+			.limit(limit)
+			.offset(offset);
+		res.status(200).send(photos);
+	}
+);
+
 // Get yt place photos
 photosExtraRouter.get(
 	'/ytplace/:placeId',
@@ -424,6 +446,49 @@ photosExtraRouter.post(
 		res.status(200).send({ message: 'Upload Success' });
 	}
 );
+
+
+// ADD NEW INTERPRETIVE SITE PHOTO
+photosExtraRouter.post(
+	'/interpretive-site',
+	[upload.single('file')],
+	async (req: Request, res: Response) => {
+
+		const { siteID, ...restBody } = req.body;
+		const ThumbFile = await createThumbnail(req.file.buffer);
+		const DateCreated = new Date();
+		const OriginalFileName = req.file.originalname;
+
+		const body = {
+			File: req.file.buffer,
+			ThumbFile,
+			DateCreated,
+			OriginalFileName,
+			...restBody,
+		};
+
+		const response = await db
+			.insert(body)
+			.into('dbo.photo')
+			.returning('*')
+			.then(async (rows) => {
+				const newPhoto = rows[0];
+
+				await db
+					.insert({ SiteID: siteID, Photo_RowID: newPhoto.RowId })
+					.into('InterpretiveSite.Photos')
+					.returning('*')
+					.then((rows) => {
+						return rows;
+					});
+
+				return newPhoto;
+			});
+
+		res.status(200).send({ message: 'Upload Success' });
+	}
+);
+
 
 // Add ytplace photo
 photosExtraRouter.post(
@@ -570,6 +635,39 @@ photosExtraRouter.post(
 			await db
 				.insert({ BurialID: burialId, Photo_RowID: rowId })
 				.into('Burial.Photo')
+				.returning('*')
+				.then((rows) => {
+					return rows;
+				});
+
+		res.status(200).send({ message: 'Successfully linked the photos' });
+	}
+);
+
+// LINK INTERPRETIVE SITE PHOTOS
+photosExtraRouter.post(
+	'/interpretive-site/link/:siteId',
+	[param('siteId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+
+		const { siteId } = req.params;
+		const { linkPhotos } = req.body;
+		let currentPhotos = await db
+			.select('Photo_RowID')
+			.from('InterpretiveSite.Photos')
+			.where('SiteID', siteId);
+		let filteredLinkPhotos = _.difference(
+			linkPhotos,
+			currentPhotos.map((x) => {
+				return x.Photo_RowID;
+			})
+		);
+
+		for (const rowId of filteredLinkPhotos)
+			await db
+				.insert({ SiteID: siteId, Photo_RowID: rowId })
+				.into('InterpretiveSite.Photos')
 				.returning('*')
 				.then((rows) => {
 					return rows;
