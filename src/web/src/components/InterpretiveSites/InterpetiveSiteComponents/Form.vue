@@ -141,6 +141,7 @@
 											lat: fields.Latitude,
 											long: fields.Longitude,
 											MapSheet: fields.MapSheet,
+											dataReady: overlay,
 										}"
 									/>
 								</v-col>

@@ -7,6 +7,7 @@
 			<v-textarea
 				name="LocationDesc"
 				outlined
+				rows="2"
 				dense
 				label="Location Description"
 				:readonly="mode == 'view'"
@@ -423,7 +424,7 @@
 					<l-control
 						:position="'bottomleft'"
 						class="custom-control-watermark"
-						>{{ mapTypeNoun }}
+						>{{ mapTypeNoun }} {{ fields.dataReady }}
 					</l-control>
 				</l-map>
 			</div>
@@ -455,6 +456,7 @@ import proj4 from 'proj4';
 import { YTPLACE_URL, STATIC_URL } from '../urls';
 import axios from 'axios';
 import catalogs from '../controllers/catalogs';
+import _ from 'lodash';
 const pointInPolygon = require('point-in-polygon');
 const utmObj = require('utm-latlng');
 const utmVar = new utmObj();
@@ -568,7 +570,7 @@ export default {
 		routes: [],
 	}),
 	async mounted() {
-		this.getFields();
+		//this.getFields();
 		this.fixMarkers();
 		this.setSharedVerbage();
 		proj4.defs([
@@ -597,7 +599,7 @@ export default {
 				return;
 			}
 			this.modifiableFields = this.fields;
-			console.log(this.fields);
+			console.log('dat', this.fields);
 			// If there is a mapsheet already prepopulate the options array with it so it shows on page load
 			if (this.modifiableFields.mapSheet) {
 				this.mapSheetOptions = [
@@ -843,19 +845,32 @@ export default {
             has fetched the data), because of that we cant use mounted or created to map the fields prop to the modifiedFields obj on the state, also 'prop' values
             are not supposed to be modified, hence why we have the modifiable fields obj. If we dont use a watcher we would have to have a flag on the parent component
             to indicate when the data is available to render the component, this would make the component less independent and less reusable.
-
-        fields(){
-            if(this.fields && this.flag < 3){
-                this.modifiableFields = this.fields;
-                this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
-                let lat = parseFloat(this.modifiableFields.lat);
-                let long = parseFloat(this.modifiableFields.long);
-                if(!isNaN(lat) || ! isNaN(long)){
-                    this.changedLocation();
-                }
-                this.flag++
-            }
-        },*/
+*/
+		fields() {
+			const tester = {
+				accuracy: '',
+				inyukon: '',
+				locationDesc: '',
+				lat: 0.0,
+				long: 0.0,
+				Location: '',
+				mapSheet: '',
+			};
+			if (!this.fields.dataReady && _.isEqual(this.modifiableFields, tester)) {
+				//this.flag < 3){
+				this.modifiableFields = this.fields;
+				this.dd = {
+					lat: this.modifiableFields.lat,
+					lng: this.modifiableFields.long,
+				};
+				let lat = parseFloat(this.modifiableFields.lat);
+				let long = parseFloat(this.modifiableFields.long);
+				if (!isNaN(lat) || !isNaN(long)) {
+					this.changedLocation();
+				}
+				//this.flag++;
+			}
+		},
 		modifiableFields: {
 			handler() {
 				this.modifiableFields.inyukon = !this.isOutsideYukon;
