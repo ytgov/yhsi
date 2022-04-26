@@ -72,7 +72,7 @@
                       :options.sync="options"
                       :server-items-length="totalLength"
                       @click:row="handleClick"
-                      :footer-props="{'items-per-page-options': [10, 30, 100]}"
+                      :footer-props="{'items-per-page-options': [50, 100]}"
                     >    
                     </v-data-table>
                     
@@ -93,6 +93,8 @@ import axios from "axios";
 import { PHOTO_BATCH_URL } from "../../../urls";
 import SaveDialog from "../SaveDialog";
 
+import { mapGetters } from 'vuex';
+
 export default {
   name: "photobatchgrid",
   components: { Breadcrumbs, SaveDialog },
@@ -105,7 +107,7 @@ export default {
     //{ text: "Id", value: "id"},
     { text: "Batch Name", value: "name"},
     { text: "User", value: "userName" },
-    { text: "Created", value: "dateCreated" },
+    { text: "Uploaded", value: "dateCreated" },
     { text: "PhotoCount", value: "photoCount" },
     ],
     //table options
@@ -138,14 +140,11 @@ export default {
       ];
 
       axios
-        //.get(`${PHOTO_BATCH_URL}`)
         .post(`${PHOTO_BATCH_URL}/search`, body)
         .then((resp) => {
           this.batches = resp.data.data;
-          // TODO include user names, for now using placeholder
           this.batches = this.batches.map((x) => { 
             x.dateCreated = this.formatDate(x.dateCreated);
-            x.userName = 'Placeholder (User ID ' + x.userName +')';
             return x;
           });
           this.totalLength = resp.data.meta.item_count;
@@ -162,8 +161,7 @@ export default {
         return `${month}/${day}/${year}`
     },
     saveDialog(batchName) {
-      // TODO replace userId once we have those
-      let body = { name: batchName, userId: 99 }
+      let body = { name: batchName, userId: this.currentUserId }
       axios
         .post(`${PHOTO_BATCH_URL}`, body)
         .then((resp) => {
@@ -183,39 +181,43 @@ export default {
     },
   },
   computed:{
-      filteredData(){// returns a filtered array depending on the selected filters and search
-          if(this.filterOptions){
-            let filters = JSON.parse(JSON.stringify(this.filterOptions));
-            let data = JSON.parse(JSON.stringify(this.batches));
-            
-            // Filter by user filter
-            data =
-              filters[0].value == null || filters[0].value == ""
-                ? data
-                : data.filter((x) =>
-                    x.userName
-                      ? x.userName.toLowerCase().includes(
-                          filters[0].value.toLowerCase()
-                        )
-                      : false
-                  );  
-            // Filter by search field
-            /*data =
-              this.search == null || this.search == ""
-                ? data
-                : data.filter((x) =>
-                    x.name
-                      ? x.name.toLowerCase().includes(
-                          this.search.toLowerCase()
-                        )
-                      : false
-                  );  */
-            return data;
-          }
-          else{
-            return this.batches;
-          }
-      },        
+    filteredData(){// returns a filtered array depending on the selected filters and search
+        if(this.filterOptions){
+          let filters = JSON.parse(JSON.stringify(this.filterOptions));
+          let data = JSON.parse(JSON.stringify(this.batches));
+          
+          // Filter by user filter
+          data =
+            filters[0].value == null || filters[0].value == ""
+              ? data
+              : data.filter((x) =>
+                  x.userName
+                    ? x.userName.toLowerCase().includes(
+                        filters[0].value.toLowerCase()
+                      )
+                    : false
+                );  
+          // Filter by search field
+          /*data =
+            this.search == null || this.search == ""
+              ? data
+              : data.filter((x) =>
+                  x.name
+                    ? x.name.toLowerCase().includes(
+                        this.search.toLowerCase()
+                      )
+                    : false
+                );  */
+          return data;
+        }
+        else{
+          return this.batches;
+        }
+    },    
+      
+    ...mapGetters({
+      currentUserId: 'profile/id',
+    }),  
   },
   watch: {/* eslint-disable */
     options: {

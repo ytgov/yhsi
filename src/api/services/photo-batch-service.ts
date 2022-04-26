@@ -61,11 +61,20 @@ export class PhotoBatchService {
 			let selectStmt = this.knex('photobatch')
 				.select(PHOTO_BATCH_FIELDS)
 				.select(this.knex.raw('photobatch.id as batchId'))
-				.select(this.knex.raw('photobatch.userId as userName'))
+				.select(
+					this.knex.raw(
+						"security.[user].first_name + ' ' + security.[user].last_name as userName"
+					)
+				)
 				.leftOuterJoin(
 					'photobatchphoto',
 					'photobatch.id',
 					'photobatchphoto.photobatchid'
+				)
+				.leftOuterJoin(
+					'security.[user]',
+					'photobatch.ownerid',
+					'security.[user].id'
 				)
 				.count('photobatchphoto.id', { as: 'photoCount' })
 				.groupBy(PHOTO_BATCH_FIELDS)
@@ -167,7 +176,7 @@ export class PhotoBatchService {
 			.select<PhotoBatchPhoto>([
 				'id',
 				'photoBatchId',
-				'photoFile',
+				'thumbFile',
 				'photoFileName',
 				'photoContentType',
 			])

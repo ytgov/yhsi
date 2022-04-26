@@ -8,6 +8,7 @@ export const PHOTO_FIELDS = [
 	'nTSMapNumber',
 	'address',
 	'dateCreated',
+	'datePhotoTaken',
 	'yHSIRecord',
 	'bordenRecord',
 	'paleoRecord',
@@ -79,6 +80,7 @@ export class Photo {
 	nTSMapNumber!: string;
 	address!: string;
 	dateCreated!: Date;
+	datePhotoTaken!: Date;
 	yHSIRecord!: string;
 	bordenRecord!: string;
 	paleoRecord!: string;
@@ -148,6 +150,7 @@ export class PhotoBatchPhoto {
 	photoFile!: Buffer;
 	photoFileName!: string;
 	photoContentType!: string;
+	thumbFile!: Buffer;
 }
 
 export class SavedFilter {

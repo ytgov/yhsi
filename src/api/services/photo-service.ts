@@ -222,17 +222,6 @@ export class PhotoService {
 		return this.knex('savedFilter').where({ id }).delete();
 	}
 
-	async getSavedFilter(id: string): Promise<SavedFilter | undefined> {
-		return this.knex('savedFilter')
-			.select<SavedFilter>(['id', 'userId', 'name', 'resultType', 'value'])
-			.where({ id: id })
-			.first()
-			.catch((err: any) => {
-				//console.log('BOMBED', err);
-				return undefined;
-			});
-	}
-
 	async getSavedFilterByUser(id: string): Promise<any> {
 		return this.knex('savedFilter')
 			.select<SavedFilter>(['id', 'userId', 'name', 'resultType', 'value'])

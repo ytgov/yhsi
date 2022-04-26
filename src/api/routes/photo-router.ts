@@ -338,31 +338,6 @@ photoRouter.delete(
 );
 
 photoRouter.get(
-	'/saved-filter/:id',
-	[check('id').notEmpty().isInt()],
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
-
-		if (!errors.isEmpty()) {
-			//console.log(errors);
-			return res.status(400).json({ errors: errors.array() });
-		}
-
-		await photoService
-			.getSavedFilter(req.params.id)
-			.then((item) => {
-				if (item) return res.json({ data: item });
-
-				return res.status(404).send('Filter not found');
-			})
-			.catch((err) => {
-				console.error(err);
-				return res.status(404).send('Filter not found');
-			});
-	}
-);
-
-photoRouter.get(
 	'/saved-filter/user/:id',
 	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {

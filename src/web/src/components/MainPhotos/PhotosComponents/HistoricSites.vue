@@ -50,6 +50,17 @@
                       :readonly="mode == 'view'"
                     ></v-text-field>
 
+                  <div v-if="itemType == 'photo'">
+                   <v-text-field
+                      v-if="mode == 'view'"
+                      v-model="fields.dateCreated"
+                      label="Date Uploaded"
+                      readonly
+                      dense
+                      outlined
+                      background-color="white"
+                    ></v-text-field>
+
                     <v-menu
                         v-if="mode != 'view'"
                         ref="menu"
@@ -61,7 +72,7 @@
                     >
                         <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                          v-model="fields.dateCreated"
+                          v-model="fields.datePhotoTaken"
                           label="Date Photo Taken"
                           append-icon="mdi-calendar"
                           readonly
@@ -75,7 +86,7 @@
                         <v-date-picker
                         v-if="mode != 'view'"
                         ref="picker"
-                        v-model="fields.dateCreated"
+                        v-model="fields.datePhotoTaken"
                         :max="new Date().toISOString().substr(0, 10)"
                         min="1950-01-01"
                         @change="save"
@@ -87,13 +98,14 @@
                     
                     <v-text-field
                       v-else
-                      v-model="fields.dateCreated"
+                      v-model="fields.datePhotoTaken"
                       label="Date Photo Taken"
                       readonly
                       dense
                       outlined
                       background-color="white"
                     ></v-text-field>
+                    </div>
                   </v-col>
 
                   <v-col

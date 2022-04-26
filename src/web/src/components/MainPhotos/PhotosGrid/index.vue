@@ -165,7 +165,7 @@
                   <v-card-subtitle
                     v-else
                     v-text="
-                      `Photo taken, ${new Date(item.dateCreated).toLocaleDateString()}`
+                      `Photo taken, ${new Date(item.datePhotoTaken).toLocaleDateString()}`
                     "
                   ></v-card-subtitle>
                 </v-card-actions>
@@ -207,6 +207,7 @@ import SaveDialog from "../SaveDialog";
 import { PHOTO_URL, STATIC_URL } from "../../../urls";
 import VueQueryBuilder from 'vue-query-builder';
 import Vue from "vue";
+import { mapGetters } from 'vuex';
 
 export default {
   name: "Grid",
@@ -527,8 +528,7 @@ export default {
 
   saveDialog(filterName) {
     let query = JSON.stringify(this.queryBuilder.children);
-    // TODO - set userId once users are set up
-    let body = { userId: 99, name: filterName, resultType: "Photo", value: query}
+    let body = { userId: this.currentUserId, name: filterName, resultType: "Photo", value: query}
     axios
       .post(`${PHOTO_URL}/saved-filter`, body)
       .then(() => {
@@ -572,8 +572,7 @@ export default {
 
   getSavedFilters() {
     this.savedFilters = [];
-    // TODO replace userid once users are set up. Using 99 for now
-    let userId = 99;
+    let userId = this.currentUserId;
     axios
       .get(`${PHOTO_URL}/saved-filter/user/${userId}`)
       .then((resp) => {
@@ -638,7 +637,10 @@ export default {
     },
     showFiltersText: function () {
       return this.showFilterSection ? 'Hide Filters' : 'Show Filters';
-    }
+    }, 
+    ...mapGetters({
+      currentUserId: 'profile/id',
+    }),
   },
 };
 </script>
