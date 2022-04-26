@@ -37,6 +37,11 @@ export class InterpretiveSiteService {
 			.select('*')
 			.from('InterpretiveSite.Assets')
 			.where('InterpretiveSite.Assets.SiteID', siteId);
+		
+		item.inspections = await db
+			.select('*')
+			.from('InterpretiveSite.Inspections')
+			.where('InterpretiveSite.Inspections.SiteID', siteId);
 
         item.maintainer = await db
 			.select('*')

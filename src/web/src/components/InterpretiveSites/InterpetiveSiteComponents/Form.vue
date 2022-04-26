@@ -242,6 +242,18 @@
 						</v-expansion-panel-header>
 						<v-expansion-panel-content>
 							<v-row>
+								<v-col
+									cols="12"
+									class="d-flex flex-row"
+								>
+									<InspectionDialog
+										:mode="'new'"
+										class="ml-auto mr-1"
+										@newInspection="newInspection"
+									/>
+								</v-col>
+							</v-row>
+							<v-row>
 								<v-col cols="12">
 									<v-data-table
 										:headers="inspectionHeaders"
@@ -296,7 +308,7 @@
 import Breadcrumbs from '../../Breadcrumbs';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 import catalogs from '../../../controllers/catalogs';
-// import MembershipDialog from "./Dialogs/MembershipDialog.vue";
+import InspectionDialog from './Dialogs/InspectionDialog.vue';
 // import OccupationDialog from "./Dialogs/OccupationDialog.vue";
 // import SourceDialog from "./Dialogs/SourceDialog.vue";
 // import KinDialog from "./Dialogs/KinDialog.vue";
@@ -309,7 +321,7 @@ export default {
 	components: {
 		Breadcrumbs,
 		MapLoader,
-		// MembershipDialog,
+		InspectionDialog,
 		// OccupationDialog,
 		// SiteVisitDialog,
 		// KinDialog,
@@ -340,10 +352,9 @@ export default {
 			{ text: 'Completion Notes', value: 'actions' },
 		],
 		inspectionHeaders: [
-			{ text: 'Inspection Date', value: 'Inscription' },
-			{ text: 'Description', value: 'MarkerDescription' },
-			{ text: 'Inspected by', value: 'Condition' },
-			{ text: 'Actions', value: 'RecordedBy' },
+			{ text: 'Inspection Date', value: 'InspectionDate' },
+			{ text: 'Description', value: 'Description' },
+			{ text: 'Inspected by', value: 'InspectedBy' },
 		],
 		assetHeaders: [
 			{ text: 'Category', value: 'Category' },
@@ -353,7 +364,7 @@ export default {
 			{ text: 'Description', value: 'Description' },
 			{ text: 'Maintained', value: 'Maintained' },
 			{ text: 'Install Date', value: 'InstallDate' },
-			{ text: 'Active', value: 'Status' },
+			{ text: 'Status', value: 'Status' },
 		],
 		routes: [],
 		//photos
@@ -395,36 +406,21 @@ export default {
 		},
 		noData() {
 			this.fields = {
-				//information section
-				FirstName: '',
-				LastName: '',
-				OriginCountry: '',
-				OriginState: '',
-				OriginCity: '',
-				BirthDate: '',
-				DeathDate: '',
-				Age: '',
-				//history section
-				Religion: '',
-				Occupations: [],
-				Memberships: [],
-				Gender: '',
-				Notes: '',
-				//Death
-				Manner: '',
-				Cause: '',
-				FuneralPaidBy: '',
-				Sources: [],
-				Kinships: [],
-				//Burial
-				BuriedInYukon: '',
-				BodyShipped: '',
-				BurialLocation: '',
-				Other: '',
-				PlotDescription: '',
-				CemetaryID: '',
-				Cemetary: '',
-				SiteVisits: [],
+				SiteName: '',
+				EstablishedYear: '',
+				Maintainer: '',
+				NotificationDesc: '',
+				AdvancedNotification: '',
+				LocationDesc: '',
+				RouteName: '',
+				KMNum: '',
+				MapSheet: '',
+				Latitude: '',
+				Longitude: '',
+				//lists
+				inspections: [],
+				actions: [],
+				assets: [],
 			};
 		},
 		saveCurrentIntSiteID() {
@@ -482,40 +478,23 @@ export default {
 		},
 		async saveChanges() {
 			this.overlay = true;
-			//console.log(this.fields);
+			console.log(this.fields);
 			// let {
-			// 	Age,
-			// 	BirthDateNotes,
-			// 	BirthDay,
-			// 	BirthMonth,
-			// 	BirthYear,
-			// 	Memberships,
-			// 	SiteVisits,
-			// 	Kinships,
-			// 	DeathDateNotes,
-			// 	DeathDay,
-			// 	DeathMonth,
-			// 	DeathYear,
-			// 	DestinationShipped,
-			// 	FirstName,
-			// 	FuneralPaidBy,
-			// 	Gender,
-			// 	GenderOther,
-			// 	LastName,
-			// 	Manner,
-			// 	Occupations,
-			// 	Sources,
-			// 	OriginCity,
-			// 	OriginCountry,
-			// 	OriginState,
-			// 	OtherCemetaryDesc,
-			// 	OtherCountry,
-			// 	PersonNotes,
-			// 	PlotDescription,
-			// 	ShippedIndicator,
-			// 	Cause,
-			// 	Cemetary,
-			// 	Religion,
+			// 	SiteName,
+			// 	EstablishedYear,
+			// 	Maintainer,
+			// 	NotificationDesc,
+			// 	AdvancedNotification,
+			// 	LocationDesc,
+			// 	RouteName,
+			// 	KMNum,
+			// 	MapSheet,
+			// 	Latitude,
+			// 	Longitude,
+			// 	//lists
+			// 	inspections,
+			// 	actions,
+			// 	assets,
 			// } = this.fields;
 			// //BurialID
 			// const burial = {
@@ -559,14 +538,18 @@ export default {
 			// };
 			//console.log(JSON.stringify(data));
 
-			// if (this.isNew) {
-			// 	await burials.post(data);
-			// } else {
-			// 	await burials.put(localStorage.currentBurialID, data);
-			// }
+			if (this.isNew) {
+				await interpretiveSites.post(this.fields);
+			} else {
+				await interpretiveSites.put(localStorage.currentIntSiteID, this.fields);
+			}
 			this.overlay = false;
-			this.$router.push({ name: 'BurialsGrid' });
+			this.$router.push({ name: 'InterpretiveSitesGrid' });
 			this.$router.go();
+		},
+		newInspection(val) {
+			this.fields.inspections.push(val);
+			console.log(this.fields);
 		},
 		newOccupation(val) {
 			this.fields.Occupations.push(val);
@@ -585,80 +568,6 @@ export default {
 				val.new = true;
 			}
 			this.$set(this.fields.Occupations, index, val);
-		},
-		newKinship(val) {
-			this.fields.Kinships.push(val);
-		},
-		editKinship(val, index) {
-			////console.log(val, index);
-			if (this.isNew) {
-				delete val.edit;
-				val.new = true;
-			}
-			this.$set(this.fields.Kinships, index, val);
-		},
-		deleteKinship(index) {
-			if (index > -1) {
-				let val = this.fields.Kinships[index];
-				val.deleted = true;
-				this.$set(this.fields.Kinships, index, val);
-			}
-		},
-		newMembership(val) {
-			////console.log(val);
-			this.fields.Memberships.push(val);
-		},
-		editMembership(val, index) {
-			// //console.log(val, index);
-			if (this.isNew) {
-				delete val.edited;
-				val.new = true;
-			}
-			this.$set(this.fields.Memberships, index, val);
-		},
-		deleteMembership(index) {
-			//console.log(index);
-			if (index > -1) {
-				let val = this.fields.Memberships[index];
-				val.deleted = true;
-				this.$set(this.fields.Memberships, index, val);
-			}
-		},
-		newSiteVisit(val) {
-			this.fields.SiteVisits.push(val);
-		},
-		editSiteVisit(val, index) {
-			////console.log(val, index);
-			if (this.isNew) {
-				delete val.edit;
-				val.new = true;
-			}
-			this.$set(this.fields.SiteVisits, index, val);
-		},
-		deleteSiteVisit(index) {
-			if (index > -1) {
-				let val = this.fields.SiteVisits[index];
-				val.deleted = true;
-				this.$set(this.fields.SiteVisits, index, val);
-			}
-		},
-		newSource(val) {
-			this.fields.Sources.push(val);
-		},
-		editSource(val, index) {
-			////console.log(val, index);
-			if (this.isNew) {
-				delete val.edit;
-				val.new = true;
-			}
-			this.$set(this.fields.Sources, index, val);
-		},
-		deleteSource(index) {
-			if (index > -1) {
-				let val = this.fields.Sources[index];
-				val.deleted = true;
-				this.$set(this.fields.Sources, index, val);
-			}
 		},
 		save(date) {
 			this.$refs.menu.save(date);
