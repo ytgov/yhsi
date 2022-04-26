@@ -1,83 +1,96 @@
 import knex, { Knex } from 'knex';
 import moment from 'moment';
-import { uniq, cloneDeep, pick } from 'lodash';
+import { get, isEmpty, isNull, uniq } from 'lodash';
 
 import {
+	AssociationService,
+	ConstructionPeriodService,
+	ContactService,
+	DateService,
+	DescriptionService,
+	FirstNationAssociationService,
+	FunctionalUseService,
 	HistoricalPatternService,
 	NameService,
+	OwnershipService,
 	PhotoService,
 	PlaceEditService,
-	QueryStatement,
+	PreviousOwnershipService,
+	RevisionLogService,
 	SortStatement,
 	StaticService,
+	ThemeService,
+	WebLinkService,
 } from './';
+import { PLACE_FIELDS, REGISTER_FIELDS } from '../data';
 import {
-	Association,
-	CONSTRUCTION_PERIODS,
-	ConstructionPeriod,
-	Contact,
-	Dates,
-	Description,
-	DESCRIPTION_TYPES,
-	DESCRIPTION_TYPE_ENUMS,
-	FIRST_NATION_ASSOCIATION_TYPES,
-	FirstNationAssociation,
-	FunctionalUse,
-	Ownership,
-	OWNERSHIP_TYPES,
-	PLACE_FIELDS,
-	PreviousOwnership,
-	REGISTER_FIELDS,
-	REVISION_LOG_TYPES,
-	RevisionLog,
-	Theme,
-	WebLink,
-} from '../data';
-import {
-	decodeCommaDelimitedArray,
-	encodeCommaDelimitedArray,
-	GenericEnum,
-	HistoricalPattern,
-	HISTORICAL_PATTERN_TYPES,
-	Name,
+	DescriptionTypeEnums,
 	Place,
+	PlainObject,
+	User,
+	UserRoles,
 } from '../models';
+import { NotFoundError } from '../utils/validation';
 
-function combine(
-	list1: Array<any>,
-	list2: Array<any> | ReadonlyArray<any>,
-	linker: any,
-	linker2: any,
-	value: any,
-	typeText: any = 'typeText'
-): any[] {
-	list1.forEach((item) => {
-		let match = list2.filter((i) => i[linker] == item[linker2]);
+// This function can go away when the back-end serves the
+// relationship data as part of the data directly.
+// e.g. { data: { names: [{ id: 1, placeId: 1, description: "SomeName" }] } }
+// instead of { data: {}, relationships: { names: { data: [{ id: 1, placeId: 1, description: "SomeName" }] } } }
+function injectRelationshipData(
+	attributes: PlainObject,
+	relationships: PlainObject
+) {
+	Object.keys(relationships).forEach((key) => {
+		if (attributes.hasOwnProperty(key)) {
+			console.error('Relationship data conflicts with source data.');
+			return;
+		}
 
-		if (match && match[0]) {
-			let add = { [typeText]: match[0][value] };
-			item = Object.assign(item, add);
-		} else item = Object.assign(item, { [typeText]: null });
+		attributes[key] = get(relationships, `${key}.data`, []);
 	});
-
-	return list1;
 }
 
 export class PlaceService {
 	private db: Knex;
+	private assocationService: AssociationService;
+	private constructionPeriodService: ConstructionPeriodService;
+	private contactService: ContactService;
+	private dateService: DateService;
+	private descriptionService: DescriptionService;
+	private firstNationAssociationService: FirstNationAssociationService;
+	private functionalUseService: FunctionalUseService;
 	private historicalPatternService: HistoricalPatternService;
 	private nameService: NameService;
+	private ownershipService: OwnershipService;
 	private photoService: PhotoService;
 	private placeEditService: PlaceEditService;
+	private previousOwnershipService: PreviousOwnershipService;
+	private revisionLogService: RevisionLogService;
 	private staticService: StaticService;
+	private themeService: ThemeService;
+	private webLinkService: WebLinkService;
 
 	constructor(config: Knex.Config<any>) {
 		this.db = knex(config);
+		this.assocationService = new AssociationService(config);
+		this.constructionPeriodService = new ConstructionPeriodService(config);
+		this.contactService = new ContactService(config);
+		this.dateService = new DateService(config);
+		this.descriptionService = new DescriptionService(config);
+		this.firstNationAssociationService = new FirstNationAssociationService(
+			config
+		);
+		this.functionalUseService = new FunctionalUseService(config);
 		this.historicalPatternService = new HistoricalPatternService();
 		this.nameService = new NameService();
+		this.ownershipService = new OwnershipService(config);
 		this.photoService = new PhotoService(config);
 		this.placeEditService = new PlaceEditService();
+		this.previousOwnershipService = new PreviousOwnershipService(config);
+		this.revisionLogService = new RevisionLogService(config);
 		this.staticService = new StaticService(config);
+		this.themeService = new ThemeService(config);
+		this.webLinkService = new WebLinkService(config);
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Place>> {
@@ -97,167 +110,60 @@ export class PlaceService {
 			.select(this.db.raw("'French teaser' as teaserFrench"));
 	}
 
-	async getById(id: number) {
+	async getIdsForUser(user?: User) {
+		let selectStatement = this.db('place').select('yHSIId');
+
+		this.scopeSitesToUser(selectStatement, user);
+
+		return selectStatement.then((list) => list);
+	}
+
+	async getById(id: number, user?: User) {
 		return this.db('place')
-			.first<Place>(PLACE_FIELDS)
+			.first(PLACE_FIELDS)
 			.where({ id: id })
+			.then(Place.decodeCommaDelimitedArrayColumns)
 			.then(async (place) => {
 				if (!place) {
-					return Promise.reject(new Error(`Could not find Place for id=${id}`));
+					return Promise.reject(
+						new NotFoundError(`Could not find Place for id=${id}`)
+					);
 				}
-
-				const fnList = await this.staticService.getFirstNations();
-				const themeList = await this.staticService.getPlaceThemes();
-				const functionalTypes = await this.staticService.getFunctionalTypes();
 
 				place.hasPendingChanges = await this.placeEditService.existsForPlace(
 					id
 				);
-
-				place.contributingResources = decodeCommaDelimitedArray(
-					place.contributingResources
+				place.associations = await this.assocationService.getFor(id);
+				place.constructionPeriods = await this.constructionPeriodService.getFor(
+					id
 				);
-				place.designations = decodeCommaDelimitedArray(place.designations);
-				place.records = decodeCommaDelimitedArray(place.records);
-				place.siteCategories = decodeCommaDelimitedArray(place.siteCategories);
-
-				const associations = combine(
-					await this.getAssociationsFor(id),
-					this.getAssociationTypes(),
-					'value',
-					'type',
-					'text'
+				place.contacts = await this.contactService.getFor(id);
+				place.dates = await this.dateService.getFor(id);
+				place.descriptions = await this.descriptionService.getForPlace(id);
+				place.firstNationAssociations =
+					await this.firstNationAssociationService.getFor(id);
+				place.functionalUses = await this.functionalUseService.getFor(id);
+				place.historicalPatterns = await this.historicalPatternService.getFor(
+					id
 				);
-				let fnAssociations = combine(
-					await this.getFNAssociationsFor(id),
-					this.getFNAssociationTypes(),
-					'value',
-					'firstNationAssociationType',
-					'text'
+				place.names = await this.nameService.getFor(id);
+				place.ownerships = await this.ownershipService.getFor(id);
+				place.recognitionDate = isNull(place.recognitionDate)
+					? null
+					: moment(place.recognitionDate).add(7, 'hours').format('YYYY-MM-DD');
+				place.revisionLogs = await this.revisionLogService.getFor(id);
+				place.themes = await this.themeService.getFor(id);
+				place.previousOwnerships = await this.previousOwnershipService.getFor(
+					id
 				);
-				fnAssociations = combine(
-					fnAssociations,
-					fnList,
-					'id',
-					'firstNationId',
-					'description'
-				);
-
-				const names = await this.getNamesFor(id);
-				const historicalPatterns = combine(
-					await this.getHistoricalPatternsFor(id),
-					this.getHistoricalPatterns(),
-					'value',
-					'historicalPatternType',
-					'text'
-				);
-				const dates = combine(
-					await this.getDatesFor(id),
-					this.getDateTypes(),
-					'value',
-					'type',
-					'text'
-				);
-				const constructionPeriods = combine(
-					await this.getConstructionPeriodsFor(id),
-					this.getConstructionPeriodTypes(),
-					'value',
-					'type',
-					'text'
-				);
-				const themes = combine(
-					combine(
-						await this.getThemesFor(id),
-						themeList,
-						'id',
-						'placeThemeId',
-						'type',
-						'typeName'
-					),
-					themeList,
-					'id',
-					'placeThemeId',
-					'category',
-					'categoryName'
-				);
-				let functionalUses = combine(
-					await this.getFunctionUsesFor(id),
-					this.getFunctionalUseTypes(),
-					'value',
-					'functionalUseType',
-					'text',
-					'functionalUseTypeText'
-				);
-				functionalUses = combine(
-					functionalUses,
-					functionalTypes,
-					'id',
-					'functionalTypeId',
-					'description',
-					'functionalTypeText'
-				);
-				const ownerships = combine(
-					await this.getOwnershipsFor(id),
-					this.getOwnershipTypes(),
-					'value',
-					'ownershipType',
-					'text'
-				);
-				const previousOwnerships = await this.getPreviousOwnershipsFor(id);
-				const contacts = combine(
-					await this.getContactsFor(id),
-					this.getContactTypes(),
-					'value',
-					'contactType',
-					'text',
-					'contactTypeText'
-				);
-				const revisionLogs = combine(
-					await this.getRevisionLogFor(id),
-					this.getRevisionLogTypes(),
-					'value',
-					'revisionLogType',
-					'text',
-					'revisionLogTypeText'
-				);
-				const webLinks = combine(
-					await this.getWebLinksFor(id),
-					this.getWebLinkTypes(),
-					'value',
-					'type',
-					'text'
-				);
-				const descriptions = combine(
-					await this.getDescriptionsFor(id),
-					this.getDescriptionTypes(),
-					'value',
-					'type',
-					'text'
-				);
+				place.webLinks = await this.webLinkService.getForPlace(id);
 
 				const photos = await this.photoService.getAllForPlace(id);
 
 				const relationships = {
-					associations: { data: associations },
-					firstNationAssociations: { data: fnAssociations },
-					names: { data: names },
-					historicalPatterns: { data: historicalPatterns },
-					dates: { data: dates },
-					constructionPeriods: { data: constructionPeriods },
-					themes: { data: themes },
-					functionalUses: { data: functionalUses },
-					ownerships: { data: ownerships },
-					previousOwnerships: { data: previousOwnerships },
 					photos: { data: photos },
-					contacts: { data: contacts },
-					revisionLogs: { data: revisionLogs },
-					webLinks: { data: webLinks },
-					descriptions: { data: descriptions },
 				};
 
-				place.recognitionDateDisplay = place.recognitionDate
-					? moment(place.recognitionDate).add(7, 'hours').format('YYYY-MM-DD')
-					: '';
 				return { place, relationships };
 			});
 	}
@@ -294,35 +200,84 @@ export class PlaceService {
 		return this.db('place').insert(item).returning<Place>(PLACE_FIELDS);
 	}
 
-	updatePlace(id: number, item: Place): Promise<Place | undefined> {
-		return this.db('place').where({ id }).update(item);
+	updateRelations(id: number, attributes: PlainObject) {
+		return Promise.resolve(attributes).then(async (attrs) => {
+			if (Object.prototype.hasOwnProperty.call(attrs, 'associations')) {
+				await this.assocationService.upsertFor(id, attrs['associations']);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'constructionPeriods')) {
+				await this.constructionPeriodService.upsertFor(
+					id,
+					attrs['constructionPeriods']
+				);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'contacts')) {
+				await this.contactService.upsertFor(id, attrs['contacts']);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'dates')) {
+				await this.dateService.upsertFor(id, attrs['dates']);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'descriptions')) {
+				await this.descriptionService.upsertForPlace(id, attrs['descriptions']);
+			}
+			if (
+				Object.prototype.hasOwnProperty.call(attrs, 'firstNationAssociations')
+			) {
+				await this.firstNationAssociationService.upsertFor(
+					id,
+					attrs['firstNationAssociations']
+				);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'functionalUses')) {
+				await this.functionalUseService.upsertFor(id, attrs['functionalUses']);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'historicalPatterns')) {
+				await this.historicalPatternService.upsertFor(
+					id,
+					attrs['historicalPatterns']
+				);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'names')) {
+				await this.nameService.upsertFor(id, attrs['names']);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'ownerships')) {
+				await this.ownershipService.upsertFor(id, attrs['ownerships']);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'previousOwnerships')) {
+				await this.previousOwnershipService.upsertFor(
+					id,
+					attrs['previousOwnerships']
+				);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'revisionLogs')) {
+				await this.revisionLogService.upsertFor(id, attrs['revisionLogs']);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'themes')) {
+				await this.themeService.upsertFor(id, attrs['themes']);
+			}
+			if (Object.prototype.hasOwnProperty.call(attrs, 'webLinks')) {
+				await this.webLinkService.upsertForPlace(id, attrs['webLinks']);
+			}
+			return attrs;
+		});
 	}
 
-	updatePlaceSummary(id: number, attributes: Place) {
-		const names = attributes.names || [];
-		const historicalPatterns = attributes.historicalPatterns || [];
-		delete attributes['names'];
-		delete attributes['historicalPatterns'];
+	update(id: number, attributes: PlainObject): Promise<Place | undefined> {
+		return Promise.resolve(attributes)
+			.then((attrs) => this.updateRelations(id, attrs))
+			.then(Place.stripOutNonColumnAttributes)
+			.then(Place.encodeCommaDelimitedArrayColumns)
+			.then((encodedAttributes) => {
+				if (isEmpty(encodedAttributes)) return;
 
-		return new Promise(async (resolve, reject) => {
-			attributes.contributingResources = encodeCommaDelimitedArray(
-				attributes.contributingResources
-			);
-			attributes.designations = encodeCommaDelimitedArray(
-				attributes.designations
-			);
-			attributes.records = encodeCommaDelimitedArray(attributes.records);
-			attributes.siteCategories = encodeCommaDelimitedArray(
-				attributes.siteCategories
-			);
-
-			return this.updatePlace(id, attributes).then(resolve).catch(reject);
-		}).then(async (result) => {
-			await this.nameService.upsertFor(id, names);
-			await this.historicalPatternService.upsertFor(id, historicalPatterns);
-
-			return result;
-		});
+				return this.db('place').where({ id }).update(encodedAttributes);
+			})
+			.then(() => {
+				return this.getById(id).then(({ place, relationships }) => {
+					injectRelationshipData(place, relationships);
+					return place;
+				});
+			});
 	}
 
 	async generateIdFor(nTSMapSheet: string): Promise<string> {
@@ -344,318 +299,8 @@ export class PlaceService {
 		return `${nTSMapSheet}/001`;
 	}
 
-	async getAssociationsFor(id: number): Promise<Association[]> {
-		return this.db('association')
-			.where({ placeId: id })
-			.select<Association[]>(['id', 'placeId', 'type', 'description']);
-	}
-
-	async addAssociation(name: Association) {
-		return this.db('association').insert(name);
-	}
-
-	async removeAssociation(id: number) {
-		return this.db('association').where({ id }).delete();
-	}
-
-	async getFNAssociationsFor(id: number): Promise<FirstNationAssociation[]> {
-		return this.db('FirstNationAssociation')
-			.where({ placeId: id })
-			.select<FirstNationAssociation[]>([
-				'id',
-				'placeId',
-				'firstNationId',
-				'firstNationAssociationType',
-				'comments',
-			]);
-	}
-
-	async addFNAssociation(name: FirstNationAssociation) {
-		return this.db('FirstNationAssociation').insert(name);
-	}
-
-	async removeFNAssociation(id: number) {
-		return this.db('FirstNationAssociation').where({ id }).delete();
-	}
-
-	async getNamesFor(id: number) {
-		return this.db('name')
-			.where({ placeId: id })
-			.select<Name[]>(['id', 'placeId', 'description']);
-	}
-
-	async addSecondaryName(name: Name) {
-		return this.db('name').insert(name);
-	}
-
-	async removeSecondaryName(id: number) {
-		return this.db('name').where({ id }).delete();
-	}
-
-	async getHistoricalPatternsFor(id: number): Promise<HistoricalPattern[]> {
-		return this.db('historicalpattern')
-			.where({ placeId: id })
-			.select<HistoricalPattern[]>([
-				'id',
-				'placeId',
-				'comments',
-				'historicalPatternType',
-			]);
-	}
-
-	async addHistoricalPattern(name: Name) {
-		return this.db('historicalpattern').insert(name);
-	}
-
-	async removeHistoricalPattern(id: number) {
-		return this.db('historicalpattern').where({ id }).delete();
-	}
-
-	async getDatesFor(id: number): Promise<Dates[]> {
-		return this.db('dates')
-			.where({ placeId: id })
-			.select<Dates[]>([
-				'id',
-				'placeId',
-				'type',
-				'fromDate',
-				'toDate',
-				'details',
-			]);
-	}
-
-	async addDate(name: Dates) {
-		return this.db('dates').insert(name);
-	}
-
-	async removeDate(id: number) {
-		return this.db('dates').where({ id }).delete();
-	}
-
-	async getConstructionPeriodsFor(id: number): Promise<ConstructionPeriod[]> {
-		return this.db('constructionperiod')
-			.where({ placeId: id })
-			.select<ConstructionPeriod[]>(['id', 'placeId', 'type']);
-	}
-
-	async addConstructionPeriod(name: ConstructionPeriod) {
-		return this.db('constructionperiod').insert(name);
-	}
-
-	async removeConstructionPeriod(id: number) {
-		return this.db('constructionperiod').where({ id }).delete();
-	}
-
-	async getThemesFor(id: number): Promise<Theme[]> {
-		return this.db('theme')
-			.where({ placeId: id })
-			.select<Theme[]>(['id', 'placeId', 'placeThemeId']);
-	}
-
-	async addTheme(name: Theme) {
-		return this.db('theme').insert(name);
-	}
-
-	async removeTheme(id: number) {
-		return this.db('theme').where({ id }).delete();
-	}
-
-	async getFunctionUsesFor(id: number): Promise<FunctionalUse[]> {
-		return this.db('FunctionalUse')
-			.where({ placeId: id })
-			.select<FunctionalUse[]>([
-				'id',
-				'placeId',
-				'functionalTypeId',
-				'functionalUseType',
-				'description',
-			]);
-	}
-
-	async addFunctionalUse(name: FunctionalUse) {
-		return this.db('FunctionalUse').insert(name);
-	}
-
-	async removeFunctionalUse(id: number) {
-		return this.db('FunctionalUse').where({ id }).delete();
-	}
-
-	async getOwnershipsFor(id: number): Promise<Ownership[]> {
-		return this.db('Ownership')
-			.where({ placeId: id })
-			.select<Ownership[]>(['id', 'placeId', 'ownershipType', 'comments']);
-	}
-
-	async addOwnership(name: Ownership) {
-		return this.db('Ownership').insert(name);
-	}
-
-	async removeOwnership(id: number) {
-		return this.db('Ownership').where({ id }).delete();
-	}
-
-	async getPreviousOwnershipsFor(id: number): Promise<PreviousOwnership[]> {
-		return this.db('PreviousOwnership')
-			.where({ placeId: id })
-			.select<PreviousOwnership[]>([
-				'id',
-				'placeId',
-				'ownershipNumber',
-				'ownershipName',
-				'ownershipDate',
-			]);
-	}
-
-	async addPreviousOwnership(name: PreviousOwnership) {
-		return this.db('PreviousOwnership').insert(name);
-	}
-
-	async removePreviousOwnership(id: number) {
-		return this.db('PreviousOwnership').where({ id }).delete();
-	}
-
-	async getContactsFor(id: number): Promise<Contact[]> {
-		return this.db('Contact')
-			.where({ placeId: id })
-			.select<Contact[]>([
-				'id',
-				'placeId',
-				'firstName',
-				'lastName',
-				'phoneNumber',
-				'email',
-				'mailingAddress',
-				'description',
-				'contactType',
-			]);
-	}
-
-	async addContact(name: Contact) {
-		return this.db('Contact').insert(name);
-	}
-
-	async removeContact(id: number) {
-		return this.db('Contact').where({ id }).delete();
-	}
-
-	async getRevisionLogFor(id: number): Promise<RevisionLog[]> {
-		return this.db('RevisionLog')
-			.where({ placeId: id })
-			.select<RevisionLog[]>([
-				'id',
-				'placeId',
-				'revisionLogType',
-				'revisionDate',
-				'revisedBy',
-				'details',
-			])
-			.orderBy('revisionDate');
-	}
-
-	async addRevisionLog(name: RevisionLog) {
-		return this.db('RevisionLog').insert(name);
-	}
-
-	async removeRevisionLog(id: number) {
-		return this.db('RevisionLog').where({ id }).delete();
-	}
-
-	async getWebLinksFor(id: number): Promise<WebLink[]> {
-		return this.db('WebLink')
-			.where({ placeId: id })
-			.select<WebLink[]>(['id', 'placeId', 'type', 'address']);
-	}
-
-	async addWebLink(name: WebLink) {
-		return this.db('WebLink').insert(name);
-	}
-
-	async removeWebLink(id: number) {
-		return this.db('WebLink').where({ id }).delete();
-	}
-
-	async getDescriptionsFor(id: number): Promise<Description[]> {
-		return this.db('Description')
-			.where({ placeId: id })
-			.select<Description[]>(['id', 'placeId', 'descriptionText', 'type']);
-	}
-
-	async addDescription(name: Description) {
-		return this.db('Description').insert(name);
-	}
-
-	async removeDescription(id: number) {
-		return this.db('Description').where({ id }).delete();
-	}
-
-	getAssociationTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Event' },
-			{ value: 2, text: 'Person' },
-			{ value: 3, text: 'Organization' },
-			{ value: 4, text: 'Architect Designer' },
-			{ value: 5, text: 'Builder' },
-		];
-	}
-
-	getFNAssociationTypes(): GenericEnum[] {
-		return FIRST_NATION_ASSOCIATION_TYPES;
-	}
-
-	getHistoricalPatterns(): readonly GenericEnum[] {
-		return HISTORICAL_PATTERN_TYPES;
-	}
-
-	getDateTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Construction' },
-			{ value: 2, text: 'Significant Date' },
-			{ value: 8, text: 'Construction Circa' },
-		];
-	}
-
-	getConstructionPeriodTypes(): GenericEnum[] {
-		return CONSTRUCTION_PERIODS;
-	}
-
-	getFunctionalUseTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Current' },
-			{ value: 2, text: 'Historic' },
-		];
-	}
-
-	getOwnershipTypes(): GenericEnum[] {
-		return OWNERSHIP_TYPES;
-	}
-
-	getContactTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Owner' },
-			{ value: 2, text: 'Administrator' },
-			{ value: 3, text: 'Heritage Planner' },
-			{ value: 4, text: 'Other' },
-		];
-	}
-
-	getRevisionLogTypes(): GenericEnum[] {
-		return REVISION_LOG_TYPES;
-	}
-
-	getWebLinkTypes(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Historic Place' },
-			{ value: 2, text: 'Local Government' },
-			{ value: 3, text: 'Federal/Provicial/Territorial' },
-			{ value: 4, text: 'Other' },
-		];
-	}
-
-	getDescriptionTypes(): GenericEnum[] {
-		return DESCRIPTION_TYPES;
-	}
-
 	async doSearch(
+		scope: Knex.QueryBuilder,
 		query: { [key: string]: any },
 		sort: Array<SortStatement>,
 		page: number,
@@ -664,7 +309,7 @@ export class PlaceService {
 		take: number
 	): Promise<any> {
 		return new Promise(async (resolve, reject) => {
-			const selectStatement = this.db('place')
+			const selectStatement = scope
 				.distinct()
 				.select(...PLACE_FIELDS, { status: 'StatusTable.Status' })
 				.leftOuterJoin(
@@ -684,12 +329,9 @@ export class PlaceService {
 					this.db('Place')
 						.select({
 							PlaceId: 'Place.Id',
-							Status: this.db.raw(`
-								CASE
-									WHEN PlaceEdit.PlaceId IS NULL THEN ''
-									ELSE 'Editing'
-								END
-							`),
+							Status: this.db.raw(
+								`CASE WHEN PlaceEdit.PlaceId IS NULL THEN '' ELSE 'Editing' END`
+							),
 						})
 						.as('StatusTable')
 						.innerJoin('PlaceEdit', 'PlaceEdit.PlaceId', 'Place.Id'),
@@ -789,7 +431,7 @@ export class PlaceService {
 						.whereILike('[Description].[DescriptionText]', `%${value}%`)
 						.where(
 							'[Description].[Type]',
-							DESCRIPTION_TYPE_ENUMS.CONSTRUCTION_STYLE
+							DescriptionTypeEnums.ConstructionStyle
 						);
 				},
 				culturalHistoryContains(base: Knex.QueryInterface, value: any) {
@@ -797,7 +439,7 @@ export class PlaceService {
 						.whereILike('[Description].[DescriptionText]', `%${value}%`)
 						.where(
 							'[Description].[Type]',
-							DESCRIPTION_TYPE_ENUMS.CULTURAL_HISTORY
+							DescriptionTypeEnums.CulturalHistory
 						);
 				},
 				includingOwnershipTypes(base: Knex.QueryInterface, value: any) {
@@ -847,5 +489,50 @@ export class PlaceService {
 
 			resolve(results);
 		});
+	}
+
+	async scopeSitesToUser(query: Knex.QueryInterface, user?: User) {
+		// without a user passed in, you see nothing
+		if (!user) {
+			query.whereRaw('(1=0)');
+			return;
+		}
+
+		// Administrators see everything
+		if (user.role_list && user.role_list.indexOf(UserRoles.ADMINISTRATOR) >= 0)
+			return;
+
+		// If you don't have one of the site roles, you see nothing
+		if (user.roles && user.roles.indexOf('Site') == -1) {
+			query.whereRaw('(1=0)');
+			return;
+		}
+
+		if (user.site_access) {
+			let mapSheets = user.site_access
+				.filter((a) => a.access_type_id == 1)
+				.map((a) => a.access_text);
+			let communities = user.site_access
+				.filter((a) => a.access_type_id == 2)
+				.map((a) => a.access_text);
+			let firstNations = user.site_access
+				.filter((a) => a.access_type_id == 3)
+				.map((a) => a.access_text);
+
+			let scope = '(1=0';
+
+			if (mapSheets.length > 0)
+				scope += ` OR NTSMapSheet IN ('${mapSheets.join("','")}')`;
+			if (communities.length > 0)
+				scope += ` OR CommunityId IN (${communities.join(',')})`;
+			if (firstNations.length > 0)
+				scope += ` OR [FirstNationAssociation].[FirstNationId] IN (${firstNations.join(
+					','
+				)})`;
+
+			scope += ')';
+
+			query.whereRaw(scope);
+		}
 	}
 }

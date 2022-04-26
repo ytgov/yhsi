@@ -5,20 +5,30 @@ import helmet from 'helmet';
 
 import {
 	aircrashRouter,
+	associationTypesRouter,
 	boatsRouter,
 	burialsRouter,
 	catalogsRouter,
 	categoryTypesRouter,
 	communitiesRouter,
-	constructionPeriodsRouter,
+	conditionTypesRouter,
+	constructionPeriodTypesRouter,
+	contactTypesRouter,
 	contributingResourceTypesRouter,
+	coordinateDeterminationTypesRouter,
+	dateTypesRouter,
+	descriptionTypesRouter,
 	designationTypesRouter,
 	firstNationAssociationTypesRouter,
 	firstNationsRouter,
+	functionalTypesRouter,
+	functionalUseTypesRouter,
 	historicalPatternTypesRouter,
 	historiesRouter,
+	jurisdictionTypesRouter,
 	mapsRouter,
 	ntsMapSheetsRouter,
+	ownerConsentTypesRouter,
 	ownerRouter,
 	ownershipTypesRouter,
 	peopleRouter,
@@ -28,14 +38,17 @@ import {
 	photosExtraRouter,
 	placeEditsRouter,
 	placeRouter,
+	placeThemesRouter,
 	recordTypesRouter,
 	registerRouter,
 	revisionLogTypesRouter,
 	siteCategoryTypesRouter,
-	siteStatusesRouter,
+	siteStatusTypesRouter,
 	staticRouter,
+	statutesRouter,
 	userRouter,
 	usersExtraRouter,
+	webLinkTypesRouter,
 	ytPlaceHistoryRouter,
 	ytPlaceRouter,
 	intSitesRouter
@@ -107,19 +120,27 @@ app.use('/api/photo', RequiresAuthentication, photoRouter);
 app.use('/api/photobatch', RequiresAuthentication, photoBatchRouter);
 app.use('/api/register', registerRouter);
 
-////console.log("B", boats)
-
 app.use('/api/interpretive-sites', intSitesRouter);
+app.use('/api/association-types', RequiresAuthentication, associationTypesRouter);
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
 app.use('/api/category-types', RequiresAuthentication, categoryTypesRouter);
 app.use('/api/communities', RequiresAuthentication, communitiesRouter);
-app.use('/api/construction-periods', RequiresAuthentication, constructionPeriodsRouter);
+app.use('/api/condition-types', RequiresAuthentication, conditionTypesRouter);
+app.use('/api/construction-period-types', RequiresAuthentication, constructionPeriodTypesRouter);
+app.use('/api/contact-types', RequiresAuthentication, contactTypesRouter);
 app.use('/api/contributing-resource-types', RequiresAuthentication, contributingResourceTypesRouter);
+app.use('/api/coordinate-determination-types', RequiresAuthentication, coordinateDeterminationTypesRouter);
+app.use('/api/date-types', RequiresAuthentication, dateTypesRouter);
+app.use('/api/description-types', RequiresAuthentication, descriptionTypesRouter);
 app.use('/api/designation-types', RequiresAuthentication, designationTypesRouter);
 app.use('/api/first-nation-association-types', RequiresAuthentication, firstNationAssociationTypesRouter);
 app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);
+app.use('/api/functional-types', RequiresAuthentication, functionalTypesRouter);
+app.use('/api/functional-use-types', RequiresAuthentication, functionalUseTypesRouter);
 app.use('/api/historical-pattern-types', RequiresAuthentication, historicalPatternTypesRouter);
+app.use('/api/jurisdiction-types', RequiresAuthentication, jurisdictionTypesRouter);
 app.use('/api/nts-map-sheets', RequiresAuthentication, ntsMapSheetsRouter);
+app.use('/api/owner-consent-types', RequiresAuthentication, ownerConsentTypesRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/owners', RequiresAuthentication, ownerRouter);
 app.use('/api/ownership-types', RequiresAuthentication, ownershipTypesRouter);
@@ -131,15 +152,16 @@ app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
 app.use('/api/photos', RequiresAuthentication, photosExtraRouter);
 app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
 app.use('/api/place-edits', RequiresAuthentication, placeEditsRouter);
+app.use('/api/place-themes', RequiresAuthentication, placeThemesRouter);
 app.use('/api/record-types', RequiresAuthentication, recordTypesRouter);
 app.use('/api/site-category-types', RequiresAuthentication, siteCategoryTypesRouter);
-app.use('/api/site-statuses', RequiresAuthentication, siteStatusesRouter);
-app.use('/api/users',RequiresAuthentication, usersExtraRouter);
+app.use('/api/site-status-types', RequiresAuthentication, siteStatusTypesRouter);
+app.use('/api/statutes', RequiresAuthentication, statutesRouter);
+app.use('/api/users', RequiresAuthentication, usersExtraRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/burials', RequiresAuthentication, burialsRouter);
-// app.use('/api/extras/photos', RequiresAuthentication, photosExtraRouter);
-// app.use('/api/extras/users', RequiresAuthentication, usersExtraRouter);
 app.use("/api/maps", mapsRouter)
+app.use("/api/web-link-types", webLinkTypesRouter)
 
 app.use('/api', RequiresAuthentication, staticRouter);
 

@@ -2,23 +2,27 @@ import express, { Request, Response } from "express";
 import axios from "axios";
 import { stringify } from "querystring"
 import moment from "moment";
-import { GIS_FEATURE_PASSWORD, GIS_FEATURE_USERNAME, GIS_PORTAL_CLIENT_ID, GIS_PORTAL_CLIENT_SECRET } from "../config";
+import { DB_CONFIG, GIS_FEATURE_PASSWORD, GIS_FEATURE_USERNAME, GIS_PORTAL_CLIENT_ID, GIS_PORTAL_CLIENT_SECRET } from "../config";
+import { User } from "models";
+import { PlaceService } from '../services';
+import { authorize } from "../middleware/authorization";
 
 export const mapsRouter = express.Router();
 
 let PORTAL_TOKEN = { access_token: "", expires_in: 0, renew_after: moment().utc(true) };
 let FEATURE_TOKEN = { access_token: "", expires_in: 0, renew_after: moment().utc(true) };
+const placeService = new PlaceService(DB_CONFIG);
 
 
-mapsRouter.get("/", async (req, res) => {
+mapsRouter.get("/", authorize(), async (req, res) => {
     await loadPortalToken();
-
-    res.json(PORTAL_TOKEN)
+    res.json(PORTAL_TOKEN);
 });
 
-mapsRouter.get("/sites*", async (req: Request, res: Response) => {
+mapsRouter.get("/sites*", authorize(), async (req: Request, res: Response) => {
     await loadFeatureToken();
 
+    let currentUser = req.user as User;
     let query = req.query;
     delete query.token;
     let queryString = stringify(query as any);
@@ -35,15 +39,15 @@ mapsRouter.get("/sites*", async (req: Request, res: Response) => {
                 await loadFeatureToken();
                 return res.redirect("/maps");
             }
-   
-            return res.json(await filterSites(resp.data));
+
+            return res.json(await filterSites(resp.data, currentUser));
         })
         .catch(err => { console.log(err); return res.json({ error: "BROKEN" }) });
 })
 
 async function loadPortalToken() {
     let now = moment().utc(true);
-    
+
     if (now.isBefore(PORTAL_TOKEN.renew_after))
         return;
 
@@ -84,9 +88,9 @@ async function loadFeatureToken() {
         });
 }
 
-async function filterSites(portalResponse: any) {
-
-    let accessList = ["115O/15/004", "117D/12/024", "116N/7/15", "116C/07/027"]
+async function filterSites(portalResponse: any, user: User) {
+    let results = await placeService.getIdsForUser(user);
+    let accessList = results.map(r => r.yHSIId);
 
     if (portalResponse.features) {
         let filtered = new Array();

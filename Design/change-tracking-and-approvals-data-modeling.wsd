@@ -1,0 +1,428 @@
+@startuml
+
+entity Place {
+  * Id : int <<generated>>
+  --
+  * Category : int
+  * CommunityId : int
+  * CoordinateDetermination : int
+  * DoorCondition : int
+  * FloorCondition : int
+  * IsPubliclyAccessible : bit
+  * Jurisdiction : int
+  * OwnerConsent : int
+  * PrimaryName : nvarchar
+  * RoofCondition : int
+  * ShowInRegister : bit
+  * SiteStatus : int
+  * Statute2Id : int
+  * StatuteId : int
+  * WallCondition : int
+  * YHSIId : nvarchar
+  Block : nvarchar
+  BordenNumber : nvarchar
+  BuildingSize : nvarchar
+  CIHBNumber : nvarchar
+  ConditionComment : nvarchar
+  ContributingResources : nvarchar : <<comma delimited array>>
+  CurrentUseComment : nvarchar
+  Designations : nvarchar : <<comma delimited array>>
+  FHBRONumber : nvarchar
+  GroupYHSI : nvarchar
+  HectareArea : nvarchar
+  LAGroup : nvarchar
+  Latitude : nvarchar
+  LocationComment : nvarchar
+  LocationContext : nvarchar
+  Longitude : nvarchar
+  Lot : nvarchar
+  NTSMapSheet : nvarchar
+  OtherCommunity : nvarchar
+  OtherLocality : nvarchar
+  PhysicalAddress : nvarchar
+  PhysicalCountry : nvarchar
+  PhysicalPostalCode : nvarchar
+  PhysicalProvince : nvarchar
+  PlanNumber : nvarchar
+  PreviousAddress : nvarchar
+  RecognitionDate : date
+  Records : nvarchar : <<comma delimited array>>
+  ResourceType : nvarchar
+  SiteCategories : nvarchar : <<comma delimited array>>
+  SiteDistrictNumber : nvarchar
+  TownSiteMapNumber : nvarchar
+  YGBuildingNumber : nvarchar
+  YGReserveNumber : nvarchar
+  YHSPastUse : nvarchar
+  YHSThemes : nvarchar
+  Zoning : nvarchar
+}
+
+entity Association {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * Type : int
+  Description : varchar
+}
+
+enum AssociationType {
+  1 : Event
+  2 : Person
+  3 : Organization
+  4 : Architect Designer
+  5 : Builder
+}
+
+enum Category {
+  0 : None Selected
+  1 : Building
+  2 : District
+  3 : Place
+  4 : Structure
+}
+
+enum Community {
+  * Id : int <<generated>>
+  --
+  * Name : nvarchar
+}
+
+enum ConditionType {
+  0 : Not Applicable
+  1 : Fair
+  2 : Good
+  3 : Poor
+}
+
+entity ConstructionPeriod {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * Type : int
+}
+
+enum ConstructionPeriodType {
+  1 : Pre 1895
+  2 : From 1896 to 1905
+  3 : From 1906 to 1939
+  4 : From 1940 to 1965
+  5 : Post 1965
+}
+
+entity Contact {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * ContactType : int
+  Description : nvarchar
+  Email : nvarchar
+  FirstName : nvarchar
+  LastName : nvarchar
+  MailingAddress : nvarchar
+  PhoneNumber : nvarchar
+}
+
+enum ContactType {
+  1 : Owner
+  2 : Administrator
+  3 : Heritage Planner
+  4 : Other
+}
+
+enum ContributingResources {
+  Archaeological : Archaeological
+  Building : Building
+  Collection : Collection
+  Landscapes : Landscapes
+  Structure : Structure
+}
+
+enum CoordinateDetermination {
+  1 : GPS
+  2 : Paper Maps
+  3 : Unknown
+  4 : Digital Maps
+  5 : Geocoding
+}
+
+entity Dates {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * Type : int
+  Details : nvarchar
+  FromDate : nvarchar
+  ToDate : nvarchar
+}
+
+enum DateType {
+  1 : Construction
+  2 : Significant Date
+  8 : Construction Circa
+}
+
+entity Description {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * Type : int
+  DescriptionText : varchar
+}
+
+enum DescriptionType {
+  1 : Additional Information
+  2 : Character Defining Elements
+  3 : Cultural Period
+  4 : Heritage Value
+  5 : Place Description
+  6 : 'Description of Boundaries'
+  8 : Historical Sources Location
+  9 : Renovation Information
+  10 : Construction Style
+  11 : Demolition Information
+  12 : Cultural History
+  13 : Documentation Location
+  27 : Archaeological Collections
+  29 : Building Style
+  30 : YRHP Additional Information
+}
+
+enum Designations {
+  Federal : Federal
+  Municipal : Municipal
+  Territorial : Territorial
+  World : World
+  NotDesignated : Not Designated
+}
+
+entity FirstNation {
+  * Id : int <<generated>>
+  --
+  Description : varchar
+}
+
+entity FirstNationAssociation {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * FirstNationId : int
+  * FirstNationAssociationType : int
+  Comments : varchar
+}
+
+enum FirstNationAssociationType {
+  1 : Settlement Lands
+  2 : Traditional Territory
+}
+
+entity FunctionalType {
+  * Id : int <<generated>>
+  --
+  Description : nvarchar
+}
+
+entity FunctionalUse {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * FunctionalTypeId : int
+  * FunctionalUseType : int
+  Description : nvarchar
+}
+
+enum FunctionalUseType {
+  1 : Current
+  2 : Historic
+}
+
+entity HistoricalPattern {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * HistoricalPatternType : int
+  Comments : nvarchar
+}
+
+enum HistoricalPatternType {
+  1 : Political
+  2 : Economic
+  3 : Social
+  4 : Geographic
+}
+
+enum JurisdictionType {
+  0 : None Selected
+  1 : Yukon
+  2 : Federal
+}
+
+entity Name {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  Description : nvarchar
+}
+
+enum OwnerConsentType {
+  0 : None Selected
+  1 : Consent
+  2 : No Response
+  3 : Objection
+}
+
+entity Ownership {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * OwnershipType : int
+  Comments : nvarchar
+}
+
+enum OwnershipType {
+  1 : Private
+  2 : Public Local
+  3 : Public Territorial
+  4 : Settlement Lands
+  5 : Public Federal
+  6 : Not For Profit
+  7 : Crown
+  8 : Unknown
+  17 : Gov Yukon
+  18 : First Nations Reserve
+  19 : Aboriginal Public Lands
+}
+
+entity PlaceTheme {
+  * Id : int <<generated>>
+  --
+  * Category : nvarchar
+  * Type : nvarchar
+}
+
+entity PreviousOwnership {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  OwnershipNumber : nvarchar
+  OwnershipName : nvarchar
+  OwnershipDate : nvarchar
+}
+
+enum Records {
+  CRHP : CRHP
+  WHBR : WHBR
+}
+
+entity RevisionLog {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * RevisionLogType : int
+  RevisionDate : nvarchar
+  RevisedBy : nvarchar
+  Details : nvarchar
+}
+
+enum RevisionLogType {
+  1 : Initial Recording
+  2 : Monitoring Visit
+  3 : Research
+  4 : Designation Assessment
+  5 : Record Update
+}
+
+enum SiteCategories {
+  Architecture : Architecture
+  FirstNation : First Nation
+  Gravesite : Gravesite
+  Industrial : Industrial
+  Landscape : Landscape
+}
+
+enum SiteStatus {
+  1 : Standing
+  2 : Demolished
+  3 : Burned
+  4 : Moved
+  5 : Dimantled
+  6 : Reconstruction
+}
+
+entity Statute {
+  * Id : int <<generated>>
+  --
+  RecognitionAuthority
+  RecognitionType
+  Description
+  AllStatute
+}
+
+entity Theme {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * PlaceThemeId : int
+}
+
+entity WebLink {
+  * Id : int <<generated>>
+  --
+  * PlaceId : int
+  * Type : int
+  Address : varchar
+}
+
+enum WebLinkType {
+  1 : Historic Place
+  2 : Local Government
+  3 : Federal/Provicial/Territorial
+  4 : Other
+}
+
+Place::Category }|--o{ Category
+Place::CommunityId ||--o{ Community
+Place::ContributingResources }o--o{ ContributingResources
+Place::CoordinateDetermination ||--o{ CoordinateDetermination
+Place::Designations }o--o{ Designations
+Place::DoorCondition }|--o{ ConditionType
+Place::FloorCondition }|--o{ ConditionType
+Place::Jurisdiction }|--o{ JurisdictionType
+Place::OwnerConsent }|--o{ OwnerConsentType
+Place::Records }o--o{ Records
+Place::RoofCondition }|--o{ ConditionType
+Place::SiteCategories }o--o{ SiteCategories
+Place::SiteStatus ||--o{ SiteStatus
+Place::StatuteId ||--o{ Statute::Id
+Place::Statute2Id ||--o{ Statute::Id
+Place::WallCondition }|--o{ ConditionType
+Place }o--|| Association::PlaceId
+Place }o--|| ConstructionPeriod::PlaceId
+Place }o--|| Contact::PlaceId
+Place }o--|| Dates::PlaceId
+Place }o--|| Description::PlaceId
+Place }o--|| FirstNationAssociation::PlaceId
+Place }o--|| HistoricalPattern::PlaceId
+Place }o--|| Name::PlaceId
+Place }o--|| Ownership::PlaceId
+Place }o--|| PreviousOwnership::PlaceId
+Place }o--|| RevisionLog::PlaceId
+Place }o--|| Theme::PlaceId
+Place }o--|| FunctionalUse::PlaceId
+Place }o--|| WebLink::PlaceId
+Association::Type ||--o{ AssociationType
+ConstructionPeriod::Type ||--o{ ConstructionPeriodType
+Contact::ContactType ||--o{ ContactType
+Dates::Type ||--o{ DateType
+Description::Type ||--o{ DescriptionType
+FirstNationAssociation::FirstNationAssociationType ||--o{ FirstNationAssociationType
+FirstNationAssociation::FirstNationId ||--o{ FirstNation::Id
+FunctionalUse::FunctionalTypeId ||--o{ FunctionalType::Id
+FunctionalUse::FunctionalUseType ||--o{ FunctionalUseType
+HistoricalPattern::HistoricalPatternType ||--o{ HistoricalPatternType
+Ownership::OwnershipType ||--o{ OwnershipType
+RevisionLog::RevisionLogType ||--o{ RevisionLogType
+WebLink::Type ||--o{ WebLinkType
+Theme::PlaceThemeId ||--o{ PlaceTheme::Id
+
+@enduml

@@ -10,13 +10,24 @@ export class HistoricalPatternService {
 		this.db = knex(DB_CONFIG);
 	}
 
+	async getFor(placeId: number): Promise<HistoricalPattern[]> {
+		return this.db('historicalpattern')
+			.where({ placeId })
+			.select<HistoricalPattern[]>([
+				'id',
+				'placeId',
+				'comments',
+				'historicalPatternType',
+			]);
+	}
+
 	async upsertFor(placeId: number, historicalPatterns: HistoricalPattern[]) {
 		return new Promise((resolve) => {
 			resolve(
 				historicalPatterns.map((historicalPattern) => ({
 					placeId,
 					historicalPatternType: historicalPattern.historicalPatternType,
-					comments: historicalPattern.comments.trim(),
+					comments: historicalPattern.comments?.trim(),
 				}))
 			);
 		}).then((cleanHistoricalPatterns) => {

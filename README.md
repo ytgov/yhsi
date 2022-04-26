@@ -13,7 +13,7 @@ Writing code and developing in this application requires running three services:
 Boot the three app services:
 
 ```bash
-docker-compose -f docker-compose.dev-full.yml up
+docker-compose -f docker-compose.development.yml up
 ```
 
 Or if you have `ruby` installed
@@ -72,43 +72,84 @@ You will now have the Vue CLI server hosting the application at http://localhost
 ## Local Testing
 
 Currently there is very minimal support for testing.
-Only `src/api` has a test suite and it is not dockerized.
-The file watching is not set up correctly, so it only watches changes to the test files,
-instead of both the test file and associated source file.
+Only `src/api` has a test suite.
+**The development and test databases are shared, so don't write tests that change database state yet.**
 
-To boot the test suite:
+To boot the test suite go to the top level of the app and run:
 
 ```
+bin/dev test up
+
+# or if you don't have ruby
+docker-compose -f docker-cmpose.test.yml up
+
+# or if you don't have docker
 cd src/api
 npm install
 npm run test
 ```
 
-## Running the application in test or production
+The `bin/dev test` command supports the full suite of "dev" and "docker-compose" commands.
 
-Since the database for this system is managed externally, the TEST and PRODUCTION versions only need to run the API and Web. The `Dockerfile` in this directory builds the Vue.js web front-end and serves the compiled files via the Node.js API, so only one container is required to serve the front-end and back-end, saving resources.
+e.g.
+`dev up` will boot the app in development mode.
+`dev test up` will boot the app in test mode.
+`dev down` will stop the app in development mode.
+`dev test down` will stop the app in test mode.
 
-On the TEST and PRODUCTION servers, the application is ran through docker-compose, so the code needs to be cloned to the server and the appropriate environment variables set using the following commands for TEST:
+### Helful Git Hooks
+
+A helpful git hook that will prevent you from accidentally disabling the test suite is below.
+
+1. Add the following to the `<project-root>/.git/hooks/pre-commit` file, or create it if it doesn't exist.
+
+```bash
+# Redirect output to stderr.
+exec 1>&2
+
+# prevent it.only context.only or describe.only commited
+if [ "$allowonlytests" != "true" ] &&
+    test $(git diff --cached | grep -E "\b(it|context|describe).only\("  | wc -l) != 0
+then
+    cat <<\EOF
+Error: Attempt to add it.only or describe.only - which may disable all other tests
+
+If you know what you are doing you can disable this check using:
+
+    git config hooks.allowonlytests true
+EOF
+    exit 1
+fi
+
+exit 0
+```
+
+2. Make the file executable vai `chmod +x .git/hooks/pre-commit`
+
+## Running the application production
+
+Since the database for this system is managed externally, PRODUCTION version only needs to run the API and Web services.
+The `Dockerfile` in this directory builds the Vue.js web front-end, and serves the compiled files via the Node.js API,
+so only one container is required to serve the front-end and back-ends; thus saving resources.
+
+On the PRODUCTION server, the application is run via docker-compose, so the code needs to be cloned to the server and
+the appropriate environment variables set using the following commands:
 
 ```
-cp /src/api/.env /src/api/.env.test
-vi /src/api/.env.test
+cp /src/api/.env /src/api/.env.production
+vi /src/api/.env.production
 ```
 
 You now can use vi or nano or other tool to set the environment variables before starting the application with:
 
 ```
-docker-compose -f docker-compose.test.yml up --build -d
+docker-compose -f docker-compose.production.yml up --build -d
 ```
 
 When you look at the running Docker containers using `docker ps`, you should see a container named `yhsi_web_1`.
 
----
-
-Running in PRODUCTION is the same steps as test, but change the `.env.test` for `.env.production` then run:
-
-```
-docker-compose -f docker-compose.production.yml up --build -d
 ```
 
-\*\* One thing to keep in mind is that the port in the `docker-compose.test.yml` and `docker-compose.prodution.yml` may need to be changed depending the the reverse proxy setups.
+**One thing to keep in mind is that the port in the `docker-compose.prodution.yml` may need to be changed
+depending the the reverse proxy setups.**
+```

@@ -10,25 +10,10 @@ import {
 } from '../services';
 import {
 	AlternateName,
-	HistoricalPattern,
-	Name,
-	Place,
 	PlaceType,
-	Dates,
-	PLACE_FIELDS,
-	ConstructionPeriod,
-	Theme,
-	FunctionalUse,
-	Association,
 	FnAssociation,
 	FirstNationName,
-	Ownership,
-	PreviousOwnership,
 	Photo,
-	WebLink,
-	RevisionLog,
-	Contact,
-	Description,
 	YtPlace,
 } from '../data';
 import { ReturnValidationErrors } from '../middleware';

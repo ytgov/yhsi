@@ -7,7 +7,6 @@ import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import * as multer from 'multer';
 import _ from 'lodash';
-import { Place, PLACE_FIELDS } from '../data';
 
 export const photosExtraRouter = express.Router();
 const db = knex(DB_CONFIG);

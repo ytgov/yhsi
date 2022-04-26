@@ -1,67 +1,11 @@
 import knex, { Knex } from 'knex';
-import { camelCase, mapKeys } from 'lodash';
 
 import { DB_CONFIG } from '../config';
-import { mapKeysDeep, pascalCase } from '../utils/lodash-extensions';
-import {
-	decodeCommaDelimitedArray,
-	encodeCommaDelimitedArray,
-	PlaceEdit,
-} from '../models';
-
-const JS_TO_JSON_COLUMN_TRANSLATIONS: { [key: string]: string } = Object.freeze(
-	{
-		names: 'NameJSON',
-		historicalPatterns: 'HistoricalPatternJSON',
-	}
-);
-
-const COMMA_DELIMITED_ARRAY_COLUMNS: ReadonlyArray<string> = Object.freeze([
-	'contributingResources',
-	'designations',
-	'records',
-	'siteCategories',
-]);
+import { Place, PlaceEdit, PlainObject } from '../models';
+import PlaceEditSerializer from '../serializers/place-edit-serializer';
 
 interface CountQuery {
 	count: number;
-}
-
-interface PlainObject {
-	[key: string]: any;
-}
-
-function parseAndNormalizeJSONColumns(object: PlainObject) {
-	Object.keys(object).forEach((key) => {
-		if (key.endsWith('JSON')) {
-			const cleanedKey = key.replace(/JSON$/, '');
-			const objectAsJson = JSON.parse(object[key]);
-			object[cleanedKey] = mapKeysDeep(objectAsJson, camelCase);
-			delete object[key];
-		}
-	});
-	return object;
-}
-
-function encodeAndDenormalizeJSONColumns(object: PlainObject) {
-	Object.keys(object).forEach((key) => {
-		if (JS_TO_JSON_COLUMN_TRANSLATIONS[key]) {
-			const encodedKey = JS_TO_JSON_COLUMN_TRANSLATIONS[key];
-			const encodedValue = mapKeysDeep(object[key], pascalCase);
-			const jsonObjectAsString = JSON.stringify(encodedValue);
-			object[encodedKey] = jsonObjectAsString;
-			delete object[key];
-		}
-	});
-	return object;
-}
-
-function encodeCommaDelimitedArrayColumns(object: PlainObject) {
-	COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
-		object[column] = encodeCommaDelimitedArray(object[column]);
-	});
-
-	return object;
 }
 
 export class PlaceEditService {
@@ -73,6 +17,7 @@ export class PlaceEditService {
 		this._defaultScope = this.db
 			.select({
 				id: 'PlaceEdit.Id',
+				placeId: 'PlaceId',
 				yHSIId: 'YHSIId',
 				primaryName: 'PrimaryName',
 				editorId: 'EditorUserId',
@@ -107,27 +52,79 @@ export class PlaceEditService {
 	buildDetailedView(id: number) {
 		return this.defaultScope
 			.first({
-				placeId: 'PlaceId',
+				associationJSON: 'AssociationJSON',
+				block: 'Block',
+				bordenNumber: 'BordenNumber',
+				buildingSize: 'BuildingSize',
 				category: 'Category',
+				cIHBNumber: 'CIHBNumber',
+				communityId: 'CommunityId',
+				conditionComment: 'ConditionComment',
+				constructionPeriodJSON: 'ConstructionPeriodJSON',
+				contactJSON: 'ContactJSON',
 				contributingResources: 'ContributingResources',
+				coordinateDetermination: 'CoordinateDetermination',
+				currentUseComment: 'CurrentUseComment',
+				datesJSON: 'DatesJSON',
+				descriptionJSON: 'DescriptionJSON',
 				designations: 'Designations',
-				historicalPatternsJSON: 'HistoricalPatternJSON',
-				namesJSON: 'NameJSON',
+				doorCondition: 'DoorCondition',
+				fHBRONumber: 'FHBRONumber',
+				firstNationAssociationJSON: 'FirstNationAssociationJSON',
+				floorCondition: 'FloorCondition',
+				functionalUseJSON: 'FunctionalUseJSON',
+				groupYHSI: 'GroupYHSI',
+				hectareArea: 'HectareArea',
+				historicalPatternJSON: 'HistoricalPatternJSON',
+				isPubliclyAccessible: 'IsPubliclyAccessible',
+				jurisdiction: 'Jurisdiction',
+				lAGroup: 'LAGroup',
+				latitude: 'Latitude',
+				locationComment: 'LocationComment',
+				locationContext: 'LocationContext',
+				longitude: 'Longitude',
+				lot: 'Lot',
+				nameJSON: 'NameJSON',
+				nTSMapSheet: 'NTSMapSheet',
+				otherCommunity: 'OtherCommunity',
+				otherLocality: 'OtherLocality',
+				ownerConsent: 'OwnerConsent',
+				ownershipJSON: 'OwnershipJSON',
+				physicalAddress: 'PhysicalAddress',
+				physicalCountry: 'PhysicalCountry',
+				physicalPostalCode: 'PhysicalPostalCode',
+				physicalProvince: 'PhysicalProvince',
+				planNumber: 'PlanNumber',
+				previousAddress: 'PreviousAddress',
+				previousOwnershipJSON: 'PreviousOwnershipJSON',
+				recognitionDate: 'RecognitionDate',
 				records: 'Records',
+				resourceType: 'ResourceType',
+				revisionLogJSON: 'RevisionLogJSON',
+				roofCondition: 'RoofCondition',
 				showInRegister: 'ShowInRegister',
 				siteCategories: 'SiteCategories',
+				siteDistrictNumber: 'SiteDistrictNumber',
+				siteStatus: 'SiteStatus',
+				statute2Id: 'Statute2Id',
+				statuteId: 'StatuteId',
+				themeJSON: 'ThemeJSON',
+				townSiteMapNumber: 'TownSiteMapNumber',
+				wallCondition: 'WallCondition',
+				webLinkJSON: 'WebLinkJSON',
+				yGBuildingNumber: 'YGBuildingNumber',
+				yGReserveNumber: 'YGReserveNumber',
+				yHSPastUse: 'YHSPastUse',
+				yHSThemes: 'YHSThemes',
+				zoning: 'Zoning',
 			})
 			.where({ 'PlaceEdit.Id': id })
-			.then(parseAndNormalizeJSONColumns)
-			.then((place) => {
-				place.contributingResources = decodeCommaDelimitedArray(
-					place.contributingResources
-				);
-				place.designations = decodeCommaDelimitedArray(place.designations);
-				place.records = decodeCommaDelimitedArray(place.records);
-				place.siteCategories = decodeCommaDelimitedArray(place.siteCategories);
+			.then((attributes) => {
+				if (attributes === undefined) return;
 
-				return place;
+				const placeEdit = new PlaceEdit(attributes);
+				const placeEditSerializer = new PlaceEditSerializer(placeEdit);
+				return placeEditSerializer.detailedView();
 			});
 	}
 
@@ -139,21 +136,24 @@ export class PlaceEditService {
 			.limit(itemsPerPage)
 			.offset(offset)
 			.orderBy('EditDate', 'desc')
-			.then((results) => {
+			.then((rows) => {
+				const serializedResults = rows.map((attributes: PlainObject) => {
+					const placeEdit = new PlaceEdit(attributes);
+					const placeEditSerializer = new PlaceEditSerializer(placeEdit);
+					return placeEditSerializer.tableView();
+				});
+
 				return {
-					results,
+					results: serializedResults,
 					totalCount,
 				};
 			});
 	}
 
-	create(data: PlaceEdit) {
-		return Promise.resolve(data)
-			.then(encodeAndDenormalizeJSONColumns)
-			.then(encodeCommaDelimitedArrayColumns)
-			.then((normalizedData) => {
-				return this.db('PlaceEdit').insert(normalizedData);
-			});
+	create(data: PlainObject) {
+		return Promise.resolve(new PlaceEdit(data)).then((placeEdit) => {
+			return this.db('PlaceEdit').insert(placeEdit.toDbObject());
+		});
 	}
 
 	delete(id: number) {

@@ -1,7 +1,11 @@
-import { isString } from 'lodash';
+import { isString, pick } from 'lodash';
 
-import { Name } from './name';
-import { HistoricalPattern } from './historical-pattern';
+import {
+	HistoricalPattern,
+	FirstNationAssociation,
+	Name,
+	PlainObject,
+} from '.';
 
 export class Place {
 	id?: number;
@@ -23,7 +27,6 @@ export class Place {
 	groupYHSI?: string;
 	hasPendingChanges?: boolean;
 	hectareArea?: string;
-	historicalPatterns?: HistoricalPattern[];
 	isPubliclyAccessible?: boolean;
 	jurisdiction?: number;
 	lAGroup?: string;
@@ -36,7 +39,6 @@ export class Place {
 	mailingCountry?: string;
 	mailingPostalCode?: string;
 	mailingProvince?: string;
-	names?: Name[];
 	nTSMapSheet?: string;
 	otherCommunity?: string;
 	otherLocality?: string;
@@ -69,28 +71,130 @@ export class Place {
 	yHSPastUse?: string;
 	yHSThemes?: string;
 	zoning?: string;
-}
 
-export function decodeCommaDelimitedArray(
-	value: undefined | null | string | string[]
-): string[] {
-	if (value === undefined || value === null || value === '') return [];
-	if (Array.isArray(value)) return value;
+	// associations
+	firstNationAssociations?: FirstNationAssociation[];
+	historicalPatterns?: HistoricalPattern[];
+	names?: Name[];
 
-	return value.split(',');
-}
+	static FIELDS: ReadonlyArray<string> = Object.freeze([
+		'id',
+		'block',
+		'bordenNumber',
+		'buildingSize',
+		'category',
+		'cIHBNumber',
+		'communityId',
+		'conditionComment',
+		'contributingResources',
+		'coordinateDetermination',
+		'currentUseComment',
+		'designations',
+		'doorCondition',
+		'fHBRONumber',
+		'floorCondition',
+		'geocode',
+		'groupYHSI',
+		'hectareArea',
+		'isPubliclyAccessible',
+		'jurisdiction',
+		'lAGroup',
+		'latitude',
+		'locationComment',
+		'locationContext',
+		'longitude',
+		'lot',
+		'mailingAddress',
+		'mailingCountry',
+		'mailingPostalCode',
+		'mailingProvince',
+		'nTSMapSheet',
+		'otherCommunity',
+		'otherLocality',
+		'ownerConsent',
+		'physicalAddress',
+		'physicalCountry',
+		'physicalPostalCode',
+		'physicalProvince',
+		'planNumber',
+		'previousAddress',
+		'primaryName',
+		'recognitionDate',
+		'records',
+		'resourceType',
+		'rollNumber',
+		'roofCondition',
+		'showInRegister',
+		'siteCategories',
+		'siteDistrictNumber',
+		'siteStatus',
+		'slideNegativeIndex',
+		'statute2Id',
+		'statuteId',
+		'townSiteMapNumber',
+		'wallCondition',
+		'yGBuildingNumber',
+		'yGReserveNumber',
+		'yHSIId',
+		'yHSPastUse',
+		'yHSThemes',
+		'zoning',
+	]);
 
-export function encodeCommaDelimitedArray(
-	value: undefined | null | string | string[]
-): string | null {
-	if (
-		value === undefined ||
-		value === null ||
-		value === '' ||
-		value.length === 0
-	)
-		return null;
-	if (isString(value)) return value;
+	static COMMA_DELIMITED_ARRAY_COLUMNS: ReadonlyArray<string> = Object.freeze([
+		'contributingResources',
+		'designations',
+		'records',
+		'siteCategories',
+	]);
 
-	return value.join(',');
+	static encodeCommaDelimitedArray(
+		value: undefined | null | string | string[]
+	): string | null {
+		if (
+			value === undefined ||
+			value === null ||
+			value === '' ||
+			value.length === 0
+		)
+			return null;
+		if (isString(value)) return value;
+
+		return value.join(',');
+	}
+
+	static decodeCommaDelimitedArray(
+		value: undefined | null | string | string[]
+	): string[] {
+		if (value === undefined || value === null || value === '') return [];
+		if (Array.isArray(value)) return value;
+
+		return value.split(',');
+	}
+
+	static encodeCommaDelimitedArrayColumns(object: PlainObject) {
+		Place.COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
+			if (!object.hasOwnProperty(column)) return;
+
+			object[column] = Place.encodeCommaDelimitedArray(object[column]);
+		});
+
+		return object;
+	}
+
+	static decodeCommaDelimitedArrayColumns(object: PlainObject) {
+		if (!object) return object;
+
+		Place.COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
+			if (!object.hasOwnProperty(column)) return;
+
+			object[column] = Place.decodeCommaDelimitedArray(object[column]);
+		});
+
+		return object;
+	}
+
+	static stripOutNonColumnAttributes(object: PlainObject) {
+		return pick(object, Place.FIELDS);
+	}
 }
