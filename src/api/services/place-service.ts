@@ -30,9 +30,8 @@ import {
 	RevisionLog,
 	WebLink,
 } from '../data';
-import { GenericEnum, Place, PlainObject, User } from '../models';
+import { GenericEnum, Place, PlainObject, User, UserRoles } from '../models';
 import { NotFoundError } from '../utils/validation';
-import { UserRoles } from '../middleware/authorization';
 
 function combine(
 	list1: Array<any>,
@@ -129,21 +128,19 @@ export class PlaceService {
 
 		this.scopeSitesToUser(selectStatement, user);
 
-		return selectStatement
-			.then(list => list);
+		return selectStatement.then((list) => list);
 	}
 
 	async getById(id: number, user?: User) {
-		let selectStatement = this.db('place')
+		return this.db('place')
 			.first(PLACE_FIELDS)
-			.where({ id: id });
-
-		this.scopeSitesToUser(selectStatement, user);
-
-		return selectStatement.then(Place.decodeCommaDelimitedArrayColumns)
+			.where({ id: id })
+			.then(Place.decodeCommaDelimitedArrayColumns)
 			.then(async (place) => {
 				if (!place) {
-					return Promise.reject(new NotFoundError(`Could not find Place for id=${id}`));
+					return Promise.reject(
+						new NotFoundError(`Could not find Place for id=${id}`)
+					);
 				}
 
 				place.hasPendingChanges = await this.placeEditService.existsForPlace(
@@ -437,16 +434,16 @@ export class PlaceService {
 	}
 
 	async doSearch(
+		scope: Knex.QueryBuilder,
 		query: { [key: string]: any },
 		sort: Array<SortStatement>,
 		page: number,
 		itemsPerPage: number,
 		skip: number,
-		take: number,
-		user: User
+		take: number
 	): Promise<any> {
 		return new Promise(async (resolve, reject) => {
-			const selectStatement = this.db('place')
+			const selectStatement = scope
 				.distinct()
 				.select(...PLACE_FIELDS, { status: 'StatusTable.Status' })
 				.leftOuterJoin(
@@ -466,15 +463,15 @@ export class PlaceService {
 					this.db('Place')
 						.select({
 							PlaceId: 'Place.Id',
-							Status: this.db.raw(`CASE WHEN PlaceEdit.PlaceId IS NULL THEN '' ELSE 'Editing' END`),
+							Status: this.db.raw(
+								`CASE WHEN PlaceEdit.PlaceId IS NULL THEN '' ELSE 'Editing' END`
+							),
 						})
 						.as('StatusTable')
 						.innerJoin('PlaceEdit', 'PlaceEdit.PlaceId', 'Place.Id'),
 					'Place.Id',
 					'StatusTable.PlaceId'
 				);
-
-			this.scopeSitesToUser(selectStatement, user);
 
 			type QueryBuilder = {
 				(base: Knex.QueryInterface, value: any): Knex.QueryInterface;
@@ -629,10 +626,9 @@ export class PlaceService {
 	}
 
 	async scopeSitesToUser(query: Knex.QueryInterface, user?: User) {
-
 		// without a user passed in, you see nothing
 		if (!user) {
-			query.whereRaw("(1=0)");
+			query.whereRaw('(1=0)');
 			return;
 		}
 
@@ -641,26 +637,34 @@ export class PlaceService {
 			return;
 
 		// If you don't have one of the site roles, you see nothing
-		if (user.roles && user.roles.indexOf("Site") == -1) {
-			query.whereRaw("(1=0)");
+		if (user.roles && user.roles.indexOf('Site') == -1) {
+			query.whereRaw('(1=0)');
 			return;
 		}
 
 		if (user.site_access) {
-			let mapSheets = user.site_access.filter(a => a.access_type_id == 1).map(a => a.access_text);
-			let communities = user.site_access.filter(a => a.access_type_id == 2).map(a => a.access_text);
-			let firstNations = user.site_access.filter(a => a.access_type_id == 3).map(a => a.access_text);
+			let mapSheets = user.site_access
+				.filter((a) => a.access_type_id == 1)
+				.map((a) => a.access_text);
+			let communities = user.site_access
+				.filter((a) => a.access_type_id == 2)
+				.map((a) => a.access_text);
+			let firstNations = user.site_access
+				.filter((a) => a.access_type_id == 3)
+				.map((a) => a.access_text);
 
-			let scope = "(1=0";
+			let scope = '(1=0';
 
 			if (mapSheets.length > 0)
 				scope += ` OR NTSMapSheet IN ('${mapSheets.join("','")}')`;
 			if (communities.length > 0)
-				scope += ` OR CommunityId IN (${communities.join(",")})`;
+				scope += ` OR CommunityId IN (${communities.join(',')})`;
 			if (firstNations.length > 0)
-				scope += ` OR [FirstNationAssociation].[FirstNationId] IN (${firstNations.join(",")})`;
+				scope += ` OR [FirstNationAssociation].[FirstNationId] IN (${firstNations.join(
+					','
+				)})`;
 
-			scope += ")";
+			scope += ')';
 
 			query.whereRaw(scope);
 		}

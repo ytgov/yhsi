@@ -3,4 +3,5 @@ module.exports = {
   reporter: 'dot',
   watch: true,
   watchFiles: ['.'],
+  ui: 'bdd-lazy-var/global',
 };

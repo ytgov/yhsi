@@ -1,5 +1,5 @@
-import knex, { Knex } from "knex";
-import { User } from "../models";
+import knex, { Knex } from 'knex';
+import { User, SiteAccesType, UserSiteAccess } from '../models';
 
 export class UserService {
 	private knex: Knex;
@@ -60,26 +60,36 @@ export class UserService {
 		else
 			user.role_list = [];
 
-		user.site_access = await this.knex("Security.UserSiteAccess").where({ user_id: user.id }).orderBy("access_type_id").orderBy("access_text");
+		user.site_access = await this.knex('Security.UserSiteAccess')
+			.where({ user_id: user.id })
+			.orderBy('access_type_id')
+			.orderBy('access_text')
+			.then((results) => {
+				return results.map((result) => new UserSiteAccess(result));
+			})
+			.catch((error) => {
+				console.error(error);
+				return [];
+			});
 
 		let allCommunities = await this.knex("Community");
 		let allFirstNations = await this.knex("FirstNation")
 
 		for (let access of user.site_access) {
 			switch (access.access_type_id) {
-				case 1:
-					access.access_type_name = "Map sheet number";
+				case SiteAccesType.MAP_SHEET:
+					access.access_type_name = 'Map sheet number';
 					access.access_text_name = access.access_text.toString();
 					break;
-				case 2:
-					access.access_type_name = "Community";
+				case SiteAccesType.COMMUNITY:
+					access.access_type_name = 'Community';
 					access.access_text = parseInt(access.access_text.toString());
 					let cm = allCommunities.filter((c: any) => c.Id == access.access_text)
 					if (cm.length > 0)
 						access.access_text_name = cm[0].Name;
 					break;
-				case 3:
-					access.access_type_name = "First Nation";
+				case SiteAccesType.FIRST_NATION:
+					access.access_type_name = 'First Nation';
 					access.access_text = parseInt(access.access_text.toString());
 					let fn = allFirstNations.filter((c: any) => c.Id == access.access_text)
 					if (fn.length > 0)
@@ -88,7 +98,7 @@ export class UserService {
 			}
 		}
 
-		return user;
+		return new User(user);
 	}
 
 	async update(id: any, value: any) {

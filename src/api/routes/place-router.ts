@@ -10,12 +10,12 @@ import {
 import { pick } from 'lodash';
 
 import { DB_CONFIG } from '../config';
-import { buildDatabaseSort, PlaceService } from '../services';
+import { PlaceService } from '../services';
 import { Place, WebLink, RevisionLog, Contact, Description } from '../data';
 import { ReturnValidationErrors } from '../middleware';
-import { authorize, UserRoles } from '../middleware/authorization';
-import { User } from 'models';
-import { NotFoundError } from '../utils/validation';
+import { authorize } from '../middleware/authorization';
+import { User, UserRoles } from '../models';
+import PlacesController from '../controllers/places-controller';
 
 const placeService = new PlaceService(DB_CONFIG);
 const PAGE_SIZE = 10;
@@ -63,25 +63,7 @@ placeRouter.get(
 placeRouter.post(
 	'/search',
 	[body('page').isInt().default(1)],
-	async (req: Request, res: Response, next: NextFunction) => {
-		let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
-		let currentUser = req.user as User;
-		const sort = buildDatabaseSort(sortBy, sortDesc);
-
-		let skip = (page - 1) * itemsPerPage;
-		let take = itemsPerPage;
-
-		return placeService
-			.doSearch(query, sort, page, itemsPerPage, skip, take, currentUser)
-			.then((results) => {
-				return res.json(results);
-			})
-			.catch((error) => {
-				return res.status(422).json({
-					messages: [{ variant: 'error', text: error.message }],
-				});
-			});
-	}
+	PlacesController.searchPlaces
 );
 
 placeRouter.post(
@@ -106,28 +88,7 @@ placeRouter.get(
 	'/:id',
 	[check('id').notEmpty()],
 	ReturnValidationErrors,
-	(req: Request, res: Response) => {
-		const id = parseInt(req.params.id);
-		let currentUser = req.user as User;
-
-		return placeService
-			.getById(id, currentUser)
-			.then(({ place, relationships }) => {
-				return res.json({
-					data: place,
-					relationships,
-				});
-			})
-			.catch((error) => {
-				if (error instanceof NotFoundError) {
-					return res.status(404).send("Not found")
-				}
-
-				return res.status(422).json({
-					messages: [{ variant: 'error', text: error.message }],
-				});
-			});
-	}
+	PlacesController.getPlace
 );
 
 placeRouter.post(

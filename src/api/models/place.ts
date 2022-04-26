@@ -1,8 +1,11 @@
 import { isString, pick } from 'lodash';
 
-import { HistoricalPattern } from './historical-pattern';
-import { Name } from './name';
-import { PlainObject } from './simple-types';
+import {
+	HistoricalPattern,
+	FirstNationAssociation,
+	Name,
+	PlainObject,
+} from '.';
 
 export class Place {
 	id?: number;
@@ -24,7 +27,6 @@ export class Place {
 	groupYHSI?: string;
 	hasPendingChanges?: boolean;
 	hectareArea?: string;
-	historicalPatterns?: HistoricalPattern[];
 	isPubliclyAccessible?: boolean;
 	jurisdiction?: number;
 	lAGroup?: string;
@@ -37,7 +39,6 @@ export class Place {
 	mailingCountry?: string;
 	mailingPostalCode?: string;
 	mailingProvince?: string;
-	names?: Name[];
 	nTSMapSheet?: string;
 	otherCommunity?: string;
 	otherLocality?: string;
@@ -70,6 +71,11 @@ export class Place {
 	yHSPastUse?: string;
 	yHSThemes?: string;
 	zoning?: string;
+
+	// associations
+	firstNationAssociations?: FirstNationAssociation[];
+	historicalPatterns?: HistoricalPattern[];
+	names?: Name[];
 
 	static FIELDS: ReadonlyArray<string> = Object.freeze([
 		'id',
@@ -177,8 +183,7 @@ export class Place {
 	}
 
 	static decodeCommaDelimitedArrayColumns(object: PlainObject) {
-		if (!object)
-			return object;
+		if (!object) return object;
 
 		Place.COMMA_DELIMITED_ARRAY_COLUMNS.forEach((column) => {
 			if (!object.hasOwnProperty(column)) return;
