@@ -6,7 +6,7 @@ import { param, query } from 'express-validator';
 import { BoatOwnerService } from "../services";
 import { renderFile } from "pug";
 import { generatePDF } from "../utils/pdf-generator";
-
+const { Parser, transforms: { unwind } } = require('json2csv');
 export const ownerRouter = express.Router();
 const boatOwnerService = new BoatOwnerService();
 const db = knex(DB_CONFIG);
@@ -181,7 +181,12 @@ ownerRouter.post('/pdf', async (req: Request, res: Response) => {
 ownerRouter.post('/export', async (req: Request, res: Response) => {
 	const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
 	let data = await boatOwnerService.doSearch(page, limit, 0, { textToMatch, sortBy, sort});
-	res.status(200).send(data.body);
+
+	const json2csvParser = new Parser();
+
+	const csv = json2csvParser.parse(data.body);
+	res.setHeader("Content-Type", "text/csv");
+	res.attachment('boats.csv').send(csv);
 });
 
 

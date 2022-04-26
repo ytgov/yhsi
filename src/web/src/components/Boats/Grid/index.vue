@@ -81,16 +81,10 @@
 
 
         
-        <v-btn class="black--text mx-1" :loading="true" v-if="loadingExport">
+        <v-btn class="black--text mx-1" @click="getOwnerExport()" :loading="loadingExport">
             <v-icon class="mr-1"> mdi-export </v-icon>
             Export
         </v-btn>
-        <JsonCSV v-else :data="ownersData"  name="owner_data.csv">
-          <v-btn class="black--text mx-1" :disabled="ownersData.length == 0">
-            <v-icon class="mr-1"> mdi-export </v-icon>
-            Export
-          </v-btn>
-        </JsonCSV>
 
         <v-btn @click="downloadPdfOwners()" class="black--text mx-1" :loading="loadingPdf">
             <v-icon class="mr-1">
@@ -101,23 +95,16 @@
 
       </v-col>
       <v-col cols="auto" v-else class="d-flex">
-        <v-btn class="black--text mx-1" :loading="loadingExport" @click="testExport()">
-          TEST EXPORT
-        </v-btn>
         <v-btn class="black--text mx-1" @click="addNewBoat">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
           Add Boat
         </v-btn>
-        <!-- <v-btn class="black--text mx-1" :loading="true"  @click="testExport">
-            <v-icon class="mr-1"> mdi-export </v-icon>
-            Export
-          </v-btn>
-        <JsonCSV style="display: none;" :data="boatsData"  name="boat_data.csv" ref="csvBtn">
-          <v-btn class="black--text mx-1" :disabled="boatsData.length == 0">
-            <v-icon class="mr-1"> mdi-export </v-icon>
-            Export
-          </v-btn>
-        </JsonCSV> -->
+
+        <v-btn class="black--text mx-1" @click="getBoatExport()" :loading="loadingExport">
+          <v-icon class="mr-1"> mdi-export </v-icon>
+          Export
+        </v-btn>
+
         <v-btn @click="downloadPdf()" class="black--text mx-1" :loading="loadingPdf">
             <v-icon class="mr-1">
               mdi-printer
@@ -151,16 +138,16 @@
 </template>
 
 <script>
-import JsonCSV from "vue-json-csv";
 import Breadcrumbs from "../../Breadcrumbs";
 import downloadCsv from "../../../utils/dataToCsv";
+import downloadPdf from "../../../utils/dataToPdf";
 import _ from "lodash";
 import boats from "../../../controllers/boats";
 import owners from "../../../controllers/owners";
 //import jsPDF from "jspdf";
 export default {
   name: "boatsgrid-index",
-  components: { Breadcrumbs, JsonCSV },
+  components: { Breadcrumbs },
   data: () => ({
     route: "",
     active_tab: "",
@@ -207,12 +194,6 @@ export default {
 
   },
   methods: {
-    async testExport(){
-      await this.getBoatExport();
-      downloadCsv(this.boatsData, this.boatHeaders);
-      
-      //console.log(this.$refs.csvBtn);
-    },
     addNewBoat() {
       this.$router.push(`/boats/new`);
     },
@@ -238,18 +219,19 @@ export default {
     async getOwnerExport(){
       this.loadingExport = true;
       let o = this.ownerTableOptions;
-      this.ownersData = await owners.getExport(this.searchBoat, o.sortBy[0] ? o.sortBy[0] : "OwnerName", o.sortDesc[0] ? "desc" : "asc");
+      let data = await owners.getExport(this.searchOwner, o.sortBy[0] ? o.sortBy[0] : "OwnerName", o.sortDesc[0] ? "desc" : "asc");
+      downloadCsv(data, "owners");
       this.loadingExport = false;
     },
     async getBoatExport(){
       this.loadingExport = true;
-      let textToMatch = this.search;
+      let textToMatch = this.searchBoat;
       const prefilters = {};
       let b = this.boatTableOptions;
       this.filterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
       })
-      this.boatsData = await boats.getExport(
+      let data = await boats.getExport(
         textToMatch,
         b.sortBy[0] ? b.sortBy[0] : "Name",
         b.sortDesc[0] ? "desc" : "asc",
@@ -259,8 +241,8 @@ export default {
         prefilters.ServiceEnd,
         prefilters.VesselType
       );
-      
-      //this.boatsData = await boats.getExport(this.searchBoat, b.sortBy[0] ? b.sortBy[0] : "Name", b.sortDesc[0] ? "desc" : "asc");
+
+      downloadCsv(data, "boats");
       this.loadingExport = false;
     },
     async downloadPdf(){
@@ -268,30 +250,14 @@ export default {
       let b = this.boatTableOptions;
       
       let res = await boats.getGridPdf(this.searchBoat, b.sortBy[0] ? b.sortBy[0] : "Name", b.sortDesc[0] ? "desc" : "asc");
-      let blob = new Blob([res], { type: "application/octetstream" });
-      let url = window.URL || window.webkitURL;
-      let link = url.createObjectURL(blob);
-      let a = document.createElement("a");
-      a.setAttribute("download", "Boats.pdf");
-      a.setAttribute("href", link);
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      downloadPdf(res, "Boats");
       this.loadingPdf = false;
     },
     async downloadPdfOwners(){
       this.loadingPdf = true;
       let o = this.ownerTableOptions;
-      let res = await owners.getGridPdf(this.searchBoat, o.sortBy[0] ? o.sortBy[0] : "OwnerName", o.sortDesc[0] ? "desc" : "asc");
-      let blob = new Blob([res], { type: "application/octetstream" });
-      let url = window.URL || window.webkitURL;
-      let link = url.createObjectURL(blob);
-      let a = document.createElement("a");
-      a.setAttribute("download", "Owners.pdf");
-      a.setAttribute("href", link);
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      let res = await owners.getGridPdf(this.searchOwner, o.sortBy[0] ? o.sortBy[0] : "OwnerName", o.sortDesc[0] ? "desc" : "asc");
+      downloadPdf(res, "Owners");
       this.loadingPdf = false;
     },
   },

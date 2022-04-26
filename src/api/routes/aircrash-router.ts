@@ -6,7 +6,7 @@ import { param, query } from 'express-validator';
 import { AircrashService } from '../services';
 import { renderFile } from "pug";
 import { generatePDF } from "../utils/pdf-generator";
-
+const { Parser, transforms: { unwind } } = require('json2csv');
 export const aircrashRouter = express.Router();
 const db = knex(DB_CONFIG);
 const aircrashService = new AircrashService();
@@ -24,7 +24,19 @@ aircrashRouter.get(
 			textToMatch = '',
 			sortBy = 'yacsinumber',
 			sort = 'asc',
+			crashdate = '',
+			aircrafttype = '',
+			aircraftregistration = '',
+			nation = '',
+			militarycivilian = '',
+			crashlocation = '',
+			pilot = '',
+			soulsonboard = '',
+			injuries = '',
+			fatalities = ''
 		} = req.query;
+
+		console.log(req.query);
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
@@ -33,7 +45,17 @@ aircrashRouter.get(
 		{ 
 			textToMatch,
 			sortBy,
-			sort 
+			sort,
+			crashdate,
+			aircrafttype,
+			aircraftregistration,
+			nation,
+			militarycivilian,
+			crashlocation,
+			pilot,
+			soulsonboard,
+			injuries,
+			fatalities 
 		});
 
 		res.status(200).send(data);
@@ -210,8 +232,8 @@ aircrashRouter.post(
 });
 
 aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
-	const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
-	let aircrashes = await aircrashService.doSearch(page, limit, 0, { sortBy, sort, textToMatch });
+	const { page = 0, limit = 0, filters = {} } = req.body;
+	let aircrashes = await aircrashService.doSearch(page, limit, 0, filters);
 
 	// Compile template.pug, and render a set of data
 	let data = renderFile('./templates/aircrashes/aircrashGrid.pug', {
@@ -225,9 +247,16 @@ aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
 });
 
 aircrashRouter.post('/export', async (req: Request, res: Response) => {
-	const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
+	const { 
+		page = 0,
+		limit = 0,  
+		filters = {}
+	} = req.body;
 
-	let aircrashes = await aircrashService.doSearch(page, limit, 0, { sortBy, sort, textToMatch });
+	let aircrashes = await aircrashService.doSearch(page, limit, 0, filters);
+	const json2csvParser = new Parser();
 
-	res.status(200).send(aircrashes.body);
+	const csv = json2csvParser.parse(aircrashes.body);
+    res.setHeader("Content-Type", "text/csv");
+	res.attachment('boats.csv').send(csv);
 });

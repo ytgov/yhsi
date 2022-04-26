@@ -8,6 +8,7 @@ import places from '@/store/places';
 import placeEdits from '@/store/place-edits';
 import profile from './profile';
 import boats from './boats';
+import interpretiveSites from './interpretive-sites';
 import alerts from './alerts';
 import photos from './photos';
 import users from './users';
@@ -66,5 +67,6 @@ export default new Vuex.Store({
     places,
     profile,
     users,
+    interpretiveSites
   },
 });

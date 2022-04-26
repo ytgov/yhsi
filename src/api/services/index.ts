@@ -21,6 +21,7 @@ export * from './static-service';
 export * from './theme-service';
 export * from './user-service';
 export * from './ytplace-service';
+export * from './interpretive-site-service';
 
 export interface QueryStatement {
 	field: string;

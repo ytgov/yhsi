@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row>
       <v-col cols="12">
-        <h2 v-if="boats">{{ boats.length }} results out of {{ totalLength }}</h2>
+        <h2 v-if="list">{{ list.length }} results out of {{ totalLength }}</h2>
         <!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
       </v-col>
     </v-row>
@@ -10,7 +10,7 @@
     <v-row>
       <v-col cols="12">
         <v-data-table
-          :items="boats"
+          :items="list"
           :headers="headers"
           :loading="loading"
           :search="search"
@@ -19,11 +19,11 @@
           @click:row="handleClick"
           :footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
         >
-          <template v-slot:item.owners="{ item }">
+          <!-- <template v-slot:item.owners="{ item }">
             <div v-if="item.owners.length > 0">
               {{ getCurrentOwner(item.owners) }}
             </div>
-          </template>
+          </template> -->
         </v-data-table>
       </v-col>
     </v-row>
@@ -31,22 +31,24 @@
 </template>
 
 <script>
-import boats from "../../../controllers/boats";
-import _ from "lodash";
+import interpretiveSites from "../../../controllers/interpretive-sites";
+// import _ from "lodash";
 export default {
-  name: "boatsGrid",
+  name: "intSitesGrid",
   data: () => ({
     loading: false,
-    boats: [],
+    list: [],
     headers: [
-      { text: "Name", value: "Name" },
-      { text: "Owner", value: "owners", sortable: false },
-      { text: "Vessel Type", value: "VesselType" },
-      { text: "Construction Date", value: "ConstructionDate" },
-      { text: "Service Start Date", value: "ServiceStart" },
-      { text: "Service End Date", value: "ServiceEnd" },
-      { text: "Current Location Description", value: "CurrentLocation" },
-      { text: "Req Number", value: "RegistrationNumber" },
+      { text: "SiteName",  value: "SiteName"},
+      { text: "Location Description",  value: "LocationDesc"},
+      { text: "RouteName",  value: "RouteName"},
+      { text: "KMNum",   value: "KMNum"},
+      { text: "MapSheet",  value: "MapSheet"},
+      { text: "Latitude",  value:  "Latitude" },
+      { text: "Longitude",  value: "Longitude"},
+      { text: "EstablishedYear",  value:  "EstablishedYear"},
+      { text: "AdvancedNotification",  value:  "AdvancedNotification"},
+      { text: "NotificationDescription",  value:  "NotificationDesc"},
     ],
     //table options
     page: 0,
@@ -54,11 +56,15 @@ export default {
     options: { itemsPerPage: 50},
     totalLength: 0,
     filterOptions: [
-      { name: "Owner", value: "", dataAccess: "Owner"},
-      { name: "Construction Date", value: "", dataAccess: "ConstructionDate" },
-      { name: "Service Start", value: "", dataAccess: "ServiceStart" },
-      { name: "Service End", value: "", dataAccess: "ServiceEnd" },
-      { name: "Vessel Type", value: "", dataAccess: "VesselType" },
+          { text: "Location Description", value: "", dataAccess: "LocationDesc"},
+          { text: "Route Name", value: "", dataAccess: "RouteName"},
+          { text: "KMNum", value: "",  dataAccess: "KMNum"},
+          { text: "MapSheet", value: "", dataAccess: "MapSheet"},
+          { text: "Latitude", value: "", dataAccess:  "Latitude" },
+          { text: "Longitude", value: "", dataAccess: "Longitude"},
+          { text: "Established Year", value: "", dataAccess:  "EstablishedYear"},
+          { text: "Advanced Notification", value: "", dataAccess:  "AdvancedNotification"},
+          { text: "Notification Description", value: "", dataAccess:  "NotificationDesc"},
     ],
   }),
   mounted() {
@@ -66,55 +72,45 @@ export default {
   },
   methods: {
     handleClick(value) {
-      //Redirects the user to the edit user form
       this.$router.push({
-        name: "boatView",
-        params: { name: value.Name, id: value.Id },
+        name: "InterpretiveSitesView",
+        params: { id: value.SiteID },
       });
     },
     async getDataFromApi() {
       this.loading = true;
       let { page, itemsPerPage, sortBy, sortDesc } = this.options;
       page = page > 0 ? page - 1 : 0;
-      ////console.log(this.options);
       itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
       let textToMatch = this.search;
       const prefilters = {};
       this.filterOptions.map( x => {
         prefilters[x.dataAccess] = x.value;
       })
-      // console.log(page,
-      //   itemsPerPage,
-      //   textToMatch,
-      //   sortBy[0] ? sortBy[0] : "Name",
-      //   sortDesc[0] ? "desc" : "asc",
-      //   prefilters.Owner,
-      //   prefilters.ConstructionDate, 
-      //   prefilters.ServiceStart, 
-      //   prefilters.ServiceEnd,
-      //   prefilters.VesselType);
-      let data = await boats.get(
+      ////console.log("TEST",JSON.stringify(prefilters));
+      let data = await interpretiveSites.get(
         page,
         itemsPerPage,
-        textToMatch,
-        sortBy[0] ? sortBy[0] : "Name",
+        sortBy[0],
         sortDesc[0] ? "desc" : "asc",
-        prefilters.Owner,
-        prefilters.ConstructionDate, 
-        prefilters.ServiceStart, 
-        prefilters.ServiceEnd,
-        prefilters.VesselType
+        textToMatch,//prefilters.SiteName,
+        prefilters.LocationDesc,
+        prefilters.RouteName,
+        prefilters.KMNum,
+        prefilters.MapSheet,
+        prefilters.Latitude,
+        prefilters.Longitude,
+        prefilters.EstablishedYear,
+        prefilters.AdvancedNotification,
+        prefilters.NotificationDesc,
       );
-      this.boats = _.get(data, "body", []);
+      this.list = data.body;
       console.log(data);
-      this.totalLength = _.get(data, "count", 0);
-      this.boats.map((x) => {
-        x.ConstructionDate = this.formatDate(x.ConstructionDate);
-        x.ServiceStart = this.formatDate(x.ServiceStart);
-        x.ServiceEnd = this.formatDate(x.ServiceEnd);
-      });
-      this.$store.commit("boats/setBoats", this.boats);
-      this.$store.commit("boats/setBoatTableOptions", this.options);
+      this.totalLength = data.count;
+
+
+      // this.$store.commit("boats/setBoats", this.boats);
+      this.$store.commit("interpretiveSites/setSiteTableOptions", this.options);
       this.loading = false;
     },
     formatDate(date) {
@@ -132,10 +128,10 @@ export default {
   },
   computed: {
     selectedFilters() {
-      return this.$store.getters["boats/selectedFilters"];
+      return this.$store.getters["interpretiveSites/selectedSiteFilters"];
     },
     search() {
-      return this.$store.getters["boats/boatSearch"];
+      return this.$store.getters["interpretiveSites/siteSearch"];
     },
   },
   watch: {
