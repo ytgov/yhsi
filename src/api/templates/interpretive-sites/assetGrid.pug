@@ -1,0 +1,47 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+table.title-row
+  tbody 
+    tr 
+      td
+        div Asset information
+      td
+        img(style='width:200px; height:100px;' src="https://firebasestorage.googleapis.com/v0/b/yg-historic-sites.appspot.com/o/yukon.svg?alt=media&token=41e6cd68-0efd-438f-aef0-44bec1e15b55", alt="")
+
+div.grid
+  table.grid-table
+    thead
+      tr 
+        td 
+          strong.underline Site Name
+        td 
+          strong.underline Category 
+        td 
+          strong.underline Type
+        td 
+          strong.underline Route
+        td 
+          strong.underline Size
+        td 
+          strong.underline Description
+        td 
+          strong.underline Sign Text
+        td 
+          strong.underline Install Date
+        td 
+          strong.underline Maintained By
+    tbody 
+      each val in data
+        tr 
+          td #{val.SiteName} 
+          td #{val.Category} 
+          td #{val.Type} 
+          td #{val.Route} 
+          td #{val.Size} 
+          td #{val.Description} 
+          td #{val.SignText} 
+          td #{val.InstallDate} 
+          td #{val.MaintainedBy} 

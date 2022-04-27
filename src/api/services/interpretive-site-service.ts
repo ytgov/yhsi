@@ -216,8 +216,8 @@ export class InterpretiveSiteService {
 
     //ACTIONS
 
-	async getActionById(ActionID: number){
-		const res = await db.select('*').from('InterpretiveSites.Actions').where('InterpretiveSite.Actions.ActionID', ActionID);
+	async getActionsBySiteId(SiteID: number){
+		const res = await db.select('*').from('InterpretiveSites.Actions').where('InterpretiveSite.Actions.SiteID', SiteID);
 		return res;
 	}
 
@@ -326,8 +326,8 @@ export class InterpretiveSiteService {
     }
 
     //ASSETS
-	async getAssetById(AssetID: number){
-		const res = await db.select('*').from('InterpretiveSites.Assets').where('InterpretiveSite.Assets.AssetID', AssetID);
+	async getAssetsBySiteId(SiteID: number){
+		const res = await db.select('*').from('InterpretiveSites.Assets').where('InterpretiveSite.Assets.SiteID', SiteID);
 		return res;
 	}
 
