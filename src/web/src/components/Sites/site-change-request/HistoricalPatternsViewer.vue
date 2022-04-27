@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import HistoricalPatternTypesSelect from '@/components/Sites/HistoricalPatternTypesSelect';
+import HistoricalPatternTypesSelect from '@/components/Sites/site-forms/HistoricalPatternTypesSelect';
 
 export default {
 	name: 'HistoricalPatternsViewer',

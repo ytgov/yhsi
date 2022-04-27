@@ -10,6 +10,12 @@ export class NameService {
 		this.db = knex(DB_CONFIG);
 	}
 
+	async getFor(placeId: number) {
+		return this.db('name')
+			.where({ placeId })
+			.select<Name[]>(['id', 'placeId', 'description']);
+	}
+
 	async upsertFor(placeId: number, names: Name[]) {
 		return new Promise((resolve) => {
 			resolve(

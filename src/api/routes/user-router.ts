@@ -1,20 +1,18 @@
 import express, { Request, Response } from 'express';
 import axios from 'axios';
+import moment from 'moment';
+import { body, param } from 'express-validator';
+
 import {
 	DB_CONFIG,
 	ISSUER_BASE_URL,
 	CLIENT_ID,
 	AUTH_DB_CONNECTION,
 } from '../config';
-import { body, param } from 'express-validator';
 import { UserService } from '../services';
 import { ReturnValidationErrors } from '../middleware';
-import moment from 'moment';
-import {
-	authorize,
-	UserRoleOptions,
-	UserRoles,
-} from '../middleware/authorization';
+import { UserRoles } from '../models/user-roles';
+import { authorize, UserRoleOptions } from '../middleware/authorization';
 
 export const userRouter = express.Router();
 const db = new UserService(DB_CONFIG);

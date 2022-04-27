@@ -34,7 +34,7 @@ export default {
 	computed: {
 		headers() {
 			return [
-				{ text: 'YHSI ID', value: 'yhsiId' },
+				{ text: 'YHSI ID', value: 'yHSIId' },
 				{ text: 'Primary name', value: 'primaryName' },
 				{ text: 'Editor', value: 'editorEmail' },
 				{ text: 'Edit Date', value: 'editDate' },

@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express';
 import { DB_CONFIG } from '../config';
-import { PhotoService, PlaceService } from '../services';
+import { DescriptionService, PhotoService, PlaceService } from '../services';
 import moment from 'moment';
 import { createThumbnail } from '../utils/image';
 
+const descriptionService = new DescriptionService(DB_CONFIG);
 const placeService = new PlaceService(DB_CONFIG);
 const photoService = new PhotoService(DB_CONFIG);
 
@@ -39,7 +40,7 @@ registerRouter.get('/:id', async (req: Request, res: Response) => {
 	data.additionalInfoEn = '';
 	data.additionalInfoFr = '';
 
-	let descs = await placeService.getDescriptionsFor(parseInt(id));
+	let descs = await descriptionService.getForPlace(parseInt(id));
 
 	for (let desc of descs) {
 		if (desc.type == 5) {

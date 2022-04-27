@@ -138,16 +138,6 @@ export class StaticService {
 		return this.knex<PlaceTheme>('PlaceTheme').select('id', 'category', 'type');
 	}
 
-	async getStatutes(): Promise<Array<Statute>> {
-		return this.knex<Statute>('Statute').select(
-			'id',
-			'recognitionAuthority',
-			'recognitionType',
-			'description',
-			'allStatute'
-		);
-	}
-
 	async getMapSheets(): Promise<Array<MapSheetLookup>> {
 		return this.knex<MapSheetLookup>('YHIS.MapSheetLookup')
 			.select('id', 'map50k', 'map250k')
@@ -196,59 +186,12 @@ export class StaticService {
 		];
 	}
 
-	getJurisdictions(): GenericEnum[] {
-		return [
-			{ value: 0, text: 'None Selected' },
-			{ value: 1, text: 'Yukon' },
-			{ value: 2, text: 'Federal' },
-		];
-	}
-
-	getOwnerConsents(): GenericEnum[] {
-		return [
-			{ value: 0, text: 'None Selected' },
-			{ value: 1, text: 'Consent' },
-			{ value: 2, text: 'No Response' },
-			{ value: 3, text: 'Objection' },
-		];
-	}
-
 	getCategories(): readonly GenericEnum[] {
 		return CATEGORY_TYPES;
 	}
 
 	getDesignationTypes(): readonly GenericStringEnum[] {
 		return DESIGNATION_TYPES;
-	}
-
-	getConditions(): GenericEnum[] {
-		return [
-			{ value: 0, text: 'Not Applicable' },
-			{ value: 3, text: 'Poor' },
-			{ value: 1, text: 'Fair' },
-			{ value: 2, text: 'Good' },
-		];
-	}
-
-	getCoordinateDeterminations(): GenericEnum[] {
-		return [
-			{ value: 4, text: 'Digital Maps' },
-			{ value: 5, text: 'Geocoding' },
-			{ value: 1, text: 'GPS' },
-			{ value: 2, text: 'Paper Maps' },
-			{ value: 3, text: 'Unknown' },
-		];
-	}
-
-	getSiteStatuses(): GenericEnum[] {
-		return [
-			{ value: 1, text: 'Standing' },
-			{ value: 2, text: 'Demolished' },
-			{ value: 3, text: 'Burned' },
-			{ value: 4, text: 'Moved' },
-			{ value: 5, text: 'Dimantled' },
-			{ value: 6, text: 'Reconstruction' },
-		];
 	}
 
 	getRecordTypes(): readonly GenericStringEnum[] {

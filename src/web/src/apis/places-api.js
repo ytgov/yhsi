@@ -1,5 +1,4 @@
 import http from '@/apis/http-client';
-import placesSummaryApi from '@/apis/places-summary-api';
 
 const placeUrl = '/api/place';
 
@@ -8,24 +7,36 @@ export default {
 		return http
 			.get(placeUrl)
 			.then((response) => response.data)
-			.catch(console.error);
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
 	},
 	get(id) {
 		return http
 			.get(`${placeUrl}/${id}`)
 			.then((response) => response.data)
-			.catch(console.error);
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
 	},
-	put(id, data) {
-		return Promise.all([placesSummaryApi.put(id, data)]).catch((error) => {
-			console.error(error);
-			return Promise.reject(error);
-		});
+	patch(id, data) {
+		return http
+			.patch(`${placeUrl}/${id}`, data)
+			.then((response) => response.data)
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
 	},
 	search(data) {
 		return http
 			.post(`${placeUrl}/search`, data)
 			.then((response) => response.data)
-			.catch(console.error);
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
 	},
 };

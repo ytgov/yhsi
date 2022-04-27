@@ -41,6 +41,17 @@
 	padding-left: 0 !important;
 	padding-right: 0 !important;
 }
+.esri-search {
+	top: 15px;
+	right: 55px;
+	border: 1px #6e6e6e solid;
+	width: 400px !important;
+}
+.esri-settings {
+	top: 15px;
+	right: 15px;
+	border: 1px #6e6e6e solid;
+}
 </style>
 
 <script>
@@ -85,6 +96,8 @@ export default {
 					'esri/widgets/LayerList',
 					'esri/widgets/Legend',
 					'esri/layers/FeatureLayer',
+					'esri/config',
+					'esri/widgets/Search',
 				],
 				{ css: true }
 			).then(
@@ -96,6 +109,8 @@ export default {
 					LayerList,
 					Legend,
 					FeatureLayer,
+					config,
+					Search,
 				]) => {
 					IdentityManager.registerToken({
 						server: 'https://yukon.maps.arcgis.com',
@@ -104,6 +119,13 @@ export default {
 					IdentityManager.registerToken({
 						server: `${MAPS_URL}/sites`,
 						token: resp.access_token,
+					});
+
+					config.request.interceptors.push({
+						urls: `${MAPS_URL}/sites`,
+						before: function (params) {
+							params.requestOptions.withCredentials = true;
+						},
 					});
 
 					const webmap = new WebMap({
@@ -116,15 +138,29 @@ export default {
 						zoom: 5,
 					});
 
-					var element = document.createElement('div');
-					element.title = 'Map settings';
-					element.className =
-						'esri-icon-drag-horizontal esri-widget--button esri-widget esri-interactive';
-					element.addEventListener('click', function () {
+					const searchWidget = new Search({
+						view: view,
+						includeDefaultSources: false,
+						sources: [],
+						allPlaceholder: 'Search for site or airplane crash',
+					});
+
+					var settingWidget = document.createElement('div');
+					settingWidget.title = 'Map settings';
+					settingWidget.className =
+						'esri-icon-drag-horizontal esri-widget--button esri-widget esri-interactive esri-settings';
+					settingWidget.addEventListener('click', function () {
 						//parent.showSidebar = true;
 						parent.showSidebar();
 					});
-					view.ui.add(element, 'top-right');
+
+					view.ui.add([
+						{
+							component: settingWidget,
+							position: 'manual',
+						},
+						{ component: searchWidget, position: 'manual' },
+					]);
 
 					new LayerList({
 						view: view,
@@ -229,6 +265,16 @@ export default {
 							outFields: ['YHSI_ID'],
 						});
 
+						searchWidget.sources.push({
+							layer: sites,
+							searchFields: ['YHSI_ID', 'SITE_NAME'],
+							suggestionTemplate: '{YHSI_ID} - {SITE_NAME}',
+							exactMatch: false,
+							outFields: ['YHSI_ID', 'SITE_NAME'],
+							name: 'Sites',
+							placeholder: 'example: 105D/10',
+						});
+
 						view.when(function () {
 							webmap.add(sites);
 						});
@@ -292,6 +338,16 @@ export default {
 						var crash = new FeatureLayer({
 							url: `${MAPS_URL}/sites/1`,
 							popupTemplate: CrashPopup,
+						});
+
+						searchWidget.sources.push({
+							layer: crash,
+							searchFields: ['AIRCRAFT', 'YACSI_NUM', 'PILOT_NAME'],
+							displayField: 'YACSI_NUM',
+							exactMatch: false,
+							outFields: ['AIRCRAFT', 'YACSI_NUM'],
+							name: 'Airplane crash',
+							placeholder: 'example: 1975-01',
 						});
 
 						view.when(function () {
