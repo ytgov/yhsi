@@ -305,7 +305,7 @@ photosExtraRouter.get(
 
 // GET INTERPRETIVE SITE PHOTOS
 photosExtraRouter.get(
-	'/interpretive-site/:siteID',
+	'/interpretive-sites/:siteID',
 	[param('siteID').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
@@ -449,11 +449,11 @@ photosExtraRouter.post(
 
 // ADD NEW INTERPRETIVE SITE PHOTO
 photosExtraRouter.post(
-	'/interpretive-site',
+	'/interpretive-sites',
 	[upload.single('file')],
 	async (req: Request, res: Response) => {
 
-		const { siteID, ...restBody } = req.body;
+		const { SiteID, ...restBody } = req.body;
 		const ThumbFile = await createThumbnail(req.file.buffer);
 		const DateCreated = new Date();
 		const OriginalFileName = req.file.originalname;
@@ -474,7 +474,7 @@ photosExtraRouter.post(
 				const newPhoto = rows[0];
 
 				await db
-					.insert({ SiteID: siteID, Photo_RowID: newPhoto.RowId })
+					.insert({ SiteID: SiteID, Photo_RowID: newPhoto.RowId })
 					.into('InterpretiveSite.Photos')
 					.returning('*')
 					.then((rows) => {
@@ -645,7 +645,7 @@ photosExtraRouter.post(
 
 // LINK INTERPRETIVE SITE PHOTOS
 photosExtraRouter.post(
-	'/interpretive-site/link/:siteId',
+	'/interpretive-sites/link/:siteId',
 	[param('siteId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {

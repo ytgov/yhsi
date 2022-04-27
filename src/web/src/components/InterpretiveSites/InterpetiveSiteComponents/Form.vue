@@ -96,11 +96,11 @@
 												></v-text-field>
 											</v-col>
 											<v-col cols="6">
+												<!-- :rules="notifRules" -->
 												<v-text-field
 													name="NotificationSigns"
 													outlined
 													dense
-													:rules="notifRules"
 													label="Advanced notification signs"
 													v-model="fields.AdvancedNotification"
 													:readonly="isView"
@@ -117,15 +117,16 @@
 										</v-row>
 									</v-col>
 									<v-col cols="4">
-										<h4>Photos</h4>
-										<!-- <Photos 
-                          v-if="true" 
-                          :showDefault="isNew" 
-                          :photoType="'burial'"
-                          :itemId="currentIntSiteID"
-                          @updateSelectedImage="selectedImageChanged" 
-                          :selectedImage="selectedImage" 
-                          @loadingPhotosChange="loadingPhotosChange"/>    -->
+										<Photos
+											v-if="true"
+											:mode="mode"
+											:showDefault="isNew"
+											:photoType="'interpretive-sites'"
+											:itemId="currentIntSiteID"
+											@updateSelectedImage="selectedImageChanged"
+											:selectedImage="selectedImage"
+											@loadingPhotosChange="loadingPhotosChange"
+										/>
 									</v-col>
 								</v-row>
 							</v-expansion-panel-content>
@@ -323,10 +324,10 @@ import InspectionDialog from './Dialogs/InspectionDialog.vue';
 // import KinDialog from "./Dialogs/KinDialog.vue";
 // import SiteVisitDialog from "./Dialogs/SiteVisitDialog.vue";
 import MapLoader from '../../MapLoader.vue';
-// import Photos from "../../PhotoEditor/Photos";
+import Photos from '../../PhotoEditor/Photos';
 import countries from '../../../misc/countries';
 export default {
-	name: 'BurialComponent',
+	name: 'IntSiteComponent',
 	components: {
 		Breadcrumbs,
 		MapLoader,
@@ -335,7 +336,7 @@ export default {
 		// SiteVisitDialog,
 		// KinDialog,
 		// SourceDialog,
-		//Photos
+		Photos,
 	},
 	data: () => ({
 		username: 'username',
@@ -379,8 +380,8 @@ export default {
 		],
 		//rules
 		notifRules: [
-			//(value) => !!value || 'Required.',
-			(value) => value.length <= 7 || 'Length must be less than 7 characters',
+			(v) => !!v || 'Required.',
+			(v) => v.length <= 7 || 'Length must be less than 7 characters',
 		],
 
 		routes: [],
@@ -452,15 +453,6 @@ export default {
 				localStorage.currentIntSiteID
 			);
 			this.routes = await catalogs.getRoutes();
-			console.log(this.routes);
-			// this.fields = await burials.getById(localStorage.currentBurialID);
-			// this.cemetaries = await catalogs.getCemetaries();
-			// this.causes = await catalogs.getCauses();
-			// this.religions = await catalogs.getReligions();
-			// this.occupations = await catalogs.getOccupations();
-			// this.memberships = await catalogs.getMemberships();
-			// this.relationships = await catalogs.getRelationships();
-			console.log(this.fields);
 			this.overlay = false;
 		},
 		viewMode() {
@@ -488,7 +480,6 @@ export default {
 			);
 		},
 		modifiedDataCoordinates(val) {
-			console.log('coord', val);
 			this.modifiedMapFields = val;
 			this.showSave = this.showSave + 1;
 		},
@@ -500,7 +491,6 @@ export default {
 		},
 		async saveChanges() {
 			this.overlay = true;
-			console.log(this.fields);
 			let {
 				SiteName,
 				EstablishedYear,
@@ -546,7 +536,6 @@ export default {
 		},
 		newInspection(val) {
 			this.fields.inspections.push(val);
-			console.log(this.fields);
 		},
 		newOccupation(val) {
 			this.fields.Occupations.push(val);
