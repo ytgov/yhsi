@@ -93,7 +93,7 @@ import axios from "axios";
 import { PHOTO_BATCH_URL } from "../../../urls";
 import SaveDialog from "../SaveDialog";
 
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: "photobatchgrid",
@@ -120,6 +120,7 @@ export default {
     ],
   }),
   mounted(){
+    this.loadProfile();
     this.getDataFromApi();
   },
   methods: {
@@ -179,6 +180,9 @@ export default {
           this.$store.commit("alerts/setAlert", true); 
         });
     },
+    ...mapActions({
+      loadProfile: 'profile/loadProfile',
+    }),
   },
   computed:{
     filteredData(){// returns a filtered array depending on the selected filters and search

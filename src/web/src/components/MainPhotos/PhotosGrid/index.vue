@@ -207,7 +207,7 @@ import SaveDialog from "../SaveDialog";
 import { PHOTO_URL, STATIC_URL } from "../../../urls";
 import VueQueryBuilder from 'vue-query-builder';
 import Vue from "vue";
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: "Grid",
@@ -258,6 +258,7 @@ export default {
       this.search = this.$store.getters["photos/searchText"];
     }
 
+    this.loadProfile();
     this.setQueryFilters();
     this.getDataFromApi();
   },
@@ -518,86 +519,90 @@ export default {
       });
     }, 
 
-  loadSavedFilter(filters) {
-    this.queryBuilder.children = [];
-    filters = JSON.parse(filters);
-    filters.forEach((x) => {     
-      this.queryBuilder.children.push(x);
-    });
-  },
+    loadSavedFilter(filters) {
+      this.queryBuilder.children = [];
+      filters = JSON.parse(filters);
+      filters.forEach((x) => {     
+        this.queryBuilder.children.push(x);
+      });
+    },
 
-  saveDialog(filterName) {
-    let query = JSON.stringify(this.queryBuilder.children);
-    let body = { userId: this.currentUserId, name: filterName, resultType: "Photo", value: query}
-    axios
-      .post(`${PHOTO_URL}/saved-filter`, body)
-      .then(() => {
-        this.filterText = ' - '+ filterName;
+    saveDialog(filterName) {
+      let query = JSON.stringify(this.queryBuilder.children);
+      let body = { userId: this.currentUserId, name: filterName, resultType: "Photo", value: query}
+      axios
+        .post(`${PHOTO_URL}/saved-filter`, body)
+        .then(() => {
+          this.filterText = ' - '+ filterName;
+          this.getDataFromApi();
+          this.$store.commit("alerts/setText",'Filter saved');
+          this.$store.commit("alerts/setType", "success");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
+        })
+        .catch((err) => {            
+          this.$store.commit("alerts/setText",err);
+          this.$store.commit("alerts/setType", "warning");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
+        });
+    },
+
+    deleteFilter(filterId) {
+      axios
+        .delete(`${PHOTO_URL}/saved-filter/${filterId}`)
+        .then(() => {
+          this.filterText = null;
+          this.$router.go();          
+          this.$store.commit("alerts/setText",'Filter removed');
+          this.$store.commit("alerts/setType", "success");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
+        })
+        .catch((err) => {
+          this.$store.commit("alerts/setText",err);
+          this.$store.commit("alerts/setType", "warning");
+          this.$store.commit("alerts/setTimeout", 5000);
+          this.$store.commit("alerts/setAlert", true);
+        });
+    },
+
+    showHideFilters() {
+      this.showFilterSection = !this.showFilterSection;
+    },
+
+    getSavedFilters() {
+      this.savedFilters = [];
+      let userId = this.currentUserId;
+      axios
+        .get(`${PHOTO_URL}/saved-filter/user/${userId}`)
+        .then((resp) => {
+          this.savedFilters = resp.data.data.slice()
+            .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : b.name.toLowerCase() > a.name.toLowerCase() ? -1 : 0)
+          );
+        });
+    },
+
+    handleFilterClick(action, filterId) {
+      if (action == 'load') {
+        let filter = this.savedFilters.find(x => x.id == filterId);
+        this.filterText = ' - '+ filter.name;
+        this.loadSavedFilter(filter.value);
         this.getDataFromApi();
-        this.$store.commit("alerts/setText",'Filter saved');
-        this.$store.commit("alerts/setType", "success");
-        this.$store.commit("alerts/setTimeout", 5000);
-        this.$store.commit("alerts/setAlert", true);
-      })
-      .catch((err) => {            
-        this.$store.commit("alerts/setText",err);
-        this.$store.commit("alerts/setType", "warning");
-        this.$store.commit("alerts/setTimeout", 5000);
-        this.$store.commit("alerts/setAlert", true);
-      });
-  },
+        this.showFilterSection = true;
+      } else {
+        this.deleteFilter(filterId);
+      }
+    },
 
-  deleteFilter(filterId) {
-    axios
-      .delete(`${PHOTO_URL}/saved-filter/${filterId}`)
-      .then(() => {
-        this.filterText = null;
-        this.$router.go();          
-        this.$store.commit("alerts/setText",'Filter removed');
-        this.$store.commit("alerts/setType", "success");
-        this.$store.commit("alerts/setTimeout", 5000);
-        this.$store.commit("alerts/setAlert", true);
-      })
-      .catch((err) => {
-        this.$store.commit("alerts/setText",err);
-        this.$store.commit("alerts/setType", "warning");
-        this.$store.commit("alerts/setTimeout", 5000);
-        this.$store.commit("alerts/setAlert", true);
-      });
-  },
-
-  showHideFilters() {
-    this.showFilterSection = !this.showFilterSection;
-  },
-
-  getSavedFilters() {
-    this.savedFilters = [];
-    let userId = this.currentUserId;
-    axios
-      .get(`${PHOTO_URL}/saved-filter/user/${userId}`)
-      .then((resp) => {
-        this.savedFilters = resp.data.data.slice()
-          .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : b.name.toLowerCase() > a.name.toLowerCase() ? -1 : 0)
-        );
-      });
-  },
-
-  handleFilterClick(action, filterId) {
-    if (action == 'load') {
-      let filter = this.savedFilters.find(x => x.id == filterId);
-      this.filterText = ' - '+ filter.name;
-      this.loadSavedFilter(filter.value);
+    clearFilters() {
+      this.queryBuilder.children = [];
       this.getDataFromApi();
-      this.showFilterSection = true;
-    } else {
-      this.deleteFilter(filterId);
-    }
-  },
-
-  clearFilters() {
-    this.queryBuilder.children = [];
-    this.getDataFromApi();
-  }
+    },
+    
+    ...mapActions({
+      loadProfile: 'profile/loadProfile',
+    }),
 
   },
   computed: {

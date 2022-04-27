@@ -57,11 +57,11 @@
 			</v-col>
 		</v-row>
 
-		<v-row v-if="imagesLoaded">
+		<v-row v-if="imagesLoaded" class="scroll">
 			<v-col
 				v-for="(item, i) in photos"
 				:key="`photo-${i}`"
-				class="d-flex child-flex scroll"
+				class="d-flex child-flex"
 				cols="2"
 			>
 				<v-card class="mx-auto">
@@ -393,7 +393,7 @@
 
 <style scoped>
 .scroll {
-  height: 200px;
+  max-height: 340px;
   overflow: auto;
 }
 </style>

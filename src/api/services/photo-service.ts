@@ -246,4 +246,144 @@ export class PhotoService {
 			.update({ ThumbFile: thumbnail })
 			.returning<Photo>(PHOTO_FIELDS);
 	}
+
+	async getPlaceAssociations(id: string): Promise<any> {
+		return this.knex('photo')
+			.where('RowID', id)
+			.join('dbo.place as PL', 'PL.id', '=', 'photo.placeId')
+			.leftOuterJoin('community', 'community.id', 'PL.communityid')
+			.select([
+				'PL.id',
+				'PL.primaryName',
+				'PL.yHSIId',
+				'community.name as communityName',
+			])
+			.catch((err: any) => {
+				//console.log('BOMBED', err);
+				return undefined;
+			});
+	}
+
+	async getYtPlaceAssociations(id: string): Promise<any> {
+		return this.knex('place.photo as PH')
+			.where('PH.photo_RowId', id)
+			.join('place.place as PL', 'PL.id', '=', 'PH.placeId')
+			.select(['PL.id', 'PL.name'])
+			.catch((err: any) => {
+				//console.log('BOMBED', err);
+				return undefined;
+			});
+	}
+
+	async getBoatAssociations(id: string): Promise<any> {
+		return this.knex('boat.photo as PH')
+			.where('PH.photo_RowId', id)
+			.join('boat.boat as B', 'B.id', '=', 'PH.boatId')
+			.select(['B.id', 'B.name', 'B.vesseltype'])
+			.catch((err: any) => {
+				//console.log('BOMBED', err);
+				return undefined;
+			});
+	}
+
+	async getAircrashAssociations(id: string): Promise<any> {
+		return this.knex('aircrash.photo as PH')
+			.where('PH.photo_RowId', id)
+			.join('aircrash.aircrash as A', 'A.yacsinumber', '=', 'PH.yacsinumber')
+			.select(['A.yacsinumber', 'A.aircraftRegistration', 'A.aircraftType'])
+			.catch((err: any) => {
+				//console.log('BOMBED', err);
+				return undefined;
+			});
+	}
+
+	async getPeopleAssociations(id: string): Promise<any> {
+		return this.knex('person.photo as PH')
+			.where('PH.photoId', id)
+			.join('person.person as P', 'P.personId', '=', 'PH.personId')
+			.select(['P.personId', 'P.birthYear', 'P.deathYear'])
+			.select(this.knex.raw("P.givenName + ' ' + P.surname as name"))
+			.catch((err: any) => {
+				console.log('BOMBED', err);
+				return undefined;
+			});
+	}
+
+	async getBurialAssociations(id: string): Promise<any> {
+		return this.knex('burial.photo as PH')
+			.where('PH.photo_RowId', id)
+			.join('burial.burial as B', 'B.burialId', '=', 'PH.burialId')
+			.select(['B.burialId', 'B.birthYear', 'B.deathYear'])
+			.select(this.knex.raw("B.firstName + ' ' + B.lastName as name"))
+			.catch((err: any) => {
+				console.log('BOMBED', err);
+				return undefined;
+			});
+	}
+
+	async getIntSiteAssociations(id: string): Promise<any> {
+		return this.knex('interpretiveSite.photos as PH')
+			.where('PH.photo_RowId', id)
+			.join('interpretiveSite.sites as S', 'S.siteId', '=', 'PH.siteId')
+			.select(['S.siteId', 'S.siteName', 'S.routeName', 'S.kmNum'])
+			.catch((err: any) => {
+				console.log('BOMBED', err);
+				return undefined;
+			});
+	}
+
+	async deletePlaceAssociation(id: string): Promise<any> {
+		return this.knex('photo')
+			.where({ RowID: id })
+			.update({ placeId: null })
+			.catch((err: any) => {
+				//console.log('BOMBED', err);
+				return undefined;
+			});
+	}
+
+	async deleteYtPlaceAssociation(id: string, ytplaceId: string): Promise<any> {
+		return this.knex('place.photo')
+			.where({ photo_RowId: id })
+			.where({ placeId: ytplaceId })
+			.delete();
+	}
+
+	async deleteBoatAssociation(id: string, boatId: string): Promise<any> {
+		return this.knex('boat.photo')
+			.where({ photo_RowId: id })
+			.where({ boatId: boatId })
+			.delete();
+	}
+
+	async deleteAircrashAssociation(
+		id: string,
+		yacsinumber: string
+	): Promise<any> {
+		return this.knex('aircrash.photo')
+			.where({ photo_RowId: id })
+			.where({ yacsinumber: yacsinumber })
+			.delete();
+	}
+
+	async deletePeopleAssociation(id: string, personId: string): Promise<any> {
+		return this.knex('person.photo')
+			.where({ photoId: id })
+			.where({ personId: personId })
+			.delete();
+	}
+
+	async deleteBurialAssociation(id: string, burialId: string): Promise<any> {
+		return this.knex('burial.photo')
+			.where({ photo_RowId: id })
+			.where({ burialId: burialId })
+			.delete();
+	}
+
+	async deleteIntSiteAssociation(id: string, siteId: string): Promise<any> {
+		return this.knex('interpretiveSite.photos')
+			.where({ photo_RowId: id })
+			.where({ siteId: siteId })
+			.delete();
+	}
 }

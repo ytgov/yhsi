@@ -53,8 +53,8 @@
           <template v-slot:default="{ hover }">
             <v-card class="mx-auto">
               <v-img
-                :src="item.photoFile.base64"
-                :lazy-src="item.photoFile.base64"
+                :src="item.thumbFile.base64"
+                :lazy-src="item.thumbFile.base64"
                 class="white--text align-end"
                 aspect-ratio="1"
               >
@@ -121,7 +121,7 @@ export default {
         .get(`${PHOTO_BATCH_URL}/${localStorage.currentBatchId}/photos`)
         .then((resp) => {
           this.photos = resp.data.data.map((x) => {
-            x.photoFile.base64 = `data:image/png;base64,${this.toBase64(x.photoFile.data)}`;
+            x.thumbFile.base64 = `data:image/png;base64,${this.toBase64(x.thumbFile.data)}`;
             return x;
           });
         })
@@ -175,7 +175,7 @@ export default {
           .post(`${PHOTO_BATCH_URL}/photo/`, formData)
           .then((resp) => {
             let photo = resp.data.data[0];
-            photo.photoFile.base64 = `data:image/png;base64,${this.toBase64(photo.photoFile.data)}`;
+            photo.thumbFile.base64 = `data:image/png;base64,${this.toBase64(photo.thumbFile.data)}`;
             this.photos.push(photo);
             this.$refs.fileupload.reset();
             this.$store.commit("alerts/setText",'Photo added');
@@ -184,6 +184,7 @@ export default {
             this.$store.commit("alerts/setAlert", true);
           })
           .catch(() => {
+            this.$store.commit("alerts/setText",'Error during photo upload');
             this.$store.commit("alerts/setType", "warning");
             this.$store.commit("alerts/setTimeout", 5000);
             this.$store.commit("alerts/setAlert", true);

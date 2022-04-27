@@ -315,6 +315,9 @@ export default {
           this.fields.dateCreated = this.fields.dateCreated
             ? this.fields.dateCreated.substr(0, 10)
             : "";
+          this.fields.datePhotoTaken = this.fields.datePhotoTaken
+            ? this.fields.datePhotoTaken.substr(0, 10)
+            : "";
           this.displayName = this.fields.originalFileName;
           axios.get(`${STATIC_URL}/community`).then((resp) => {
             let community = resp.data.data.filter((a) => a.id == this.fields.communityId);

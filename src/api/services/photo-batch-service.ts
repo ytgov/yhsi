@@ -73,13 +73,16 @@ export class PhotoBatchService {
 				)
 				.leftOuterJoin(
 					'security.[user]',
-					'photobatch.ownerid',
+					'photobatch.userid',
 					'security.[user].id'
 				)
 				.count('photobatchphoto.id', { as: 'photoCount' })
 				.groupBy(PHOTO_BATCH_FIELDS)
+				.groupBy(this.knex.raw('security.[user].first_name'))
+				.groupBy(this.knex.raw('security.[user].last_name'))
 				.groupBy(this.knex.raw('photobatch.id'))
-				.groupBy(this.knex.raw('photobatch.userId'));
+				.groupBy(this.knex.raw('photobatch.userId'))
+				.orderBy('photobatch.dateCreated', 'desc');
 
 			if (query && query.length > 0) {
 				query.forEach((stmt: any) => {
@@ -114,7 +117,6 @@ export class PhotoBatchService {
 							break;
 						}
 						case 'lte': {
-							////console.log(`Testing ${stmt.field} for IN on ${stmt.value}`)
 							selectStmt.orWhere(stmt.field, '<=', stmt.value);
 							break;
 						}
@@ -230,7 +232,7 @@ export class PhotoBatchService {
 			.returning<PhotoBatchPhoto>([
 				'id',
 				'photoBatchId',
-				'photoFile',
+				'thumbFile',
 				'photoFileName',
 				'photoContentType',
 			]);

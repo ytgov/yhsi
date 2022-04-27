@@ -1,4 +1,3 @@
-
 import express, { Request, Response } from 'express';
 import { DB_CONFIG } from '../config';
 import { createThumbnail } from '../utils/image';
@@ -23,7 +22,6 @@ photosExtraRouter.get(
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		
 		const { textToMatch } = req.query;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
@@ -107,7 +105,6 @@ photosExtraRouter.post(
 	ReturnValidationErrors,
 	[upload.single('file')],
 	async (req: Request, res: Response) => {
-
 		const { BoatId } = req.params;
 		const { linkPhotos } = req.body;
 
@@ -212,7 +209,6 @@ photosExtraRouter.get(
 	[param('boatId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-
 		const { boatId } = req.params;
 
 		const page = parseInt(req.query.page as string);
@@ -277,7 +273,7 @@ photosExtraRouter.get(
 			.where('BP.BurialID', burialId)
 			.limit(limit)
 			.offset(offset);
-		
+
 		res.status(200).send(photos);
 	}
 );
@@ -464,95 +460,12 @@ photosExtraRouter.post(
 	}
 );
 
-// Get item links as an array of strings
-photosExtraRouter.get(
-	'/:id/item-link',
-	[param('id').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { id } = req.params;
-
-		const items = await db
-			.from('place.photo')
-			.select(db.raw("'Place' as itemName"))
-			.where('Photo_RowID', id)
-			.union(
-				db
-					.from('boat.photo')
-					.select(db.raw("'Boat' as itemName"))
-					.where('Photo_RowID', id),
-				db
-					.from('aircrash.photo')
-					.select(db.raw("'Airplane Crash' as itemName"))
-					.where('Photo_RowID', id),
-				db
-					.from('photo')
-					.select(db.raw("'Site' as itemName"))
-					.where('RowID', id)
-					.whereNotNull('placeId')
-			);
-
-		res.status(200).send(items);
-	}
-);
-
-// Get all site records associated with photo
-photosExtraRouter.get(
-	'/:id/place',
-	[param('id').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { id } = req.params;
-
-		const items = await db
-			.from('dbo.photo as PH')
-			.where('RowID', id)
-			.join('dbo.place as PL', 'PL.id', '=', 'PH.placeId')
-			.leftOuterJoin('community', 'community.id', 'PL.communityid')
-			.select([
-				'PL.id',
-				'PL.primaryName',
-				'PL.yHSIId',
-				'community.name as communityName',
-			])
-			.catch((err) => {
-				//console.log('BOMBED', err);
-				return undefined;
-			});
-
-		res.status(200).send(items);
-	}
-);
-
-// Delete the site id (placeId) from the photo
-photosExtraRouter.delete(
-	'/:id/place',
-	[param('id').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { id } = req.params;
-
-		const items = await db
-			.from('dbo.photo')
-			.where({ RowID: id })
-			.update({ placeId: null })
-			.catch((err) => {
-				//console.log('BOMBED', err);
-				return undefined;
-			});
-
-		res.sendStatus(200).send(items);
-	}
-);
-
-
 // LINK BURIAL PHOTOS
 photosExtraRouter.post(
 	'/burial/link/:burialId',
 	[param('burialId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-
 		const { burialId } = req.params;
 		const { linkPhotos } = req.body;
 		let currentPhotos = await db
@@ -611,7 +524,6 @@ photosExtraRouter.post(
 	}
 );
 
-
 // ADD NEW PERSON PHOTO
 photosExtraRouter.post(
 	'/people/:personID',
@@ -650,7 +562,6 @@ photosExtraRouter.post(
 	[param('personID').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		
 		const { personID } = req.params;
 		const { linkPhotos } = req.body;
 		let currentPhotos = await db
@@ -681,7 +592,6 @@ photosExtraRouter.post(
 	'/boat',
 	[upload.single('file')],
 	async (req: Request, res: Response) => {
-
 		const { burialId, ...restBody } = req.body;
 		const ThumbFile = await createThumbnail(req.file.buffer);
 
@@ -707,37 +617,3 @@ photosExtraRouter.post(
 		res.status(200).send({ message: 'Upload Success' });
 	}
 );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
