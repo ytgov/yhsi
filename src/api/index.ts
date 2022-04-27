@@ -149,7 +149,7 @@ app.use('/api/histories', RequiresAuthentication, historiesRouter);
 app.use('/api/catalogs', RequiresAuthentication, catalogsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
-app.use('/api/photos', RequiresAuthentication, photosExtraRouter);
+app.use('/api/photos', photosExtraRouter); //removed auth check for testing
 app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
 app.use('/api/place-edits', RequiresAuthentication, placeEditsRouter);
 app.use('/api/place-themes', RequiresAuthentication, placeThemesRouter);

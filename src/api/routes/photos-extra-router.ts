@@ -457,7 +457,7 @@ photosExtraRouter.post(
 		const ThumbFile = await createThumbnail(req.file.buffer);
 		const DateCreated = new Date();
 		const OriginalFileName = req.file.originalname;
-
+		console.log("inside the endpoint", req.body);
 		const body = {
 			File: req.file.buffer,
 			ThumbFile,

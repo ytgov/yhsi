@@ -97,14 +97,21 @@
 											</v-col>
 											<v-col cols="6">
 												<!-- :rules="notifRules" -->
-												<v-text-field
-													name="NotificationSigns"
-													outlined
-													dense
-													label="Advanced notification signs"
+												<label> Advanced Notification Signs?</label>
+												<v-radio-group
 													v-model="fields.AdvancedNotification"
-													:readonly="isView"
-												></v-text-field>
+													row
+												>
+													<v-radio
+														label="Yes"
+														value="Yes"
+													></v-radio>
+													<v-radio
+														label="No"
+														value="No"
+													></v-radio>
+												</v-radio-group>
+
 												<v-textarea
 													name="NotificationDesc"
 													outlined
