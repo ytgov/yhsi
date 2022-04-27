@@ -55,30 +55,6 @@ GO
 	else 'large' end) PERSISTED;
 GO
 
-/* Decided the photoprogram tables are unnecessary since we already have linking tables, just use those. Keeping these scripts in case I want them
--- Create PhotoProgram lookup table
--- drop table [PhotoProgram]
-CREATE TABLE [dbo].[PhotoProgram](
-	Photo_RowId nvarchar(255) NOT NULL,
-	[PhotoProgramLookupId] [int] NOT NULL
-);
-GO
 
---drop table PhotoProgramLookup
-CREATE TABLE [dbo].[PhotoProgramLookup](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Program] nvarchar(256) NOT NULL
-);
+alter table photo add DatePhotoTaken date;
 GO
-
-INSERT INTO PhotoProgramLookup (program)
-VALUES
-    ('Place'),
-    ('Boat'),
-    ('Airplane Crash');
-GO
-
--- Testing script to populate
-insert into photoprogram (photo_rowid, PhotoProgramLookupId) 
-select photo_rowid, 1 from place.photo where placeid = 1;
-*/

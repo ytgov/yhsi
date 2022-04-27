@@ -243,8 +243,10 @@ photoBatchRouter.post(
 	[check('photoBatchId').isInt().notEmpty()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
+		const ThumbFile = await createThumbnail(req.file.buffer);
 		req.body.photoFile = req.file.buffer;
 		req.body.photoFileName = req.file.originalname;
+		req.body.ThumbFile = ThumbFile;
 
 		if (!errors.isEmpty()) {
 			//console.log(errors);

@@ -57,7 +57,7 @@
 			</v-col>
 		</v-row>
 
-		<v-row v-if="imagesLoaded">
+		<v-row v-if="imagesLoaded" class="scroll">
 			<v-col
 				v-for="(item, i) in photos"
 				:key="`photo-${i}`"
@@ -66,8 +66,8 @@
 			>
 				<v-card class="mx-auto">
 					<v-img
-						:src="item.photoFile.base64"
-						:lazy-src="item.photoFile.base64"
+						:src="item.thumbFile.base64"
+						:lazy-src="item.thumbFile.base64"
 						class="white--text align-end"
 						aspect-ratio="1"
 					>
@@ -184,8 +184,8 @@
 					.get(`${PHOTO_BATCH_URL}/${localStorage.currentBatchId}/photos`)
 					.then((resp) => {
 						this.photos = resp.data.data.map((x) => {
-							x.photoFile.base64 = `data:image/png;base64,${this.toBase64(
-								x.photoFile.data
+							x.thumbFile.base64 = `data:image/png;base64,${this.toBase64(
+								x.thumbFile.data
 							)}`;
 							return x;
 						});
@@ -223,7 +223,7 @@
 			},
 			historicSiteChange(val) {
 				this.fields.creator = val.creator;
-				this.fields.dateCreated = val.dateCreated;
+				//this.fields.dateCreated = val.dateCreated;
 				this.fields.mediaStorage = val.mediaStorage;
 				this.fields.originalMediaId = val.originalMediaId;
 				this.fields.originalRecord = val.originalRecord;
@@ -390,3 +390,10 @@
 		},
 	};
 </script>
+
+<style scoped>
+.scroll {
+  max-height: 340px;
+  overflow: auto;
+}
+</style>

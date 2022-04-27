@@ -46,3 +46,6 @@ ALTER TABLE photobatch
 ADD CONSTRAINT isPrivateDefault
 DEFAULT 0 FOR isPrivate;
 GO
+
+alter table photobatchphoto add ThumbFile varbinary(max);
+GO

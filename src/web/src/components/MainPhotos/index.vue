@@ -121,7 +121,7 @@
               <v-row>
                 <v-col cols="2">
                   <v-text-field
-                    v-model="fields.dateCreated"
+                    v-model="fields.datePhotoTaken"
                     label="Date Photo Taken"
                     readonly
                     outlined
@@ -315,6 +315,9 @@ export default {
           this.fields.dateCreated = this.fields.dateCreated
             ? this.fields.dateCreated.substr(0, 10)
             : "";
+          this.fields.datePhotoTaken = this.fields.datePhotoTaken
+            ? this.fields.datePhotoTaken.substr(0, 10)
+            : "";
           this.displayName = this.fields.originalFileName;
           axios.get(`${STATIC_URL}/community`).then((resp) => {
             let community = resp.data.data.filter((a) => a.id == this.fields.communityId);
@@ -382,7 +385,7 @@ export default {
     },
     historicSiteChange(val) {   
       this.fields.creator = val.creator;     
-      this.fields.dateCreated = val.dateCreated;     
+      this.fields.datePhotoTaken = val.datePhotoTaken;     
       this.fields.mediaStorage = val.mediaStorage;     
       this.fields.originalMediaId = val.originalMediaId;     
       this.fields.originalRecord = val.originalRecord;     
@@ -453,6 +456,7 @@ export default {
 
         creator: this.fields.creator,
         dateCreated: this.fields.dateCreated,
+        datePhotoTaken: this.fields.datePhotoTaken,
         mediaStorage: this.fields.mediaStorage,
         originalMediaId: this.fields.originalMediaId,
         originalRecord: this.fields.originalRecord,

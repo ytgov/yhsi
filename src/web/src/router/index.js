@@ -194,53 +194,29 @@ const routes = [
 		meta: { requiresAuth: true, authorize: [UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.SITE_VIEWER, UserRoles.SITE_VIEWER_LIMITED] }
 	},
 	{
-		path: "/photos/edit/:id",
-		name: "PhotosFormEdit",
+		path: "/photos/:mode",
+		name: "PhotosForm",
 		component: MainPhotos,
 		meta: { requiresAuth: true, authorize: [UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR] },
 		children: [
 			{
-				path: "feature",
-				component: Feature
+			path: "feature",
+			component: Feature
 			},
 			{
-				path: "site_record",
-				component: SiteRecord
+			path: "site_record",
+			component: SiteRecord
 			},
 			{
-				path: "historic_sites",
-				component: HistoricSites
+			path: "historic_sites",
+			component: HistoricSites
 			},
 			{
-				path: "photo",
-				component: Photo
+			path: "photo",
+			component: Photo
 			}
 		]
-	},
-	{
-		path: "/photos/add",
-		name: "PhotosFormAdd",
-		component: MainPhotos,
-		meta: { requiresAuth: true, authorize: [UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR] },
-		children: [
-			{
-				path: "feature",
-				component: Feature
-			},
-			{
-				path: "site_record",
-				component: SiteRecord
-			},
-			{
-				path: "historic_sites",
-				component: HistoricSites
-			},
-			{
-				path: "photo",
-				component: Photo
-			}
-		]
-	},
+	},	
 	{
 		path: "/boats",
 		component: Boats,
