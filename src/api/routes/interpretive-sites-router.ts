@@ -407,9 +407,6 @@ intSitesRouter.get(
 intSitesRouter.post('/actions', async (req: Request, res: Response) => {
 	const {
 		item = {},
-		// actions = [],
-		// assets = [],
-		// inspections = [],
 	} = req.body;
 
 	const resObj = await intSiteService.addAction(item);

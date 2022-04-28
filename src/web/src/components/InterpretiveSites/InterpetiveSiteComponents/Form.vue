@@ -214,6 +214,23 @@
 							</v-expansion-panel-header>
 							<v-expansion-panel-content>
 								<v-row>
+									<v-col
+										cols="12"
+										class="d-flex flex-row"
+									>
+										<ActionDialog
+											:mode="'new'"
+											:type="'siteview'"
+											:Site="{
+												SiteName: fields.SiteName,
+												SiteID: fields.SiteID,
+											}"
+											class="ml-auto mr-1"
+											@newAction="newAction"
+										/>
+									</v-col>
+								</v-row>
+								<v-row>
 									<v-col cols="12">
 										<v-data-table
 											:headers="actionHeaders"
@@ -221,32 +238,14 @@
 											:items-per-page="5"
 											class="elevation-0"
 										>
-											<!-- <template v-slot:item="{ item, index }">
-                            <tr v-if="item.deleted != true">
-                                <td class="parent-row">{{ item.Name }}</td>
-                                <td class="child-row">{{ item.Location }}</td>
-                                <td class="child-row">{{ item.Quantity }}</td>
-                                <td class="child-row">{{ item.Relationship }}</td>
-                                <td class="child-row">
-                                  <div class="d-flex flex-row">
-                                    <KinDialog v-if="!isView" :mode="'edit'" :data="relationships" @editKinship="editKinship" :kinToEdit="{ index, Kinship: item}"/>
-                                    <v-tooltip bottom v-if="!isView">
-                                        <template v-slot:activator="{ on, attrs }">
-                                                <v-btn 
-                                                v-bind="attrs"
-                                                v-on="on"
-                                                icon class="grey--text text--darken-2"  @click="deleteKinship(index)">
-                                                    <v-icon
-                                                    small
-                                                    >mdi-trash-can</v-icon>  
-                                                </v-btn>
-                                        </template>
-                                        <span>Delete</span>
-                                    </v-tooltip>
-                                  </div>
-                                </td>   
-                            </tr>            
-                          </template>   -->
+											<template v-slot:item="{ item, index }">
+												<ActionDialog
+													:mode="'edit'"
+													:type="'siteview'"
+													:dataToEdit="{ item, index }"
+													@editAction="editAction"
+												/>
+											</template>
 										</v-data-table>
 									</v-col>
 								</v-row>
@@ -276,34 +275,7 @@
 											:items="fields.inspections"
 											:items-per-page="5"
 											class="elevation-0"
-										>
-											<!-- <template v-slot:item="{ item, index }">
-                            <tr v-if="item.deleted != true">
-                                <td class="parent-row">{{ item.Name }}</td>
-                                <td class="child-row">{{ item.Location }}</td>
-                                <td class="child-row">{{ item.Quantity }}</td>
-                                <td class="child-row">{{ item.Relationship }}</td>
-                                <td class="child-row">
-                                  <div class="d-flex flex-row">
-                                    <KinDialog v-if="!isView" :mode="'edit'" :data="relationships" @editKinship="editKinship" :kinToEdit="{ index, Kinship: item}"/>
-                                    <v-tooltip bottom v-if="!isView">
-                                        <template v-slot:activator="{ on, attrs }">
-                                                <v-btn 
-                                                v-bind="attrs"
-                                                v-on="on"
-                                                icon class="grey--text text--darken-2"  @click="deleteKinship(index)">
-                                                    <v-icon
-                                                    small
-                                                    >mdi-trash-can</v-icon>  
-                                                </v-btn>
-                                        </template>
-                                        <span>Delete</span>
-                                    </v-tooltip>
-                                  </div>
-                                </td>   
-                            </tr>            
-                          </template>   -->
-										</v-data-table>
+										></v-data-table>
 									</v-col>
 								</v-row>
 							</v-expansion-panel-content>
@@ -325,11 +297,8 @@
 import Breadcrumbs from '../../Breadcrumbs';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 import catalogs from '../../../controllers/catalogs';
-import InspectionDialog from './Dialogs/InspectionDialog.vue';
-// import OccupationDialog from "./Dialogs/OccupationDialog.vue";
-// import SourceDialog from "./Dialogs/SourceDialog.vue";
-// import KinDialog from "./Dialogs/KinDialog.vue";
-// import SiteVisitDialog from "./Dialogs/SiteVisitDialog.vue";
+import InspectionDialog from '../Dialogs/InspectionDialog.vue';
+import ActionDialog from '../Dialogs/ActionDialog.vue';
 import MapLoader from '../../MapLoader.vue';
 import Photos from '../../PhotoEditor/Photos';
 import countries from '../../../misc/countries';
@@ -339,10 +308,7 @@ export default {
 		Breadcrumbs,
 		MapLoader,
 		InspectionDialog,
-		// OccupationDialog,
-		// SiteVisitDialog,
-		// KinDialog,
-		// SourceDialog,
+		ActionDialog,
 		Photos,
 	},
 	data: () => ({
@@ -364,11 +330,11 @@ export default {
 		menu2: false,
 		showSave: 0,
 		actionHeaders: [
-			{ text: 'Action Required', value: 'Membership' },
-			{ text: 'To be Completed by', value: 'Chapter' },
-			{ text: 'Priority', value: 'Notes' },
-			{ text: 'Completed date', value: 'actions' },
-			{ text: 'Completion Notes', value: 'actions' },
+			{ text: 'Action Required', value: 'ActionDesc' },
+			{ text: 'To be Completed by', value: 'CompletedBy' },
+			{ text: 'Priority', value: 'Priority' },
+			{ text: 'Completed date', value: 'ActionCompleteDate' },
+			{ text: 'Completion Notes', value: 'CompletionDesc' },
 		],
 		inspectionHeaders: [
 			{ text: 'Inspection Date', value: 'InspectionDate' },
@@ -541,11 +507,15 @@ export default {
 			this.$router.push({ name: 'InterpretiveSitesGrid' });
 			this.$router.go();
 		},
+		newAction(val) {
+			this.fields.actions.push(val);
+		},
+		editAction() {},
 		newInspection(val) {
 			this.fields.inspections.push(val);
 		},
-		newOccupation(val) {
-			this.fields.Occupations.push(val);
+		newAsset(val) {
+			this.fields.assets.push(val);
 		},
 		deleteOccupation(index) {
 			if (index > -1) {
