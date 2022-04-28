@@ -346,8 +346,7 @@ intSitesRouter.post('/assets/export', async (req: Request, res: Response) => {
 intSitesRouter.get(
 	'/actions',
 	[
-		query('textToMatch').default('').isString(),
-		query('sortBy').default('SiteName').isString(),
+		query('sortBy').default('ActionDesc').isString(),
 		query('sort').default('asc').isString(),
 		query('page').default(0).isInt(), 
 		query('limit').default(10).isInt({ gt: 0 }),

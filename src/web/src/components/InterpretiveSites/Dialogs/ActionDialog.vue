@@ -118,7 +118,7 @@
 										dense
 										name="CompletedDate"
 										label="Completed Date"
-										v-model="fields.CompletedDate"
+										v-model="fields.ActionCompleteDate"
 										:rules="rules"
 									></v-text-field>
 								</v-col>
@@ -130,7 +130,7 @@
 										dense
 										name="Notes"
 										label="Notes"
-										v-model="fields.Notes"
+										v-model="fields.CompletionDesc"
 										:rules="rules"
 									></v-textarea>
 								</v-col>
@@ -159,33 +159,14 @@
 			</v-card>
 		</v-dialog>
 		<!-- edit dialog  -->
-		{{ mode }}
 		<v-dialog
 			v-if="mode == 'edit'"
 			v-model="editDialog"
 			persistent
 			max-width="800px"
 		>
-			{{ dataToEdit }} this is some data
-			<template v-slot:activator="{ on, attrs }">
-				<v-btn
-					color="primary"
-					outlined
-					class="ml-auto mr-1"
-					v-bind="attrs"
-					v-on="on"
-				>
-					<!-- </template>
-			<template #activator="{ on }"> -->
-					<tr>
-						<td class="parent-row">{{ dataToEdit.item.ActionDesc }}</td>
-						<td class="child-row">{{ dataToEdit.item.CompletedBy }}</td>
-						<td class="child-row">{{ dataToEdit.item.Priority }}</td>
-						<td class="child-row">{{ dataToEdit.item.ActionCompleteDate }}</td>
-						<td class="child-row">{{ dataToEdit.item.CompletionDesc }}</td>
-					</tr>
-				</v-btn>
-				<!-- <v-tooltip bottom>
+			<template #activator="{ on: dialog }">
+				<v-tooltip bottom>
 					<template #activator="{ on: tooltip }">
 						<v-btn
 							v-on="{ ...tooltip, ...dialog }"
@@ -197,7 +178,7 @@
 						</v-btn>
 					</template>
 					<span>Edit</span>
-				</v-tooltip> -->
+				</v-tooltip>
 			</template>
 
 			<v-card>
@@ -299,7 +280,7 @@
 										dense
 										name="CompletedDate"
 										label="Completed Date"
-										v-model="editFields.CompletedDate"
+										v-model="editFields.ActionCompleteDate"
 										:rules="rules"
 									></v-text-field>
 								</v-col>
@@ -311,7 +292,7 @@
 										dense
 										name="Notes"
 										label="Notes"
-										v-model="editFields.Notes"
+										v-model="editFields.CompletionDesc"
 										:rules="rules"
 									></v-textarea>
 								</v-col>

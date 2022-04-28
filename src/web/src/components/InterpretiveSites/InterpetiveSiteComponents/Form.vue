@@ -239,12 +239,29 @@
 											class="elevation-0"
 										>
 											<template v-slot:item="{ item, index }">
-												<ActionDialog
-													:mode="'edit'"
-													:type="'siteview'"
-													:dataToEdit="{ item, index }"
-													@editAction="editAction"
-												/>
+												<tr>
+													<td class="parent-row">
+														{{ item.ActionDesc }}
+													</td>
+													<td class="child-row">{{ item.CompletedBy }}</td>
+													<td class="child-row">{{ item.Priority }}</td>
+													<td class="child-row">
+														{{ item.ActionCompleteDate }}
+													</td>
+													<td class="child-row">{{ item.CompletionDesc }}</td>
+													<td class="child-row">
+														<ActionDialog
+															:mode="'edit'"
+															:type="'siteview'"
+															:Site="{
+																SiteName: fields.SiteName,
+																SiteID: fields.SiteID,
+															}"
+															:dataToEdit="{ item, index }"
+															@editAction="editAction"
+														/>
+													</td>
+												</tr>
 											</template>
 										</v-data-table>
 									</v-col>

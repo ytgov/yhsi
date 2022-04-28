@@ -170,6 +170,50 @@ export default {
 			});
 	},
 	//ACTIONS
+	async getActions(
+		ActionDesc,
+		ToBeCompleteDate,
+		ActionCompleteDate,
+		CompletionDesc,
+		Priority,
+		CreatedBy,
+		CreatedDate,
+		CompletedBy,
+		sortBy,
+		sort,
+		page,
+		limit
+	) {
+		return await api
+			.get(`/interpretive-sites/actions`, {
+				crossdomain: true,
+				params: {
+					// textToMatch,
+					// sortBy,
+					// sort,
+
+					ActionDesc,
+					ToBeCompleteDate,
+					ActionCompleteDate,
+					CompletionDesc,
+					Priority,
+					CreatedBy,
+					CreatedDate,
+					CompletedBy,
+					sortBy,
+					sort,
+					page,
+					limit,
+				},
+			})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
 	async putAction(id, data) {
 		return await api
 			.put(`interpretive-sites/actions/${id}`, data)
