@@ -80,16 +80,21 @@
                   background-color="white"
                   :readonly="mode == 'view'"
                 ></v-text-field>
-
-                <v-text-field
+            
+                <v-autocomplete
                   v-model="fields.nTSMapNumber"
-                  label="NTS Map Number"
-                  required
+                  :items="mapSheetOptions"
+                  :readonly="mode == 'view'"
+                  :class="{ 'read-only-form-item': mode == 'view' }"
+                  clearable
+                  label="Mapsheet"
+                  item-text="name"
+                  item-value="id"
                   dense
                   outlined
                   background-color="white"
-                  :readonly="mode == 'view'"
-                ></v-text-field>
+                  hide-details
+                ></v-autocomplete>
               </v-col>
             </v-row>
           </v-container>
@@ -113,6 +118,7 @@ export default {
     valid: false,
     generalRules: [ v => !!v || 'This field is required' ],
     availableCommunities: [],
+    mapSheetOptions: [],
   }),
   created(){
     axios.get(`${STATIC_URL}/community`).then((resp) => {
@@ -121,6 +127,14 @@ export default {
         .slice()
         .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : b.name.toLowerCase() > a.name.toLowerCase() ? -1 : 0)
       );
+    });
+
+    axios.get(`${STATIC_URL}/mapsheet`).then((resp) => {
+      this.mapSheetOptions = resp.data.data;
+      this.mapSheetOptions = this.mapSheetOptions.map((x) => (x = {id: x.map50k, name: x.map50k}));
+      this.mapSheetOptions = this.mapSheetOptions       
+        .slice()
+        .sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
     });
 
   },

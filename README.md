@@ -135,21 +135,32 @@ so only one container is required to serve the front-end and back-ends; thus sav
 On the PRODUCTION server, the application is run via docker-compose, so the code needs to be cloned to the server and
 the appropriate environment variables set using the following commands:
 
+1. Set the environment variables for the back-end.
+
 ```
 cp /src/api/.env /src/api/.env.production
 vi /src/api/.env.production
 ```
 
-You now can use vi or nano or other tool to set the environment variables before starting the application with:
+2. Set the global host port.
+
+```bash
+cp .env.sample .env
+vi .env
+```
+
+> Note that the file needs to be named `.env` and it needs to be at the same level as
+> the `docker-compose.production.yml` file.
+
+3. Start the application with:
 
 ```
 docker-compose -f docker-compose.production.yml up --build -d
 ```
 
-When you look at the running Docker containers using `docker ps`, you should see a container named `yhsi_web_1`.
+> To override an `.env` variable you can do `SOME_VAR=12345 docker-compose -f docker-compose.production.yml up --build -d`
 
-```
+When you look at the running Docker containers using `docker ps`, you should see a container named `yhsi_web_1`.
 
 **One thing to keep in mind is that the port in the `docker-compose.prodution.yml` may need to be changed
 depending the the reverse proxy setups.**
-```
