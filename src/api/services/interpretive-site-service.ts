@@ -269,7 +269,7 @@ export class InterpretiveSiteService {
 					if(CreatedDate !== '') builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
 					if(CompletedBy !== '') builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
 				})
-				.count('Id', { as: 'count' });
+				.count('ActionID', { as: 'count' });
 
             actions = await db
 				.select('*')
@@ -301,7 +301,7 @@ export class InterpretiveSiteService {
 					if(CreatedDate !== '') builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
 					if(CompletedBy !== '') builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
 				})
-				.count('Id', { as: 'count' });
+				.count('ActionID', { as: 'count' });
 
             actions = await db
 				.select('*')
@@ -364,7 +364,7 @@ export class InterpretiveSiteService {
 		 } = filters;
         if(limit === 0){
 			counter = await db
-				.from('InterpretiveSite.Actions')
+				.from('InterpretiveSite.Assets')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(Category !== '') builder.where('Category', 'like', `%${Category}%`);
@@ -377,11 +377,11 @@ export class InterpretiveSiteService {
 					if(DecommissionNotes !== '') builder.where('DecommissionNotes', 'like', `%${DecommissionNotes}%`);
 					if(Status !== '') builder.where('Status', 'like', `%${Status}%`);
 				})
-				.count('Id', { as: 'count' });
+				.count('AssetID', { as: 'count' });
 
 			assets = await db
 				.select('*')
-				.from('InterpretiveSite.Actions')
+				.from('InterpretiveSite.Assets')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(Category !== '') builder.where('Category', 'like', `%${Category}%`);
@@ -398,7 +398,7 @@ export class InterpretiveSiteService {
 		}
         else {
 			counter = await db
-				.from('InterpretiveSite.Actions')
+				.from('InterpretiveSite.Assets')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(Category !== '') builder.where('Category', 'like', `%${Category}%`);
@@ -411,11 +411,11 @@ export class InterpretiveSiteService {
 					if(DecommissionNotes !== '') builder.where('DecommissionNotes', 'like', `%${DecommissionNotes}%`);
 					if(Status !== '') builder.where('Status', 'like', `%${Status}%`);
 				})
-				.count('Id', { as: 'count' });
+				.count('AssetID', { as: 'count' });
 
 			assets = await db
 				.select('*')
-				.from('InterpretiveSite.Actions')
+				.from('InterpretiveSite.Assets')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(Category !== '') builder.where('Category', 'like', `%${Category}%`);

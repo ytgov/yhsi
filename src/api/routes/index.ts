@@ -47,3 +47,5 @@ export * from './web-link-types-router';
 export * from './ytplace-history-router';
 export * from './ytplace-router';
 export * from './interpretive-sites-router';
+export * from "./action-router";
+export * from "./asset-router";

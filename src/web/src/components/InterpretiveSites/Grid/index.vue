@@ -25,7 +25,7 @@
 					prepend-icon="mdi-magnify"
 					class="mx-4"
 					hide-details
-					label="Search"
+					label="Search by description"
 					v-model="searchAsset"
 					@keyup.enter="assetSearchChange()"
 					v-on:input="assetSearchChange()"
@@ -278,23 +278,15 @@ export default {
 			{ text: 'Completion Notes', value: '', dataAccess: 'CompletionDesc' },
 		],
 		assetFilterOptions: [
-			{ text: 'Location Description', value: '', dataAccess: 'LocationDesc' },
-			{ text: 'Route Name', value: '', dataAccess: 'RouteName' },
-			{ text: 'KMNum', value: '', dataAccess: 'KMNum' },
-			{ text: 'MapSheet', value: '', dataAccess: 'MapSheet' },
-			{ text: 'Latitude', value: '', dataAccess: 'Latitude' },
-			{ text: 'Longitude', value: '', dataAccess: 'Longitude' },
-			{ text: 'Established Year', value: '', dataAccess: 'EstablishedYear' },
-			{
-				text: 'Advanced Notification',
-				value: '',
-				dataAccess: 'AdvancedNotification',
-			},
-			{
-				text: 'Notification Description',
-				value: '',
-				dataAccess: 'NotificationDesc',
-			},
+			{ text: 'Category', value: '', dataAccess: 'Category' },
+			{ text: 'Type', value: '', dataAccess: 'Type' },
+			{ text: 'Size', value: '', dataAccess: 'Size' },
+			{ text: 'Description', value: '', dataAccess: 'Description' },
+			{ text: 'SignText', value: '', dataAccess: 'SignText' },
+			{ text: 'InstallDate', value: '', dataAccess: 'InstallDate' },
+			{ text: 'DecommissionDate', value: '', dataAccess: 'DecommissionDate' },
+			{ text: 'DecommissionNotes', value: '', dataAccess: 'DecommissionNotes' },
+			{ text: 'Status', value: '', dataAccess: 'Status' },
 		],
 		selectedItem: 1,
 		items: [

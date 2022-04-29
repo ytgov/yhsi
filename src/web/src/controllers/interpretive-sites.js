@@ -185,7 +185,7 @@ export default {
 		limit
 	) {
 		return await api
-			.get(`/interpretive-sites/actions`, {
+			.get(`/actions`, {
 				crossdomain: true,
 				params: {
 					// textToMatch,
@@ -216,7 +216,7 @@ export default {
 	},
 	async putAction(id, data) {
 		return await api
-			.put(`interpretive-sites/actions/${id}`, data)
+			.put(`actions/${id}`, data)
 			.then((res) => {
 				return res.data;
 			})
@@ -226,7 +226,7 @@ export default {
 	},
 	async postAction(data) {
 		return await api
-			.post(`interpretive-sites/actions`, data)
+			.post(`/actions`, data)
 			.then((res) => {
 				return res.data;
 			})
@@ -235,9 +235,51 @@ export default {
 			});
 	},
 	//ASSETS
+	async getAssets(
+		Category,
+		Type,
+		Size,
+		Description,
+		SignText,
+		InstallDate,
+		DecommissionDate,
+		DecommissionNotes,
+		Status,
+		sortBy,
+		sort,
+		page,
+		limit
+	) {
+		return await api
+			.get(`/assets`, {
+				crossdomain: true,
+				params: {
+					Category,
+					Type,
+					Size,
+					Description,
+					SignText,
+					InstallDate,
+					DecommissionDate,
+					DecommissionNotes,
+					Status,
+					sortBy,
+					sort,
+					page,
+					limit,
+				},
+			})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
 	async putAsset(id, data) {
 		return await api
-			.put(`interpretive-sites/assets/${id}`, data)
+			.put(`assets/${id}`, data)
 			.then((res) => {
 				return res.data;
 			})
@@ -247,7 +289,7 @@ export default {
 	},
 	async postAsset(data) {
 		return await api
-			.post(`interpretive-sites/assets`, data)
+			.post(`assets`, data)
 			.then((res) => {
 				return res.data;
 			})
