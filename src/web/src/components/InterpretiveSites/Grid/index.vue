@@ -113,13 +113,10 @@
 				v-if="actionRoute"
 				class="d-flex"
 			>
-				<v-btn
-					class="black--text mx-1"
-					@click="addNewAction"
-				>
-					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-					Add Action
-				</v-btn>
+				<ActionDialog
+					:type="'grid'"
+					:mode="'new'"
+				/>
 
 				<v-btn
 					class="black--text mx-1"
@@ -144,13 +141,10 @@
 				v-else-if="assetRoute"
 				class="d-flex"
 			>
-				<v-btn
-					class="black--text mx-1"
-					@click="addNewAsset"
-				>
-					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-					Add Asset
-				</v-btn>
+				<AssetDialog
+					:type="'grid'"
+					:mode="'new'"
+				/>
 
 				<v-btn
 					class="black--text mx-1"
@@ -237,6 +231,8 @@
 
 <script>
 import Breadcrumbs from '../../Breadcrumbs';
+import ActionDialog from '../Dialogs/ActionDialog.vue';
+import AssetDialog from '../Dialogs/AssetDialog.vue';
 import downloadCsv from '../../../utils/dataToCsv';
 import downloadPdf from '../../../utils/dataToPdf';
 import _ from 'lodash';
@@ -244,7 +240,7 @@ import interpretiveSites from '../../../controllers/interpretive-sites';
 //import jsPDF from "jspdf";
 export default {
 	name: 'int-sites-grid-index',
-	components: { Breadcrumbs },
+	components: { Breadcrumbs, ActionDialog, AssetDialog },
 	data: () => ({
 		route: '',
 		active_tab: '',

@@ -80,7 +80,6 @@ export default {
 			let { page, itemsPerPage, sortBy, sortDesc } = this.options;
 			page = page > 0 ? page - 1 : 0;
 			itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
-			let textToMatch = this.search;
 			const prefilters = {};
 			this.filterOptions.map((x) => {
 				prefilters[x.dataAccess] = x.value;

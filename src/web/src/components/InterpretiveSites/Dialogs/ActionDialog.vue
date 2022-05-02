@@ -8,6 +8,7 @@
 		>
 			<template v-slot:activator="{ on, attrs }">
 				<v-btn
+					v-if="!typeGrid"
 					color="primary"
 					outlined
 					class="ml-auto mr-1"
@@ -15,6 +16,15 @@
 					v-on="on"
 				>
 					ADD ACTION
+				</v-btn>
+				<v-btn
+					v-else
+					class="black--text mx-1"
+					v-bind="attrs"
+					v-on="on"
+				>
+					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
+					Add Action
 				</v-btn>
 			</template>
 			<v-card>
@@ -29,18 +39,23 @@
 						>
 							<v-row>
 								<v-col cols="6">
-									<v-select
+									{{ fields.SiteID }}
+									<v-autocomplete
 										v-if="typeGrid"
 										outlined
 										dense
-										:items="data"
+										clearable
+										@click="searchSites"
+										:items="siteList"
+										:search-input.sync="siteSearch"
+										:loading="loadingSites"
 										name="Site"
 										item-text="SiteName"
 										item-value="SiteID"
 										label="Site"
 										v-model="fields.SiteID"
 										:rules="rules"
-									></v-select>
+									></v-autocomplete>
 									<label v-else>
 										<h3>{{ Site.SiteName }} test</h3>
 									</label>
@@ -202,9 +217,25 @@
 										item-text="SiteName"
 										item-value="SiteID"
 										label="Site"
-										v-model="editFields.SiteID"
+										v-model="siteSearch"
 										:rules="rules"
 									></v-select>
+									<!-- <v-autocomplete
+										v-if="typeGrid"
+										outlined
+										dense
+										clearable
+										@click="searchSites"
+										:items="siteList"
+										:search-input.sync="siteSearch"
+										:loading="loadingSites"
+										name="Site"
+										item-text="SiteName"
+										item-value="SiteID"
+										label="Site"
+										v-model="fields.SiteID"
+										:rules="rules"
+									></v-autocomplete> -->
 									<label v-else>{{ Site.SiteName }}</label>
 
 									<v-text-field
@@ -332,8 +363,10 @@ export default {
 		dialog: false,
 		valid: false,
 		fields: {},
-		sites: [],
+		siteList: [],
+		siteSearch: '',
 		rules: [(value) => !!value || 'Required.'],
+		loadingSites: false,
 		//edit dialog
 		form2: false,
 		editDialog: false,
@@ -344,8 +377,44 @@ export default {
 			let data = { ...this.fields };
 			if (this.typeGrid) {
 				console.log('grid action', data);
-				const res = await interpretiveSites.postAction(data);
-				this.$emit('gridActionAdded', res);
+
+				console.log(`
+        [ActionID] smallint,
+				[InspectID] smallint,
+				[SiteID] smallint,
+				[ActionDesc] varchar,
+				[ToBeCompleteDate] date,
+				[ActionCompleteDate] date,
+				[CompletionDesc] varchar,
+				[Priority] varchar,
+				[CreatedBy] varchar,
+				[CreatedDate] date,
+				[CompletedBy] varchar,
+        `);
+				// ActionCompleteDate: "test"
+				// ActionDesc: "tesst"
+				// CompletedBy: "test"
+				// CompletionDesc: "test"
+				// CreatedBy: "test"
+				// CreatedDate: "tsest"
+				// Inspection: "test"
+				// Priority: "test"
+				// SiteID: 7
+				// ToBeCompleted: "teset"
+
+				// [ActionID] smallint,
+				// [InspectID] smallint,
+				// [SiteID] smallint,
+				// [ActionDesc] varchar,
+				// [ToBeCompleteDate] date,
+				// [ActionCompleteDate] date,
+				// [CompletionDesc] varchar,
+				// [Priority] varchar,
+				// [CreatedBy] varchar,
+				// [CreatedDate] date,
+				// [CompletedBy] varchar,
+				//const res = await interpretiveSites.postAction(data);
+				//this.$emit('gridActionAdded', res);
 			} else {
 				data.SiteID = this.Site.SiteID;
 				data.new = true;
@@ -374,6 +443,38 @@ export default {
 			this.editFields = { ...item };
 
 			this.editDialog = true;
+		},
+		async searchSites() {
+			this.loadingSites = true;
+			console.log('function called');
+			let list = await interpretiveSites.get(
+				0,
+				5,
+				'SiteName',
+				'asc',
+				this.siteSearch,
+				'',
+				'',
+				'',
+				'',
+				'',
+				'',
+				'',
+				'',
+				''
+			);
+			this.siteList = list.body;
+			console.log(list);
+			this.loadingSites = false;
+		},
+	},
+	watch: {
+		siteSearch: {
+			deep: true,
+			handler() {
+				console.log('changed');
+				this.searchSites();
+			},
 		},
 	},
 	computed: {
