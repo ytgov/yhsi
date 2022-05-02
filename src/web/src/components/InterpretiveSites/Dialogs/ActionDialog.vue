@@ -114,7 +114,7 @@
 										dense
 										name="ToBeCompleted"
 										label="To Be Completed Date"
-										v-model="fields.ToBeCompleted"
+										v-model="fields.ToBeCompleteDate"
 										:rules="rules"
 									></v-text-field>
 								</v-col>
@@ -292,7 +292,7 @@
 										dense
 										name="ToBeCompleted"
 										label="To Be Completed Date"
-										v-model="editFields.ToBeCompleted"
+										v-model="editFields.ToBeCompleteDate"
 										:rules="rules"
 									></v-text-field>
 								</v-col>
@@ -377,7 +377,7 @@ export default {
 			let data = { ...this.fields };
 			if (this.typeGrid) {
 				console.log('grid action', data);
-
+				this.fields.CompletedBy = '';
 				console.log(`
         [ActionID] smallint,
 				[InspectID] smallint,
