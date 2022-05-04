@@ -7,7 +7,11 @@
 		<v-row>
 			<v-col cols="6">
 				<v-card elevation="1">
-					<v-toolbar color="grey" dark flat>
+					<v-toolbar
+						color="grey"
+						dark
+						flat
+					>
 						<v-toolbar-title>Administration</v-toolbar-title>
 
 						<v-spacer></v-spacer>
@@ -28,7 +32,11 @@
 			</v-col>
 			<v-col cols="6">
 				<v-card elevation="1">
-					<v-toolbar color="grey" dark flat>
+					<v-toolbar
+						color="grey"
+						dark
+						flat
+					>
 						<v-toolbar-title>Look-up Table Managment</v-toolbar-title>
 
 						<v-spacer></v-spacer>
@@ -65,32 +73,42 @@ export default {
 			{
 				icon: 'mdi-ferry',
 				text: 'Boats - Vessel Type',
-				url: '/admin/vessel_type',
+				url: '/admin/vessel_types',
 			},
 			{
 				icon: 'mdi-wrench',
 				text: 'Burials - Occupations',
-				url: '/admin/burials/occupations',
+				url: '/admin/occupations',
 			},
 			{
 				icon: 'mdi-wallet-membership',
 				text: 'Burials - Memberships',
-				url: '/admin/burials/memberships',
+				url: '/admin/memberships',
 			},
 			{
 				icon: 'mdi-database',
 				text: 'Burials - Cementeries',
-				url: '/admin/burials/cementeries',
+				url: '/admin/cementeries',
 			},
 			{
 				icon: 'mdi-shape',
 				text: 'Burials - Religions',
-				url: '/admin/burials/religions',
+				url: '/admin/religions',
 			},
 			{
 				icon: 'mdi-bug',
 				text: 'Burials - Causes',
-				url: '/admin/burials/causes',
+				url: '/admin/causes',
+			},
+			{
+				icon: 'mdi-wallet-membership',
+				text: 'Interpretive Sites - Categories',
+				url: '/admin/categories',
+			},
+			{
+				icon: 'mdi-database',
+				text: 'Interpretive Sites - Asset types',
+				url: '/admin/asset-types',
 			},
 			{
 				icon: 'mdi-camera',
