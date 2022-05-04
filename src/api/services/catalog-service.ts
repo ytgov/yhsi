@@ -240,5 +240,25 @@ export class CatalogService {
 			"asc"
 		);
 	}
-
+	//ASSET TYPES
+	async getAllAssetTypes(){
+		return await db("InterpretiveSite.AssetTypeLookup").orderBy(
+			"InterpretiveSite.AssetTypeLookup.Type",
+			"asc"
+		);
+	}
+	//CATEGORIES
+	async getAllCategories(){
+		return await db("InterpretiveSite.AssetCategoryLookup").orderBy(
+			"InterpretiveSite.AssetCategoryLookup.Category",
+			"asc"
+		);
+	}
+	//MAINTAINER
+	async getAllMaintainers(){
+		return await db("InterpretiveSite.MaintOwnLookup").orderBy(
+			"InterpretiveSite.MaintOwnLookup.MaintOwnName",
+			"asc"
+		);
+	}
 }

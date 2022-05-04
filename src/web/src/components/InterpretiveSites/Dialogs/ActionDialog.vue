@@ -150,6 +150,12 @@
 									></v-textarea>
 								</v-col>
 							</v-row>
+
+							<DocumentHandler
+								:headers="documentHeaders"
+								:data="[]"
+								@documentAdded="documentAdded"
+							/>
 						</v-form>
 					</v-container>
 				</v-card-text>
@@ -209,7 +215,6 @@
 							<v-row>
 								<v-col cols="6">
 									<v-select
-										v-if="typeGrid"
 										outlined
 										dense
 										:items="data"
@@ -220,23 +225,6 @@
 										v-model="siteSearch"
 										:rules="rules"
 									></v-select>
-									<!-- <v-autocomplete
-										v-if="typeGrid"
-										outlined
-										dense
-										clearable
-										@click="searchSites"
-										:items="siteList"
-										:search-input.sync="siteSearch"
-										:loading="loadingSites"
-										name="Site"
-										item-text="SiteName"
-										item-value="SiteID"
-										label="Site"
-										v-model="fields.SiteID"
-										:rules="rules"
-									></v-autocomplete> -->
-									<label v-else>{{ Site.SiteName }}</label>
 
 									<v-text-field
 										outlined
@@ -356,8 +344,10 @@
 
 <script>
 import interpretiveSites from '../../../controllers/interpretive-sites';
+import DocumentHandler from './DocumentHandler.vue';
 export default {
 	props: ['type', 'Site', 'data', 'mode', 'dataToEdit'],
+	components: { DocumentHandler },
 	data: () => ({
 		//new Dialog
 		dialog: false,
@@ -371,8 +361,18 @@ export default {
 		form2: false,
 		editDialog: false,
 		editFields: {},
+		documentHeaders: [
+			{ text: 'Document Name', value: 'DocumentName' },
+			{ text: 'Date Uploaded', value: 'DateUploaded' },
+			{ text: 'Uploader', value: 'Uploader' },
+		],
+		newDocuments: [],
+		editedDocuments: [],
 	}),
 	methods: {
+		documentAdded(val) {
+			this.fields.documents.push(val);
+		},
 		async saveNew() {
 			let data = { ...this.fields };
 			if (this.typeGrid) {
@@ -389,32 +389,11 @@ export default {
 				[Priority] varchar,
 				[CreatedBy] varchar,
 				[CreatedDate] date,
-				[CompletedBy] varchar,
+				[CompletedBy] varchar
         `);
-				// ActionCompleteDate: "test"
-				// ActionDesc: "tesst"
-				// CompletedBy: "test"
-				// CompletionDesc: "test"
-				// CreatedBy: "test"
-				// CreatedDate: "tsest"
-				// Inspection: "test"
-				// Priority: "test"
-				// SiteID: 7
-				// ToBeCompleted: "teset"
 
-				// [ActionID] smallint,
-				// [InspectID] smallint,
-				// [SiteID] smallint,
-				// [ActionDesc] varchar,
-				// [ToBeCompleteDate] date,
-				// [ActionCompleteDate] date,
-				// [CompletionDesc] varchar,
-				// [Priority] varchar,
-				// [CreatedBy] varchar,
-				// [CreatedDate] date,
-				// [CompletedBy] varchar,
-				//const res = await interpretiveSites.postAction(data);
-				//this.$emit('gridActionAdded', res);
+				const res = await interpretiveSites.postAction(data);
+				this.$emit('gridActionAdded', res);
 			} else {
 				data.SiteID = this.Site.SiteID;
 				data.new = true;

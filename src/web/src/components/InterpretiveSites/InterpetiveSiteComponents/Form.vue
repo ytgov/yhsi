@@ -292,7 +292,29 @@
 											:items="fields.inspections"
 											:items-per-page="5"
 											class="elevation-0"
-										></v-data-table>
+										>
+											<template v-slot:item="{ item, index }">
+												<tr>
+													<td class="parent-row">
+														{{ item.InspectionDate }}
+													</td>
+													<td class="child-row">{{ item.Description }}</td>
+													<td class="child-row">{{ item.InspectedBy }}</td>
+													<td class="child-row">
+														<InspectionDialog
+															:mode="'edit'"
+															:type="'siteview'"
+															:Site="{
+																SiteName: fields.SiteName,
+																SiteID: fields.SiteID,
+															}"
+															:dataToEdit="{ item, index }"
+															@editAction="editAction"
+														/>
+													</td>
+												</tr>
+											</template>
+										</v-data-table>
 									</v-col>
 								</v-row>
 							</v-expansion-panel-content>
@@ -357,6 +379,7 @@ export default {
 			{ text: 'Inspection Date', value: 'InspectionDate' },
 			{ text: 'Description', value: 'Description' },
 			{ text: 'Inspected by', value: 'InspectedBy' },
+			{ text: '', value: 'actions' },
 		],
 		assetHeaders: [
 			{ text: 'Category', value: 'Category' },

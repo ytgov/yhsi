@@ -57,83 +57,58 @@
 										:rules="rules"
 									></v-autocomplete>
 									<label v-else>
-										<h3>{{ Site.SiteName }} test</h3>
+										<h3>{{ Site.SiteName }}</h3>
 									</label>
 
-									<v-text-field
+									<v-select
+										:items="availableCategories"
 										outlined
 										dense
-										name="CreatedBy"
-										label="Created By"
-										v-model="fields.CreatedBy"
+										item-text="Category"
+										item-value="Category"
+										name="Category"
+										label="Category"
+										v-model="fields.Category"
 										:rules="rules"
-									></v-text-field>
+									></v-select>
+
+									<!-- <v-text-field
+										outlined
+										dense
+										name="Owned By"
+										label="Owned By"
+										v-model="fields.OwnedBy"
+										:rules="rules"
+									></v-text-field> -->
 								</v-col>
 								<v-col cols="6">
+									<v-select
+										outlined
+										dense
+										name="Type"
+										label="Type"
+										item-text="Type"
+										item-value="Type"
+										:items="availableTypes"
+										v-model="fields.Type"
+										:rules="rules"
+									></v-select>
+
 									<v-text-field
 										outlined
 										dense
-										name="Inspection"
-										label="Inspection"
-										v-model="fields.Inspection"
+										name="Installation Date"
+										label="Installation Date"
+										v-model="fields.InstallationDate"
 										:rules="rules"
 									></v-text-field>
 
 									<v-text-field
 										outlined
 										dense
-										name="CreatedDate"
-										label="Created Date"
-										v-model="fields.CreatedDate"
-										:rules="rules"
-									></v-text-field>
-								</v-col>
-							</v-row>
-							<v-row>
-								<v-col cols="6">
-									<v-text-field
-										outlined
-										dense
-										name="ActionDescription"
-										label="Action Description"
-										v-model="fields.ActionDesc"
-										:rules="rules"
-									></v-text-field>
-
-									<v-text-field
-										outlined
-										dense
-										name="Priority"
-										label="Priority"
-										v-model="fields.Priority"
-										:rules="rules"
-									></v-text-field>
-
-									<v-text-field
-										outlined
-										dense
-										name="ToBeCompleted"
-										label="To Be Completed Date"
-										v-model="fields.ToBeCompleted"
-										:rules="rules"
-									></v-text-field>
-								</v-col>
-								<v-col cols="6">
-									<v-text-field
-										outlined
-										dense
-										name="CompletedBy"
-										label="Completed By"
-										v-model="fields.CompletedBy"
-										:rules="rules"
-									></v-text-field>
-
-									<v-text-field
-										outlined
-										dense
-										name="CompletedDate"
-										label="Completed Date"
-										v-model="fields.ActionCompleteDate"
+										name="Maintained By"
+										label="Maintained By"
+										v-model="fields.MaintainedBy"
 										:rules="rules"
 									></v-text-field>
 								</v-col>
@@ -143,13 +118,57 @@
 									<v-textarea
 										outlined
 										dense
-										name="Notes"
-										label="Notes"
-										v-model="fields.CompletionDesc"
+										name="Sign Text"
+										label="Sign Text"
+										v-model="fields.SignText"
+										:rules="rules"
+									></v-textarea>
+
+									<v-textarea
+										outlined
+										dense
+										name="Description"
+										label="Description"
+										v-model="fields.Description"
 										:rules="rules"
 									></v-textarea>
 								</v-col>
 							</v-row>
+							<v-row>
+								<v-col cols="12">
+									<h3>Active</h3>
+									<v-radio-group
+										v-model="fields.Status"
+										row
+									>
+										<v-radio
+											label="Yes"
+											value="Yes"
+										></v-radio>
+										<v-radio
+											label="No"
+											value="No"
+										></v-radio>
+									</v-radio-group>
+									<v-text-field
+										outlined
+										dense
+										name="DecommissionDate"
+										label="Decommission Date"
+										:rules="rules"
+										v-model="fields.DecommissionDate"
+									></v-text-field>
+									<v-textarea
+										outlined
+										dense
+										name="DecommissionNotes"
+										label="Decommission Notes"
+										v-model="fields.DecommissionNotes"
+										:rules="rules"
+									></v-textarea>
+								</v-col>
+							</v-row>
+							<DocumentHandler />
 						</v-form>
 					</v-container>
 				</v-card-text>
@@ -355,9 +374,12 @@
 </template>
 
 <script>
+import DocumentHandler from './DocumentHandler.vue';
+import catalogs from '../../../controllers/catalogs';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 export default {
 	props: ['type', 'Site', 'data', 'mode', 'dataToEdit'],
+	components: { DocumentHandler },
 	data: () => ({
 		//new Dialog
 		dialog: false,
@@ -371,8 +393,20 @@ export default {
 		form2: false,
 		editDialog: false,
 		editFields: {},
+		assetTypes: [],
+		categoryTypes: [],
 	}),
+	mounted() {
+		this.getTypes();
+		this.getCategories();
+	},
 	methods: {
+		async getTypes() {
+			this.assetTypes = await catalogs.getAssetType();
+		},
+		async getCategories() {
+			this.categoryTypes = await catalogs.getCategories();
+		},
 		async saveNew() {
 			let data = { ...this.fields };
 			if (this.typeGrid) {
@@ -469,6 +503,12 @@ export default {
 		},
 		typeSiteView() {
 			return this.type === 'siteview';
+		},
+		availableTypes() {
+			return this.assetTypes;
+		},
+		availableCategories() {
+			return this.categoryTypes;
 		},
 	},
 };

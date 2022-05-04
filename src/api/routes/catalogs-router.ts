@@ -416,3 +416,24 @@ catalogsRouter.get("/route", async (req: Request, res: Response) => {
 
   res.status(200).send(response);
 })
+
+
+//ASSET TYPES
+catalogsRouter.get("/asset-type", async (req: Request, res: Response) => {
+  const response = await catalogService.getAllAssetTypes();
+  res.status(200).send(response);
+})
+
+//CATEGORIES
+catalogsRouter.get("/categories", async (req: Request, res: Response) => {
+  const response = await catalogService.getAllCategories();
+  res.status(200).send(response);
+})
+
+//MAINTAINERS
+catalogsRouter.get("/maintainer", async (req: Request, res: Response) => {
+  const response = await catalogService.getAllMaintainers();
+  res.status(200).send(response);
+})
+
+
