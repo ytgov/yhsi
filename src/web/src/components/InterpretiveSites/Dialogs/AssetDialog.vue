@@ -39,7 +39,6 @@
 						>
 							<v-row>
 								<v-col cols="6">
-									{{ fields.SiteID }}
 									<v-autocomplete
 										v-if="typeGrid"
 										outlined

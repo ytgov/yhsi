@@ -254,6 +254,47 @@ export class CatalogService {
 			"asc"
 		);
 	}
+	async modifyCategory(id: number, item: any){
+		return await db("InterpretiveSite.AssetCategoryLookup")
+					.update(item).where("InterpretiveSite.AssetCategoryLookup.CatLUpID", id);
+	}
+
+	async newCategory(item: any){
+		return await db
+			.insert(item)
+			.into("InterpretiveSite.AssetCategoryLookup")
+			.returning("*");
+	}
+	
+	async doCategorySearch( page: number, limit: number, offset: number, filters: any){
+        const {
+			textToMatch = '',
+			sortBy = 'MaintOwnLUpID',
+			sort = 'asc',
+		} = filters;
+		let counter = [{ count: 0 }];
+		let list = [];
+
+		if (textToMatch) {
+			counter = await db("InterpretiveSite.AssetCategoryLookup").where("InterpretiveSite.AssetCategoryLookup.Category", "like", `%${textToMatch}%`)
+				.count('MaintOwnLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.AssetCategoryLookup").where("InterpretiveSite.AssetCategoryLookup.Category", "like", `%${textToMatch}%`)
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		} else {
+			counter = await db("InterpretiveSite.MaintOwnLookup")
+				.count('MaintOwnLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.MaintOwnLookup")
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		}
+        return { count: counter[0].count, body: list };
+    }
+
 	//MAINTAINER
 	async getAllMaintainers(){
 		return await db("InterpretiveSite.MaintOwnLookup").orderBy(
@@ -261,4 +302,45 @@ export class CatalogService {
 			"asc"
 		);
 	}
+	
+	async newMaintainer(item: any){
+		return await db
+				.insert(item)
+				.into("InterpretiveSite.MaintOwnLookup")
+				.returning("*");
+	}
+
+	async modifyMaintainer(id: number, item: any){
+		return await db("InterpretiveSite.MaintOwnLookup")
+					.update(item).where("InterpretiveSite.MaintOwnLookup.MaintOwnLUpID", id);
+	}
+	
+	async doMaintainerSearch( page: number, limit: number, offset: number, filters: any){
+        const {
+			textToMatch = '',
+			sortBy = 'MaintOwnLUpID',
+			sort = 'asc',
+		} = filters;
+		let counter = [{ count: 0 }];
+		let list = [];
+
+		if (textToMatch) {
+			counter = await db("InterpretiveSite.MaintOwnLookup").where("InterpretiveSite.MaintOwnLookup.MaintOwnName", "like", `%${textToMatch}%`)
+				.count('MaintOwnLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.MaintOwnLookup").where("InterpretiveSite.MaintOwnLookup.MaintOwnName", "like", `%${textToMatch}%`)
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		} else {
+			counter = await db("InterpretiveSite.MaintOwnLookup")
+				.count('MaintOwnLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.MaintOwnLookup")
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		}
+        return { count: counter[0].count, body: list };
+    }
 }

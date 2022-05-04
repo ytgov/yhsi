@@ -504,7 +504,29 @@ export default {
 	//CATEGORIES
 	async getCategories() {
 		return await api
-			.get(`catalogs/categories`)
+			.get(`catalogs/category`)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async putCategory(id, data) {
+		return await api
+			.put(`catalogs/category/${id}`, data)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async postCategory(data) {
+		return await api
+			.post(`catalogs/category`, data)
 			.then((res) => {
 				return res.data;
 			})
@@ -517,6 +539,28 @@ export default {
 	async getMaintainers() {
 		return await api
 			.get(`catalogs/maintainer`)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async putMaintainers(id, data) {
+		return await api
+			.put(`catalogs/maintainer/${id}`, data)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async postMaintainers(data) {
+		return await api
+			.post(`catalogs/maintainer`, data)
 			.then((res) => {
 				return res.data;
 			})

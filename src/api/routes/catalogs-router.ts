@@ -415,25 +415,70 @@ catalogsRouter.get("/route", async (req: Request, res: Response) => {
   const response = await catalogService.getAllRoutes();
 
   res.status(200).send(response);
-})
+});
 
 
 //ASSET TYPES
 catalogsRouter.get("/asset-type", async (req: Request, res: Response) => {
   const response = await catalogService.getAllAssetTypes();
   res.status(200).send(response);
-})
+});
 
 //CATEGORIES
-catalogsRouter.get("/categories", async (req: Request, res: Response) => {
+catalogsRouter.get("/category", async (req: Request, res: Response) => {
   const response = await catalogService.getAllCategories();
   res.status(200).send(response);
-})
+});
 
+catalogsRouter.post("/category", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await catalogService.newCategory(data);
+
+  res.status(200).send(response);
+});
+
+catalogsRouter.put(
+  "/category/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    let resObj = await catalogService.modifyCategory(parseInt(id), data);
+
+    console.log(resObj);
+
+    res.status(200).send({ message: "success" });
+  }
+);
 //MAINTAINERS
 catalogsRouter.get("/maintainer", async (req: Request, res: Response) => {
   const response = await catalogService.getAllMaintainers();
   res.status(200).send(response);
-})
+});
+
+catalogsRouter.post("/maintainer", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await catalogService.newMaintainer(data);
+
+  res.status(200).send(response);
+});
+
+catalogsRouter.put(
+  "/maintainer/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    let resObj = await catalogService.modifyMaintainer(parseInt(id), data);
+    console.log(resObj);
+    res.status(200).send({ message: "success" });
+  }
+);
 
 
