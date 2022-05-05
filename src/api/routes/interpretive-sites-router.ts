@@ -7,9 +7,12 @@ import { InterpretiveSiteService } from "../services";
 import { renderFile } from "pug";
 import { generatePDF } from "../utils/pdf-generator";
 const { Parser, transforms: { unwind } } = require('json2csv');
+import * as multer from 'multer';
 export const intSitesRouter = express.Router();
 const db = knex(DB_CONFIG);
 const intSiteService = new InterpretiveSiteService();
+
+const upload = multer.default();
 
 //SITES
 
@@ -90,20 +93,20 @@ intSitesRouter.put('/:siteId', async (req: Request, res: Response) => {
 
 //PDF AND EXPORTS
 intSitesRouter.post(
-	'/pdf/:boatId', 
-	[param('boatId').notEmpty()],
+	'/pdf/:siteID', 
+	[param('siteID').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { boatId } = req.params;
+		const { siteID } = req.params;
 
-		const boat = await intSiteService.getSiteById(parseInt(boatId));
+		const item = await intSiteService.getSiteById(parseInt(siteID));
 
-		let data = renderFile('./templates/boats/boatView.pug', {
-			data: boat
+		let data = renderFile('./templates/interpretive-sites/interpretiveSitesView.pug', {
+			data: item
 		});
 
 		let pdf = await generatePDF(data);
-		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+		res.setHeader('Content-disposition', 'attachment; filename="interpretiveSite.html"');
 		res.setHeader('Content-type', 'application/pdf');
 		res.send(pdf);
 });
@@ -116,7 +119,7 @@ intSitesRouter.post('/pdf', async (req: Request, res: Response) => {
         const data = await intSiteService.doSiteSearch(page, limit, 0, { 
             SiteName, RouteName, KMNum, MapSheet,  sortBy, sort
         });
-		let pdfData = renderFile('./templates/boats/boatGrid.pug', {
+		let pdfData = renderFile('./templates/interpretive-sites/interpretiveSitesGrid.pug', {
 			data: data.body
 		});
 
@@ -200,14 +203,14 @@ intSitesRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { siteId } = req.params;
-		const boat = await intSiteService.getAssetById(parseInt(siteId));
+		const list = await intSiteService.getAssetsBySiteId(parseInt(siteId));
 
-		if(!boat){
+		if(!list){
 			res.status(404).send({message: "Data not found"});
 			return;
 		}
 
-		res.status(200).send(boat);
+		res.status(200).send(list);
 	}
 );
 
@@ -228,15 +231,14 @@ intSitesRouter.post('/assets', async (req: Request, res: Response) => {
 	res.send(resObj);
 });
 
-intSitesRouter.put('/assets/:siteId', async (req: Request, res: Response) => {
+intSitesRouter.put('/assets/:assetId', async (req: Request, res: Response) => {
 	const {
-		item = {},
-		assets = [], actions = [], inspections = []
+		item = {}
 	} = req.body;
-	const { siteId } = req.params;
-	const resObj = await intSiteService.modifyAsset(parseInt(siteId), item);
+	const { assetId } = req.params;
+	const resObj = await intSiteService.modifyAsset(parseInt(assetId), item);
 	if(!resObj){
-		res.status(404).send({ message: "Site not found"});
+		res.status(404).send({ message: "Asset not found"});
 		return;
 	}
 
@@ -245,24 +247,25 @@ intSitesRouter.put('/assets/:siteId', async (req: Request, res: Response) => {
 
 
 //PDF AND EXPORTS
-intSitesRouter.post(
-	'/assets/pdf/:assetId', 
-	[param('assetId').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { assetId } = req.params;
+// NO REQUESTS FOR A SINGLE ASSET PRINT
+// intSitesRouter.post(
+// 	'/assets/pdf/:s', 
+// 	[param('assetId').notEmpty()],
+// 	ReturnValidationErrors,
+// 	async (req: Request, res: Response) => {
+// 		const { assetId } = req.params;
 
-		const asset = await intSiteService.getActionById(parseInt(assetId));
+// 		const asset = await intSiteService.getActionById(parseInt(assetId));
 
-		let data = renderFile('./templates/boats/boatView.pug', {
-			data: asset
-		});
+// 		let data = renderFile('./templates/boats/boatView.pug', {
+// 			data: asset
+// 		});
 
-		let pdf = await generatePDF(data);
-		res.setHeader('Content-disposition', 'attachment; filename="asset.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		res.send(pdf);
-});
+// 		let pdf = await generatePDF(data);
+// 		res.setHeader('Content-disposition', 'attachment; filename="asset.html"');
+// 		res.setHeader('Content-type', 'application/pdf');
+// 		res.send(pdf);
+// });
 
 intSitesRouter.post('/assets/pdf', async (req: Request, res: Response) => {
         const { 
@@ -292,7 +295,7 @@ intSitesRouter.post('/assets/pdf', async (req: Request, res: Response) => {
 			sortBy, 
 			sort
         });
-		let pdfData = renderFile('./templates/boats/boatGrid.pug', {
+		let pdfData = renderFile('./templates/interpretive-sites/assetGrid.pug', {
 			data: data.body
 		});
 
@@ -346,8 +349,7 @@ intSitesRouter.post('/assets/export', async (req: Request, res: Response) => {
 intSitesRouter.get(
 	'/actions',
 	[
-		query('textToMatch').default('').isString(),
-		query('sortBy').default('SiteName').isString(),
+		query('sortBy').default('ActionDesc').isString(),
 		query('sort').default('asc').isString(),
 		query('page').default(0).isInt(), 
 		query('limit').default(10).isInt({ gt: 0 }),
@@ -388,28 +390,25 @@ intSitesRouter.get(
 );
 
 intSitesRouter.get(
-	'/actions/:actionId',
-	[param('actionId').notEmpty()],
+	'/actions/:siteId',
+	[param('siteId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { actionId } = req.params;
-		const action = await intSiteService.getActionById(parseInt(actionId));
+		const { siteId } = req.params;
+		const list = await intSiteService.getActionsBySiteId(parseInt(siteId));
 
-		if(!action){
+		if(!list){
 			res.status(404).send({message: "Data not found"});
 			return;
 		}
 
-		res.status(200).send(action);
+		res.status(200).send(list);
 	}
 );
 
 intSitesRouter.post('/actions', async (req: Request, res: Response) => {
 	const {
 		item = {},
-		// actions = [],
-		// assets = [],
-		// inspections = [],
 	} = req.body;
 
 	const resObj = await intSiteService.addAction(item);
@@ -421,13 +420,13 @@ intSitesRouter.post('/actions', async (req: Request, res: Response) => {
 	res.send(resObj);
 });
 
-intSitesRouter.put('/actions/:siteId', async (req: Request, res: Response) => {
+intSitesRouter.put('/actions/:actionId', async (req: Request, res: Response) => {
 	const {
 		item = {},
 		// assets = [], actions = [], inspections = []
 	} = req.body;
-	const { siteId } = req.params;
-	const resObj = await intSiteService.modifyAction(parseInt(siteId), item);
+	const { actionId } = req.params;
+	const resObj = await intSiteService.modifyAction(parseInt(actionId), item);
 	if(!resObj){
 		res.status(404).send({ message: "Action not found"});
 		return;
@@ -438,24 +437,25 @@ intSitesRouter.put('/actions/:siteId', async (req: Request, res: Response) => {
 
 
 //PDF AND EXPORTS
-intSitesRouter.post(
-	'/actions/pdf/:actionId', 
-	[param('actionId').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { actionId } = req.params;
+// NO REQUEST FOR A SINGLE ACTION PRINT
+// intSitesRouter.post(
+// 	'/actions/pdf/:actionId', 
+// 	[param('actionId').notEmpty()],
+// 	ReturnValidationErrors,
+// 	async (req: Request, res: Response) => {
+// 		const { actionId } = req.params;
 
-		const asset = await intSiteService.getActionById(parseInt(actionId));
+// 		const asset = await intSiteService.getActionById(parseInt(actionId));
 
-		let data = renderFile('./templates/boats/boatView.pug', {
-			data: asset
-		});
+// 		let data = renderFile('./templates/boats/boatView.pug', {
+// 			data: asset
+// 		});
 
-		let pdf = await generatePDF(data);
-		res.setHeader('Content-disposition', 'attachment; filename="action.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		res.send(pdf);
-});
+// 		let pdf = await generatePDF(data);
+// 		res.setHeader('Content-disposition', 'attachment; filename="action.html"');
+// 		res.setHeader('Content-type', 'application/pdf');
+// 		res.send(pdf);
+// });
 
 intSitesRouter.post('/actions/pdf', async (req: Request, res: Response) => {
         const { 
@@ -483,7 +483,7 @@ intSitesRouter.post('/actions/pdf', async (req: Request, res: Response) => {
 			sortBy, 
 			sort
         });
-		let pdfData = renderFile('./templates/boats/boatGrid.pug', {
+		let pdfData = renderFile('./templates/interpretive-sites/actionGrid.pug', {
 			data: data.body
 		});
 
@@ -528,5 +528,37 @@ intSitesRouter.post('/actions/export', async (req: Request, res: Response) => {
 	res.attachment('actions.csv').send(csv)
 });
 
+intSitesRouter.post(
+	'/file/upload',
+	[upload.single('file')],
+	async (req: Request, res: Response) => {
 
+		const { 
+			Document = req.file.buffer,
+			ActionID = '',
+			InspectID = '',
+			SiteID = '',
+			DocDesc,
+			UploadedBy,
+			UploadDate = new Date(),
+		} = req.body;
+
+		// const OriginalFileName = req.file.originalname;
+
+		await db
+			.insert({
+				...ActionID && { ActionID },
+				...InspectID && { InspectID },
+				...SiteID && { SiteID },
+				DocDesc,
+				UploadedBy,
+				UploadDate,
+				Document
+			})
+			.into('InterpretiveSite.Documents')
+			.returning('*')
+			
+		res.status(200).send({ message: 'Upload Success' });
+	}
+);
 

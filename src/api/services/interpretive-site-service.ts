@@ -37,6 +37,11 @@ export class InterpretiveSiteService {
 			.select('*')
 			.from('InterpretiveSite.Assets')
 			.where('InterpretiveSite.Assets.SiteID', siteId);
+		
+		item.inspections = await db
+			.select('*')
+			.from('InterpretiveSite.Inspections')
+			.where('InterpretiveSite.Inspections.SiteID', siteId);
 
         item.maintainer = await db
 			.select('*')
@@ -47,6 +52,7 @@ export class InterpretiveSiteService {
     }
 
 	async addSite(item: any, assets: any, actions: any, inspections: any){
+		console.log(item, assets, actions, inspections);
 		const res = await db
 		.insert(item)
 		.into('InterpretiveSite.Sites')
@@ -55,7 +61,8 @@ export class InterpretiveSiteService {
 			const newSite = rows[0];
 
 			//ASSETS
-			newSite.assets = await db
+			if(assets.length > 0){
+				newSite.assets = await db
 				.insert(
 					assets.map((item: any) => ({
 						...item,
@@ -67,10 +74,13 @@ export class InterpretiveSiteService {
 				.then((rows: any) => {
 					return rows;
 				});
+			}
+			
 
 
 			//ACTIONS
-			newSite.actions = await db
+			if(actions.length > 0){
+				newSite.actions = await db
 				.insert(
 					actions.map((item: any) => ({
 						SiteID: newSite.SiteID,
@@ -81,12 +91,16 @@ export class InterpretiveSiteService {
 				.then((rows: any) => {
 					return rows;
 				});
+			}
 			
 			//INSPECTIONS
-			newSite.inspections = await db
+			if(inspections.length > 0){
+				newSite.inspections = await db
 				.insert(
 					inspections.map((item: any) => ({
-						...item,
+						Description: item.Description,
+						InspectedBy: item.InspectedBy,
+						InspectionDate: item.InspectionDate,
 						SiteID: newSite.SiteID,
 					}))
 				)
@@ -95,7 +109,7 @@ export class InterpretiveSiteService {
 				.then((rows: any) => {
 					return rows;
 				});
-			
+			}
 			
 			return newSite;
 		});
@@ -110,13 +124,22 @@ export class InterpretiveSiteService {
 		if(!res){
 			return null;
 		}
-			//assets
-			// await db
-			// .insert(assets.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationLupID })))
-			// .into('Burial.Occupation')
-			// .then((rows: any) => {
-			// 	return rows;
-			// });
+
+		//inspections
+		await db
+		.insert(inspections.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID })))
+		.into('InterpretiveSite.Inspections')
+		.then((rows: any) => {
+			return rows;
+		});
+
+		//assets
+		// await db
+		// .insert(assets.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID })))
+		// .into('InterpretiveSite.Assets')
+		// .then((rows: any) => {
+		// 	return rows;
+		// });
 
 			// const deletedAssets = assets.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
 			// for (const item of deletedOccupations) {
@@ -193,8 +216,8 @@ export class InterpretiveSiteService {
 
     //ACTIONS
 
-	async getActionById(ActionID: number){
-		const res = await db.select('*').from('InterpretiveSites.Actions').where('InterpretiveSite.Actions.ActionID', ActionID);
+	async getActionsBySiteId(SiteID: number){
+		const res = await db.select('*').from('InterpretiveSites.Actions').where('InterpretiveSite.Actions.SiteID', SiteID);
 		return res;
 	}
 
@@ -246,7 +269,7 @@ export class InterpretiveSiteService {
 					if(CreatedDate !== '') builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
 					if(CompletedBy !== '') builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
 				})
-				.count('Id', { as: 'count' });
+				.count('ActionID', { as: 'count' });
 
             actions = await db
 				.select('*')
@@ -278,7 +301,7 @@ export class InterpretiveSiteService {
 					if(CreatedDate !== '') builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
 					if(CompletedBy !== '') builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
 				})
-				.count('Id', { as: 'count' });
+				.count('ActionID', { as: 'count' });
 
             actions = await db
 				.select('*')
@@ -303,8 +326,8 @@ export class InterpretiveSiteService {
     }
 
     //ASSETS
-	async getAssetById(AssetID: number){
-		const res = await db.select('*').from('InterpretiveSites.Assets').where('InterpretiveSite.Assets.AssetID', AssetID);
+	async getAssetsBySiteId(SiteID: number){
+		const res = await db.select('*').from('InterpretiveSites.Assets').where('InterpretiveSite.Assets.SiteID', SiteID);
 		return res;
 	}
 
@@ -341,7 +364,7 @@ export class InterpretiveSiteService {
 		 } = filters;
         if(limit === 0){
 			counter = await db
-				.from('InterpretiveSite.Actions')
+				.from('InterpretiveSite.Assets')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(Category !== '') builder.where('Category', 'like', `%${Category}%`);
@@ -354,11 +377,11 @@ export class InterpretiveSiteService {
 					if(DecommissionNotes !== '') builder.where('DecommissionNotes', 'like', `%${DecommissionNotes}%`);
 					if(Status !== '') builder.where('Status', 'like', `%${Status}%`);
 				})
-				.count('Id', { as: 'count' });
+				.count('AssetID', { as: 'count' });
 
 			assets = await db
 				.select('*')
-				.from('InterpretiveSite.Actions')
+				.from('InterpretiveSite.Assets')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(Category !== '') builder.where('Category', 'like', `%${Category}%`);
@@ -375,7 +398,7 @@ export class InterpretiveSiteService {
 		}
         else {
 			counter = await db
-				.from('InterpretiveSite.Actions')
+				.from('InterpretiveSite.Assets')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(Category !== '') builder.where('Category', 'like', `%${Category}%`);
@@ -388,11 +411,11 @@ export class InterpretiveSiteService {
 					if(DecommissionNotes !== '') builder.where('DecommissionNotes', 'like', `%${DecommissionNotes}%`);
 					if(Status !== '') builder.where('Status', 'like', `%${Status}%`);
 				})
-				.count('Id', { as: 'count' });
+				.count('AssetID', { as: 'count' });
 
 			assets = await db
 				.select('*')
-				.from('InterpretiveSite.Actions')
+				.from('InterpretiveSite.Assets')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(Category !== '') builder.where('Category', 'like', `%${Category}%`);

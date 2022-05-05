@@ -1,0 +1,40 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+table.title-row
+  tbody 
+    tr 
+      td
+        div Action information
+      td
+        img(style='width:200px; height:100px;' src="https://firebasestorage.googleapis.com/v0/b/yg-historic-sites.appspot.com/o/yukon.svg?alt=media&token=41e6cd68-0efd-438f-aef0-44bec1e15b55", alt="")
+div.grid
+  table.grid-table
+    thead
+      tr 
+        td 
+          strong.underline Site Name
+        td 
+          strong.underline Action Description 
+        td 
+          strong.underline To Be Complete Date
+        td 
+          strong.underline Action Complete Date
+        td 
+          strong.underline Route
+        td 
+          strong.underline Completion Description
+        td 
+          strong.underline Priority
+    tbody 
+      each val in data
+        tr 
+          td #{val.SiteName} 
+          td #{val.ActionDesc} 
+          td #{val.ToBeCompleteDate} 
+          td #{val.ActionCompleteDate} 
+          td #{val.Route} 
+          td #{val.CompletionDesc} 
+          td #{val.Priority} 

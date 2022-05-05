@@ -233,12 +233,203 @@ export class CatalogService {
           );
 	}
 
+
+	//ASSET TYPES
+	async getAllAssetTypes(){
+		return await db("InterpretiveSite.AssetTypeLookup").orderBy(
+			"InterpretiveSite.AssetTypeLookup.Type",
+			"asc"
+		);
+	}
+
+	async modifyAssetType(id: number, item: any){
+		return await db("InterpretiveSite.AssetTypeLookup")
+					.update(item).where("InterpretiveSite.AssetTypeLookup.TypeLUpID", id);
+	}
+
+	async newAssetType(item: any){
+		return await db
+			.insert(item)
+			.into("InterpretiveSite.AssetTypeLookup")
+			.returning("*");
+	}
+	
+	async doAssetTypeSearch( page: number, limit: number, offset: number, filters: any){
+        const {
+			textToMatch = '',
+			sortBy = 'TypeLUpID',
+			sort = 'asc',
+		} = filters;
+		let counter = [{ count: 0 }];
+		let list = [];
+
+		if (textToMatch) {
+			counter = await db("InterpretiveSite.AssetTypeLookup").where("InterpretiveSite.AssetTypeLookup.Type", "like", `%${textToMatch}%`)
+				.count('TypeLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.AssetTypeLookup").where("InterpretiveSite.AssetTypeLookup.Type", "like", `%${textToMatch}%`)
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		} else {
+			counter = await db("InterpretiveSite.AssetTypeLookup")
+				.count('TypeLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.AssetTypeLookup")
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		}
+        return { count: counter[0].count, body: list };
+    }
+
+	//CATEGORIES
+	async getAllCategories(){
+		return await db("InterpretiveSite.AssetCategoryLookup").orderBy(
+			"InterpretiveSite.AssetCategoryLookup.Category",
+			"asc"
+		);
+	}
+	async modifyCategory(id: number, item: any){
+		return await db("InterpretiveSite.AssetCategoryLookup")
+					.update(item).where("InterpretiveSite.AssetCategoryLookup.CatLUpID", id);
+	}
+
+	async newCategory(item: any){
+		return await db
+			.insert(item)
+			.into("InterpretiveSite.AssetCategoryLookup")
+			.returning("*");
+	}
+	
+	async doCategorySearch( page: number, limit: number, offset: number, filters: any){
+        const {
+			textToMatch = '',
+			sortBy = 'CatLUpID',
+			sort = 'asc',
+		} = filters;
+		let counter = [{ count: 0 }];
+		let list = [];
+
+		if (textToMatch) {
+			counter = await db("InterpretiveSite.AssetCategoryLookup").where("InterpretiveSite.AssetCategoryLookup.Category", "like", `%${textToMatch}%`)
+				.count('CatLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.AssetCategoryLookup").where("InterpretiveSite.AssetCategoryLookup.Category", "like", `%${textToMatch}%`)
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		} else {
+			counter = await db("InterpretiveSite.AssetCategoryLookup")
+				.count('CatLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.AssetCategoryLookup")
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		}
+        return { count: counter[0].count, body: list };
+    }
+
+
 	//ROUTES
+
 	async getAllRoutes(){
 		return await db("InterpretiveSite.RouteLookup").orderBy(
 			"InterpretiveSite.RouteLookup.RouteName",
 			"asc"
 		);
 	}
+
+	async modifyRoute(id: number, item: any){
+		return await db("InterpretiveSite.RouteLookup")
+					.update(item).where("InterpretiveSite.RouteLookup.RouteLUpID", id);
+	}
+
+	async newRoute(item: any){
+		return await db
+			.insert(item)
+			.into("InterpretiveSite.RouteLookup")
+			.returning("*");
+	}
+	
+	async doRouteSearch( page: number, limit: number, offset: number, filters: any){
+        const {
+			textToMatch = '',
+			sortBy = 'RouteLUpID',
+			sort = 'asc',
+		} = filters;
+		let counter = [{ count: 0 }];
+		let list = [];
+
+		if (textToMatch) {
+			counter = await db("InterpretiveSite.RouteLookup").where("InterpretiveSite.RouteLookup.RouteName", "like", `%${textToMatch}%`)
+				.count('RouteLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.RouteLookup").where("InterpretiveSite.RouteLookup.RouteName", "like", `%${textToMatch}%`)
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		} else {
+			counter = await db("InterpretiveSite.RouteLookup")
+				.count('RouteLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.RouteLookup")
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		}
+        return { count: counter[0].count, body: list };
+    }
+
+	//OWNER (Maintainers)
+
+	async getAllMaintainers(){
+		return await db("InterpretiveSite.MaintOwnLookup").orderBy(
+			"InterpretiveSite.MaintOwnLookup.MaintOwnName",
+			"asc"
+		);
+	}
+
+	async modifyMaintainer(id: number, item: any){
+		return await db("InterpretiveSite.MaintOwnLookup")
+					.update(item).where("InterpretiveSite.MaintOwnLookup.MaintOwnLUpID", id);
+	}
+
+	async newMaintainer(item: any){
+		return await db
+			.insert(item)
+			.into("InterpretiveSite.MaintOwnLookup")
+			.returning("*");
+	}
+	
+	async doMaintainerSearch( page: number, limit: number, offset: number, filters: any){
+        const {
+			textToMatch = '',
+			sortBy = 'MaintOwnLUpID',
+			sort = 'asc',
+		} = filters;
+		let counter = [{ count: 0 }];
+		let list = [];
+
+		if (textToMatch) {
+			counter = await db("InterpretiveSite.MaintOwnLookup").where("InterpretiveSite.MaintOwnLookup.MaintOwnName", "like", `%${textToMatch}%`)
+				.count('MaintOwnLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.MaintOwnLookup").where("InterpretiveSite.MaintOwnLookup.MaintOwnName", "like", `%${textToMatch}%`)
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		} else {
+			counter = await db("InterpretiveSite.MaintOwnLookup")
+				.count('MaintOwnLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.MaintOwnLookup")
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		}
+        return { count: counter[0].count, body: list };
+    }
 
 }

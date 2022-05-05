@@ -1,0 +1,50 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+table.title-row
+  tbody 
+    tr 
+      td
+        div Interpretive Sites information
+      td
+        img(style='width:200px; height:100px;' src="https://firebasestorage.googleapis.com/v0/b/yg-historic-sites.appspot.com/o/yukon.svg?alt=media&token=41e6cd68-0efd-438f-aef0-44bec1e15b55", alt="")
+
+div.grid
+  table.grid-table
+    thead
+      tr 
+        td 
+          strong.underline Site Name 
+        td 
+          strong.underline Location Description
+        td 
+          strong.underline Route Name
+        td 
+          strong.underline KMNumber
+        td 
+          strong.underline MapSheet
+        td 
+          strong.underline Latitude
+        td 
+          strong.underline Longitude
+        td 
+          strong.underline Established Year
+        td 
+          strong.underline Advanced Notification
+        td 
+          strong.underline Notification Description
+    tbody 
+      each val in data
+        tr 
+          td #{val.SiteName} 
+          td #{val.LocationDesc} 
+          td #{val.RouteName} 
+          td #{val.KMNum} 
+          td #{val.MapSheet} 
+          td #{val.Latitude} 
+          td #{val.Longitude} 
+          td #{val.EstablishedYear} 
+          td #{val.AdvancedNotification} 
+          td #{val.NotificationDesc} 

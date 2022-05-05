@@ -410,9 +410,161 @@ catalogsRouter.post("/relationship", async (req: Request, res: Response) => {
   res.status(200).send(response);
 });
 
+
+
+//ASSET TYPES
+catalogsRouter.get("/asset-type", async (req: Request, res: Response) => {
+  const response = await catalogService.getAllAssetTypes();
+  res.status(200).send(response);
+});
+
+catalogsRouter.post("/asset-type", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await catalogService.newAssetType(data);
+
+  res.status(200).send(response);
+});
+
+catalogsRouter.put(
+  "/asset-type/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    let resObj = await catalogService.modifyAssetType(parseInt(id), data);
+
+    console.log(resObj);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+catalogsRouter.get("/asset-type/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Type", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  const data = await catalogService.doAssetTypeSearch(page, limit, offset, { textToMatch, sortBy, sort });
+
+  res.send(data);
+});
+
+//CATEGORIES
+catalogsRouter.get("/category", async (req: Request, res: Response) => {
+  const response = await catalogService.getAllCategories();
+  res.status(200).send(response);
+});
+
+catalogsRouter.get("/category/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "Category", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  const data = await catalogService.doCategorySearch(page, limit, offset, { textToMatch, sortBy, sort });
+
+  res.send(data);
+});
+
+catalogsRouter.post("/category", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await catalogService.newCategory(data);
+
+  res.status(200).send(response);
+});
+
+catalogsRouter.put(
+  "/category/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    let resObj = await catalogService.modifyCategory(parseInt(id), data);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+//MAINTAINERS
+catalogsRouter.get("/maintainer", async (req: Request, res: Response) => {
+  const response = await catalogService.getAllMaintainers();
+  res.status(200).send(response);
+});
+
+catalogsRouter.post("/maintainer", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await catalogService.newMaintainer(data);
+
+  res.status(200).send(response);
+});
+
+catalogsRouter.get("/maintainer/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "MaintOwnName", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  const data = await catalogService.doMaintainerSearch(page, limit, offset, { textToMatch, sortBy, sort });
+
+  res.send(data);
+});
+
+
+catalogsRouter.put(
+  "/maintainer/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    let resObj = await catalogService.modifyMaintainer(parseInt(id), data);
+    console.log(resObj);
+    res.status(200).send({ message: "success" });
+  }
+);
+
+
 //ROUTES
 catalogsRouter.get("/route", async (req: Request, res: Response) => {
   const response = await catalogService.getAllRoutes();
+  res.status(200).send(response);
+});
+
+catalogsRouter.get("/route/search", async (req: Request, res: Response) => {
+  const { textToMatch = "", sortBy = "RouteName", sort = "asc" } = req.query;
+  const page = parseInt(req.query.page as string);
+  const limit = parseInt(req.query.limit as string);
+  const offset = page * limit || 0;
+  const data = await catalogService.doRouteSearch(page, limit, offset, { textToMatch, sortBy, sort });
+
+  res.send(data);
+});
+
+catalogsRouter.post("/route", async (req: Request, res: Response) => {
+  const { data = {} } = req.body;
+
+  const response = await catalogService.newRoute(data);
 
   res.status(200).send(response);
-})
+});
+
+catalogsRouter.put(
+  "/route/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { data = {} } = req.body;
+
+    let resObj = await catalogService.modifyRoute(parseInt(id), data);
+
+    res.status(200).send({ message: "success" });
+  }
+);
+
+
