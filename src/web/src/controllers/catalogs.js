@@ -501,11 +501,72 @@ export default {
 				console.error(error);
 			});
 	},
+	async putAssetType(id, data) {
+		return await api
+			.put(`catalogs/asset-type/${id}`, data)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async postAssetType(data) {
+		return await api
+			.post(`catalogs/asset-type`, data)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async searchAssetTypes(page, limit, textToMatch, sortBy, sort) {
+		return await api
+			.get(`catalogs/asset-type/search`, {
+				params: {
+					page,
+					limit,
+					textToMatch,
+					sortBy,
+					sort,
+				},
+			})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
 	//CATEGORIES
 	async getCategories() {
 		return await api
 			.get(`catalogs/category`)
 			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async searchCategories(page, limit, textToMatch, sortBy, sort) {
+		return await api
+			.get(`catalogs/category/search`, {
+				params: {
+					page,
+					limit,
+					textToMatch,
+					sortBy,
+					sort,
+				},
+			})
+			.then((res) => {
+				console.log(res);
 				return res.data;
 			})
 			.catch((error) => {
@@ -539,6 +600,25 @@ export default {
 	async getMaintainers() {
 		return await api
 			.get(`catalogs/maintainer`)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async searcMaintainers(page, limit, textToMatch, sortBy, sort) {
+		return await api
+			.get(`catalogs/maintainer/search`, {
+				params: {
+					page,
+					limit,
+					textToMatch,
+					sortBy,
+					sort,
+				},
+			})
 			.then((res) => {
 				return res.data;
 			})

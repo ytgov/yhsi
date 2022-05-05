@@ -67,7 +67,7 @@
 			</div>
 			<EditDialog
 				:dialog="editDialog"
-				:data="displayVesselType"
+				:data="displayData"
 				@closeEditDialog="closeDialog"
 			/>
 		</v-container>
@@ -81,7 +81,7 @@ import EditDialog from './EditDialog';
 import AddDialog from './AddDialog';
 import _ from 'lodash';
 export default {
-	name: 'usersgrid',
+	name: 'categorygrid',
 	components: { Breadcrumbs, EditDialog, AddDialog },
 	data: () => ({
 		loading: false,
@@ -90,13 +90,14 @@ export default {
 		options: {},
 		totalLength: 10,
 		headers: [
-			{ text: 'Religion', value: 'Religion' },
+			{ text: 'Category', value: 'Category' },
+			{ text: 'Status', value: 'Status' },
 			//      { text: "Actions", value: "actions"}
 		],
 		page: 1,
 		pageCount: 0,
 		iteamsPerPage: 10,
-		displayVesselType: {},
+		displayData: {},
 		editDialog: false,
 	}),
 	mounted() {
@@ -108,7 +109,7 @@ export default {
 		}, 400),
 		handleClick(value) {
 			//Redirects the user to the edit user form
-			this.displayVesselType = value;
+			this.displayData = value;
 			this.editDialog = true;
 		},
 		removeItem(item) {
@@ -125,7 +126,7 @@ export default {
 			page = page > 0 ? page - 1 : 0;
 			itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
 			let textToMatch = this.search;
-			let data = await catalogs.searchReligions(
+			let data = await catalogs.searchCategories(
 				page,
 				itemsPerPage,
 				textToMatch,
@@ -134,6 +135,7 @@ export default {
 			);
 			this.list = _.get(data, 'body', []);
 			//console.log(this.vesseltypes);
+			console.log(data);
 			this.totalLength = _.get(data, 'count', 0);
 			this.loading = false;
 		},

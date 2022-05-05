@@ -67,7 +67,7 @@
 			</div>
 			<EditDialog
 				:dialog="editDialog"
-				:data="displayVesselType"
+				:data="displayData"
 				@closeEditDialog="closeDialog"
 			/>
 		</v-container>
@@ -90,13 +90,15 @@ export default {
 		options: {},
 		totalLength: 10,
 		headers: [
-			{ text: 'Religion', value: 'Religion' },
+			{ text: 'Type', value: 'Type' },
+			{ text: 'Category', value: 'Category' },
+			{ text: 'Status', value: 'Status' },
 			//      { text: "Actions", value: "actions"}
 		],
 		page: 1,
 		pageCount: 0,
 		iteamsPerPage: 10,
-		displayVesselType: {},
+		displayData: {},
 		editDialog: false,
 	}),
 	mounted() {
@@ -108,7 +110,7 @@ export default {
 		}, 400),
 		handleClick(value) {
 			//Redirects the user to the edit user form
-			this.displayVesselType = value;
+			this.displayData = value;
 			this.editDialog = true;
 		},
 		removeItem(item) {
@@ -125,7 +127,7 @@ export default {
 			page = page > 0 ? page - 1 : 0;
 			itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
 			let textToMatch = this.search;
-			let data = await catalogs.searchReligions(
+			let data = await catalogs.searchAssetTypes(
 				page,
 				itemsPerPage,
 				textToMatch,

@@ -247,6 +247,48 @@ export class CatalogService {
 			"asc"
 		);
 	}
+
+	async modifyAssetType(id: number, item: any){
+		return await db("InterpretiveSite.AssetTypeLookup")
+					.update(item).where("InterpretiveSite.AssetTypeLookup.TypeLUpID", id);
+	}
+
+	async newAssetType(item: any){
+		return await db
+			.insert(item)
+			.into("InterpretiveSite.AssetTypeLookup")
+			.returning("*");
+	}
+	
+	async doAssetTypeSearch( page: number, limit: number, offset: number, filters: any){
+        const {
+			textToMatch = '',
+			sortBy = 'TypeLUpID',
+			sort = 'asc',
+		} = filters;
+		let counter = [{ count: 0 }];
+		let list = [];
+
+		if (textToMatch) {
+			counter = await db("InterpretiveSite.AssetTypeLookup").where("InterpretiveSite.AssetTypeLookup.Type", "like", `%${textToMatch}%`)
+				.count('TypeLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.AssetTypeLookup").where("InterpretiveSite.AssetTypeLookup.Type", "like", `%${textToMatch}%`)
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		} else {
+			counter = await db("InterpretiveSite.AssetTypeLookup")
+				.count('TypeLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.AssetTypeLookup")
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		}
+        return { count: counter[0].count, body: list };
+    }
+
 	//CATEGORIES
 	async getAllCategories(){
 		return await db("InterpretiveSite.AssetCategoryLookup").orderBy(
@@ -269,7 +311,7 @@ export class CatalogService {
 	async doCategorySearch( page: number, limit: number, offset: number, filters: any){
         const {
 			textToMatch = '',
-			sortBy = 'MaintOwnLUpID',
+			sortBy = 'CatLUpID',
 			sort = 'asc',
 		} = filters;
 		let counter = [{ count: 0 }];
@@ -277,17 +319,17 @@ export class CatalogService {
 
 		if (textToMatch) {
 			counter = await db("InterpretiveSite.AssetCategoryLookup").where("InterpretiveSite.AssetCategoryLookup.Category", "like", `%${textToMatch}%`)
-				.count('MaintOwnLUpID', { as: 'count' });
+				.count('CatLUpID', { as: 'count' });
 
 			list = await db("InterpretiveSite.AssetCategoryLookup").where("InterpretiveSite.AssetCategoryLookup.Category", "like", `%${textToMatch}%`)
 				.orderBy(`${sortBy}`, `${sort}`)
 				.limit(limit)
 				.offset(offset);
 		} else {
-			counter = await db("InterpretiveSite.MaintOwnLookup")
-				.count('MaintOwnLUpID', { as: 'count' });
+			counter = await db("InterpretiveSite.AssetCategoryLookup")
+				.count('CatLUpID', { as: 'count' });
 
-			list = await db("InterpretiveSite.MaintOwnLookup")
+			list = await db("InterpretiveSite.AssetCategoryLookup")
 				.orderBy(`${sortBy}`, `${sort}`)
 				.limit(limit)
 				.offset(offset);
