@@ -51,7 +51,9 @@ import {
 	webLinkTypesRouter,
 	ytPlaceHistoryRouter,
 	ytPlaceRouter,
-	intSitesRouter
+	intSitesRouter,
+	actionRouter,
+	assetRouter
 } from './routes';
 
 import * as config from './config';
@@ -119,8 +121,10 @@ app.use('/api/ytplacehistory', RequiresAuthentication, ytPlaceHistoryRouter);
 app.use('/api/photo', RequiresAuthentication, photoRouter);
 app.use('/api/photobatch', RequiresAuthentication, photoBatchRouter);
 app.use('/api/register', registerRouter);
-
+	
 app.use('/api/interpretive-sites', intSitesRouter);
+app.use('/api/actions', actionRouter);
+app.use('/api/assets', assetRouter);
 app.use('/api/association-types', RequiresAuthentication, associationTypesRouter);
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
 app.use('/api/category-types', RequiresAuthentication, categoryTypesRouter);
@@ -149,7 +153,7 @@ app.use('/api/histories', RequiresAuthentication, historiesRouter);
 app.use('/api/catalogs', RequiresAuthentication, catalogsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
-app.use('/api/photos', RequiresAuthentication, photosExtraRouter);
+app.use('/api/photos', photosExtraRouter); //removed auth check for testing
 app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
 app.use('/api/place-edits', RequiresAuthentication, placeEditsRouter);
 app.use('/api/place-themes', RequiresAuthentication, placeThemesRouter);

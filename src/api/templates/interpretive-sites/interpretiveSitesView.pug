@@ -1,0 +1,144 @@
+//- template.pug
+
+style
+     include ../styles.css
+    
+table.title-row
+  tbody 
+    tr 
+      td
+        div Interpretive Site Information
+        div.item-name #{data.SiteName}
+      td
+        img(style='width:200px; height:100px;' src="https://firebasestorage.googleapis.com/v0/b/yg-historic-sites.appspot.com/o/yukon.svg?alt=media&token=41e6cd68-0efd-438f-aef0-44bec1e15b55", alt="")
+
+
+div.section-title Site information
+ 
+table.divided-row
+  tbody 
+    tr 
+      td
+        div Site Name: #{data.FirstName}
+        div Established Year: #{data.EstablishedYear}
+        div Maintained By: #{data.MaintainedBy}
+      td
+        div Advanced Notification Signs: #{data.AdvancedNotification}
+        div Advanced Notification Description: #{data.NotificationDesc}
+
+div.section-title Location
+table.full-width.table-display.general
+  tbody
+      tr 
+        td
+          table.religion-table.table-full-width 
+            thead 
+              tr 
+                td 
+                  strong.underline Religion
+            tbody 
+                tr 
+                  td #{data.Religion.Religion}
+        td
+          table.table-full-width
+            thead 
+              tr 
+                td 
+                  strong.underline Occupations
+            tbody 
+              each val in data.Occupations
+                tr 
+                  td #{val.Occupation}
+        td
+          table.membership-table.table-full-width
+            thead 
+              tr 
+                td
+                  strong.underline Memberships
+                td 
+            tbody 
+              each val in data.Memberships
+                tr
+                  td #{val.Membership}
+                  td  #{val.Chapter}
+    
+
+div.section-title Assets
+
+table.table-full-width.center
+  thead 
+    tr 
+      td 
+        strong.underline Category 
+      td 
+        strong.underline Type
+      td 
+        strong.underline Size
+      td 
+        strong.underline Description
+      td 
+        strong.underline Sign Text
+      td 
+        strong.underline Install Date
+      td 
+        strong.underline Active
+  tbody 
+    each val in data.assets
+      tr 
+          td #{val.Category} 
+          td #{val.Type} 
+          td #{val.Size} 
+          td #{val.Description} 
+          td #{val.SignText} 
+          td #{val.InstallDate} 
+          td #{val.Status} 
+
+div.section-title Actions
+
+table.table-full-width.center
+  thead 
+    tr 
+      td 
+        strong.underline Action Description 
+      td 
+        strong.underline To Be Complete Date
+      td 
+        strong.underline Action Complete Date
+      td 
+        strong.underline Route
+      td 
+        strong.underline Completion Description
+      td 
+        strong.underline Priority
+  tbody 
+    each val in data.actions
+        tr 
+          td #{val.ActionDesc} 
+          td #{val.ToBeCompleteDate} 
+          td #{val.ActionCompleteDate} 
+          td #{val.Route} 
+          td #{val.CompletionDesc} 
+          td #{val.Priority} 
+
+div.section-title Inspections
+
+table.table-full-width.center
+  thead 
+    tr 
+      td
+        strong.underline Inspection Date
+      td
+        strong.underline Description
+      td
+        strong.underline Inspected By
+      td
+        strong.underline Actions
+  tbody 
+    each val in data.inspections
+      tr
+        td #{val.InspectionDate} 
+        td #{val.Description} 
+        td #{val.InspectedBy} 
+        td #{val.Actions} 
+        
+

@@ -21,6 +21,7 @@
 					Edit
 				</v-btn>
 				<v-btn
+					v-if="isView"
 					class="black--text mx-1"
 					@click="downloadPdf"
 					:loading="loadingPdf"
@@ -37,9 +38,10 @@
 					<v-icon>mdi-close</v-icon>
 					Cancel
 				</v-btn>
+
 				<v-btn
 					color="success"
-					:disabled="showSave < 1"
+					:disabled="showSave < 1 || !valid"
 					v-if="!isView"
 					@click="saveChanges"
 				>
@@ -50,117 +52,132 @@
 		</v-row>
 		<v-row>
 			<v-col cols="12">
-				<v-expansion-panels
-					v-model="panel"
-					multiple
+				<v-form
+					lazy-validation
+					v-model="valid"
+					ref="intSiteForm"
 				>
-					<v-expansion-panel>
-						<v-expansion-panel-header>
-							<h2>Site Information</h2>
-						</v-expansion-panel-header>
-						<v-expansion-panel-content>
-							<v-row>
-								<v-col cols="8">
-									<v-row>
-										<v-col cols="6">
-											<v-text-field
-												name="SiteName"
-												label="Site Name"
-												outlined
-												dense
-												v-model="fields.SiteName"
-												:readonly="isView"
-											></v-text-field>
-											<v-text-field
-												name="EstablishedYear"
-												label="Established Year"
-												outlined
-												dense
-												v-model="fields.EstablishedYear"
-												:readonly="isView"
-											></v-text-field>
-											<v-text-field
-												name="MaintainedBy"
-												label="Maintained"
-												outlined
-												dense
-												v-model="fields.SiteName"
-												:readonly="isView"
-											></v-text-field>
-										</v-col>
-										<v-col cols="6">
-											<v-text-field
-												name="NotificationSigns"
-												outlined
-												dense
-												label="Advanced notification signs"
-												v-model="fields.AdvancedNotification"
-												:readonly="isView"
-											></v-text-field>
-											<v-textarea
-												name="NotificationDesc"
-												outlined
-												dense
-												label="Advanced Notification Description"
-												:readonly="isView"
-												v-model="fields.NotificationDesc"
-											></v-textarea>
-										</v-col>
-									</v-row>
-								</v-col>
-								<v-col cols="4">
-									<h4>Photos</h4>
-									<!-- <Photos 
-                          v-if="true" 
-                          :showDefault="isNew" 
-                          :photoType="'burial'"
-                          :itemId="currentIntSiteID"
-                          @updateSelectedImage="selectedImageChanged" 
-                          :selectedImage="selectedImage" 
-                          @loadingPhotosChange="loadingPhotosChange"/>    -->
-								</v-col>
-							</v-row>
-						</v-expansion-panel-content>
-					</v-expansion-panel>
-					<v-expansion-panel>
-						<v-expansion-panel-header>
-							<h2>Location</h2>
-						</v-expansion-panel-header>
-						<v-expansion-panel-content>
-							<v-row>
-								<v-col cols="12">
-									<MapLoader
-										v-if="true"
-										:mode="mode"
-										:mapType="'intSite'"
-										@modifiedDataCoordinates="modifiedDataCoordinates"
-										:fields="{
-											RouteName: fields.RouteName,
-											KMNum: fields.KMNum,
-											LocationDesc: fields.LocationDesc,
-											lat: fields.Latitude,
-											long: fields.Longitude,
-											MapSheet: fields.MapSheet,
-										}"
-									/>
-								</v-col>
-							</v-row>
-						</v-expansion-panel-content>
-					</v-expansion-panel>
-					<v-expansion-panel v-if="!isNew">
-						<v-expansion-panel-header>
-							<h2>Assets</h2>
-						</v-expansion-panel-header>
-						<v-expansion-panel-content>
-							<v-row>
-								<v-col cols="12">
-									<v-data-table
-										:headers="assetHeaders"
-										:items="fields.assets"
-										:items-per-page="5"
-										class="elevation-0"
-									>
-										<!-- <template v-slot:item="{ item, index }">
+					<v-expansion-panels
+						v-model="panel"
+						multiple
+					>
+						<v-expansion-panel>
+							<v-expansion-panel-header>
+								<h2>Site Information</h2>
+							</v-expansion-panel-header>
+							<v-expansion-panel-content>
+								<v-row>
+									<v-col cols="8">
+										<v-row>
+											<v-col cols="6">
+												<v-text-field
+													name="SiteName"
+													label="Site Name"
+													outlined
+													dense
+													v-model="fields.SiteName"
+													:readonly="isView"
+												></v-text-field>
+												<v-text-field
+													name="EstablishedYear"
+													label="Established Year"
+													outlined
+													dense
+													v-model="fields.EstablishedYear"
+													:readonly="isView"
+												></v-text-field>
+												<v-text-field
+													name="MaintainedBy"
+													label="Maintained"
+													outlined
+													dense
+													v-model="fields.SiteName"
+													:readonly="isView"
+												></v-text-field>
+											</v-col>
+											<v-col cols="6">
+												<!-- :rules="notifRules" -->
+												<label> Advanced Notification Signs?</label>
+												<v-radio-group
+													v-model="fields.AdvancedNotification"
+													row
+												>
+													<v-radio
+														label="Yes"
+														value="Yes"
+													></v-radio>
+													<v-radio
+														label="No"
+														value="No"
+													></v-radio>
+												</v-radio-group>
+
+												<v-textarea
+													name="NotificationDesc"
+													outlined
+													dense
+													label="Advanced Notification Description"
+													:readonly="isView"
+													v-model="fields.NotificationDesc"
+												></v-textarea>
+											</v-col>
+										</v-row>
+									</v-col>
+									<v-col cols="4">
+										<Photos
+											v-if="true"
+											:mode="mode"
+											:showDefault="isNew"
+											:photoType="'interpretive-sites'"
+											:itemId="currentIntSiteID"
+											@updateSelectedImage="selectedImageChanged"
+											:selectedImage="selectedImage"
+											@loadingPhotosChange="loadingPhotosChange"
+										/>
+									</v-col>
+								</v-row>
+							</v-expansion-panel-content>
+						</v-expansion-panel>
+						<v-expansion-panel>
+							<v-expansion-panel-header>
+								<h2>Location</h2>
+							</v-expansion-panel-header>
+							<v-expansion-panel-content>
+								<v-row>
+									<v-col cols="12">
+										<MapLoader
+											v-if="true"
+											:mode="mode"
+											:mapType="'intSite'"
+											@modifiedDataCoordinates="modifiedDataCoordinates"
+											:fields="{
+												RouteName: fields.RouteName,
+												KMNum: fields.KMNum,
+												LocationDesc: fields.LocationDesc,
+												lat: fields.Latitude,
+												long: fields.Longitude,
+												MapSheet: fields.MapSheet,
+												dataReady: overlay,
+											}"
+										/>
+									</v-col>
+								</v-row>
+							</v-expansion-panel-content>
+						</v-expansion-panel>
+						<v-expansion-panel v-if="!isNew">
+							<v-expansion-panel-header>
+								<h2>Assets</h2>
+							</v-expansion-panel-header>
+							<v-expansion-panel-content>
+								<v-row>
+									<v-col cols="12">
+										<v-data-table
+											:headers="assetHeaders"
+											:items="fields.assets"
+											:items-per-page="5"
+											class="elevation-0"
+										>
+											<!-- <template v-slot:item="{ item, index }">
                             <tr v-if="item.deleted != true">
                                 <td class="parent-row">{{ item.Name }}</td>
                                 <td class="child-row">{{ item.Location }}</td>
@@ -186,100 +203,124 @@
                                 </td>   
                             </tr>            
                           </template>   -->
-									</v-data-table>
-								</v-col>
-							</v-row>
-						</v-expansion-panel-content>
-					</v-expansion-panel>
-					<v-expansion-panel v-if="!isNew">
-						<v-expansion-panel-header>
-							<h2>Actions</h2>
-						</v-expansion-panel-header>
-						<v-expansion-panel-content>
-							<v-row>
-								<v-col cols="12">
-									<v-data-table
-										:headers="actionHeaders"
-										:items="fields.actions"
-										:items-per-page="5"
-										class="elevation-0"
+										</v-data-table>
+									</v-col>
+								</v-row>
+							</v-expansion-panel-content>
+						</v-expansion-panel>
+						<v-expansion-panel v-if="!isNew">
+							<v-expansion-panel-header>
+								<h2>Actions</h2>
+							</v-expansion-panel-header>
+							<v-expansion-panel-content>
+								<v-row>
+									<v-col
+										cols="12"
+										class="d-flex flex-row"
 									>
-										<!-- <template v-slot:item="{ item, index }">
-                            <tr v-if="item.deleted != true">
-                                <td class="parent-row">{{ item.Name }}</td>
-                                <td class="child-row">{{ item.Location }}</td>
-                                <td class="child-row">{{ item.Quantity }}</td>
-                                <td class="child-row">{{ item.Relationship }}</td>
-                                <td class="child-row">
-                                  <div class="d-flex flex-row">
-                                    <KinDialog v-if="!isView" :mode="'edit'" :data="relationships" @editKinship="editKinship" :kinToEdit="{ index, Kinship: item}"/>
-                                    <v-tooltip bottom v-if="!isView">
-                                        <template v-slot:activator="{ on, attrs }">
-                                                <v-btn 
-                                                v-bind="attrs"
-                                                v-on="on"
-                                                icon class="grey--text text--darken-2"  @click="deleteKinship(index)">
-                                                    <v-icon
-                                                    small
-                                                    >mdi-trash-can</v-icon>  
-                                                </v-btn>
-                                        </template>
-                                        <span>Delete</span>
-                                    </v-tooltip>
-                                  </div>
-                                </td>   
-                            </tr>            
-                          </template>   -->
-									</v-data-table>
-								</v-col>
-							</v-row>
-						</v-expansion-panel-content>
-					</v-expansion-panel>
-					<v-expansion-panel>
-						<v-expansion-panel-header>
-							<h2>Inspections</h2>
-						</v-expansion-panel-header>
-						<v-expansion-panel-content>
-							<v-row>
-								<v-col cols="12">
-									<v-data-table
-										:headers="inspectionHeaders"
-										:items="fields.inspections"
-										:items-per-page="5"
-										class="elevation-0"
+										<ActionDialog
+											:mode="'new'"
+											:type="'siteview'"
+											:Site="{
+												SiteName: fields.SiteName,
+												SiteID: fields.SiteID,
+											}"
+											class="ml-auto mr-1"
+											@newAction="newAction"
+										/>
+									</v-col>
+								</v-row>
+								<v-row>
+									<v-col cols="12">
+										<v-data-table
+											:headers="actionHeaders"
+											:items="fields.actions"
+											:items-per-page="5"
+											class="elevation-0"
+										>
+											<template v-slot:item="{ item, index }">
+												<tr>
+													<td class="parent-row">
+														{{ item.ActionDesc }}
+													</td>
+													<td class="child-row">{{ item.CompletedBy }}</td>
+													<td class="child-row">{{ item.Priority }}</td>
+													<td class="child-row">
+														{{ item.ActionCompleteDate }}
+													</td>
+													<td class="child-row">{{ item.CompletionDesc }}</td>
+													<td class="child-row">
+														<ActionDialog
+															:mode="'edit'"
+															:type="'siteview'"
+															:Site="{
+																SiteName: fields.SiteName,
+																SiteID: fields.SiteID,
+															}"
+															:dataToEdit="{ item, index }"
+															@editAction="editAction"
+														/>
+													</td>
+												</tr>
+											</template>
+										</v-data-table>
+									</v-col>
+								</v-row>
+							</v-expansion-panel-content>
+						</v-expansion-panel>
+						<v-expansion-panel>
+							<v-expansion-panel-header>
+								<h2>Inspections</h2>
+							</v-expansion-panel-header>
+							<v-expansion-panel-content>
+								<v-row>
+									<v-col
+										cols="12"
+										class="d-flex flex-row"
 									>
-										<!-- <template v-slot:item="{ item, index }">
-                            <tr v-if="item.deleted != true">
-                                <td class="parent-row">{{ item.Name }}</td>
-                                <td class="child-row">{{ item.Location }}</td>
-                                <td class="child-row">{{ item.Quantity }}</td>
-                                <td class="child-row">{{ item.Relationship }}</td>
-                                <td class="child-row">
-                                  <div class="d-flex flex-row">
-                                    <KinDialog v-if="!isView" :mode="'edit'" :data="relationships" @editKinship="editKinship" :kinToEdit="{ index, Kinship: item}"/>
-                                    <v-tooltip bottom v-if="!isView">
-                                        <template v-slot:activator="{ on, attrs }">
-                                                <v-btn 
-                                                v-bind="attrs"
-                                                v-on="on"
-                                                icon class="grey--text text--darken-2"  @click="deleteKinship(index)">
-                                                    <v-icon
-                                                    small
-                                                    >mdi-trash-can</v-icon>  
-                                                </v-btn>
-                                        </template>
-                                        <span>Delete</span>
-                                    </v-tooltip>
-                                  </div>
-                                </td>   
-                            </tr>            
-                          </template>   -->
-									</v-data-table>
-								</v-col>
-							</v-row>
-						</v-expansion-panel-content>
-					</v-expansion-panel>
-				</v-expansion-panels>
+										<InspectionDialog
+											:mode="'new'"
+											class="ml-auto mr-1"
+											@newInspection="newInspection"
+										/>
+									</v-col>
+								</v-row>
+								<v-row>
+									<v-col cols="12">
+										<v-data-table
+											:headers="inspectionHeaders"
+											:items="fields.inspections"
+											:items-per-page="5"
+											class="elevation-0"
+										>
+											<template v-slot:item="{ item, index }">
+												<tr>
+													<td class="parent-row">
+														{{ item.InspectionDate }}
+													</td>
+													<td class="child-row">{{ item.Description }}</td>
+													<td class="child-row">{{ item.InspectedBy }}</td>
+													<td class="child-row">
+														<InspectionDialog
+															:mode="'edit'"
+															:type="'siteview'"
+															:Site="{
+																SiteName: fields.SiteName,
+																SiteID: fields.SiteID,
+															}"
+															:dataToEdit="{ item, index }"
+															@editAction="editAction"
+														/>
+													</td>
+												</tr>
+											</template>
+										</v-data-table>
+									</v-col>
+								</v-row>
+							</v-expansion-panel-content>
+						</v-expansion-panel>
+					</v-expansion-panels>
+				</v-form>
 			</v-col>
 		</v-row>
 		<v-overlay :value="overlay">
@@ -295,29 +336,25 @@
 import Breadcrumbs from '../../Breadcrumbs';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 import catalogs from '../../../controllers/catalogs';
-// import MembershipDialog from "./Dialogs/MembershipDialog.vue";
-// import OccupationDialog from "./Dialogs/OccupationDialog.vue";
-// import SourceDialog from "./Dialogs/SourceDialog.vue";
-// import KinDialog from "./Dialogs/KinDialog.vue";
-// import SiteVisitDialog from "./Dialogs/SiteVisitDialog.vue";
+import InspectionDialog from '../Dialogs/InspectionDialog.vue';
+import ActionDialog from '../Dialogs/ActionDialog.vue';
 import MapLoader from '../../MapLoader.vue';
-// import Photos from "../../PhotoEditor/Photos";
+import Photos from '../../PhotoEditor/Photos';
 import countries from '../../../misc/countries';
 export default {
-	name: 'BurialComponent',
+	name: 'IntSiteComponent',
 	components: {
 		Breadcrumbs,
 		MapLoader,
-		// MembershipDialog,
-		// OccupationDialog,
-		// SiteVisitDialog,
-		// KinDialog,
-		// SourceDialog,
-		//Photos
+		InspectionDialog,
+		ActionDialog,
+		Photos,
 	},
 	data: () => ({
 		username: 'username',
-		panel: [0, 1, 2, 3],
+		//form
+		valid: false,
+		panel: [0, 1, 2, 3, 4],
 		overlay: false,
 		items: null,
 		selectedItem: null,
@@ -332,17 +369,17 @@ export default {
 		menu2: false,
 		showSave: 0,
 		actionHeaders: [
-			{ text: 'Action Required', value: 'Membership' },
-			{ text: 'To be Completed by', value: 'Chapter' },
-			{ text: 'Priority', value: 'Notes' },
-			{ text: 'Completed date', value: 'actions' },
-			{ text: 'Completion Notes', value: 'actions' },
+			{ text: 'Action Required', value: 'ActionDesc' },
+			{ text: 'To be Completed by', value: 'CompletedBy' },
+			{ text: 'Priority', value: 'Priority' },
+			{ text: 'Completed date', value: 'ActionCompleteDate' },
+			{ text: 'Completion Notes', value: 'CompletionDesc' },
 		],
 		inspectionHeaders: [
-			{ text: 'Inspection Date', value: 'Inscription' },
-			{ text: 'Description', value: 'MarkerDescription' },
-			{ text: 'Inspected by', value: 'Condition' },
-			{ text: 'Actions', value: 'RecordedBy' },
+			{ text: 'Inspection Date', value: 'InspectionDate' },
+			{ text: 'Description', value: 'Description' },
+			{ text: 'Inspected by', value: 'InspectedBy' },
+			{ text: '', value: 'actions' },
 		],
 		assetHeaders: [
 			{ text: 'Category', value: 'Category' },
@@ -352,9 +389,16 @@ export default {
 			{ text: 'Description', value: 'Description' },
 			{ text: 'Maintained', value: 'Maintained' },
 			{ text: 'Install Date', value: 'InstallDate' },
-			{ text: 'Active', value: 'Status' },
+			{ text: 'Status', value: 'Status' },
 		],
+		//rules
+		notifRules: [
+			(v) => !!v || 'Required.',
+			(v) => v.length <= 7 || 'Length must be less than 7 characters',
+		],
+
 		routes: [],
+		modifiedMapFields: {},
 		//photos
 		selectedImage: null,
 		loadingPhotos: false,
@@ -388,42 +432,26 @@ export default {
 			}
 			return false;
 		},
-		modifiedDataCoordinates() {},
 		resetValidation() {
 			this.$refs.sForm.reset();
 		},
 		noData() {
 			this.fields = {
-				//information section
-				FirstName: '',
-				LastName: '',
-				OriginCountry: '',
-				OriginState: '',
-				OriginCity: '',
-				BirthDate: '',
-				DeathDate: '',
-				Age: '',
-				//history section
-				Religion: '',
-				Occupations: [],
-				Memberships: [],
-				Gender: '',
-				Notes: '',
-				//Death
-				Manner: '',
-				Cause: '',
-				FuneralPaidBy: '',
-				Sources: [],
-				Kinships: [],
-				//Burial
-				BuriedInYukon: '',
-				BodyShipped: '',
-				BurialLocation: '',
-				Other: '',
-				PlotDescription: '',
-				CemetaryID: '',
-				Cemetary: '',
-				SiteVisits: [],
+				SiteName: '',
+				EstablishedYear: '',
+				Maintainer: '',
+				NotificationDesc: '',
+				AdvancedNotification: '',
+				LocationDesc: '',
+				RouteName: '',
+				KMNum: '',
+				MapSheet: '',
+				Latitude: '',
+				Longitude: '',
+				//lists
+				inspections: [],
+				actions: [],
+				assets: [],
 			};
 		},
 		saveCurrentIntSiteID() {
@@ -438,15 +466,6 @@ export default {
 				localStorage.currentIntSiteID
 			);
 			this.routes = await catalogs.getRoutes();
-			console.log(this.routes);
-			// this.fields = await burials.getById(localStorage.currentBurialID);
-			// this.cemetaries = await catalogs.getCemetaries();
-			// this.causes = await catalogs.getCauses();
-			// this.religions = await catalogs.getReligions();
-			// this.occupations = await catalogs.getOccupations();
-			// this.memberships = await catalogs.getMemberships();
-			// this.relationships = await catalogs.getRelationships();
-			console.log(this.fields);
 			this.overlay = false;
 		},
 		viewMode() {
@@ -473,6 +492,10 @@ export default {
 				`/interpretive-sites/view/${localStorage.currentIntSiteID}`
 			);
 		},
+		modifiedDataCoordinates(val) {
+			this.modifiedMapFields = val;
+			this.showSave = this.showSave + 1;
+		},
 		selectedImageChanged(val) {
 			this.selectedImage = val;
 		},
@@ -481,94 +504,58 @@ export default {
 		},
 		async saveChanges() {
 			this.overlay = true;
-			//console.log(this.fields);
-			// let {
-			// 	Age,
-			// 	BirthDateNotes,
-			// 	BirthDay,
-			// 	BirthMonth,
-			// 	BirthYear,
-			// 	Memberships,
-			// 	SiteVisits,
-			// 	Kinships,
-			// 	DeathDateNotes,
-			// 	DeathDay,
-			// 	DeathMonth,
-			// 	DeathYear,
-			// 	DestinationShipped,
-			// 	FirstName,
-			// 	FuneralPaidBy,
-			// 	Gender,
-			// 	GenderOther,
-			// 	LastName,
-			// 	Manner,
-			// 	Occupations,
-			// 	Sources,
-			// 	OriginCity,
-			// 	OriginCountry,
-			// 	OriginState,
-			// 	OtherCemetaryDesc,
-			// 	OtherCountry,
-			// 	PersonNotes,
-			// 	PlotDescription,
-			// 	ShippedIndicator,
-			// 	Cause,
-			// 	Cemetary,
-			// 	Religion,
-			// } = this.fields;
-			// //BurialID
-			// const burial = {
-			// 	Age,
-			// 	BirthDateNotes,
-			// 	BirthDay,
-			// 	BirthMonth,
-			// 	BirthYear,
-			// 	DeathDateNotes,
-			// 	DeathDay,
-			// 	DeathMonth,
-			// 	DeathYear,
-			// 	DestinationShipped,
-			// 	FirstName,
-			// 	FuneralPaidBy,
-			// 	Gender,
-			// 	GenderOther,
-			// 	LastName,
-			// 	Manner,
-			// 	OriginCity,
-			// 	OriginCountry,
-			// 	OriginState,
-			// 	OtherCemetaryDesc,
-			// 	OtherCountry,
-			// 	PersonNotes,
-			// 	PlotDescription,
-			// 	ShippedIndicator,
-			// 	//Ids directly on the burial table
-			// 	CauseID: Cause.CauseLUpID,
-			// 	CemetaryID: Cemetary.CemetaryLUpID,
-			// 	ReligionID: Religion.ReligionLUpID,
-			// };
-			// ////console.log(data);
-			// const data = {
-			// 	burial,
-			// 	Memberships,
-			// 	SiteVisits,
-			// 	Kinships,
-			// 	Sources,
-			// 	Occupations,
-			// };
+			let {
+				SiteName,
+				EstablishedYear,
+				//Maintainer,
+				NotificationDesc,
+				AdvancedNotification,
+				//lists
+				inspections,
+				actions,
+				assets,
+			} = this.fields;
+			let { LocationDesc, RouteName, KMNum, MapSheet, lat, long } =
+				this.modifiedMapFields;
+			const item = {
+				SiteName,
+				EstablishedYear,
+				//Maintainer,
+				NotificationDesc,
+				AdvancedNotification,
+				LocationDesc,
+				RouteName,
+				KMNum,
+				MapSheet,
+				Latitude: lat,
+				Longitude: long,
+			};
+			const data = {
+				item,
+				inspections,
+				actions,
+				assets,
+			};
 			//console.log(JSON.stringify(data));
 
-			// if (this.isNew) {
-			// 	await burials.post(data);
-			// } else {
-			// 	await burials.put(localStorage.currentBurialID, data);
-			// }
+			if (this.isNew) {
+				await interpretiveSites.post(data);
+			} else {
+				await interpretiveSites.put(localStorage.currentIntSiteID, data);
+			}
 			this.overlay = false;
-			this.$router.push({ name: 'BurialsGrid' });
+			this.$router.push({ name: 'InterpretiveSitesGrid' });
 			this.$router.go();
 		},
-		newOccupation(val) {
-			this.fields.Occupations.push(val);
+		newAction(val) {
+			this.fields.actions.push(val);
+		},
+		editAction() {},
+		newInspection(val) {
+			this.fields.inspections.push(val);
+		},
+		newAsset(val) {
+			this.fields.assets.push(val);
 		},
 		deleteOccupation(index) {
 			if (index > -1) {
@@ -584,80 +571,6 @@ export default {
 				val.new = true;
 			}
 			this.$set(this.fields.Occupations, index, val);
-		},
-		newKinship(val) {
-			this.fields.Kinships.push(val);
-		},
-		editKinship(val, index) {
-			////console.log(val, index);
-			if (this.isNew) {
-				delete val.edit;
-				val.new = true;
-			}
-			this.$set(this.fields.Kinships, index, val);
-		},
-		deleteKinship(index) {
-			if (index > -1) {
-				let val = this.fields.Kinships[index];
-				val.deleted = true;
-				this.$set(this.fields.Kinships, index, val);
-			}
-		},
-		newMembership(val) {
-			////console.log(val);
-			this.fields.Memberships.push(val);
-		},
-		editMembership(val, index) {
-			// //console.log(val, index);
-			if (this.isNew) {
-				delete val.edited;
-				val.new = true;
-			}
-			this.$set(this.fields.Memberships, index, val);
-		},
-		deleteMembership(index) {
-			//console.log(index);
-			if (index > -1) {
-				let val = this.fields.Memberships[index];
-				val.deleted = true;
-				this.$set(this.fields.Memberships, index, val);
-			}
-		},
-		newSiteVisit(val) {
-			this.fields.SiteVisits.push(val);
-		},
-		editSiteVisit(val, index) {
-			////console.log(val, index);
-			if (this.isNew) {
-				delete val.edit;
-				val.new = true;
-			}
-			this.$set(this.fields.SiteVisits, index, val);
-		},
-		deleteSiteVisit(index) {
-			if (index > -1) {
-				let val = this.fields.SiteVisits[index];
-				val.deleted = true;
-				this.$set(this.fields.SiteVisits, index, val);
-			}
-		},
-		newSource(val) {
-			this.fields.Sources.push(val);
-		},
-		editSource(val, index) {
-			////console.log(val, index);
-			if (this.isNew) {
-				delete val.edit;
-				val.new = true;
-			}
-			this.$set(this.fields.Sources, index, val);
-		},
-		deleteSource(index) {
-			if (index > -1) {
-				let val = this.fields.Sources[index];
-				val.deleted = true;
-				this.$set(this.fields.Sources, index, val);
-			}
 		},
 		save(date) {
 			this.$refs.menu.save(date);
