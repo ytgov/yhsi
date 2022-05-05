@@ -233,13 +233,7 @@ export class CatalogService {
           );
 	}
 
-	//ROUTES
-	async getAllRoutes(){
-		return await db("InterpretiveSite.RouteLookup").orderBy(
-			"InterpretiveSite.RouteLookup.RouteName",
-			"asc"
-		);
-	}
+
 	//ASSET TYPES
 	async getAllAssetTypes(){
 		return await db("InterpretiveSite.AssetTypeLookup").orderBy(
@@ -337,24 +331,76 @@ export class CatalogService {
         return { count: counter[0].count, body: list };
     }
 
-	//MAINTAINER
+
+	//ROUTES
+
+	async getAllRoutes(){
+		return await db("InterpretiveSite.RouteLookup").orderBy(
+			"InterpretiveSite.RouteLookup.RouteName",
+			"asc"
+		);
+	}
+
+	async modifyRoute(id: number, item: any){
+		return await db("InterpretiveSite.RouteLookup")
+					.update(item).where("InterpretiveSite.RouteLookup.RouteLUpID", id);
+	}
+
+	async newRoute(item: any){
+		return await db
+			.insert(item)
+			.into("InterpretiveSite.RouteLookup")
+			.returning("*");
+	}
+	
+	async doRouteSearch( page: number, limit: number, offset: number, filters: any){
+        const {
+			textToMatch = '',
+			sortBy = 'RouteLUpID',
+			sort = 'asc',
+		} = filters;
+		let counter = [{ count: 0 }];
+		let list = [];
+
+		if (textToMatch) {
+			counter = await db("InterpretiveSite.RouteLookup").where("InterpretiveSite.RouteLookup.RouteName", "like", `%${textToMatch}%`)
+				.count('RouteLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.RouteLookup").where("InterpretiveSite.RouteLookup.RouteName", "like", `%${textToMatch}%`)
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		} else {
+			counter = await db("InterpretiveSite.RouteLookup")
+				.count('RouteLUpID', { as: 'count' });
+
+			list = await db("InterpretiveSite.RouteLookup")
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		}
+        return { count: counter[0].count, body: list };
+    }
+
+	//OWNER (Maintainers)
+
 	async getAllMaintainers(){
 		return await db("InterpretiveSite.MaintOwnLookup").orderBy(
 			"InterpretiveSite.MaintOwnLookup.MaintOwnName",
 			"asc"
 		);
 	}
-	
-	async newMaintainer(item: any){
-		return await db
-				.insert(item)
-				.into("InterpretiveSite.MaintOwnLookup")
-				.returning("*");
-	}
 
 	async modifyMaintainer(id: number, item: any){
 		return await db("InterpretiveSite.MaintOwnLookup")
 					.update(item).where("InterpretiveSite.MaintOwnLookup.MaintOwnLUpID", id);
+	}
+
+	async newMaintainer(item: any){
+		return await db
+			.insert(item)
+			.into("InterpretiveSite.MaintOwnLookup")
+			.returning("*");
 	}
 	
 	async doMaintainerSearch( page: number, limit: number, offset: number, filters: any){
@@ -385,4 +431,5 @@ export class CatalogService {
 		}
         return { count: counter[0].count, body: list };
     }
+
 }

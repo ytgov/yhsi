@@ -111,6 +111,16 @@ export default {
 				url: '/admin/asset-types',
 			},
 			{
+				icon: 'mdi-database',
+				text: 'Interpretive Sites - Routes',
+				url: '/admin/routes',
+			},
+			{
+				icon: 'mdi-database',
+				text: 'Interpretive Sites - Owners ',
+				url: '/admin/maintainers',
+			},
+			{
 				icon: 'mdi-camera',
 				text: 'Photos - Owner',
 				url: '',

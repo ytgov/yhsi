@@ -64,6 +64,8 @@ import InterpretiveSitesForm from '../components/InterpretiveSites/InterpetiveSi
 
 import Category from '../components/Administration/LookupTableManagement/Category/Category';
 import AssetType from '../components/Administration/LookupTableManagement/AssetType/AssetType';
+import IntSiteOwner from '../components/Administration/LookupTableManagement/IntSiteOwner/IntSiteOwner';
+import Route from '../components/Administration/LookupTableManagement/Route/Route';
 
 Vue.use(VueRouter);
 
@@ -401,6 +403,16 @@ const routes = [
 		path: '/admin/asset-types',
 		name: 'AssetTypeGrid',
 		component: AssetType,
+	},
+	{
+		path: '/admin/maintainers',
+		name: 'IntSiteOwnerGrid',
+		component: IntSiteOwner,
+	},
+	{
+		path: '/admin/routes',
+		name: 'RouteGrid',
+		component: Route,
 	},
 	{
 		path: '/burials',

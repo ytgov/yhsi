@@ -477,18 +477,6 @@ export default {
 				console.error(error);
 			});
 	},
-	//ROUTES
-	async getRoutes() {
-		return await api
-			.get(`catalogs/route`)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
 	//ASSET TYPES
 	async getAssetType() {
 		return await api
@@ -608,7 +596,7 @@ export default {
 				console.error(error);
 			});
 	},
-	async searcMaintainers(page, limit, textToMatch, sortBy, sort) {
+	async searchMaintainers(page, limit, textToMatch, sortBy, sort) {
 		return await api
 			.get(`catalogs/maintainer/search`, {
 				params: {
@@ -641,6 +629,59 @@ export default {
 	async postMaintainers(data) {
 		return await api
 			.post(`catalogs/maintainer`, data)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	//ROUTES
+	async getRoutes() {
+		return await api
+			.get(`catalogs/route`)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async searchRoutes(page, limit, textToMatch, sortBy, sort) {
+		return await api
+			.get(`catalogs/route/search`, {
+				params: {
+					page,
+					limit,
+					textToMatch,
+					sortBy,
+					sort,
+				},
+			})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async putRoute(id, data) {
+		return await api
+			.put(`catalogs/route/${id}`, data)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async postRoute(data) {
+		return await api
+			.post(`catalogs/route`, data)
 			.then((res) => {
 				return res.data;
 			})
