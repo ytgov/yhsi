@@ -7,9 +7,12 @@ import { InterpretiveSiteService } from "../services";
 import { renderFile } from "pug";
 import { generatePDF } from "../utils/pdf-generator";
 const { Parser, transforms: { unwind } } = require('json2csv');
+import * as multer from 'multer';
 export const intSitesRouter = express.Router();
 const db = knex(DB_CONFIG);
 const intSiteService = new InterpretiveSiteService();
+
+const upload = multer.default();
 
 //SITES
 
@@ -525,5 +528,37 @@ intSitesRouter.post('/actions/export', async (req: Request, res: Response) => {
 	res.attachment('actions.csv').send(csv)
 });
 
+intSitesRouter.post(
+	'/file/upload',
+	[upload.single('file')],
+	async (req: Request, res: Response) => {
 
+		const { 
+			Document = req.file.buffer,
+			ActionID = '',
+			InspectID = '',
+			SiteID = '',
+			DocDesc,
+			UploadedBy,
+			UploadDate = new Date(),
+		} = req.body;
+
+		// const OriginalFileName = req.file.originalname;
+
+		await db
+			.insert({
+				...ActionID && { ActionID },
+				...InspectID && { InspectID },
+				...SiteID && { SiteID },
+				DocDesc,
+				UploadedBy,
+				UploadDate,
+				Document
+			})
+			.into('InterpretiveSite.Documents')
+			.returning('*')
+			
+		res.status(200).send({ message: 'Upload Success' });
+	}
+);
 
