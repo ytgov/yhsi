@@ -76,21 +76,20 @@ assetRouter.get(
 	}
 );
 
-assetRouter.post('/assets', async (req: Request, res: Response) => {
+assetRouter.post('/', async (req: Request, res: Response) => {
 	const {
 		item = {},
-		actions = [],
-		assets = [],
-		inspections = [],
 	} = req.body;
-
-	const resObj = await intSiteService.addAsset(item);
+	
+	const { Maintainer, ...restObj } = item;
+	console.log("data: ",Maintainer, restObj);
+	const resObj = await intSiteService.addAsset(restObj, {Maintainer});
 	if(!resObj){
 		res.status(401).send({ message: "Conflict"});
 		return;
 	}
 
-	res.send(resObj);
+	res.send("resObj");
 });
 
 assetRouter.put('/:assetId', async (req: Request, res: Response) => {

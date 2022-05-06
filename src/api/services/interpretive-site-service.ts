@@ -330,11 +330,18 @@ export class InterpretiveSiteService {
 		return res;
 	}
 
-	async addAsset(item: any) {
-		const res = await db
+	async addAsset(item: any, maintainer: any){
+		let res: any = await db
 		.insert(item)
 		.into('InterpretiveSite.Assets')
 		.returning('*');
+		console.log(res);
+		if(res){
+			maintainer.SiteID = res[0].SiteID;
+			maintainer.AssetID = res[0].AssetID;
+			console.log(maintainer);
+			res.maintainer = await db.insert(maintainer).into('InterpretiveSite.Maintainer').returning('*');
+		}
 
 		return res;
 	}
