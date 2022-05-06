@@ -127,20 +127,53 @@ export class InterpretiveSiteService {
 		}
 
 		//inspections
-		await db
-		.insert(inspections.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID })))
-		.into('InterpretiveSite.Inspections')
-		.then((rows: any) => {
-			return rows;
-		});
+		let newInspections = inspections.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID }));
+		if(newInspections.length > 0){
+			await db
+			.insert(newInspections)
+			.into('InterpretiveSite.Inspections')
+			.then((rows: any) => {
+				return rows;
+			});
+		}
+
+		let editInspections = inspections.filter((x: any) => x.edited == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID }));
+		if(editInspections.length > 0){
+			await db
+			.insert(editInspections)
+			.into('InterpretiveSite.Inspections')
+			.then((rows: any) => {
+				return rows;
+			});
+		}
+
 
 		//assets
-		// await db
-		// .insert(assets.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID })))
-		// .into('InterpretiveSite.Assets')
-		// .then((rows: any) => {
-		// 	return rows;
-		// });
+		let newAssets = assets.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID }));
+		if(newAssets.length > 0){
+			await db
+			.insert(newAssets)
+			.into('InterpretiveSite.Assets')
+			.then((rows: any) => {
+				return rows;
+			});
+		}
+
+		let editAssets = assets.filter((x: any) => x.new == true && !x.deleted).map((x: any) => { 
+				delete x.new;
+				delete x.deleted;
+				delete x.edited;
+				return {...x, SiteID: SiteID} 
+			});
+		if(editAssets.length > 0){
+
+			for (const item of editAssets) {
+				await db
+					.update(editAssets)
+					.where('InterpretiveSite.Assets.AssetID', item.AssetID);
+			}
+		}
+
 
 			// const deletedAssets = assets.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
 			// for (const item of deletedOccupations) {

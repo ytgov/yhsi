@@ -170,6 +170,23 @@
 							</v-expansion-panel-header>
 							<v-expansion-panel-content>
 								<v-row>
+									<v-col
+										cols="12"
+										class="d-flex flex-row"
+									>
+										<v-spacer></v-spacer>
+										<AssetDialog
+											:type="'siteview'"
+											:mode="'new'"
+											:Site="{
+												SiteName: fields.SiteName,
+												SiteID: fields.SiteID,
+											}"
+											@newAsset="newAsset"
+										/>
+									</v-col>
+								</v-row>
+								<v-row>
 									<v-col cols="12">
 										<v-data-table
 											:headers="assetHeaders"
@@ -338,6 +355,7 @@ import interpretiveSites from '../../../controllers/interpretive-sites';
 import catalogs from '../../../controllers/catalogs';
 import InspectionDialog from '../Dialogs/InspectionDialog.vue';
 import ActionDialog from '../Dialogs/ActionDialog.vue';
+import AssetDialog from '../Dialogs/AssetDialog.vue';
 import MapLoader from '../../MapLoader.vue';
 import Photos from '../../PhotoEditor/Photos';
 import countries from '../../../misc/countries';
@@ -348,6 +366,7 @@ export default {
 		MapLoader,
 		InspectionDialog,
 		ActionDialog,
+		AssetDialog,
 		Photos,
 	},
 	data: () => ({

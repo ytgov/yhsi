@@ -31,7 +31,7 @@
 <script>
 import interpretiveSites from '../../../controllers/interpretive-sites';
 export default {
-	name: 'boatsGrid',
+	name: 'assetsGrid',
 	data: () => ({
 		loading: false,
 		list: [],
