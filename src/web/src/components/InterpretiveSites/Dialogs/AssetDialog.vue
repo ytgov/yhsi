@@ -67,6 +67,7 @@
 										item-value="Category"
 										name="Category"
 										label="Category"
+										:loading="loadingCatalogs"
 										v-model="fields.Category"
 										:rules="rules"
 									></v-select>
@@ -88,6 +89,7 @@
 										label="Type"
 										item-text="Type"
 										item-value="Type"
+										:loading="loadingCatalogs"
 										:items="availableTypes"
 										v-model="fields.Type"
 										:rules="rules"
@@ -98,18 +100,22 @@
 										dense
 										name="Installation Date"
 										label="Installation Date"
-										v-model="fields.InstallationDate"
-										:rules="rules"
+										v-model="fields.InstallDate"
+										:rules="dateRules"
 									></v-text-field>
 
-									<v-text-field
+									<v-select
 										outlined
 										dense
 										name="Maintained By"
 										label="Maintained By"
-										v-model="fields.MaintainedBy"
+										:items="maintainers"
+										item-text="MaintOwnName"
+										item-value="MaintOwnName"
+										:loading="loadingCatalogs"
+										v-model="fields.Maintainer"
 										:rules="rules"
-									></v-text-field>
+									></v-select>
 								</v-col>
 							</v-row>
 							<v-row>
@@ -154,7 +160,7 @@
 										dense
 										name="DecommissionDate"
 										label="Decommission Date"
-										:rules="rules"
+										:rules="dateRules"
 										v-model="fields.DecommissionDate"
 									></v-text-field>
 									<v-textarea
@@ -281,7 +287,7 @@
 										name="CreatedDate"
 										label="Created Date"
 										v-model="editFields.CreatedDate"
-										:rules="rules"
+										:rules="dateRules"
 									></v-text-field>
 								</v-col>
 							</v-row>
@@ -392,52 +398,48 @@ export default {
 		form2: false,
 		editDialog: false,
 		editFields: {},
+		dateRules: [
+			(v) => !!v || 'This field is required',
+			(v) =>
+				/^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/.test(
+					v
+				) || 'Correct date format required.',
+		],
 		assetTypes: [],
 		categoryTypes: [],
+		maintainers: [],
+		loadingCatalogs: false,
 	}),
 	mounted() {
 		this.getTypes();
 		this.getCategories();
+		this.getMaintainers();
 	},
 	methods: {
 		async getTypes() {
+			this.loadingCatalogs = true;
 			this.assetTypes = await catalogs.getAssetType();
+			this.loadingCatalogs = false;
 		},
 		async getCategories() {
+			this.loadingCatalogs = true;
 			this.categoryTypes = await catalogs.getCategories();
+			this.loadingCatalogs = false;
+		},
+		async getMaintainers() {
+			this.loadingCatalogs = true;
+			this.maintainers = await catalogs.getMaintainers();
+			this.loadingCatalogs = false;
 		},
 		async saveNew() {
-			let data = { ...this.fields };
+			let item = { ...this.fields };
 			if (this.typeGrid) {
-				console.log('grid action', data);
-				// ActionCompleteDate: "test"
-				// ActionDesc: "tesst"
-				// CompletedBy: "test"
-				// CompletionDesc: "test"
-				// CreatedBy: "test"
-				// CreatedDate: "tsest"
-				// Inspection: "test"
-				// Priority: "test"
-				// SiteID: 7
-				// ToBeCompleted: "teset"
-
-				// [ActionID] smallint,
-				// [InspectID] smallint,
-				// [SiteID] smallint,
-				// [ActionDesc] varchar,
-				// [ToBeCompleteDate] date,
-				// [ActionCompleteDate] date,
-				// [CompletionDesc] varchar,
-				// [Priority] varchar,
-				// [CreatedBy] varchar,
-				// [CreatedDate] date,
-				// [CompletedBy] varchar,
-				//const res = await interpretiveSites.postAsset(data);
-				//this.$emit('gridAssetAdded', res);
+				const res = await interpretiveSites.postAsset({ item });
+				this.$emit('gridAssetAdded', res);
 			} else {
-				data.SiteID = this.Site.SiteID;
-				data.new = true;
-				this.$emit('newAsset', data);
+				item.SiteID = this.Site.SiteID;
+				item.new = true;
+				this.$emit('newAsset', item);
 			}
 			this.$refs.assetDialog.reset();
 			this.dialog = false;
