@@ -75,6 +75,21 @@ intSitesRouter.post('/', async (req: Request, res: Response) => {
 	res.send(resObj);
 });
 
+intSitesRouter.post('/inspection', async (req: Request, res: Response) => {
+	const {
+		item = {},
+
+	} = req.body;
+
+	const resObj = await intSiteService.addInspection(item);
+	if(!resObj){
+		res.status(401).send({ message: "Conflict"});
+		return;
+	}
+
+	res.send(resObj);
+});
+
 intSitesRouter.put('/:siteId', async (req: Request, res: Response) => {
 	const {
 		item = {},
@@ -157,27 +172,29 @@ intSitesRouter.post(
 			ActionID = '',
 			InspectID = '',
 			SiteID = '',
+			AssetID = '',
 			DocDesc,
 			UploadedBy,
 			UploadDate = new Date(),
 		} = req.body;
 
 		// const OriginalFileName = req.file.originalname;
-
-		await db
+		let resObj = (await db
 			.insert({
 				...ActionID && { ActionID },
 				...InspectID && { InspectID },
 				...SiteID && { SiteID },
+				...AssetID && { AssetID },
 				DocDesc,
 				UploadedBy,
 				UploadDate,
 				Document
 			})
 			.into('InterpretiveSite.Documents')
-			.returning('*')
-			
-		res.status(200).send({ message: 'Upload Success' });
+			.returning('*'))[0];
+		
+		delete resObj.Documment;
+		res.status(200).send(resObj);
 	}
 );
 

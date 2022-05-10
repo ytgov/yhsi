@@ -127,20 +127,53 @@ export class InterpretiveSiteService {
 		}
 
 		//inspections
-		await db
-		.insert(inspections.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID })))
-		.into('InterpretiveSite.Inspections')
-		.then((rows: any) => {
-			return rows;
-		});
+		let newInspections = inspections.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID }));
+		if(newInspections.length > 0){
+			await db
+			.insert(newInspections)
+			.into('InterpretiveSite.Inspections')
+			.then((rows: any) => {
+				return rows;
+			});
+		}
+
+		let editInspections = inspections.filter((x: any) => x.edited == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID }));
+		if(editInspections.length > 0){
+			await db
+			.insert(editInspections)
+			.into('InterpretiveSite.Inspections')
+			.then((rows: any) => {
+				return rows;
+			});
+		}
+
 
 		//assets
-		// await db
-		// .insert(assets.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID })))
-		// .into('InterpretiveSite.Assets')
-		// .then((rows: any) => {
-		// 	return rows;
-		// });
+		let newAssets = assets.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID }));
+		if(newAssets.length > 0){
+			await db
+			.insert(newAssets)
+			.into('InterpretiveSite.Assets')
+			.then((rows: any) => {
+				return rows;
+			});
+		}
+
+		let editAssets = assets.filter((x: any) => x.new == true && !x.deleted).map((x: any) => { 
+				delete x.new;
+				delete x.deleted;
+				delete x.edited;
+				return {...x, SiteID: SiteID} 
+			});
+		if(editAssets.length > 0){
+
+			for (const item of editAssets) {
+				await db
+					.update(editAssets)
+					.where('InterpretiveSite.Assets.AssetID', item.AssetID);
+			}
+		}
+
 
 			// const deletedAssets = assets.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
 			// for (const item of deletedOccupations) {
@@ -213,6 +246,23 @@ export class InterpretiveSiteService {
         return { count: counter[0].count, body: sites };
 
   }
+  //INSPECTIONS
+  
+	async modifyInspection(item: any, InspectID: number) {
+		return await db('InterpretiveSite.Inspections').update(item).where('InterpretiveSite.Inspections.InspectID', InspectID);
+	}
+
+  	async addInspection(item: any) {
+		const res = await db
+		.insert(item)
+		.into('InterpretiveSite.Inspections')
+		.returning('*')
+		.then(async (rows: any) => {
+			const newInsp = rows[0];		
+			return newInsp;
+		});
+		return res;
+	}
 
   //ACTIONS
 	async getActionsBySiteId(SiteID: number) {
@@ -339,7 +389,6 @@ export class InterpretiveSiteService {
 		if(res){
 			maintainer.SiteID = res[0].SiteID;
 			maintainer.AssetID = res[0].AssetID;
-			console.log(maintainer);
 			res.maintainer = await db.insert(maintainer).into('InterpretiveSite.Maintainer').returning('*');
 		}
 
@@ -444,26 +493,27 @@ export class InterpretiveSiteService {
   }
 
 	async getDocumentsByOwnerID(param: any) {
-		const { ActionID = '', InspectID = '',	SiteID = '' } = param;
+		const { ActionID = '', InspectID = '',	SiteID = '', AssetID = '' } = param;
 
 		const filterColumn = {
 			...ActionID && { ActionID },
 			...InspectID && { InspectID },
 			...SiteID && { SiteID },
+			...AssetID && { AssetID },
 		};
 
 		let [key] = Object.keys(filterColumn);
 
-		const res = await db.select(`DocID, ${key}, DocDesc, UploadedBy, UploadedDate`)
-			.from('InterpretiveSites.Documents')
-			.where(`InterpretiveSite.${key}`, filterColumn[key]);
+		const res = await db.select(`DocID`, `${key}`, `DocDesc`, `UploadedBy`, `UploadDate`)
+			.from('InterpretiveSite.Documents')
+			.where(`InterpretiveSite.Documents.${key}`, filterColumn[key]);
 		return res;
 	}
 
 	async getDocumentsByID(documentId: any) {
 		const res = await db.select('*')
-			.from('InterpretiveSites.Documents')
-			.where('InterpretiveSite.DocID', documentId);
+			.from('InterpretiveSite.Documents')
+			.where('InterpretiveSite.Documents.DocID', documentId);
 		return res;
 	}
 }

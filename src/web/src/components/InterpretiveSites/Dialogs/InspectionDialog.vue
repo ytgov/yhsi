@@ -28,6 +28,27 @@
 							ref="inspectionDialog"
 						>
 							<v-row>
+								<v-col cols="12">
+									<v-autocomplete
+										v-if="typeGrid"
+										outlined
+										dense
+										clearable
+										@click="searchSites"
+										:items="siteList"
+										:search-input.sync="siteSearch"
+										:loading="loadingSites"
+										name="Site"
+										item-text="SiteName"
+										item-value="SiteID"
+										label="Site"
+										v-model="fields.SiteID"
+										:rules="rules"
+									></v-autocomplete>
+									<label v-else>
+										<h3>{{ Site.SiteName }}</h3>
+									</label>
+								</v-col>
 								<v-col cols="6">
 									<v-text-field
 										outlined
@@ -43,7 +64,7 @@
 										dense
 										v-model="fields.InspectionDate"
 										label="Inspection Date"
-										:rules="rules"
+										:rules="dateRules"
 									></v-text-field>
 								</v-col>
 								<v-col cols="12">
@@ -56,14 +77,14 @@
 									></v-textarea>
 								</v-col>
 							</v-row>
-							<DocumentHandler :data="[]" />
+							<DocumentHandler :default="true" />
 						</v-form>
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
 					<v-spacer></v-spacer>
 					<v-btn
-						color="blue darken-1"
+						color="grey darken-1"
 						text
 						@click="dialog = false"
 					>
@@ -105,7 +126,19 @@
 
 			<v-card>
 				<v-card-title>
-					<span class="text-h5">Edit Inspection</span>
+					<v-col
+						class="d-flex flex-row"
+						cols="12"
+					>
+						<span class="text-h5 mt-3">{{ textMode }} Inspection</span>
+						<v-spacer></v-spacer>
+						<v-btn
+							color="success"
+							text
+							@click="editMode"
+							>Edit</v-btn
+						>
+					</v-col>
 				</v-card-title>
 				<v-card-text>
 					<v-container>
@@ -116,6 +149,7 @@
 							<v-row>
 								<v-col cols="6">
 									<v-text-field
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										v-model="editFields.InspectedBy"
@@ -125,6 +159,7 @@
 								</v-col>
 								<v-col cols="6">
 									<v-text-field
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										v-model="editFields.InspectionDate"
@@ -134,6 +169,7 @@
 								</v-col>
 								<v-col cols="12">
 									<v-textarea
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										v-model="editFields.Description"
@@ -176,19 +212,26 @@
 								</v-col>
 							</v-row>
 							<v-divider></v-divider>
-							<DocumentHandler :data="fields.documents" />
+							<DocumentHandler
+								:doclist="docs"
+								@newDocumment="newDocumment"
+								:objID="{
+									key: 'InspectID',
+									value: dataToEdit.item.InspectID,
+								}"
+							/>
 						</v-form>
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
-					<v-spacer></v-spacer>
 					<v-btn
-						color="blue darken-1"
+						color="grey darken-1"
 						text
-						@click="editDialog = false"
+						@click="closeDialog()"
 					>
-						Close
+						Close{{ cancelActive }}
 					</v-btn>
+					<v-spacer></v-spacer>
 					<v-btn
 						color="blue darken-1"
 						text
@@ -205,15 +248,17 @@
 
 <script>
 import ActionDialog from './ActionDialog.vue';
+import interpretiveSites from '../../../controllers/interpretive-sites';
 import DocumentHandler from './DocumentHandler.vue';
 export default {
-	props: ['mode', 'dataToEdit'],
+	props: ['mode', 'Site', 'dataToEdit'],
 	components: { DocumentHandler, ActionDialog },
 	data: () => ({
 		dialog: false,
 		fields: {},
 		editFields: {},
 		valid: false,
+		internalEditMode: false,
 		rules: [(value) => !!value || 'Required.'],
 		//editDialog
 		editDialog: false,
@@ -225,17 +270,76 @@ export default {
 			{ text: 'Completed date', value: 'ActionCompleteDate' },
 			{ text: 'Completion Notes', value: 'CompletionDesc' },
 		],
+		dateRules: [
+			(v) => !!v || 'This field is required',
+			(v) =>
+				/^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/.test(
+					v
+				) || 'Correct date format required.',
+		],
+		siteList: [],
+		documments: [],
+		siteSearch: '',
+		loadingSites: false,
+		fieldsHistory: null,
 	}),
 	methods: {
 		newAction() {},
-		saveNew() {
+		newDocumment(val) {
+			this.fields.documments.push(val);
+		},
+		closeDialog() {
+			if (this.internalEditMode) {
+				this.internalEditMode = false;
+				this.editFields = { ...this.fieldsHistory };
+			}
+			this.editDialog = false;
+		},
+		editMode() {
+			this.fieldsHistory = { ...this.editFields };
+			this.internalEditMode = true;
+		},
+		async searchSites() {
+			this.loadingSites = true;
+			let list = await interpretiveSites.get(
+				0,
+				5,
+				'SiteName',
+				'asc',
+				this.siteSearch,
+				'',
+				'',
+				'',
+				'',
+				'',
+				'',
+				'',
+				'',
+				''
+			);
+			this.siteList = list.body;
+			this.loadingSites = false;
+		},
+		async saveNew() {
 			let { InspectionDate, InspectedBy, Description } = this.fields;
-			this.$emit('newInspection', {
-				InspectionDate,
-				InspectedBy,
-				Description,
-				new: true,
-			});
+			// this.$emit('newInspection', {
+			// 	InspectionDate,
+			// 	InspectedBy,
+			// 	Description,
+			// 	new: true,
+			// });
+			if (!this.typeGrid) {
+				let res = await interpretiveSites.postInspection({
+					item: {
+						SiteID: this.Site.SiteID,
+						InspectionDate,
+						InspectedBy,
+						Description,
+					},
+				});
+				this.$emit('newInspection', res);
+			}
+
 			this.$refs.inspectionDialog.reset();
 			this.dialog = false;
 		},
@@ -254,9 +358,34 @@ export default {
 			this.$refs.inspectionEditDialog.reset();
 			this.editDialog = false;
 		},
-		openEditDialog() {
+		async openEditDialog() {
 			this.editFields = { ...this.dataToEdit.item };
+			await this.getDocs();
 			this.editDialog = true;
+		},
+		async getDocs() {
+			let res = await interpretiveSites.getDocummentsGeneral(
+				'inspections',
+				this.dataToEdit.item.InspectID
+			);
+			this.documments = [...res.data];
+		},
+	},
+	computed: {
+		docs() {
+			return this.documments ? this.documments : [];
+		},
+		typeGrid() {
+			return this.type === 'grid';
+		},
+		typeSiteView() {
+			return this.type === 'siteview';
+		},
+		textMode() {
+			return this.internalEditMode ? 'Edit' : 'View';
+		},
+		cancelActive() {
+			return this.internalEditMode ? '/Cancel' : '';
 		},
 	},
 };

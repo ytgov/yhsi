@@ -170,6 +170,23 @@
 							</v-expansion-panel-header>
 							<v-expansion-panel-content>
 								<v-row>
+									<v-col
+										cols="12"
+										class="d-flex flex-row"
+									>
+										<v-spacer></v-spacer>
+										<AssetDialog
+											:type="'siteview'"
+											:mode="'new'"
+											:Site="{
+												SiteName: fields.SiteName,
+												SiteID: fields.SiteID,
+											}"
+											@newAsset="newAsset"
+										/>
+									</v-col>
+								</v-row>
+								<v-row>
 									<v-col cols="12">
 										<v-data-table
 											:headers="assetHeaders"
@@ -281,6 +298,10 @@
 										<InspectionDialog
 											:mode="'new'"
 											class="ml-auto mr-1"
+											:Site="{
+												SiteName: fields.SiteName,
+												SiteID: fields.SiteID,
+											}"
 											@newInspection="newInspection"
 										/>
 									</v-col>
@@ -338,6 +359,7 @@ import interpretiveSites from '../../../controllers/interpretive-sites';
 import catalogs from '../../../controllers/catalogs';
 import InspectionDialog from '../Dialogs/InspectionDialog.vue';
 import ActionDialog from '../Dialogs/ActionDialog.vue';
+import AssetDialog from '../Dialogs/AssetDialog.vue';
 import MapLoader from '../../MapLoader.vue';
 import Photos from '../../PhotoEditor/Photos';
 import countries from '../../../misc/countries';
@@ -348,6 +370,7 @@ export default {
 		MapLoader,
 		InspectionDialog,
 		ActionDialog,
+		AssetDialog,
 		Photos,
 	},
 	data: () => ({
@@ -583,16 +606,18 @@ export default {
 		},
 		async downloadPdf() {
 			this.loadingPdf = true;
-			// let res = await burials.getPdf(parseInt(localStorage.currentIntSiteID));
-			// let blob = new Blob([res], { type: 'application/octetstream' });
-			// let url = window.URL || window.webkitURL;
-			// let link = url.createObjectURL(blob);
-			// let a = document.createElement('a');
-			// a.setAttribute('download', 'Burials.pdf');
-			// a.setAttribute('href', link);
-			// document.body.appendChild(a);
-			// a.click();
-			// document.body.removeChild(a);
+			let res = await interpretiveSites.getPdf(
+				parseInt(localStorage.currentIntSiteID)
+			);
+			let blob = new Blob([res], { type: 'application/octetstream' });
+			let url = window.URL || window.webkitURL;
+			let link = url.createObjectURL(blob);
+			let a = document.createElement('a');
+			a.setAttribute('download', 'InterpretiveSite.pdf');
+			a.setAttribute('href', link);
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
 			this.loadingPdf = false;
 		},
 	},
