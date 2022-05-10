@@ -493,26 +493,27 @@ export class InterpretiveSiteService {
   }
 
 	async getDocumentsByOwnerID(param: any) {
-		const { ActionID = '', InspectID = '',	SiteID = '' } = param;
+		const { ActionID = '', InspectID = '',	SiteID = '', AssetID = '' } = param;
 
 		const filterColumn = {
 			...ActionID && { ActionID },
 			...InspectID && { InspectID },
 			...SiteID && { SiteID },
+			...AssetID && { AssetID },
 		};
 
 		let [key] = Object.keys(filterColumn);
 
-		const res = await db.select(`DocID, ${key}, DocDesc, UploadedBy, UploadedDate`)
-			.from('InterpretiveSites.Documents')
-			.where(`InterpretiveSite.${key}`, filterColumn[key]);
+		const res = await db.select(`DocID`, `${key}`, `DocDesc`, `UploadedBy`, `UploadDate`)
+			.from('InterpretiveSite.Documents')
+			.where(`InterpretiveSite.Documents.${key}`, filterColumn[key]);
 		return res;
 	}
 
 	async getDocumentsByID(documentId: any) {
 		const res = await db.select('*')
-			.from('InterpretiveSites.Documents')
-			.where('InterpretiveSite.DocID', documentId);
+			.from('InterpretiveSite.Documents')
+			.where('InterpretiveSite.Documents.DocID', documentId);
 		return res;
 	}
 }

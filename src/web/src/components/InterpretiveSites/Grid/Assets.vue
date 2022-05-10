@@ -22,6 +22,29 @@
 					@click:row="handleClick"
 					:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
 				>
+					<template v-slot:item="{ item, index }">
+						<tr>
+							<td class="parent-row">
+								{{ item.Category }}
+							</td>
+							<td class="child-row">{{ item.Type }}</td>
+							<td class="child-row">{{ item.Size }}</td>
+							<td class="child-row">{{ item.Description }}</td>
+							<td class="child-row">{{ item.SignText }}</td>
+							<td class="child-row">{{ item.InstallDate }}</td>
+							<td class="child-row">{{ item.DecommissionDate }}</td>
+							<td class="child-row">{{ item.DecommissionNotes }}</td>
+							<td class="child-row">{{ item.Status }}</td>
+							<td class="child-row">
+								<AssetDialog
+									:mode="'edit'"
+									:type="'grid'"
+									:dataToEdit="{ item, index }"
+									@editAction="editAsset"
+								/>
+							</td>
+						</tr>
+					</template>
 				</v-data-table>
 			</v-col>
 		</v-row>
@@ -29,9 +52,11 @@
 </template>
 
 <script>
+import AssetDialog from '../Dialogs/AssetDialog.vue';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 export default {
 	name: 'assetsGrid',
+	components: { AssetDialog },
 	data: () => ({
 		loading: false,
 		list: [],
@@ -45,6 +70,7 @@ export default {
 			{ text: 'DecommissionDate', value: 'DecommissionDate' },
 			{ text: 'DecommissionNotes', value: 'DecommissionNotes' },
 			{ text: 'Status', value: 'Status' },
+			{ text: '', value: 'actions' },
 		],
 		filterOptions: [
 			{ text: 'Category', value: '', dataAccess: 'Category' },
@@ -67,6 +93,9 @@ export default {
 		this.getDataFromApi();
 	},
 	methods: {
+		editAsset() {
+			this.$router.go();
+		},
 		handleClick(value) {
 			//Redirects the user to the edit user form
 			// this.$router.push({

@@ -53,7 +53,8 @@ import {
 	ytPlaceRouter,
 	intSitesRouter,
 	actionRouter,
-	assetRouter
+	assetRouter,
+	inspectionRouter
 } from './routes';
 
 import * as config from './config';
@@ -125,6 +126,7 @@ app.use('/api/register', registerRouter);
 app.use('/api/interpretive-sites', intSitesRouter);
 app.use('/api/actions', actionRouter);
 app.use('/api/assets', assetRouter);
+app.use('/api/inspections', inspectionRouter);
 app.use('/api/association-types', RequiresAuthentication, associationTypesRouter);
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
 app.use('/api/category-types', RequiresAuthentication, categoryTypesRouter);

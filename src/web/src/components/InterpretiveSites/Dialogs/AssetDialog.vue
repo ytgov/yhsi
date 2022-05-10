@@ -213,16 +213,29 @@
 							class="grey--text text--darken-2"
 							@click="openEditDialog()"
 						>
-							<v-icon small>mdi-pencil</v-icon>
+							<v-icon small>mdi-eye</v-icon>
 						</v-btn>
 					</template>
-					<span>Edit</span>
+					<span>View</span>
 				</v-tooltip>
 			</template>
 
 			<v-card>
 				<v-card-title>
-					<span class="text-h5">Edit Asset</span>
+					<v-col
+						class="d-flex flex-row"
+						cols="12"
+					>
+						<span class="text-h5 mt-3">{{ textMode }} Asset</span>
+						<v-spacer></v-spacer>
+						<v-btn
+							color="success"
+							v-if="!internalEditMode"
+							text
+							@click="editMode"
+							>Edit</v-btn
+						>
+					</v-col>
 				</v-card-title>
 				<v-card-text>
 					<v-container>
@@ -367,22 +380,25 @@
 								</v-col>
 							</v-row>
 							<DocumentHandler
-								:default="false"
-								:data="documents"
+								:doclist="docs"
 								@newDocumment="newDocumment"
+								:objID="{
+									key: 'AssetID',
+									value: dataToEdit.item.AssetID,
+								}"
 							/>
 						</v-form>
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
-					<v-spacer></v-spacer>
 					<v-btn
-						color="blue darken-1"
+						color="grey darken-1"
 						text
-						@click="editDialog = false"
+						@click="closeDialog()"
 					>
-						Close
+						Close{{ cancelActive }}
 					</v-btn>
+					<v-spacer></v-spacer>
 					<v-btn
 						color="blue darken-1"
 						text
@@ -429,6 +445,8 @@ export default {
 		maintainers: [],
 		documments: [],
 		loadingCatalogs: false,
+		internalEditMode: false,
+		fieldsHistory: null,
 	}),
 	mounted() {
 		this.getTypes();
@@ -436,6 +454,20 @@ export default {
 		this.getMaintainers();
 	},
 	methods: {
+		closeDialog() {
+			if (this.internalEditMode) {
+				this.internalEditMode = false;
+				this.editFields = { ...this.fieldsHistory };
+			}
+			this.editDialog = false;
+		},
+		newDocumment(val) {
+			this.documments.push(val.data);
+		},
+		editMode() {
+			this.fieldsHistory = { ...this.editFields };
+			this.internalEditMode = true;
+		},
 		async getTypes() {
 			this.loadingCatalogs = true;
 			this.assetTypes = await catalogs.getAssetType();
@@ -484,10 +516,10 @@ export default {
 			this.$refs.assetEditDialog.reset();
 			this.editDialog = false;
 		},
-		openEditDialog() {
+		async openEditDialog() {
 			const { item } = this.dataToEdit;
 			this.editFields = { ...item };
-
+			await this.getDocs();
 			this.editDialog = true;
 		},
 		async searchSites() {
@@ -513,8 +545,12 @@ export default {
 			console.log(list);
 			this.loadingSites = false;
 		},
-		newDocumment(val) {
-			this.documments.push(val);
+		async getDocs() {
+			let res = await interpretiveSites.getDocummentsGeneral(
+				'assets',
+				this.dataToEdit.item.AssetID
+			);
+			this.documments = [...res.data];
 		},
 	},
 	watch: {
@@ -527,6 +563,9 @@ export default {
 		},
 	},
 	computed: {
+		docs() {
+			return this.documments ? this.documments : [];
+		},
 		typeGrid() {
 			return this.type === 'grid';
 		},
@@ -538,6 +577,12 @@ export default {
 		},
 		availableCategories() {
 			return this.categoryTypes;
+		},
+		textMode() {
+			return this.internalEditMode ? 'Edit' : 'View';
+		},
+		cancelActive() {
+			return this.internalEditMode ? '/Cancel' : '';
 		},
 	},
 };

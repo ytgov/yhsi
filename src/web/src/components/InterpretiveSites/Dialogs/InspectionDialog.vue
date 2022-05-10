@@ -84,7 +84,7 @@
 				<v-card-actions>
 					<v-spacer></v-spacer>
 					<v-btn
-						color="blue darken-1"
+						color="grey darken-1"
 						text
 						@click="dialog = false"
 					>
@@ -126,7 +126,19 @@
 
 			<v-card>
 				<v-card-title>
-					<span class="text-h5">Edit Inspection</span>
+					<v-col
+						class="d-flex flex-row"
+						cols="12"
+					>
+						<span class="text-h5 mt-3">{{ textMode }} Inspection</span>
+						<v-spacer></v-spacer>
+						<v-btn
+							color="success"
+							text
+							@click="editMode"
+							>Edit</v-btn
+						>
+					</v-col>
 				</v-card-title>
 				<v-card-text>
 					<v-container>
@@ -137,6 +149,7 @@
 							<v-row>
 								<v-col cols="6">
 									<v-text-field
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										v-model="editFields.InspectedBy"
@@ -146,6 +159,7 @@
 								</v-col>
 								<v-col cols="6">
 									<v-text-field
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										v-model="editFields.InspectionDate"
@@ -155,6 +169,7 @@
 								</v-col>
 								<v-col cols="12">
 									<v-textarea
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										v-model="editFields.Description"
@@ -197,19 +212,26 @@
 								</v-col>
 							</v-row>
 							<v-divider></v-divider>
-							<DocumentHandler :data="fields.documents" />
+							<DocumentHandler
+								:doclist="docs"
+								@newDocumment="newDocumment"
+								:objID="{
+									key: 'InspectID',
+									value: dataToEdit.item.InspectID,
+								}"
+							/>
 						</v-form>
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
-					<v-spacer></v-spacer>
 					<v-btn
-						color="blue darken-1"
+						color="grey darken-1"
 						text
-						@click="editDialog = false"
+						@click="closeDialog()"
 					>
-						Close
+						Close{{ cancelActive }}
 					</v-btn>
+					<v-spacer></v-spacer>
 					<v-btn
 						color="blue darken-1"
 						text
@@ -236,6 +258,7 @@ export default {
 		fields: {},
 		editFields: {},
 		valid: false,
+		internalEditMode: false,
 		rules: [(value) => !!value || 'Required.'],
 		//editDialog
 		editDialog: false,
@@ -255,14 +278,29 @@ export default {
 				) || 'Correct date format required.',
 		],
 		siteList: [],
+		documments: [],
 		siteSearch: '',
 		loadingSites: false,
+		fieldsHistory: null,
 	}),
 	methods: {
 		newAction() {},
+		newDocumment(val) {
+			this.fields.documments.push(val);
+		},
+		closeDialog() {
+			if (this.internalEditMode) {
+				this.internalEditMode = false;
+				this.editFields = { ...this.fieldsHistory };
+			}
+			this.editDialog = false;
+		},
+		editMode() {
+			this.fieldsHistory = { ...this.editFields };
+			this.internalEditMode = true;
+		},
 		async searchSites() {
 			this.loadingSites = true;
-			console.log('function called');
 			let list = await interpretiveSites.get(
 				0,
 				5,
@@ -320,17 +358,34 @@ export default {
 			this.$refs.inspectionEditDialog.reset();
 			this.editDialog = false;
 		},
-		openEditDialog() {
+		async openEditDialog() {
 			this.editFields = { ...this.dataToEdit.item };
+			await this.getDocs();
 			this.editDialog = true;
+		},
+		async getDocs() {
+			let res = await interpretiveSites.getDocummentsGeneral(
+				'inspections',
+				this.dataToEdit.item.InspectID
+			);
+			this.documments = [...res.data];
 		},
 	},
 	computed: {
+		docs() {
+			return this.documments ? this.documments : [];
+		},
 		typeGrid() {
 			return this.type === 'grid';
 		},
 		typeSiteView() {
 			return this.type === 'siteview';
+		},
+		textMode() {
+			return this.internalEditMode ? 'Edit' : 'View';
+		},
+		cancelActive() {
+			return this.internalEditMode ? '/Cancel' : '';
 		},
 	},
 };

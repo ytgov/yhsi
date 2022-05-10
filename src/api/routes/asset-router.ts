@@ -117,9 +117,9 @@ assetRouter.get(
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
 
-		const photos = await intSiteService.getDocumentsByOwnerID({AssetID: assetID});
+		const docs = await intSiteService.getDocumentsByOwnerID({AssetID: assetID});
 
-		res.status(200).send(photos);
+		res.status(200).send(docs);
 	}
 );
 

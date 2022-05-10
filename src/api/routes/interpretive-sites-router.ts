@@ -172,28 +172,29 @@ intSitesRouter.post(
 			ActionID = '',
 			InspectID = '',
 			SiteID = '',
-			//AssetID = '',
+			AssetID = '',
 			DocDesc,
 			UploadedBy,
 			UploadDate = new Date(),
 		} = req.body;
 
 		// const OriginalFileName = req.file.originalname;
-
-		await db
+		let resObj = (await db
 			.insert({
 				...ActionID && { ActionID },
 				...InspectID && { InspectID },
 				...SiteID && { SiteID },
+				...AssetID && { AssetID },
 				DocDesc,
 				UploadedBy,
 				UploadDate,
 				Document
 			})
 			.into('InterpretiveSite.Documents')
-			.returning('*')
-			
-		res.status(200).send({ message: 'Upload Success' });
+			.returning('*'))[0];
+		
+		delete resObj.Documment;
+		res.status(200).send(resObj);
 	}
 );
 
