@@ -75,6 +75,21 @@ intSitesRouter.post('/', async (req: Request, res: Response) => {
 	res.send(resObj);
 });
 
+intSitesRouter.post('/inspection', async (req: Request, res: Response) => {
+	const {
+		item = {},
+
+	} = req.body;
+
+	const resObj = await intSiteService.addInspection(item);
+	if(!resObj){
+		res.status(401).send({ message: "Conflict"});
+		return;
+	}
+
+	res.send(resObj);
+});
+
 intSitesRouter.put('/:siteId', async (req: Request, res: Response) => {
 	const {
 		item = {},
@@ -157,6 +172,7 @@ intSitesRouter.post(
 			ActionID = '',
 			InspectID = '',
 			SiteID = '',
+			//AssetID = '',
 			DocDesc,
 			UploadedBy,
 			UploadDate = new Date(),

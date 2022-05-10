@@ -8,6 +8,7 @@
 				>
 					<v-spacer></v-spacer>
 					<v-btn
+						v-if="!isDeafault"
 						color="primary"
 						outlined
 						class="ml-auto mr-1"
@@ -23,6 +24,11 @@
 						:headers="headers"
 						:items="data"
 						:items-per-page="5"
+						:no-data-text="
+							isDeafault
+								? 'You will be able to add documments once the general object is created'
+								: 'No documments added'
+						"
 						class="elevation-0"
 					></v-data-table>
 				</v-col>
@@ -34,7 +40,7 @@
 <script>
 export default {
 	name: 'DocumentHandler',
-	props: ['data'],
+	props: ['data', 'default'],
 	data: () => ({
 		headers: [
 			{ text: 'Document Name', value: 'DocumentName' },
@@ -42,11 +48,20 @@ export default {
 			{ text: 'Uploader', value: 'Uploader' },
 		],
 	}),
-	mounted() {},
 	methods: {
 		newDocument() {
 			console.log('newDocument');
 			//this.$emit("newDocument", val)
+		},
+		textData() {
+			return this.default
+				? 'You will be able to add documments once the general object is created'
+				: 'No documments added';
+		},
+	},
+	computed: {
+		isDeafault() {
+			return this.default;
 		},
 	},
 };

@@ -29,7 +29,15 @@
 			</template>
 			<v-card>
 				<v-card-title>
-					<span class="text-h5">New Action</span>
+					<v-row>
+						<v-col
+							class="d-flex flex-row"
+							cols="12"
+						>
+							<span class="text-h5 mt-3">New Action</span>
+							<v-spacer></v-spacer>
+						</v-col>
+					</v-row>
 				</v-card-title>
 				<v-card-text>
 					<v-container>
@@ -39,7 +47,6 @@
 						>
 							<v-row>
 								<v-col cols="6">
-									{{ fields.SiteID }}
 									<v-autocomplete
 										v-if="typeGrid"
 										outlined
@@ -151,11 +158,7 @@
 								</v-col>
 							</v-row>
 
-							<DocumentHandler
-								:headers="documentHeaders"
-								:data="[]"
-								@documentAdded="documentAdded"
-							/>
+							<DocumentHandler :default="true" />
 						</v-form>
 					</v-container>
 				</v-card-text>
@@ -204,7 +207,20 @@
 
 			<v-card>
 				<v-card-title>
-					<span class="text-h5">Edit Action</span>
+					<v-row>
+						<v-col
+							class="d-flex flex-row"
+							cols="12"
+						>
+							<span class="text-h5 mt-3">Edit Action</span>
+							<v-spacer></v-spacer>
+							<v-btn
+								color="success"
+								@click="editMode"
+								>Edit</v-btn
+							>
+						</v-col>
+					</v-row>
 				</v-card-title>
 				<v-card-text>
 					<v-container>
@@ -359,6 +375,7 @@ export default {
 		loadingSites: false,
 		//edit dialog
 		form2: false,
+		editing: false,
 		editDialog: false,
 		editFields: {},
 		documentHeaders: [
@@ -372,6 +389,9 @@ export default {
 	methods: {
 		documentAdded(val) {
 			this.fields.documents.push(val);
+		},
+		editMode() {
+			this.editing = true;
 		},
 		async saveNew() {
 			let data = { ...this.fields };
@@ -415,6 +435,7 @@ export default {
 			}
 
 			this.$refs.actionEditDialog.reset();
+			this.editing = false;
 			this.editDialog = false;
 		},
 		openEditDialog() {

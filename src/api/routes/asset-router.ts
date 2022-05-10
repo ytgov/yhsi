@@ -82,14 +82,14 @@ assetRouter.post('/', async (req: Request, res: Response) => {
 	} = req.body;
 	
 	const { Maintainer, ...restObj } = item;
-	console.log("data: ",Maintainer, restObj);
+
 	const resObj = await intSiteService.addAsset(restObj, {Maintainer});
 	if(!resObj){
 		res.status(401).send({ message: "Conflict"});
 		return;
 	}
 
-	res.send("resObj");
+	res.send(resObj[0]);
 });
 
 assetRouter.put('/:assetId', async (req: Request, res: Response) => {
@@ -105,6 +105,23 @@ assetRouter.put('/:assetId', async (req: Request, res: Response) => {
 
 	res.status(200).send(resObj);
 });
+
+assetRouter.get(
+	'/docs/:assetID',
+	[param('assetID').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { assetID } = req.params;
+
+		const page = parseInt(req.query.page as string);
+		const limit = parseInt(req.query.limit as string);
+		const offset = page * limit || 0;
+
+		const photos = await intSiteService.getDocumentsByOwnerID({AssetID: assetID});
+
+		res.status(200).send(photos);
+	}
+);
 
 
 //PDF AND EXPORTS

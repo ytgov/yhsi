@@ -341,8 +341,9 @@ export default {
 			console.log(route);
 			return 'notActive';
 		},
-		gridAssetAdded() {
-			this.$router.go();
+		gridAssetAdded(val) {
+			console.log(val);
+			//this.$router.go();
 		},
 		async getSitesExport() {
 			this.loadingExport = true;

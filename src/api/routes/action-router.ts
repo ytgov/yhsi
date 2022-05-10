@@ -124,6 +124,23 @@ actionRouter.put('/:actionId', async (req: Request, res: Response) => {
 // 		res.send(pdf);
 // });
 
+actionRouter.get(
+	'/docs/:actionID',
+	[param('actionID').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { actionID } = req.params;
+
+		const page = parseInt(req.query.page as string);
+		const limit = parseInt(req.query.limit as string);
+		const offset = page * limit || 0;
+
+		const photos = await intSiteService.getDocumentsByOwnerID({ActionID: actionID});
+
+		res.status(200).send(photos);
+	}
+);
+
 actionRouter.post('/pdf', async (req: Request, res: Response) => {
         const { 
 			ActionDesc = '', 

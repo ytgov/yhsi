@@ -246,6 +246,23 @@ export class InterpretiveSiteService {
         return { count: counter[0].count, body: sites };
 
   }
+  //INSPECTIONS
+  
+	async modifyInspection(item: any, InspectID: number) {
+		return await db('InterpretiveSite.Inspections').update(item).where('InterpretiveSite.Inspections.InspectID', InspectID);
+	}
+
+  	async addInspection(item: any) {
+		const res = await db
+		.insert(item)
+		.into('InterpretiveSite.Inspections')
+		.returning('*')
+		.then(async (rows: any) => {
+			const newInsp = rows[0];		
+			return newInsp;
+		});
+		return res;
+	}
 
   //ACTIONS
 	async getActionsBySiteId(SiteID: number) {
@@ -372,7 +389,6 @@ export class InterpretiveSiteService {
 		if(res){
 			maintainer.SiteID = res[0].SiteID;
 			maintainer.AssetID = res[0].AssetID;
-			console.log(maintainer);
 			res.maintainer = await db.insert(maintainer).into('InterpretiveSite.Maintainer').returning('*');
 		}
 

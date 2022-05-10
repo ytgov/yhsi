@@ -298,6 +298,10 @@
 										<InspectionDialog
 											:mode="'new'"
 											class="ml-auto mr-1"
+											:Site="{
+												SiteName: fields.SiteName,
+												SiteID: fields.SiteID,
+											}"
 											@newInspection="newInspection"
 										/>
 									</v-col>
