@@ -1,4 +1,4 @@
-import { api } from './config';
+import { api, apiP } from './config';
 
 export default {
 	async get(
@@ -169,6 +169,27 @@ export default {
 				return err;
 			});
 	},
+	//INSPECTIONS
+	async putInspection(id, data) {
+		return await api
+			.put(`interpretive-sites/inspection/${id}`, data)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				return error;
+			});
+	},
+	async postInspection(data) {
+		return await api
+			.post(`interpretive-sites/inspection`, data)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				return error;
+			});
+	},
 	//ACTIONS
 	async getActions(
 		ActionDesc,
@@ -296,5 +317,25 @@ export default {
 			.catch((error) => {
 				return error;
 			});
+	},
+	async newDocumment(data) {
+		return await apiP
+			.post(`interpretive-sites/file/upload`, data)
+			.then((res) => {
+				return res;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async getDocummentsGeneral(docType, itemId) {
+		return await api
+			.get(`${docType}/docs/${itemId}`)
+			.then((resp) => {
+				//console.log("data",resp);
+				return resp;
+			})
+			.catch((error) => console.error(error));
 	},
 };

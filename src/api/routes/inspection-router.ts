@@ -7,13 +7,13 @@ import { InterpretiveSiteService } from "../services";
 import { renderFile } from "pug";
 import { generatePDF } from "../utils/pdf-generator";
 const { Parser, transforms: { unwind } } = require('json2csv');
-export const actionRouter = express.Router();
+export const inspectionRouter = express.Router();
 const db = knex(DB_CONFIG);
 const intSiteService = new InterpretiveSiteService();
 
 // ACTIONS
 
-actionRouter.get(
+inspectionRouter.get(
 	'/',
 	[
 		query('sortBy').default('ActionDesc').isString(),
@@ -56,7 +56,7 @@ actionRouter.get(
 	}
 );
 
-actionRouter.get(
+inspectionRouter.get(
 	'/:siteId',
 	[param('siteId').notEmpty()],
 	ReturnValidationErrors,
@@ -73,7 +73,7 @@ actionRouter.get(
 	}
 );
 
-actionRouter.post('/', async (req: Request, res: Response) => {
+inspectionRouter.post('/', async (req: Request, res: Response) => {
 	const {
 		item = {},
 	} = req.body;
@@ -87,7 +87,7 @@ actionRouter.post('/', async (req: Request, res: Response) => {
 	res.send(resObj);
 });
 
-actionRouter.put('/:actionId', async (req: Request, res: Response) => {
+inspectionRouter.put('/:actionId', async (req: Request, res: Response) => {
 	const {
 		item = {},
 		// assets = [], actions = [], inspections = []
@@ -105,7 +105,7 @@ actionRouter.put('/:actionId', async (req: Request, res: Response) => {
 
 //PDF AND EXPORTS
 // NO REQUEST FOR A SINGLE ACTION PRINT
-// actionRouter.post(
+// inspectionRouter.post(
 // 	'/actions/pdf/:actionId', 
 // 	[param('actionId').notEmpty()],
 // 	ReturnValidationErrors,
@@ -124,24 +124,24 @@ actionRouter.put('/:actionId', async (req: Request, res: Response) => {
 // 		res.send(pdf);
 // });
 
-actionRouter.get(
-	'/docs/:actionID',
-	[param('actionID').notEmpty()],
+inspectionRouter.get(
+	'/docs/:inspectID',
+	[param('inspectID').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { actionID } = req.params;
+		const { inspectID } = req.params;
 
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
 
-		const photos = await intSiteService.getDocumentsByOwnerID({ActionID: actionID});
+		const docs = await intSiteService.getDocumentsByOwnerID({InspectID: inspectID});
 
-		res.status(200).send(photos);
+		res.status(200).send(docs);
 	}
 );
 
-actionRouter.post('/pdf', async (req: Request, res: Response) => {
+inspectionRouter.post('/pdf', async (req: Request, res: Response) => {
         const { 
 			ActionDesc = '', 
 			ToBeCompleteDate = '', 
@@ -178,7 +178,7 @@ actionRouter.post('/pdf', async (req: Request, res: Response) => {
 	}
 );
 
-actionRouter.post('/export', async (req: Request, res: Response) => {
+inspectionRouter.post('/export', async (req: Request, res: Response) => {
 
     const { 
 		ActionDesc = '', 

@@ -144,6 +144,7 @@
 				<AssetDialog
 					:type="'grid'"
 					:mode="'new'"
+					@gridAssetAdded="gridAssetAdded"
 				/>
 
 				<v-btn
@@ -339,6 +340,10 @@ export default {
 			//route.includes("sites") ? "notActive" : route.includes("actions") ? : ;
 			console.log(route);
 			return 'notActive';
+		},
+		gridAssetAdded(val) {
+			console.log(val);
+			//this.$router.go();
 		},
 		async getSitesExport() {
 			this.loadingExport = true;
