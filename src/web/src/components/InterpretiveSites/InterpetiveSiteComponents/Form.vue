@@ -606,16 +606,18 @@ export default {
 		},
 		async downloadPdf() {
 			this.loadingPdf = true;
-			// let res = await burials.getPdf(parseInt(localStorage.currentIntSiteID));
-			// let blob = new Blob([res], { type: 'application/octetstream' });
-			// let url = window.URL || window.webkitURL;
-			// let link = url.createObjectURL(blob);
-			// let a = document.createElement('a');
-			// a.setAttribute('download', 'Burials.pdf');
-			// a.setAttribute('href', link);
-			// document.body.appendChild(a);
-			// a.click();
-			// document.body.removeChild(a);
+			let res = await interpretiveSites.getPdf(
+				parseInt(localStorage.currentIntSiteID)
+			);
+			let blob = new Blob([res], { type: 'application/octetstream' });
+			let url = window.URL || window.webkitURL;
+			let link = url.createObjectURL(blob);
+			let a = document.createElement('a');
+			a.setAttribute('download', 'InterpretiveSite.pdf');
+			a.setAttribute('href', link);
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
 			this.loadingPdf = false;
 		},
 	},

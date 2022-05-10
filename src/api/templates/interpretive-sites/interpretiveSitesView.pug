@@ -31,37 +31,13 @@ table.full-width.table-display.general
   tbody
       tr 
         td
-          table.religion-table.table-full-width 
-            thead 
-              tr 
-                td 
-                  strong.underline Religion
-            tbody 
-                tr 
-                  td #{data.Religion.Religion}
+          div Location Description: #{data.LocationDesc}
+          div Route Name: #{data.RouteName}
+          div MapSheet: #{data.MapSheet}
         td
-          table.table-full-width
-            thead 
-              tr 
-                td 
-                  strong.underline Occupations
-            tbody 
-              each val in data.Occupations
-                tr 
-                  td #{val.Occupation}
-        td
-          table.membership-table.table-full-width
-            thead 
-              tr 
-                td
-                  strong.underline Memberships
-                td 
-            tbody 
-              each val in data.Memberships
-                tr
-                  td #{val.Membership}
-                  td  #{val.Chapter}
-    
+          div KMNumber: #{data.KMNumber}
+          div Latitude: #{data.Latitude}
+          div Longitude: #{data.Longitude}  
 
 div.section-title Assets
 
