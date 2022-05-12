@@ -97,13 +97,15 @@ assetRouter.put('/:assetId', async (req: Request, res: Response) => {
 		item = {}
 	} = req.body;
 	const { assetId } = req.params;
-	const resObj = await intSiteService.modifyAsset(parseInt(assetId), item);
+	console.log(assetId);
+	console.log('asset modif', req.body);
+	const resObj = await intSiteService.modifyAsset( item, parseInt(assetId));
 	if(!resObj){
 		res.status(404).send({ message: "Asset not found"});
 		return;
 	}
 
-	res.status(200).send(resObj);
+	res.send(resObj[0]);
 });
 
 assetRouter.get(

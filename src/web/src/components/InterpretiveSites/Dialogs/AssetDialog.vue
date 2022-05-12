@@ -270,7 +270,7 @@
 										name="Site"
 										label="Site"
 										readonly
-										v-model="Site.SiteName"
+										v-model="editFields.SiteName"
 									></v-text-field>
 
 									<v-select
@@ -422,7 +422,7 @@
 						@click="saveEdit()"
 						:disabled="!form2"
 					>
-						Save {{ form2 }}
+						Save
 					</v-btn>
 				</v-card-actions>
 			</v-card>
@@ -516,19 +516,24 @@ export default {
 		},
 		async saveEdit() {
 			let data = { ...this.editFields };
+			delete data.Maintainer;
+			delete data.AssetID;
+			delete data.SiteName;
 			if (this.typeGrid) {
-				const res = await interpretiveSites.putAsset(data);
-				if (res) {
-					await interpretiveSites.addDocumments({
-						documments: this.documments,
-						AssetID: res.AssetID,
-					});
-				}
+				const res = await interpretiveSites.putAsset(this.editFields.AssetID, {
+					item: data,
+				});
+
 				this.$emit('gridAssetEdited', res);
 			} else {
 				data.SiteID = this.Site.SiteID;
-				data.new = true;
-				this.$emit('editAsset', data);
+				// data.new = true;
+				// this.$emit('editAsset', data);
+
+				const res = await interpretiveSites.putAsset(this.editFields.AssetID, {
+					item: data,
+				});
+				this.$emit('editAsset', { data: res, index: this.dataToEdit.index });
 			}
 
 			this.$refs.assetEditDialog.reset();

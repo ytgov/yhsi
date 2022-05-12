@@ -606,21 +606,32 @@ export default {
 			this.$router.go();
 		},
 		newAction(val) {
+			val.ToBeCompleteDate = this.formatDate(val.ToBeCompleteDate);
+			val.CreatedDate = this.formatDate(val.CreatedDate);
+			val.ActionCompleteDate = this.formatDate(val.ActionCompleteDate);
 			this.fields.actions.push(val);
 		},
-		editAction(val, index) {
-			console.log(val, index);
-		},
-		editAsset({ data, index }) {
-			console.log(data, index);
-		},
-		newInspection(val) {
-			this.fields.inspections.push(val);
+		editAction({ data, index }) {
+			data.ToBeCompleteDate = this.formatDate(data.ToBeCompleteDate);
+			data.CreatedDate = this.formatDate(data.CreatedDate);
+			data.ActionCompleteDate = this.formatDate(data.ActionCompleteDate);
+			this.fields.actions[index] = data;
 		},
 		newAsset(val) {
 			val.DecommissionDate = this.formatDate(val.DecommissionDate);
 			val.InstallDate = this.formatDate(val.InstallDate);
 			this.fields.assets.push(val);
+		},
+		editAsset({ data, index }) {
+			this.fields.assets[index] = data;
+			//console.log(data, index);
+		},
+		newInspection(val) {
+			this.fields.inspections.push(val);
+		},
+		editInspection({ data, index }) {
+			this.fields.inspections[index] = data;
+			//console.log(data, index);
 		},
 		deleteOccupation(index) {
 			if (index > -1) {

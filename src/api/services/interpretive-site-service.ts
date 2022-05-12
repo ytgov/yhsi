@@ -465,8 +465,8 @@ export class InterpretiveSiteService {
 	}
 
 	async modifyAsset(item: any, AssetId: number) {
-		const res = await db('InterpretiveSite.Assets').update(item).where('InterpretiveSite.Assets.AssetID', AssetId);
-		return res;
+		return await db('InterpretiveSite.Assets').update(item).where('InterpretiveSite.Assets.AssetID', AssetId).returning('*');
+		
 	}
 
   async doAssetSearch(page: number, limit: number, offset: number, filters: any) {
@@ -489,7 +489,7 @@ export class InterpretiveSiteService {
     
 		if(limit === 0) {
 			counter = await db
-				.from('InterpretiveSite.Assets')
+				.from('InterpretiveSite.Assets as ASS')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(Category !== '') builder.where('Category', 'like', `%${Category}%`);
@@ -502,11 +502,12 @@ export class InterpretiveSiteService {
 					if(DecommissionNotes !== '') builder.where('DecommissionNotes', 'like', `%${DecommissionNotes}%`);
 					if(Status !== '') builder.where('Status', 'like', `%${Status}%`);
 				})
+				.join('InterpretiveSite.Sites as ST', 'ASS.SiteID', '=', 'ST.SiteID')
 				.count('AssetID', { as: 'count' });
 
 			assets = await db
-				.select('*')
-				.from('InterpretiveSite.Assets')
+				.select('ASS.*','ST.SiteName')
+				.from('InterpretiveSite.Assets as ASS')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(Category !== '') builder.where('Category', 'like', `%${Category}%`);
@@ -519,10 +520,11 @@ export class InterpretiveSiteService {
 					if(DecommissionNotes !== '') builder.where('DecommissionNotes', 'like', `%${DecommissionNotes}%`);
 					if(Status !== '') builder.where('Status', 'like', `%${Status}%`);
 				})
+				.join('InterpretiveSite.Sites as ST', 'ASS.SiteID', '=', 'ST.SiteID')
 				.orderBy(`${sortBy}`, `${sort}`);
 		} else {
 			counter = await db
-				.from('InterpretiveSite.Assets')
+				.from('InterpretiveSite.Assets as ASS')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(Category !== '') builder.where('Category', 'like', `%${Category}%`);
@@ -535,11 +537,12 @@ export class InterpretiveSiteService {
 					if(DecommissionNotes !== '') builder.where('DecommissionNotes', 'like', `%${DecommissionNotes}%`);
 					if(Status !== '') builder.where('Status', 'like', `%${Status}%`);
 				})
+				.join('InterpretiveSite.Sites as ST', 'ASS.SiteID', '=', 'ST.SiteID')
 				.count('AssetID', { as: 'count' });
 
 			assets = await db
-				.select('*')
-				.from('InterpretiveSite.Assets')
+				.select('ASS.*','ST.SiteName')
+				.from('InterpretiveSite.Assets as ASS')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(Category !== '') builder.where('Category', 'like', `%${Category}%`);
@@ -552,6 +555,7 @@ export class InterpretiveSiteService {
 					if(DecommissionNotes !== '') builder.where('DecommissionNotes', 'like', `%${DecommissionNotes}%`);
 					if(Status !== '') builder.where('Status', 'like', `%${Status}%`);
 				})
+				.join('InterpretiveSite.Sites as ST', 'ASS.SiteID', '=', 'ST.SiteID')
 				.orderBy(`${sortBy}`, `${sort}`)
 				.limit(limit)
 				.offset(offset);
