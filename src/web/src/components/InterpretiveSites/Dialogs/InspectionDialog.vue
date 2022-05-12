@@ -237,6 +237,7 @@
 						text
 						@click="saveEdit()"
 						:disabled="!form2"
+						:loading="loading"
 					>
 						Save
 					</v-btn>
@@ -255,6 +256,7 @@ export default {
 	components: { DocumentHandler, ActionDialog },
 	data: () => ({
 		dialog: false,
+		loading: false,
 		fields: {},
 		editFields: {},
 		valid: false,
@@ -321,6 +323,7 @@ export default {
 			this.loadingSites = false;
 		},
 		async saveNew() {
+			this.loading = true;
 			let { InspectionDate, InspectedBy, Description } = this.fields;
 			// this.$emit('newInspection', {
 			// 	InspectionDate,
@@ -341,9 +344,11 @@ export default {
 			}
 
 			this.$refs.inspectionDialog.reset();
+			this.loading = false;
 			this.dialog = false;
 		},
 		saveEdit() {
+			this.loading = true;
 			let { InspectionDate, InspectedBy, Description } = this.editFields;
 			this.$emit(
 				'editInspection',
@@ -356,6 +361,7 @@ export default {
 				this.dataToEdit.index
 			);
 			this.$refs.inspectionEditDialog.reset();
+			this.loading = false;
 			this.editDialog = false;
 		},
 		async openEditDialog() {

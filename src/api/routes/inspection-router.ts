@@ -16,7 +16,7 @@ const intSiteService = new InterpretiveSiteService();
 inspectionRouter.get(
 	'/',
 	[
-		query('sortBy').default('ActionDesc').isString(),
+		query('sortBy').default('InspectedBy').isString(),
 		query('sort').default('asc').isString(),
 		query('page').default(0).isInt(), 
 		query('limit').default(10).isInt({ gt: 0 }),
@@ -24,14 +24,9 @@ inspectionRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { 
-			ActionDesc = '', 
-			ToBeCompleteDate = '', 
-			ActionCompleteDate = '', 
-			CompletionDesc = '',
-			Priority = '',
-			CreatedBy = '',
-			CreatedDate = '',
-			CompletedBy = '',
+			InspectionDate = '', 
+			Description = '', 
+			InspectedBy = '', 
 			sortBy, 
 			sort
 		 } =  req.query;
@@ -39,21 +34,16 @@ inspectionRouter.get(
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
 		
-		const data = await intSiteService.doActionSearch(page, limit, offset, { 
-			ActionDesc, 
-			ToBeCompleteDate, 
-			ActionCompleteDate, 
-			CompletionDesc,
-			Priority,
-			CreatedBy,
-			CreatedDate,
-			CompletedBy,
+		const data = await intSiteService.doInspectionSearch(page, limit, offset, { 
+			InspectionDate, 
+			Description, 
+			InspectedBy, 
 			sortBy, 
 			sort
 		});
 
 		res.status(200).send(data);
-	}
+	} 
 );
 
 inspectionRouter.get(

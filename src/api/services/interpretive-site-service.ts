@@ -19,7 +19,7 @@ export class InterpretiveSiteService {
 	}
 
 	async getSiteById(siteId: number) {	
-        const item= await db
+        const item = await db
 			.select('*')
 			.from('InterpretiveSite.Sites')
 			.where('InterpretiveSite.Sites.SiteID', siteId)
@@ -263,6 +263,70 @@ export class InterpretiveSiteService {
 		});
 		return res;
 	}
+	 async doInspectionSearch( page: number, limit: number, offset: number, filters: any) {
+		let counter = [{ count: 0 }];
+		let inspections = [""];
+    const { 
+			//textToMatch = '', 
+			InspectionDate = '', 
+			Description = '', 
+			InspectedBy = '', 
+			sortBy, 
+			sort
+		} = filters;
+    if(limit === 0){
+			counter = await db
+				.from('InterpretiveSite.Actions as AC')
+				.where(builder => {
+					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
+					if(InspectionDate !== '') builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
+					if(Description !== '') builder.where('Description', 'like', `%${Description}%`);
+					if(InspectedBy !== '') builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
+				})
+				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
+				.count('ActionID', { as: 'count' });
+
+            inspections = await db
+				.select('AC.*', 'ST.SiteName')
+				.from('InterpretiveSite.Actions as AC')
+				.where(builder => {
+					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
+					if(InspectionDate !== '') builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
+					if(Description !== '') builder.where('Description', 'like', `%${Description}%`);
+					if(InspectedBy !== '') builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
+				})
+				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
+				.orderBy(`${sortBy}`, `${sort}`);
+		}
+        else {
+			counter = await db
+				.from('InterpretiveSite.Actions as AC')
+				.where(builder => {
+					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
+					if(InspectionDate !== '') builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
+					if(Description !== '') builder.where('Description', 'like', `%${Description}%`);
+					if(InspectedBy !== '') builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
+				})
+				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
+				.count('ActionID', { as: 'count' });
+
+            inspections = await db
+				.select('AC.*', 'ST.SiteName')
+				.from('InterpretiveSite.Actions as AC')
+				.where(builder => {
+					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
+					if(InspectionDate !== '') builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
+					if(Description !== '') builder.where('Description', 'like', `%${Description}%`);
+					if(InspectedBy !== '') builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
+				})
+				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
+				.orderBy(`${sortBy}`, `${sort}`)
+				.limit(limit)
+				.offset(offset);
+		}
+        return { count: counter[0].count, body: inspections };
+
+  }
 
   //ACTIONS
 	async getActionsBySiteId(SiteID: number) {
@@ -273,7 +337,7 @@ export class InterpretiveSiteService {
 	async addAction(item: any) {
 		const res = await db
 		.insert(item)
-		.into('InterpretiveSite.Action')
+		.into('InterpretiveSite.Actions')
 		.returning('*')
 		.then(async (rows: any) => {
 			const newAction = rows[0];		
@@ -283,7 +347,7 @@ export class InterpretiveSiteService {
 	}
 
 	async modifyAction(item: any, ActionID: number) {
-		const res = await db('InterpretiveSite.Action').update(item).where('InterpretiveSite.Action.ActionID', ActionID);
+		const res = await db('InterpretiveSite.Actions').update(item).where('InterpretiveSite.Actions.ActionID', ActionID);
 		console.log(res);
 		return res;
 	}
@@ -306,7 +370,7 @@ export class InterpretiveSiteService {
 		} = filters;
     if(limit === 0){
 			counter = await db
-				.from('InterpretiveSite.Actions')
+				.from('InterpretiveSite.Actions as AC')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(ActionDesc !== '') builder.where('ActionDesc', 'like', `%${ActionDesc}%`);
@@ -318,11 +382,12 @@ export class InterpretiveSiteService {
 					if(CreatedDate !== '') builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
 					if(CompletedBy !== '') builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
 				})
+				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.count('ActionID', { as: 'count' });
 
             actions = await db
-				.select('*')
-				.from('InterpretiveSite.Actions')
+				.select('AC.*', 'ST.SiteName')
+				.from('InterpretiveSite.Actions as AC')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(ActionDesc !== '') builder.where('ActionDesc', 'like', `%${ActionDesc}%`);
@@ -334,11 +399,13 @@ export class InterpretiveSiteService {
 					if(CreatedDate !== '') builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
 					if(CompletedBy !== '') builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
 				})
+				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.orderBy(`${sortBy}`, `${sort}`);
+				console.log(actions);
 		}
         else {
 			counter = await db
-				.from('InterpretiveSite.Actions')
+				.from('InterpretiveSite.Actions as AC')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(ActionDesc !== '') builder.where('ActionDesc', 'like', `%${ActionDesc}%`);
@@ -350,11 +417,12 @@ export class InterpretiveSiteService {
 					if(CreatedDate !== '') builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
 					if(CompletedBy !== '') builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
 				})
+				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.count('ActionID', { as: 'count' });
 
             actions = await db
-				.select('*')
-				.from('InterpretiveSite.Actions')
+				.select('AC.*', 'ST.SiteName')
+				.from('InterpretiveSite.Actions as AC')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(ActionDesc !== '') builder.where('ActionDesc', 'like', `%${ActionDesc}%`);
@@ -366,6 +434,7 @@ export class InterpretiveSiteService {
 					if(CreatedDate !== '') builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
 					if(CompletedBy !== '') builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
 				})
+				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.orderBy(`${sortBy}`, `${sort}`)
 				.limit(limit)
 				.offset(offset);

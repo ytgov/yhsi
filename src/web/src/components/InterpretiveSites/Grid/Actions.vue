@@ -22,6 +22,25 @@
 					@click:row="handleClick"
 					:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
 				>
+					<template v-slot:item="{ item, index }">
+						<tr>
+							<td class="parent-row">
+								{{ item.ActionDesc }}
+							</td>
+							<td class="child-row">{{ item.CompletedBy }}</td>
+							<td class="child-row">{{ item.Priority }}</td>
+							<td class="child-row">{{ item.ActionCompleteDate }}</td>
+							<td class="child-row">{{ item.CompletionDesc }}</td>
+							<td class="child-row">
+								<ActionDialog
+									:mode="'edit'"
+									:type="'grid'"
+									:dataToEdit="{ item, index }"
+									@editAction="editAction"
+								/>
+							</td>
+						</tr>
+					</template>
 				</v-data-table>
 			</v-col>
 		</v-row>
@@ -29,9 +48,11 @@
 </template>
 
 <script>
+import ActionDialog from '../Dialogs/ActionDialog.vue';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 export default {
 	name: 'actionGrid',
+	components: { ActionDialog },
 	data: () => ({
 		loading: false,
 		list: [],
@@ -59,6 +80,7 @@ export default {
 		this.getDataFromApi();
 	},
 	methods: {
+		editAction() {},
 		handleClick(value) {
 			console.log(value);
 			//Redirects the user to the edit user form
@@ -75,6 +97,13 @@ export default {
 			let textToMatch = this.search;
 			let data = await interpretiveSites.getActions(
 				textToMatch,
+				'',
+				'',
+				'',
+				'',
+				'',
+				'',
+				'',
 				sortBy[0],
 				sortDesc[0] ? 'desc' : 'asc',
 				page,

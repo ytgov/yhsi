@@ -170,6 +170,36 @@ export default {
 			});
 	},
 	//INSPECTIONS
+	async getInspections(
+		InspectionDate,
+		Description,
+		InspectedBy,
+		sortBy,
+		sort,
+		page,
+		limit
+	) {
+		return await api
+			.get(`/inspections`, {
+				crossdomain: true,
+				params: {
+					InspectionDate,
+					Description,
+					InspectedBy,
+					sortBy,
+					sort,
+					page,
+					limit,
+				},
+			})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
 	async putInspection(id, data) {
 		return await api
 			.put(`interpretive-sites/inspection/${id}`, data)

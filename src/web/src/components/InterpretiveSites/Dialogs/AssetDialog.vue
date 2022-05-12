@@ -178,7 +178,6 @@
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
-					<v-spacer></v-spacer>
 					<v-btn
 						color="blue darken-1"
 						text
@@ -186,6 +185,7 @@
 					>
 						Close
 					</v-btn>
+					<v-spacer></v-spacer>
 					<v-btn
 						color="blue darken-1"
 						text
@@ -245,7 +245,7 @@
 						>
 							<v-row>
 								<v-col cols="6">
-									<v-autocomplete
+									<!-- <v-autocomplete
 										v-if="typeGrid"
 										outlined
 										dense
@@ -263,9 +263,18 @@
 									></v-autocomplete>
 									<label v-else>
 										<h3>{{ Site.SiteName }}</h3>
-									</label>
+									</label> -->
+									<v-text-field
+										outlined
+										dense
+										name="Site"
+										label="Site"
+										readonly
+										v-model="Site.SiteName"
+									></v-text-field>
 
 									<v-select
+										:readonly="!internalEditMode"
 										:items="availableCategories"
 										outlined
 										dense
@@ -289,6 +298,7 @@
 								</v-col>
 								<v-col cols="6">
 									<v-select
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										name="Type"
@@ -302,6 +312,7 @@
 									></v-select>
 
 									<v-text-field
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										name="Installation Date"
@@ -311,6 +322,7 @@
 									></v-text-field>
 
 									<v-select
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										name="Maintained By"
@@ -327,6 +339,7 @@
 							<v-row>
 								<v-col cols="12">
 									<v-textarea
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										name="Sign Text"
@@ -336,6 +349,7 @@
 									></v-textarea>
 
 									<v-textarea
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										name="Description"
@@ -349,6 +363,7 @@
 								<v-col cols="12">
 									<h3>Active</h3>
 									<v-radio-group
+										:readonly="!internalEditMode"
 										v-model="editFields.Status"
 										row
 									>
@@ -363,6 +378,7 @@
 									</v-radio-group>
 									<v-text-field
 										outlined
+										:readonly="!internalEditMode"
 										dense
 										name="DecommissionDate"
 										label="Decommission Date"
@@ -371,6 +387,7 @@
 									></v-text-field>
 									<v-textarea
 										outlined
+										:readonly="!internalEditMode"
 										dense
 										name="DecommissionNotes"
 										label="Decommission Notes"
@@ -379,15 +396,15 @@
 									></v-textarea>
 								</v-col>
 							</v-row>
-							<DocumentHandler
-								:doclist="docs"
-								@newDocumment="newDocumment"
-								:objID="{
-									key: 'AssetID',
-									value: dataToEdit.item.AssetID,
-								}"
-							/>
 						</v-form>
+						<DocumentHandler
+							:doclist="docs"
+							@newDocumment="newDocumment"
+							:objID="{
+								key: 'AssetID',
+								value: dataToEdit.item.AssetID,
+							}"
+						/>
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
@@ -405,7 +422,7 @@
 						@click="saveEdit()"
 						:disabled="!form2"
 					>
-						Save
+						Save {{ form2 }}
 					</v-btn>
 				</v-card-actions>
 			</v-card>
@@ -490,8 +507,9 @@ export default {
 				this.$emit('gridAssetAdded', res);
 			} else {
 				item.SiteID = this.Site.SiteID;
-				item.new = true;
-				this.$emit('newAsset', item);
+				const res = await interpretiveSites.postAsset({ item });
+				//item.new = true;
+				this.$emit('newAsset', res);
 			}
 			this.$refs.assetDialog.reset();
 			this.dialog = false;
