@@ -33,7 +33,7 @@ inspectionRouter.get(
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
-		
+		console.log(req.query);
 		const data = await intSiteService.doInspectionSearch(page, limit, offset, { 
 			InspectionDate, 
 			Description, 
@@ -77,19 +77,19 @@ inspectionRouter.post('/', async (req: Request, res: Response) => {
 	res.send(resObj);
 });
 
-inspectionRouter.put('/:actionId', async (req: Request, res: Response) => {
+inspectionRouter.put('/:inspectID', async (req: Request, res: Response) => {
 	const {
 		item = {},
 		// assets = [], actions = [], inspections = []
 	} = req.body;
-	const { actionId } = req.params;
-	const resObj = await intSiteService.modifyAction(parseInt(actionId), item);
+	const { inspectID } = req.params;
+	const resObj = await intSiteService.modifyInspection(item,parseInt(inspectID));
 	if(!resObj){
-		res.status(404).send({ message: "Action not found"});
+		res.status(404).send({ message: "Inspection not found"});
 		return;
 	}
 
-	res.status(200).send(resObj);
+	res.status(200).send(resObj[0]);
 });
 
 

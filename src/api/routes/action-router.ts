@@ -72,6 +72,22 @@ actionRouter.get(
 		res.status(200).send(list);
 	}
 );
+actionRouter.get(
+	'/inspection/:inspectId',
+	[param('inspectId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { inspectId } = req.params;
+		const list = await intSiteService.getActionsByInspectID(parseInt(inspectId));
+
+		if(!list){
+			res.status(404).send({message: "Data not found"});
+			return;
+		}
+
+		res.status(200).send(list);
+	}
+);
 
 actionRouter.post('/', async (req: Request, res: Response) => {
 	const {
@@ -93,13 +109,14 @@ actionRouter.put('/:actionId', async (req: Request, res: Response) => {
 		// assets = [], actions = [], inspections = []
 	} = req.body;
 	const { actionId } = req.params;
-	const resObj = await intSiteService.modifyAction(parseInt(actionId), item);
+	console.log(req.body, req.params);
+	const resObj = await intSiteService.modifyAction(item, parseInt(actionId));
 	if(!resObj){
 		res.status(404).send({ message: "Action not found"});
 		return;
 	}
 
-	res.status(200).send(resObj);
+	res.send(resObj[0]);
 });
 
 

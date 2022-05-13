@@ -30,9 +30,25 @@ export class InterpretiveSiteService {
 		}
 
 		item.actions = await db
-			.select('*')
-			.from('InterpretiveSite.Actions')
-			.where('InterpretiveSite.Actions.SiteID', siteId);
+			.select('AC.*')
+			.from('InterpretiveSite.Actions as AC')
+			.where('AC.SiteID', siteId)
+			.returning('*')
+			.then(async (rows) => {
+				for( const action of rows ){
+					action.SiteName = item.SiteName;
+					if(action.InspectID){
+						action.Inspection = await db.select('*')
+							.from('InterpretiveSite.Inspections')
+							.where('InterpretiveSite.Inspections.InspectID', '=', action.InspectID)
+							.first();
+					}
+				}
+				return rows;
+			});
+
+			//.rightJoin('InterpretiveSite.Inspections as IN', 'AC.InspectID', '=', 'IN.InspectID');
+			
 
         item.assets = await db
 			.select('*')
@@ -249,7 +265,7 @@ export class InterpretiveSiteService {
   //INSPECTIONS
   
 	async modifyInspection(item: any, InspectID: number) {
-		return await db('InterpretiveSite.Inspections').update(item).where('InterpretiveSite.Inspections.InspectID', InspectID);
+		return await db('InterpretiveSite.Inspections').update(item).where('InterpretiveSite.Inspections.InspectID', InspectID).returning('*');
 	}
 
   	async addInspection(item: any) {
@@ -276,7 +292,7 @@ export class InterpretiveSiteService {
 		} = filters;
     if(limit === 0){
 			counter = await db
-				.from('InterpretiveSite.Actions as AC')
+				.from('InterpretiveSite.Inspections as AC')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(InspectionDate !== '') builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
@@ -284,11 +300,11 @@ export class InterpretiveSiteService {
 					if(InspectedBy !== '') builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
-				.count('ActionID', { as: 'count' });
+				.count('InspectID', { as: 'count' });
 
             inspections = await db
 				.select('AC.*', 'ST.SiteName')
-				.from('InterpretiveSite.Actions as AC')
+				.from('InterpretiveSite.Inspections as AC')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(InspectionDate !== '') builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
@@ -300,7 +316,7 @@ export class InterpretiveSiteService {
 		}
         else {
 			counter = await db
-				.from('InterpretiveSite.Actions as AC')
+				.from('InterpretiveSite.Inspections as AC')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(InspectionDate !== '') builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
@@ -308,11 +324,11 @@ export class InterpretiveSiteService {
 					if(InspectedBy !== '') builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
-				.count('ActionID', { as: 'count' });
+				.count('InspectID', { as: 'count' });
 
             inspections = await db
 				.select('AC.*', 'ST.SiteName')
-				.from('InterpretiveSite.Actions as AC')
+				.from('InterpretiveSite.Inspections as AC')
 				.where(builder => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
 					if(InspectionDate !== '') builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
@@ -330,8 +346,11 @@ export class InterpretiveSiteService {
 
   //ACTIONS
 	async getActionsBySiteId(SiteID: number) {
-		const res = await db.select('*').from('InterpretiveSites.Actions').where('InterpretiveSite.Actions.SiteID', SiteID);
+		const res = await db.select('*').from('InterpretiveSite.Actions').where('InterpretiveSite.Actions.SiteID', SiteID);
 		return res;
+	}
+	async getActionsByInspectID(InspectID: number) {
+		return await db.select('*').from('InterpretiveSite.Actions').where('InterpretiveSite.Actions.InspectID', InspectID);
 	}
 
 	async addAction(item: any) {
@@ -347,9 +366,7 @@ export class InterpretiveSiteService {
 	}
 
 	async modifyAction(item: any, ActionID: number) {
-		const res = await db('InterpretiveSite.Actions').update(item).where('InterpretiveSite.Actions.ActionID', ActionID);
-		console.log(res);
-		return res;
+		return await db('InterpretiveSite.Actions').update(item).where('InterpretiveSite.Actions.ActionID', ActionID).returning('*');
 	}
 
   async doActionSearch( page: number, limit: number, offset: number, filters: any) {

@@ -42,6 +42,7 @@
 					</v-row>
 				</v-card-title>
 				<v-card-text>
+					<!-- style="height: 400px" -->
 					<v-container>
 						<v-form
 							v-model="valid"
@@ -65,9 +66,15 @@
 										v-model="fields.SiteID"
 										:rules="rules"
 									></v-autocomplete>
-									<label v-else>
-										<h3>{{ Site.SiteName }} test</h3>
-									</label>
+									<v-text-field
+										v-else
+										outlined
+										dense
+										readonly
+										name="Site Name"
+										label="Site Name"
+										v-model="Site.SiteName"
+									></v-text-field>
 
 									<v-text-field
 										outlined
@@ -79,14 +86,39 @@
 									></v-text-field>
 								</v-col>
 								<v-col cols="6">
-									<v-text-field
+									<!-- <v-text-field
 										outlined
 										dense
 										name="Inspection"
 										label="Inspection"
 										v-model="fields.Inspection"
-									></v-text-field>
+									></v-text-field> -->
+									<v-autocomplete
+										v-if="!typeInspection"
+										outlined
+										dense
+										clearable
+										@click="searchInspections"
+										:items="inspectionList"
+										:search-input.sync="inspectionSearch"
+										:loading="loadingInspections"
+										name="Inspection"
+										item-text="Description"
+										item-value="InspectID"
+										label="Inspection"
+										v-model="fields.InspectID"
+									></v-autocomplete>
 
+									<v-text-field
+										v-else
+										outlined
+										dense
+										name="Inspection"
+										label="Inspection"
+										readonly
+										v-model="Inspection.Description"
+									></v-text-field>
+									{{ Inspection }}
 									<v-text-field
 										outlined
 										dense
@@ -218,6 +250,7 @@
 							<v-spacer></v-spacer>
 							<v-btn
 								text
+								v-if="!internalEditMode"
 								color="success"
 								@click="editMode"
 								>Edit</v-btn
@@ -248,12 +281,13 @@
 										outlined
 										dense
 										name="Site"
-										readonly
+										disabled
 										v-model="editFields.SiteName"
 										label="Site"
 									></v-text-field>
 
 									<v-text-field
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="CreatedBy"
@@ -263,15 +297,24 @@
 									></v-text-field>
 								</v-col>
 								<v-col cols="6">
-									<v-text-field
+									<v-autocomplete
 										outlined
 										dense
+										clearable
+										:disabled="!internalEditMode"
+										@click="searchInspections"
+										:items="inspectionList"
+										:search-input.sync="inspectionSearch"
+										:loading="loadingInspections"
 										name="Inspection"
+										item-text="Description"
+										return-object
 										label="Inspection"
 										v-model="editFields.Inspection"
-									></v-text-field>
+									></v-autocomplete>
 
 									<v-text-field
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="CreatedDate"
@@ -284,6 +327,7 @@
 							<v-row>
 								<v-col cols="6">
 									<v-text-field
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="ActionDescription"
@@ -293,6 +337,7 @@
 									></v-text-field>
 
 									<v-select
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="Priority"
@@ -303,6 +348,7 @@
 									></v-select>
 
 									<v-text-field
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="ToBeCompleted"
@@ -313,6 +359,7 @@
 								</v-col>
 								<v-col cols="6">
 									<v-text-field
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="CompletedBy"
@@ -322,6 +369,7 @@
 									></v-text-field>
 
 									<v-text-field
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="CompletedDate"
@@ -334,6 +382,7 @@
 							<v-row>
 								<v-col cols="12">
 									<v-textarea
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="Notes"
@@ -343,15 +392,15 @@
 									></v-textarea>
 								</v-col>
 							</v-row>
-							<DocumentHandler
-								:doclist="docs"
-								@newDocumment="newDocumment"
-								:objID="{
-									key: 'ActionID',
-									value: dataToEdit.item.ActionID,
-								}"
-							/>
 						</v-form>
+						<DocumentHandler
+							:doclist="docs"
+							@newDocumment="newDocumment"
+							:objID="{
+								key: 'ActionID',
+								value: dataToEdit.item.ActionID,
+							}"
+						/>
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
@@ -382,7 +431,7 @@ import { mapGetters } from 'vuex';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 import DocumentHandler from './DocumentHandler.vue';
 export default {
-	props: ['type', 'Site', 'data', 'mode', 'dataToEdit'],
+	props: ['type', 'Site', 'Inspection', 'data', 'mode', 'dataToEdit'],
 	components: { DocumentHandler },
 	data: () => ({
 		//new Dialog
@@ -416,14 +465,15 @@ export default {
 		documments: [],
 		editedDocuments: [],
 		loading: false,
+		inspectionList: [],
+		inspectionSearch: '',
+		loadingInspections: false,
 	}),
 	methods: {
 		openNewDialog() {
 			this.fields.CreatedBy = this.username;
-			console.log(this.fields);
 		},
 		newDocumment(val) {
-			console.log(val);
 			this.documents.push(val);
 		},
 		editMode() {
@@ -435,26 +485,18 @@ export default {
 			let data = { ...this.fields };
 			if (this.typeGrid) {
 				this.fields.CompletedBy = '';
-				console.log(`
-        [ActionID] smallint,
-				[InspectID] smallint,
-				[SiteID] smallint,
-				[ActionDesc] varchar,
-				[ToBeCompleteDate] date,
-				[ActionCompleteDate] date,
-				[CompletionDesc] varchar,
-				[Priority] varchar,
-				[CreatedBy] varchar,
-				[CreatedDate] date,
-				[CompletedBy] varchar
-        `);
-
 				const res = await interpretiveSites.postAction({ item: data });
 				this.$emit('gridActionAdded', res);
+			} else if (this.typeInspection) {
+				this.fields.CompletedBy = '';
+				data.InspectID = this.Inspection.InspectID;
+				const res = await interpretiveSites.postAction({ item: data });
+				this.$emit('newAction', res);
 			} else {
 				data.SiteID = this.Site.SiteID;
-				data.new = true;
-				this.$emit('newAction', data);
+				//data.new = true;
+				const res = await interpretiveSites.postAction({ item: data });
+				this.$emit('newAction', res);
 			}
 			this.$refs.actionDialog.reset();
 			this.loading = false;
@@ -463,13 +505,22 @@ export default {
 		async saveEdit() {
 			this.loading = true;
 			let data = { ...this.editFields };
+			delete data.SiteName;
+			delete data.ActionID;
 			if (this.typeGrid) {
-				const res = await interpretiveSites.putAction(data);
+				const res = await interpretiveSites.putAction(
+					this.editFields.ActionID,
+					{ item: data }
+				);
 				this.$emit('gridActionEdited', res);
 			} else {
 				data.SiteID = this.Site.SiteID;
-				data.new = true;
-				this.$emit('editAction', { data, index: this.dataToEdit.index });
+				//data.new = true;
+				const res = await interpretiveSites.putAction(
+					this.dataToEdit.ActionID,
+					{ item: data }
+				);
+				this.$emit('editAction', { data: res, index: this.dataToEdit.index });
 			}
 
 			this.$refs.actionEditDialog.reset();
@@ -480,6 +531,8 @@ export default {
 		async openEditDialog() {
 			const { item } = this.dataToEdit;
 			this.editFields = { ...item };
+			await this.searchInspections();
+			//await this.searchSites();
 			await this.getDocs();
 			this.editDialog = true;
 		},
@@ -511,6 +564,20 @@ export default {
 			this.siteList = list.body;
 			this.loadingSites = false;
 		},
+		async searchInspections() {
+			this.loadingInspections = true;
+			let res = await interpretiveSites.getInspections(
+				'',
+				this.inspectionSearch,
+				'',
+				'Description',
+				'asc',
+				0,
+				5
+			);
+			this.inspectionList = res.body;
+			this.loadingInspections = false;
+		},
 		async getDocs() {
 			let res = await interpretiveSites.getDocummentsGeneral(
 				'actions',
@@ -534,6 +601,9 @@ export default {
 		},
 		typeGrid() {
 			return this.type === 'grid';
+		},
+		typeInspection() {
+			return this.type === 'inspection';
 		},
 		typeSiteView() {
 			return this.type === 'siteview';

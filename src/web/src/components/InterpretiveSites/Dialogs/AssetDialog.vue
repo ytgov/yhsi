@@ -565,7 +565,6 @@ export default {
 				''
 			);
 			this.siteList = list.body;
-			console.log(list);
 			this.loadingSites = false;
 		},
 		async getDocs() {
@@ -580,7 +579,6 @@ export default {
 		siteSearch: {
 			deep: true,
 			handler() {
-				console.log('changed');
 				this.searchSites();
 			},
 		},

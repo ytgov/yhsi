@@ -221,6 +221,17 @@ export default {
 			});
 	},
 	//ACTIONS
+	async getActionsByInspectID(id) {
+		return await api
+			.get(`actions/inspection/${id}`)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
 	async getActions(
 		ActionDesc,
 		ToBeCompleteDate,

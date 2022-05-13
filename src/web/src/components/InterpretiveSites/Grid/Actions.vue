@@ -36,7 +36,7 @@
 									:mode="'edit'"
 									:type="'grid'"
 									:dataToEdit="{ item, index }"
-									@editAction="editAction"
+									@gridActionEdited="editAction"
 								/>
 							</td>
 						</tr>
@@ -80,7 +80,10 @@ export default {
 		this.getDataFromApi();
 	},
 	methods: {
-		editAction() {},
+		editAction() {
+			this.$router.go();
+		},
+		newAction() {},
 		handleClick(value) {
 			console.log(value);
 			//Redirects the user to the edit user form
@@ -110,7 +113,12 @@ export default {
 				itemsPerPage
 			);
 
-			this.list = data.body;
+			this.list = data.body.map((x) => {
+				x.ToBeCompleteDate = this.formatDate(x.ToBeCompleteDate);
+				x.CreatedDate = this.formatDate(x.CreatedDate);
+				x.ActionCompleteDate = this.formatDate(x.ActionCompleteDate);
+				return x;
+			});
 			this.totalLength = data.count;
 			//console.log(data);
 			this.$store.commit(
@@ -118,6 +126,9 @@ export default {
 				this.options
 			);
 			this.loading = false;
+		},
+		formatDate(date) {
+			return date.split('T')[0].split('-').reverse().join('-');
 		},
 	},
 	computed: {
