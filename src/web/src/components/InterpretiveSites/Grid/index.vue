@@ -116,6 +116,7 @@
 				<ActionDialog
 					:type="'grid'"
 					:mode="'new'"
+					@newAction="newAction"
 				/>
 
 				<v-btn
@@ -343,7 +344,10 @@ export default {
 		},
 		gridAssetAdded(val) {
 			console.log(val);
-			//this.$router.go();
+			this.$router.go();
+		},
+		newAction() {
+			this.$router.go();
 		},
 		async getSitesExport() {
 			this.loadingExport = true;

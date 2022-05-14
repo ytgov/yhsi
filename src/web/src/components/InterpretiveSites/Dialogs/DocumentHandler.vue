@@ -53,7 +53,6 @@
 													@change="onFileSelected"
 													:rules="rules"
 												></v-file-input>
-												{{ objID }}
 											</v-col>
 										</v-row>
 									</v-form>
@@ -93,6 +92,23 @@
 								: 'No documments added'
 						"
 						class="elevation-0"
+					>
+						<template v-slot:item="{ item }">
+							<tr>
+								<td class="parent-row">
+									{{ item.DocDesc }}
+								</td>
+								<td class="child-row">{{ item.UploadDate }}</td>
+								<td class="child-row">{{ item.UploadedBy }}</td>
+								<td class="child-row">
+									<DeleteDialog
+										:type="'Documment'"
+										:id="item.DocID"
+										@deleteItem="deleteItem"
+										:mode="'table'"
+									/>
+								</td>
+							</tr> </template
 					></v-data-table>
 				</v-col>
 			</v-row>
@@ -101,23 +117,27 @@
 </template>
 
 <script>
+import DeleteDialog from './DeleteDialog.vue';
 import { mapGetters } from 'vuex';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 export default {
 	name: 'DocumentHandler',
 	props: ['doclist', 'default', 'objID'], // objID :{ key: AssetID, value: 1, doctype: 'assets' }
+	components: { DeleteDialog },
 	data: () => ({
 		loading: false,
 		headers: [
 			{ text: 'Document Description', value: 'DocDesc' },
 			{ text: 'Date Uploaded', value: 'UploadDate' },
 			{ text: 'Uploader', value: 'UploadedBy' },
+			{ text: '', value: 'actions' },
 		],
 		dialog: false,
 		fields: {},
 		sendObj: {},
 		form: false,
 		rules: [(value) => !!value || 'Required.'],
+		currentRemoval: null,
 	}),
 	methods: {
 		async newDocument() {
@@ -138,6 +158,15 @@ export default {
 			this.$emit('newDocumment', res);
 			this.loading = false;
 			this.dialog = false;
+		},
+		async removeDocumment() {},
+		async deleteItem(id) {
+			console.log('docid', id, 'key', this.objID.doctype);
+			await interpretiveSites.removeDocummentGeneral(
+				this.objID.doctype,
+				id
+				//this.objID.value
+			);
 		},
 		textData() {
 			return this.default

@@ -184,6 +184,13 @@
 											}"
 											@newAsset="newAsset"
 										/>
+										<v-btn
+											outlined
+											dense
+											color="primary"
+											@click="showDisabled"
+											>{{ showAllAssets ? 'SHOW LESS' : 'SHOW MORE' }}</v-btn
+										>
 									</v-col>
 								</v-row>
 								<v-row>
@@ -194,32 +201,36 @@
 											:items-per-page="5"
 											class="elevation-0"
 										>
-											<!-- <template v-slot:item="{ item, index }">
-                            <tr v-if="item.deleted != true">
-                                <td class="parent-row">{{ item.Name }}</td>
-                                <td class="child-row">{{ item.Location }}</td>
-                                <td class="child-row">{{ item.Quantity }}</td>
-                                <td class="child-row">{{ item.Relationship }}</td>
-                                <td class="child-row">
-                                  <div class="d-flex flex-row">
-                                    <KinDialog v-if="!isView" :mode="'edit'" :data="relationships" @editKinship="editKinship" :kinToEdit="{ index, Kinship: item}"/>
-                                    <v-tooltip bottom v-if="!isView">
-                                        <template v-slot:activator="{ on, attrs }">
-                                                <v-btn 
-                                                v-bind="attrs"
-                                                v-on="on"
-                                                icon class="grey--text text--darken-2"  @click="deleteKinship(index)">
-                                                    <v-icon
-                                                    small
-                                                    >mdi-trash-can</v-icon>  
-                                                </v-btn>
-                                        </template>
-                                        <span>Delete</span>
-                                    </v-tooltip>
-                                  </div>
-                                </td>   
-                            </tr>            
-                          </template>   -->
+											<template v-slot:item="{ item, index }">
+												<tr v-if="showAllAssets || item.Status === 'Yes'">
+													<td class="parent-row">
+														{{ item.Category }}
+													</td>
+													<td class="child-row">{{ item.Type }}</td>
+													<td class="child-row">{{ item.Size }}</td>
+													<td class="child-row">
+														{{ item.SignText }}
+													</td>
+													<td class="child-row">{{ item.Description }}</td>
+													<td class="child-row">{{ item.Maintained }}</td>
+													<td class="child-row">{{ item.InstallDate }}</td>
+													<td class="child-row">{{ item.Status }}</td>
+													<td class="child-row"></td>
+													<td class="child-row">
+														<AssetDialog
+															:mode="'edit'"
+															:type="'siteview'"
+															:Site="{
+																SiteName: fields.SiteName,
+																SiteID: fields.SiteID,
+															}"
+															:dataToEdit="{ item, index }"
+															@editAsset="editAsset"
+															@deletedAsset="deletedAsset"
+														/>
+													</td>
+												</tr>
+											</template>
 										</v-data-table>
 									</v-col>
 								</v-row>
@@ -276,6 +287,7 @@
 															}"
 															:dataToEdit="{ item, index }"
 															@editAction="editAction"
+															@deletedAction="deletedAction"
 														/>
 													</td>
 												</tr>
@@ -331,6 +343,7 @@
 															}"
 															:dataToEdit="{ item, index }"
 															@editAction="editAction"
+															@deletedInspection="deletedInspection"
 														/>
 													</td>
 												</tr>
@@ -425,6 +438,7 @@ export default {
 		//photos
 		selectedImage: null,
 		loadingPhotos: false,
+		showAllAssets: false,
 		infoLoaded: false,
 		loadingPdf: false,
 	}),
@@ -444,7 +458,7 @@ export default {
 		//console.log(countries);
 	},
 	methods: {
-		/*this function checks if the current path contains a specific word, this can be done with a simple includes but 
+		/*this function checks if the current path contains a specific word, this can be done with a simple includes but
     //it causes confusion when a boat or owner has 'new' in its name, leading the component to think it should use the 'new' mode,
     this problem is solved by using this funtion.*/
 		checkPath(word) {
@@ -454,6 +468,10 @@ export default {
 				return true;
 			}
 			return false;
+		},
+		showDisabled() {
+			this.showAllAssets = !this.showAllAssets;
+			console.log(this.showAllAssets);
 		},
 		resetValidation() {
 			this.$refs.sForm.reset();
@@ -488,8 +506,28 @@ export default {
 			this.fields = await interpretiveSites.getById(
 				localStorage.currentIntSiteID
 			);
+
+			this.fields.assets = this.fields.assets.map((x) => {
+				x.DecommissionDate = this.formatDate(x.DecommissionDate);
+				x.InstallDate = this.formatDate(x.InstallDate);
+				return x;
+			});
+			this.fields.actions = this.fields.actions.map((x) => {
+				x.ToBeCompleteDate = this.formatDate(x.ToBeCompleteDate);
+				x.CreatedDate = this.formatDate(x.CreatedDate);
+				x.ActionCompleteDate = this.formatDate(x.ActionCompleteDate);
+				return x;
+			});
+			this.fields.inspections = this.fields.inspections.map((x) => {
+				x.InspectionDate = this.formatDate(x.InspectionDate);
+				return x;
+			});
+			console.log(this.fields);
 			this.routes = await catalogs.getRoutes();
 			this.overlay = false;
+		},
+		formatDate(date) {
+			return date.split('T')[0].split('-').reverse().join('-');
 		},
 		viewMode() {
 			this.mode = 'view';
@@ -571,14 +609,41 @@ export default {
 			this.$router.go();
 		},
 		newAction(val) {
+			val.ToBeCompleteDate = this.formatDate(val.ToBeCompleteDate);
+			val.CreatedDate = this.formatDate(val.CreatedDate);
+			val.ActionCompleteDate = this.formatDate(val.ActionCompleteDate);
 			this.fields.actions.push(val);
 		},
-		editAction() {},
+		deletedAsset(index) {
+			this.fields.assets.splice(index, 1);
+		},
+		deletedAction(index) {
+			this.fields.actions.splice(index, 1);
+		},
+		deletedInspection(index) {
+			this.fields.inspections.splice(index, 1);
+		},
+		editAction({ data, index }) {
+			data.ToBeCompleteDate = this.formatDate(data.ToBeCompleteDate);
+			data.CreatedDate = this.formatDate(data.CreatedDate);
+			data.ActionCompleteDate = this.formatDate(data.ActionCompleteDate);
+			this.fields.actions[index] = data;
+		},
+		newAsset(val) {
+			val.DecommissionDate = this.formatDate(val.DecommissionDate);
+			val.InstallDate = this.formatDate(val.InstallDate);
+			this.fields.assets.push(val);
+		},
+		editAsset({ data, index }) {
+			this.fields.assets[index] = data;
+			//console.log(data, index);
+		},
 		newInspection(val) {
 			this.fields.inspections.push(val);
 		},
-		newAsset(val) {
-			this.fields.assets.push(val);
+		editInspection({ data, index }) {
+			this.fields.inspections[index] = data;
+			//console.log(data, index);
 		},
 		deleteOccupation(index) {
 			if (index > -1) {
@@ -598,12 +663,12 @@ export default {
 		save(date) {
 			this.$refs.menu.save(date);
 		},
-		formatDate(date) {
-			if (!date) return null;
-			//date = date.substr(0, 10);
-			const [year, month, day] = date.split('-');
-			return `${month}/${day}/${year}`;
-		},
+		// formatDate(date) {
+		// 	if (!date) return null;
+		// 	//date = date.substr(0, 10);
+		// 	const [year, month, day] = date.split('-');
+		// 	return `${month}/${day}/${year}`;
+		// },
 		async downloadPdf() {
 			this.loadingPdf = true;
 			let res = await interpretiveSites.getPdf(
@@ -627,9 +692,6 @@ export default {
 		},
 		param() {
 			return this.$route.params.id;
-		},
-		serviceEnd() {
-			return this.formatDate(this.fields.ServiceEnd);
 		},
 		availableDataAccess() {
 			return this.dataAccessOptions.filter(

@@ -170,6 +170,36 @@ export default {
 			});
 	},
 	//INSPECTIONS
+	async getInspections(
+		InspectionDate,
+		Description,
+		InspectedBy,
+		sortBy,
+		sort,
+		page,
+		limit
+	) {
+		return await api
+			.get(`/inspections`, {
+				crossdomain: true,
+				params: {
+					InspectionDate,
+					Description,
+					InspectedBy,
+					sortBy,
+					sort,
+					page,
+					limit,
+				},
+			})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
 	async putInspection(id, data) {
 		return await api
 			.put(`interpretive-sites/inspection/${id}`, data)
@@ -191,6 +221,17 @@ export default {
 			});
 	},
 	//ACTIONS
+	async getActionsByInspectID(id) {
+		return await api
+			.get(`actions/inspection/${id}`)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
 	async getActions(
 		ActionDesc,
 		ToBeCompleteDate,
@@ -332,6 +373,45 @@ export default {
 	async getDocummentsGeneral(docType, itemId) {
 		return await api
 			.get(`${docType}/docs/${itemId}`)
+			.then((resp) => {
+				//console.log("data",resp);
+				return resp;
+			})
+			.catch((error) => console.error(error));
+	},
+	async removeAsset(id) {
+		return await api
+			.delete(`assets/${id}`)
+			.then((res) => {
+				return res;
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+	},
+	async removeAction(id) {
+		return await api
+			.delete(`actions/${id}`)
+			.then((res) => {
+				return res;
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+	},
+	async removeInspection(id) {
+		return await api
+			.delete(`inspections/${id}`)
+			.then((res) => {
+				return res;
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+	},
+	async removeDocummentGeneral(docType, itemId) {
+		return await api
+			.delete(`${docType}/docs/${itemId}`)
 			.then((resp) => {
 				//console.log("data",resp);
 				return resp;

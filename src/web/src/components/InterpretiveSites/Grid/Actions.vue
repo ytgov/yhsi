@@ -22,6 +22,25 @@
 					@click:row="handleClick"
 					:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
 				>
+					<template v-slot:item="{ item, index }">
+						<tr>
+							<td class="parent-row">
+								{{ item.ActionDesc }}
+							</td>
+							<td class="child-row">{{ item.CompletedBy }}</td>
+							<td class="child-row">{{ item.Priority }}</td>
+							<td class="child-row">{{ item.ActionCompleteDate }}</td>
+							<td class="child-row">{{ item.CompletionDesc }}</td>
+							<td class="child-row">
+								<ActionDialog
+									:mode="'edit'"
+									:type="'grid'"
+									:dataToEdit="{ item, index }"
+									@gridActionEdited="editAction"
+								/>
+							</td>
+						</tr>
+					</template>
 				</v-data-table>
 			</v-col>
 		</v-row>
@@ -29,9 +48,11 @@
 </template>
 
 <script>
+import ActionDialog from '../Dialogs/ActionDialog.vue';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 export default {
 	name: 'actionGrid',
+	components: { ActionDialog },
 	data: () => ({
 		loading: false,
 		list: [],
@@ -59,6 +80,10 @@ export default {
 		this.getDataFromApi();
 	},
 	methods: {
+		editAction() {
+			this.$router.go();
+		},
+		newAction() {},
 		handleClick(value) {
 			console.log(value);
 			//Redirects the user to the edit user form
@@ -75,13 +100,25 @@ export default {
 			let textToMatch = this.search;
 			let data = await interpretiveSites.getActions(
 				textToMatch,
+				'',
+				'',
+				'',
+				'',
+				'',
+				'',
+				'',
 				sortBy[0],
 				sortDesc[0] ? 'desc' : 'asc',
 				page,
 				itemsPerPage
 			);
 
-			this.list = data.body;
+			this.list = data.body.map((x) => {
+				x.ToBeCompleteDate = this.formatDate(x.ToBeCompleteDate);
+				x.CreatedDate = this.formatDate(x.CreatedDate);
+				x.ActionCompleteDate = this.formatDate(x.ActionCompleteDate);
+				return x;
+			});
 			this.totalLength = data.count;
 			//console.log(data);
 			this.$store.commit(
@@ -89,6 +126,9 @@ export default {
 				this.options
 			);
 			this.loading = false;
+		},
+		formatDate(date) {
+			return date.split('T')[0].split('-').reverse().join('-');
 		},
 	},
 	computed: {
