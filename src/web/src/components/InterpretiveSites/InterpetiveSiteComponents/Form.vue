@@ -226,6 +226,7 @@
 															}"
 															:dataToEdit="{ item, index }"
 															@editAsset="editAsset"
+															@deletedAsset="deletedAsset"
 														/>
 													</td>
 												</tr>
@@ -286,6 +287,7 @@
 															}"
 															:dataToEdit="{ item, index }"
 															@editAction="editAction"
+															@deletedAction="deletedAction"
 														/>
 													</td>
 												</tr>
@@ -341,6 +343,7 @@
 															}"
 															:dataToEdit="{ item, index }"
 															@editAction="editAction"
+															@deletedInspection="deletedInspection"
 														/>
 													</td>
 												</tr>
@@ -610,6 +613,15 @@ export default {
 			val.CreatedDate = this.formatDate(val.CreatedDate);
 			val.ActionCompleteDate = this.formatDate(val.ActionCompleteDate);
 			this.fields.actions.push(val);
+		},
+		deletedAsset(index) {
+			this.fields.assets.splice(index, 1);
+		},
+		deletedAction(index) {
+			this.fields.actions.splice(index, 1);
+		},
+		deletedInspection(index) {
+			this.fields.inspections.splice(index, 1);
 		},
 		editAction({ data, index }) {
 			data.ToBeCompleteDate = this.formatDate(data.ToBeCompleteDate);

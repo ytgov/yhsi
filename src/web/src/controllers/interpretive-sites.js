@@ -379,4 +379,43 @@ export default {
 			})
 			.catch((error) => console.error(error));
 	},
+	async removeAsset(id) {
+		return await api
+			.delete(`assets/${id}`)
+			.then((res) => {
+				return res;
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+	},
+	async removeAction(id) {
+		return await api
+			.delete(`actions/${id}`)
+			.then((res) => {
+				return res;
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+	},
+	async removeInspection(id) {
+		return await api
+			.delete(`inspections/${id}`)
+			.then((res) => {
+				return res;
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+	},
+	async removeDocummentGeneral(docType, itemId) {
+		return await api
+			.delete(`${docType}/docs/${itemId}`)
+			.then((resp) => {
+				//console.log("data",resp);
+				return resp;
+			})
+			.catch((error) => console.error(error));
+	},
 };

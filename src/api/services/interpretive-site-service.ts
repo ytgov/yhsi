@@ -132,6 +132,35 @@ export class InterpretiveSiteService {
 		});
 		return res;
 	}
+	async removeInspection(InspectID: number){
+		await db('InterpretiveSite.Actions')
+			.where('InterpretiveSite.Actions.InspectID', InspectID)
+			.del();
+
+		await db('InterpretiveSite.Documents')
+			.where('InterpretiveSite.Documents.InspectID', InspectID)
+			.del();
+		
+		return await db('InterpretiveSite.Inspections')
+			.where('InterpretiveSite.Inspections.InspectID', '=', InspectID)
+			.del();
+	}
+	async objExists(objID: any, objName: string){
+		const { ActionID = '', InspectID = '',	SiteID = '', AssetID = '' } = objID;
+
+		const filterColumn = {
+			...ActionID && { ActionID },
+			...InspectID && { InspectID },
+			...SiteID && { SiteID },
+			...AssetID && { AssetID },
+		};
+
+		let [key] = Object.keys(filterColumn);
+		return await db.select('*')
+			.from(`InterpretiveSite.${objName}`)
+			.where(`InterpretiveSite.${objName}.${key}`, filterColumn[key]).first();
+ 
+	}
 
 	async modifySite(SiteID: number, item: any, assets: any, actions: any, inspections: any){
 		const res = await db('InterpretiveSite.Sites')
@@ -143,52 +172,52 @@ export class InterpretiveSiteService {
 		}
 
 		//inspections
-		let newInspections = inspections.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID }));
-		if(newInspections.length > 0){
-			await db
-			.insert(newInspections)
-			.into('InterpretiveSite.Inspections')
-			.then((rows: any) => {
-				return rows;
-			});
-		}
+		// let newInspections = inspections.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID }));
+		// if(newInspections.length > 0){
+		// 	await db
+		// 	.insert(newInspections)
+		// 	.into('InterpretiveSite.Inspections')
+		// 	.then((rows: any) => {
+		// 		return rows;
+		// 	});
+		// }
 
-		let editInspections = inspections.filter((x: any) => x.edited == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID }));
-		if(editInspections.length > 0){
-			await db
-			.insert(editInspections)
-			.into('InterpretiveSite.Inspections')
-			.then((rows: any) => {
-				return rows;
-			});
-		}
+		// let editInspections = inspections.filter((x: any) => x.edited == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID }));
+		// if(editInspections.length > 0){
+		// 	await db
+		// 	.insert(editInspections)
+		// 	.into('InterpretiveSite.Inspections')
+		// 	.then((rows: any) => {
+		// 		return rows;
+		// 	});
+		// }
 
 
-		//assets
-		let newAssets = assets.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID }));
-		if(newAssets.length > 0){
-			await db
-			.insert(newAssets)
-			.into('InterpretiveSite.Assets')
-			.then((rows: any) => {
-				return rows;
-			});
-		}
+		// //assets
+		// let newAssets = assets.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({ ...x, SiteID: SiteID }));
+		// if(newAssets.length > 0){
+		// 	await db
+		// 	.insert(newAssets)
+		// 	.into('InterpretiveSite.Assets')
+		// 	.then((rows: any) => {
+		// 		return rows;
+		// 	});
+		// }
 
-		let editAssets = assets.filter((x: any) => x.new == true && !x.deleted).map((x: any) => { 
-				delete x.new;
-				delete x.deleted;
-				delete x.edited;
-				return {...x, SiteID: SiteID} 
-			});
-		if(editAssets.length > 0){
+		// let editAssets = assets.filter((x: any) => x.new == true && !x.deleted).map((x: any) => { 
+		// 		delete x.new;
+		// 		delete x.deleted;
+		// 		delete x.edited;
+		// 		return {...x, SiteID: SiteID} 
+		// 	});
+		// if(editAssets.length > 0){
 
-			for (const item of editAssets) {
-				await db
-					.update(editAssets)
-					.where('InterpretiveSite.Assets.AssetID', item.AssetID);
-			}
-		}
+		// 	for (const item of editAssets) {
+		// 		await db
+		// 			.update(editAssets)
+		// 			.where('InterpretiveSite.Assets.AssetID', item.AssetID);
+		// 	}
+		// }
 
 
 			// const deletedAssets = assets.filter((x: any) => x.deleted == true).map((x: any) => ({ BurialID: burialId, OccupationID: x.OccupationID, ID: x.ID }));
@@ -352,7 +381,15 @@ export class InterpretiveSiteService {
 	async getActionsByInspectID(InspectID: number) {
 		return await db.select('*').from('InterpretiveSite.Actions').where('InterpretiveSite.Actions.InspectID', InspectID);
 	}
+	async removeAction(ActionID: number){
+		await db('InterpretiveSite.Documents')
+			.where('InterpretiveSite.Documents.ActionID', ActionID)
+			.del();
 
+		return await db('InterpretiveSite.Actions')
+			.where('InterpretiveSite.Actions.ActionID', '=', ActionID)
+			.del();
+	}
 	async addAction(item: any) {
 		const res = await db
 		.insert(item)
@@ -464,6 +501,19 @@ export class InterpretiveSiteService {
 	async getAssetsBySiteId(SiteID: number) {
 		const res = await db.select('*').from('InterpretiveSites.Assets').where('InterpretiveSite.Assets.SiteID', SiteID);
 		return res;
+	}
+	async removeAsset(AssetID: number){
+		await db('InterpretiveSite.Documents')
+			.where('InterpretiveSite.Documents.AssetID', AssetID)
+			.del();
+		
+		await db('InterpretiveSite.Maintainer')
+			.where('InterpretiveSite.Maintainer.AssetID', AssetID)
+			.del();
+
+		return await db('InterpretiveSite.Assets')
+			.where('InterpretiveSite.Assets.AssetID', '=', AssetID)
+			.del();
 	}
 
 	async addAsset(item: any, maintainer: any){
@@ -605,5 +655,11 @@ export class InterpretiveSiteService {
 			.from('InterpretiveSite.Documents')
 			.where('InterpretiveSite.Documents.DocID', documentId);
 		return res;
+	}
+
+	async removeDocumentByID(DocID: number) {
+		return await db('InterpretiveSite.Documents')
+			.where('InterpretiveSite.Documents.DocID', DocID)
+			.del();
 	}
 }

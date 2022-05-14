@@ -133,6 +133,11 @@
 					>
 						<span class="text-h5 mt-3">{{ textMode }} Inspection</span>
 						<v-spacer></v-spacer>
+						<DeleteDialog
+							:type="'Inspection'"
+							:id="editFields.InspectID"
+							@deleteItem="deleteItem"
+						/>
 						<v-btn
 							color="success"
 							text
@@ -250,13 +255,14 @@
 </template>
 
 <script>
+import DeleteDialog from './DeleteDialog.vue';
 import { mapGetters } from 'vuex';
 import ActionDialog from './ActionDialog.vue';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 import DocumentHandler from './DocumentHandler.vue';
 export default {
 	props: ['mode', 'Site', 'dataToEdit'],
-	components: { DocumentHandler, ActionDialog },
+	components: { DocumentHandler, ActionDialog, DeleteDialog },
 	data: () => ({
 		dialog: false,
 		loading: false,
@@ -291,7 +297,21 @@ export default {
 	}),
 	methods: {
 		openNewDialog() {
+			this.fields.InspectionDate = this.currentDate();
 			this.fields.InspectedBy = this.username;
+		},
+		async deleteItem(id) {
+			await interpretiveSites.removeInspection(id);
+			this.$emit('deletedInspection', this.dataToEdit.index);
+			this.editDialog = false;
+		},
+		currentDate() {
+			let today = new Date();
+			let dd = String(today.getDate()).padStart(2, '0');
+			let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+			let yyyy = today.getFullYear();
+
+			return dd + '-' + mm + '-' + yyyy;
 		},
 		newAction(data) {
 			this.actions.push(data);

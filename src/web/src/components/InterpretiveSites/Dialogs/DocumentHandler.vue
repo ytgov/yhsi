@@ -139,6 +139,12 @@ export default {
 			this.loading = false;
 			this.dialog = false;
 		},
+		async removeDocumment() {
+			await interpretiveSites.removeDocummentGeneral(
+				this.objID.key,
+				this.objID.value
+			);
+		},
 		textData() {
 			return this.default
 				? 'You will be able to add documments once the general object is created'

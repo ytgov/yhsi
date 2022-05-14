@@ -72,6 +72,36 @@ actionRouter.get(
 		res.status(200).send(list);
 	}
 );
+
+actionRouter.delete('/docs/:id', 
+	[param('id').notEmpty()], 
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+
+		let resObj = await intSiteService.removeDocumentByID(parseInt(id));
+		if(!resObj){
+			res.sendStatus(404).send('The Action doesnt exist');
+			return;
+		}
+		res.sendStatus(200).send(resObj);
+});
+
+actionRouter.delete('/:actionID', 
+	[param('actionID').notEmpty()], 
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { actionID } = req.params;
+		const exists = await intSiteService.objExists({ ActionID: parseInt(actionID)}, 'actions')
+		if(!exists){
+			res.sendStatus(404).send('The Action doesnt exist');
+			return
+		}
+
+		let resObj = await intSiteService.removeAction(parseInt(actionID));
+		res.sendStatus(200).send(resObj);
+});
+
 actionRouter.get(
 	'/inspection/:inspectId',
 	[param('inspectId').notEmpty()],

@@ -228,6 +228,11 @@
 					>
 						<span class="text-h5 mt-3">{{ textMode }} Asset</span>
 						<v-spacer></v-spacer>
+						<DeleteDialog
+							:type="'Asset'"
+							:id="editFields.AssetID"
+							@deleteItem="deleteItem"
+						/>
 						<v-btn
 							color="success"
 							v-if="!internalEditMode"
@@ -270,7 +275,7 @@
 										name="Site"
 										label="Site"
 										readonly
-										v-model="editFields.SiteName"
+										v-model="Site.SiteName"
 									></v-text-field>
 
 									<v-select
@@ -431,12 +436,13 @@
 </template>
 
 <script>
+import DeleteDialog from './DeleteDialog.vue';
 import DocumentHandler from './DocumentHandler.vue';
 import catalogs from '../../../controllers/catalogs';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 export default {
 	props: ['type', 'Site', 'data', 'mode', 'dataToEdit'],
-	components: { DocumentHandler },
+	components: { DocumentHandler, DeleteDialog },
 	data: () => ({
 		//new Dialog
 		dialog: false,
@@ -476,6 +482,11 @@ export default {
 				this.internalEditMode = false;
 				this.editFields = { ...this.fieldsHistory };
 			}
+			this.editDialog = false;
+		},
+		async deleteItem(id) {
+			await interpretiveSites.removeAsset(id);
+			this.$emit('deletedAsset', this.dataToEdit.index);
 			this.editDialog = false;
 		},
 		newDocumment(val) {

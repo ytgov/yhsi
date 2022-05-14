@@ -248,6 +248,11 @@
 						>
 							<span class="text-h5 mt-3">{{ textMode }} Action</span>
 							<v-spacer></v-spacer>
+							<DeleteDialog
+								:type="'Action'"
+								:id="editFields.ActionID"
+								@deleteItem="deleteItem"
+							/>
 							<v-btn
 								text
 								v-if="!internalEditMode"
@@ -427,12 +432,13 @@
 </template>
 
 <script>
+import DeleteDialog from './DeleteDialog.vue';
 import { mapGetters } from 'vuex';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 import DocumentHandler from './DocumentHandler.vue';
 export default {
 	props: ['type', 'Site', 'Inspection', 'data', 'mode', 'dataToEdit'],
-	components: { DocumentHandler },
+	components: { DocumentHandler, DeleteDialog },
 	data: () => ({
 		//new Dialog
 		dialog: false,
@@ -472,6 +478,11 @@ export default {
 	methods: {
 		openNewDialog() {
 			this.fields.CreatedBy = this.username;
+		},
+		async deleteItem(id) {
+			await interpretiveSites.removeAction(id);
+			this.$emit('deletedAction', this.dataToEdit.index);
+			this.editDialog = false;
 		},
 		newDocumment(val) {
 			this.documents.push(val);

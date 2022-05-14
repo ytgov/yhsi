@@ -92,6 +92,34 @@ inspectionRouter.put('/:inspectID', async (req: Request, res: Response) => {
 	res.status(200).send(resObj[0]);
 });
 
+inspectionRouter.delete('/:inspectID', 
+	[param('inspectID').notEmpty()], 
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { inspectID } = req.params;
+		const exists = await intSiteService.objExists({ InspectID: parseInt(inspectID)}, 'inspections')
+		if(!exists){
+			res.sendStatus(404).send('The inspection doesnt exist');
+			return
+		}
+
+		let resObj = await intSiteService.removeInspection(parseInt(inspectID));
+		res.sendStatus(200).send(resObj);
+});
+
+inspectionRouter.delete('/docs/:id', 
+	[param('id').notEmpty()], 
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+
+		let resObj = await intSiteService.removeDocumentByID(parseInt(id));
+		if(!resObj){
+			res.sendStatus(404).send('The Action doesnt exist');
+			return;
+		}
+		res.sendStatus(200).send(resObj);
+});
 
 //PDF AND EXPORTS
 // NO REQUEST FOR A SINGLE ACTION PRINT
