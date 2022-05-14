@@ -14,6 +14,7 @@
 					class="ml-auto mr-1"
 					v-bind="attrs"
 					v-on="on"
+					@click="openNewDialog"
 				>
 					ADD ACTION
 				</v-btn>
@@ -22,6 +23,7 @@
 					class="black--text mx-1"
 					v-bind="attrs"
 					v-on="on"
+					@click="openNewDialog"
 				>
 					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
 					Add Action
@@ -40,6 +42,7 @@
 					</v-row>
 				</v-card-title>
 				<v-card-text>
+					<!-- style="height: 400px" -->
 					<v-container>
 						<v-form
 							v-model="valid"
@@ -63,9 +66,15 @@
 										v-model="fields.SiteID"
 										:rules="rules"
 									></v-autocomplete>
-									<label v-else>
-										<h3>{{ Site.SiteName }} test</h3>
-									</label>
+									<v-text-field
+										v-else
+										outlined
+										dense
+										readonly
+										name="Site Name"
+										label="Site Name"
+										v-model="Site.SiteName"
+									></v-text-field>
 
 									<v-text-field
 										outlined
@@ -77,22 +86,46 @@
 									></v-text-field>
 								</v-col>
 								<v-col cols="6">
-									<v-text-field
+									<!-- <v-text-field
 										outlined
 										dense
 										name="Inspection"
 										label="Inspection"
 										v-model="fields.Inspection"
-										:rules="rules"
-									></v-text-field>
+									></v-text-field> -->
+									<v-autocomplete
+										v-if="!typeInspection"
+										outlined
+										dense
+										clearable
+										@click="searchInspections"
+										:items="inspectionList"
+										:search-input.sync="inspectionSearch"
+										:loading="loadingInspections"
+										name="Inspection"
+										item-text="Description"
+										item-value="InspectID"
+										label="Inspection"
+										v-model="fields.InspectID"
+									></v-autocomplete>
 
+									<v-text-field
+										v-else
+										outlined
+										dense
+										name="Inspection"
+										label="Inspection"
+										readonly
+										v-model="Inspection.Description"
+									></v-text-field>
+									{{ Inspection }}
 									<v-text-field
 										outlined
 										dense
 										name="CreatedDate"
 										label="Created Date"
 										v-model="fields.CreatedDate"
-										:rules="rules"
+										:rules="dateRules"
 									></v-text-field>
 								</v-col>
 							</v-row>
@@ -107,14 +140,15 @@
 										:rules="rules"
 									></v-text-field>
 
-									<v-text-field
+									<v-select
 										outlined
 										dense
 										name="Priority"
 										label="Priority"
+										:items="priorityList"
 										v-model="fields.Priority"
 										:rules="rules"
-									></v-text-field>
+									></v-select>
 
 									<v-text-field
 										outlined
@@ -122,7 +156,7 @@
 										name="ToBeCompleted"
 										label="To Be Completed Date"
 										v-model="fields.ToBeCompleteDate"
-										:rules="rules"
+										:rules="dateRules"
 									></v-text-field>
 								</v-col>
 								<v-col cols="6">
@@ -141,7 +175,7 @@
 										name="CompletedDate"
 										label="Completed Date"
 										v-model="fields.ActionCompleteDate"
-										:rules="rules"
+										:rules="dateRules"
 									></v-text-field>
 								</v-col>
 							</v-row>
@@ -198,10 +232,10 @@
 							class="grey--text text--darken-2"
 							@click="openEditDialog()"
 						>
-							<v-icon small>mdi-pencil</v-icon>
+							<v-icon small>mdi-eye</v-icon>
 						</v-btn>
 					</template>
-					<span>Edit</span>
+					<span>View</span>
 				</v-tooltip>
 			</template>
 
@@ -212,9 +246,16 @@
 							class="d-flex flex-row"
 							cols="12"
 						>
-							<span class="text-h5 mt-3">Edit Action</span>
+							<span class="text-h5 mt-3">{{ textMode }} Action</span>
 							<v-spacer></v-spacer>
+							<DeleteDialog
+								:type="'Action'"
+								:id="editFields.ActionID"
+								@deleteItem="deleteItem"
+							/>
 							<v-btn
+								text
+								v-if="!internalEditMode"
 								color="success"
 								@click="editMode"
 								>Edit</v-btn
@@ -230,7 +271,7 @@
 						>
 							<v-row>
 								<v-col cols="6">
-									<v-select
+									<!-- <v-select
 										outlined
 										dense
 										:items="data"
@@ -240,9 +281,18 @@
 										label="Site"
 										v-model="siteSearch"
 										:rules="rules"
-									></v-select>
+									></v-select> -->
+									<v-text-field
+										outlined
+										dense
+										name="Site"
+										disabled
+										v-model="editFields.SiteName"
+										label="Site"
+									></v-text-field>
 
 									<v-text-field
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="CreatedBy"
@@ -252,28 +302,37 @@
 									></v-text-field>
 								</v-col>
 								<v-col cols="6">
-									<v-text-field
+									<v-autocomplete
 										outlined
 										dense
+										clearable
+										:disabled="!internalEditMode"
+										@click="searchInspections"
+										:items="inspectionList"
+										:search-input.sync="inspectionSearch"
+										:loading="loadingInspections"
 										name="Inspection"
+										item-text="Description"
+										return-object
 										label="Inspection"
 										v-model="editFields.Inspection"
-										:rules="rules"
-									></v-text-field>
+									></v-autocomplete>
 
 									<v-text-field
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="CreatedDate"
 										label="Created Date"
 										v-model="editFields.CreatedDate"
-										:rules="rules"
+										:rules="dateRules"
 									></v-text-field>
 								</v-col>
 							</v-row>
 							<v-row>
 								<v-col cols="6">
 									<v-text-field
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="ActionDescription"
@@ -282,26 +341,30 @@
 										:rules="rules"
 									></v-text-field>
 
-									<v-text-field
+									<v-select
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="Priority"
 										label="Priority"
+										:items="priorityList"
 										v-model="editFields.Priority"
 										:rules="rules"
-									></v-text-field>
+									></v-select>
 
 									<v-text-field
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="ToBeCompleted"
 										label="To Be Completed Date"
 										v-model="editFields.ToBeCompleteDate"
-										:rules="rules"
+										:rules="dateRules"
 									></v-text-field>
 								</v-col>
 								<v-col cols="6">
 									<v-text-field
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="CompletedBy"
@@ -311,18 +374,20 @@
 									></v-text-field>
 
 									<v-text-field
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="CompletedDate"
 										label="Completed Date"
 										v-model="editFields.ActionCompleteDate"
-										:rules="rules"
+										:rules="dateRules"
 									></v-text-field>
 								</v-col>
 							</v-row>
 							<v-row>
 								<v-col cols="12">
 									<v-textarea
+										:disabled="!internalEditMode"
 										outlined
 										dense
 										name="Notes"
@@ -333,17 +398,26 @@
 								</v-col>
 							</v-row>
 						</v-form>
+						<DocumentHandler
+							:doclist="docs"
+							@newDocumment="newDocumment"
+							:objID="{
+								key: 'ActionID',
+								doctype: 'actions',
+								value: dataToEdit.item.ActionID,
+							}"
+						/>
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
-					<v-spacer></v-spacer>
 					<v-btn
-						color="blue darken-1"
+						color="grey darken-1"
 						text
-						@click="editDialog = false"
+						@click="closeDialog()"
 					>
-						Close
+						Close{{ cancelActive }}
 					</v-btn>
+					<v-spacer></v-spacer>
 					<v-btn
 						color="blue darken-1"
 						text
@@ -359,11 +433,13 @@
 </template>
 
 <script>
+import DeleteDialog from './DeleteDialog.vue';
+import { mapGetters } from 'vuex';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 import DocumentHandler from './DocumentHandler.vue';
 export default {
-	props: ['type', 'Site', 'data', 'mode', 'dataToEdit'],
-	components: { DocumentHandler },
+	props: ['type', 'Site', 'Inspection', 'data', 'mode', 'dataToEdit'],
+	components: { DocumentHandler, DeleteDialog },
 	data: () => ({
 		//new Dialog
 		dialog: false,
@@ -372,81 +448,115 @@ export default {
 		siteList: [],
 		siteSearch: '',
 		rules: [(value) => !!value || 'Required.'],
+		dateRules: [
+			(v) => !!v || 'This field is required',
+			(v) =>
+				/^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/.test(
+					v
+				) || 'Correct date format required.',
+		],
 		loadingSites: false,
 		//edit dialog
 		form2: false,
 		editing: false,
 		editDialog: false,
 		editFields: {},
+		fieldsHistory: null,
+		internalEditMode: false,
 		documentHeaders: [
 			{ text: 'Document Name', value: 'DocumentName' },
 			{ text: 'Date Uploaded', value: 'DateUploaded' },
 			{ text: 'Uploader', value: 'Uploader' },
 		],
-		newDocuments: [],
+		priorityList: ['High', 'Med', 'Low'],
+		documments: [],
 		editedDocuments: [],
+		loading: false,
+		inspectionList: [],
+		inspectionSearch: '',
+		loadingInspections: false,
 	}),
 	methods: {
-		documentAdded(val) {
-			this.fields.documents.push(val);
+		openNewDialog() {
+			this.fields.CreatedBy = this.username;
+		},
+		async deleteItem(id) {
+			await interpretiveSites.removeAction(id);
+			this.$emit('deletedAction', this.dataToEdit.index);
+			this.editDialog = false;
+		},
+		newDocumment(val) {
+			this.documents.push(val);
 		},
 		editMode() {
-			this.editing = true;
+			this.fieldsHistory = { ...this.editFields };
+			this.internalEditMode = true;
 		},
 		async saveNew() {
+			this.loading = true;
 			let data = { ...this.fields };
 			if (this.typeGrid) {
-				console.log('grid action', data);
 				this.fields.CompletedBy = '';
-				console.log(`
-        [ActionID] smallint,
-				[InspectID] smallint,
-				[SiteID] smallint,
-				[ActionDesc] varchar,
-				[ToBeCompleteDate] date,
-				[ActionCompleteDate] date,
-				[CompletionDesc] varchar,
-				[Priority] varchar,
-				[CreatedBy] varchar,
-				[CreatedDate] date,
-				[CompletedBy] varchar
-        `);
-
-				const res = await interpretiveSites.postAction(data);
+				const res = await interpretiveSites.postAction({ item: data });
 				this.$emit('gridActionAdded', res);
+			} else if (this.typeInspection) {
+				this.fields.CompletedBy = '';
+				data.InspectID = this.Inspection.InspectID;
+				const res = await interpretiveSites.postAction({ item: data });
+				this.$emit('newAction', res);
 			} else {
 				data.SiteID = this.Site.SiteID;
-				data.new = true;
-				this.$emit('newAction', data);
+				//data.new = true;
+				const res = await interpretiveSites.postAction({ item: data });
+				this.$emit('newAction', res);
 			}
 			this.$refs.actionDialog.reset();
+			this.loading = false;
 			this.dialog = false;
 		},
 		async saveEdit() {
+			this.loading = true;
 			let data = { ...this.editFields };
+			delete data.SiteName;
+			delete data.ActionID;
 			if (this.typeGrid) {
-				console.log('grid action', data);
-				const res = await interpretiveSites.putAction(data);
+				const res = await interpretiveSites.putAction(
+					this.editFields.ActionID,
+					{ item: data }
+				);
 				this.$emit('gridActionEdited', res);
 			} else {
 				data.SiteID = this.Site.SiteID;
-				data.new = true;
-				this.$emit('editAction', data);
+				//data.new = true;
+				const res = await interpretiveSites.putAction(
+					this.dataToEdit.ActionID,
+					{ item: data }
+				);
+				this.$emit('editAction', { data: res, index: this.dataToEdit.index });
 			}
 
 			this.$refs.actionEditDialog.reset();
-			this.editing = false;
+			this.internalEditMode = false;
+			this.loading = false;
 			this.editDialog = false;
 		},
-		openEditDialog() {
+		async openEditDialog() {
 			const { item } = this.dataToEdit;
 			this.editFields = { ...item };
-
+			await this.searchInspections();
+			//await this.searchSites();
+			await this.getDocs();
 			this.editDialog = true;
+		},
+		closeDialog() {
+			if (this.internalEditMode) {
+				this.internalEditMode = false;
+				this.editFields = { ...this.fieldsHistory };
+			}
+			this.editDialog = false;
 		},
 		async searchSites() {
 			this.loadingSites = true;
-			console.log('function called');
 			let list = await interpretiveSites.get(
 				0,
 				5,
@@ -464,25 +574,57 @@ export default {
 				''
 			);
 			this.siteList = list.body;
-			console.log(list);
 			this.loadingSites = false;
+		},
+		async searchInspections() {
+			this.loadingInspections = true;
+			let res = await interpretiveSites.getInspections(
+				'',
+				this.inspectionSearch,
+				'',
+				'Description',
+				'asc',
+				0,
+				5
+			);
+			this.inspectionList = res.body;
+			this.loadingInspections = false;
+		},
+		async getDocs() {
+			let res = await interpretiveSites.getDocummentsGeneral(
+				'actions',
+				this.dataToEdit.item.ActionID
+			);
+			this.documments = [...res.data];
 		},
 	},
 	watch: {
 		siteSearch: {
 			deep: true,
 			handler() {
-				console.log('changed');
 				this.searchSites();
 			},
 		},
 	},
 	computed: {
+		...mapGetters({ username: 'fullName' }),
+		docs() {
+			return this.documments;
+		},
 		typeGrid() {
 			return this.type === 'grid';
 		},
+		typeInspection() {
+			return this.type === 'inspection';
+		},
 		typeSiteView() {
 			return this.type === 'siteview';
+		},
+		textMode() {
+			return this.internalEditMode ? 'Edit' : 'View';
+		},
+		cancelActive() {
+			return this.internalEditMode ? '/Cancel' : '';
 		},
 	},
 };

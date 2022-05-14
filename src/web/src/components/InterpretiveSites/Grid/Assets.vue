@@ -40,7 +40,7 @@
 									:mode="'edit'"
 									:type="'grid'"
 									:dataToEdit="{ item, index }"
-									@editAction="editAsset"
+									@gridAssetEdited="editAsset"
 								/>
 							</td>
 						</tr>
@@ -93,6 +93,9 @@ export default {
 		this.getDataFromApi();
 	},
 	methods: {
+		formatDate(date) {
+			return date.split('T')[0].split('-').reverse().join('-');
+		},
 		editAsset() {
 			this.$router.go();
 		},
@@ -130,7 +133,11 @@ export default {
 				itemsPerPage
 			);
 			console.log(data.body);
-			this.list = data.body;
+			this.list = data.body.map((x) => {
+				x.DecommissionDate = this.formatDate(x.DecommissionDate);
+				x.InstallDate = this.formatDate(x.InstallDate);
+				return x;
+			});
 			this.totalLength = data.count;
 			//console.log(data);
 			//this.$store.commit("boats/setOwners", this.owners);

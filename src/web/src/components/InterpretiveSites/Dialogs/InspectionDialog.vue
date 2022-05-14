@@ -13,6 +13,7 @@
 					v-on="on"
 					outlined
 					class="ml-auto mr-1"
+					@click="openNewDialog"
 				>
 					ADD INSPECTION
 				</v-btn>
@@ -106,7 +107,7 @@
 			v-if="mode == 'edit'"
 			v-model="editDialog"
 			persistent
-			max-width="600px"
+			max-width="700px"
 		>
 			<template #activator="{ on: dialog }">
 				<v-tooltip bottom>
@@ -132,6 +133,11 @@
 					>
 						<span class="text-h5 mt-3">{{ textMode }} Inspection</span>
 						<v-spacer></v-spacer>
+						<DeleteDialog
+							:type="'Inspection'"
+							:id="editFields.InspectID"
+							@deleteItem="deleteItem"
+						/>
 						<v-btn
 							color="success"
 							text
@@ -189,11 +195,12 @@
 											<v-spacer></v-spacer>
 											<ActionDialog
 												:mode="'new'"
-												:type="'siteview'"
+												:type="'inspection'"
 												:Site="{
-													SiteName: fields.SiteName,
-													SiteID: fields.SiteID,
+													SiteName: Site.SiteName,
+													SiteID: Site.SiteID,
 												}"
+												:Inspection="editFields"
 												class="ml-auto mr-1"
 												@newAction="newAction"
 											/>
@@ -203,7 +210,7 @@
 										<v-col cols="12">
 											<v-data-table
 												:headers="actionHeaders"
-												:items="fields.actions"
+												:items="actions"
 												:items-per-page="5"
 												class="elevation-0"
 											></v-data-table>
@@ -217,6 +224,7 @@
 								@newDocumment="newDocumment"
 								:objID="{
 									key: 'InspectID',
+									doctype: 'inspections',
 									value: dataToEdit.item.InspectID,
 								}"
 							/>
@@ -237,6 +245,7 @@
 						text
 						@click="saveEdit()"
 						:disabled="!form2"
+						:loading="loading"
 					>
 						Save
 					</v-btn>
@@ -247,14 +256,17 @@
 </template>
 
 <script>
+import DeleteDialog from './DeleteDialog.vue';
+import { mapGetters } from 'vuex';
 import ActionDialog from './ActionDialog.vue';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 import DocumentHandler from './DocumentHandler.vue';
 export default {
 	props: ['mode', 'Site', 'dataToEdit'],
-	components: { DocumentHandler, ActionDialog },
+	components: { DocumentHandler, ActionDialog, DeleteDialog },
 	data: () => ({
 		dialog: false,
+		loading: false,
 		fields: {},
 		editFields: {},
 		valid: false,
@@ -280,11 +292,31 @@ export default {
 		siteList: [],
 		documments: [],
 		siteSearch: '',
+		actions: [],
 		loadingSites: false,
 		fieldsHistory: null,
 	}),
 	methods: {
-		newAction() {},
+		openNewDialog() {
+			this.fields.InspectionDate = this.currentDate();
+			this.fields.InspectedBy = this.username;
+		},
+		async deleteItem(id) {
+			await interpretiveSites.removeInspection(id);
+			this.$emit('deletedInspection', this.dataToEdit.index);
+			this.editDialog = false;
+		},
+		currentDate() {
+			let today = new Date();
+			let dd = String(today.getDate()).padStart(2, '0');
+			let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+			let yyyy = today.getFullYear();
+
+			return dd + '-' + mm + '-' + yyyy;
+		},
+		newAction(data) {
+			this.actions.push(data);
+		},
 		newDocumment(val) {
 			this.fields.documments.push(val);
 		},
@@ -321,6 +353,7 @@ export default {
 			this.loadingSites = false;
 		},
 		async saveNew() {
+			this.loading = true;
 			let { InspectionDate, InspectedBy, Description } = this.fields;
 			// this.$emit('newInspection', {
 			// 	InspectionDate,
@@ -341,27 +374,38 @@ export default {
 			}
 
 			this.$refs.inspectionDialog.reset();
+			this.loading = false;
 			this.dialog = false;
 		},
-		saveEdit() {
+		async saveEdit() {
+			this.loading = true;
 			let { InspectionDate, InspectedBy, Description } = this.editFields;
-			this.$emit(
-				'editInspection',
-				{
-					InspectionDate,
-					InspectedBy,
-					Description,
-					edited: true,
-				},
-				this.dataToEdit.index
+			let data = {
+				InspectionDate,
+				InspectedBy,
+				Description,
+			};
+			let res = await interpretiveSites.putInspection(
+				this.dataToEdit.InspectID,
+				{ item: data }
 			);
+			this.$emit('editInspection', res, this.dataToEdit.index);
 			this.$refs.inspectionEditDialog.reset();
+			this.loading = false;
 			this.editDialog = false;
 		},
 		async openEditDialog() {
 			this.editFields = { ...this.dataToEdit.item };
+
 			await this.getDocs();
+			await this.getActions();
 			this.editDialog = true;
+		},
+		async getActions() {
+			let res = await interpretiveSites.getActionsByInspectID(
+				this.dataToEdit.item.InspectID
+			);
+			this.actions = [...res];
 		},
 		async getDocs() {
 			let res = await interpretiveSites.getDocummentsGeneral(
@@ -372,6 +416,7 @@ export default {
 		},
 	},
 	computed: {
+		...mapGetters({ username: 'fullName' }),
 		docs() {
 			return this.documments ? this.documments : [];
 		},

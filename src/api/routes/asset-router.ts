@@ -97,13 +97,15 @@ assetRouter.put('/:assetId', async (req: Request, res: Response) => {
 		item = {}
 	} = req.body;
 	const { assetId } = req.params;
-	const resObj = await intSiteService.modifyAsset(parseInt(assetId), item);
+	console.log(assetId);
+	console.log('asset modif', req.body);
+	const resObj = await intSiteService.modifyAsset( item, parseInt(assetId));
 	if(!resObj){
 		res.status(404).send({ message: "Asset not found"});
 		return;
 	}
 
-	res.status(200).send(resObj);
+	res.send(resObj[0]);
 });
 
 assetRouter.get(
@@ -122,6 +124,35 @@ assetRouter.get(
 		res.status(200).send(docs);
 	}
 );
+assetRouter.delete('/:assetID', 
+	[param('assetID').notEmpty()], 
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { assetID } = req.params;
+		console.log('before service call');
+		const exists = await intSiteService.objExists({ AssetID: parseInt(assetID)}, 'assets')
+		if(!exists){
+			res.sendStatus(404).send('The Asset doesnt exist');
+			return
+		}
+		console.log('exists');
+		let resObj = await intSiteService.removeAsset(parseInt(assetID));
+		res.sendStatus(200).send(resObj);
+});
+
+assetRouter.delete('/docs/:id', 
+	[param('id').notEmpty()], 
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+
+		let resObj = await intSiteService.removeDocumentByID(parseInt(id));
+		if(!resObj){
+			res.sendStatus(404).send('The Action doesnt exist');
+			return;
+		}
+		res.sendStatus(200).send(resObj);
+});
 
 
 //PDF AND EXPORTS

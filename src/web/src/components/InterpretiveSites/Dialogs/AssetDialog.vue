@@ -178,7 +178,6 @@
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
-					<v-spacer></v-spacer>
 					<v-btn
 						color="blue darken-1"
 						text
@@ -186,6 +185,7 @@
 					>
 						Close
 					</v-btn>
+					<v-spacer></v-spacer>
 					<v-btn
 						color="blue darken-1"
 						text
@@ -228,6 +228,11 @@
 					>
 						<span class="text-h5 mt-3">{{ textMode }} Asset</span>
 						<v-spacer></v-spacer>
+						<DeleteDialog
+							:type="'Asset'"
+							:id="editFields.AssetID"
+							@deleteItem="deleteItem"
+						/>
 						<v-btn
 							color="success"
 							v-if="!internalEditMode"
@@ -245,7 +250,7 @@
 						>
 							<v-row>
 								<v-col cols="6">
-									<v-autocomplete
+									<!-- <v-autocomplete
 										v-if="typeGrid"
 										outlined
 										dense
@@ -263,9 +268,18 @@
 									></v-autocomplete>
 									<label v-else>
 										<h3>{{ Site.SiteName }}</h3>
-									</label>
+									</label> -->
+									<v-text-field
+										outlined
+										dense
+										name="Site"
+										label="Site"
+										readonly
+										v-model="Site.SiteName"
+									></v-text-field>
 
 									<v-select
+										:readonly="!internalEditMode"
 										:items="availableCategories"
 										outlined
 										dense
@@ -289,6 +303,7 @@
 								</v-col>
 								<v-col cols="6">
 									<v-select
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										name="Type"
@@ -302,6 +317,7 @@
 									></v-select>
 
 									<v-text-field
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										name="Installation Date"
@@ -311,6 +327,7 @@
 									></v-text-field>
 
 									<v-select
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										name="Maintained By"
@@ -327,6 +344,7 @@
 							<v-row>
 								<v-col cols="12">
 									<v-textarea
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										name="Sign Text"
@@ -336,6 +354,7 @@
 									></v-textarea>
 
 									<v-textarea
+										:readonly="!internalEditMode"
 										outlined
 										dense
 										name="Description"
@@ -349,6 +368,7 @@
 								<v-col cols="12">
 									<h3>Active</h3>
 									<v-radio-group
+										:readonly="!internalEditMode"
 										v-model="editFields.Status"
 										row
 									>
@@ -363,6 +383,7 @@
 									</v-radio-group>
 									<v-text-field
 										outlined
+										:readonly="!internalEditMode"
 										dense
 										name="DecommissionDate"
 										label="Decommission Date"
@@ -371,6 +392,7 @@
 									></v-text-field>
 									<v-textarea
 										outlined
+										:readonly="!internalEditMode"
 										dense
 										name="DecommissionNotes"
 										label="Decommission Notes"
@@ -379,15 +401,16 @@
 									></v-textarea>
 								</v-col>
 							</v-row>
-							<DocumentHandler
-								:doclist="docs"
-								@newDocumment="newDocumment"
-								:objID="{
-									key: 'AssetID',
-									value: dataToEdit.item.AssetID,
-								}"
-							/>
 						</v-form>
+						<DocumentHandler
+							:doclist="docs"
+							@newDocumment="newDocumment"
+							:objID="{
+								key: 'AssetID',
+								doctype: 'assets',
+								value: dataToEdit.item.AssetID,
+							}"
+						/>
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
@@ -414,12 +437,13 @@
 </template>
 
 <script>
+import DeleteDialog from './DeleteDialog.vue';
 import DocumentHandler from './DocumentHandler.vue';
 import catalogs from '../../../controllers/catalogs';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 export default {
 	props: ['type', 'Site', 'data', 'mode', 'dataToEdit'],
-	components: { DocumentHandler },
+	components: { DocumentHandler, DeleteDialog },
 	data: () => ({
 		//new Dialog
 		dialog: false,
@@ -461,6 +485,11 @@ export default {
 			}
 			this.editDialog = false;
 		},
+		async deleteItem(id) {
+			await interpretiveSites.removeAsset(id);
+			this.$emit('deletedAsset', this.dataToEdit.index);
+			this.editDialog = false;
+		},
 		newDocumment(val) {
 			this.documments.push(val.data);
 		},
@@ -490,27 +519,33 @@ export default {
 				this.$emit('gridAssetAdded', res);
 			} else {
 				item.SiteID = this.Site.SiteID;
-				item.new = true;
-				this.$emit('newAsset', item);
+				const res = await interpretiveSites.postAsset({ item });
+				//item.new = true;
+				this.$emit('newAsset', res);
 			}
 			this.$refs.assetDialog.reset();
 			this.dialog = false;
 		},
 		async saveEdit() {
 			let data = { ...this.editFields };
+			delete data.Maintainer;
+			delete data.AssetID;
+			delete data.SiteName;
 			if (this.typeGrid) {
-				const res = await interpretiveSites.putAsset(data);
-				if (res) {
-					await interpretiveSites.addDocumments({
-						documments: this.documments,
-						AssetID: res.AssetID,
-					});
-				}
+				const res = await interpretiveSites.putAsset(this.editFields.AssetID, {
+					item: data,
+				});
+
 				this.$emit('gridAssetEdited', res);
 			} else {
 				data.SiteID = this.Site.SiteID;
-				data.new = true;
-				this.$emit('editAsset', data);
+				// data.new = true;
+				// this.$emit('editAsset', data);
+
+				const res = await interpretiveSites.putAsset(this.editFields.AssetID, {
+					item: data,
+				});
+				this.$emit('editAsset', { data: res, index: this.dataToEdit.index });
 			}
 
 			this.$refs.assetEditDialog.reset();
@@ -542,7 +577,6 @@ export default {
 				''
 			);
 			this.siteList = list.body;
-			console.log(list);
 			this.loadingSites = false;
 		},
 		async getDocs() {
@@ -557,7 +591,6 @@ export default {
 		siteSearch: {
 			deep: true,
 			handler() {
-				console.log('changed');
 				this.searchSites();
 			},
 		},
