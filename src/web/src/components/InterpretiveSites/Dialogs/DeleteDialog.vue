@@ -6,11 +6,21 @@
 	>
 		<template v-slot:activator="{ on, attrs }">
 			<v-btn
+				v-if="!tableMode"
 				color="warning"
 				text
 				v-bind="attrs"
 				v-on="on"
 				>Delete
+			</v-btn>
+			<v-btn
+				v-else
+				color="danger"
+				icon
+				v-bind="attrs"
+				v-on="on"
+			>
+				<v-icon> mdi-delete </v-icon>
 			</v-btn>
 		</template>
 		<v-card>
@@ -42,7 +52,7 @@
 <script>
 export default {
 	name: 'deleteDialog',
-	props: ['id', 'type'],
+	props: ['id', 'type', 'mode'],
 	data: () => ({
 		dialog: false,
 	}),
@@ -50,6 +60,11 @@ export default {
 		confirmDelete() {
 			this.$emit('deleteItem', this.id);
 			this.dialog = false;
+		},
+	},
+	computed: {
+		tableMode() {
+			return this.mode === 'table';
 		},
 	},
 };

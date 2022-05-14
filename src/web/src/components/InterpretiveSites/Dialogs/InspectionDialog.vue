@@ -224,6 +224,7 @@
 								@newDocumment="newDocumment"
 								:objID="{
 									key: 'InspectID',
+									doctype: 'inspections',
 									value: dataToEdit.item.InspectID,
 								}"
 							/>

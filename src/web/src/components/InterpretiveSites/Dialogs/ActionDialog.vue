@@ -403,6 +403,7 @@
 							@newDocumment="newDocumment"
 							:objID="{
 								key: 'ActionID',
+								doctype: 'actions',
 								value: dataToEdit.item.ActionID,
 							}"
 						/>
