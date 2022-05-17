@@ -276,6 +276,78 @@ export default {
 				console.error(error);
 			});
 	},
+	async getActionsExport(
+		ActionDesc,
+		ToBeCompleteDate,
+		ActionCompleteDate,
+		CompletionDesc,
+		Priority,
+		CreatedBy,
+		CreatedDate,
+		CompletedBy,
+		sortBy,
+		sort
+	) {
+		return await api
+			.post('actions/export', {
+				ActionDesc,
+				ToBeCompleteDate,
+				ActionCompleteDate,
+				CompletionDesc,
+				Priority,
+				CreatedBy,
+				CreatedDate,
+				CompletedBy,
+				sortBy,
+				sort,
+				page: 0,
+				limit: 0,
+			})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((err) => {
+				return err;
+			});
+	},
+	async getActionsGridPdf(
+		ActionDesc,
+		ToBeCompleteDate,
+		ActionCompleteDate,
+		CompletionDesc,
+		Priority,
+		CreatedBy,
+		CreatedDate,
+		CompletedBy,
+		sortBy,
+		sort
+	) {
+		return await api({
+			url: 'actions/pdf',
+			method: 'POST',
+			responseType: 'blob',
+			data: {
+				page: 0,
+				limit: 0,
+				ActionDesc,
+				ToBeCompleteDate,
+				ActionCompleteDate,
+				CompletionDesc,
+				Priority,
+				CreatedBy,
+				CreatedDate,
+				CompletedBy,
+				sortBy,
+				sort,
+			},
+		})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((err) => {
+				return err;
+			});
+	},
 	async putAction(id, data) {
 		return await api
 			.put(`actions/${id}`, data)
@@ -337,6 +409,82 @@ export default {
 			.catch((error) => {
 				// handle error
 				console.error(error);
+			});
+	},
+	async getAssetsExport(
+		Category,
+		Type,
+		Size,
+		Description,
+		SignText,
+		InstallDate,
+		DecommissionDate,
+		DecommissionNotes,
+		Status,
+		sortBy,
+		sort
+	) {
+		return await api
+			.post('assets/export', {
+				Category,
+				Type,
+				Size,
+				Description,
+				SignText,
+				InstallDate,
+				DecommissionDate,
+				DecommissionNotes,
+				Status,
+				sortBy,
+				sort,
+				page: 0,
+				limit: 0,
+			})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((err) => {
+				return err;
+			});
+	},
+	async getAssetsGridPdf(
+		Category,
+		Type,
+		Size,
+		Description,
+		SignText,
+		InstallDate,
+		DecommissionDate,
+		DecommissionNotes,
+		Status,
+		sortBy,
+		sort
+	) {
+		return await api({
+			url: 'assets/pdf',
+			method: 'POST',
+			responseType: 'blob',
+			data: {
+				page: 0,
+				limit: 0,
+				Category,
+				Type,
+				Size,
+				Description,
+				SignText,
+				InstallDate,
+				DecommissionDate,
+				DecommissionNotes,
+				Status,
+				sortBy,
+				sort,
+			},
+		})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((err) => {
+				return err;
 			});
 	},
 	async putAsset(id, data) {

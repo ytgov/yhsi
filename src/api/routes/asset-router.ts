@@ -34,7 +34,7 @@ assetRouter.get(
 			DecommissionDate = '',
 			DecommissionNotes = '',
 			Status = '',
-			sortBy, 
+			sortBy = 'Description', 
 			sort
 		 } =  req.query;
 		const page = parseInt(req.query.page as string);
@@ -187,7 +187,7 @@ assetRouter.post('/pdf', async (req: Request, res: Response) => {
 			DecommissionDate = '',
 			DecommissionNotes = '',
 			Status = '',
-			sortBy, 
+			sortBy = 'Description', 
 			sort,
             page = 0, limit = 0 } =  req.body;
         
@@ -227,10 +227,10 @@ assetRouter.post('/export', async (req: Request, res: Response) => {
 		DecommissionDate = '',
 		DecommissionNotes = '',
 		Status = '',
-		sortBy, 
+		sortBy = 'Description', 
 		sort,
         page = 0, limit = 0 } =  req.body;
-    
+		console.log(req.body);
     const data = await intSiteService.doAssetSearch(page, limit, 0, { 
         Category, 
 		Type, 

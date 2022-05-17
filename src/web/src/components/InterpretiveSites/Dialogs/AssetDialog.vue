@@ -275,7 +275,7 @@
 										name="Site"
 										label="Site"
 										readonly
-										v-model="Site.SiteName"
+										v-model="editFields.SiteName"
 									></v-text-field>
 
 									<v-select
