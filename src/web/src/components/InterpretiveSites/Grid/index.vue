@@ -295,7 +295,7 @@ export default {
 			},
 		],
 		actionFilterOptions: [
-			{ text: 'Action Required', value: '', dataAccess: 'ActionDesc' },
+			//{ text: 'Action Required', value: '', dataAccess: 'ActionDesc' },
 			{ text: 'To be Completed by', value: '', dataAccess: 'CompletedBy' },
 			{ text: 'Priority', value: '', dataAccess: 'Priority' },
 			{ text: 'Completed date', value: '', dataAccess: 'ActionCompleteDate' },
