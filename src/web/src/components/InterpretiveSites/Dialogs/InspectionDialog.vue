@@ -318,7 +318,7 @@ export default {
 			this.actions.push(data);
 		},
 		newDocumment(val) {
-			this.fields.documments.push(val);
+			this.documments.push(val);
 		},
 		closeDialog() {
 			if (this.internalEditMode) {

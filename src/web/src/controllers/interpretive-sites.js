@@ -566,4 +566,13 @@ export default {
 			})
 			.catch((error) => console.error(error));
 	},
+	async downloadDocByID(itemId) {
+		return await api
+			.get(`interpretive-sites/file/${itemId}`)
+			.then((resp) => {
+				//console.log("data",resp);
+				return resp;
+			})
+			.catch((error) => console.error(error));
+	},
 };

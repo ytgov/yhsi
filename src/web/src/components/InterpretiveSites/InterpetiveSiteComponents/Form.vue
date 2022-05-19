@@ -94,6 +94,13 @@
 													v-model="fields.SiteName"
 													:readonly="isView"
 												></v-text-field>
+												<MaintainerList
+													:list="fields.maintainers"
+													:mode="mode"
+													@newMaintainer="newMaintainer"
+													@deleteMaintainer="deleteMaintainer"
+												/>
+												{{ fields.maintainers }}
 											</v-col>
 											<v-col cols="6">
 												<!-- :rules="notifRules" -->
@@ -367,6 +374,7 @@
 </template>
 
 <script>
+import MaintainerList from './MaintainerList';
 import Breadcrumbs from '../../Breadcrumbs';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 import catalogs from '../../../controllers/catalogs';
@@ -384,6 +392,7 @@ export default {
 		InspectionDialog,
 		ActionDialog,
 		AssetDialog,
+		MaintainerList,
 		Photos,
 	},
 	data: () => ({
@@ -572,9 +581,7 @@ export default {
 				NotificationDesc,
 				AdvancedNotification,
 				//lists
-				inspections,
-				actions,
-				assets,
+				maintainers,
 			} = this.fields;
 			let { LocationDesc, RouteName, KMNum, MapSheet, lat, long } =
 				this.modifiedMapFields;
@@ -593,9 +600,7 @@ export default {
 			};
 			const data = {
 				item,
-				inspections,
-				actions,
-				assets,
+				maintainers,
 			};
 			//console.log(JSON.stringify(data));
 
@@ -622,6 +627,19 @@ export default {
 		},
 		deletedInspection(index) {
 			this.fields.inspections.splice(index, 1);
+		},
+		newMaintainer(val) {
+			val.SiteID = this.fields.SiteID;
+			console.log('inside form comp', val);
+			this.fields.maintainers.push(val);
+		},
+		deleteMaintainer(id) {
+			this.fields.maintainers = this.fields.maintainers.map((x) => {
+				if (x.MaintID !== id) {
+					x.deleted = true;
+				}
+				return x;
+			});
 		},
 		editAction({ data, index }) {
 			data.ToBeCompleteDate = this.formatDate(data.ToBeCompleteDate);

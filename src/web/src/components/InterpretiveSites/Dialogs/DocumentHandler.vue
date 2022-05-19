@@ -102,14 +102,23 @@
 								<td class="child-row">{{ item.UploadedBy }}</td>
 								<td class="child-row">
 									<DeleteDialog
+										v-if="displayDelete"
 										:type="'Documment'"
 										:id="item.DocID"
 										@deleteItem="deleteItem"
 										:mode="'table'"
 									/>
+									<v-btn
+										icon
+										@click="downloadDoc(item.DocID)"
+										:loading="downloading"
+									>
+										<v-icon>mdi-download</v-icon>
+									</v-btn>
 								</td>
-							</tr> </template
-					></v-data-table>
+							</tr>
+						</template></v-data-table
+					>
 				</v-col>
 			</v-row>
 		</v-col>
@@ -117,12 +126,13 @@
 </template>
 
 <script>
+import downloadFile from '../../../utils/dataToFile';
 import DeleteDialog from './DeleteDialog.vue';
 import { mapGetters } from 'vuex';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 export default {
 	name: 'DocumentHandler',
-	props: ['doclist', 'default', 'objID'], // objID :{ key: AssetID, value: 1, doctype: 'assets' }
+	props: ['doclist', 'default', 'objID', 'displayDelete'], // objID :{ key: AssetID, value: 1, doctype: 'assets' }
 	components: { DeleteDialog },
 	data: () => ({
 		loading: false,
@@ -138,6 +148,7 @@ export default {
 		form: false,
 		rules: [(value) => !!value || 'Required.'],
 		currentRemoval: null,
+		downloading: false,
 	}),
 	methods: {
 		async newDocument() {
@@ -147,26 +158,32 @@ export default {
 			this.sendObj[this.objID.key] = this.objID.value;
 			this.sendObj.DocDesc = DocDesc;
 			this.sendObj.UploadedBy = this.username; //fullName
+			this.sendObj.FileType = this.file.name.replace(/^.*\./, '');
 			const formData = new FormData();
 			let prevFields = Object.entries(this.sendObj);
 			for (let i = 0; i < prevFields.length; i++) {
 				formData.append(prevFields[i][0], prevFields[i][1]);
 			}
 			formData.append('file', this.file);
-
 			let res = await interpretiveSites.newDocumment(formData);
 			this.$emit('newDocumment', res);
+
 			this.loading = false;
 			this.dialog = false;
 		},
 		async removeDocumment() {},
 		async deleteItem(id) {
-			console.log('docid', id, 'key', this.objID.doctype);
 			await interpretiveSites.removeDocummentGeneral(
 				this.objID.doctype,
 				id
 				//this.objID.value
 			);
+		},
+		async downloadDoc(id) {
+			console.log('downloading');
+			let res = await interpretiveSites.downloadDocByID(id);
+			console.log('file', res.data);
+			downloadFile(res.data[0].Document, 'file', res.data[0].FileType);
 		},
 		textData() {
 			return this.default
