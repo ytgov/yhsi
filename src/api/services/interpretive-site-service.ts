@@ -189,7 +189,7 @@ export class InterpretiveSiteService {
 		//maintainers
 		let newMaintainers = maintainers
 			.filter((x: any) => x.new == true && !x.deleted)
-			.map((x: any) => ({ ...x, SiteID: SiteID }));
+			.map((x: any) => ({ Maintainer: x.Maintainer, SiteID: x.SiteID }));
 		if (newMaintainers.length > 0) {
 			await db
 				.insert(newMaintainers)
@@ -662,7 +662,29 @@ export class InterpretiveSiteService {
 		return res;
 	}
 
-	async modifyAsset(item: any, AssetId: number) {
+	async modifyAsset(item: any, maintainers: any, AssetId: number) {
+		//maintainers
+		let newMaintainers = maintainers
+			.filter((x: any) => x.new == true && !x.deleted)
+			.map((x: any) => ({ Maintainer: x.Maintainer, AssetID: x.AssetID }));
+		if (newMaintainers.length > 0) {
+			await db
+				.insert(newMaintainers)
+				.into('InterpretiveSite.Maintainer')
+				.then((rows: any) => {
+					return rows;
+				});
+		}
+
+		const deletedMaintainers = maintainers
+			.filter((x: any) => x.deleted == true)
+			.map((x: any) => ({ MaintID: x.MaintID }));
+		for (const item of deletedMaintainers) {
+			await db('InterpretiveSite.Maintainer')
+				.where('InterpretiveSite.Maintainer.MaintID', item.MaintID)
+				.del();
+		}
+
 		return await db('InterpretiveSite.Assets')
 			.update(item)
 			.where('InterpretiveSite.Assets.AssetID', AssetId)
