@@ -126,7 +126,9 @@
 </template>
 
 <script>
-import downloadFile from '../../../utils/dataToFile';
+
+import { downloadFileFromJSON } from '../../../utils/dataToFile';
+
 import DeleteDialog from './DeleteDialog.vue';
 import { mapGetters } from 'vuex';
 import interpretiveSites from '../../../controllers/interpretive-sites';
@@ -182,8 +184,8 @@ export default {
 		async downloadDoc(id) {
 			console.log('downloading');
 			let res = await interpretiveSites.downloadDocByID(id);
-			console.log('file', res.data);
-			downloadFile(res.data[0].Document, 'file', res.data[0].FileType);
+
+			downloadFileFromJSON(res.data[0].Document.data, 'file', res.data[0].FileType);
 		},
 		textData() {
 			return this.default

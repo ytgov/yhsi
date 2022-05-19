@@ -408,7 +408,7 @@ export default {
 			this.actions = [...res];
 		},
 		async getDocs() {
-			let res = await interpretiveSites.getDocummentsGeneral(
+			let res = await interpretiveSites.getDocumentsGeneral(
 				'inspections',
 				this.dataToEdit.item.InspectID
 			);

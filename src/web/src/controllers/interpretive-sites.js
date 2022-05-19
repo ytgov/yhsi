@@ -1,4 +1,5 @@
 import { api, apiP } from './config';
+import axios from 'axios';
 
 export default {
 	async get(
@@ -518,7 +519,7 @@ export default {
 				console.error(error);
 			});
 	},
-	async getDocummentsGeneral(docType, itemId) {
+	async getDocumentsGeneral(docType, itemId) {
 		return await api
 			.get(`${docType}/docs/${itemId}`)
 			.then((resp) => {
@@ -567,12 +568,7 @@ export default {
 			.catch((error) => console.error(error));
 	},
 	async downloadDocByID(itemId) {
-		return await api
-			.get(`interpretive-sites/file/${itemId}`)
-			.then((resp) => {
-				//console.log("data",resp);
-				return resp;
-			})
-			.catch((error) => console.error(error));
+		const response = await api.get(`interpretive-sites/file/${itemId}`, { responseType: 'json' });
+		return response;
 	},
 };

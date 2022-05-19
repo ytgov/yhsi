@@ -591,7 +591,7 @@ export default {
 			this.loadingInspections = false;
 		},
 		async getDocs() {
-			let res = await interpretiveSites.getDocummentsGeneral(
+			let res = await interpretiveSites.getDocumentsGeneral(
 				'actions',
 				this.dataToEdit.item.ActionID
 			);

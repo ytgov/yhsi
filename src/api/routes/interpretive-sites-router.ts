@@ -251,12 +251,9 @@ intSitesRouter.get(
 	async (req: Request, res: Response) => {
 		const { docID } = req.params;
 		const doc: any = await intSiteService.getDocumentsByID(parseInt(docID));
-		//testing
-		res.setHeader(
-			'Content-disposition',
-			`attachment; filename="file.${doc.FileType}"`
-		);
-		res.setHeader('Content-type', 'application/pdf');
-		res.status(200).send(doc);
+
+		res.setHeader('Content-disposition', `attachment; filename="${doc.DocDesc}.${doc.FileType}"`);
+		res.setHeader('Content-type', 'application/json');
+		res.send(doc);
 	}
 );

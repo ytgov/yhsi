@@ -580,7 +580,7 @@ export default {
 			this.loadingSites = false;
 		},
 		async getDocs() {
-			let res = await interpretiveSites.getDocummentsGeneral(
+			let res = await interpretiveSites.getDocumentsGeneral(
 				'assets',
 				this.dataToEdit.item.AssetID
 			);
