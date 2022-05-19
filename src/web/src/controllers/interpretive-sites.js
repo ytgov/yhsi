@@ -411,6 +411,17 @@ export default {
 				console.error(error);
 			});
 	},
+	async getMaintainersByAssetID(id) {
+		return await api
+			.get(`/assets/maintainers/${id}`)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
 	async getAssetsExport(
 		Category,
 		Type,
@@ -520,7 +531,25 @@ export default {
 	},
 	async getDocummentsGeneral(docType, itemId) {
 		return await api
-			.get(`${docType}/docs/${itemId}`)
+			.post({
+				url: `${docType}/docs/${itemId}`,
+				method: 'POST',
+				responseType: 'blob',
+				// data: {
+				// 	page: 0,
+				// 	limit: 0,
+				// 	ActionDesc,
+				// 	ToBeCompleteDate,
+				// 	ActionCompleteDate,
+				// 	CompletionDesc,
+				// 	Priority,
+				// 	CreatedBy,
+				// 	CreatedDate,
+				// 	CompletedBy,
+				// 	sortBy,
+				// 	sort,
+				// },
+			})
 			.then((resp) => {
 				//console.log("data",resp);
 				return resp;

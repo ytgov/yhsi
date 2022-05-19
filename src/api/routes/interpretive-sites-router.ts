@@ -111,11 +111,11 @@ intSitesRouter.put('/:siteId', async (req: Request, res: Response) => {
 		maintainers
 	);
 	if (!resObj) {
-		res.status(404).send({ message: 'Site not found' });
+		res.sendStatus(404).send({ message: 'Site not found' });
 		return;
 	}
 
-	res.status(200).send(resObj);
+	res.sendStatus(200).send(resObj);
 });
 
 //PDF AND EXPORTS
@@ -244,7 +244,7 @@ intSitesRouter.post(
 	}
 );
 
-intSitesRouter.get(
+intSitesRouter.post(
 	'/file/:docID',
 	[param('docID').notEmpty()],
 	ReturnValidationErrors,
@@ -257,6 +257,6 @@ intSitesRouter.get(
 			`attachment; filename="file.${doc.FileType}"`
 		);
 		res.setHeader('Content-type', 'application/pdf');
-		res.status(200).send(doc);
+		res.status(200).send(doc.Documment);
 	}
 );

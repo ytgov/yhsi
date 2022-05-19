@@ -100,7 +100,6 @@
 													@newMaintainer="newMaintainer"
 													@deleteMaintainer="deleteMaintainer"
 												/>
-												{{ fields.maintainers }}
 											</v-col>
 											<v-col cols="6">
 												<!-- :rules="notifRules" -->
@@ -635,7 +634,7 @@ export default {
 		},
 		deleteMaintainer(id) {
 			this.fields.maintainers = this.fields.maintainers.map((x) => {
-				if (x.MaintID !== id) {
+				if (x.MaintID === id) {
 					x.deleted = true;
 				}
 				return x;

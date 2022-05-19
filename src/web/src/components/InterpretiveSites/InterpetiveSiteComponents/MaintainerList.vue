@@ -7,6 +7,7 @@
 			<v-subheader class="d-flex flex-row">
 				<div>Maintainers</div>
 				<MaintainerDialog
+					v-if="mode === 'edit'"
 					class="ml-auto mr-1"
 					:type="'siteview'"
 					:mode="'new'"
@@ -15,7 +16,7 @@
 			</v-subheader>
 
 			<v-list-item
-				v-for="item in list"
+				v-for="item in filteredList"
 				:key="`maint-${item.MaintID}`"
 			>
 				<v-list-item-content>
@@ -24,6 +25,7 @@
 
 				<v-list-item-action>
 					<DeleteDialog
+						v-if="mode === 'edit'"
 						:type="'Maintainer'"
 						:id="item.MaintID"
 						@deleteItem="deleteItem"
@@ -54,7 +56,8 @@ export default {
 	},
 	computed: {
 		filteredList() {
-			return this.list.filter((x) => x.deleted !== true);
+			if (this.list) return this.list.filter((x) => x.deleted !== true);
+			return [];
 		},
 	},
 };
