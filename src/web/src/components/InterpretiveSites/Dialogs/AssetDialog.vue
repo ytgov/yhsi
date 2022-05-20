@@ -275,7 +275,7 @@
 										name="Site"
 										label="Site"
 										readonly
-										v-model="Site.SiteName"
+										v-model="editFields.SiteName"
 									></v-text-field>
 
 									<v-select
@@ -326,7 +326,7 @@
 										:rules="dateRules"
 									></v-text-field>
 
-									<v-select
+									<!-- <v-select
 										:readonly="!internalEditMode"
 										outlined
 										dense
@@ -338,7 +338,13 @@
 										:loading="loadingCatalogs"
 										v-model="editFields.Maintainer"
 										:rules="rules"
-									></v-select>
+									></v-select> -->
+									<MaintainerList
+										:list="maintainers"
+										:mode="internalEditMode ? 'edit' : 'view'"
+										@newMaintainer="newMaintainer"
+										@deleteMaintainer="deleteMaintainer"
+									/>
 								</v-col>
 							</v-row>
 							<v-row>
@@ -411,6 +417,15 @@
 								value: dataToEdit.item.AssetID,
 							}"
 						/>
+						<!-- <DocumentHandler
+								:doclist="docs"
+								@newDocumment="newDocumment"
+								:objID="{
+									key: 'InspectID',
+									doctype: 'inspections',
+									value: dataToEdit.item.InspectID,
+								}"
+							/> -->
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
@@ -437,13 +452,14 @@
 </template>
 
 <script>
+import MaintainerList from '../InterpetiveSiteComponents/MaintainerList.vue';
 import DeleteDialog from './DeleteDialog.vue';
 import DocumentHandler from './DocumentHandler.vue';
 import catalogs from '../../../controllers/catalogs';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 export default {
 	props: ['type', 'Site', 'data', 'mode', 'dataToEdit'],
-	components: { DocumentHandler, DeleteDialog },
+	components: { DocumentHandler, DeleteDialog, MaintainerList },
 	data: () => ({
 		//new Dialog
 		dialog: false,
@@ -475,7 +491,6 @@ export default {
 	mounted() {
 		this.getTypes();
 		this.getCategories();
-		this.getMaintainers();
 	},
 	methods: {
 		closeDialog() {
@@ -493,6 +508,18 @@ export default {
 		newDocumment(val) {
 			this.documments.push(val.data);
 		},
+		newMaintainer(val) {
+			val.AssetID = this.dataToEdit.item.AssetID;
+			this.maintainers.push(val);
+		},
+		deleteMaintainer(id) {
+			this.maintainers = this.maintainers.map((x) => {
+				if (x.MaintID === id) {
+					x.deleted = true;
+				}
+				return x;
+			});
+		},
 		editMode() {
 			this.fieldsHistory = { ...this.editFields };
 			this.internalEditMode = true;
@@ -509,7 +536,10 @@ export default {
 		},
 		async getMaintainers() {
 			this.loadingCatalogs = true;
-			this.maintainers = await catalogs.getMaintainers();
+			this.maintainers = await interpretiveSites.getMaintainersByAssetID(
+				this.dataToEdit.item.AssetID
+			);
+			console.log('main', this.maintainers);
 			this.loadingCatalogs = false;
 		},
 		async saveNew() {
@@ -534,6 +564,7 @@ export default {
 			if (this.typeGrid) {
 				const res = await interpretiveSites.putAsset(this.editFields.AssetID, {
 					item: data,
+					maintainers: this.maintainers,
 				});
 
 				this.$emit('gridAssetEdited', res);
@@ -544,6 +575,7 @@ export default {
 
 				const res = await interpretiveSites.putAsset(this.editFields.AssetID, {
 					item: data,
+					maintainers: this.maintainers,
 				});
 				this.$emit('editAsset', { data: res, index: this.dataToEdit.index });
 			}
@@ -554,7 +586,8 @@ export default {
 		async openEditDialog() {
 			const { item } = this.dataToEdit;
 			this.editFields = { ...item };
-			await this.getDocs();
+			//await this.getDocs();
+			await this.getMaintainers();
 			this.editDialog = true;
 		},
 		async searchSites() {
@@ -580,7 +613,7 @@ export default {
 			this.loadingSites = false;
 		},
 		async getDocs() {
-			let res = await interpretiveSites.getDocummentsGeneral(
+			let res = await interpretiveSites.getDocumentsGeneral(
 				'assets',
 				this.dataToEdit.item.AssetID
 			);

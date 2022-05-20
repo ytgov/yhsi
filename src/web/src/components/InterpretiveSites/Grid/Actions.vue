@@ -98,15 +98,20 @@ export default {
 			page = page > 0 ? page - 1 : 0;
 			itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
 			let textToMatch = this.search;
+
+			const prefilters = {};
+			this.filterOptions.map((x) => {
+				prefilters[x.dataAccess] = x.value;
+			});
 			let data = await interpretiveSites.getActions(
 				textToMatch,
-				'',
-				'',
-				'',
-				'',
-				'',
-				'',
-				'',
+				prefilters.ToBeCompleteDate,
+				prefilters.ActionCompleteDate,
+				prefilters.CompletionDesc,
+				prefilters.Priority,
+				prefilters.CreatedBy,
+				prefilters.CreatedDate,
+				prefilters.CompletedBy,
 				sortBy[0],
 				sortDesc[0] ? 'desc' : 'asc',
 				page,
@@ -139,6 +144,9 @@ export default {
 			// returns a filtered users array depending on the selected filters
 			return this.list;
 		},
+		selectedFilters() {
+			return this.$store.getters['interpretiveSites/selectedActionFilters'];
+		},
 	},
 	watch: {
 		options: {
@@ -148,8 +156,12 @@ export default {
 			deep: true,
 		},
 		/* eslint-disable */
-		selectedFilters(newv, oldv) {
-			////console.log(oldv,newv);
+		selectedFilters: {
+			handler(newv) {
+				this.filterOptions = newv;
+				this.getDataFromApi();
+			},
+			deep: true,
 		},
 		search(newv, oldv) {
 			//this.searchText = newv;

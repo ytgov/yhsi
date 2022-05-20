@@ -4,11 +4,10 @@
 			v-if="mode == 'new'"
 			v-model="dialog"
 			persistent
-			max-width="800px"
+			max-width="600px"
 		>
 			<template v-slot:activator="{ on, attrs }">
 				<v-btn
-					v-if="!typeGrid"
 					color="primary"
 					outlined
 					class="ml-auto mr-1"
@@ -16,17 +15,7 @@
 					v-on="on"
 					@click="openNewDialog"
 				>
-					ADD ACTION
-				</v-btn>
-				<v-btn
-					v-else
-					class="black--text mx-1"
-					v-bind="attrs"
-					v-on="on"
-					@click="openNewDialog"
-				>
-					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-					Add Action
+					ADD MAINTAINER
 				</v-btn>
 			</template>
 			<v-card>
@@ -36,7 +25,7 @@
 							class="d-flex flex-row"
 							cols="12"
 						>
-							<span class="text-h5 mt-3">New Action</span>
+							<span class="text-h5 mt-3">New Maintainer</span>
 							<v-spacer></v-spacer>
 						</v-col>
 					</v-row>
@@ -46,153 +35,25 @@
 					<v-container>
 						<v-form
 							v-model="valid"
-							ref="actionDialog"
+							ref="maintainerDialog"
 						>
 							<v-row>
-								<v-col cols="6">
-									<v-autocomplete
-										v-if="typeGrid"
-										outlined
-										dense
-										clearable
-										@click="searchSites"
-										:items="siteList"
-										:search-input.sync="siteSearch"
-										:loading="loadingSites"
-										name="Site"
-										item-text="SiteName"
-										item-value="SiteID"
-										label="Site"
-										v-model="fields.SiteID"
-										:rules="rules"
-									></v-autocomplete>
-									<v-text-field
-										v-else
-										outlined
-										dense
-										readonly
-										name="Site Name"
-										label="Site Name"
-										v-model="Site.SiteName"
-									></v-text-field>
-
-									<v-text-field
-										outlined
-										dense
-										name="CreatedBy"
-										label="Created By"
-										v-model="fields.CreatedBy"
-										:rules="rules"
-									></v-text-field>
-								</v-col>
-								<v-col cols="6">
-									<!-- <v-text-field
-										outlined
-										dense
-										name="Inspection"
-										label="Inspection"
-										v-model="fields.Inspection"
-									></v-text-field> -->
-									<v-autocomplete
-										v-if="!typeInspection"
-										outlined
-										dense
-										clearable
-										@click="searchInspections"
-										:items="inspectionList"
-										:search-input.sync="inspectionSearch"
-										:loading="loadingInspections"
-										name="Inspection"
-										item-text="Description"
-										item-value="InspectID"
-										label="Inspection"
-										v-model="fields.InspectID"
-									></v-autocomplete>
-
-									<v-text-field
-										v-else
-										outlined
-										dense
-										name="Inspection"
-										label="Inspection"
-										readonly
-										v-model="Inspection.Description"
-									></v-text-field>
-									{{ Inspection }}
-									<v-text-field
-										outlined
-										dense
-										name="CreatedDate"
-										label="Created Date"
-										v-model="fields.CreatedDate"
-										:rules="dateRules"
-									></v-text-field>
-								</v-col>
-							</v-row>
-							<v-row>
-								<v-col cols="6">
-									<v-text-field
-										outlined
-										dense
-										name="ActionDescription"
-										label="Action Description"
-										v-model="fields.ActionDesc"
-										:rules="rules"
-									></v-text-field>
-
+								<v-col cols="12">
 									<v-select
 										outlined
 										dense
-										name="Priority"
-										label="Priority"
-										:items="priorityList"
-										v-model="fields.Priority"
+										name="Maintainer"
+										label="Maintainer"
+										item-text="MaintOwnName"
+										return-object
+										:items="maintainerOpts"
+										:loading="loadingMaintainers"
+										@click="searchMaintainers"
+										v-model="selectedMaintainer"
 										:rules="rules"
 									></v-select>
-
-									<v-text-field
-										outlined
-										dense
-										name="ToBeCompleted"
-										label="To Be Completed Date"
-										v-model="fields.ToBeCompleteDate"
-										:rules="dateRules"
-									></v-text-field>
-								</v-col>
-								<v-col cols="6">
-									<v-text-field
-										outlined
-										dense
-										name="CompletedBy"
-										label="Completed By"
-										v-model="fields.CompletedBy"
-										:rules="rules"
-									></v-text-field>
-
-									<v-text-field
-										outlined
-										dense
-										name="CompletedDate"
-										label="Completed Date"
-										v-model="fields.ActionCompleteDate"
-										:rules="dateRules"
-									></v-text-field>
 								</v-col>
 							</v-row>
-							<v-row>
-								<v-col cols="12">
-									<v-textarea
-										outlined
-										dense
-										name="Notes"
-										label="Notes"
-										v-model="fields.CompletionDesc"
-										:rules="rules"
-									></v-textarea>
-								</v-col>
-							</v-row>
-
-							<DocumentHandler :default="true" />
 						</v-form>
 					</v-container>
 				</v-card-text>
@@ -248,11 +109,6 @@
 						>
 							<span class="text-h5 mt-3">{{ textMode }} Action</span>
 							<v-spacer></v-spacer>
-							<DeleteDialog
-								:type="'Action'"
-								:id="editFields.ActionID"
-								@deleteItem="deleteItem"
-							/>
 							<v-btn
 								text
 								v-if="!internalEditMode"
@@ -267,7 +123,7 @@
 					<v-container>
 						<v-form
 							v-model="form2"
-							ref="actionEditDialog"
+							ref="maintainerEditDialog"
 						>
 							<v-row>
 								<v-col cols="6">
@@ -398,15 +254,6 @@
 								</v-col>
 							</v-row>
 						</v-form>
-						<DocumentHandler
-							:doclist="docs"
-							@newDocumment="newDocumment"
-							:objID="{
-								key: 'ActionID',
-								doctype: 'actions',
-								value: dataToEdit.item.ActionID,
-							}"
-						/>
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
@@ -433,20 +280,16 @@
 </template>
 
 <script>
-import DeleteDialog from './DeleteDialog.vue';
-import { mapGetters } from 'vuex';
+import catalogs from '../../../controllers/catalogs';
 import interpretiveSites from '../../../controllers/interpretive-sites';
-import DocumentHandler from './DocumentHandler.vue';
 export default {
 	props: ['type', 'Site', 'Inspection', 'data', 'mode', 'dataToEdit'],
-	components: { DocumentHandler, DeleteDialog },
+	components: {},
 	data: () => ({
 		//new Dialog
 		dialog: false,
 		valid: false,
 		fields: {},
-		siteList: [],
-		siteSearch: '',
 		rules: [(value) => !!value || 'Required.'],
 		dateRules: [
 			(v) => !!v || 'This field is required',
@@ -455,7 +298,6 @@ export default {
 					v
 				) || 'Correct date format required.',
 		],
-		loadingSites: false,
 		//edit dialog
 		form2: false,
 		editing: false,
@@ -469,24 +311,20 @@ export default {
 			{ text: 'Uploader', value: 'Uploader' },
 		],
 		priorityList: ['High', 'Med', 'Low'],
-		documments: [],
-		editedDocuments: [],
 		loading: false,
-		inspectionList: [],
-		inspectionSearch: '',
-		loadingInspections: false,
+		maintainerOpts: [],
+		selectedMaintainer: null,
+		maintainerSearch: '',
+		loadingMaintainers: false,
 	}),
 	methods: {
 		openNewDialog() {
-			this.fields.CreatedBy = this.username;
+			//this.fields.CreatedBy = this.username;
 		},
 		async deleteItem(id) {
 			await interpretiveSites.removeAction(id);
 			this.$emit('deletedAction', this.dataToEdit.index);
 			this.editDialog = false;
-		},
-		newDocumment(val) {
-			this.documents.push(val);
 		},
 		editMode() {
 			this.fieldsHistory = { ...this.editFields };
@@ -494,46 +332,51 @@ export default {
 		},
 		async saveNew() {
 			this.loading = true;
-			let data = { ...this.fields };
-			if (this.typeGrid) {
-				this.fields.CompletedBy = '';
-				const res = await interpretiveSites.postAction({ item: data });
-				this.$emit('gridActionAdded', res);
-			} else if (this.typeInspection) {
-				this.fields.CompletedBy = '';
-				data.InspectID = this.Inspection.InspectID;
-				const res = await interpretiveSites.postAction({ item: data });
-				this.$emit('newAction', res);
-			} else {
-				data.SiteID = this.Site.SiteID;
-				//data.new = true;
-				const res = await interpretiveSites.postAction({ item: data });
-				this.$emit('newAction', res);
-			}
-			this.$refs.actionDialog.reset();
+
+			let data = {
+				Maintainer: this.selectedMaintainer.MaintOwnName,
+				new: true,
+			};
+			this.$emit('newMaintainer', data);
+			// if (this.typeGrid) {
+			// 	this.fields.CompletedBy = '';
+			// 	const res = await interpretiveSites.postAction({ item: data });
+			// 	this.$emit('gridActionAdded', res);
+			// } else if (this.typeInspection) {
+			// 	this.fields.CompletedBy = '';
+			// 	data.InspectID = this.Inspection.InspectID;
+			// 	const res = await interpretiveSites.postAction({ item: data });
+			// 	this.$emit('newAction', res);
+			// } else {
+			// 	data.SiteID = this.Site.SiteID;
+			// 	//data.new = true;
+			// 	const res = await interpretiveSites.postAction({ item: data });
+			// 	this.$emit('newAction', res);
+			// }
+			this.$refs.maintainerDialog.reset();
 			this.loading = false;
 			this.dialog = false;
 		},
 		async saveEdit() {
 			this.loading = true;
-			let data = { ...this.editFields };
-			delete data.SiteName;
-			delete data.ActionID;
-			if (this.typeGrid) {
-				const res = await interpretiveSites.putAction(
-					this.editFields.ActionID,
-					{ item: data }
-				);
-				this.$emit('gridActionEdited', res);
-			} else {
-				data.SiteID = this.Site.SiteID;
-				//data.new = true;
-				const res = await interpretiveSites.putAction(
-					this.dataToEdit.ActionID,
-					{ item: data }
-				);
-				this.$emit('editAction', { data: res, index: this.dataToEdit.index });
-			}
+			// let data = { ...this.editFields };
+			// delete data.SiteName;
+			// delete data.ActionID;
+			// // if (this.typeGrid) {
+			// // 	const res = await interpretiveSites.putAction(
+			// // 		this.editFields.ActionID,
+			// // 		{ item: data }
+			// // 	);
+			// // 	this.$emit('gridActionEdited', res);
+			// // } else {
+			// // 	data.SiteID = this.Site.SiteID;
+			// // 	//data.new = true;
+			// // 	const res = await interpretiveSites.putAction(
+			// // 		this.dataToEdit.ActionID,
+			// // 		{ item: data }
+			// // 	);
+			// // 	this.$emit('editAction', { data: res, index: this.dataToEdit.index });
+			// // }
 
 			this.$refs.actionEditDialog.reset();
 			this.internalEditMode = false;
@@ -543,9 +386,6 @@ export default {
 		async openEditDialog() {
 			const { item } = this.dataToEdit;
 			this.editFields = { ...item };
-			await this.searchInspections();
-			//await this.searchSites();
-			await this.getDocs();
 			this.editDialog = true;
 		},
 		closeDialog() {
@@ -555,47 +395,10 @@ export default {
 			}
 			this.editDialog = false;
 		},
-		async searchSites() {
-			this.loadingSites = true;
-			let list = await interpretiveSites.get(
-				0,
-				5,
-				'SiteName',
-				'asc',
-				this.siteSearch,
-				'',
-				'',
-				'',
-				'',
-				'',
-				'',
-				'',
-				'',
-				''
-			);
-			this.siteList = list.body;
-			this.loadingSites = false;
-		},
-		async searchInspections() {
-			this.loadingInspections = true;
-			let res = await interpretiveSites.getInspections(
-				'',
-				this.inspectionSearch,
-				'',
-				'Description',
-				'asc',
-				0,
-				5
-			);
-			this.inspectionList = res.body;
-			this.loadingInspections = false;
-		},
-		async getDocs() {
-			let res = await interpretiveSites.getDocumentsGeneral(
-				'actions',
-				this.dataToEdit.item.ActionID
-			);
-			this.documments = [...res.data];
+		async searchMaintainers() {
+			this.loadingMaintainers = true;
+			this.maintainerOpts = await catalogs.getMaintainers();
+			this.loadingMaintainers = false;
 		},
 	},
 	watch: {
@@ -607,10 +410,6 @@ export default {
 		},
 	},
 	computed: {
-		...mapGetters({ username: 'fullName' }),
-		docs() {
-			return this.documments;
-		},
 		typeGrid() {
 			return this.type === 'grid';
 		},

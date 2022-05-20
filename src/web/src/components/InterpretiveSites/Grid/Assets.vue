@@ -34,7 +34,9 @@
 							<td class="child-row">{{ item.InstallDate }}</td>
 							<td class="child-row">{{ item.DecommissionDate }}</td>
 							<td class="child-row">{{ item.DecommissionNotes }}</td>
-							<td class="child-row">{{ item.Status }}</td>
+							<td class="child-row">
+								{{ item.Status === 'Yes' ? 'Active' : 'Inactive' }}
+							</td>
 							<td class="child-row">
 								<AssetDialog
 									:mode="'edit'"
@@ -156,6 +158,9 @@ export default {
 			// returns a filtered users array depending on the selected filters
 			return this.list;
 		},
+		selectedFilters() {
+			return this.$store.getters['interpretiveSites/selectedAssetFilters'];
+		},
 	},
 	watch: {
 		options: {
@@ -165,8 +170,12 @@ export default {
 			deep: true,
 		},
 		/* eslint-disable */
-		selectedFilters(newv, oldv) {
-			////console.log(oldv,newv);
+		selectedFilters: {
+			handler(newv) {
+				this.filterOptions = newv;
+				this.getDataFromApi();
+			},
+			deep: true,
 		},
 		search(newv, oldv) {
 			//this.search = newv;
