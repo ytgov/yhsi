@@ -1,4 +1,5 @@
 import { api, apiP } from './config';
+import axios from 'axios';
 
 export default {
 	async get(
@@ -276,6 +277,78 @@ export default {
 				console.error(error);
 			});
 	},
+	async getActionsExport(
+		ActionDesc,
+		ToBeCompleteDate,
+		ActionCompleteDate,
+		CompletionDesc,
+		Priority,
+		CreatedBy,
+		CreatedDate,
+		CompletedBy,
+		sortBy,
+		sort
+	) {
+		return await api
+			.post('actions/export', {
+				ActionDesc,
+				ToBeCompleteDate,
+				ActionCompleteDate,
+				CompletionDesc,
+				Priority,
+				CreatedBy,
+				CreatedDate,
+				CompletedBy,
+				sortBy,
+				sort,
+				page: 0,
+				limit: 0,
+			})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((err) => {
+				return err;
+			});
+	},
+	async getActionsGridPdf(
+		ActionDesc,
+		ToBeCompleteDate,
+		ActionCompleteDate,
+		CompletionDesc,
+		Priority,
+		CreatedBy,
+		CreatedDate,
+		CompletedBy,
+		sortBy,
+		sort
+	) {
+		return await api({
+			url: 'actions/pdf',
+			method: 'POST',
+			responseType: 'blob',
+			data: {
+				page: 0,
+				limit: 0,
+				ActionDesc,
+				ToBeCompleteDate,
+				ActionCompleteDate,
+				CompletionDesc,
+				Priority,
+				CreatedBy,
+				CreatedDate,
+				CompletedBy,
+				sortBy,
+				sort,
+			},
+		})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((err) => {
+				return err;
+			});
+	},
 	async putAction(id, data) {
 		return await api
 			.put(`actions/${id}`, data)
@@ -339,6 +412,93 @@ export default {
 				console.error(error);
 			});
 	},
+	async getMaintainersByAssetID(id) {
+		return await api
+			.get(`/assets/maintainers/${id}`)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((error) => {
+				// handle error
+				console.error(error);
+			});
+	},
+	async getAssetsExport(
+		Category,
+		Type,
+		Size,
+		Description,
+		SignText,
+		InstallDate,
+		DecommissionDate,
+		DecommissionNotes,
+		Status,
+		sortBy,
+		sort
+	) {
+		return await api
+			.post('assets/export', {
+				Category,
+				Type,
+				Size,
+				Description,
+				SignText,
+				InstallDate,
+				DecommissionDate,
+				DecommissionNotes,
+				Status,
+				sortBy,
+				sort,
+				page: 0,
+				limit: 0,
+			})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((err) => {
+				return err;
+			});
+	},
+	async getAssetsGridPdf(
+		Category,
+		Type,
+		Size,
+		Description,
+		SignText,
+		InstallDate,
+		DecommissionDate,
+		DecommissionNotes,
+		Status,
+		sortBy,
+		sort
+	) {
+		return await api({
+			url: 'assets/pdf',
+			method: 'POST',
+			responseType: 'blob',
+			data: {
+				page: 0,
+				limit: 0,
+				Category,
+				Type,
+				Size,
+				Description,
+				SignText,
+				InstallDate,
+				DecommissionDate,
+				DecommissionNotes,
+				Status,
+				sortBy,
+				sort,
+			},
+		})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((err) => {
+				return err;
+			});
+	},
 	async putAsset(id, data) {
 		return await api
 			.put(`assets/${id}`, data)
@@ -370,9 +530,27 @@ export default {
 				console.error(error);
 			});
 	},
-	async getDocummentsGeneral(docType, itemId) {
+	async getDocumentsGeneral(docType, itemId) {
 		return await api
-			.get(`${docType}/docs/${itemId}`)
+			.post({
+				url: `${docType}/docs/${itemId}`,
+				method: 'POST',
+				responseType: 'blob',
+				// data: {
+				// 	page: 0,
+				// 	limit: 0,
+				// 	ActionDesc,
+				// 	ToBeCompleteDate,
+				// 	ActionCompleteDate,
+				// 	CompletionDesc,
+				// 	Priority,
+				// 	CreatedBy,
+				// 	CreatedDate,
+				// 	CompletedBy,
+				// 	sortBy,
+				// 	sort,
+				// },
+			})
 			.then((resp) => {
 				//console.log("data",resp);
 				return resp;
@@ -417,5 +595,9 @@ export default {
 				return resp;
 			})
 			.catch((error) => console.error(error));
+	},
+	async downloadDocByID(itemId) {
+		const response = await api.get(`interpretive-sites/file/${itemId}`, { responseType: 'json' });
+		return response;
 	},
 };

@@ -32,9 +32,10 @@ actionRouter.get(
 			CreatedBy = '',
 			CreatedDate = '',
 			CompletedBy = '',
-			sortBy, 
+			sortBy = 'ActionDesc', 
 			sort
 		 } =  req.query;
+		 console.log(req.query);
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
@@ -198,7 +199,7 @@ actionRouter.post('/pdf', async (req: Request, res: Response) => {
 			CreatedBy = '',
 			CreatedDate = '',
 			CompletedBy = '',
-			sortBy, 
+			sortBy = 'ActionDesc', 
 			sort,
             page = 0, limit = 0 } =  req.body;
         
@@ -236,7 +237,7 @@ actionRouter.post('/export', async (req: Request, res: Response) => {
 		CreatedBy = '',
 		CreatedDate = '',
 		CompletedBy = '',
-		sortBy, 
+		sortBy = 'ActionDesc', 
 		sort,
         page = 0, limit = 0 } =  req.body;
     

@@ -318,7 +318,7 @@ export default {
 			this.actions.push(data);
 		},
 		newDocumment(val) {
-			this.fields.documments.push(val);
+			this.documments.push(val);
 		},
 		closeDialog() {
 			if (this.internalEditMode) {
@@ -408,7 +408,7 @@ export default {
 			this.actions = [...res];
 		},
 		async getDocs() {
-			let res = await interpretiveSites.getDocummentsGeneral(
+			let res = await interpretiveSites.getDocumentsGeneral(
 				'inspections',
 				this.dataToEdit.item.InspectID
 			);
