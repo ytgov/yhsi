@@ -66,9 +66,10 @@ export class InterpretiveSiteService {
 		//.rightJoin('InterpretiveSite.Inspections as IN', 'AC.InspectID', '=', 'IN.InspectID');
 
 		item.assets = await db
-			.select('*')
-			.from('InterpretiveSite.Assets')
-			.where('InterpretiveSite.Assets.SiteID', siteId);
+			.select('AS.*', 'ST.SiteName')
+			.from('InterpretiveSite.Assets as AS')
+			.where('AS.SiteID', siteId)
+			.join('InterpretiveSite.Sites as ST', 'ST.SiteID', '=', 'AS.SiteID');
 
 		item.inspections = await db
 			.select('*')

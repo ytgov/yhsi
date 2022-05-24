@@ -120,7 +120,7 @@ assetRouter.get(
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
-
+		console.log('insideendpoint', assetID);
 		const docs = await intSiteService.getDocumentsByOwnerID({
 			AssetID: assetID,
 		});
