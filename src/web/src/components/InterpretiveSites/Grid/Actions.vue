@@ -119,9 +119,13 @@ export default {
 			);
 
 			this.list = data.body.map((x) => {
-				x.ToBeCompleteDate = this.formatDate(x.ToBeCompleteDate);
-				x.CreatedDate = this.formatDate(x.CreatedDate);
-				x.ActionCompleteDate = this.formatDate(x.ActionCompleteDate);
+				x.ToBeCompleteDate = x.ToBeCompleteDate
+					? this.formatDate(x.ToBeCompleteDate)
+					: null;
+				x.CreatedDate = x.CreatedDate ? this.formatDate(x.CreatedDate) : null;
+				x.ActionCompleteDate = x.ActionCompleteDate
+					? this.formatDate(x.ActionCompleteDate)
+					: null;
 				return x;
 			});
 			this.totalLength = data.count;

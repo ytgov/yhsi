@@ -109,6 +109,7 @@
 										:mode="'table'"
 									/>
 									<v-btn
+										v-else
 										icon
 										@click="downloadDoc(item.DocID)"
 										:loading="downloading"
@@ -126,7 +127,6 @@
 </template>
 
 <script>
-
 import { downloadFileFromJSON } from '../../../utils/dataToFile';
 
 import DeleteDialog from './DeleteDialog.vue';
@@ -180,12 +180,18 @@ export default {
 				id
 				//this.objID.value
 			);
+			this.$emit('deletedItem', id);
 		},
 		async downloadDoc(id) {
 			console.log('downloading');
+			console.log('id', id);
 			let res = await interpretiveSites.downloadDocByID(id);
-
-			downloadFileFromJSON(res.data[0].Document.data, 'file', res.data[0].FileType);
+			console.log(res);
+			downloadFileFromJSON(
+				res.data[0].Document.data,
+				'file',
+				res.data[0].FileType
+			);
 		},
 		textData() {
 			return this.default

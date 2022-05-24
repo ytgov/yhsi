@@ -411,11 +411,13 @@
 						<DocumentHandler
 							:doclist="docs"
 							@newDocumment="newDocumment"
+							:displayDelete="internalEditMode"
 							:objID="{
 								key: 'AssetID',
 								doctype: 'assets',
 								value: dataToEdit.item.AssetID,
 							}"
+							@deletedItem="deletedDoc"
 						/>
 						<!-- <DocumentHandler
 								:doclist="docs"
@@ -442,6 +444,7 @@
 						text
 						@click="saveEdit()"
 						:disabled="!form2"
+						v-if="internalEditMode"
 					>
 						Save
 					</v-btn>
@@ -507,6 +510,9 @@ export default {
 		},
 		newDocumment(val) {
 			this.documments.push(val.data);
+		},
+		deletedDoc(id) {
+			this.documments = this.documments.filter((x) => x.DocID !== id);
 		},
 		newMaintainer(val) {
 			val.AssetID = this.dataToEdit.item.AssetID;
@@ -586,7 +592,7 @@ export default {
 		async openEditDialog() {
 			const { item } = this.dataToEdit;
 			this.editFields = { ...item };
-			//await this.getDocs();
+			await this.getDocs();
 			await this.getMaintainers();
 			this.editDialog = true;
 		},
@@ -617,6 +623,7 @@ export default {
 				'assets',
 				this.dataToEdit.item.AssetID
 			);
+			console.log('response', res);
 			this.documments = [...res.data];
 		},
 	},

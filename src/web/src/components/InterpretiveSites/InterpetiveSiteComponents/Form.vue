@@ -194,7 +194,7 @@
 											outlined
 											dense
 											color="primary"
-											@click="showDisabled"
+											@click="showAssetDisabled"
 											>{{ showAllAssets ? 'SHOW LESS' : 'SHOW MORE' }}</v-btn
 										>
 									</v-col>
@@ -262,6 +262,13 @@
 											class="ml-auto mr-1"
 											@newAction="newAction"
 										/>
+										<v-btn
+											outlined
+											dense
+											color="primary"
+											@click="showActionDisabled"
+											>{{ showAllActions ? 'SHOW LESS' : 'SHOW MORE' }}</v-btn
+										>
 									</v-col>
 								</v-row>
 								<v-row>
@@ -273,7 +280,7 @@
 											class="elevation-0"
 										>
 											<template v-slot:item="{ item, index }">
-												<tr>
+												<tr v-if="showAllActions || item.ActionCompleteDate">
 													<td class="parent-row">
 														{{ item.ActionDesc }}
 													</td>
@@ -382,7 +389,6 @@ import ActionDialog from '../Dialogs/ActionDialog.vue';
 import AssetDialog from '../Dialogs/AssetDialog.vue';
 import MapLoader from '../../MapLoader.vue';
 import Photos from '../../PhotoEditor/Photos';
-import countries from '../../../misc/countries';
 export default {
 	name: 'IntSiteComponent',
 	components: {
@@ -447,6 +453,7 @@ export default {
 		selectedImage: null,
 		loadingPhotos: false,
 		showAllAssets: false,
+		showAllActions: false,
 		infoLoaded: false,
 		loadingPdf: false,
 	}),
@@ -477,9 +484,11 @@ export default {
 			}
 			return false;
 		},
-		showDisabled() {
+		showAssetDisabled() {
 			this.showAllAssets = !this.showAllAssets;
-			console.log(this.showAllAssets);
+		},
+		showActionDisabled() {
+			this.showAllActions = !this.showAllActions;
 		},
 		resetValidation() {
 			this.$refs.sForm.reset();
@@ -521,9 +530,13 @@ export default {
 				return x;
 			});
 			this.fields.actions = this.fields.actions.map((x) => {
-				x.ToBeCompleteDate = this.formatDate(x.ToBeCompleteDate);
-				x.CreatedDate = this.formatDate(x.CreatedDate);
-				x.ActionCompleteDate = this.formatDate(x.ActionCompleteDate);
+				x.ToBeCompleteDate = x.ToBeCompleteDate
+					? this.formatDate(x.ToBeCompleteDate)
+					: null;
+				x.CreatedDate = x.CreatedDate ? this.formatDate(x.CreatedDate) : null;
+				x.ActionCompleteDate = x.ActionCompleteDate
+					? this.formatDate(x.ActionCompleteDate)
+					: null;
 				return x;
 			});
 			this.fields.inspections = this.fields.inspections.map((x) => {
@@ -613,9 +626,15 @@ export default {
 			this.$router.go();
 		},
 		newAction(val) {
-			val.ToBeCompleteDate = this.formatDate(val.ToBeCompleteDate);
-			val.CreatedDate = this.formatDate(val.CreatedDate);
-			val.ActionCompleteDate = this.formatDate(val.ActionCompleteDate);
+			val.ToBeCompleteDate = val.ToBeCompleteDate
+				? this.formatDate(val.ToBeCompleteDate)
+				: null;
+			val.CreatedDate = val.CreatedDate
+				? this.formatDate(val.CreatedDate)
+				: null;
+			val.ActionCompleteDate = val.ActionCompleteDate
+				? this.formatDate(val.ActionCompleteDate)
+				: null;
 			this.fields.actions.push(val);
 		},
 		deletedAsset(index) {
@@ -715,19 +734,6 @@ export default {
 				(x) => !this.sites.some((item) => item.dataAccess === x)
 			);
 		},
-		filteredOccupations() {
-			return this.occupations.filter(
-				(x) => !this.fields.Occupations.some((item) => item === x)
-			);
-		},
-		filteredMemberships() {
-			return this.memberships.filter(
-				(x) =>
-					!this.fields.Memberships.some(
-						(item) => item.MembershipLUpID === x.MembershipLUpID
-					)
-			);
-		},
 		isView() {
 			return this.mode == 'view';
 		},
@@ -741,9 +747,6 @@ export default {
 			if (this.mode == 'new') return false;
 
 			return localStorage.currentIntSiteID;
-		},
-		getCountries() {
-			return countries;
 		},
 	},
 	watch: {
