@@ -149,7 +149,8 @@
 										v-model="fields.Priority"
 										:rules="rules"
 									></v-select>
-
+								</v-col>
+								<v-col cols="6">
 									<v-text-field
 										outlined
 										dense
@@ -158,25 +159,22 @@
 										v-model="fields.ToBeCompleteDate"
 										:rules="dateRules"
 									></v-text-field>
-								</v-col>
-								<v-col cols="6">
-									<v-text-field
+									<!-- <v-text-field
 										outlined
 										dense
 										name="CompletedBy"
 										label="Completed By"
 										v-model="fields.CompletedBy"
-										:rules="rules"
-									></v-text-field>
+									></v-text-field> -->
 
-									<v-text-field
+									<!-- <v-text-field
 										outlined
 										dense
 										name="CompletedDate"
 										label="Completed Date"
 										v-model="fields.ActionCompleteDate"
 										:rules="dateRules"
-									></v-text-field>
+									></v-text-field> -->
 								</v-col>
 							</v-row>
 							<v-row>
@@ -406,6 +404,8 @@
 								doctype: 'actions',
 								value: dataToEdit.item.ActionID,
 							}"
+							:displayDelete="internalEditMode"
+							@deletedItem="deletedDoc"
 						/>
 					</v-container>
 				</v-card-text>
@@ -486,7 +486,10 @@ export default {
 			this.editDialog = false;
 		},
 		newDocumment(val) {
-			this.documents.push(val);
+			this.documments.push(val);
+		},
+		deletedDoc(id) {
+			this.documments = this.documments.filter((x) => x.DocID !== id);
 		},
 		editMode() {
 			this.fieldsHistory = { ...this.editFields };
@@ -528,8 +531,9 @@ export default {
 			} else {
 				data.SiteID = this.Site.SiteID;
 				//data.new = true;
+
 				const res = await interpretiveSites.putAction(
-					this.dataToEdit.ActionID,
+					this.editFields.ActionID,
 					{ item: data }
 				);
 				this.$emit('editAction', { data: res, index: this.dataToEdit.index });

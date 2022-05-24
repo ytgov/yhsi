@@ -227,6 +227,8 @@
 									doctype: 'inspections',
 									value: dataToEdit.item.InspectID,
 								}"
+								:displayDelete="internalEditMode"
+								@deletedItem="deletedDoc"
 							/>
 						</v-form>
 					</v-container>
@@ -316,6 +318,9 @@ export default {
 		},
 		newAction(data) {
 			this.actions.push(data);
+		},
+		deletedDoc(id) {
+			this.documments = this.documments.filter((x) => x.DocID !== id);
 		},
 		newDocumment(val) {
 			this.documments.push(val);

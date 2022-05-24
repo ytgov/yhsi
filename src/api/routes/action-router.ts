@@ -35,7 +35,7 @@ actionRouter.get(
 			sortBy = 'ActionDesc', 
 			sort
 		 } =  req.query;
-		 console.log(req.query);
+
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
