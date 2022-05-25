@@ -50,12 +50,10 @@
 				>
 					<template v-slot:activator="{ on, attrs }">
 						<v-btn
-							v-if="$route.path.includes('action')"
 							color="transparent"
 							class="black--text"
 							v-bind="attrs"
 							v-on="on"
-							disabled
 						>
 							<v-icon class="black--text mr-1">mdi-filter</v-icon>
 							Filter
@@ -65,15 +63,15 @@
 					</template>
 					<v-list v-if="siteRoute">
 						<v-list-item
-							v-for="(item, i) in actionFilterOptions"
-							:key="`action-filter-list-opt-${i}`"
+							v-for="(item, i) in siteFilterOptions"
+							:key="`site-filter-list-opt-${i}`"
 							link
 						>
 							<v-text-field
 								clearable
 								@blur="siteFilterChange"
 								v-model="item.value"
-								:label="item.name"
+								:label="item.text"
 							></v-text-field>
 						</v-list-item>
 					</v-list>
@@ -87,22 +85,49 @@
 								clearable
 								@blur="actionFilterChange"
 								v-model="item.value"
-								:label="item.name"
+								:label="item.text"
 							></v-text-field>
 						</v-list-item>
 					</v-list>
 					<v-list v-else>
 						<v-list-item
-							v-for="(item, i) in actionFilterOptions"
-							:key="`action-filter-list-opt-${i}`"
+							v-for="(item, i) in displayAssetOptions"
+							:key="`asset-filter-list-opt-${i}`"
 							link
 						>
 							<v-text-field
 								clearable
 								@blur="assetFilterChange"
 								v-model="item.value"
-								:label="item.name"
+								:label="item.text"
 							></v-text-field>
+						</v-list-item>
+						<v-list-item>
+							<v-select
+								@blur="assetFilterChange"
+								:items="[
+									{ text: 'Active', value: 'Yes' },
+									{ text: 'Inactive', value: 'No' },
+								]"
+								label="Status"
+								name="Status"
+								item-text="text"
+								item-value="value"
+								v-model="assetFilterOptions[8].value"
+							>
+							</v-select>
+						</v-list-item>
+						<v-list-item>
+							<v-select
+								@blur="assetFilterChange"
+								:items="assetTypes"
+								label="Type"
+								name="Type"
+								item-text="Type"
+								item-value="Type"
+								v-model="assetFilterOptions[1].value"
+							>
+							</v-select>
 						</v-list-item>
 					</v-list>
 				</v-menu>
@@ -116,6 +141,7 @@
 				<ActionDialog
 					:type="'grid'"
 					:mode="'new'"
+					@newAction="newAction"
 				/>
 
 				<v-btn
@@ -144,6 +170,7 @@
 				<AssetDialog
 					:type="'grid'"
 					:mode="'new'"
+					@gridAssetAdded="gridAssetAdded"
 				/>
 
 				<v-btn
@@ -230,6 +257,7 @@
 </template>
 
 <script>
+import catalogs from '../../../controllers/catalogs';
 import Breadcrumbs from '../../Breadcrumbs';
 import ActionDialog from '../Dialogs/ActionDialog.vue';
 import AssetDialog from '../Dialogs/AssetDialog.vue';
@@ -267,7 +295,7 @@ export default {
 			},
 		],
 		actionFilterOptions: [
-			{ text: 'Action Required', value: '', dataAccess: 'ActionDesc' },
+			//{ text: 'Action Required', value: '', dataAccess: 'ActionDesc' },
 			{ text: 'To be Completed by', value: '', dataAccess: 'CompletedBy' },
 			{ text: 'Priority', value: '', dataAccess: 'Priority' },
 			{ text: 'Completed date', value: '', dataAccess: 'ActionCompleteDate' },
@@ -292,9 +320,17 @@ export default {
 		],
 		loadingPdf: false,
 		loadingExport: false,
+		assetTypes: [],
 	}),
-	async mounted() {},
+	async mounted() {
+		this.getTypes();
+	},
 	methods: {
+		async getTypes() {
+			this.loadingCatalogs = true;
+			this.assetTypes = await catalogs.getAssetType();
+			this.loadingCatalogs = false;
+		},
 		addNewSite() {
 			this.$router.push(`/interpretive-sites/new`);
 		},
@@ -339,6 +375,13 @@ export default {
 			//route.includes("sites") ? "notActive" : route.includes("actions") ? : ;
 			console.log(route);
 			return 'notActive';
+		},
+		gridAssetAdded(val) {
+			console.log(val);
+			this.$router.go();
+		},
+		newAction() {
+			this.$router.go();
 		},
 		async getSitesExport() {
 			this.loadingExport = true;
@@ -394,46 +437,57 @@ export default {
 			let { sortBy, sortDesc } = this.actionTableOptions;
 			let textToMatch = this.searchAction;
 			const prefilters = {};
-			this.siteFilterOptions.map((x) => {
+			this.actionFilterOptions.map((x) => {
 				prefilters[x.dataAccess] = x.value;
 			});
-			let data = await interpretiveSites.getExport(
+			let data = await interpretiveSites.getActionsExport(
+				textToMatch,
+				prefilters.ToBeCompleteDate,
+				prefilters.ActionCompleteDate,
+				prefilters.CompletionDesc,
+				prefilters.Priority,
+				prefilters.CreatedBy,
+				prefilters.CreatedDate,
+				prefilters.CompletedBy,
 				sortBy[0],
-				sortDesc[0] ? 'desc' : 'asc',
-				textToMatch, //prefilters.SiteName,
-				prefilters.LocationDesc,
-				prefilters.RouteName,
-				prefilters.KMNum,
-				prefilters.MapSheet,
-				prefilters.Latitude,
-				prefilters.Longitude,
-				prefilters.EstablishedYear,
-				prefilters.AdvancedNotification,
-				prefilters.NotificationDesc
+				sortDesc[0] ? 'desc' : 'asc'
 			);
+			// let data = await interpretiveSites.getExport(
+			// 	sortBy[0],
+			// 	sortDesc[0] ? 'desc' : 'asc',
+			// 	textToMatch, //prefilters.SiteName,
+			// 	prefilters.LocationDesc,
+			// 	prefilters.RouteName,
+			// 	prefilters.KMNum,
+			// 	prefilters.MapSheet,
+			// 	prefilters.Latitude,
+			// 	prefilters.Longitude,
+			// 	prefilters.EstablishedYear,
+			// 	prefilters.AdvancedNotification,
+			// 	prefilters.NotificationDesc
+			// );
 			downloadCsv(data, 'actions');
 			this.loadingExport = false;
 		},
 		async downloadActionsPdf() {
 			this.loadingPdf = true;
 			let { sortBy, sortDesc } = this.actionTableOptions;
+
 			const prefilters = {};
-			this.siteFilterOptions.map((x) => {
+			this.actionFilterOptions.map((x) => {
 				prefilters[x.dataAccess] = x.value;
 			});
-			let res = await interpretiveSites.getGridPdf(
+			let res = await interpretiveSites.getActionsGridPdf(
+				this.searchAction,
+				prefilters.ToBeCompleteDate,
+				prefilters.ActionCompleteDate,
+				prefilters.CompletionDesc,
+				prefilters.Priority,
+				prefilters.CreatedBy,
+				prefilters.CreatedDate,
+				prefilters.CompletedBy,
 				sortBy[0],
-				sortDesc[0] ? 'desc' : 'asc',
-				this.searchAction, //prefilters.SiteName,
-				prefilters.LocationDesc,
-				prefilters.RouteName,
-				prefilters.KMNum,
-				prefilters.MapSheet,
-				prefilters.Latitude,
-				prefilters.Longitude,
-				prefilters.EstablishedYear,
-				prefilters.AdvancedNotification,
-				prefilters.NotificationDesc
+				sortDesc[0] ? 'desc' : 'asc'
 			);
 			downloadPdf(res, 'actions');
 			this.loadingPdf = false;
@@ -443,22 +497,23 @@ export default {
 			let { sortBy, sortDesc } = this.assetTableOptions;
 			let textToMatch = this.searchAsset;
 			const prefilters = {};
-			this.siteFilterOptions.map((x) => {
+			this.assetFilterOptions.map((x) => {
 				prefilters[x.dataAccess] = x.value;
 			});
-			let data = await interpretiveSites.getExport(
+			let data = await interpretiveSites.getAssetsExport(
+				//prefilters.SiteName,
+				prefilters.Category,
+				prefilters.Type,
+				prefilters.Size,
+				//	prefilters.Description,
+				textToMatch,
+				prefilters.SignText,
+				prefilters.InstallDate,
+				prefilters.DecommissionDate,
+				prefilters.DecommissionNotes,
+				prefilters.Status,
 				sortBy[0],
-				sortDesc[0] ? 'desc' : 'asc',
-				textToMatch, //prefilters.SiteName,
-				prefilters.LocationDesc,
-				prefilters.RouteName,
-				prefilters.KMNum,
-				prefilters.MapSheet,
-				prefilters.Latitude,
-				prefilters.Longitude,
-				prefilters.EstablishedYear,
-				prefilters.AdvancedNotification,
-				prefilters.NotificationDesc
+				sortDesc[0] ? 'desc' : 'asc'
 			);
 			downloadCsv(data, 'assets');
 			this.loadingExport = false;
@@ -467,28 +522,34 @@ export default {
 			this.loadingPdf = true;
 			let { sortBy, sortDesc } = this.assetTableOptions;
 			const prefilters = {};
-			this.siteFilterOptions.map((x) => {
+			this.assetFilterOptions.map((x) => {
 				prefilters[x.dataAccess] = x.value;
 			});
-			let res = await interpretiveSites.getGridPdf(
+			let res = await interpretiveSites.getAssetsGridPdf(
+				//prefilters.SiteName,
+				prefilters.Category,
+				prefilters.Type,
+				prefilters.Size,
+				//	prefilters.Description,
+				this.searchAsset,
+				prefilters.SignText,
+				prefilters.InstallDate,
+				prefilters.DecommissionDate,
+				prefilters.DecommissionNotes,
+				prefilters.Status,
 				sortBy[0],
-				sortDesc[0] ? 'desc' : 'asc',
-				this.searchAsset, //prefilters.SiteName,
-				prefilters.LocationDesc,
-				prefilters.RouteName,
-				prefilters.KMNum,
-				prefilters.MapSheet,
-				prefilters.Latitude,
-				prefilters.Longitude,
-				prefilters.EstablishedYear,
-				prefilters.AdvancedNotification,
-				prefilters.NotificationDesc
+				sortDesc[0] ? 'desc' : 'asc'
 			);
 			downloadPdf(res, 'assets');
 			this.loadingPdf = false;
 		},
 	},
 	computed: {
+		displayAssetOptions() {
+			return this.assetFilterOptions.filter(
+				(x) => x.dataAccess !== 'Type' && x.dataAccess != 'Status'
+			);
+		},
 		currentRoute() {
 			if (this.$route.path.includes('actions')) {
 				return 'actions';

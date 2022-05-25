@@ -7,16 +7,16 @@ import { InterpretiveSiteService } from "../services";
 import { renderFile } from "pug";
 import { generatePDF } from "../utils/pdf-generator";
 const { Parser, transforms: { unwind } } = require('json2csv');
-export const actionRouter = express.Router();
+export const inspectionRouter = express.Router();
 const db = knex(DB_CONFIG);
 const intSiteService = new InterpretiveSiteService();
 
 // ACTIONS
 
-actionRouter.get(
+inspectionRouter.get(
 	'/',
 	[
-		query('sortBy').default('ActionDesc').isString(),
+		query('sortBy').default('InspectedBy').isString(),
 		query('sort').default('asc').isString(),
 		query('page').default(0).isInt(), 
 		query('limit').default(10).isInt({ gt: 0 }),
@@ -24,40 +24,29 @@ actionRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { 
-			ActionDesc = '', 
-			ToBeCompleteDate = '', 
-			ActionCompleteDate = '', 
-			CompletionDesc = '',
-			Priority = '',
-			CreatedBy = '',
-			CreatedDate = '',
-			CompletedBy = '',
-			sortBy = 'ActionDesc', 
+			InspectionDate = '', 
+			Description = '', 
+			InspectedBy = '', 
+			sortBy, 
 			sort
 		 } =  req.query;
-
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
-		
-		const data = await intSiteService.doActionSearch(page, limit, offset, { 
-			ActionDesc, 
-			ToBeCompleteDate, 
-			ActionCompleteDate, 
-			CompletionDesc,
-			Priority,
-			CreatedBy,
-			CreatedDate,
-			CompletedBy,
+		console.log(req.query);
+		const data = await intSiteService.doInspectionSearch(page, limit, offset, { 
+			InspectionDate, 
+			Description, 
+			InspectedBy, 
 			sortBy, 
 			sort
 		});
 
 		res.status(200).send(data);
-	}
+	} 
 );
 
-actionRouter.get(
+inspectionRouter.get(
 	'/:siteId',
 	[param('siteId').notEmpty()],
 	ReturnValidationErrors,
@@ -74,53 +63,7 @@ actionRouter.get(
 	}
 );
 
-actionRouter.delete('/docs/:id', 
-	[param('id').notEmpty()], 
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { id } = req.params;
-
-		let resObj = await intSiteService.removeDocumentByID(parseInt(id));
-		if(!resObj){
-			res.sendStatus(404).send('The Action doesnt exist');
-			return;
-		}
-		res.sendStatus(200).send(resObj);
-});
-
-actionRouter.delete('/:actionID', 
-	[param('actionID').notEmpty()], 
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { actionID } = req.params;
-		const exists = await intSiteService.objExists({ ActionID: parseInt(actionID)}, 'actions')
-		if(!exists){
-			res.sendStatus(404).send('The Action doesnt exist');
-			return
-		}
-
-		let resObj = await intSiteService.removeAction(parseInt(actionID));
-		res.sendStatus(200).send(resObj);
-});
-
-actionRouter.get(
-	'/inspection/:inspectId',
-	[param('inspectId').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { inspectId } = req.params;
-		const list = await intSiteService.getActionsByInspectID(parseInt(inspectId));
-
-		if(!list){
-			res.status(404).send({message: "Data not found"});
-			return;
-		}
-
-		res.status(200).send(list);
-	}
-);
-
-actionRouter.post('/', async (req: Request, res: Response) => {
+inspectionRouter.post('/', async (req: Request, res: Response) => {
 	const {
 		item = {},
 	} = req.body;
@@ -134,26 +77,53 @@ actionRouter.post('/', async (req: Request, res: Response) => {
 	res.send(resObj);
 });
 
-actionRouter.put('/:actionId', async (req: Request, res: Response) => {
+inspectionRouter.put('/:inspectID', async (req: Request, res: Response) => {
 	const {
 		item = {},
 		// assets = [], actions = [], inspections = []
 	} = req.body;
-	const { actionId } = req.params;
-	console.log(req.body, req.params);
-	const resObj = await intSiteService.modifyAction(item, parseInt(actionId));
+	const { inspectID } = req.params;
+	const resObj = await intSiteService.modifyInspection(item,parseInt(inspectID));
 	if(!resObj){
-		res.status(404).send({ message: "Action not found"});
+		res.status(404).send({ message: "Inspection not found"});
 		return;
 	}
 
-	res.send(resObj[0]);
+	res.status(200).send(resObj[0]);
 });
 
+inspectionRouter.delete('/:inspectID', 
+	[param('inspectID').notEmpty()], 
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { inspectID } = req.params;
+		const exists = await intSiteService.objExists({ InspectID: parseInt(inspectID)}, 'inspections')
+		if(!exists){
+			res.sendStatus(404).send('The inspection doesnt exist');
+			return
+		}
+
+		let resObj = await intSiteService.removeInspection(parseInt(inspectID));
+		res.sendStatus(200).send(resObj);
+});
+
+inspectionRouter.delete('/docs/:id', 
+	[param('id').notEmpty()], 
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+
+		let resObj = await intSiteService.removeDocumentByID(parseInt(id));
+		if(!resObj){
+			res.sendStatus(404).send('The Action doesnt exist');
+			return;
+		}
+		res.sendStatus(200).send(resObj);
+});
 
 //PDF AND EXPORTS
 // NO REQUEST FOR A SINGLE ACTION PRINT
-// actionRouter.post(
+// inspectionRouter.post(
 // 	'/actions/pdf/:actionId', 
 // 	[param('actionId').notEmpty()],
 // 	ReturnValidationErrors,
@@ -172,24 +142,24 @@ actionRouter.put('/:actionId', async (req: Request, res: Response) => {
 // 		res.send(pdf);
 // });
 
-actionRouter.get(
-	'/docs/:actionID',
-	[param('actionID').notEmpty()],
+inspectionRouter.get(
+	'/docs/:inspectID',
+	[param('inspectID').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { actionID } = req.params;
+		const { inspectID } = req.params;
 
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
 
-		const photos = await intSiteService.getDocumentsByOwnerID({ActionID: actionID});
+		const docs = await intSiteService.getDocumentsByOwnerID({InspectID: inspectID});
 
-		res.status(200).send(photos);
+		res.status(200).send(docs);
 	}
 );
 
-actionRouter.post('/pdf', async (req: Request, res: Response) => {
+inspectionRouter.post('/pdf', async (req: Request, res: Response) => {
         const { 
 			ActionDesc = '', 
 			ToBeCompleteDate = '', 
@@ -199,7 +169,7 @@ actionRouter.post('/pdf', async (req: Request, res: Response) => {
 			CreatedBy = '',
 			CreatedDate = '',
 			CompletedBy = '',
-			sortBy = 'ActionDesc', 
+			sortBy, 
 			sort,
             page = 0, limit = 0 } =  req.body;
         
@@ -226,7 +196,7 @@ actionRouter.post('/pdf', async (req: Request, res: Response) => {
 	}
 );
 
-actionRouter.post('/export', async (req: Request, res: Response) => {
+inspectionRouter.post('/export', async (req: Request, res: Response) => {
 
     const { 
 		ActionDesc = '', 
@@ -237,7 +207,7 @@ actionRouter.post('/export', async (req: Request, res: Response) => {
 		CreatedBy = '',
 		CreatedDate = '',
 		CompletedBy = '',
-		sortBy = 'ActionDesc', 
+		sortBy, 
 		sort,
         page = 0, limit = 0 } =  req.body;
     

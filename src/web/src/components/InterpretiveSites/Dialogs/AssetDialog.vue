@@ -67,6 +67,7 @@
 										item-value="Category"
 										name="Category"
 										label="Category"
+										:loading="loadingCatalogs"
 										v-model="fields.Category"
 										:rules="rules"
 									></v-select>
@@ -88,6 +89,7 @@
 										label="Type"
 										item-text="Type"
 										item-value="Type"
+										:loading="loadingCatalogs"
 										:items="availableTypes"
 										v-model="fields.Type"
 										:rules="rules"
@@ -98,18 +100,22 @@
 										dense
 										name="Installation Date"
 										label="Installation Date"
-										v-model="fields.InstallationDate"
-										:rules="rules"
+										v-model="fields.InstallDate"
+										:rules="dateRules"
 									></v-text-field>
 
-									<v-text-field
+									<v-select
 										outlined
 										dense
 										name="Maintained By"
 										label="Maintained By"
-										v-model="fields.MaintainedBy"
+										:items="maintainers"
+										item-text="MaintOwnName"
+										item-value="MaintOwnName"
+										:loading="loadingCatalogs"
+										v-model="fields.Maintainer"
 										:rules="rules"
-									></v-text-field>
+									></v-select>
 								</v-col>
 							</v-row>
 							<v-row>
@@ -154,7 +160,7 @@
 										dense
 										name="DecommissionDate"
 										label="Decommission Date"
-										:rules="rules"
+										:rules="dateRules"
 										v-model="fields.DecommissionDate"
 									></v-text-field>
 									<v-textarea
@@ -167,12 +173,11 @@
 									></v-textarea>
 								</v-col>
 							</v-row>
-							<DocumentHandler />
+							<DocumentHandler :default="true" />
 						</v-form>
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
-					<v-spacer></v-spacer>
 					<v-btn
 						color="blue darken-1"
 						text
@@ -180,6 +185,7 @@
 					>
 						Close
 					</v-btn>
+					<v-spacer></v-spacer>
 					<v-btn
 						color="blue darken-1"
 						text
@@ -207,16 +213,34 @@
 							class="grey--text text--darken-2"
 							@click="openEditDialog()"
 						>
-							<v-icon small>mdi-pencil</v-icon>
+							<v-icon small>mdi-eye</v-icon>
 						</v-btn>
 					</template>
-					<span>Edit</span>
+					<span>View</span>
 				</v-tooltip>
 			</template>
 
 			<v-card>
 				<v-card-title>
-					<span class="text-h5">Edit Asset</span>
+					<v-col
+						class="d-flex flex-row"
+						cols="12"
+					>
+						<span class="text-h5 mt-3">{{ textMode }} Asset</span>
+						<v-spacer></v-spacer>
+						<DeleteDialog
+							:type="'Asset'"
+							:id="editFields.AssetID"
+							@deleteItem="deleteItem"
+						/>
+						<v-btn
+							color="success"
+							v-if="!internalEditMode"
+							text
+							@click="editMode"
+							>Edit</v-btn
+						>
+					</v-col>
 				</v-card-title>
 				<v-card-text>
 					<v-container>
@@ -226,18 +250,6 @@
 						>
 							<v-row>
 								<v-col cols="6">
-									<v-select
-										v-if="typeGrid"
-										outlined
-										dense
-										:items="data"
-										name="Site"
-										item-text="SiteName"
-										item-value="SiteID"
-										label="Site"
-										v-model="siteSearch"
-										:rules="rules"
-									></v-select>
 									<!-- <v-autocomplete
 										v-if="typeGrid"
 										outlined
@@ -251,118 +263,188 @@
 										item-text="SiteName"
 										item-value="SiteID"
 										label="Site"
-										v-model="fields.SiteID"
+										v-model="editFields.SiteID"
 										:rules="rules"
-									></v-autocomplete> -->
-									<label v-else>{{ Site.SiteName }}</label>
-
+									></v-autocomplete>
+									<label v-else>
+										<h3>{{ Site.SiteName }}</h3>
+									</label> -->
 									<v-text-field
 										outlined
 										dense
-										name="CreatedBy"
-										label="Created By"
-										v-model="editFields.CreatedBy"
-										:rules="rules"
+										name="Site"
+										label="Site"
+										readonly
+										v-model="editFields.SiteName"
 									></v-text-field>
+
+									<v-select
+										:readonly="!internalEditMode"
+										:items="availableCategories"
+										outlined
+										dense
+										item-text="Category"
+										item-value="Category"
+										name="Category"
+										label="Category"
+										:loading="loadingCatalogs"
+										v-model="editFields.Category"
+										:rules="rules"
+									></v-select>
+
+									<!-- <v-text-field
+										outlined
+										dense
+										name="Owned By"
+										label="Owned By"
+										v-model="editFields.OwnedBy"
+										:rules="rules"
+									></v-text-field> -->
 								</v-col>
 								<v-col cols="6">
-									<v-text-field
+									<v-select
+										:readonly="!internalEditMode"
 										outlined
 										dense
-										name="Inspection"
-										label="Inspection"
-										v-model="editFields.Inspection"
+										name="Type"
+										label="Type"
+										item-text="Type"
+										item-value="Type"
+										:loading="loadingCatalogs"
+										:items="availableTypes"
+										v-model="editFields.Type"
 										:rules="rules"
-									></v-text-field>
+									></v-select>
 
 									<v-text-field
+										:readonly="!internalEditMode"
 										outlined
 										dense
-										name="CreatedDate"
-										label="Created Date"
-										v-model="editFields.CreatedDate"
-										:rules="rules"
-									></v-text-field>
-								</v-col>
-							</v-row>
-							<v-row>
-								<v-col cols="6">
-									<v-text-field
-										outlined
-										dense
-										name="ActionDescription"
-										label="Action Description"
-										v-model="editFields.ActionDesc"
-										:rules="rules"
+										name="Installation Date"
+										label="Installation Date"
+										v-model="editFields.InstallDate"
+										:rules="dateRules"
 									></v-text-field>
 
-									<v-text-field
+									<!-- <v-select
+										:readonly="!internalEditMode"
 										outlined
 										dense
-										name="Priority"
-										label="Priority"
-										v-model="editFields.Priority"
+										name="Maintained By"
+										label="Maintained By"
+										:items="maintainers"
+										item-text="MaintOwnName"
+										item-value="MaintOwnName"
+										:loading="loadingCatalogs"
+										v-model="editFields.Maintainer"
 										:rules="rules"
-									></v-text-field>
-
-									<v-text-field
-										outlined
-										dense
-										name="ToBeCompleted"
-										label="To Be Completed Date"
-										v-model="editFields.ToBeCompleted"
-										:rules="rules"
-									></v-text-field>
-								</v-col>
-								<v-col cols="6">
-									<v-text-field
-										outlined
-										dense
-										name="CompletedBy"
-										label="Completed By"
-										v-model="editFields.CompletedBy"
-										:rules="rules"
-									></v-text-field>
-
-									<v-text-field
-										outlined
-										dense
-										name="CompletedDate"
-										label="Completed Date"
-										v-model="editFields.ActionCompleteDate"
-										:rules="rules"
-									></v-text-field>
+									></v-select> -->
+									<MaintainerList
+										:list="maintainers"
+										:mode="internalEditMode ? 'edit' : 'view'"
+										@newMaintainer="newMaintainer"
+										@deleteMaintainer="deleteMaintainer"
+									/>
 								</v-col>
 							</v-row>
 							<v-row>
 								<v-col cols="12">
 									<v-textarea
+										:readonly="!internalEditMode"
 										outlined
 										dense
-										name="Notes"
-										label="Notes"
-										v-model="editFields.CompletionDesc"
+										name="Sign Text"
+										label="Sign Text"
+										v-model="editFields.SignText"
+										:rules="rules"
+									></v-textarea>
+
+									<v-textarea
+										:readonly="!internalEditMode"
+										outlined
+										dense
+										name="Description"
+										label="Description"
+										v-model="editFields.Description"
+										:rules="rules"
+									></v-textarea>
+								</v-col>
+							</v-row>
+							<v-row>
+								<v-col cols="12">
+									<h3>Active</h3>
+									<v-radio-group
+										:readonly="!internalEditMode"
+										v-model="editFields.Status"
+										row
+									>
+										<v-radio
+											label="Yes"
+											value="Yes"
+										></v-radio>
+										<v-radio
+											label="No"
+											value="No"
+										></v-radio>
+									</v-radio-group>
+									<v-text-field
+										outlined
+										:readonly="!internalEditMode"
+										dense
+										name="DecommissionDate"
+										label="Decommission Date"
+										:rules="dateRules"
+										v-model="editFields.DecommissionDate"
+									></v-text-field>
+									<v-textarea
+										outlined
+										:readonly="!internalEditMode"
+										dense
+										name="DecommissionNotes"
+										label="Decommission Notes"
+										v-model="editFields.DecommissionNotes"
 										:rules="rules"
 									></v-textarea>
 								</v-col>
 							</v-row>
 						</v-form>
+						<DocumentHandler
+							:doclist="docs"
+							@newDocumment="newDocumment"
+							:displayDelete="internalEditMode"
+							:objID="{
+								key: 'AssetID',
+								doctype: 'assets',
+								value: dataToEdit.item.AssetID,
+							}"
+							@deletedItem="deletedDoc"
+						/>
+						<!-- <DocumentHandler
+								:doclist="docs"
+								@newDocumment="newDocumment"
+								:objID="{
+									key: 'InspectID',
+									doctype: 'inspections',
+									value: dataToEdit.item.InspectID,
+								}"
+							/> -->
 					</v-container>
 				</v-card-text>
 				<v-card-actions>
-					<v-spacer></v-spacer>
 					<v-btn
-						color="blue darken-1"
+						color="grey darken-1"
 						text
-						@click="editDialog = false"
+						@click="closeDialog()"
 					>
-						Close
+						Close{{ cancelActive }}
 					</v-btn>
+					<v-spacer></v-spacer>
 					<v-btn
 						color="blue darken-1"
 						text
 						@click="saveEdit()"
 						:disabled="!form2"
+						v-if="internalEditMode"
 					>
 						Save
 					</v-btn>
@@ -373,12 +455,14 @@
 </template>
 
 <script>
+import MaintainerList from '../InterpetiveSiteComponents/MaintainerList.vue';
+import DeleteDialog from './DeleteDialog.vue';
 import DocumentHandler from './DocumentHandler.vue';
 import catalogs from '../../../controllers/catalogs';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 export default {
 	props: ['type', 'Site', 'data', 'mode', 'dataToEdit'],
-	components: { DocumentHandler },
+	components: { DocumentHandler, DeleteDialog, MaintainerList },
 	data: () => ({
 		//new Dialog
 		dialog: false,
@@ -392,75 +476,124 @@ export default {
 		form2: false,
 		editDialog: false,
 		editFields: {},
+		dateRules: [
+			(v) => !!v || 'This field is required',
+			(v) =>
+				/^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/.test(
+					v
+				) || 'Correct date format required.',
+		],
 		assetTypes: [],
 		categoryTypes: [],
+		maintainers: [],
+		documments: [],
+		loadingCatalogs: false,
+		internalEditMode: false,
+		fieldsHistory: null,
 	}),
 	mounted() {
 		this.getTypes();
 		this.getCategories();
 	},
 	methods: {
+		closeDialog() {
+			if (this.internalEditMode) {
+				this.internalEditMode = false;
+				this.editFields = { ...this.fieldsHistory };
+			}
+			this.editDialog = false;
+		},
+		async deleteItem(id) {
+			await interpretiveSites.removeAsset(id);
+			this.$emit('deletedAsset', this.dataToEdit.index);
+			this.editDialog = false;
+		},
+		newDocumment(val) {
+			this.documments.push(val.data);
+		},
+		deletedDoc(id) {
+			this.documments = this.documments.filter((x) => x.DocID !== id);
+		},
+		newMaintainer(val) {
+			val.AssetID = this.dataToEdit.item.AssetID;
+			this.maintainers.push(val);
+		},
+		deleteMaintainer(id) {
+			this.maintainers = this.maintainers.map((x) => {
+				if (x.MaintID === id) {
+					x.deleted = true;
+				}
+				return x;
+			});
+		},
+		editMode() {
+			this.fieldsHistory = { ...this.editFields };
+			this.internalEditMode = true;
+		},
 		async getTypes() {
+			this.loadingCatalogs = true;
 			this.assetTypes = await catalogs.getAssetType();
+			this.loadingCatalogs = false;
 		},
 		async getCategories() {
+			this.loadingCatalogs = true;
 			this.categoryTypes = await catalogs.getCategories();
+			this.loadingCatalogs = false;
+		},
+		async getMaintainers() {
+			this.loadingCatalogs = true;
+			this.maintainers = await interpretiveSites.getMaintainersByAssetID(
+				this.dataToEdit.item.AssetID
+			);
+			console.log('main', this.maintainers);
+			this.loadingCatalogs = false;
 		},
 		async saveNew() {
-			let data = { ...this.fields };
+			let item = { ...this.fields };
 			if (this.typeGrid) {
-				console.log('grid action', data);
-				// ActionCompleteDate: "test"
-				// ActionDesc: "tesst"
-				// CompletedBy: "test"
-				// CompletionDesc: "test"
-				// CreatedBy: "test"
-				// CreatedDate: "tsest"
-				// Inspection: "test"
-				// Priority: "test"
-				// SiteID: 7
-				// ToBeCompleted: "teset"
-
-				// [ActionID] smallint,
-				// [InspectID] smallint,
-				// [SiteID] smallint,
-				// [ActionDesc] varchar,
-				// [ToBeCompleteDate] date,
-				// [ActionCompleteDate] date,
-				// [CompletionDesc] varchar,
-				// [Priority] varchar,
-				// [CreatedBy] varchar,
-				// [CreatedDate] date,
-				// [CompletedBy] varchar,
-				//const res = await interpretiveSites.postAsset(data);
-				//this.$emit('gridAssetAdded', res);
+				const res = await interpretiveSites.postAsset({ item });
+				this.$emit('gridAssetAdded', res);
 			} else {
-				data.SiteID = this.Site.SiteID;
-				data.new = true;
-				this.$emit('newAsset', data);
+				item.SiteID = this.Site.SiteID;
+				const res = await interpretiveSites.postAsset({ item });
+				//item.new = true;
+				this.$emit('newAsset', res);
 			}
 			this.$refs.assetDialog.reset();
 			this.dialog = false;
 		},
 		async saveEdit() {
 			let data = { ...this.editFields };
+			delete data.Maintainer;
+			delete data.AssetID;
+			delete data.SiteName;
 			if (this.typeGrid) {
-				console.log('grid action', data);
-				const res = await interpretiveSites.putAsset(data);
+				const res = await interpretiveSites.putAsset(this.editFields.AssetID, {
+					item: data,
+					maintainers: this.maintainers,
+				});
+
 				this.$emit('gridAssetEdited', res);
 			} else {
 				data.SiteID = this.Site.SiteID;
-				data.new = true;
-				this.$emit('editAsset', data);
+				// data.new = true;
+				// this.$emit('editAsset', data);
+
+				const res = await interpretiveSites.putAsset(this.editFields.AssetID, {
+					item: data,
+					maintainers: this.maintainers,
+				});
+				this.$emit('editAsset', { data: res, index: this.dataToEdit.index });
 			}
 
 			this.$refs.assetEditDialog.reset();
 			this.editDialog = false;
 		},
-		openEditDialog() {
+		async openEditDialog() {
 			const { item } = this.dataToEdit;
 			this.editFields = { ...item };
-
+			await this.getDocs();
+			await this.getMaintainers();
 			this.editDialog = true;
 		},
 		async searchSites() {
@@ -483,20 +616,29 @@ export default {
 				''
 			);
 			this.siteList = list.body;
-			console.log(list);
 			this.loadingSites = false;
+		},
+		async getDocs() {
+			let res = await interpretiveSites.getDocumentsGeneral(
+				'assets',
+				this.dataToEdit.item.AssetID
+			);
+			console.log('response', res);
+			this.documments = [...res.data];
 		},
 	},
 	watch: {
 		siteSearch: {
 			deep: true,
 			handler() {
-				console.log('changed');
 				this.searchSites();
 			},
 		},
 	},
 	computed: {
+		docs() {
+			return this.documments ? this.documments : [];
+		},
 		typeGrid() {
 			return this.type === 'grid';
 		},
@@ -508,6 +650,12 @@ export default {
 		},
 		availableCategories() {
 			return this.categoryTypes;
+		},
+		textMode() {
+			return this.internalEditMode ? 'Edit' : 'View';
+		},
+		cancelActive() {
+			return this.internalEditMode ? '/Cancel' : '';
 		},
 	},
 };

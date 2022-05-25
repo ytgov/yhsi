@@ -49,3 +49,4 @@ export * from './ytplace-router';
 export * from './interpretive-sites-router';
 export * from "./action-router";
 export * from "./asset-router";
+export * from './inspection-router';
