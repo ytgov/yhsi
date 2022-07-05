@@ -39,7 +39,7 @@ export const PLACE_FIELDS = [
 	'yHSThemes',
 	'rollNumber',
 	'locationContext',
-	'communityId',
+	'Place.communityId',
 	'lAGroup',
 	'siteStatus',
 	'floorCondition',

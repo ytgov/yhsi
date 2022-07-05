@@ -97,6 +97,11 @@
 							<v-list-item-title>Places</v-list-item-title>
 						</v-list-item>
 						<v-list-item
+							to="/public-places"
+						>
+							<v-list-item-title>Public Places</v-list-item-title>
+						</v-list-item>
+						<v-list-item
 							to="/people"
 							v-if="userInRole([UserRoles.ADMINISTRATOR])"
 						>
