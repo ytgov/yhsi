@@ -21,6 +21,44 @@ const PAGE_SIZE = 10;
 export const placeRouter = express.Router();
 
 placeRouter.get(
+	'/public-places',
+	[query('page').default(1).isInt({ gt: 0 })],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		let page = parseInt(req.query.page as string);
+		let skip = (page - 1) * PAGE_SIZE;
+		let take = PAGE_SIZE;
+
+		let list = await placeService
+			.getAllWithPhoto(skip, take)
+			.then((data) => data)
+			.catch((err) => {
+				console.error('Database Error', err);
+				return undefined;
+			});
+
+		let item_count = await placeService
+			.getPlaceCount()
+			.then((data) => data)
+			.catch((err) => {
+				console.error('Database Error', err);
+				return 0;
+			});
+
+		let page_count = Math.ceil(item_count / PAGE_SIZE);
+
+		if (list) {
+			return res.json({
+				data: list,
+				meta: { page, page_size: PAGE_SIZE, item_count, page_count },
+			});
+		}
+
+		return res.status(500).send('Error');
+	}
+);
+
+placeRouter.get(
 	'/',
 	[query('page').default(1).isInt({ gt: 0 })],
 	ReturnValidationErrors,

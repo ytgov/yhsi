@@ -36,6 +36,7 @@ import VesselTypeGrid from '../components/Administration/LookupTableManagement/V
 import BurialsGrid from '../components/Burials/Grid';
 import BurialsForm from '../components/Burials/BurialsComponents/Form';
 import PlacesGrid from '../components/Places/PlacesGrid';
+import PublicPlacesGrid from '../components/Places/PublicPlacesGrid';
 import PlaceTypeGrid from '../components/Administration/LookupTableManagement/PlaceType/PlaceType';
 import PlacesForm from '../components/Places/PlacesComponents/PlacesForm';
 import PhotoBatchGrid from '../components/MainPhotos/PhotoBatches/Grid';
@@ -482,6 +483,12 @@ const routes = [
 		name: 'PlacesGrid',
 		component: PlacesGrid,
 		meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] },
+	},
+	{
+		path: '/public-places',
+		name: 'PublicPlacesGrid',
+		component: PublicPlacesGrid,
+		// meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] },
 	},
 	{
 		path: '/places/view/:name',

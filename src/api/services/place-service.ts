@@ -31,6 +31,7 @@ import {
 	UserRoles,
 } from '../models';
 import { NotFoundError } from '../utils/validation';
+import { group } from 'console';
 
 // This function can go away when the back-end serves the
 // relationship data as part of the data directly.
@@ -97,6 +98,21 @@ export class PlaceService {
 		return this.db('place')
 			.select<Place[]>(PLACE_FIELDS)
 			.orderBy('id')
+			.offset(skip)
+			.limit(take);
+	}
+
+	async getAllWithPhoto(skip: number, take: number): Promise<Array<Place>> {
+		const db = this.db;
+		return this.db('place')
+			.distinct('Place.Id')
+			.select<Place[]>([...PLACE_FIELDS, 'PH.ThumbFile', 'PH.caption'])
+			.leftJoin('dbo.photo as PH', function() {
+        this.on('PH.PlaceId', '=', 'Place.Id')
+					/* The new line here */
+					.andOn('PH.DateCreated', '=', db.raw('(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)'))
+			})
+			.orderBy('Place.Id')
 			.offset(skip)
 			.limit(take);
 	}
