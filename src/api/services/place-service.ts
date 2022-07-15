@@ -112,18 +112,41 @@ export class PlaceService {
 					/* The new line here */
 					.andOn('PH.DateCreated', '=', db.raw('(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)'))
 			})
+
+	}
+
+	async getRegisterAll(skip: number, take: number): Promise<Array<any>> {
+		const db = this.db;
+		return this.db('place')
+			.select([...REGISTER_FIELDS, 'PH.ThumbFile', 'PH.caption'])
+			.join('community', 'community.id', 'place.communityid')
+			.leftJoin('dbo.photo as PH', function() {
+        this.on('PH.PlaceId', '=', 'Place.Id')
+					/* The new line here */
+					.andOn('PH.DateCreated', '=', db.raw('(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)'))
+			})
+			.where({ showInRegister: true })
 			.orderBy('Place.Id')
 			.offset(skip)
 			.limit(take);
+
 	}
 
-	async getRegisterAll(): Promise<Array<any>> {
-		return this.db('place')
-			.join('community', 'community.id', 'place.communityid')
-			.where({ showInRegister: true })
-			.select(REGISTER_FIELDS)
-			.select(this.db.raw("'English teaser' as teaserEnglish"))
-			.select(this.db.raw("'French teaser' as teaserFrench"));
+	async getPlaceInRegisterCount(): Promise<number> {
+		return new Promise(async (resolve, reject) => {
+			let results = await this.db('place')
+				.count('*', {
+					as: 'count',
+				})
+				.where({ showInRegister: true });
+
+			if (results) {
+				let val = results[0].count as number;
+				resolve(val);
+			}
+
+			resolve(0);
+		});
 	}
 
 	async getIdsForUser(user?: User) {
