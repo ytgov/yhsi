@@ -36,6 +36,7 @@ export const PHOTO_FIELDS = [
 	'legacyBatchInfo',
 	'isSiteDefault',
 	'isPrivate',
+	'ThumbFile',
 ];
 
 export const PHOTO_BATCH_FIELDS = [

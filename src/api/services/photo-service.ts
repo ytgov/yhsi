@@ -33,7 +33,22 @@ export class PhotoService {
 	async getAllForPlace(id: number): Promise<Photo[]> {
 		return this.knex('photo')
 			.select<Photo[]>(PHOTO_FIELDS)
+			.limit(4)
 			.where({ placeId: id })
+			.catch((err: any) => {
+				//console.log('BOMBED', err);
+				return new Array<Photo>();
+			})
+	}
+
+	async getAllForRegisterPlace(id: number): Promise<Photo[]> {
+		return this.knex('place')
+			.select<Photo[]>(PHOTO_FIELDS)
+			.leftJoin('dbo.photo as PH', function() {
+				this
+					.on('PH.placeId', '=', 'place.id')
+			})
+			.where({ showInRegister: true })
 			.catch((err: any) => {
 				//console.log('BOMBED', err);
 				return new Array<Photo>();

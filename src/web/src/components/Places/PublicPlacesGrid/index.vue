@@ -156,7 +156,6 @@ export default {
               item = { ...item, ThumbFile: { base64: placeholderBase64 } }
             }
             
-            console.log(item);
             return item;
           });
           
