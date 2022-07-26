@@ -10,34 +10,16 @@ import {
 } from '../services';
 import {
 	AlternateName,
-	HistoricalPattern,
-	Name,
-	Place,
 	PlaceType,
-	Dates,
-	PLACE_FIELDS,
-	ConstructionPeriod,
-	Theme,
-	FunctionalUse,
-	Association,
 	FnAssociation,
 	FirstNationName,
-	Ownership,
-	PreviousOwnership,
-	Photo,
-	WebLink,
-	RevisionLog,
-	Contact,
-	Description,
-	YtPlace,
 } from '../data';
+
 import { ReturnValidationErrors } from '../middleware';
-import moment from 'moment';
 import knex from 'knex';
 
 const ytPlaceService = new YtPlaceService(DB_CONFIG);
 const staticService = new StaticService(DB_CONFIG);
-const photoService = new PhotoService(DB_CONFIG);
 const PAGE_SIZE = 10;
 
 export const ytPlaceRouter = express.Router();
