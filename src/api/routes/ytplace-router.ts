@@ -10,10 +10,25 @@ import {
 } from '../services';
 import {
 	AlternateName,
+	HistoricalPattern,
+	Name,
+	Place,
 	PlaceType,
+	Dates,
+	PLACE_FIELDS,
+	ConstructionPeriod,
+	Theme,
+	FunctionalUse,
+	Association,
 	FnAssociation,
 	FirstNationName,
+	Ownership,
+	PreviousOwnership,
 	Photo,
+	WebLink,
+	RevisionLog,
+	Contact,
+	Description,
 	YtPlace,
 } from '../data';
 import { ReturnValidationErrors } from '../middleware';
@@ -197,8 +212,8 @@ ytPlaceRouter.post(
 		} = req.body;
 
 		if (!errors.isEmpty()) {
-			//console.log('Validation error');
-			//console.log(errors.array());
+			console.log('Validation error');
+			console.log(errors.array());
 			return res.status(400).json({ errors: errors.array() });
 		}
 
