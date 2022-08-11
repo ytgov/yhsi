@@ -100,7 +100,7 @@ app.use(
 // very basic CORS setup
 app.use(
 	cors({
-		origin: config.FRONTEND_URL,
+		origin: [config.FRONTEND_URL, 'http://inf-docker-tst:27640', 'http://localhost:27640'],
 		optionsSuccessStatus: 200,
 		credentials: true,
 	})
