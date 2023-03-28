@@ -20,5 +20,5 @@ exports.up = async function (knex: Knex, Promise: any) {
 	});
 };
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.raw(`DROP TABLE Burial.RelationLookup;`);
+	await knex.schema.dropTable('Burial.RelationLookup');
 };

@@ -20,17 +20,15 @@
 
 import { Knex } from 'knex';
 exports.up = async function (knex: Knex, Promise: any) {
-	knex.raw(`CREATE TABLE Burial.NOKin (
-    	NOKID smallint NOT NULL IDENTITY(1,1),
-      BurialID smallint NOT NULL,
-      RelationshipID smallint NOT NULL,
-      Quantity tinyint NULL,
-      Name varchar(200) NULL,
-      Location varchar(100) NULL
-    );
-    ALTER TABLE Burial.NOKin ADD CONSTRAINT PK__NOKin__05FA48A30A49EA48 PRIMARY KEY (NOKID);
-    `);
+	knex.schema.createTable('Burial.NOKin', (table) => {
+		table.increments('NOKID').primary();
+		table.integer('BurialID').notNullable();
+		table.integer('RelationshipID').notNullable();
+		table.integer('Quantity').nullable();
+		table.string('Name', 200).nullable();
+		table.string('Location', 100).nullable();
+	});
 };
 exports.down = async function (knex: Knex, Promise: any) {
-	knex.raw(`DROP TABLE Burial.NOKin;`);
+	knex.schema.dropTable('Burial.NOKin');
 };

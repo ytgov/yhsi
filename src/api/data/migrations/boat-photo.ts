@@ -15,14 +15,12 @@
 
 import { Knex } from 'knex';
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.raw(`CREATE TABLE Boat.Photo (
-    BoatId int NOT NULL,
-    Photo_RowID varchar(255) NULL,
-    Id int NOT NULL IDENTITY(1,1)
-  );
-  ALTER TABLE Boat.Photo ADD CONSTRAINT PK__Photo__3214EC076ADE23BB PRIMARY KEY (Id);
-    `);
+	await knex.schema.createTable('Boat.Photo', (table) => {
+		table.integer('BoatId').notNullable();
+		table.string('Photo_RowID', 255).nullable();
+		table.increments('Id').primary();
+	});
 };
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.raw(`DROP TABLE Boat.Photo;`);
+	await knex.schema.dropTable('Boat.Photo');
 };

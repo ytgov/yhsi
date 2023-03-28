@@ -20,5 +20,5 @@ exports.up = async function (knex: Knex, Promise: any) {
 	});
 };
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.raw(`DROP TABLE Boat.[Type];`);
+	await knex.schema.dropTable('Boat.[Type]');
 };

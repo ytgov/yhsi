@@ -15,14 +15,12 @@
 
 import { Knex } from 'knex';
 exports.up = async function (knex: Knex, Promise: any) {
-	knex.raw(`CREATE TABLE Burial.Occupation (
-    	ID smallint NOT NULL IDENTITY(1,1),
-      BurialID smallint NOT NULL,
-      OccupationID smallint NOT NULL
-    );
-    ALTER TABLE Burial.Occupation ADD CONSTRAINT PK__Occupati__3214EC27263EF355 PRIMARY KEY (ID);
-    `);
+	await knex.schema.createTable('Burial.Occupation', (table) => {
+		table.increments('ID').primary();
+		table.integer('BurialID').notNullable();
+		table.integer('OccupationID').notNullable();
+	});
 };
 exports.down = async function (knex: Knex, Promise: any) {
-	knex.raw(`DROP TABLE Burial.Occupation;`);
+	await knex.schema.dropTable('Burial.Occupation');
 };
