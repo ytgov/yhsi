@@ -17,7 +17,7 @@
 
 import { Knex } from 'knex';
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Place.FirstNationName', (table) => {
+	await knex.schema.createTable('Place.FirstNationName', (table: any) => {
 		table.integer('PlaceId').notNullable();
 		table.string('FNName', 64).notNullable();
 		table.string('FNLanguage', 128).nullable().defaultTo(null);
@@ -25,6 +25,7 @@ exports.up = async function (knex: Knex, Promise: any) {
 		table.increments('Id').primary();
 	});
 };
+
 exports.down = async function (knex: Knex, Promise: any) {
 	await knex.schema.dropTable('Place.FirstNationName');
 };

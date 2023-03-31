@@ -18,6 +18,30 @@ exports.up = async function (knex: Knex, Promise: any) {
 		table.increments('RouteLUpID').primary();
 		table.string('RouteName', 50).notNullable();
 	});
+
+	await knex('InterpretiveSite.RouteLookup').delete().whereRaw('1=1');
+	await knex('InterpretiveSite.RouteLookup').insert([
+		{
+			RouteLUpID: 1,
+			RouteName: 'Alaska Highway',
+		},
+		{
+			RouteLUpID: 2,
+			RouteName: 'Robert Campbell Highway',
+		},
+		{
+			RouteLUpID: 3,
+			RouteName: 'Dempster Highway',
+		},
+		{
+			RouteLUpID: 4,
+			RouteName: 'Klondike Highway',
+		},
+		{
+			RouteLUpID: 5,
+			RouteName: 'Dawson City',
+		},
+	]);
 };
 exports.down = async function (knex: Knex, Promise: any) {
 	await knex.schema.dropTable('InterpretiveSite.RouteLookup');

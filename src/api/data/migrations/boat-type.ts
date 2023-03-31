@@ -18,6 +18,26 @@ exports.up = async function (knex: Knex, Promise: any) {
 		table.increments('Id').primary();
 		table.string('Type', 64).notNullable();
 	});
+
+	await knex('Boat.[Type]').delete().whereRaw('1=1');
+	await knex('Boat.[Type]').insert([
+		{
+			Id: 1,
+			Type: 'Barge',
+		},
+		{
+			Id: 2,
+			Type: 'Sternwheeler',
+		},
+		{
+			Id: 3,
+			Type: 'Launch',
+		},
+		{
+			Id: 4,
+			Type: 'Ferry',
+		},
+	]);
 };
 exports.down = async function (knex: Knex, Promise: any) {
 	await knex.schema.dropTable('Boat.[Type]');

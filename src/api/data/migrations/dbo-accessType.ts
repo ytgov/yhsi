@@ -18,6 +18,22 @@ exports.up = async function (knex: Knex, Promise: any) {
 		table.increments('AccessID').primary();
 		table.string('AccessName', 60).notNullable();
 	});
+
+	await knex('dbo.AccessType').delete().whereRaw('1=1');
+	await knex('dbo.AccessType').insert([
+		{
+			AccessID: 1,
+			AccessName: 'No Access',
+		},
+		{
+			AccessID: 2,
+			AccessName: 'View',
+		},
+		{
+			AccessID: 3,
+			AccessName: 'Edit',
+		},
+	]);
 };
 
 exports.down = async function (knex: Knex, Promise: any) {

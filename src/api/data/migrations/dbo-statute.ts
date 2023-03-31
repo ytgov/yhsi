@@ -24,6 +24,96 @@ exports.up = async function (knex: Knex, Promise: any) {
 		table.string('Description', 256).nullable();
 		table.string('AllStatute', 256).nullable();
 	});
+
+	await knex('Statute').delete().whereRaw('1=1');
+	await knex('Statute').insert([
+		{
+			Id: 0,
+			RecognitionAuthority: 'No Statue Selected',
+			RecognitionType: '',
+			Description: '',
+			AllStatute: '',
+		},
+		{
+			Id: 1,
+			RecognitionAuthority: 'Government of Yukon (/First Nation)',
+			RecognitionType:
+				'Yukon First Nations Final Agreement-Yukon First Nations Site',
+			Description: 'Yukon First Nation Final Agreement/Historic Resources Act',
+			AllStatute: 'Yukon First Nation Final Agreement/Historic Resources Act',
+		},
+		{
+			Id: 2,
+			RecognitionAuthority: 'Government of Yukon (/First Nation)',
+			RecognitionType:
+				'Yukon First Nation Final Agreement-Special Managment Area',
+			Description: 'Yukon First Nation Final Agreement/Historic Resources Act',
+			AllStatute: 'Yukon First Nation Final Agreement-Historic Resources Act',
+		},
+		{
+			Id: 3,
+			RecognitionAuthority: 'City of Whitehorse',
+			RecognitionType: 'Historic Site',
+			Description: 'City of Whitehorse By-law',
+			AllStatute: 'City of Whitehorse By-law',
+		},
+		{
+			Id: 4,
+			RecognitionAuthority: 'Government of Yukon',
+			RecognitionType: 'Territorial Historic Site',
+			Description: 'Historic Resources Act',
+			AllStatute: 'Historic Resources Act',
+		},
+		{
+			Id: 6,
+			RecognitionAuthority: 'Local Governments (YK)',
+			RecognitionType: 'Historic Control Zone',
+			Description: 'Municipal Act',
+			AllStatute: 'Municipal Act',
+		},
+		{
+			Id: 7,
+			RecognitionAuthority: 'Government of Canada',
+			RecognitionType: 'National Historic Site',
+			Description: 'National Historic Sites Act',
+			AllStatute: 'National Historic Sites Act',
+		},
+		{
+			Id: 8,
+			RecognitionAuthority: 'Government of Canada',
+			RecognitionType: 'Recognized Federal Heritage Building',
+			Description: 'Treasury Board Heritage Buildings Policy',
+			AllStatute: 'Treasury Board Heritage Buildings Policy',
+		},
+		{
+			Id: 9,
+			RecognitionAuthority: 'Government of Canada',
+			RecognitionType: 'Classified Federal Heritage Building',
+			Description: 'Treasury Board Heritage Buildings Policy',
+			AllStatute: 'Treasury Board Heritage Buildings Policy',
+		},
+		{
+			Id: 10,
+			RecognitionAuthority: 'Government of Yukon',
+			RecognitionType: 'Territorial Park',
+			Description: 'Territorial Parks Act',
+			AllStatute: 'Parks and Land Certainty Act',
+		},
+		{
+			Id: 22,
+			RecognitionAuthority: 'Government of Canada',
+			RecognitionType: 'Heritage Railway Station',
+			Description: 'Heritage Railway Station Protection Act',
+			AllStatute: 'Heritage Railway Station Protection Act',
+		},
+		{
+			Id: 23,
+			RecognitionAuthority: 'Town of the City of Dawson',
+			RecognitionType: 'Historic Site',
+			Description: 'Town of the City of Dawson By-law',
+			AllStatute: 'Town of the City of Dawson By-law',
+		},
+	]);
 };
 exports.down = async function (knex: Knex, Promise: any) {
 	await knex.schema.dropTable('dbo.Statute');

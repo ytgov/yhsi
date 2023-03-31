@@ -31,6 +31,55 @@ exports.up = async function (knex: Knex, Promise: any) {
 		table.string('SectionName', 60).notNullable();
 		table.string('SectionIcon', 120).nullable();
 	});
+
+	await knex('dbo.AccessSection').delete().whereRaw('1=1');
+	await knex('dbo.AccessSection').insert([
+		{
+			SectionID: 1,
+			SectionName: 'Photos',
+			SectionIcon: 'camera',
+		},
+		{
+			SectionID: 2,
+			SectionName: 'Airplane Crash',
+			SectionIcon: 'airplane-landing',
+		},
+		{
+			SectionID: 3,
+			SectionName: 'Places',
+			SectionIcon: 'routes',
+		},
+		{
+			SectionID: 4,
+			SectionName: 'Boats',
+			SectionIcon: 'ferry',
+		},
+		{
+			SectionID: 5,
+			SectionName: 'People',
+			SectionIcon: 'human-male-female',
+		},
+		{
+			SectionID: 6,
+			SectionName: 'Interpretive Signs',
+			SectionIcon: 'image',
+		},
+		{
+			SectionID: 7,
+			SectionName: 'Burials',
+			SectionIcon: 'grave-stone',
+		},
+		{
+			SectionID: 8,
+			SectionName: 'Map',
+			SectionIcon: 'buffer',
+		},
+		{
+			SectionID: 9,
+			SectionName: 'Administration',
+			SectionIcon: 'cube',
+		},
+	]);
 };
 
 exports.down = async function (knex: Knex, Promise: any) {

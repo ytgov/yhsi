@@ -18,7 +18,24 @@ exports.up = async function (knex: Knex, Promise: any) {
 		table.integer('id').notNullable();
 		table.string('name', 100).notNullable();
 	});
+
+	await knex('Security.SiteAccessType').delete().whereRaw('1=1');
+	await knex('Security.SiteAccessType').insert([
+		{
+			id: 1,
+			name: 'Map Sheet',
+		},
+		{
+			id: 2,
+			name: 'Community',
+		},
+		{
+			id: 3,
+			name: 'First Nation',
+		},
+	]);
 };
+
 exports.down = async function (knex: Knex, Promise: any) {
 	await knex.schema.dropTable('Security.SiteAccessType');
 };
