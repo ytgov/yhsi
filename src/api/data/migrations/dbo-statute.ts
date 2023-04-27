@@ -29,7 +29,7 @@ exports.up = async function (knex: Knex, Promise: any) {
 	await knex('Statute').insert([
 		{
 			Id: 0,
-			RecognitionAuthority: 'No Statue Selected',
+			RecognitionAuthority: 'No Statute Selected',
 			RecognitionType: '',
 			Description: '',
 			AllStatute: '',

@@ -115,3 +115,4 @@ db/place_data.sql
 
 # Other
 package-lock.json
+.DS_Store

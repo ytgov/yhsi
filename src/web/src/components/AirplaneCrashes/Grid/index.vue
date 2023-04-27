@@ -12,7 +12,7 @@
 					prepend-icon="mdi-magnify"
 					class="mx-4"
 					hide-details
-					label="Search"
+					label="Search YASCI"
 					v-model="search"
 					v-on:input="crashsiteSearchChange()"
 				></v-text-field>
