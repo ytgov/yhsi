@@ -107,12 +107,17 @@ export class PlaceService {
 		return this.db('place')
 			.distinct('Place.Id')
 			.select<Place[]>([...PLACE_FIELDS, 'PH.ThumbFile', 'PH.caption'])
-			.leftJoin('dbo.photo as PH', function() {
-        this.on('PH.PlaceId', '=', 'Place.Id')
+			.leftJoin('dbo.photo as PH', function () {
+				this.on('PH.PlaceId', '=', 'Place.Id')
 					/* The new line here */
-					.andOn('PH.DateCreated', '=', db.raw('(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)'))
-			})
-
+					.andOn(
+						'PH.DateCreated',
+						'=',
+						db.raw(
+							'(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)'
+						)
+					);
+			});
 	}
 
 	async getRegisterAll(skip: number, take: number): Promise<Array<any>> {
@@ -120,16 +125,21 @@ export class PlaceService {
 		return this.db('place')
 			.select([...REGISTER_FIELDS, 'PH.ThumbFile', 'PH.caption'])
 			.join('community', 'community.id', 'place.communityid')
-			.leftJoin('dbo.photo as PH', function() {
-        this.on('PH.PlaceId', '=', 'Place.Id')
+			.leftJoin('dbo.photo as PH', function () {
+				this.on('PH.PlaceId', '=', 'Place.Id')
 					/* The new line here */
-					.andOn('PH.DateCreated', '=', db.raw('(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)'))
+					.andOn(
+						'PH.DateCreated',
+						'=',
+						db.raw(
+							'(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)'
+						)
+					);
 			})
 			.where({ showInRegister: true })
 			.orderBy('Place.Id')
 			.offset(skip)
 			.limit(take);
-
 	}
 
 	async getPlaceInRegisterCount(): Promise<number> {

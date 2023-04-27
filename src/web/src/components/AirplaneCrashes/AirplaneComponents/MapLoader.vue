@@ -34,11 +34,8 @@
 				</v-row>
 				<!-- SELECTED SYSTEM  == DD -->
 				<v-row v-if="selectedSystem.id == 1 && selectedProjection.id == 1">
-					<v-col cols="2.4">
-						<h4>Latitude</h4>
-					</v-col>
+					<v-col cols="3"> Latitude </v-col>
 					<v-col cols="9">
-						<h4>Degrees</h4>
 						<v-text-field
 							outlined
 							dense
@@ -50,9 +47,7 @@
 					</v-col>
 				</v-row>
 				<v-row v-if="selectedSystem.id == 1 && selectedProjection.id == 1">
-					<v-col cols="2.4">
-						<h4>Longitude</h4>
-					</v-col>
+					<v-col cols="3"> Longitude </v-col>
 					<v-col cols="9">
 						<v-text-field
 							outlined

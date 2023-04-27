@@ -135,50 +135,55 @@ aircrashRouter.put(
 );
 
 aircrashRouter.post('/', async (req: Request, res: Response) => {
-	const { aircrash = {}, newInfoSources } = req.body;
-	/*
-      const response = await db.insert(aircrash)
-        .into('AirCrash.AirCrash')
-        .returning('*');
-    */
-	const exists = await db
-		.select('*')
-		.from('dbo.vAircrash')
-		.where('dbo.vAircrash.yacsinumber', aircrash.yacsinumber)
-		.first();
+	try {
+		const { aircrash = {}, newInfoSources } = req.body;
+		/*
+		  const response = await db.insert(aircrash)
+			.into('AirCrash.AirCrash')
+			.returning('*');
+		*/
+		const exists = await db
+			.select('*')
+			.from('dbo.vAircrash')
+			.where('dbo.vAircrash.yacsinumber', aircrash.yacsinumber)
+			.first();
 
-	if (exists) {
-		//this is a 409 conflict, i might change the status to 409 after some tests
-		res.status(409).send('The YACSI Number already exists');
-		return;
+		if (exists) {
+			//this is a 409 conflict, i might change the status to 409 after some tests
+			res.status(409).send('The YACSI Number already exists');
+			return;
+		}
+
+		const response = await db
+			.insert(aircrash)
+			.into('AirCrash.AirCrash')
+			.returning('*')
+			.then(async (rows: any) => {
+				const newAirCrash = rows[0];
+
+				if (newInfoSources.length) {
+					const finalInfoSources = newInfoSources.map((source: any) => ({
+						YACSINumber: newAirCrash.YACSINumber,
+						...source,
+					}));
+
+					await db
+						.insert(finalInfoSources)
+						.into('AirCrash.InfoSource')
+						.returning('*')
+						.then((rows: any) => {
+							return rows;
+						});
+				}
+
+				return newAirCrash;
+			});
+
+		res.status(200).send(response);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send('Internal Server Error');
 	}
-
-	const response = await db
-		.insert(aircrash)
-		.into('AirCrash.AirCrash')
-		.returning('*')
-		.then(async (rows: any) => {
-			const newAirCrash = rows[0];
-
-			if (newInfoSources.length) {
-				const finalInfoSources = newInfoSources.map((source: any) => ({
-					YACSINumber: newAirCrash.YACSINumber,
-					...source,
-				}));
-
-				await db
-					.insert(finalInfoSources)
-					.into('AirCrash.InfoSource')
-					.returning('*')
-					.then((rows: any) => {
-						return rows;
-					});
-			}
-
-			return newAirCrash;
-		});
-
-	res.status(200).send(response);
 });
 
 aircrashRouter.get(
