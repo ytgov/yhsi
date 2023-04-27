@@ -2,7 +2,7 @@
 	<v-container fluid>
 		<v-row>
 			<v-col cols="12">
-				<h2>Sites</h2>
+				<h2>YHSI Sites</h2>
 			</v-col>
 		</v-row>
 		<v-divider class="mb-5" />

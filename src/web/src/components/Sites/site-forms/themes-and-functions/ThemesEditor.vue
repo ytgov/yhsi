@@ -26,7 +26,7 @@ v-card.default.mb-0(tag="section")
 					v-icon mdi-close
 	v-card-actions
 		v-btn.my-0(
-			color="info"
+			color="primary"
 			@click="addTheme"
 		)
 			| Add Theme
