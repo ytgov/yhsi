@@ -71,7 +71,7 @@ export default {
 	},
 	async post(data) {
 		return await api
-			.post(`aircrash/new`, data)
+			.post(`aircrash/`, data)
 			.then((res) => {
 				return res.data;
 			})
