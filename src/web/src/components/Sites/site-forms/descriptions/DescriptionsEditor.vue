@@ -40,7 +40,7 @@ v-card.default
 					v-divider.my-1.black
 	v-card-actions
 		v-btn.my-0(
-			color="info"
+			color="primary"
 			@click="addDescription"
 		)
 			| Add Description

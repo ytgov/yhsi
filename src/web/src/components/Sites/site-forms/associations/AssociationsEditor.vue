@@ -36,7 +36,7 @@ v-card.default.mb-5(tag="section")
 					v-icon mdi-close
 	v-card-actions
 		v-btn.my-0(
-			color="info"
+			color="primary"
 			@click="addAssociation"
 		)
 			| Add Association

@@ -51,7 +51,7 @@ v-card.mb-0(
 									dense
 									outlined
 									hide-details
-									color="info"
+									color="primary"
 									background-color="white"
 								)
 			v-col(cols="6")
