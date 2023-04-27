@@ -1,6 +1,7 @@
 import knex, { Knex } from 'knex';
 import moment from 'moment';
 import { get, isEmpty, isNull, uniq } from 'lodash';
+import { SITE_STATUS_TYPES } from '../models';
 
 import {
 	AssociationService,
@@ -379,11 +380,11 @@ export class PlaceService {
 						.select({
 							PlaceId: 'Place.Id',
 							Status: this.db.raw(
-								`CASE WHEN PlaceEdit.PlaceId IS NULL THEN '' ELSE 'Editing' END`
+								`CASE WHEN PlaceEdit.PlaceId IS NULL THEN 'Editable' ELSE 'Editing' END`
 							),
 						})
 						.as('StatusTable')
-						.innerJoin('PlaceEdit', 'PlaceEdit.PlaceId', 'Place.Id'),
+						.leftJoin('PlaceEdit', 'PlaceEdit.PlaceId', 'Place.Id'),
 					'Place.Id',
 					'StatusTable.PlaceId'
 				);
@@ -521,17 +522,18 @@ export class PlaceService {
 				selectStatement.orderBy('place.primaryName');
 			}
 
-			let fullData = await selectStatement.catch((error: any) => {
+			const fullData = await selectStatement.catch((error: any) => {
 				reject(error);
 				return [];
 			});
 
-			let uniqIds = uniq(fullData.map((i: any) => i.id));
-			let count = uniqIds.length;
-			let pageCount = Math.ceil(count / itemsPerPage);
+			const uniqIds = uniq(fullData.map((i: any) => i.id));
+			const count = uniqIds.length;
+			const pageCount = Math.ceil(count / itemsPerPage);
 
-			let data = await selectStatement.offset(skip).limit(take).catch(reject);
-			let results = {
+			const data = await selectStatement.offset(skip).limit(take).catch(reject);
+
+			const results = {
 				data,
 				meta: { page, itemsPerPage, itemCount: count, pageCount },
 			};
