@@ -8,8 +8,15 @@
 			style="left: 0; border-bottom: 3px #f3b228 solid"
 		>
 			<!-- <v-icon color="#f3b228" class="mr-5">{{ applicationIcon }}</v-icon> -->
-			<img src="/yukon.svg" style="margin: -8px 85px 0 0" height="44" />
-			<v-toolbar-title tag="h1" class="mb-0">
+			<img
+				src="/yukon.svg"
+				style="margin: -8px 85px 0 0"
+				height="44"
+			/>
+			<v-toolbar-title
+				tag="h1"
+				class="mb-0"
+			>
 				<span style="font-weight: 700">{{ applicationName }}</span>
 
 				<v-progress-circular
@@ -24,14 +31,25 @@
 			<v-spacer></v-spacer>
 
 			<div v-if="isAuthenticated">
-				<v-menu offset-y class="ml-0">
+				<v-menu
+					offset-y
+					class="ml-0"
+				>
 					<template v-slot:activator="{ on, attrs }">
-						<v-btn text color="primary" v-bind="attrs" v-on="on">
+						<v-btn
+							text
+							color="primary"
+							v-bind="attrs"
+							v-on="on"
+						>
 							Navigation <v-icon>mdi-menu-down</v-icon>
 						</v-btn>
 					</template>
 
-					<v-list dense style="min-width: 200px">
+					<v-list
+						dense
+						style="min-width: 200px"
+					>
 						<v-list-item to="/dashboard">
 							<v-list-item-title>Dashboard</v-list-item-title>
 						</v-list-item>
@@ -46,21 +64,17 @@
 								])
 							"
 						>
-							<v-list-item-title>Sites</v-list-item-title>
+							<v-list-item-title>YHSI Sites</v-list-item-title>
 						</v-list-item>
 						<v-list-item
 							v-if="userInRole(['Site Admin'])"
 							to="/sites-change-requests"
 						>
-							<v-list-item-title>
-								Site Change Requests
-							</v-list-item-title>
+							<v-list-item-title>YHSI Site Change Requests </v-list-item-title>
 						</v-list-item>
 						<v-list-item
 							to="/photos"
-							v-if="
-								userInRole(['Photo Admin', 'Photo Editor', 'Photo Viewer'])
-							"
+							v-if="userInRole(['Photo Admin', 'Photo Editor', 'Photo Viewer'])"
 						>
 							<v-list-item-title>Photos</v-list-item-title>
 						</v-list-item>
@@ -79,15 +93,19 @@
 						>
 							<v-list-item-title>Airplane Crash Sites</v-list-item-title>
 						</v-list-item>
-						<v-list-item to="/boats" v-if="userInRole(['Boats Editor'])">
-							<v-list-item-title>Boats & Owners</v-list-item-title>
-						</v-list-item>
-						<v-list-item to="/burials" v-if="userInRole(['Burials Editor'])">
-							<v-list-item-title>Burials</v-list-item-title>
+						<v-list-item
+							to="/boats"
+							v-if="userInRole(['Boats Editor'])"
+						>
+							<v-list-item-title>Boats</v-list-item-title>
 						</v-list-item>
 						<v-list-item
-							to="/interpretive-sites"
+							to="/burials"
+							v-if="userInRole(['Burials Editor'])"
 						>
+							<v-list-item-title>Burials</v-list-item-title>
+						</v-list-item>
+						<v-list-item to="/interpretive-sites">
 							<v-list-item-title>Interpretive Sites</v-list-item-title>
 						</v-list-item>
 						<v-list-item
@@ -95,11 +113,6 @@
 							v-if="userInRole(UserRoles.PLACE_EDITOR)"
 						>
 							<v-list-item-title>Places</v-list-item-title>
-						</v-list-item>
-						<v-list-item
-							to="/public-places"
-						>
-							<v-list-item-title>Public Places</v-list-item-title>
 						</v-list-item>
 						<v-list-item
 							to="/people"
@@ -121,14 +134,26 @@
 				</v-btn>
 
 				<span>{{ username }}</span>
-				<v-menu bottom left class="ml-0">
+				<v-menu
+					bottom
+					left
+					class="ml-0"
+				>
 					<template v-slot:activator="{ on, attrs }">
-						<v-btn icon color="primary" v-bind="attrs" v-on="on">
+						<v-btn
+							icon
+							color="primary"
+							v-bind="attrs"
+							v-on="on"
+						>
 							<v-icon>mdi-dots-vertical</v-icon>
 						</v-btn>
 					</template>
 
-					<v-list dense style="min-width: 200px">
+					<v-list
+						dense
+						style="min-width: 200px"
+					>
 						<v-list-item to="/profile">
 							<v-list-item-icon>
 								<v-icon>mdi-account</v-icon>
@@ -161,9 +186,9 @@
 		</v-app-bar>
 
 		<v-main>
-			<v-container fluid >
+			<v-container fluid>
 				<v-row>
-					<v-col >
+					<v-col>
 						<!-- 
               <router-view :class="`${isSites($route.path, false)}`" :class="`${isSites($route.path, true)}`"
                 v-on:showError="showError"
