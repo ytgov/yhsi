@@ -28,7 +28,7 @@ exports.up = async function (knex: Knex, Promise: any) {
 		table.string('SiteName', 60).nullable();
 		table.string('LocationDesc', 150).nullable();
 		table.string('RouteName', 50).nullable();
-		table.integer('KMNum').nullable();
+		table.float('KMNum').nullable();
 		table.string('MapSheet', 7).nullable();
 		table.float('Latitude').nullable();
 		table.float('Longitude').nullable();

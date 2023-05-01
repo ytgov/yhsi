@@ -18,10 +18,11 @@
 import { Knex } from 'knex';
 exports.up = async function (knex: Knex, Promise: any) {
 	await knex.schema.createTable('InterpretiveSite.Inspections', (table) => {
-		table.increments('InspectID').primary();
+		//if you find this later, inspectionID is not unique. It's unique per site
+		table.increments('InspectID').notNullable();
 		table.integer('SiteID').nullable();
 		table.date('InspectionDate').nullable();
-		table.string('Description', 255).nullable();
+		table.string('Description', 1024).nullable();
 		table.string('InspectedBy', 50).nullable();
 	});
 };

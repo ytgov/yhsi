@@ -21,17 +21,18 @@
 import { Knex } from 'knex';
 exports.up = async function (knex: Knex, Promise: any) {
 	await knex.schema.createTable('InterpretiveSite.Actions', (table) => {
-		table.increments('ActionID').primary();
+		//ActionID is not unique either. It's unique per site
+		table.increments('ActionID').notNullable();
 		table.integer('InspectID').nullable();
 		table.integer('SiteID').nullable();
-		table.string('ActionDesc', 255).notNullable();
+		table.string('ActionDesc', 1024).notNullable();
 		table.date('ToBeCompleteDate').nullable();
 		table.date('ActionCompleteDate').nullable();
-		table.string('CompletionDesc', 255).nullable();
+		table.string('CompletionDesc', 1024).nullable();
 		table.string('Priority', 8).nullable();
-		table.string('CreatedBy', 50).nullable();
+		table.string('CreatedBy', 100).nullable();
 		table.date('CreatedDate').nullable();
-		table.string('CompletedBy', 50).nullable();
+		table.string('CompletedBy', 100).nullable();
 	});
 };
 exports.down = async function (knex: Knex, Promise: any) {

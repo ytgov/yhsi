@@ -24,17 +24,17 @@
 import { Knex } from 'knex';
 exports.up = async function (knex: Knex, Promise: any) {
 	await knex.schema.createTable('InterpretiveSite.Assets', (table) => {
-		table.increments('AssetID').primary();
+		table.increments('AssetID').notNullable();
 		table.integer('SiteID').notNullable();
-		table.string('Category', 30).nullable();
+		table.string('Category', 100).nullable();
 		table.string('Type', 100).nullable();
-		table.string('Size', 40).nullable();
-		table.string('Description', 500).nullable();
-		table.string('SignText', 255).nullable();
+		table.string('Size', 100).nullable();
+		table.string('Description', 4096).nullable();
+		table.string('SignText', 4096).nullable();
 		table.date('InstallDate').nullable();
 		table.date('DecommissionDate').nullable();
-		table.string('DecommissionNotes', 255).nullable();
-		table.string('Status', 30).nullable();
+		table.string('DecommissionNotes', 1024).nullable();
+		table.string('Status', 50).nullable();
 	});
 };
 exports.down = async function (knex: Knex, Promise: any) {
