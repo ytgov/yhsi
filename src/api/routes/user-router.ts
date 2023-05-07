@@ -144,12 +144,12 @@ userRouter.post(
 
 		await axios
 			.post(`${ISSUER_BASE_URL}dbconnections/signup`, body)
-			.then((resp) => {
+			.then((resp: any) => {
 				return res.json({
 					messages: [{ variant: 'success', text: 'User account created' }],
 				});
 			})
-			.catch((err) => {
+			.catch((err: any) => {
 				return res
 					.status(400)
 					.json({ errors: [{ msg: err.response.data.description }] });
