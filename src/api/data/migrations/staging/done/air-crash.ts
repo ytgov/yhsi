@@ -74,8 +74,23 @@ exports.up = async function (knex: Knex, Promise: any) {
 		table.string('PilotFirstName', 50).nullable();
 		table.string('PilotRank', 50).nullable();
 	});
+	// CREATE VIEW vAircrash
+	//     AS
+
+	// SELECT yacsinumber, crashdate, aircrafttype, aircraftregistration, nation, militarycivilian, crashlocation, remainsonsite
+	//      , extentofremainsonsite, otherlocationsofremains, pilot, fatalities, descriptionofcrashevent, comments, significanceofaircraft
+	//      , sources, photographs, inyukon, soulsonboard, injuries, datedescriptor, datenote, pilotlastname, pilotfirstname, pilotrank
+	//      , accuracy, aircraftcaption, aircraftaftercrashcaption [location].ToString() as Location,[location].Lat as lat,[location].Long as long FROM AirCrash.AirCrash
+	// GO
+
+	//create view vAircrash
+	await knex.schema.createView('vAirCrash', (view) => {
+		// view.columns(['']);
+		view.as(knex('AirCrash').select('YACSINumber'));
+	});
 };
 
 exports.down = async function (knex: Knex, Promise: any) {
 	await knex.schema.dropTable('AirCrash.AirCrash');
+	await knex.schema.dropView('vAircrash');
 };
