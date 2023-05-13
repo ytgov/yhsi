@@ -248,7 +248,7 @@
                     <v-col cols="2.4">
                         <h4>Y</h4>
                     </v-col>
-                    <v-col cols="9"> 
+                    <v-col cols="9">
                         <v-text-field outlined dense
                             @change="changedLocation"
                             v-model="nad83.y"
@@ -466,13 +466,13 @@ export default {
 		},
 		//Selection vars
 		selectedSystem: { id: 1, text: 'Decimal Degrees' },
-		selectedProjection: { id: 1, name: 'WSG 84' },
+		selectedProjection: { id: 1, name: 'WGS 84' },
 		locationAccuracyOptions: ['Approximate', 'Map Measurement', 'GPS'],
 		projectionOptions: [
 			//datums
 			{
 				id: 1,
-				name: 'WSG 84',
+				name: 'WGS 84',
 			},
 			{
 				id: 2,
@@ -774,10 +774,10 @@ export default {
 	watch: {
 		/*
             We use a watcher because the component is rendered before the data is available (the mounted() hook is ran before the parent component
-            has fetched the data), because of that we cant use mounted or created to map the fields prop to the modifiedFields obj on the state, also 'prop' values 
+            has fetched the data), because of that we cant use mounted or created to map the fields prop to the modifiedFields obj on the state, also 'prop' values
             are not supposed to be modified, hence why we have the modifiable fields obj. If we dont use a watcher we would have to have a flag on the parent component
             to indicate when the data is available to render the component, this would make the component less independent and less reusable.
-        
+
         fields(){
             if(this.fields && this.flag < 3){
                 this.modifiableFields = this.fields;
