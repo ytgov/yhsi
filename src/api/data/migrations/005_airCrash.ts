@@ -15,7 +15,7 @@
 // 	ExtentofRemainsonSite nvarchar(255) NULL,
 // 	OtherLocationsofRemains nvarchar(255) NULL,
 // 	Pilot nvarchar(255) NULL,
-// 	Fatalities int NULL,
+// 	Fatalities int NULL,YACSINumber
 // 	DescriptionofCrashEvent nvarchar(255) NULL,
 // 	Comments nvarchar(max) NULL,
 // 	SignificanceofAircraft nvarchar(max) NULL,
@@ -97,6 +97,7 @@ exports.up = async function (knex: Knex, Promise: any) {
 	await knex.schema.createTable(`${schemaName}.Photo`, (table) => {
 		table.increments('Id').primary();
 		table.string('YAID', 256).nullable();
+		table.string('YACSINumber', 256).nullable();
 		table.string('Photo_RowID', 255).nullable();
 	});
 };
