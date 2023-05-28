@@ -41,6 +41,7 @@
 // ALTER TABLE dbo.Photo ADD CONSTRAINT PK_Image PRIMARY KEY (RowId);
 // GO
 
+import { OriginalMedia } from 'data/static-entities';
 import { Knex } from 'knex';
 exports.up = async function (knex: Knex, Promise: any) {
 	await knex.schema.createTable('photo', (table) => {
@@ -80,8 +81,22 @@ exports.up = async function (knex: Knex, Promise: any) {
 		table.string('LegacyBatchInfo', 150);
 		table.boolean('IsSiteDefault').notNullable();
 	});
+	await knex.schema.createTable('PhotoOwner', (table) => {
+		table.increments('Id').primary();
+		table.string('Name', 256).nullable();
+		table.string('Email', 256).nullable();
+		table.string('Address', 256).nullable();
+		table.string('Telephone', 256).nullable();
+		table.string('ContactPerson', 256).nullable();
+	});
+	await knex.schema.createTable('OriginalMedia', (table) => {
+		table.increments('Id').primary();
+		table.string('Type', 256).notNullable();
+	});
 };
 
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('photo');
+	await knex.schema.dropTableIfExists('photo');
+	await knex.schema.dropTableIfExists('PhotoOwner');
+	await knex.schema.dropTableIfExists('OriginalMedia');
 };
