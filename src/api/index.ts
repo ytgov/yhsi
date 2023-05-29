@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
 import helmet from 'helmet';
@@ -54,7 +54,7 @@ import {
 	intSitesRouter,
 	actionRouter,
 	assetRouter,
-	inspectionRouter
+	inspectionRouter,
 } from './routes';
 
 import * as config from './config';
@@ -63,11 +63,20 @@ import { configureAuthentication } from './routes/auth';
 import { RequiresAuthentication } from './middleware';
 import { CreateMigrationRoutes } from './data/migrator';
 
+import * as Sentry from '@sentry/node';
+
+Sentry.init({ dsn: config.SENTRY_DSN });
+
 const app = express();
+
+// Use GlitchTip for error monitoring (Sentry)
+// The request handler must be the first middleware on the app
+app.use(Sentry.Handlers.requestHandler());
 
 // Use qs for query parsing
 // This setting is on by default, so I'm only surfacing it here for clarity.
 // https://expressjs.com/en/api.html#app.settings.table -> query parser
+
 app.set('query parser', 'extended');
 
 app.use(express.json()); // for parsing application/json
@@ -91,7 +100,7 @@ app.use(
 				"'self'",
 				'https://*.arcgis.com',
 				'https://services.arcgisonline.com',
-				'https://mapservices.gov.yk.ca'
+				'https://mapservices.gov.yk.ca',
 			],
 		},
 	})
@@ -100,12 +109,15 @@ app.use(
 // very basic CORS setup
 app.use(
 	cors({
-		origin: [config.FRONTEND_URL, 'http://inf-docker-tst:27640', 'http://localhost:27640'],
+		origin: [
+			config.FRONTEND_URL,
+			'http://inf-docker-tst:27640',
+			'http://localhost:27640',
+		],
 		optionsSuccessStatus: 200,
 		credentials: true,
 	})
 );
-
 
 CreateMigrationRoutes(app);
 
@@ -127,26 +139,70 @@ app.use('/api/interpretive-sites', intSitesRouter);
 app.use('/api/actions', actionRouter);
 app.use('/api/assets', assetRouter);
 app.use('/api/inspections', inspectionRouter);
-app.use('/api/association-types', RequiresAuthentication, associationTypesRouter);
+app.use(
+	'/api/association-types',
+	RequiresAuthentication,
+	associationTypesRouter
+);
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
 app.use('/api/category-types', RequiresAuthentication, categoryTypesRouter);
 app.use('/api/communities', RequiresAuthentication, communitiesRouter);
 app.use('/api/condition-types', RequiresAuthentication, conditionTypesRouter);
-app.use('/api/construction-period-types', RequiresAuthentication, constructionPeriodTypesRouter);
+app.use(
+	'/api/construction-period-types',
+	RequiresAuthentication,
+	constructionPeriodTypesRouter
+);
 app.use('/api/contact-types', RequiresAuthentication, contactTypesRouter);
-app.use('/api/contributing-resource-types', RequiresAuthentication, contributingResourceTypesRouter);
-app.use('/api/coordinate-determination-types', RequiresAuthentication, coordinateDeterminationTypesRouter);
+app.use(
+	'/api/contributing-resource-types',
+	RequiresAuthentication,
+	contributingResourceTypesRouter
+);
+app.use(
+	'/api/coordinate-determination-types',
+	RequiresAuthentication,
+	coordinateDeterminationTypesRouter
+);
 app.use('/api/date-types', RequiresAuthentication, dateTypesRouter);
-app.use('/api/description-types', RequiresAuthentication, descriptionTypesRouter);
-app.use('/api/designation-types', RequiresAuthentication, designationTypesRouter);
-app.use('/api/first-nation-association-types', RequiresAuthentication, firstNationAssociationTypesRouter);
+app.use(
+	'/api/description-types',
+	RequiresAuthentication,
+	descriptionTypesRouter
+);
+app.use(
+	'/api/designation-types',
+	RequiresAuthentication,
+	designationTypesRouter
+);
+app.use(
+	'/api/first-nation-association-types',
+	RequiresAuthentication,
+	firstNationAssociationTypesRouter
+);
 app.use('/api/first-nations', RequiresAuthentication, firstNationsRouter);
 app.use('/api/functional-types', RequiresAuthentication, functionalTypesRouter);
-app.use('/api/functional-use-types', RequiresAuthentication, functionalUseTypesRouter);
-app.use('/api/historical-pattern-types', RequiresAuthentication, historicalPatternTypesRouter);
-app.use('/api/jurisdiction-types', RequiresAuthentication, jurisdictionTypesRouter);
+app.use(
+	'/api/functional-use-types',
+	RequiresAuthentication,
+	functionalUseTypesRouter
+);
+app.use(
+	'/api/historical-pattern-types',
+	RequiresAuthentication,
+	historicalPatternTypesRouter
+);
+app.use(
+	'/api/jurisdiction-types',
+	RequiresAuthentication,
+	jurisdictionTypesRouter
+);
 app.use('/api/nts-map-sheets', RequiresAuthentication, ntsMapSheetsRouter);
-app.use('/api/owner-consent-types', RequiresAuthentication, ownerConsentTypesRouter);
+app.use(
+	'/api/owner-consent-types',
+	RequiresAuthentication,
+	ownerConsentTypesRouter
+);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/owners', RequiresAuthentication, ownerRouter);
 app.use('/api/ownership-types', RequiresAuthentication, ownershipTypesRouter);
@@ -156,18 +212,30 @@ app.use('/api/catalogs', RequiresAuthentication, catalogsRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
 app.use('/api/photos', photosExtraRouter); //removed auth check for testing
-app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
+app.use(
+	'/api/revision-log-types',
+	RequiresAuthentication,
+	revisionLogTypesRouter
+);
 app.use('/api/place-edits', RequiresAuthentication, placeEditsRouter);
 app.use('/api/place-themes', RequiresAuthentication, placeThemesRouter);
 app.use('/api/record-types', RequiresAuthentication, recordTypesRouter);
-app.use('/api/site-category-types', RequiresAuthentication, siteCategoryTypesRouter);
-app.use('/api/site-status-types', RequiresAuthentication, siteStatusTypesRouter);
+app.use(
+	'/api/site-category-types',
+	RequiresAuthentication,
+	siteCategoryTypesRouter
+);
+app.use(
+	'/api/site-status-types',
+	RequiresAuthentication,
+	siteStatusTypesRouter
+);
 app.use('/api/statutes', RequiresAuthentication, statutesRouter);
 app.use('/api/users', RequiresAuthentication, usersExtraRouter);
 app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/burials', RequiresAuthentication, burialsRouter);
-app.use("/api/maps", mapsRouter)
-app.use("/api/web-link-types", webLinkTypesRouter)
+app.use('/api/maps', mapsRouter);
+app.use('/api/web-link-types', webLinkTypesRouter);
 
 app.use('/api', RequiresAuthentication, staticRouter);
 
@@ -177,6 +245,24 @@ app.use(express.static(path.join(__dirname, 'web')));
 // if no other routes match, just send the front-end
 app.use((req: Request, res: Response) => {
 	res.sendFile(path.join(__dirname, 'web') + '/index.html');
+});
+
+// The error handler must be before any other error middleware and after all controllers
+app.use(Sentry.Handlers.errorHandler());
+
+// Optional fallthrough error handler
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use(function onError(
+	err: Error,
+	req: Request,
+	res: any,
+	next: NextFunction
+) {
+	// The error id is attached to `res.sentry` to be returned
+	// and optionally displayed to the user for support.
+	res.statusCode = 500;
+	res.end(res.sentry + '\n');
 });
 
 app.listen(config.API_PORT, () => {
