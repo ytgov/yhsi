@@ -389,6 +389,8 @@ export class PlaceService {
 					'StatusTable.PlaceId'
 				);
 
+			console.log(selectStatement.toString());
+
 			type QueryBuilder = {
 				(base: Knex.QueryInterface, value: any): Knex.QueryInterface;
 			};
