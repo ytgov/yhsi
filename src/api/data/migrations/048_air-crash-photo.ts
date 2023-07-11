@@ -17,7 +17,7 @@ import { Knex } from 'knex';
 exports.up = async function (knex: Knex, Promise: any) {
 	await knex.schema.createTable('AirCrash.Photo', (table) => {
 		table.increments('Id').primary();
-		table.string('YAID', 256).nullable();
+		table.string('YACSINumber', 256).nullable();
 		table.string('Photo_RowID', 255).nullable();
 	});
 };
