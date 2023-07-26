@@ -491,7 +491,7 @@ burialsRouter.post('/export', async (req: Request, res: Response) => {
 		Cemetary = '',
 		OriginCountry = '',
 	} = req.body;
-	const burials = await burialService.doSearch(Number(page), Number(limit), 0, {
+	const burials = await burialService.doSearch(page, page, 0, {
 		textToMatch,
 		sortBy,
 		sort,
@@ -507,9 +507,10 @@ burialsRouter.post('/export', async (req: Request, res: Response) => {
 		Cemetary,
 		OriginCountry,
 	});
+
 	const json2csvParser = new Parser();
 
 	const csv = json2csvParser.parse(burials.body);
 	res.setHeader('Content-Type', 'text/csv');
-	res.attachment('boats.csv').send(csv);
+	res.attachment('burials.csv').send(csv);
 });
