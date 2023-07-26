@@ -266,6 +266,7 @@ boatsRouter.post('/export', async (req: Request, res: Response) => {
 	const json2csvParser = new Parser();
 
 	const csv = json2csvParser.parse(boats.body);
+
 	res.setHeader('Content-Type', 'text/csv');
 	res.attachment('boats.csv').send(csv);
 });

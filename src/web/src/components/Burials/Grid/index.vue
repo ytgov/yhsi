@@ -72,18 +72,13 @@
 					<v-icon class="mr-1"> mdi-export </v-icon>
 					Export
 				</v-btn>
-				<JsonCSV
-					v-else
-					:data="burialsData"
+				<v-btn
+					class="black--text mx-1"
+					@click="getBurialExport()"
 				>
-					<v-btn
-						class="black--text mx-1"
-						:disabled="burialsData.length == 0"
-					>
-						<v-icon class="mr-1"> mdi-export </v-icon>
-						Export
-					</v-btn>
-				</JsonCSV>
+					<v-icon class="mr-1"> mdi-export </v-icon>
+					Export
+				</v-btn>
 
 				<v-btn
 					class="black--text mx-1"
@@ -134,13 +129,13 @@
 </template>
 
 <script>
-import JsonCSV from 'vue-json-csv';
 import Breadcrumbs from '../../Breadcrumbs';
 import _ from 'lodash';
+import downloadCsv from '../../../utils/dataToCsv';
 import burials from '../../../controllers/burials';
 export default {
 	name: 'boatsgrid-index',
-	components: { Breadcrumbs, JsonCSV },
+	components: { Breadcrumbs },
 	data: () => ({
 		route: '',
 		loading: false,
@@ -217,7 +212,6 @@ export default {
 			this.filterOptions.map((x) => {
 				prefilters[x.dataAccess] = x.value;
 			});
-			////console.log("TEST",JSON.stringify(prefilters));
 			let data = await burials.get(
 				page,
 				itemsPerPage,
@@ -243,7 +237,23 @@ export default {
 			this.burials.map((x) => {
 				x.crashdate = this.formatDate(x.crashdate);
 			});
-			this.burialsData = await burials.getExport(
+			this.loading = false;
+		},
+		removeCurrentBurial() {
+			localStorage.currentBurialID = null;
+		},
+		async getBurialExport() {
+			this.loadingExport = true;
+
+			let { sortBy, sortDesc } = this.options;
+
+			let textToMatch = this.search;
+			const prefilters = {};
+			this.filterOptions.map((x) => {
+				prefilters[x.dataAccess] = x.value;
+			});
+
+			let data = await burials.getExport(
 				textToMatch,
 				sortBy[0],
 				sortDesc[0] ? 'desc' : 'asc',
@@ -259,11 +269,9 @@ export default {
 				prefilters.Cemetary,
 				prefilters.OriginCountry
 			);
-			console.log('here', this.burialsData);
-			this.loading = false;
-		},
-		removeCurrentBurial() {
-			localStorage.currentBurialID = null;
+
+			downloadCsv(data, 'burials');
+			this.loadingExport = false;
 		},
 		async downloadPdf() {
 			this.loadingPdf = true;
