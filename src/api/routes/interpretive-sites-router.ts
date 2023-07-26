@@ -38,7 +38,6 @@ intSitesRouter.get(
 			sortBy,
 			sort,
 		} = req.query;
-		console.log(req.query);
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
@@ -252,7 +251,10 @@ intSitesRouter.post(
 		const { docID } = req.params;
 		const doc: any = await intSiteService.getDocumentsByID(parseInt(docID));
 
-		res.setHeader('Content-disposition', `attachment; filename="${doc.DocDesc}.${doc.FileType}"`);
+		res.setHeader(
+			'Content-disposition',
+			`attachment; filename="${doc.DocDesc}.${doc.FileType}"`
+		);
 		res.setHeader('Content-type', 'application/json');
 		res.send(doc);
 	}

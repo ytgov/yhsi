@@ -103,7 +103,6 @@ aircrashRouter.put(
 			.where('AirCrash.AirCrash.yacsinumber', aircrashId);
 
 		//Add the new info sources (in progress)
-		//console.log(newInfoSources);
 		await db
 			.insert(
 				newInfoSources.map((source: any) => ({

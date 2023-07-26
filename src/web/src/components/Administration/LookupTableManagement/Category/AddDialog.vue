@@ -104,7 +104,6 @@ export default {
 			let data = {
 				data: this.data,
 			};
-			console.log(data);
 			await catalogs.postCategory(data);
 			this.$router.go();
 		},

@@ -101,13 +101,12 @@ export default {
 		editAsset() {
 			this.$router.go();
 		},
-		handleClick(value) {
+		handleClick() {
 			//Redirects the user to the edit user form
 			// this.$router.push({
 			// 	name: 'ownerView',
 			// 	params: { name: value.OwnerName, id: value.id },
 			// });
-			console.log(value);
 		},
 		async getDataFromApi() {
 			this.loading = true;
@@ -134,7 +133,6 @@ export default {
 				page,
 				itemsPerPage
 			);
-			console.log(data.body);
 			this.list = data.body.map((x) => {
 				x.DecommissionDate = this.formatDate(x.DecommissionDate);
 				x.InstallDate = this.formatDate(x.InstallDate);

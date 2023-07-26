@@ -370,14 +370,7 @@ export default {
 				this.assetFilterOptions
 			);
 		},
-		isActive(route) {
-			//this function helps to show certain classes depending on the route
-			//route.includes("sites") ? "notActive" : route.includes("actions") ? : ;
-			console.log(route);
-			return 'notActive';
-		},
-		gridAssetAdded(val) {
-			console.log(val);
+		gridAssetAdded() {
 			this.$router.go();
 		},
 		newAction() {

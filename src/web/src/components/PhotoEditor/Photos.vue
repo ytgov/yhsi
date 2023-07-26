@@ -563,7 +563,6 @@ export default {
 			}
 		},
 		async getDataFromAPI() {
-			//console.log("getting photos", `photos/${this.photoType}/${this.itemId}`);
 			let resp = await photos.getGeneral(this.photoType, this.itemId);
 			if (resp) {
 				this.photos = resp.data.map((x) => {
@@ -579,7 +578,6 @@ export default {
 			/*axios //${EXTRA_PHOTOS_URL}
         .get(`/api/photos/${this.photoType}/${this.itemId}`)
         .then((resp) => {
-          console.log("photos",resp.data);
           if (resp) {
             this.photos = resp.data.map((x) => {
               x.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(x.ThumbFile.data)}`;
@@ -655,8 +653,7 @@ export default {
 			}
 			formData.append('file', this.file);
 
-			let res = await photos.postGeneral(this.photoType, formData);
-			console.log(res);
+			await photos.postGeneral(this.photoType, formData);
 			// this.reset();
 			// this.$router.go();
 			this.overlay = false;
@@ -723,14 +720,11 @@ export default {
 			this.isLoadingMedias = false;
 		},
 		selectImage(item) {
-			console.log('selected');
 			let index = this.availablePhotos.indexOf(item);
 			if (index > -1) {
 				if (this.availablePhotos[index].selected) {
-					console.log('up');
 					this.availablePhotos[index].selected = false;
 				} else {
-					console.log('down');
 					this.availablePhotos[index].selected = true;
 				}
 			}

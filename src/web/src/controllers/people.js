@@ -79,48 +79,59 @@ export default {
 		return await api
 			.get(`people/${id}/histories`)
 			.then((res) => {
-				//console.log(res);
 				return res.data;
 			})
 			.catch((error) => {
 				console.error(error);
 			});
 	},
-	async getGridPdf(textToMatch, sortBy, sort){
+	async getGridPdf(textToMatch, sortBy, sort) {
 		return await api({
 			url: 'people/pdf',
 			method: 'POST',
 			responseType: 'blob',
 			data: {
-				page: 0, limit: 0, textToMatch, sortBy, sort
-			}
+				page: 0,
+				limit: 0,
+				textToMatch,
+				sortBy,
+				sort,
+			},
 		})
-		.then( res => {
-			return res.data;
-		}).catch( err => {
-			return err;
-		})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((err) => {
+				return err;
+			});
 	},
-	async getExport(textToMatch, sortBy, sort){
-		return await api.post('people/export', {
-			page: 0, limit: 0, textToMatch, sortBy, sort
-		})
-		.then( res => {
-			return res.data;
-		}).catch( err => {
-			return err;
-		})
+	async getExport(textToMatch, sortBy, sort) {
+		return await api
+			.post('people/export', {
+				page: 0,
+				limit: 0,
+				textToMatch,
+				sortBy,
+				sort,
+			})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((err) => {
+				return err;
+			});
 	},
-	async getPdf(id){
+	async getPdf(id) {
 		return await api({
 			url: `people/pdf/${id}`,
 			method: 'POST',
 			responseType: 'blob',
 		})
-		.then( res => {
-			return res.data;
-		}).catch( err => {
-			return err;
-		})
+			.then((res) => {
+				return res.data;
+			})
+			.catch((err) => {
+				return err;
+			});
 	},
 };

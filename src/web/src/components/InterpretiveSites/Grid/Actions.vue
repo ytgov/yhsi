@@ -84,8 +84,7 @@ export default {
 			this.$router.go();
 		},
 		newAction() {},
-		handleClick(value) {
-			console.log(value);
+		handleClick() {
 			//Redirects the user to the edit user form
 			// this.$router.push({
 			// 	name: 'ownerView',
@@ -129,7 +128,6 @@ export default {
 				return x;
 			});
 			this.totalLength = data.count;
-			//console.log(data);
 			this.$store.commit(
 				'interpretiveSites/setActionTableOptions',
 				this.options

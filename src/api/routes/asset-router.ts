@@ -42,7 +42,6 @@ assetRouter.get(
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
-		console.log('endpoint reached');
 		const data = await intSiteService.doAssetSearch(page, limit, offset, {
 			Category,
 			Type,
@@ -95,8 +94,7 @@ assetRouter.post('/', async (req: Request, res: Response) => {
 assetRouter.put('/:assetId', async (req: Request, res: Response) => {
 	const { item = {}, maintainers = [] } = req.body;
 	const { assetId } = req.params;
-	console.log(assetId);
-	console.log('asset modif', req.body);
+
 	const resObj = await intSiteService.modifyAsset(
 		item,
 		maintainers,
@@ -120,7 +118,6 @@ assetRouter.get(
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
-		console.log('insideendpoint', assetID);
 		const docs = await intSiteService.getDocumentsByOwnerID({
 			AssetID: assetID,
 		});
@@ -134,7 +131,6 @@ assetRouter.delete(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { assetID } = req.params;
-		console.log('before service call');
 		const exists = await intSiteService.objExists(
 			{ AssetID: parseInt(assetID) },
 			'assets'
@@ -143,7 +139,6 @@ assetRouter.delete(
 			res.sendStatus(404).send('The Asset doesnt exist');
 			return;
 		}
-		console.log('exists');
 		let resObj = await intSiteService.removeAsset(parseInt(assetID));
 		res.sendStatus(200).send(resObj);
 	}
@@ -233,12 +228,10 @@ assetRouter.get(
 	async (req: Request, res: Response) => {
 		const { assetID } = req.params;
 
-		console.log(assetID);
 		const list = await intSiteService.getMaintainersByID({
 			AssetID: assetID,
 		});
 
-		console.log(list);
 		res.status(200).send(list);
 	}
 );
@@ -258,7 +251,6 @@ assetRouter.post('/export', async (req: Request, res: Response) => {
 		page = 0,
 		limit = 0,
 	} = req.body;
-	console.log(req.body);
 	const data = await intSiteService.doAssetSearch(page, limit, 0, {
 		Category,
 		Type,
