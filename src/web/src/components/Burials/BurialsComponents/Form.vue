@@ -46,7 +46,7 @@
 					@click="saveChanges"
 				>
 					<v-icon class="mr-1">mdi-check</v-icon>
-					Done
+					Save
 				</v-btn>
 			</v-col>
 		</v-row>
