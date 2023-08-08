@@ -3,7 +3,7 @@ import * as ExpressSession from 'express-session';
 import { AUTH_REDIRECT, DB_CONFIG, FRONTEND_URL } from '../config';
 
 import { auth } from 'express-openid-connect';
-import { AuthUser } from "../models";
+import { AuthUser } from '../models';
 import { UserService } from '../services';
 
 const db = new UserService(DB_CONFIG);
@@ -41,7 +41,7 @@ export function configureAuthentication(app: Express) {
 			req.user = user;
 
 			let dbUser = await db.getByEmail(user.email);
-			req.user = dbUser;// Object.assign(user, dbUser);
+			req.user = dbUser; // Object.assign(user, dbUser);
 		}
 
 		next();
@@ -56,8 +56,7 @@ export function configureAuthentication(app: Express) {
 
 			if (!dbUser) {
 				await db.create(user.email, user.first_name, user.last_name);
-			}
-			else {
+			} else {
 				await db.updateLoginDate(dbUser);
 			}
 
