@@ -14,6 +14,11 @@ export const aircrashRouter = express.Router();
 const db = knex(DB_CONFIG);
 const aircrashService = new AircrashService();
 
+/* Routes which are available to
+    UserRoles.AIRPLANE_CRASH_EDITOR,
+		UserRoles.AIRPLANE_CRASH_VIEWER,
+*/
+
 aircrashRouter.get(
 	'/',
 	[
@@ -78,6 +83,10 @@ aircrashRouter.get(
 		res.status(200).send(aircrash);
 	}
 );
+
+/* Routes which are available to
+    UserRoles.AIRPLANE_CRASH_EDITOR,
+*/
 
 aircrashRouter.put(
 	'/:aircrashId',
