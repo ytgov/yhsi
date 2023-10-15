@@ -913,7 +913,6 @@ export default {
 	},
 	computed: {
 		isAircrashEditor() {
-			console.log(this.$store.state.user);
 			return this.$store.state.auth.user.roles.includes('Administrator');
 		},
 		isAdministrator() {
