@@ -29,7 +29,7 @@ export function authorize(roles: string[] = [], allowPending = false) {
 			return res.status(401).send('Not authenticated');
 
 		if (currentUser.status != USER_ACTIVE_STATUS && !allowPending)
-			return res.status(401).json({ message: 'Unauthorized - User inactive' });
+			return res.status(403).json({ message: 'Unauthorized - User inactive' });
 
 		// if route only requires an active user
 		if (roles.length == 0) return next();
@@ -40,7 +40,7 @@ export function authorize(roles: string[] = [], allowPending = false) {
 		}
 
 		return res
-			.status(401)
+			.status(403)
 			.json({ message: 'Unauthorized - Missing role(s): ' + roles });
 	};
 }
