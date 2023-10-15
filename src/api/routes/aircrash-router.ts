@@ -22,7 +22,7 @@ const aircrashService = new AircrashService();
 */
 const airCrashViewers = [
 	// 'UserRoles.AIRPLANE_CRASH_VIEWER',
-	UserRoles.ADMINISTRATOR,
+
 	UserRoles.AIRPLANE_CRASH_EDITOR,
 	UserRoles.AIRPLANE_CRASH_VIEWER,
 ];
@@ -94,9 +94,12 @@ aircrashRouter.get(
 	}
 );
 
-const airCrashEditors = 'UserRoles.AIRPLANE_CRASH_EDITOR';
+const airCrashEditors = [
+	UserRoles.AIRPLANE_CRASH_EDITOR,
+	UserRoles.ADMINISTRATOR,
+];
 
-aircrashRouter.use(authorize([airCrashEditors]));
+aircrashRouter.use(authorize(airCrashEditors));
 
 aircrashRouter.put(
 	'/:aircrashId',
