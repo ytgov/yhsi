@@ -8,6 +8,7 @@ export const UserRoles = {
 	PHOTO_VIEWER: 'Photo Viewer',
 	SITE_VIEWER_LIMITED: 'Site Viewer Limited',
 	AIRPLANE_CRASH_EDITOR: 'Airplane Crash Editor',
+	AIRPLANE_CRASH_VIEWER: 'Airplane Crash Viewer',
 	BOATS_EDITOR: 'Boats Editor',
 	PLACE_EDITOR: 'Places Editor',
 	BURIALS_EDITOR: 'Burials Editor',
