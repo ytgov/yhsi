@@ -6,6 +6,8 @@ import { param, query } from 'express-validator';
 import { AircrashService } from '../services';
 import { renderFile } from 'pug';
 import { generatePDF } from '../utils/pdf-generator';
+import { UserRoles } from '../models/user-roles';
+import { authorize } from '../middleware/authorization';
 const {
 	Parser,
 	transforms: { unwind },
@@ -18,6 +20,14 @@ const aircrashService = new AircrashService();
     UserRoles.AIRPLANE_CRASH_EDITOR,
 		UserRoles.AIRPLANE_CRASH_VIEWER,
 */
+const airCrashViewers = [
+	// 'UserRoles.AIRPLANE_CRASH_VIEWER',
+	UserRoles.ADMINISTRATOR,
+	UserRoles.AIRPLANE_CRASH_EDITOR,
+	UserRoles.AIRPLANE_CRASH_VIEWER,
+];
+
+aircrashRouter.use(authorize(airCrashViewers));
 
 aircrashRouter.get(
 	'/',
@@ -84,9 +94,9 @@ aircrashRouter.get(
 	}
 );
 
-/* Routes which are available to
-    UserRoles.AIRPLANE_CRASH_EDITOR,
-*/
+const airCrashEditors = 'UserRoles.AIRPLANE_CRASH_EDITOR';
+
+aircrashRouter.use(authorize([airCrashEditors]));
 
 aircrashRouter.put(
 	'/:aircrashId',
