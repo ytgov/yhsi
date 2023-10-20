@@ -25,6 +25,7 @@ const airCrashViewers = [
 
 	UserRoles.AIRPLANE_CRASH_EDITOR,
 	UserRoles.AIRPLANE_CRASH_VIEWER,
+	UserRoles.ADMINISTRATOR,
 ];
 
 aircrashRouter.use(authorize(airCrashViewers));
