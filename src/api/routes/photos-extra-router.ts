@@ -442,18 +442,15 @@ photosExtraRouter.post(
 	}
 );
 
-
 // ADD NEW INTERPRETIVE SITE PHOTO
 photosExtraRouter.post(
 	'/interpretive-sites',
 	[upload.single('file')],
 	async (req: Request, res: Response) => {
-
 		const { SiteID, ...restBody } = req.body;
 		const ThumbFile = await createThumbnail(req.file.buffer);
 		const DateCreated = new Date();
 		const OriginalFileName = req.file.originalname;
-		console.log("inside the endpoint", req.body);
 		const body = {
 			File: req.file.buffer,
 			ThumbFile,
@@ -483,7 +480,6 @@ photosExtraRouter.post(
 		res.status(200).send({ message: 'Upload Success' });
 	}
 );
-
 
 // Add ytplace photo
 photosExtraRouter.post(
@@ -562,7 +558,6 @@ photosExtraRouter.post(
 	[param('siteId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-
 		const { siteId } = req.params;
 		const { linkPhotos } = req.body;
 		let currentPhotos = await db

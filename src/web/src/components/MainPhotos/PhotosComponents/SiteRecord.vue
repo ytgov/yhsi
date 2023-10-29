@@ -536,7 +536,6 @@ export default {
 	}),
 	created() {
 		if (this.fields.rowId) {
-			console.log(this.fields.rowId);
 			// Fetch associations
 			axios.get(`${PHOTO_URL}/${this.fields.rowId}/place`).then((resp) => {
 				this.sites = resp.data.data;

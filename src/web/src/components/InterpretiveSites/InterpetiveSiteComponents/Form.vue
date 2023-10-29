@@ -1,6 +1,6 @@
 <template>
 	<v-container fluid>
-		<h3>Interpretvie Site Information</h3>
+		<h3>Interpretive Site Information</h3>
 		<Breadcrumbs />
 		<v-row>
 			<v-col
@@ -40,13 +40,13 @@
 				</v-btn>
 
 				<v-btn
-					color="success"
+					color="primary"
 					:disabled="showSave < 1 || !valid"
 					v-if="!isView"
 					@click="saveChanges"
 				>
 					<v-icon class="mr-1">mdi-check</v-icon>
-					Done
+					Save
 				</v-btn>
 			</v-col>
 		</v-row>
@@ -543,7 +543,6 @@ export default {
 				x.InspectionDate = this.formatDate(x.InspectionDate);
 				return x;
 			});
-			console.log(this.fields);
 			this.routes = await catalogs.getRoutes();
 			this.overlay = false;
 		},
@@ -648,7 +647,6 @@ export default {
 		},
 		newMaintainer(val) {
 			val.SiteID = this.fields.SiteID;
-			console.log('inside form comp', val);
 			this.fields.maintainers.push(val);
 		},
 		deleteMaintainer(id) {

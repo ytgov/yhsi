@@ -47,7 +47,6 @@ export default {
 	methods: {
 		deleteItem(id) {
 			//api delete call
-			console.log(id);
 			this.$emit('deleteMaintainer', id);
 		},
 		newMaintainer(val) {

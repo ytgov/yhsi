@@ -2,6 +2,7 @@
 	<div>
 		<h3>Airplane Crash Sites</h3>
 		<Breadcrumbs />
+
 		<v-row>
 			<v-col
 				cols="12"
@@ -15,11 +16,12 @@
 				<h1 v-else-if="isEditingCrash">Edit: {{ fields.yacsinumber }}</h1>
 				<h1 v-else>New Crash Site</h1>
 				<v-spacer></v-spacer>
+
 				<!-- buttons for the view state -->
 				<v-btn
 					class="black--text mx-1"
 					@click="editMode"
-					v-if="isViewingCrash"
+					v-if="isViewingCrash && canEdit"
 				>
 					<v-icon class="mr-1">mdi-pencil</v-icon>
 					Edit
@@ -50,7 +52,7 @@
 					@click="saveChanges"
 				>
 					<v-icon class="mr-1">mdi-check</v-icon>
-					Done
+					Save
 				</v-btn>
 				<!-- buttons for the new state -->
 				<v-btn
@@ -275,15 +277,15 @@
 				<!-- <v-col cols="5">
                         <v-col cols="12"> -->
 				<!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-				<!-- <Photos 
-                            v-if="infoLoaded" 
-                            :showDefault="isNewCrash" 
+				<!-- <Photos
+                            v-if="infoLoaded"
+                            :showDefault="isNewCrash"
                             :yacsiNumber="getYACSINumber"
                             @updateSelectedImage="selectedImageChanged"
                             @loadingPhotosChange="loadingPhotosChange"/>
                             </v-row>
                         </v-alert>
-                        
+
                     </v-col>
                 </v-row>
             </v-col> -->
@@ -644,7 +646,7 @@ export default {
         //console.log(/^[0-9]*$/.test('12'));*/
 	},
 	methods: {
-		/*this function checks if the current path contains a specific word, this can be done with a simple includes but 
+		/*this function checks if the current path contains a specific word, this can be done with a simple includes but
         //it causes confusion when a boat or owner has 'new' in its name, leading the component to think it should use the 'new' mode,
         this problem is solved by using this funtion.*/
 		checkPath(word) {
@@ -910,6 +912,17 @@ export default {
 		},
 	},
 	computed: {
+		isAircrashEditor() {
+			console.log(this.$store.state.user);
+			return this.$store.state.auth.user.roles.includes('Administrator');
+		},
+		isAdministrator() {
+			return this.$store.state.auth.user.roles.includes('Administrator');
+		},
+		canEdit() {
+			return this.isAircrashEditor || this.isAdministrator;
+		},
+
 		getYACSINumber() {
 			if (this.$route.params.yacsinumber) {
 				return this.$route.params.yacsinumber;

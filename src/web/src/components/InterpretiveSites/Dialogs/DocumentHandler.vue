@@ -183,10 +183,7 @@ export default {
 			this.$emit('deletedItem', id);
 		},
 		async downloadDoc(id) {
-			console.log('downloading');
-			console.log('id', id);
 			let res = await interpretiveSites.downloadDocByID(id);
-			console.log(res);
 			downloadFileFromJSON(
 				res.data[0].Document.data,
 				'file',

@@ -11,7 +11,11 @@
 		</p>
 
 		<v-row>
-			<v-col cols="12" sm="6" v-if="!showSuccess">
+			<v-col
+				cols="12"
+				sm="6"
+				v-if="!showSuccess"
+			>
 				<v-card class="default">
 					<v-card-title>Create an account</v-card-title>
 					<v-card-text>
@@ -55,7 +59,9 @@
 							>
 								Sign up
 							</v-btn>
-							<span class="text-error" v-if="errorMessage"
+							<span
+								class="text-error"
+								v-if="errorMessage"
 								>* {{ errorMessage }}</span
 							>
 						</v-form>

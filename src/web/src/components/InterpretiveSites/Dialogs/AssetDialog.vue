@@ -545,7 +545,6 @@ export default {
 			this.maintainers = await interpretiveSites.getMaintainersByAssetID(
 				this.dataToEdit.item.AssetID
 			);
-			console.log('main', this.maintainers);
 			this.loadingCatalogs = false;
 		},
 		async saveNew() {
@@ -598,7 +597,6 @@ export default {
 		},
 		async searchSites() {
 			this.loadingSites = true;
-			console.log('function called');
 			let list = await interpretiveSites.get(
 				0,
 				5,
@@ -623,7 +621,6 @@ export default {
 				'assets',
 				this.dataToEdit.item.AssetID
 			);
-			console.log('response', res);
 			this.documments = [...res.data];
 		},
 	},

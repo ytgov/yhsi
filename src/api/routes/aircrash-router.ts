@@ -6,6 +6,8 @@ import { param, query } from 'express-validator';
 import { AircrashService } from '../services';
 import { renderFile } from 'pug';
 import { generatePDF } from '../utils/pdf-generator';
+import { UserRoles } from '../models/user-roles';
+import { authorize } from '../middleware/authorization';
 const {
 	Parser,
 	transforms: { unwind },
@@ -13,6 +15,19 @@ const {
 export const aircrashRouter = express.Router();
 const db = knex(DB_CONFIG);
 const aircrashService = new AircrashService();
+
+/* Routes which are available to
+    UserRoles.AIRPLANE_CRASH_EDITOR,
+		UserRoles.AIRPLANE_CRASH_VIEWER,
+*/
+const airCrashViewers = [
+	// 'UserRoles.AIRPLANE_CRASH_VIEWER',
+
+	UserRoles.AIRPLANE_CRASH_EDITOR,
+	UserRoles.AIRPLANE_CRASH_VIEWER,
+];
+
+aircrashRouter.use(authorize(airCrashViewers));
 
 aircrashRouter.get(
 	'/',
@@ -79,6 +94,13 @@ aircrashRouter.get(
 	}
 );
 
+const airCrashEditors = [
+	UserRoles.AIRPLANE_CRASH_EDITOR,
+	UserRoles.ADMINISTRATOR,
+];
+
+aircrashRouter.use(authorize(airCrashEditors));
+
 aircrashRouter.put(
 	'/:aircrashId',
 	[param('aircrashId').notEmpty()],
@@ -103,7 +125,6 @@ aircrashRouter.put(
 			.where('AirCrash.AirCrash.yacsinumber', aircrashId);
 
 		//Add the new info sources (in progress)
-		//console.log(newInfoSources);
 		await db
 			.insert(
 				newInfoSources.map((source: any) => ({

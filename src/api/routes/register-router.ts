@@ -12,37 +12,42 @@ const photoService = new PhotoService(DB_CONFIG);
 export const registerRouter = express.Router();
 const PAGE_SIZE = 12;
 
-registerRouter.get('/', [query('page').default(1).isInt({ gt: 0 })], async (req: Request, res: Response) => {
-	let page = parseInt(req.query.page as string);
-	let skip = (page - 1) * PAGE_SIZE;
-	let take = PAGE_SIZE;
+registerRouter.get(
+	'/',
+	[query('page').default(1).isInt({ gt: 0 })],
+	async (req: Request, res: Response) => {
+		let page = parseInt(req.query.page as string);
+		let skip = (page - 1) * PAGE_SIZE;
+		let take = PAGE_SIZE;
 
-	let data = await placeService.getRegisterAll(skip, take);
-	data.map(
-		(d) =>
-			(d.recognitionDate = moment(d.recognitionDate)
-				.add(7, 'hours')
-				.format('YYYY-MM-DD'))
-	);
+		let data = await placeService.getRegisterAll(skip, take);
+		data.map(
+			(d) =>
+				(d.recognitionDate = moment(d.recognitionDate)
+					.add(7, 'hours')
+					.format('YYYY-MM-DD'))
+		);
 
-	let item_count = await placeService.getPlaceInRegisterCount()
-		.then((data) => data)
-		.catch((err) => {
-			console.error('Database Error', err);
-			return 0;
-		});
+		let item_count = await placeService
+			.getPlaceInRegisterCount()
+			.then((data) => data)
+			.catch((err) => {
+				console.error('Database Error', err);
+				return 0;
+			});
 
-	let page_count = Math.ceil(item_count / PAGE_SIZE);
+		let page_count = Math.ceil(item_count / PAGE_SIZE);
 
-	if (data) {
-		return res.json({
-			data,
-			meta: { page, page_size: PAGE_SIZE, item_count, page_count },
-		});
+		if (data) {
+			return res.json({
+				data,
+				meta: { page, page_size: PAGE_SIZE, item_count, page_count },
+			});
+		}
+
+		res.json({ data });
 	}
-	
-	res.json({ data });
-});
+);
 
 registerRouter.get('/:id', async (req: Request, res: Response) => {
 	let { id } = req.params;

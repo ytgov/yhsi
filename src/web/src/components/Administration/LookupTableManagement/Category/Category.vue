@@ -134,8 +134,6 @@ export default {
 				sortDesc[0] ? 'desc' : 'asc'
 			);
 			this.list = _.get(data, 'body', []);
-			//console.log(this.vesseltypes);
-			console.log(data);
 			this.totalLength = _.get(data, 'count', 0);
 			this.loading = false;
 		},

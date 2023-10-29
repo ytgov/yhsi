@@ -9,7 +9,6 @@ const getters = {
 		return !!state.user;
 	},
 	fullName: (state) => {
-		console.log('current', state);
 		return state.user.display_name;
 	},
 	user: (state) => {

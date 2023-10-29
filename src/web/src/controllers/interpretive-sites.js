@@ -533,7 +533,6 @@ export default {
 		return await api
 			.get(`${docType}/docs/${itemId}`)
 			.then((resp) => {
-				//console.log("data",resp);
 				return resp;
 			})
 			.catch((error) => console.error(error));
@@ -572,7 +571,6 @@ export default {
 		return await api
 			.delete(`${docType}/docs/${itemId}`)
 			.then((resp) => {
-				//console.log("data",resp);
 				return resp;
 			})
 			.catch((error) => console.error(error));

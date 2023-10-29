@@ -1,12 +1,15 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response } from 'express';
 import { DB_CONFIG } from '../config';
-import knex from "knex";
+import knex from 'knex';
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
-import { BoatService } from "../services";
-import { renderFile } from "pug";
-import { generatePDF } from "../utils/pdf-generator";
-const { Parser, transforms: { unwind } } = require('json2csv');
+import { BoatService } from '../services';
+import { renderFile } from 'pug';
+import { generatePDF } from '../utils/pdf-generator';
+const {
+	Parser,
+	transforms: { unwind },
+} = require('json2csv');
 export const boatsRouter = express.Router();
 const db = knex(DB_CONFIG);
 const boatService = new BoatService();
@@ -17,26 +20,32 @@ boatsRouter.get(
 		query('textToMatch').default('').isString(),
 		query('sortBy').default('Name').isString(),
 		query('sort').default('asc').isString(),
-		query('page').default(0).isInt(), 
+		query('page').default(0).isInt(),
 		query('limit').default(10).isInt({ gt: 0 }),
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { 
-			textToMatch = '', 
-			Owner = '', 
-			ConstructionDate = '', 
-			ServiceStart = '', 
-			ServiceEnd = '', 
-			sortBy = 'Name', 
-			sort = 'asc' 
-		} =  req.query;
+		const {
+			textToMatch = '',
+			Owner = '',
+			ConstructionDate = '',
+			ServiceStart = '',
+			ServiceEnd = '',
+			sortBy = 'Name',
+			sort = 'asc',
+		} = req.query;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
-		
-		const data = await boatService.doSearch(page, limit, offset, { 
-			textToMatch, Owner, ConstructionDate, ServiceStart, ServiceEnd, sortBy, sort 
+
+		const data = await boatService.doSearch(page, limit, offset, {
+			textToMatch,
+			Owner,
+			ConstructionDate,
+			ServiceStart,
+			ServiceEnd,
+			sortBy,
+			sort,
 		});
 
 		res.status(200).send(data);
@@ -51,8 +60,8 @@ boatsRouter.get(
 		const { boatId } = req.params;
 		const boat = await boatService.getById(parseInt(boatId));
 
-		if(!boat){
-			res.status(404).send({message: "Data not found"});
+		if (!boat) {
+			res.status(404).send({ message: 'Data not found' });
 			return;
 		}
 
@@ -178,10 +187,9 @@ boatsRouter.put('/:boatId', async (req: Request, res: Response) => {
 	res.status(200).send({ message: 'success' });
 });
 
-
 //PDF AND EXPORTS
 boatsRouter.post(
-	'/pdf/:boatId', 
+	'/pdf/:boatId',
 	[param('boatId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
@@ -190,32 +198,7 @@ boatsRouter.post(
 		const boat = await boatService.getById(parseInt(boatId));
 
 		let data = renderFile('./templates/boats/boatView.pug', {
-			data: boat
-		});
-
-		let pdf = await generatePDF(data);
-		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		res.send(pdf);
-});
-
-boatsRouter.post('/pdf', async (req: Request, res: Response) => {
-		const { 
-			textToMatch = '', 
-			Owner = '', 
-			ConstructionDate = '', 
-			ServiceStart = '', 
-			ServiceEnd = '', 
-			sortBy = 'Name', 
-			sort = 'asc',
-			page = 0, limit = 0
-		} =  req.body;
-		
-		const boats = await boatService.doSearch(page, limit, 0, { 
-			textToMatch, Owner, ConstructionDate, ServiceStart, ServiceEnd, sortBy, sort 
-		});
-		let data = renderFile('./templates/boats/boatGrid.pug', {
-			data: boats.body
+			data: boat,
 		});
 
 		let pdf = await generatePDF(data);
@@ -225,25 +208,65 @@ boatsRouter.post('/pdf', async (req: Request, res: Response) => {
 	}
 );
 
-boatsRouter.post('/export', async (req: Request, res: Response) => {
-	const { 
-		textToMatch = '', 
-		Owner = '', 
-		ConstructionDate = '', 
-		ServiceStart = '', 
-		ServiceEnd = '', 
-		sortBy = 'Name', 
+boatsRouter.post('/pdf', async (req: Request, res: Response) => {
+	const {
+		textToMatch = '',
+		Owner = '',
+		ConstructionDate = '',
+		ServiceStart = '',
+		ServiceEnd = '',
+		sortBy = 'Name',
 		sort = 'asc',
-		page = 0, limit = 0
-	} =  req.body;
+		page = 0,
+		limit = 0,
+	} = req.body;
 
-	const boats = await boatService.doSearch(page, limit, 0, { 
-		textToMatch, Owner, ConstructionDate, ServiceStart, ServiceEnd, sortBy, sort 
+	const boats = await boatService.doSearch(page, limit, 0, {
+		textToMatch,
+		Owner,
+		ConstructionDate,
+		ServiceStart,
+		ServiceEnd,
+		sortBy,
+		sort,
 	});
+	let data = renderFile('./templates/boats/boatGrid.pug', {
+		data: boats.body,
+	});
+
+	let pdf = await generatePDF(data);
+	res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
+	res.setHeader('Content-type', 'application/pdf');
+	res.send(pdf);
+});
+
+boatsRouter.post('/export', async (req: Request, res: Response) => {
+	const {
+		textToMatch = '',
+		Owner = '',
+		ConstructionDate = '',
+		ServiceStart = '',
+		ServiceEnd = '',
+		sortBy = 'Name',
+		sort = 'asc',
+		page = 0,
+		limit = 0,
+	} = req.body;
+
+	const boats = await boatService.doSearch(page, limit, 0, {
+		textToMatch,
+		Owner,
+		ConstructionDate,
+		ServiceStart,
+		ServiceEnd,
+		sortBy,
+		sort,
+	});
+
 	const json2csvParser = new Parser();
 
 	const csv = json2csvParser.parse(boats.body);
-    res.setHeader("Content-Type", "text/csv");
-	res.attachment('boats.csv').send(csv)
 
+	res.setHeader('Content-Type', 'text/csv');
+	res.attachment('boats.csv').send(csv);
 });
