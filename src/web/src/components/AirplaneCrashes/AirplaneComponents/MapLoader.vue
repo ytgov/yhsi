@@ -5,7 +5,7 @@
 				outlined
 				color="primary"
 			>
-				<div class="sub-title">Location</div>
+				<div class="subtitle-1 pb-3">Location</div>
 				<v-row>
 					<v-col>
 						<v-select
@@ -32,11 +32,47 @@
 						></v-select>
 					</v-col>
 				</v-row>
+				<v-row>
+					<div class="subtitle-1 pl-4">Coordinate</div>
+				</v-row>
+
+				<v-row>
+					<v-col cols="1" />
+					<v-col cols="9">
+						<v-text-field
+							outlined
+							dense
+							label="Latitude"
+							v-model="displayCoordinate.lat"
+							:readonly="mode == 'view'"
+							:disabled="mode == 'view'"
+						>
+						</v-text-field>
+					</v-col>
+				</v-row>
+				<v-row>
+					<v-col cols="1" />
+					<v-col cols="9">
+						<v-text-field
+							outlined
+							dense
+							label="Longitude"
+							v-model="displayCoordinate.long"
+							:readonly="mode == 'view'"
+							:disabled="mode == 'view'"
+						>
+						</v-text-field>
+					</v-col>
+				</v-row>
 				<!-- SELECTED SYSTEM  == DD -->
+				<v-row>
+					<div class="subtitle-2">Coordinate</div>
+				</v-row>
 				<v-row v-if="selectedSystem.id == 1 && selectedProjection.id == 1">
 					<v-col cols="3"> Latitude </v-col>
 					<v-col cols="9">
 						<v-text-field
+							label="Latitude"
 							outlined
 							dense
 							@change="changedLocation"
@@ -57,53 +93,7 @@
 						></v-text-field>
 					</v-col>
 				</v-row>
-				<!-- SELECTED SYSTEM  == UTM -->
-				<!-- <v-row v-if="selectedSystem.id == 2 && selectedProjection.id == 1">
-					<v-col cols="3">
-						<h4>Easting</h4>
-						<v-text-field
-							outlined
-							dense
-							@change="changedLocation"
-							v-model="utm.Easting"
-							:readonly="mode == 'view'"
-							type="number"
-						></v-text-field>
-					</v-col>
-					<v-col cols="3">
-						<h4>Northing</h4>
-						<v-text-field
-							outlined
-							dense
-							@change="changedLocation"
-							v-model="utm.Northing"
-							:readonly="mode == 'view'"
-							type="number"
-						></v-text-field>
-					</v-col>
-					<v-col cols="3">
-						<h4>Hemisphere</h4>
-						<v-select
-							outlined
-							dense
-							@change="changedLocation"
-							v-model="utm.ZoneLetter"
-							:readonly="mode == 'view'"
-							:items="hemispheres"
-						></v-select>
-					</v-col>
-					<v-col cols="3">
-						<h4>Zone</h4>
-						<v-text-field
-							outlined
-							dense
-							@change="changedLocation"
-							v-model="utm.ZoneNumber"
-							:readonly="mode == 'view'"
-							type="number"
-						></v-text-field>
-					</v-col>
-				</v-row> -->
+
 				<!-- SELECTED SYSTEM  == DMS -->
 				<v-row v-if="selectedSystem.id == 3 && selectedProjection.id == 1">
 					<v-col cols="2.4">
@@ -444,12 +434,7 @@ export default {
 			lat: { deg: 0, min: 0, sec: 0, dir: 0 },
 			lng: { deg: 0, min: 0, sec: 0, dir: 0 },
 		},
-		utm: {
-			Easting: 0,
-			Northing: 0,
-			ZoneLetter: null,
-			ZoneNumber: 0,
-		},
+
 		nad83: {
 			x: 0,
 			y: 0,
@@ -726,8 +711,55 @@ export default {
 			} // Don't do anything for N or E
 			return dd;
 		},
+
+		decimalToDMS: function (decimalDegrees, isLongitude) {
+			// is a duplicate of convertDDToDMS but uses less 'magic'
+			let degrees = 0;
+
+			if (decimalDegrees < 0) {
+				degrees = Math.ceil(decimalDegrees);
+			} else {
+				degrees = Math.floor(decimalDegrees);
+			}
+
+			const minutesFloat = Math.abs(decimalDegrees - degrees) * 60;
+			const minutes = Math.floor(minutesFloat);
+			const seconds = ((minutesFloat - minutes) * 60).toFixed(0);
+
+			// Determine the direction
+			let direction;
+			if (isLongitude) {
+				direction = decimalDegrees >= 0 ? 'E' : 'W';
+			} else {
+				direction = decimalDegrees >= 0 ? 'N' : 'S';
+			}
+
+			return `${Math.abs(degrees)}°${minutes}'${seconds}"${direction}`;
+		},
 	},
 	computed: {
+		displayCoordinate() {
+			// use a computed value to show the preffered coordinate system
+			//decimal degrees
+			if (this.selectedSystem.id === 1) {
+				return { lat: this.fields.lat, long: this.fields.long };
+			}
+			//dms
+			if (this.selectedSystem.id === 3) {
+				return {
+					lat: this.decimalToDMS(this.fields.lat, false),
+					long: this.decimalToDMS(this.fields.long, true),
+				};
+			}
+			//utm
+			if (this.selectedSystem.id === 2) {
+				return {
+					lat: this.utm.Easting,
+					long: this.utm.Northing,
+				};
+			}
+			return { lat: 'Error', long: 'Error' };
+		},
 		isOutsideYukon() {
 			let { lat, long } = this.modifiableFields;
 			return !pointInPolygon([lat, long], yukonPolygon.latlngs);
