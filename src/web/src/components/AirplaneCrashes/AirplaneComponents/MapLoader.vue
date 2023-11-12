@@ -308,13 +308,13 @@
 						layer-type="base"
 					/>
 
-					<l-polygon
+					<!-- <l-polygon
 						:lat-lngs="yukonPolygon.latlngs"
 						:color="yukonPolygon.color"
 						:fillOpacity="0.09"
 					>
 						<l-tooltip content="Yukon" />
-					</l-polygon>
+					</l-polygon> -->
 
 					<l-marker
 						:lat-lng="[63.6333308, -135.7666636]"
@@ -408,7 +408,7 @@ export default {
 		LMap,
 		LTileLayer,
 		LControl,
-		LPolygon,
+		// LPolygon,
 		LMarker,
 		LPopup,
 		LTooltip,
@@ -492,7 +492,7 @@ export default {
 			},
 		],
 		yukonPolygon,
-		zoom: 8,
+		zoom: 6,
 		center: [64.0, -135.0],
 	}),
 	mounted() {
