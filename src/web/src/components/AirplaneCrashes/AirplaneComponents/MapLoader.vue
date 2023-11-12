@@ -42,7 +42,6 @@
 							@change="changedLocation"
 							v-model="dd.lat"
 							:readonly="mode == 'view'"
-							type="number"
 						></v-text-field>
 					</v-col>
 				</v-row>
@@ -55,7 +54,6 @@
 							@change="changedLocation"
 							v-model="dd.lng"
 							:readonly="mode == 'view'"
-							type="number"
 						></v-text-field>
 					</v-col>
 				</v-row>
@@ -119,7 +117,6 @@
 							@change="changedLocation"
 							v-model="dms.lat.deg"
 							:readonly="mode == 'view'"
-							type="number"
 						></v-text-field>
 					</v-col>
 					<v-col>
@@ -130,7 +127,6 @@
 							@change="changedLocation"
 							v-model="dms.lat.min"
 							:readonly="mode == 'view'"
-							type="number"
 						></v-text-field>
 					</v-col>
 					<v-col>
@@ -141,7 +137,6 @@
 							@change="changedLocation"
 							v-model="dms.lat.sec"
 							:readonly="mode == 'view'"
-							type="number"
 						></v-text-field>
 					</v-col>
 					<v-col>
@@ -166,7 +161,6 @@
 							@change="changedLocation"
 							v-model="dms.lng.deg"
 							:readonly="mode == 'view'"
-							type="number"
 						></v-text-field>
 					</v-col>
 					<v-col>
@@ -176,7 +170,6 @@
 							@change="changedLocation"
 							v-model="dms.lng.min"
 							:readonly="mode == 'view'"
-							type="number"
 						></v-text-field>
 					</v-col>
 					<v-col>
@@ -186,7 +179,6 @@
 							@change="changedLocation"
 							v-model="dms.lng.sec"
 							:readonly="mode == 'view'"
-							type="number"
 						></v-text-field>
 					</v-col>
 					<v-col>
@@ -212,7 +204,6 @@
 							@change="changedLocation"
 							v-model="nad83.lat"
 							:readonly="mode == 'view'"
-							type="number"
 						></v-text-field>
 					</v-col>
 				</v-row>
@@ -227,7 +218,6 @@
 							@change="changedLocation"
 							v-model="nad83.lng"
 							:readonly="mode == 'view'"
-							type="number"
 						></v-text-field>
 					</v-col>
 				</v-row>
@@ -483,28 +473,7 @@ export default {
 				name: 'NAD 83 CSRS',
 			},
 		],
-		hemispheres: [
-			'C',
-			'D',
-			'E',
-			'F',
-			'G',
-			'H',
-			'J',
-			'K',
-			'L',
-			'M',
-			'N',
-			'P',
-			'Q',
-			'R',
-			'S',
-			'T',
-			'U',
-			'V',
-			'W',
-			'X',
-		],
+
 		coordinateSystemOptions: [
 			{ id: 1, text: 'Decimal Degrees' },
 			// { id: 2, text: 'UTM' },
