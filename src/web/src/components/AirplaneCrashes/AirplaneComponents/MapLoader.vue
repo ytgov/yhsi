@@ -60,7 +60,7 @@
 					</v-col>
 				</v-row>
 				<!-- SELECTED SYSTEM  == UTM -->
-				<v-row v-if="selectedSystem.id == 2 && selectedProjection.id == 1">
+				<!-- <v-row v-if="selectedSystem.id == 2 && selectedProjection.id == 1">
 					<v-col cols="3">
 						<h4>Easting</h4>
 						<v-text-field
@@ -105,7 +105,7 @@
 							type="number"
 						></v-text-field>
 					</v-col>
-				</v-row>
+				</v-row> -->
 				<!-- SELECTED SYSTEM  == DMS -->
 				<v-row v-if="selectedSystem.id == 3 && selectedProjection.id == 1">
 					<v-col cols="2.4">
@@ -507,7 +507,7 @@ export default {
 		],
 		coordinateSystemOptions: [
 			{ id: 1, text: 'Decimal Degrees' },
-			{ id: 2, text: 'UTM' },
+			// { id: 2, text: 'UTM' },
 			{ id: 3, text: 'Degrees, Minutes, Seconds' },
 		],
 		//Crash site marker
