@@ -1,11 +1,15 @@
 <template>
 	<v-row v-if="modifiableFields">
+		{{ modifiableFields }}
+
 		<v-col cols="5">
+			{{ siteLocation }}
 			<v-alert
 				outlined
 				color="primary"
 			>
 				<div class="subtitle-1 pb-3">Location</div>
+
 				<v-row>
 					<v-col>
 						<v-select
@@ -32,86 +36,93 @@
 						></v-select>
 					</v-col>
 				</v-row>
-				<v-row>
-					<div class="subtitle-1 pl-4">Coordinate</div>
-				</v-row>
+				<v-form
+					:readonly="mode == 'view'"
+					:disabled="mode == 'view'"
+				>
+					<v-row>
+						<div class="subtitle-1 pl-4">Coordinate</div>
+					</v-row>
 
-				<v-row>
-					<v-col cols="1" />
-					<v-col cols="9">
-						<v-text-field
-							outlined
-							dense
-							label="Latitude"
-							v-model="displayCoordinate.lat"
-							:readonly="mode == 'view'"
-							:disabled="mode == 'view'"
-						>
-						</v-text-field>
-					</v-col>
-				</v-row>
-				<v-row>
-					<v-col cols="1" />
-					<v-col cols="9">
-						<v-text-field
-							outlined
-							dense
-							label="Longitude"
-							v-model="displayCoordinate.long"
-							:readonly="mode == 'view'"
-							:disabled="mode == 'view'"
-						>
-						</v-text-field>
-					</v-col>
-				</v-row>
+					<v-row>
+						<v-col cols="1" />
+						<v-col cols="9">
+							<v-text-field
+								outlined
+								dense
+								label="Latitude"
+								v-model="displayCoordinate.lat"
+							>
+							</v-text-field>
+						</v-col>
+					</v-row>
+					<v-row>
+						<v-col cols="1" />
+						<v-col cols="9">
+							<v-text-field
+								outlined
+								dense
+								label="Longitude"
+								v-model="displayCoordinate.long"
+							>
+							</v-text-field>
+						</v-col>
+					</v-row>
 
-				<v-row v-if="isEmpty">
-					<v-col>
-						<v-alert
-							dense
-							outlined
-							type="error"
-						>
-							Please enter a location in the <strong>Yukon</strong>
-						</v-alert>
-					</v-col>
-				</v-row>
-				<v-row v-else-if="isOutsideYukon">
-					<v-col>
-						<v-alert
-							dense
-							outlined
-							type="error"
-						>
-							The location you entered is not in the <strong>Yukon</strong>
-						</v-alert>
-					</v-col>
-				</v-row>
+					<v-row v-if="isEmpty">
+						<v-col>
+							<v-alert
+								dense
+								outlined
+								type="error"
+							>
+								Please enter a location in the <strong>Yukon</strong>
+							</v-alert>
+						</v-col>
+					</v-row>
+					<v-row v-else-if="isOutsideYukon">
+						<v-col>
+							<v-alert
+								dense
+								outlined
+								type="error"
+							>
+								The location you entered is not in the <strong>Yukon</strong>
+							</v-alert>
+						</v-col>
+					</v-row>
+				</v-form>
 			</v-alert>
 		</v-col>
+
 		<v-col cols="2">
-			<v-textarea
-				outlined
-				dense
-				label="Crash Location Description"
-				v-model="modifiableFields.crashlocation"
+			<v-form
 				:readonly="mode == 'view'"
-			></v-textarea>
-			<v-select
-				outlined
-				dense
-				label="Location Accuracy"
-				v-model="modifiableFields.accuracy"
-				:items="locationAccuracyOptions"
-				:readonly="mode == 'view'"
-			></v-select>
-			<v-checkbox
-				:value="!isOutsideYukon"
-				:readonly="true"
-				label="Crash site within Yukon"
+				:disabled="mode == 'view'"
 			>
-			</v-checkbox>
+				<v-textarea
+					outlined
+					dense
+					label="Crash Location Description"
+					v-model="modifiableFields.crashlocation"
+					:readonly="mode == 'view'"
+				></v-textarea>
+				<v-select
+					outlined
+					dense
+					label="Location Accuracy"
+					v-model="modifiableFields.accuracy"
+					:items="locationAccuracyOptions"
+				></v-select>
+				<v-checkbox
+					:value="!isOutsideYukon"
+					:readonly="true"
+					label="Crash site within Yukon"
+				>
+				</v-checkbox>
+			</v-form>
 		</v-col>
+
 		<v-col cols="5">
 			<div>
 				<l-map
@@ -254,19 +265,7 @@ export default {
 			Location: '',
 		},
 		//fields for the types of coordinate systems
-		dd: {
-			lat: 0,
-			lng: 0,
-		},
-		dms: {
-			lat: { deg: 0, min: 0, sec: 0, dir: 0 },
-			lng: { deg: 0, min: 0, sec: 0, dir: 0 },
-		},
 
-		nad83: {
-			x: 0,
-			y: 0,
-		},
 		//Selection vars
 		selectedSystem: { id: 1, text: 'Decimal Degrees' },
 		selectedProjection: { id: 1, name: 'WGS 84' },
@@ -276,14 +275,17 @@ export default {
 			{
 				id: 1,
 				name: 'WGS 84',
+				spec: 'EPSG:4326',
 			},
 			{
 				id: 2,
 				name: 'NAD 83',
+				spec: 'EPSG:3978',
 			},
 			{
 				id: 3,
 				name: 'NAD 83 CSRS',
+				spec: 'EPSG:3979',
 			},
 		],
 
@@ -566,6 +568,9 @@ export default {
 		},
 	},
 	computed: {
+		siteLocation() {
+			return [this.modifiableFields.lat, this.modifiableFields.long];
+		},
 		displayCoordinate() {
 			// use a computed value to show the preffered coordinate system
 			//decimal degrees
