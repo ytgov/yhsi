@@ -377,7 +377,8 @@ export default {
 			});
 		},
 		recenterMap() {
-			this.$refs.myMap.mapObject.panTo(latLng(64.0, -135.0));
+			console.log(latLng(64.0, -135.0));
+			this.$refs.myMap.mapObject.panTo(this.siteLocation);
 			//this.maps[ this.showTopographicMap ? 1 : 0].center = latLng(lat, lng);
 		},
 		setCenter(lat, lng) {
@@ -569,7 +570,7 @@ export default {
 	},
 	computed: {
 		siteLocation() {
-			return [this.modifiableFields.lat, this.modifiableFields.long];
+			return latLng(this.modifiableFields.lat, this.modifiableFields.long);
 		},
 		displayCoordinate() {
 			// use a computed value to show the preffered coordinate system
