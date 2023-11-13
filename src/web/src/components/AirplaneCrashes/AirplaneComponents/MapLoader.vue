@@ -256,6 +256,11 @@ export default {
 	data: () => ({
 		flag: 1, // tells the component if it should accept new prop data
 		//showTopographicMap: false,
+		// set a default location. Use for centering if no location is provided.
+		location: {
+			lat: 64.0,
+			long: -135.0,
+		},
 		modifiableFields: {
 			accuracy: '',
 			inyukon: '',
@@ -327,7 +332,7 @@ export default {
 	}),
 	mounted() {
 		this.getFields();
-		this.fixMarkers();
+		// this.fixMarkers();
 		////console.log(proj4);
 		proj4.defs([
 			[
@@ -346,6 +351,10 @@ export default {
 	},
 
 	methods: {
+		updateModifiableFields: function () {
+			//do stuff
+			this.$emit('modifiedDataCoordinates', this.modifiableFields);
+		},
 		getFields() {
 			if (!this.fields) {
 				return;
@@ -377,7 +386,6 @@ export default {
 			});
 		},
 		recenterMap() {
-			console.log(latLng(64.0, -135.0));
 			this.$refs.myMap.mapObject.panTo(this.siteLocation);
 			//this.maps[ this.showTopographicMap ? 1 : 0].center = latLng(lat, lng);
 		},
@@ -569,10 +577,10 @@ export default {
 		},
 	},
 	computed: {
-		siteLocation() {
+		siteLocation: function () {
 			return latLng(this.modifiableFields.lat, this.modifiableFields.long);
 		},
-		displayCoordinate() {
+		displayCoordinate: function () {
 			// use a computed value to show the preffered coordinate system
 			//decimal degrees
 			if (this.selectedSystem.id === 1) {
@@ -585,20 +593,13 @@ export default {
 					long: this.decimalToDMS(this.fields.long, true),
 				};
 			}
-			//utm
-			if (this.selectedSystem.id === 2) {
-				return {
-					lat: this.utm.Easting,
-					long: this.utm.Northing,
-				};
-			}
 			return { lat: 'Error', long: 'Error' };
 		},
-		isOutsideYukon() {
+		isOutsideYukon: function () {
 			let { lat, long } = this.modifiableFields;
 			return !pointInPolygon([lat, long], yukonPolygon.latlngs);
 		},
-		isEmpty() {
+		isEmpty: function () {
 			let { lat, long } = this.modifiableFields;
 			return lat == 0.0 && long == 0.0;
 		},
@@ -627,6 +628,7 @@ export default {
         },*/
 		modifiableFields: {
 			handler() {
+				console.log('modifiableFields changed');
 				this.modifiableFields.inyukon = !this.isOutsideYukon;
 				this.$emit('modifiedDataCoordinates', this.modifiableFields);
 			},
