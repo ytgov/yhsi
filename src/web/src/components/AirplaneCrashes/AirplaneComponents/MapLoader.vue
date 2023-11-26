@@ -1,6 +1,6 @@
 <template>
-	<v-row v-if="modifiableFields">
-		{{ modifiableFields }}
+	<v-row>
+		<!-- {{ modifiableFields }} -->
 
 		<v-col cols="5">
 			<!-- {{ siteLocation }} -->
@@ -19,7 +19,6 @@
 							return-object
 							item-text="text"
 							label="Coordinate System"
-							@change="changedSystem"
 							v-model="selectedSystem"
 						></v-select>
 					</v-col>
@@ -105,15 +104,15 @@
 					outlined
 					dense
 					label="Crash Location Description"
-					v-model="modifiableFields.crashlocation"
+					v-model="airCrashLocation.locationDesc"
 					:readonly="mode == 'view'"
 				></v-textarea>
-				{{ modifiableFields.accuracy }}
+				{{ airCrashLocation.accuracy }}
 				<v-select
 					outlined
 					dense
 					label="Location Accuracy"
-					v-model="modifiableFields.accuracy"
+					v-model="airCrashLocation.accuracy"
 					:items="locationAccuracyOptions"
 				></v-select>
 				<v-checkbox
@@ -240,20 +239,19 @@ import { yukonPolygon, inYukon } from '../../../misc/yukon_territory_polygon';
 import { AirCrashLocation } from '../store/models/AircrashModels';
 import proj4 from 'proj4';
 
-const pointInPolygon = require('point-in-polygon');
+// const pointInPolygon = require('point-in-polygon');
 
 /* eslint-enable */
 export default {
 	props: {
 		airCrashLocation: {
 			type: Object,
-			required: true,
-			default: () => new AirCrashLocation(),
+			required: false,
+			default: () => new AirCrashLocation({}),
 		},
 		fields: {
 			type: Object,
 			required: true,
-			default: () => new AirCrashLocation(),
 		},
 		mode: {
 			type: String,
@@ -297,7 +295,12 @@ export default {
 		//Selection vars
 		selectedSystem: { id: 1, text: 'Decimal Degrees' },
 		selectedProjection: { id: 1, name: 'WGS 84' },
-		locationAccuracyOptions: ['Approximate', 'Map Measurement', 'GPS'],
+		locationAccuracyOptions: [
+			'Approximate',
+			'Map Measurement',
+			'GPS',
+			'Approx.',
+		],
 		projectionOptions: [
 			//datums
 			{
@@ -387,10 +390,6 @@ export default {
 			}
 			this.flag++;
 		},
-		//This method is responsible for transforming the inputed lat & long values depending on the cordinate system and the selected projeciton
-		changedDatum() {
-			// this.updateDisplayCoordinates();
-		},
 		fixMarkers() {
 			//This code snippet fixes an issue where the marker icons dont appear (according to the vueleaflet docs)
 			delete Icon.Default.prototype._getIconUrl;
@@ -418,10 +417,6 @@ export default {
 		},
 		changedLocation() {
 			// //This method handles the user input, when the data has changed, it reloads the map with the new values
-			// if (this.selectedProjection.id == 1) this.updateStateCoordinates();
-			// else this.transformProjectedCoordinates();
-			// let lat = this.modifiableFields.lat;
-			// let long = this.modifiableFields.long;
 			// this.addMarker(lat, long);
 			// this.setCenter(lat, long);
 		},
@@ -452,9 +447,6 @@ export default {
 		},
 	},
 	computed: {
-		siteLocation: function () {
-			return [this.modifiableFields.lat, this.modifiableFields.long];
-		},
 		displayCoordinate: function () {
 			// use a computed value to show the preffered coordinate system
 			//decimal degrees
@@ -472,7 +464,7 @@ export default {
 		},
 		isOutsideYukon: function () {
 			let { lat, long } = this.modifiableFields;
-			return !pointInPolygon([lat, long], yukonPolygon.latlngs);
+			return !inYukon(lat, long);
 		},
 		isEmpty: function () {
 			let { lat, long } = this.modifiableFields;
@@ -489,18 +481,7 @@ export default {
             are not supposed to be modified, hence why we have the modifiable fields obj. If we dont use a watcher we would have to have a flag on the parent component
             to indicate when the data is available to render the component, this would make the component less independent and less reusable.
 
-        fields(){
-            if(this.fields && this.flag < 3){
-                this.modifiableFields = this.fields;
-                this.dd = { lat: this.modifiableFields.lat, lng: this.modifiableFields.long };
-                let lat = parseFloat(this.modifiableFields.lat);
-                let long = parseFloat(this.modifiableFields.long);
-                if(!isNaN(lat) || ! isNaN(long)){
-                    this.changedLocation();
-                }
-                this.flag++
-            }
-        },*/
+      */
 		modifiableFields: {
 			handler() {
 				console.log('modifiableFields changed');
