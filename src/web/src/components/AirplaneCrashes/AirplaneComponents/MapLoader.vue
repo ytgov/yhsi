@@ -3,7 +3,7 @@
 		{{ modifiableFields }}
 
 		<v-col cols="5">
-			{{ siteLocation }}
+			<!-- {{ siteLocation }} -->
 			<v-alert
 				outlined
 				color="primary"
@@ -27,6 +27,7 @@
 						<v-select
 							outlined
 							dense
+							disabled
 							:items="projectionOptions"
 							return-object
 							item-text="name"
@@ -107,6 +108,7 @@
 					v-model="modifiableFields.crashlocation"
 					:readonly="mode == 'view'"
 				></v-textarea>
+				{{ modifiableFields.accuracy }}
 				<v-select
 					outlined
 					dense
@@ -156,7 +158,7 @@
 					</l-polygon> -->
 
 					<l-marker
-						:lat-lng="[63.6333308, -135.7666636]"
+						:lat-lng="this.siteLocation"
 						:visible="!marker.visible"
 					></l-marker>
 					<l-marker
@@ -234,15 +236,31 @@ import {
 	LPopup,
 	LControlLayers,
 } from 'vue2-leaflet';
-import { yukonPolygon } from '../../../misc/yukon_territory_polygon';
+import { yukonPolygon, inYukon } from '../../../misc/yukon_territory_polygon';
+import { AirCrashLocation } from '../store/models/AircrashModels';
 import proj4 from 'proj4';
 
 const pointInPolygon = require('point-in-polygon');
-const utmObj = require('utm-latlng');
-const utmVar = new utmObj();
+
 /* eslint-enable */
 export default {
-	props: ['fields', 'mode', 'mapType'],
+	props: {
+		fields: {
+			type: Object,
+			required: true,
+			default: () => new AirCrashLocation(),
+		},
+		mode: {
+			type: String,
+			required: true,
+			default: 'view',
+		},
+		mapType: {
+			type: String,
+			required: true,
+			default: 'aircrash',
+		},
+	},
 	components: {
 		LMap,
 		LTileLayer,
@@ -332,7 +350,7 @@ export default {
 	}),
 	mounted() {
 		this.getFields();
-		// this.fixMarkers();
+		this.fixMarkers();
 		////console.log(proj4);
 		proj4.defs([
 			[
@@ -351,19 +369,12 @@ export default {
 	},
 
 	methods: {
-		updateModifiableFields: function () {
-			//do stuff
-			this.$emit('modifiedDataCoordinates', this.modifiableFields);
-		},
 		getFields() {
 			if (!this.fields) {
 				return;
 			}
 			this.modifiableFields = this.fields;
-			this.dd = {
-				lat: this.modifiableFields.lat,
-				lng: this.modifiableFields.long,
-			};
+
 			let lat = parseFloat(this.modifiableFields.lat);
 			let long = parseFloat(this.modifiableFields.long);
 			if (!isNaN(lat) || !isNaN(long)) {
@@ -373,8 +384,7 @@ export default {
 		},
 		//This method is responsible for transforming the inputed lat & long values depending on the cordinate system and the selected projeciton
 		changedDatum() {
-			this.updateDisplayCoordinates();
-			this.applyCoordinateProjection();
+			// this.updateDisplayCoordinates();
 		},
 		fixMarkers() {
 			//This code snippet fixes an issue where the marker icons dont appear (according to the vueleaflet docs)
@@ -402,153 +412,13 @@ export default {
 			this.marker.visible = true;
 		},
 		changedLocation() {
-			//This method handles the user input, when the data has changed, it reloads the map with the new values
-			if (this.selectedProjection.id == 1) this.updateStateCoordinates();
-			else this.transformProjectedCoordinates();
-
-			let lat = parseFloat(this.modifiableFields.lat);
-			let long = parseFloat(this.modifiableFields.long);
-			this.addMarker(lat, long);
-			this.setCenter(lat, long);
-		},
-		// this method  applies cordinate projection to the 'display cordinates' according to the selected projection
-		applyCoordinateProjection() {
-			//let { lat, long } = this.modifiableFields;
-			let { id } = this.selectedProjection;
-			//let transformed_coordinates;
-			switch (id) {
-				case 1:
-					this.dd = {
-						lat: this.modifiableFields.lat,
-						lng: this.modifiableFields.long,
-					};
-					break;
-				case 2: //NAD83
-					this.nad83 = {
-						lat: this.modifiableFields.lat,
-						lng: this.modifiableFields.long,
-					};
-					break;
-				case 3: //NAD83 CRS
-					//transformed_coordinates = proj4(proj4('EPSG:3979'), [long,lat]);
-					this.nad83 = {
-						lat: this.modifiableFields.lat,
-						lng: this.modifiableFields.long,
-					};
-					break;
-			}
-		},
-		//this transforms the projected coordinates
-		transformProjectedCoordinates() {
-			let { lat, lng } = this.nad83;
-			//let transformed_coordinates;
-			switch (this.selectedProjection.id) {
-				case 1:
-					this.dd = {
-						lat: this.modifiableFields.lat,
-						lng: this.modifiableFields.long,
-					};
-					this.modifiableFields.lat = this.dd.lat;
-					this.modifiableFields.long = this.dd.lng;
-					break;
-				case 2: //NAD83
-					//transformed_coordinates = proj4(proj4('EPSG:3978'),proj4('EPSG:4326'), [parseFloat(x),parseFloat(y)]);
-					this.modifiableFields.lat = lat; //transformed_coordinates[1];
-					this.modifiableFields.long = lng; //transformed_coordinates[0];
-					break;
-				case 3: //NAD83 CRS
-					//transformed_coordinates = proj4(proj4('EPSG:3978'),proj4('EPSG:4326'), [parseFloat(x),parseFloat(y)]);
-					this.modifiableFields.lat = lat; //transformed_coordinates[1];
-					this.modifiableFields.long = lng; //transformed_coordinates[0];
-					break;
-			}
-		},
-		updateStateCoordinates() {
-			let system = this.selectedSystem.id;
-			if (!system) return;
-
-			let data;
-			switch (system) {
-				case 1: //DD
-					this.modifiableFields.lat = parseFloat(this.dd.lat);
-					this.modifiableFields.long = parseFloat(this.dd.lng);
-					break;
-				case 2: //UTM
-					data = utmVar.convertUtmToLatLng(
-						this.utm.Easting,
-						this.utm.Northing,
-						this.utm.ZoneNumber,
-						this.utm.ZoneLetter
-					);
-					this.modifiableFields.lat = parseFloat(data.lat);
-					this.modifiableFields.long = parseFloat(data.lng);
-					break;
-				case 3: //DMS
-					this.modifiableFields.lat = parseFloat(
-						this.convertDMSToDD(this.dms.lat)
-					);
-					this.modifiableFields.long = parseFloat(
-						this.convertDMSToDD(this.dms.lng)
-					);
-					break;
-			}
-		},
-		changedSystem() {
-			this.updateDisplayCoordinates();
-			this.applyCoordinateProjection();
-		},
-		updateDisplayCoordinates() {
-			let { id } = this.selectedSystem;
-
-			if (!id) return;
-
-			let lat, lng;
-			switch (id) {
-				case 1: //DD
-					this.dd = {
-						lat: this.modifiableFields.lat,
-						lng: this.modifiableFields.long,
-					};
-					this.dms = null;
-					this.utm = null;
-					break;
-				case 2: //utm
-					this.utm = utmVar.convertLatLngToUtm(
-						this.modifiableFields.lat,
-						this.modifiableFields.long,
-						1
-					);
-					////console.log(this.utm);
-					this.dms = null;
-					this.dd = null;
-					break;
-				case 3: //DMS
-					lat = this.convertDDToDMS(this.modifiableFields.lat, false);
-					lng = this.convertDDToDMS(this.modifiableFields.long, true);
-					this.dms = { lat, lng };
-					this.dd = null;
-					this.utm = null;
-					break;
-			}
-		},
-		convertDDToDMS(D, lng) {
-			const M = 0 | ((D % 1) * 60e7);
-			return {
-				dir: D < 0 ? (lng ? 'W' : 'S') : lng ? 'E' : 'N',
-				deg: 0 | (D < 0 ? (D = -D) : D),
-				min: 0 | (M / 1e7),
-				sec: (0 | (((M / 1e6) % 1) * 6e4)) / 100,
-			};
-		},
-		convertDMSToDD(val) {
-			////console.log(val);
-			let { deg, min, sec, dir } = val;
-			let dd = deg + min / 60 + sec / (60 * 60);
-			dd = parseFloat(dd);
-			if (dir == 'S' || dir == 'W') {
-				dd = dd * -1;
-			} // Don't do anything for N or E
-			return dd;
+			// //This method handles the user input, when the data has changed, it reloads the map with the new values
+			// if (this.selectedProjection.id == 1) this.updateStateCoordinates();
+			// else this.transformProjectedCoordinates();
+			// let lat = this.modifiableFields.lat;
+			// let long = this.modifiableFields.long;
+			// this.addMarker(lat, long);
+			// this.setCenter(lat, long);
 		},
 
 		decimalToDMS: function (decimalDegrees, isLongitude) {
@@ -578,7 +448,7 @@ export default {
 	},
 	computed: {
 		siteLocation: function () {
-			return latLng(this.modifiableFields.lat, this.modifiableFields.long);
+			return [this.modifiableFields.lat, this.modifiableFields.long];
 		},
 		displayCoordinate: function () {
 			// use a computed value to show the preffered coordinate system
