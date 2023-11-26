@@ -245,6 +245,11 @@ const pointInPolygon = require('point-in-polygon');
 /* eslint-enable */
 export default {
 	props: {
+		airCrashLocation: {
+			type: Object,
+			required: true,
+			default: () => new AirCrashLocation(),
+		},
 		fields: {
 			type: Object,
 			required: true,
@@ -502,6 +507,13 @@ export default {
 				this.modifiableFields.inyukon = !this.isOutsideYukon;
 				this.$emit('modifiedDataCoordinates', this.modifiableFields);
 			},
+			deep: true,
+		},
+		airCrashLocation: {
+			handler: function (val) {
+				this.$emit('update:airCrashLocation', val);
+			},
+
 			deep: true,
 		},
 	},
