@@ -48,7 +48,7 @@
 								outlined
 								dense
 								label="Latitude"
-								v-model="displayCoordinate.lat"
+								v-model="lat"
 							>
 							</v-text-field>
 						</v-col>
@@ -60,7 +60,7 @@
 								outlined
 								dense
 								label="Longitude"
-								v-model="displayCoordinate.long"
+								v-model="long"
 							>
 							</v-text-field>
 						</v-col>
@@ -359,19 +359,6 @@ export default {
 	},
 
 	methods: {
-		// getFields() {
-		// 	if (!this.fields) {
-		// 		return;
-		// 	}
-		// this.modifiableFields = this.fields;
-
-		// 	let lat = parseFloat(this.modifiableFields.lat);
-		// 	let long = parseFloat(this.modifiableFields.long);
-		// 	if (!isNaN(lat) || !isNaN(long)) {
-		// 		this.changedLocation();
-		// 	}
-		// 	this.flag++;
-		// },
 		fixMarkers() {
 			//This code snippet fixes an issue where the marker icons dont appear (according to the vueleaflet docs)
 			delete Icon.Default.prototype._getIconUrl;
@@ -432,24 +419,40 @@ export default {
 		siteLocation: function () {
 			return [this.airCrashLocation.lat, this.airCrashLocation.long];
 		},
-		displayCoordinate: function () {
-			// use a computed value to show the preffered coordinate system
-			//decimal degrees
-			if (this.selectedSystem.id === 1) {
-				return {
-					lat: this.airCrashLocation.lat,
-					long: this.airCrashLocation.long,
-				};
-			}
-			//dms
-			if (this.selectedSystem.id === 3) {
-				return {
-					lat: this.decimalToDMS(this.airCrashLocation.lat, false),
-					long: this.decimalToDMS(this.airCrashLocation.long, true),
-				};
-			}
-			return { lat: 'Error', long: 'Error' };
+
+		lat: {
+			get: function () {
+				if (this.selectedSystem.id === 1) {
+					return this.airCrashLocation.lat;
+				}
+				return this.decimalToDMS(this.airCrashLocation.lat, false);
+			},
+			set: function (val) {
+				if (this.selectedSystem.id === 1) {
+					this.airCrashLocation.lat = val;
+				} else {
+					console.alert('We only implement DD for now');
+					//this.airCrashLocation.lat = this.convertDMSToDD(val, false);
+				}
+			},
 		},
+		long: {
+			get() {
+				if (this.selectedSystem.id === 1) {
+					return this.airCrashLocation.long;
+				}
+				return this.decimalToDMS(this.airCrashLocation.long, true);
+			},
+			set: function (val) {
+				if (this.selectedSystem.id === 1) {
+					this.airCrashLocation.long = val;
+				} else {
+					console.alert('We only implement DD for now');
+					//this.airCrashLocation.long = this.convertDMSToDD(val, true);
+				}
+			},
+		},
+
 		isOutsideYukon: function () {
 			return !inYukon(this.airCrashLocation.lat, this.airCrashLocation.long);
 		},
@@ -473,10 +476,11 @@ export default {
       */
 		airCrashLocation: {
 			handler: function (val) {
+				console.log('From MapLoader.vue');
 				this.$emit('update:airCrashLocation', val);
+
 				// this.$emit('modifiedDataCoordinates', val);
 			},
-
 			deep: true,
 		},
 		mode() {
