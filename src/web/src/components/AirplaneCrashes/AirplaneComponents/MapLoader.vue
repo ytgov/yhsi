@@ -1,9 +1,6 @@
 <template>
 	<v-row>
-		<!-- {{ modifiableFields }} -->
-
 		<v-col cols="5">
-			<!-- {{ siteLocation }} -->
 			<v-alert
 				outlined
 				color="primary"
@@ -19,6 +16,7 @@
 							return-object
 							item-text="text"
 							label="Coordinate System"
+							:disabled="mode !== 'view'"
 							v-model="selectedSystem"
 						></v-select>
 					</v-col>
@@ -31,7 +29,6 @@
 							return-object
 							item-text="name"
 							label="Projection"
-							@change="changedDatum"
 							v-model="selectedProjection"
 						></v-select>
 					</v-col>
@@ -74,9 +71,9 @@
 							<v-alert
 								dense
 								outlined
-								type="error"
+								type="warning"
 							>
-								Please enter a location in the <strong>Yukon</strong>
+								No coordinates...
 							</v-alert>
 						</v-col>
 					</v-row>
@@ -85,7 +82,7 @@
 							<v-alert
 								dense
 								outlined
-								type="error"
+								type="warning"
 							>
 								The location you entered is not in the <strong>Yukon</strong>
 							</v-alert>
@@ -107,7 +104,6 @@
 					v-model="airCrashLocation.locationDesc"
 					:readonly="mode == 'view'"
 				></v-textarea>
-				{{ airCrashLocation.accuracy }}
 				<v-select
 					outlined
 					dense
@@ -116,7 +112,7 @@
 					:items="locationAccuracyOptions"
 				></v-select>
 				<v-checkbox
-					:value="!isOutsideYukon"
+					v-model="airCrashLocation.inyukon"
 					:readonly="true"
 					label="Crash site within Yukon"
 				>
@@ -249,10 +245,10 @@ export default {
 			required: false,
 			default: () => new AirCrashLocation({}),
 		},
-		fields: {
-			type: Object,
-			required: true,
-		},
+		// fields: {
+		// 	type: Object,
+		// 	required: true,
+		// },
 		mode: {
 			type: String,
 			required: true,
@@ -282,14 +278,14 @@ export default {
 			lat: 64.0,
 			long: -135.0,
 		},
-		modifiableFields: {
-			accuracy: '',
-			inyukon: '',
-			crashlocation: '',
-			lat: 0.0,
-			long: 0.0,
-			Location: '',
-		},
+		// modifiableFields: {
+		// 	accuracy: '',
+		// 	inyukon: '',
+		// 	crashlocation: '',
+		// 	lat: 0.0,
+		// 	long: 0.0,
+		// 	Location: '',
+		// },
 		//fields for the types of coordinate systems
 
 		//Selection vars
@@ -357,39 +353,25 @@ export default {
 		center: [64.0, -135.0],
 	}),
 	mounted() {
-		this.getFields();
+		// this.getFields();
 		this.fixMarkers();
 		////console.log(proj4);
-		proj4.defs([
-			[
-				'EPSG:4326',
-				'+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees +no_defs',
-			],
-			[
-				'EPSG:3978',
-				'+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=degrees +no_defs',
-			],
-			[
-				'EPSG:3979',
-				'+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=degrees +no_defs',
-			],
-		]);
 	},
 
 	methods: {
-		getFields() {
-			if (!this.fields) {
-				return;
-			}
-			this.modifiableFields = this.fields;
+		// getFields() {
+		// 	if (!this.fields) {
+		// 		return;
+		// 	}
+		// this.modifiableFields = this.fields;
 
-			let lat = parseFloat(this.modifiableFields.lat);
-			let long = parseFloat(this.modifiableFields.long);
-			if (!isNaN(lat) || !isNaN(long)) {
-				this.changedLocation();
-			}
-			this.flag++;
-		},
+		// 	let lat = parseFloat(this.modifiableFields.lat);
+		// 	let long = parseFloat(this.modifiableFields.long);
+		// 	if (!isNaN(lat) || !isNaN(long)) {
+		// 		this.changedLocation();
+		// 	}
+		// 	this.flag++;
+		// },
 		fixMarkers() {
 			//This code snippet fixes an issue where the marker icons dont appear (according to the vueleaflet docs)
 			delete Icon.Default.prototype._getIconUrl;
@@ -447,28 +429,35 @@ export default {
 		},
 	},
 	computed: {
+		siteLocation: function () {
+			return [this.airCrashLocation.lat, this.airCrashLocation.long];
+		},
 		displayCoordinate: function () {
 			// use a computed value to show the preffered coordinate system
 			//decimal degrees
 			if (this.selectedSystem.id === 1) {
-				return { lat: this.fields.lat, long: this.fields.long };
+				return {
+					lat: this.airCrashLocation.lat,
+					long: this.airCrashLocation.long,
+				};
 			}
 			//dms
 			if (this.selectedSystem.id === 3) {
 				return {
-					lat: this.decimalToDMS(this.fields.lat, false),
-					long: this.decimalToDMS(this.fields.long, true),
+					lat: this.decimalToDMS(this.airCrashLocation.lat, false),
+					long: this.decimalToDMS(this.airCrashLocation.long, true),
 				};
 			}
 			return { lat: 'Error', long: 'Error' };
 		},
 		isOutsideYukon: function () {
-			let { lat, long } = this.modifiableFields;
-			return !inYukon(lat, long);
+			return !inYukon(this.airCrashLocation.lat, this.airCrashLocation.long);
 		},
 		isEmpty: function () {
-			let { lat, long } = this.modifiableFields;
-			return lat == 0.0 && long == 0.0;
+			if (this.airCrashLocation.lat && this.airCrashLocation.long) {
+				return false;
+			}
+			return true;
 		},
 		// layer () {
 		//     return this.maps[ this.showTopographicMap ? 1 : 0]
@@ -482,20 +471,18 @@ export default {
             to indicate when the data is available to render the component, this would make the component less independent and less reusable.
 
       */
-		modifiableFields: {
-			handler() {
-				console.log('modifiableFields changed');
-				this.modifiableFields.inyukon = !this.isOutsideYukon;
-				this.$emit('modifiedDataCoordinates', this.modifiableFields);
-			},
-			deep: true,
-		},
 		airCrashLocation: {
 			handler: function (val) {
 				this.$emit('update:airCrashLocation', val);
+				// this.$emit('modifiedDataCoordinates', val);
 			},
 
 			deep: true,
+		},
+		mode() {
+			if (this.mode === 'edit') {
+				this.selectedSystem = { id: 1, text: 'Decimal Degrees' };
+			}
 		},
 	},
 };
