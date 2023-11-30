@@ -7,7 +7,7 @@ const routes = [
 		meta: { requiresAuth: true, authorize: [UserRoles.AIRPLANE_CRASH_EDITOR] },
 	},
 	{
-		path: '/view/:name',
+		path: 'view/:name',
 		name: 'airplaneView',
 		component: () => import('../views/AirplaneCrashForm'),
 		props: { action: 'view' },
@@ -17,7 +17,7 @@ const routes = [
 		},
 	},
 	{
-		path: '/edit/:name',
+		path: 'edit/:name',
 		name: 'airplaneEditView',
 		component: () => import('../views/AirplaneCrashForm'),
 		props: { action: 'edit' },
@@ -27,8 +27,9 @@ const routes = [
 		},
 	},
 	{
-		path: '/new',
-		name: () => import('../views/AirplaneCrashForm'),
+		path: 'new',
+		name: 'airplaneAddView',
+		component: () => import('../views/AirplaneCrashForm'),
 		props: { action: 'new' },
 		meta: {
 			requiresAuth: true,
