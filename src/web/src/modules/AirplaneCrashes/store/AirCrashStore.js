@@ -2,8 +2,6 @@ import aircrash from '@/controllers/aircrash';
 
 import { AircraftCrash } from '../models/AircrashModels';
 
-console.log(aircrash);
-
 const store = {
 	state: {
 		airCrash: new AircraftCrash({}),
@@ -14,7 +12,6 @@ const store = {
 		// Define your getters here
 	},
 	mutations: {
-		SETAIRCRASH: null,
 		// Define your mutations here
 	},
 	actions: {
