@@ -641,16 +641,16 @@ export default {
 		loadingPdf: false,
 	}),
 	async mounted() {
-		if (this.checkPath('edit')) {
+		if (this.action === 'edit') {
 			this.mode = 'edit';
 			//after this, the fields get filled with the info obtained from the api
 			await this.getDataFromApi();
 			this.fieldsHistory = JSON.parse(JSON.stringify(this.fields));
-		} else if (this.checkPath('new')) {
+		} else if (this.action === 'new') {
 			this.mode = 'new';
 			//inputs remain empty
 			this.noData();
-		} else if (this.checkPath('view')) {
+		} else if (this.action === 'view') {
 			this.mode = 'view';
 			//after this, the fields get filled with the info obtained from the api
 			this.getDataFromApi();
