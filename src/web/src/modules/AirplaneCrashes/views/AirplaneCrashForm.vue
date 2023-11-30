@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h3>Airplane Crash Sites {{ crashID }} {{ action }}</h3>
+		<h3>Airplane Crash Sites {{ crashID }}</h3>
 		<Breadcrumbs />
 
 		<v-row>
@@ -939,7 +939,6 @@ export default {
 			},
 		},
 		isAircrashEditor() {
-			console.log(this.$store.state.user);
 			return this.$store.state.auth.user.roles.includes('Administrator');
 		},
 		isAdministrator() {
