@@ -665,15 +665,7 @@ export default {
 		/*this function checks if the current path contains a specific word, this can be done with a simple includes but
         //it causes confusion when a boat or owner has 'new' in its name, leading the component to think it should use the 'new' mode,
         this problem is solved by using this funtion.*/
-		checkPath(word) {
-			let path = this.$route.path.split('/');
-			console.log(path);
 
-			if (path[2] == word) {
-				return true;
-			}
-			return false;
-		},
 		changeNation() {
 			this.fields.nation = '';
 		},
