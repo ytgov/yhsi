@@ -662,10 +662,6 @@ export default {
         //console.log(/^[0-9]*$/.test('12'));*/
 	},
 	methods: {
-		/*this function checks if the current path contains a specific word, this can be done with a simple includes but
-        //it causes confusion when a boat or owner has 'new' in its name, leading the component to think it should use the 'new' mode,
-        this problem is solved by using this funtion.*/
-
 		changeNation() {
 			this.fields.nation = '';
 		},
