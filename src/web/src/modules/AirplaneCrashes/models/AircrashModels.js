@@ -10,38 +10,38 @@ export class AirCrashLocation {
 
 export class AircraftCrash {
 	constructor(data) {
-		this.Location = '';
-		this.accuracy = '';
-		this.aircraftaftercrashcaption = '';
-		this.aircraftcaption = '';
-		this.aircraftregistration = '';
-		this.aircrafttype = '';
-		this.comments = '';
-		this.crashdate = '';
-		this.crashlocation = '';
-		this.descriptionofcrashevent = '';
-		this.extentofremainsonsite = '';
-		this.fatalities = '';
-		this.injuries = '';
-		this.inYukon = '';
-		this.lat = '';
-		this.long = '';
-		this.militarycivilian = '';
+		this.Location = data.Location || '';
+		this.accuracy = data.accuracy || '';
+		this.aircraftaftercrashcaption = data.aircraftaftercrashcaption || '';
+		this.aircraftcaption = data.aircraftcaption || '';
+		this.aircraftregistration = data.aircraftregistration || '';
+		this.aircrafttype = data.aircrafttype || '';
+		this.comments = data.comments || '';
+		this.crashdate = data.crashdate || '';
+		this.crashlocation = data.crashlocation || '';
+		this.descriptionofcrashevent = data.descriptionofcrashevent || '';
+		this.extentofremainsonsite = data.extentofremainsonsite || '';
+		this.fatalities = data.fatalities || '';
+		this.injuries = data.injuries || '';
+		this.inYukon = data.inYukon || '';
+		this.lat = data.lat || '';
+		this.long = data.long || '';
+		this.militarycivilian = data.militarycivilian || '';
 		this.nation = '';
 		this.otherlocationsofremains = '';
-		this.photographs = '';
-		this.pilot = '';
-		this.remainsonsite = '';
-		this.significanceofaircraft = '';
-		this.soulsonboard = '';
-		this.sources = '';
-		this.infoSources = [];
+		this.photographs = data.photographs || '';
+		this.pilot = data.pilot || '';
+		this.remainsonsite = data.remainsonsite || '';
+		this.significanceofaircraft = data.significanceofaircraft || '';
+		this.soulsonboard = data.soulsonboard = '';
+		this.sources = data.sources || '';
+		this.infoSources = data.infoSources || [];
 		this.yacsiNumber = data.yacsiNumber || undefined;
-		this.pilotfirstname = '';
-		this.pilotlastname = '';
-		this.pilotrank = '';
-		this.datenote = '';
-		this.datedescriptor = '';
+		this.pilotfirstname = data.pilotfirstname || '';
+		this.pilotlastname = data.pilotlastname || '';
+		this.pilotrank = data.pilotrank || '';
+		this.datenote = data.datenote || '';
+		this.datedescriptor = data.datedescriptor || '';
 	}
 	AirrCrashLocation() {
 		return new AirCrashLocation(this);
