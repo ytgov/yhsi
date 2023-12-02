@@ -13,7 +13,7 @@
 						fields.aircraftregistration
 					}})
 				</h1>
-				<h1 v-else-if="isEditingCrash">Edit: {{ fields.yacsinumber }}</h1>
+				<h1 v-else-if="isEditingCrash">Edit: {{ this.crashID }}</h1>
 				<h1 v-else>New Crash Site</h1>
 				<v-spacer></v-spacer>
 
@@ -39,11 +39,11 @@
 				<!-- buttons for the edit state -->
 				<v-btn
 					class="black--text mx-1"
-					@click="cancelEdit"
+					:to="{ name: 'airplaneView', params: { name: this.crashID } }"
 					v-if="isEditingCrash"
 				>
 					<v-icon>mdi-close</v-icon>
-					Cancel
+					Cancel a ca
 				</v-btn>
 				<v-btn
 					color="success"
@@ -732,13 +732,9 @@ export default {
 		},
 		//Functions dedicated to handle the edit, add, view modes
 		cancelEdit() {
-			if (this.fieldsHistory) {
-				this.fields = { ...this.fieldsHistory };
-			}
-			this.mode = 'view';
 			this.yacsiWarning = [];
 			this.resetListVariables();
-			this.$router.push(`/airplane/view/${this.fields.yacsinumber}`);
+			this.$router.push(`/airplane/view/${this.crashID}`);
 		},
 		cancelNew() {
 			this.$router.push(`/airplane/`);
@@ -751,14 +747,10 @@ export default {
 			this.fieldsHistory = { ...this.fields };
 			this.mode = 'edit';
 
-			this.$router.push(`/airplane/edit/${this.fields.yacsinumber}`);
+			this.$router.push(`/airplane/edit/${this.crashID}`);
 			this.showSave = 0;
-			this.resetListVariables();
 		},
-		resetListVariables() {
-			this.addingSource = false;
-			this.editTableSources = -1;
-		},
+
 		async saveChanges() {
 			this.overlay = true;
 			////console.log(this.fields);
@@ -950,13 +942,13 @@ export default {
 			return this.formatDate(this.fields.crashdate);
 		},
 		isNewCrash() {
-			return this.mode == 'new';
+			return this.action == 'new';
 		},
 		isEditingCrash() {
-			return this.mode == 'edit';
+			return this.action == 'edit';
 		},
 		isViewingCrash() {
-			return this.mode == 'view';
+			return this.action == 'view';
 		},
 	},
 	watch: {
