@@ -43,7 +43,7 @@
 					v-if="isEditingCrash"
 				>
 					<v-icon>mdi-close</v-icon>
-					Cancel a ca
+					Cancel
 				</v-btn>
 				<v-btn
 					color="success"
