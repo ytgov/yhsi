@@ -197,7 +197,7 @@ export default {
 			//Redirects the user to the airplane form component
 			this.$router.push({
 				name: 'airplaneView',
-				params: { name: value.yacsinumber, yacsinumber: value.yacsinumber },
+				params: { crashID: value.yacsinumber },
 			});
 		},
 		async getDataFromApi() {
@@ -231,6 +231,7 @@ export default {
 				prefilters.injuries,
 				prefilters.fatalities
 			);
+			console.log(data.body.length);
 			this.crashsites = data.body;
 			this.totalLength = data.count;
 			this.crashsites.map((x) => {
