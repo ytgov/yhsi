@@ -293,7 +293,6 @@
 					<v-col cols="12">
 						<!-- Photos component, it includes a carousel and some dialogs for the button actions -->
 						<Photos
-							v-if="infoLoaded"
 							:showDefault="isNewCrash"
 							:mode="mode"
 							:photoType="'aircrash'"
@@ -304,22 +303,12 @@
 					</v-col>
 				</v-col>
 			</v-row>
-			{{ crashMapData }}
+
 			<MapLoader
-				v-if="infoLoaded"
 				:mode="mode"
 				:mapType="'planeCrash'"
 				@modifiedDataCoordinates="modifiedDataCoordinates"
 				@update:airCrashLocation="updateAirCrashLocation"
-				:fields="{
-					accuracy: fields.accuracy,
-					inYukon: fields.inYukon,
-					locationDesc: fields.crashlocation,
-					lat: fields.lat,
-					long: fields.long,
-					Location: fields.Location, //pretty sure this is never used
-					mapsheet: null,
-				}"
 				:airCrashLocation="crashMapData"
 			/>
 
@@ -628,7 +617,6 @@ export default {
 		selectedImage: null,
 		//modified coordinate fields
 		modifiedMapFields: null,
-		infoLoaded: false,
 		//helper var for the nations checkboxes
 		otherNation: false,
 		// dialog to inform the user if a field has the wrong data
@@ -725,7 +713,6 @@ export default {
 				datenote: '',
 				datedescriptor: '',
 			};
-			this.infoLoaded = true;
 		},
 
 		async getDataFromApi() {
@@ -741,7 +728,6 @@ export default {
 			if (this.fields.nation != 'Canadian' && this.fields.nation != 'American')
 				this.otherNation = true;
 			////console.log(this.fields);
-			this.infoLoaded = true;
 			this.overlay = false;
 		},
 		//Functions dedicated to handle the edit, add, view modes
