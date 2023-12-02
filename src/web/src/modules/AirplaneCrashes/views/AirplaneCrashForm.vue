@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<h3>Airplane Crash Sites {{ crashID }}</h3>
-		<Breadcrumbs />
 
+		<Breadcrumbs />
 		<v-row>
 			<v-col
 				cols="12"
@@ -583,6 +583,7 @@ import Photos from '@/components/PhotoEditor/Photos';
 import aircrash from '@/controllers/aircrash';
 import MapLoader from '../components/MapLoader';
 import _ from 'lodash';
+import { mapState, mapActions } from 'vuex';
 export default {
 	name: 'crashForm',
 	components: { Photos, Breadcrumbs, MapLoader },
@@ -591,9 +592,13 @@ export default {
 			type: String,
 			default: 'view',
 		},
+		name: {
+			type: String,
+			default: '',
+		},
 		crashID: {
 			type: String,
-			defailt: 'new',
+			default: 'SomethingBad',
 		},
 	},
 	data: () => ({
@@ -645,6 +650,7 @@ export default {
 			this.mode = 'edit';
 			//after this, the fields get filled with the info obtained from the api
 			await this.getDataFromApi();
+
 			this.fieldsHistory = JSON.parse(JSON.stringify(this.fields));
 		} else if (this.action === 'new') {
 			this.mode = 'new';
@@ -653,7 +659,9 @@ export default {
 		} else if (this.action === 'view') {
 			this.mode = 'view';
 			//after this, the fields get filled with the info obtained from the api
-			this.getDataFromApi();
+			// this.getDataFromApi();
+			await this.getAircrashByID(this.crashID);
+			this.fields = this.airCrash;
 		} else {
 			console.error('invalid path');
 		}
@@ -662,6 +670,7 @@ export default {
         //console.log(/^[0-9]*$/.test('12'));*/
 	},
 	methods: {
+		...mapActions('aircrash', ['getAircrashByID']),
 		changeNation() {
 			this.fields.nation = '';
 		},
@@ -718,15 +727,13 @@ export default {
 			};
 			this.infoLoaded = true;
 		},
-		saveCurrentCrash() {
-			localStorage.currentCrashNumber = this.$route.params.yacsinumber;
-		},
+
 		async getDataFromApi() {
 			this.overlay = true;
-			if (this.$route.params.yacsinumber) {
-				this.saveCurrentCrash();
-			}
-			this.fields = await aircrash.getById(localStorage.currentCrashNumber);
+
+			// this.fields = await aircrash.getById(localStorage.currentCrashNumber);
+			// await this.getAircrashByID(this.crashID);
+			// this.fields = this.airCrash;
 			this.fields.crashdate = this.fields.crashdate
 				? this.fields.crashdate.substr(0, 10)
 				: '';
@@ -824,14 +831,14 @@ export default {
 					this.$router.push(`/airplane/`);
 				}
 			} else {
-				await aircrash.put(localStorage.currentCrashNumber, data);
+				await aircrash.put(this.crashID, data);
 				this.overlay = false;
 				this.mode = 'view';
 				this.$router.push({
 					name: 'airplaneView',
 					params: {
-						name: localStorage.currentCrashNumber,
-						yacsinumber: localStorage.currentCrashNumber,
+						name: this.crashID.currentCrashNumber,
+						yacsinumber: this.crashID.currentCrashNumber,
 					},
 				});
 			}
@@ -907,9 +914,7 @@ export default {
 		},
 		async downloadPdf() {
 			this.loadingPdf = true;
-			let res = await aircrash.getPdf(
-				parseInt(localStorage.currentCrashNumber)
-			);
+			let res = await aircrash.getPdf(parseInt(this.crashID));
 			let blob = new Blob([res], { type: 'application/octetstream' });
 			let url = window.URL || window.webkitURL;
 			let link = url.createObjectURL(blob);
@@ -923,6 +928,8 @@ export default {
 		},
 	},
 	computed: {
+		...mapState('aircrash', ['airCrash']),
+
 		crashMapData: {
 			// let m =
 			// console.log(m);
@@ -951,7 +958,7 @@ export default {
 		getYACSINumber() {
 			if (this.$route.params.yacsinumber) {
 				return this.$route.params.yacsinumber;
-			} else return localStorage.currentCrashNumber;
+			} else return this.crashID;
 		},
 		crashdate() {
 			return this.formatDate(this.fields.crashdate);
