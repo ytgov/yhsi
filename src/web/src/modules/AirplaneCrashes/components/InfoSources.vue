@@ -1,5 +1,6 @@
 <template>
 	<div>
+		<!-- {{ deletedSources }} -->
 		<!-- Information source list -->
 		<v-card>
 			<v-list class="pa-0">
@@ -122,9 +123,9 @@
 </template>
 
 <script>
-import _ from 'lodash';
+// import _ from 'lodash';
 export default {
-	name: 'InforSources',
+	name: 'InfoSources',
 	props: {
 		action: {
 			type: String,
@@ -132,7 +133,7 @@ export default {
 		},
 		infoSources: {
 			type: Array,
-			default: () => [''],
+			// default: () => [''],
 		},
 	},
 	data: () => ({
@@ -145,6 +146,9 @@ export default {
 	}),
 
 	computed: {
+		editedInfoSources() {
+			return this.infoSources.filter((x) => x.isEdited == true);
+		},
 		isNewCrash() {
 			return this.action == 'new';
 		},
@@ -193,14 +197,15 @@ export default {
 			this.editTableSources = -1;
 		},
 		addSource() {
+			if (!this.infoSources) this.infoSources = [];
 			this.helperSource = '';
 			this.infoSources.push('');
 			this.addingSource = true;
 			this.editTableSources = this.infoSources.length - 1;
 		},
-		getSources() {
-			return _.join(this.infoSources, ';');
-		},
+		// getSources() {
+		// return _.join(this.infoSources, ';');
+		// },
 	},
 };
 </script>
