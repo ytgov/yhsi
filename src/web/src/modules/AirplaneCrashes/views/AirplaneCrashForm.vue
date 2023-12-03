@@ -589,6 +589,7 @@ export default {
 				.filter((x) => x.isNew == true)
 				.map((x) => ({ Type: x.Type, Source: x.Source }));
 			//Final data obj
+
 			let data = {
 				aircrash: crash,
 				removedInfoSources,
@@ -597,7 +598,7 @@ export default {
 			};
 
 			if (this.action == 'new') {
-				//console.log("api call");
+				console.log('api call');
 				let resp = await aircrash.post(data);
 				if (resp.response) {
 					if (resp.status == 409) {
@@ -615,6 +616,7 @@ export default {
 					this.$router.push(`/airplane/`);
 				}
 			} else {
+				console.log('in the else');
 				await aircrash.put(this.crashID, data);
 				this.overlay = false;
 				this.$router.push({
@@ -625,6 +627,8 @@ export default {
 					},
 				});
 			}
+			console.log('At the end ');
+			this.overlay = false;
 		},
 		getSources() {
 			return _.join(this.infoSources, ';');
@@ -670,7 +674,7 @@ export default {
 		...mapState('aircrash', ['airCrash']),
 
 		otherNation() {
-			if (this.fields.nation in ['Canadian', 'American']) {
+			if (!['Canadian', 'American'].includes(this.fields.nation)) {
 				return true;
 			}
 			return false;
