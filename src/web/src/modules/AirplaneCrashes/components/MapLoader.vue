@@ -1,6 +1,5 @@
 <template>
 	<v-row>
-		{{ isOutsideYukon }}
 		<v-col cols="5">
 			<v-alert
 				outlined
@@ -477,7 +476,6 @@ export default {
       */
 		airCrashLocation: {
 			handler: function (val) {
-				console.log('From MapLoader.vue');
 				this.$emit('update:airCrashLocation', val);
 
 				// this.$emit('modifiedDataCoordinates', val);
