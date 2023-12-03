@@ -1,7 +1,6 @@
 <template>
 	<div>
-		<h3>Airplane Crash Sites {{ crashID }}</h3>
-
+		<h3>Airplane Crash Sites</h3>
 		<Breadcrumbs />
 		<v-row>
 			<v-col
@@ -39,7 +38,7 @@
 				<!-- buttons for the edit state -->
 				<v-btn
 					class="black--text mx-1"
-					:to="{ name: 'airplaneView', params: { name: this.crashID } }"
+					@click="cancelEdit()"
 					v-if="isEditingCrash"
 				>
 					<v-icon>mdi-close</v-icon>
@@ -58,7 +57,7 @@
 				<v-btn
 					class="black--text mx-1"
 					@click="cancelNew"
-					v-if="mode == 'new'"
+					v-if="action == 'new'"
 				>
 					<v-icon>mdi-close</v-icon>
 					Cancel
@@ -66,7 +65,7 @@
 				<v-btn
 					color="success"
 					:disabled="showSave < 1 || yacsiWarning.length == 1"
-					v-if="mode == 'new'"
+					v-if="action == 'new'"
 					@click="saveChanges"
 				>
 					<v-icon class="mr-1">mdi-check</v-icon>
@@ -294,7 +293,7 @@
 						<!-- Photos component, it includes a carousel and some dialogs for the button actions -->
 						<Photos
 							:showDefault="isNewCrash"
-							:mode="mode"
+							:mode="action"
 							:photoType="'aircrash'"
 							:itemId="getYACSINumber"
 							@updateSelectedImage="selectedImageChanged"
@@ -305,7 +304,7 @@
 			</v-row>
 
 			<MapLoader
-				:mode="mode"
+				:mode="action"
 				:mapType="'planeCrash'"
 				@modifiedDataCoordinates="modifiedDataCoordinates"
 				@update:airCrashLocation="updateAirCrashLocation"
@@ -587,7 +586,7 @@ export default {
 		},
 		crashID: {
 			type: String,
-			default: 'SomethingBad',
+			default: 'noCrashID',
 		},
 	},
 	data: () => ({
@@ -618,7 +617,6 @@ export default {
 		//modified coordinate fields
 		modifiedMapFields: null,
 		//helper var for the nations checkboxes
-		otherNation: false,
 		// dialog to inform the user if a field has the wrong data
 		dataDialog: false,
 		//YACSINUMBER VALIDATION
@@ -634,31 +632,25 @@ export default {
 		loadingPdf: false,
 	}),
 	async mounted() {
+		this.overlay = true;
 		if (this.action === 'edit') {
-			this.mode = 'edit';
 			//after this, the fields get filled with the info obtained from the api
-			await this.getDataFromApi();
-
-			this.fieldsHistory = JSON.parse(JSON.stringify(this.fields));
+			await this.getAircrashByID(this.crashID);
 		} else if (this.action === 'new') {
-			this.mode = 'new';
 			//inputs remain empty
-			this.noData();
+			this.setEmptyAircrash();
 		} else if (this.action === 'view') {
-			this.mode = 'view';
 			//after this, the fields get filled with the info obtained from the api
 			// this.getDataFromApi();
-			await this.getAircrashByID(this.crashID);
-			this.fields = this.airCrash;
+			this.fields = await this.getAircrashByID(this.crashID);
 		} else {
 			console.error('invalid path');
+			this.$router.push(`/airplane/`);
 		}
-		/*
-        //console.log('regex');
-        //console.log(/^[0-9]*$/.test('12'));*/
+		this.overlay = false;
 	},
 	methods: {
-		...mapActions('aircrash', ['getAircrashByID']),
+		...mapActions('aircrash', ['getAircrashByID', 'setEmptyAircrash']),
 		changeNation() {
 			this.fields.nation = '';
 		},
@@ -678,62 +670,11 @@ export default {
 				this.yacsiWarning = ['The YACSI Number must be unique.'];
 			}
 		},
-		noData() {
-			this.fields = {
-				Location: '',
-				accuracy: '',
-				aircraftaftercrashcaption: '',
-				aircraftcaption: '',
-				aircraftregistration: '',
-				aircrafttype: '',
-				comments: '',
-				crashdate: '',
-				crashlocation: '',
-				descriptionofcrashevent: '',
-				extentofremainsonsite: '',
-				fatalities: '',
-				injuries: '',
-				inYukon: '',
-				lat: '',
-				long: '',
-				militarycivilian: '',
-				nation: '',
-				otherlocationsofremains: '',
-				photographs: '',
-				pilot: '',
-				remainsonsite: '',
-				significanceofaircraft: '',
-				soulsonboard: '',
-				sources: '',
-				infoSources: [],
-				yacsinumber: '',
-				pilotfirstname: '',
-				pilotlastname: '',
-				pilotrank: '',
-				datenote: '',
-				datedescriptor: '',
-			};
-		},
 
-		async getDataFromApi() {
-			this.overlay = true;
-
-			// this.fields = await aircrash.getById(localStorage.currentCrashNumber);
-			// await this.getAircrashByID(this.crashID);
-			// this.fields = this.airCrash;
-			this.fields.crashdate = this.fields.crashdate
-				? this.fields.crashdate.substr(0, 10)
-				: '';
-			//this.fields.infoSources = this.fields.sources.includes(";") ? this.fields.sources.split(";") : [];
-			if (this.fields.nation != 'Canadian' && this.fields.nation != 'American')
-				this.otherNation = true;
-			////console.log(this.fields);
-			this.overlay = false;
-		},
 		//Functions dedicated to handle the edit, add, view modes
-		cancelEdit() {
+		async cancelEdit() {
 			this.yacsiWarning = [];
-			this.resetListVariables();
+			this.fields = await this.getAircrashByID(this.crashID);
 			this.$router.push(`/airplane/view/${this.crashID}`);
 		},
 		cancelNew() {
@@ -741,11 +682,10 @@ export default {
 		},
 		viewMode() {
 			// this.mode = 'view';
-			this.$router.push(`/airplane/view/${this.fields.yacsinumber}`);
+			this.$router.push(`/airplane/view/${this.crashID}`);
 		},
 		editMode() {
-			this.fieldsHistory = { ...this.fields };
-			this.mode = 'edit';
+			// this.mode = 'edit';
 
 			this.$router.push(`/airplane/edit/${this.crashID}`);
 			this.showSave = 0;
@@ -753,23 +693,13 @@ export default {
 
 		async saveChanges() {
 			this.overlay = true;
-			////console.log(this.fields);
 			//Mapping coordinate data
-			let { lat, long, inYukon, crashlocation, accuracy } =
-				this.modifiedMapFields;
-			this.fields.lat = lat;
-			this.fields.long = long;
-			this.fields.inYukon = inYukon;
-			this.fields.crashlocation = crashlocation;
-			this.fields.accuracy = accuracy;
 			//Mapping general fields
 			let crash = { ...this.fields };
-			crash.pilot = this.getPilotName();
 			crash.sources = this.getSources();
 			crash.Location = `POINT(${crash.long} ${crash.lat})`;
 			//Removing useless values
-			delete crash.pilotFirstName;
-			delete crash.pilotLastName;
+
 			delete crash.infoSources;
 			delete crash.sources;
 			delete crash.lat;
@@ -790,7 +720,7 @@ export default {
 				editedInfoSources,
 			};
 
-			if (this.mode == 'new') {
+			if (this.action == 'new') {
 				//console.log("api call");
 				let resp = await aircrash.post(data);
 				if (resp.response) {
@@ -815,8 +745,8 @@ export default {
 				this.$router.push({
 					name: 'airplaneView',
 					params: {
-						name: this.crashID.currentCrashNumber,
-						yacsinumber: this.crashID.currentCrashNumber,
+						name: this.crashID,
+						yacsinumber: this.crashID,
 					},
 				});
 			}
@@ -869,9 +799,7 @@ export default {
 			const [year, month, day] = date.split('-');
 			return `${month}/${day}/${year}`;
 		},
-		getPilotName() {
-			return `${this.fields.pilotLastName},${this.fields.pilotFirstName}`;
-		},
+
 		getSources() {
 			return _.join(this.fields.infoSources, ';');
 		},
@@ -908,6 +836,15 @@ export default {
 	computed: {
 		...mapState('aircrash', ['airCrash']),
 
+		otherNation() {
+			if (
+				this.fields.nation != 'Canadian' &&
+				this.fields.nation != 'American'
+			) {
+				return true;
+			}
+			return false;
+		},
 		crashMapData: {
 			// let m =
 			// console.log(m);
