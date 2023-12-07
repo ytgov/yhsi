@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<!-- {{ deletedSources }} -->
+		{{ deletedSources }}
 		<!-- Information source list -->
 		<v-card>
 			<v-list class="pa-0">
@@ -119,10 +119,13 @@
 				>
 			</v-col>
 		</v-row>
+		{{ editedInfoSources }}
+		{{ removedInfoSources }}
 	</div>
 </template>
 
 <script>
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 // import _ from 'lodash';
 export default {
 	name: 'InfoSources',
@@ -131,10 +134,10 @@ export default {
 			type: String,
 			default: 'view',
 		},
-		infoSources: {
-			type: Array,
-			// default: () => [''],
-		},
+		// infoSources: {
+		// 	type: Array,
+		// 	// default: () => [''],
+		// },
 	},
 	data: () => ({
 		editTableSources: -1, // tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
@@ -143,12 +146,16 @@ export default {
 		validSource: false,
 		deletedSources: [],
 		sourceRules: [(v) => !!v || 'Source is required'],
+		newSource: {},
 	}),
 
 	computed: {
-		editedInfoSources() {
-			return this.infoSources.filter((x) => x.isEdited == true);
-		},
+		...mapGetters('aircrash', [
+			'infoSources',
+			'editedInfoSources',
+			'removedInfoSources',
+		]),
+
 		isNewCrash() {
 			return this.action == 'new';
 		},
@@ -161,21 +168,36 @@ export default {
 	},
 
 	methods: {
+		...mapActions('aircrash', [
+			'updateInfoSources',
+			'updateDeletedSources',
+			'newInfoSource',
+		]),
+		...mapMutations('aircrash', ['deleteInfoSource', 'upsertInfoSource']),
 		changeEditTableSources(item, index) {
-			this.editTableSources = index;
+			console.log(index);
+			// this.editTableSources = index;
 			this.helperSource = item.Source;
 		},
+
 		deleteSource(item, index) {
-			if (index > -1) {
-				this.infoSources.splice(index, 1);
-				if (!item.isNew) this.deletedSources.push(item);
-			}
+			console.log(item, index);
+			this.deleteInfoSource({ item, index });
+			// if (index > -1) {
+			// 	this.infoSources.splice(index, 1);
+
+			// 	if (!item.isNew) {
+			// 		this.updateDeletedSources(item);
+			// 		this.deletedSources.push(item);
+			// 		this.updateInfoSources(this.infoSources);
+			// 	}
+			// }
 		},
 		cancelEditTableSources() {
 			if (this.addingSource) {
 				this.infoSources.pop();
 				this.addingSource = false;
-				this.editTableSources = -1;
+				// this.editTableSources = -1;
 			} else {
 				this.editTableNames = -1;
 			}
@@ -189,19 +211,20 @@ export default {
 				};
 			else {
 				this.infoSources[index].Source = this.helperSource;
-				if (!this.infoSources[index].isNew)
+				if (!this.infoSources[index].isNew) {
 					this.infoSources[index].isEdited = true;
+				}
 			}
-
+			this.updateInfoSources(this.infoSources);
 			this.addingSource = false;
-			this.editTableSources = -1;
+			// this.editTableSources = -1;
 		},
 		addSource() {
-			if (!this.infoSources) this.infoSources = [];
+			this.newSource = this.newInfoSource();
 			this.helperSource = '';
-			this.infoSources.push('');
+			// this.infoSources.push();
 			this.addingSource = true;
-			this.editTableSources = this.infoSources.length - 1;
+			// this.editTableSources = this.infoSources.length - 1;
 		},
 		// getSources() {
 		// return _.join(this.infoSources, ';');
