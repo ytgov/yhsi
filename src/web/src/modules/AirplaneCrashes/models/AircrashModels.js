@@ -1,5 +1,5 @@
 export class AirCrashLocation {
-	constructor(data) {
+	constructor(data = {}) {
 		this.lat = data.lat || 0.0;
 		this.long = data.long || 0.0;
 		this.inYukon = data.inYukon || undefined;
@@ -9,7 +9,7 @@ export class AirCrashLocation {
 }
 
 export class AircraftCrash {
-	constructor(data) {
+	constructor(data = {}) {
 		this.lat = data.lat || '';
 		this.long = data.long || '';
 		this.Location = this.setLocation() || '';
@@ -38,8 +38,7 @@ export class AircraftCrash {
 		this.remainsonsite = data.remainsonsite || '';
 		this.significanceofaircraft = data.significanceofaircraft || '';
 		this.soulsonboard = data.soulsonboard = '';
-		this.sources = data.sources || '';
-		this.infoSources = data.infoSources || [''];
+		this.infoSources = data.infoSources || [];
 		this.yacsinumber = data.yacsinumber || undefined;
 		this.datenote = data.datenote || '';
 		this.datedescriptor = data.datedescriptor || '';

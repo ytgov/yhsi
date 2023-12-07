@@ -1,20 +1,89 @@
 import aircrash from '@/controllers/aircrash';
 
 import { AircraftCrash } from '../models/AircrashModels';
-
+import { InfoSource } from '../models/InfoSource';
 const state = {
-	airCrash: new AircraftCrash({}),
+	airCrash: new AircraftCrash(),
+	indexOfSourceBeingEdited: null,
 	// Define your state properties here
 };
 const getters = {
+	YACSINumber: (state) => {
+		return state.airCrash.yacsinumber;
+	},
+	infoSources: (state) => {
+		return state.airCrash.infoSources.filter((x) => x.status !== 'Deleted');
+	},
+	editedInfoSources: (state) => {
+		return state.airCrash.infoSources
+			.filter((x) => x.status === 'Edited')
+			.map((x) => ({ Type: x.Type, Source: x.Source }));
+	},
+	newInfoSources: (state) => {
+		return state.airCrash.infoSources
+			.filter((x) => x.status === 'New')
+			.map((x) => ({ Type: x.Type, Source: x.Source }));
+	},
+	removedInfoSources: (state) => {
+		return state.airCrash.infoSources
+			.filter((x) => x.status === 'Deleted')
+			.map((x) => ({ Type: x.Type, Source: x.Source }));
+	},
 	// Define your getters here
 };
 const mutations = {
 	SET_AIRCRASH: (state, val) => {
 		state.airCrash = new AircraftCrash(val);
 	},
+	deleteInfoSource(state, { item, index }) {
+		if (state.airCrash.infoSources.length > 0) {
+			if (item.status === 'New') {
+				// We don't need to worry about updateing the database so
+				//remove index from infoSources array.
+				state.airCrash.infoSources.splice(index, 1);
+			} else {
+				//use splice to update the item in the array because Vuex can't detect
+				// this: // state.airCrash.infoSources[index].status = 'Deleted';
+				item.status = 'Deleted';
+				state.airCrash.infoSources.splice(index, 1, item);
+			}
+		}
+		state.indexOfSourceBeingEdited = null;
+	},
+	upsertInfoSource(state, { item, index }) {
+		if (item.status === 'New') {
+			if (index === undefined) {
+				console.log('Brand new info source');
+				let m = state.airCrash.infoSources.push(item);
+				// 	console.log(m - 1);
+				state.indexOfSourceBeingEdited = m - 1;
+			} else if (index) {
+				item.status = 'Edited';
+				state.indexOfSourceBeingEdited = null;
+			}
+		}
+	},
+	setEdit(state, payload) {
+		state.indexOfSourceBeingEdited = payload;
+	},
 };
 const actions = {
+	addNewSource({ commit, getters }) {
+		let item = new InfoSource({
+			YACSINumber: getters.YACSINumber,
+			Source: '',
+			Type: 'Reference',
+			status: 'New',
+		});
+		commit('upsertInfoSource', { item });
+	},
+	deleteSource({ item, index }) {
+		console.log(item);
+		console.log(index);
+
+		// commit('deleteInfoSource', { item, index });
+	},
+
 	getAircrashByID: async ({ commit }, id) => {
 		try {
 			let airCrash = await aircrash.getById(id).then((data) => {
