@@ -5,6 +5,7 @@ import { InfoSource } from '../models/InfoSource';
 const state = {
 	airCrash: new AircraftCrash(),
 	indexOfSourceBeingEdited: null,
+	deletedSources: [],
 	// Define your state properties here
 };
 const getters = {
@@ -17,17 +18,26 @@ const getters = {
 	editedInfoSources: (state) => {
 		return state.airCrash.infoSources
 			.filter((x) => x.status === 'Edited')
-			.map((x) => ({ Type: x.Type, Source: x.Source }));
+			.map((x) => ({
+				Type: x.Type,
+				Source: x.Source,
+				YACSINumber: x.YACSINumber,
+				Id: x.Id,
+			}));
 	},
 	newInfoSources: (state) => {
 		return state.airCrash.infoSources
 			.filter((x) => x.status === 'New')
-			.map((x) => ({ Type: x.Type, Source: x.Source }));
+			.map((x) => ({
+				Type: x.Type,
+				Source: x.Source,
+				YACSINumber: x.YACSINumber,
+			}));
 	},
 	removedInfoSources: (state) => {
-		return state.airCrash.infoSources
-			.filter((x) => x.status === 'Deleted')
-			.map((x) => ({ Type: x.Type, Source: x.Source }));
+		return state.deletedSources;
+		// return state.airCrash.infoSources.filter((x) => x.status === 'Deleted');
+		// .map((x) => ({ Type: x.Type, Source: x.Source }));
 	},
 	// Define your getters here
 };
@@ -45,22 +55,24 @@ const mutations = {
 				//use splice to update the item in the array because Vuex can't detect
 				// this: // state.airCrash.infoSources[index].status = 'Deleted';
 				item.status = 'Deleted';
-				state.airCrash.infoSources.splice(index, 1, item);
+				state.deletedSources.push(item);
+				// state.airCrash.infoSources.splice(index, 1, item);
+				state.airCrash.infoSources.splice(index, 1);
 			}
 		}
 		state.indexOfSourceBeingEdited = null;
 	},
 	upsertInfoSource(state, { item, index }) {
-		if (item.status === 'New') {
-			if (index === undefined) {
-				console.log('Brand new info source');
-				let m = state.airCrash.infoSources.push(item);
-				// 	console.log(m - 1);
-				state.indexOfSourceBeingEdited = m - 1;
-			} else if (index) {
+		if (index === undefined) {
+			let m = state.airCrash.infoSources.push(item);
+			console.log(m);
+			state.indexOfSourceBeingEdited = m - 1;
+		} else {
+			if (!item.status) {
 				item.status = 'Edited';
-				state.indexOfSourceBeingEdited = null;
 			}
+			state.airCrash.infoSources.splice(index, 1, item);
+			state.indexOfSourceBeingEdited = null;
 		}
 	},
 	setEdit(state, payload) {
