@@ -41,6 +41,10 @@ export const DB_CONFIG = {
 };
 
 export const GIS_PORTAL_CLIENT_ID = process.env.GIS_PORTAL_CLIENT_ID || '';
-export const GIS_PORTAL_CLIENT_SECRET = process.env.GIS_PORTAL_CLIENT_SECRET || '';
+export const GIS_PORTAL_CLIENT_SECRET =
+	process.env.GIS_PORTAL_CLIENT_SECRET || '';
 export const GIS_FEATURE_USERNAME = process.env.GIS_FEATURE_USERNAME || '';
 export const GIS_FEATURE_PASSWORD = process.env.GIS_FEATURE_PASSWORD || '';
+
+// Configure Sentry (GlitchTip) for Monitorings)
+export const SENTRY_DSN = process.env.SENTRY_DSN || '';

@@ -3,6 +3,9 @@ import VueRouter from 'vue-router';
 
 import goTo from 'vuetify/lib/services/goto';
 
+//new Style router imports
+import aircrashRoutes from '@/modules/AirplaneCrashes/router/AircrashRouter.js';
+
 import Dashboard from '../components/Dashboard.vue';
 import NotFound from '../views/NotFound.vue';
 import Profile from '../views/Profile';
@@ -26,9 +29,10 @@ import BoatsGrid from '../components/Boats/Grid/Boats';
 import OwnerGrid from '../components/Boats/Grid/Owner';
 import BoatsForm from '../components/Boats/BoatsComponents/Boat/BoatsForm';
 import BoatsOwnerForm from '../components/Boats/BoatsComponents/Owner/OwnerForm';
-import AirplaneGrid from '../components/AirplaneCrashes/Grid';
-import AirplaneViewForm from '../components/AirplaneCrashes/AirplaneComponents/AirplaneForm';
-import AirplaneEditForm from '../components/AirplaneCrashes/AirplaneComponents/AirplaneForm';
+
+// import AirplaneGrid from '../components/AirplaneCrashes/Grid';
+// import AirplaneViewForm from '../components/AirplaneCrashes/AirplaneComponents/AirplaneForm';
+// import AirplaneEditForm from '../components/AirplaneCrashes/AirplaneComponents/AirplaneForm';
 import AdminDashboard from '../components/Administration/AdminDashboard';
 import AdminUserGrid from '../components/Administration/UserManagement/Grid';
 import AdminUserForm from '../components/Administration/UserManagement/UserComponent/Form';
@@ -75,6 +79,14 @@ const routes = [
 		name: 'Home',
 		component: () => import('../components/Home.vue'),
 	},
+
+	{
+		path: '/dev',
+		name: 'tinerking',
+		component: () => import('../modules/tinkering/parent.vue'),
+		meta: { requiresAuth: false },
+	},
+
 	{
 		path: '/dashboard',
 		name: 'Dashboard',
@@ -315,31 +327,36 @@ const routes = [
 	},
 	{
 		path: '/airplane',
-		name: 'airplane',
-		component: AirplaneGrid,
-		meta: { requiresAuth: true, authorize: [UserRoles.AIRPLANE_CRASH_EDITOR] },
+		component: () => import('@/layouts/BlankLayout.vue'),
+		children: [...aircrashRoutes],
 	},
-	{
-		path: '/airplane/view/:name',
-		name: 'airplaneView',
-		component: AirplaneViewForm,
-		props: true,
-		meta: { requiresAuth: true, authorize: [UserRoles.AIRPLANE_CRASH_EDITOR] },
-	},
-	{
-		path: '/airplane/edit/:name',
-		name: 'airplaneEditView',
-		component: AirplaneEditForm,
-		props: true,
-		meta: { requiresAuth: true, authorize: [UserRoles.AIRPLANE_CRASH_EDITOR] },
-	},
-	{
-		path: '/airplane/New',
-		name: 'airplaneAddView',
-		component: AirplaneEditForm,
-		props: true,
-		meta: { requiresAuth: true, authorize: [UserRoles.AIRPLANE_CRASH_EDITOR] },
-	},
+	// {
+	// 	path: '/airplane',
+	// 	name: 'airplane',
+	// 	component: AirplaneGrid,
+	// 	meta: { requiresAuth: true, authorize: [UserRoles.AIRPLANE_CRASH_EDITOR] },
+	// },
+	// {
+	// 	path: '/airplane/view/:name',
+	// 	name: 'airplaneView',
+	// 	component: AirplaneViewForm,
+	// 	props: { action: 'view' },
+	// 	meta: { requiresAuth: true, authorize: [UserRoles.AIRPLANE_CRASH_EDITOR] },
+	// },
+	// {
+	// 	path: '/airplane/edit/:name',
+	// 	name: 'airplaneEditView',
+	// 	component: AirplaneEditForm,
+	// 	props: { action: 'edit' },
+	// 	meta: { requiresAuth: true, authorize: [UserRoles.AIRPLANE_CRASH_EDITOR] },
+	// },
+	// {
+	// 	path: '/airplane/new',
+	// 	name: 'airplaneAddView',
+	// 	component: AirplaneEditForm,
+	// 	props: { action: 'new' },
+	// 	meta: { requiresAuth: true, authorize: [UserRoles.AIRPLANE_CRASH_EDITOR] },
+	// },
 	{
 		path: '/admin',
 		name: 'AdminDashboard',

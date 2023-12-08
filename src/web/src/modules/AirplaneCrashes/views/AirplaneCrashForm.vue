@@ -13,7 +13,7 @@
 						fields.aircraftregistration
 					}})
 				</h1>
-				<h1 v-else-if="isEditingCrash">Edit: {{ fields.yacsinumber }}</h1>
+				<h1 v-else-if="isEditingCrash">Edit: {{ this.crashID }}</h1>
 				<h1 v-else>New Crash Site</h1>
 				<v-spacer></v-spacer>
 
@@ -39,7 +39,7 @@
 				<!-- buttons for the edit state -->
 				<v-btn
 					class="black--text mx-1"
-					@click="cancelEdit"
+					@click="cancelEdit()"
 					v-if="isEditingCrash"
 				>
 					<v-icon>mdi-close</v-icon>
@@ -58,7 +58,7 @@
 				<v-btn
 					class="black--text mx-1"
 					@click="cancelNew"
-					v-if="mode == 'new'"
+					v-if="action == 'new'"
 				>
 					<v-icon>mdi-close</v-icon>
 					Cancel
@@ -66,7 +66,7 @@
 				<v-btn
 					color="success"
 					:disabled="showSave < 1 || yacsiWarning.length == 1"
-					v-if="mode == 'new'"
+					v-if="action == 'new'"
 					@click="saveChanges"
 				>
 					<v-icon class="mr-1">mdi-check</v-icon>
@@ -293,9 +293,8 @@
 					<v-col cols="12">
 						<!-- Photos component, it includes a carousel and some dialogs for the button actions -->
 						<Photos
-							v-if="infoLoaded"
 							:showDefault="isNewCrash"
-							:mode="mode"
+							:mode="action"
 							:photoType="'aircrash'"
 							:itemId="getYACSINumber"
 							@updateSelectedImage="selectedImageChanged"
@@ -304,21 +303,19 @@
 					</v-col>
 				</v-col>
 			</v-row>
+
 			<MapLoader
-				v-if="infoLoaded"
-				:mode="mode"
+				:mode="action"
+				:mapType="'planeCrash'"
+				:airCrashLocation.sync="crashMapData"
+			/>
+			<!-- <MapLoader
+				:mode="action"
 				:mapType="'planeCrash'"
 				@modifiedDataCoordinates="modifiedDataCoordinates"
-				:fields="{
-					accuracy: fields.accuracy,
-					inyukon: fields.inyukon,
-					locationDesc: fields.crashlocation,
-					lat: fields.lat,
-					long: fields.long,
-					Location: fields.Location,
-					mapsheet: null,
-				}"
-			/>
+				@update:airCrashLocation="updateAirCrashLocation()"
+				:airCrashLocation.sync="crashMapData"
+			/> -->
 
 			<v-row>
 				<v-col col="6">
@@ -409,124 +406,8 @@
 			</v-row>
 			<v-row>
 				<v-col cols="5">
-					<!-- Information source list -->
-					<v-card>
-						<v-list class="pa-0">
-							<v-subheader>Information Source</v-subheader>
-							<v-divider></v-divider>
-							<template v-for="(item, index) in fields.infoSources">
-								<v-list-item :key="`nl-${index}`">
-									<v-list-item-content>
-										<v-list-item-title
-											v-if="index != editTableSources || isViewingCrash"
-											>{{ item.Source }}</v-list-item-title
-										>
-										<v-form
-											v-model="validSource"
-											v-if="!isViewingCrash"
-											v-on:submit.prevent
-										>
-											<v-text-field
-												outlined
-												dense
-												v-if="editTableSources == index"
-												label="Source"
-												v-model="helperSource"
-												:rules="sourceRules"
-											></v-text-field>
-										</v-form>
-									</v-list-item-content>
-									<v-list-item-action class="d-flex flex-row">
-										<v-tooltip
-											bottom
-											v-if="!isViewingCrash && editTableSources != index"
-										>
-											<template v-slot:activator="{ on, attrs }">
-												<v-btn
-													v-bind="attrs"
-													v-on="on"
-													icon
-													class="grey--text text--darken-2"
-													@click="deleteSource(item, index)"
-												>
-													<v-icon small> mdi-delete</v-icon>
-												</v-btn>
-											</template>
-											<span>Delete</span>
-										</v-tooltip>
-										<v-tooltip
-											bottom
-											v-if="!isViewingCrash && editTableSources != index"
-										>
-											<template v-slot:activator="{ on, attrs }">
-												<v-btn
-													v-bind="attrs"
-													v-on="on"
-													icon
-													class="grey--text text--darken-2"
-													@click="changeEditTableSources(item, index)"
-												>
-													<v-icon small> mdi-pencil</v-icon>
-												</v-btn>
-											</template>
-											<span>Edit</span>
-										</v-tooltip>
-										<v-tooltip
-											bottom
-											v-if="!isViewingCrash && editTableSources == index"
-										>
-											<template v-slot:activator="{ on, attrs }">
-												<v-btn
-													v-bind="attrs"
-													v-on="on"
-													:disabled="!validSource"
-													icon
-													class="grey--text text--darken-2"
-													color="success"
-													@click="saveTableSources(index)"
-												>
-													<v-icon small>mdi-check</v-icon>
-												</v-btn>
-											</template>
-											<span>Save changes</span>
-										</v-tooltip>
-										<v-tooltip
-											bottom
-											v-if="!isViewingCrash && editTableSources == index"
-										>
-											<template v-slot:activator="{ on, attrs }">
-												<v-btn
-													v-bind="attrs"
-													v-on="on"
-													icon
-													class="grey--text text--darken-2"
-													@click="cancelEditTableSources()"
-												>
-													<v-icon small>mdi-close</v-icon>
-												</v-btn>
-											</template>
-											<span>Cancel</span>
-										</v-tooltip>
-									</v-list-item-action>
-								</v-list-item>
-								<v-divider :key="`ldiv-${index}`"></v-divider>
-							</template>
-						</v-list>
-					</v-card>
-					<v-row>
-						<v-col
-							cols="12"
-							class="d-flex"
-						>
-							<v-spacer></v-spacer>
-							<v-btn
-								class="mx-1 black--text align"
-								@click="addSource"
-								v-if="!isViewingCrash && editTableSources == -1"
-								>Add Source</v-btn
-							>
-						</v-col>
-					</v-row>
+					<!-- Info Sources -->
+					<info-sources :action="action" />
 				</v-col>
 				<v-col cols="7">
 					<v-textarea
@@ -574,23 +455,35 @@
 </template>
 
 <script>
-import Breadcrumbs from '../../Breadcrumbs.vue';
-import Photos from '../../PhotoEditor/Photos';
-import aircrash from '../../../controllers/aircrash';
-import MapLoader from './MapLoader';
+import { AirCrashLocation } from '../models/AircrashModels';
+import Breadcrumbs from '@/components/Breadcrumbs.vue';
+import Photos from '@/components/PhotoEditor/Photos';
+import aircrash from '@/controllers/aircrash';
+import MapLoader from '../components/MapLoader';
 import _ from 'lodash';
+import { mapActions, mapGetters, mapState } from 'vuex';
+import InfoSources from '../components/InfoSources';
 export default {
 	name: 'crashForm',
-	components: { Photos, Breadcrumbs, MapLoader },
+	components: { Photos, Breadcrumbs, MapLoader, InfoSources },
+	props: {
+		action: {
+			type: String,
+			default: 'view',
+		},
+		name: {
+			type: String,
+			default: '',
+		},
+		crashID: {
+			type: String,
+			default: 'noCrashID',
+		},
+	},
 	data: () => ({
 		overlay: false,
 		//helper vars used for the name list functions
-		editTableSources: -1, // tells the list which element will be edited (it has problems with accuracy, i.e: you cant distinguish between an edit & a new element being added)
-		addingSource: false, // tells the list if the user is adding a new element, this helps distinguish between an edit & a new element being added...
-		helperSource: null,
-		validSource: false,
-		deletedSources: [],
-		sourceRules: [(v) => !!v || 'Source is required'],
+
 		//helper vars, they are used to determine if the component is in an edit, view or add new state
 		mode: '',
 		edit: false,
@@ -609,9 +502,7 @@ export default {
 		selectedImage: null,
 		//modified coordinate fields
 		modifiedMapFields: null,
-		infoLoaded: false,
 		//helper var for the nations checkboxes
-		otherNation: false,
 		// dialog to inform the user if a field has the wrong data
 		dataDialog: false,
 		//YACSINUMBER VALIDATION
@@ -627,35 +518,18 @@ export default {
 		loadingPdf: false,
 	}),
 	async mounted() {
-		if (this.checkPath('edit')) {
-			this.mode = 'edit';
-			//after this, the fields get filled with the info obtained from the api
-			await this.getDataFromApi();
-			this.fieldsHistory = JSON.parse(JSON.stringify(this.fields));
-		} else if (this.checkPath('new')) {
-			this.mode = 'new';
+		this.overlay = true;
+		if (this.action === 'new') {
 			//inputs remain empty
-			this.noData();
-		} else if (this.checkPath('view')) {
-			this.mode = 'view';
-			//after this, the fields get filled with the info obtained from the api
-			this.getDataFromApi();
+			this.fields = await this.setEmptyAircrash();
+		} else if (['edit', 'view'].includes(this.action)) {
+			this.fields = await this.getAircrashByID(this.crashID);
 		}
-		/*
-        //console.log('regex');
-        //console.log(/^[0-9]*$/.test('12'));*/
+
+		this.overlay = false;
 	},
 	methods: {
-		/*this function checks if the current path contains a specific word, this can be done with a simple includes but
-        //it causes confusion when a boat or owner has 'new' in its name, leading the component to think it should use the 'new' mode,
-        this problem is solved by using this funtion.*/
-		checkPath(word) {
-			let path = this.$route.path.split('/');
-			if (path[2] == word) {
-				return true;
-			}
-			return false;
-		},
+		...mapActions('aircrash', ['getAircrashByID', 'setEmptyAircrash']),
 		changeNation() {
 			this.fields.nation = '';
 		},
@@ -675,131 +549,61 @@ export default {
 				this.yacsiWarning = ['The YACSI Number must be unique.'];
 			}
 		},
-		noData() {
-			this.fields = {
-				Location: '',
-				accuracy: '',
-				aircraftaftercrashcaption: '',
-				aircraftcaption: '',
-				aircraftregistration: '',
-				aircrafttype: '',
-				comments: '',
-				crashdate: '',
-				crashlocation: '',
-				descriptionofcrashevent: '',
-				extentofremainsonsite: '',
-				fatalities: '',
-				injuries: '',
-				inyukon: '',
-				lat: '',
-				long: '',
-				militarycivilian: '',
-				nation: '',
-				otherlocationsofremains: '',
-				photographs: '',
-				pilot: '',
-				remainsonsite: '',
-				significanceofaircraft: '',
-				soulsonboard: '',
-				sources: '',
-				infoSources: [],
-				yacsinumber: '',
-				pilotfirstname: '',
-				pilotlastname: '',
-				pilotrank: '',
-				datenote: '',
-				datedescriptor: '',
-			};
-			this.infoLoaded = true;
-		},
-		saveCurrentCrash() {
-			localStorage.currentCrashNumber = this.$route.params.yacsinumber;
-		},
-		async getDataFromApi() {
-			this.overlay = true;
-			if (this.$route.params.yacsinumber) {
-				this.saveCurrentCrash();
-			}
-			this.fields = await aircrash.getById(localStorage.currentCrashNumber);
-			this.fields.crashdate = this.fields.crashdate
-				? this.fields.crashdate.substr(0, 10)
-				: '';
-			//this.fields.infoSources = this.fields.sources.includes(";") ? this.fields.sources.split(";") : [];
-			if (this.fields.nation != 'Canadian' && this.fields.nation != 'American')
-				this.otherNation = true;
-			////console.log(this.fields);
-			this.infoLoaded = true;
-			this.overlay = false;
-		},
+
 		//Functions dedicated to handle the edit, add, view modes
-		cancelEdit() {
-			if (this.fieldsHistory) {
-				this.fields = { ...this.fieldsHistory };
-			}
-			this.mode = 'view';
+		async cancelEdit() {
 			this.yacsiWarning = [];
-			this.resetListVariables();
-			this.$router.push(`/airplane/view/${this.fields.yacsinumber}`);
+			this.fields = await this.getAircrashByID(this.crashID);
+			this.$router.push(`/airplane/view/${this.crashID}`);
 		},
 		cancelNew() {
 			this.$router.push(`/airplane/`);
 		},
 		viewMode() {
-			this.mode = 'view';
-			this.$router.push(`/airplane/view/${this.fields.yacsinumber}`);
+			// this.mode = 'view';
+			this.$router.push(`/airplane/view/${this.crashID}`);
 		},
 		editMode() {
-			this.fieldsHistory = { ...this.fields };
-			this.mode = 'edit';
-			this.$router.push(`/airplane/edit/${this.fields.yacsinumber}`);
+			// this.mode = 'edit';
+
+			this.$router.push(`/airplane/edit/${this.crashID}`);
 			this.showSave = 0;
-			this.resetListVariables();
 		},
-		resetListVariables() {
-			this.addingSource = false;
-			this.editTableSources = -1;
-		},
+
 		async saveChanges() {
 			this.overlay = true;
-			////console.log(this.fields);
 			//Mapping coordinate data
-			let { lat, long, inyukon, crashlocation, accuracy } =
-				this.modifiedMapFields;
-			this.fields.lat = lat;
-			this.fields.long = long;
-			this.fields.inyukon = inyukon;
-			this.fields.crashlocation = crashlocation;
-			this.fields.accuracy = accuracy;
 			//Mapping general fields
 			let crash = { ...this.fields };
-			crash.pilot = this.getPilotName();
-			crash.sources = this.getSources();
-			crash.Location = `POINT(${crash.long} ${crash.lat})`;
 			//Removing useless values
-			delete crash.pilotFirstName;
-			delete crash.pilotLastName;
+
 			delete crash.infoSources;
 			delete crash.sources;
 			delete crash.lat;
 			delete crash.long;
 			//Mapping infosources
-			let editedInfoSources = this.fields.infoSources.filter(
-				(x) => x.isEdited == true
-			);
-			let removedInfoSources = this.deletedSources;
-			let newInfoSources = this.fields.infoSources
-				.filter((x) => x.isNew == true)
-				.map((x) => ({ Type: x.Type, Source: x.Source }));
-			//Final data obj
+			// let editedInfoSources = this.fields.infoSources.filter(
+			// 	(x) => x.isEdited == true
+			// );
+			// let removedInfoSources = this.deletedSources;
+			// let newInfoSources = this.fields.infoSources
+			// 	.filter((x) => x.isNew == true)
+			// 	.map((x) => ({ Type: x.Type, Source: x.Source }));
+			// //Final data obj
+
+			const removedInfoSources = this.removedInfoSources;
+			const editedInfoSources = this.editedInfoSources;
+			const newInfoSources = this.newInfoSources;
+
 			let data = {
 				aircrash: crash,
 				removedInfoSources,
 				newInfoSources,
 				editedInfoSources,
 			};
-
-			if (this.mode == 'new') {
-				//console.log("api call");
+			console.log(data);
+			if (this.action == 'new') {
+				console.log('api call');
 				let resp = await aircrash.post(data);
 				if (resp.response) {
 					if (resp.status == 409) {
@@ -817,59 +621,22 @@ export default {
 					this.$router.push(`/airplane/`);
 				}
 			} else {
-				await aircrash.put(localStorage.currentCrashNumber, data);
+				console.log('in the else');
+				await aircrash.put(this.crashID, data);
 				this.overlay = false;
-				this.mode = 'view';
 				this.$router.push({
 					name: 'airplaneView',
 					params: {
-						name: localStorage.currentCrashNumber,
-						yacsinumber: localStorage.currentCrashNumber,
+						name: this.crashID,
+						yacsinumber: this.crashID,
 					},
 				});
 			}
+			console.log('At the end ');
+			this.overlay = false;
 		},
-		//functions for editing the table "Sources" values
-		changeEditTableSources(item, index) {
-			this.editTableSources = index;
-			this.helperSource = item.Source;
-		},
-		deleteSource(item, index) {
-			if (index > -1) {
-				this.fields.infoSources.splice(index, 1);
-				if (!item.isNew) this.deletedSources.push(item);
-			}
-		},
-		cancelEditTableSources() {
-			if (this.addingSource) {
-				this.fields.infoSources.pop();
-				this.addingSource = false;
-				this.editTableSources = -1;
-			} else {
-				this.editTableNames = -1;
-			}
-		},
-		saveTableSources(index) {
-			if (this.addingSource)
-				this.fields.infoSources[index] = {
-					Source: this.helperSource,
-					Type: 'Reference',
-					isNew: true,
-				};
-			else {
-				this.fields.infoSources[index].Source = this.helperSource;
-				if (!this.fields.infoSources[index].isNew)
-					this.fields.infoSources[index].isEdited = true;
-			}
-
-			this.addingSource = false;
-			this.editTableSources = -1;
-		},
-		addSource() {
-			this.helperSource = '';
-			this.fields.infoSources.push('');
-			this.addingSource = true;
-			this.editTableSources = this.fields.infoSources.length - 1;
+		getSources() {
+			return _.join(this.infoSources, ';');
 		},
 		formatDate(date) {
 			if (!date) return null;
@@ -877,13 +644,13 @@ export default {
 			const [year, month, day] = date.split('-');
 			return `${month}/${day}/${year}`;
 		},
-		getPilotName() {
-			return `${this.fields.pilotLastName},${this.fields.pilotFirstName}`;
-		},
-		getSources() {
-			return _.join(this.fields.infoSources, ';');
-		},
+
 		modifiedDataCoordinates(val) {
+			this.modifiedMapFields = val;
+			this.showSave = this.showSave + 1;
+		},
+		updateAirCrashLocation(val) {
+			console.log('updating map data...');
 			this.modifiedMapFields = val;
 			this.showSave = this.showSave + 1;
 		},
@@ -896,9 +663,7 @@ export default {
 		},
 		async downloadPdf() {
 			this.loadingPdf = true;
-			let res = await aircrash.getPdf(
-				parseInt(localStorage.currentCrashNumber)
-			);
+			let res = await aircrash.getPdf(parseInt(this.crashID));
 			let blob = new Blob([res], { type: 'application/octetstream' });
 			let url = window.URL || window.webkitURL;
 			let link = url.createObjectURL(blob);
@@ -912,8 +677,45 @@ export default {
 		},
 	},
 	computed: {
+		...mapGetters('aircrash', [
+			'editedInfoSources',
+			'newInfoSources',
+			'removedInfoSources',
+			'',
+		]),
+		...mapState('aircrash', ['deletedSources']),
+
+		// airCrash: {
+		// 	get() {
+		// 		return this.$store.state.aircrash.airCrash;
+		// 	},
+		// 	set(value) {
+		// 		console.log(value);
+		// 		this.$store.commit('SET_AIRCRASH', value);
+		// 	},
+		// },
+
+		otherNation() {
+			if (!['Canadian', 'American'].includes(this.fields.nation)) {
+				return true;
+			}
+			return false;
+		},
+		crashMapData: {
+			// let m =
+			// console.log(m);
+			get() {
+				return new AirCrashLocation(this.fields);
+			},
+			set(val) {
+				this.fields.lat = val.lat;
+				this.fields.long = val.long;
+				this.fields.inYukon = val.inYukon;
+				this.fields.crashlocation = val.crashlocation;
+				this.fields.accuracy = val.accuracy;
+			},
+		},
 		isAircrashEditor() {
-			console.log(this.$store.state.user);
 			return this.$store.state.auth.user.roles.includes('Administrator');
 		},
 		isAdministrator() {
@@ -926,19 +728,19 @@ export default {
 		getYACSINumber() {
 			if (this.$route.params.yacsinumber) {
 				return this.$route.params.yacsinumber;
-			} else return localStorage.currentCrashNumber;
+			} else return this.crashID;
 		},
 		crashdate() {
 			return this.formatDate(this.fields.crashdate);
 		},
 		isNewCrash() {
-			return this.mode == 'new';
+			return this.action == 'new';
 		},
 		isEditingCrash() {
-			return this.mode == 'edit';
+			return this.action == 'edit';
 		},
 		isViewingCrash() {
-			return this.mode == 'view';
+			return this.action == 'view';
 		},
 	},
 	watch: {
