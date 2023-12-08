@@ -109,7 +109,9 @@ const actions = {
 	},
 
 	setEmptyAircrash: async ({ commit }) => {
-		commit('SET_AIRCRASH', new AircraftCrash({}));
+		let x = new AircraftCrash();
+		commit('SET_AIRCRASH', x);
+		return x;
 	},
 	saveAirCrash: async ({ state, commit }) => {
 		// delete crash.pilotFirstName;

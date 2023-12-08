@@ -2,6 +2,7 @@
 	<div>
 		<h3>Airplane Crash Sites</h3>
 		<Breadcrumbs />
+
 		<v-row>
 			<v-col
 				cols="12"
@@ -306,10 +307,15 @@
 			<MapLoader
 				:mode="action"
 				:mapType="'planeCrash'"
-				@modifiedDataCoordinates="modifiedDataCoordinates"
-				@update:airCrashLocation="updateAirCrashLocation"
-				:airCrashLocation="crashMapData"
+				:airCrashLocation.sync="crashMapData"
 			/>
+			<!-- <MapLoader
+				:mode="action"
+				:mapType="'planeCrash'"
+				@modifiedDataCoordinates="modifiedDataCoordinates"
+				@update:airCrashLocation="updateAirCrashLocation()"
+				:airCrashLocation.sync="crashMapData"
+			/> -->
 
 			<v-row>
 				<v-col col="6">
@@ -401,10 +407,7 @@
 			<v-row>
 				<v-col cols="5">
 					<!-- Info Sources -->
-					<info-sources
-						:infoSources.sync="fields.infoSources"
-						:action="action"
-					/>
+					<info-sources :action="action" />
 				</v-col>
 				<v-col cols="7">
 					<v-textarea
@@ -458,7 +461,7 @@ import Photos from '@/components/PhotoEditor/Photos';
 import aircrash from '@/controllers/aircrash';
 import MapLoader from '../components/MapLoader';
 import _ from 'lodash';
-import { mapState, mapActions } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import InfoSources from '../components/InfoSources';
 export default {
 	name: 'crashForm',
@@ -518,7 +521,7 @@ export default {
 		this.overlay = true;
 		if (this.action === 'new') {
 			//inputs remain empty
-			this.setEmptyAircrash();
+			this.fields = await this.setEmptyAircrash();
 		} else if (['edit', 'view'].includes(this.action)) {
 			this.fields = await this.getAircrashByID(this.crashID);
 		}
@@ -572,8 +575,6 @@ export default {
 			//Mapping coordinate data
 			//Mapping general fields
 			let crash = { ...this.fields };
-			crash.sources = this.getSources();
-			crash.Location = `POINT(${crash.long} ${crash.lat})`;
 			//Removing useless values
 
 			delete crash.infoSources;
@@ -581,14 +582,18 @@ export default {
 			delete crash.lat;
 			delete crash.long;
 			//Mapping infosources
-			let editedInfoSources = this.fields.infoSources.filter(
-				(x) => x.isEdited == true
-			);
-			let removedInfoSources = this.deletedSources;
-			let newInfoSources = this.fields.infoSources
-				.filter((x) => x.isNew == true)
-				.map((x) => ({ Type: x.Type, Source: x.Source }));
-			//Final data obj
+			// let editedInfoSources = this.fields.infoSources.filter(
+			// 	(x) => x.isEdited == true
+			// );
+			// let removedInfoSources = this.deletedSources;
+			// let newInfoSources = this.fields.infoSources
+			// 	.filter((x) => x.isNew == true)
+			// 	.map((x) => ({ Type: x.Type, Source: x.Source }));
+			// //Final data obj
+
+			const removedInfoSources = this.removedInfoSources;
+			const editedInfoSources = this.editedInfoSources;
+			const newInfoSources = this.newInfoSources;
 
 			let data = {
 				aircrash: crash,
@@ -596,7 +601,7 @@ export default {
 				newInfoSources,
 				editedInfoSources,
 			};
-
+			console.log(data);
 			if (this.action == 'new') {
 				console.log('api call');
 				let resp = await aircrash.post(data);
@@ -645,6 +650,7 @@ export default {
 			this.showSave = this.showSave + 1;
 		},
 		updateAirCrashLocation(val) {
+			console.log('updating map data...');
 			this.modifiedMapFields = val;
 			this.showSave = this.showSave + 1;
 		},
@@ -671,7 +677,23 @@ export default {
 		},
 	},
 	computed: {
-		...mapState('aircrash', ['airCrash']),
+		...mapGetters('aircrash', [
+			'editedInfoSources',
+			'newInfoSources',
+			'removedInfoSources',
+			'',
+		]),
+		...mapState('aircrash', ['deletedSources']),
+
+		// airCrash: {
+		// 	get() {
+		// 		return this.$store.state.aircrash.airCrash;
+		// 	},
+		// 	set(value) {
+		// 		console.log(value);
+		// 		this.$store.commit('SET_AIRCRASH', value);
+		// 	},
+		// },
 
 		otherNation() {
 			if (!['Canadian', 'American'].includes(this.fields.nation)) {
@@ -686,7 +708,6 @@ export default {
 				return new AirCrashLocation(this.fields);
 			},
 			set(val) {
-				console.log('updating map data...');
 				this.fields.lat = val.lat;
 				this.fields.long = val.long;
 				this.fields.inYukon = val.inYukon;
