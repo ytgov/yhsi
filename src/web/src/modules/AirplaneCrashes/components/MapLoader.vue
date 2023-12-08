@@ -101,18 +101,18 @@
 					outlined
 					dense
 					label="Crash Location Description"
-					v-model="airCrashLocation.locationDesc"
+					v-model="locationDescription"
 					:readonly="mode == 'view'"
 				></v-textarea>
 				<v-select
 					outlined
 					dense
 					label="Location Accuracy"
-					v-model="airCrashLocation.accuracy"
+					v-model="accuracy"
 					:items="locationAccuracyOptions"
 				></v-select>
 				<v-checkbox
-					v-model="airCrashLocation.inyukon"
+					:value="!isOutsideYukon"
 					:readonly="true"
 					label="Crash site within Yukon"
 				>
@@ -242,9 +242,10 @@ export default {
 	props: {
 		airCrashLocation: {
 			type: Object,
-			required: false,
-			default: () => new AirCrashLocation({}),
+			required: true,
+			default: () => new AirCrashLocation(),
 		},
+
 		// fields: {
 		// 	type: Object,
 		// 	required: true,
@@ -420,6 +421,26 @@ export default {
 			return [this.airCrashLocation.lat, this.airCrashLocation.long];
 		},
 
+		locationDescription: {
+			get: function () {
+				return this.airCrashLocation.crashlocation;
+			},
+			set: function (value) {
+				this.airCrashLocation.crashlocation = value;
+				this.$emit('update:airCrashLocation', this.airCrashLocation);
+			},
+		},
+
+		accuracy: {
+			get: function () {
+				return this.airCrashLocation.accuracy;
+			},
+			set: function (value) {
+				this.airCrashLocation.accuracy = value;
+				this.$emit('update:airCrashLocation', this.airCrashLocation);
+			},
+		},
+
 		lat: {
 			get: function () {
 				if (this.selectedSystem.id === 1) {
@@ -430,6 +451,7 @@ export default {
 			set: function (val) {
 				if (this.selectedSystem.id === 1) {
 					this.airCrashLocation.lat = val;
+					this.$emit('update:airCrashLocation', this.airCrashLocation);
 				} else {
 					console.alert('We only implement DD for now');
 					//this.airCrashLocation.lat = this.convertDMSToDD(val, false);
@@ -446,6 +468,7 @@ export default {
 			set: function (val) {
 				if (this.selectedSystem.id === 1) {
 					this.airCrashLocation.long = val;
+					this.$emit('update:airCrashLocation', this.airCrashLocation);
 				} else {
 					console.alert('We only implement DD for now');
 					//this.airCrashLocation.long = this.convertDMSToDD(val, true);
@@ -462,30 +485,16 @@ export default {
 			}
 			return true;
 		},
-		// layer () {
-		//     return this.maps[ this.showTopographicMap ? 1 : 0]
-		// }
 	},
 	watch: {
-		/*
-            We use a watcher because the component is rendered before the data is available (the mounted() hook is ran before the parent component
-            has fetched the data), because of that we cant use mounted or created to map the fields prop to the modifiedFields obj on the state, also 'prop' values
-            are not supposed to be modified, hence why we have the modifiable fields obj. If we dont use a watcher we would have to have a flag on the parent component
-            to indicate when the data is available to render the component, this would make the component less independent and less reusable.
-
-      */
-		airCrashLocation: {
-			handler: function (val) {
-				this.$emit('update:airCrashLocation', val);
-
-				// this.$emit('modifiedDataCoordinates', val);
-			},
-			deep: true,
-		},
 		mode() {
 			if (this.mode === 'edit') {
 				this.selectedSystem = { id: 1, text: 'Decimal Degrees' };
 			}
+		},
+		isOutsideYukon: function () {
+			this.airCrashLocation.inYukon = !this.isOutsideYukon || false;
+			this.$emit('update:airCrashLocation', this.airCrashLocation);
 		},
 	},
 };

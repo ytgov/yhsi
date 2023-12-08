@@ -1,10 +1,10 @@
 export class AirCrashLocation {
 	constructor(data = {}) {
-		this.lat = data.lat || 0.0;
-		this.long = data.long || 0.0;
-		this.inYukon = data.inYukon || undefined;
-		this.accuracy = data.accuracy || undefined;
-		this.locationDesc = data.crashlocation || '';
+		this.lat = data.lat || 0;
+		this.long = data.long || 0;
+		this.inYukon = data.inYukon || '';
+		this.accuracy = data.accuracy || '';
+		this.crashlocation = data.crashlocation || '';
 	}
 }
 
