@@ -80,12 +80,12 @@ const routes = [
 		component: () => import('../components/Home.vue'),
 	},
 
-	{
-		path: '/dev',
-		name: 'tinerking',
-		component: () => import('../modules/tinkering/parent.vue'),
-		meta: { requiresAuth: false },
-	},
+	// {
+	// 	path: '/dev',
+	// 	name: 'tinerking',
+	// 	component: () => import('../modules/tinkering/parent.vue'),
+	// 	meta: { requiresAuth: false },
+	// },
 
 	{
 		path: '/dashboard',
