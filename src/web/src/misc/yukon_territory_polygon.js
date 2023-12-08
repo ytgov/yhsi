@@ -6,20 +6,20 @@ export function inYukon(latitude, longitude) {
 }
 
 //tests for in Yukon
-const pointInPolygonTestData = [
-	{
-		location: 'Vancouver, BC',
-		point: [49.24966 - 123.11934],
-		expectedResult: false,
-	},
-	{
-		location: 'Whitehorse Yukon',
-		point: [60.721188, -135.056839],
-		expectedResult: true,
-	},
-];
+// const pointInPolygonTestData = [
+// 	{
+// 		location: 'Vancouver, BC',
+// 		point: [49.24966 - 123.11934],
+// 		expectedResult: false,
+// 	},
+// 	{
+// 		location: 'Whitehorse Yukon',
+// 		point: [60.721188, -135.056839],
+// 		expectedResult: true,
+// 	},
+// ];
 
-expect(inYukon(49.24966, -123.11).toBe(false));
+// expect(inYukon(49.24966, -123.11).toBe(false));
 
 export let yukonPolygon = {
 	color: '#B0B0B0',
