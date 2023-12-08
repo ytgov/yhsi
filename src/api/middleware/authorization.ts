@@ -13,6 +13,7 @@ export const UserRoleOptions = [
 	UserRoles.PHOTO_EDITOR,
 	UserRoles.PHOTO_VIEWER,
 	UserRoles.AIRPLANE_CRASH_EDITOR,
+	UserRoles.AIRPLANE_CRASH_VIEWER,
 	UserRoles.BOATS_EDITOR,
 	UserRoles.PLACE_EDITOR,
 	UserRoles.BURIALS_EDITOR,
@@ -38,6 +39,8 @@ export function authorize(roles: string[] = [], allowPending = false) {
 			if (currentUser.roles && currentUser.roles.indexOf(role) >= 0)
 				return next();
 		}
+
+		//TODO for RYAN add an override for ADMINISTRATOR role, maybe? If it doesn't break anything?
 
 		return res
 			.status(403)
