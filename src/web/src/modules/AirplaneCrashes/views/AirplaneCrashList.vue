@@ -16,40 +16,28 @@
 					v-model="search"
 					v-on:input="crashsiteSearchChange()"
 				></v-text-field>
-
-				<v-menu
-					transition="slide-y-transition"
-					bottom
-					:close-on-content-click="false"
+				<v-btn
+					color="transparent"
+					class="black--text"
+					v-model="showFilters"
+					@click="showFilters = !showFilters"
 				>
-					<template v-slot:activator="{ on, attrs }">
-						<v-btn
-							color="transparent"
-							class="black--text"
-							v-bind="attrs"
-							v-on="on"
-						>
-							<v-icon class="black--text mr-1">mdi-filter</v-icon>
-							Filter
+					<v-icon class="black--text mr-1">mdi-filter</v-icon>
 
-							<v-icon class="black--text">mdi-chevron-right</v-icon>
-						</v-btn>
-					</template>
-					<v-list>
-						<v-list-item
-							v-for="(item, i) in filterOptions"
-							:key="i"
-							link
-						>
-							<v-text-field
-								clearable
-								@blur="getDataFromApi"
-								v-model="item.value"
-								:label="item.name"
-							></v-text-field>
-						</v-list-item>
-					</v-list>
-				</v-menu>
+					Filter
+
+					<v-icon
+						v-if="!showFilters"
+						class="black--text"
+						>mdi-chevron-right</v-icon
+					>
+					<v-icon
+						v-else
+						class="black--text pl-3"
+						small
+						>mdi-close</v-icon
+					>
+				</v-btn>
 			</v-col>
 			<v-spacer></v-spacer>
 			<v-col
@@ -83,11 +71,20 @@
 				</v-btn>
 			</v-col>
 		</v-row>
+		<v-row>
+			<v-col>
+				<filter-menu
+					v-show="showFilters"
+					v-bind:filterOptions.sync="filterOptions"
+					@update:filterOptions="getDataFromApi"
+				/>
+			</v-col>
+		</v-row>
 		<div class="mt-2">
 			<v-card>
 				<v-container fluid>
 					<v-row>
-						<v-col cols="12">
+						<v-col cols="10">
 							<h2
 								v-if="crashsites"
 								class="ma-2"
@@ -95,6 +92,16 @@
 								{{ filteredData.length }} results out of {{ totalLength }}
 							</h2>
 						</v-col>
+						<v-vol>
+							<v-btn
+								v-if="filterOptions.filter((x) => x.value).length > 0"
+								disabled
+								class="ml-5"
+								color="primary"
+							>
+								Filters Applied
+							</v-btn>
+						</v-vol>
 					</v-row>
 					<v-divider
 						inset
@@ -131,10 +138,12 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import downloadCsv from '@/utils/dataToCsv';
 import _ from 'lodash';
 import aircrash from '@/controllers/aircrash';
+import FilterMenu from '../components/AirCrashFilterMenu';
 export default {
 	name: 'boatsgrid-index',
-	components: { Breadcrumbs },
+	components: { Breadcrumbs, FilterMenu },
 	data: () => ({
+		showFilters: false,
 		route: '',
 		loading: false,
 		crashsites: [],
