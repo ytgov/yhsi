@@ -110,7 +110,7 @@
 						</v-list-item>
 						<v-list-item
 							to="/places"
-							v-if="userInRole(UserRoles.PLACE_EDITOR)"
+							v-if="userInRole([UserRoles.PLACE_EDITOR])"
 						>
 							<v-list-item-title>Places</v-list-item-title>
 						</v-list-item>
@@ -189,7 +189,7 @@
 			<v-container fluid>
 				<v-row>
 					<v-col>
-						<!-- 
+						<!--
               <router-view :class="`${isSites($route.path, false)}`" :class="`${isSites($route.path, true)}`"
                 v-on:showError="showError"
                 v-on:showSuccess="showSuccess"
