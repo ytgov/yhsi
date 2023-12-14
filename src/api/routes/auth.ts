@@ -55,6 +55,10 @@ export function configureAuthentication(app: Express) {
 			let dbUser = await db.getByEmail(user.email);
 
 			if (!dbUser) {
+				if (user.first_name == null || user.last_name == null) {
+					user.first_name = 'External';
+					user.last_name = 'User';
+				}
 				await db.create(user.email, user.first_name, user.last_name);
 			} else {
 				await db.updateLoginDate(dbUser);

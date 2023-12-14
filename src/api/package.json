@@ -13,6 +13,7 @@
   "author": "Michael Johnson",
   "license": "ISC",
   "dependencies": {
+    "@sentry/node": "^7.53.1",
     "@types/axios": "^0.14.0",
     "cors": "^2.8.5",
     "dotenv": "^8.6.0",

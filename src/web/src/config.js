@@ -1,4 +1,4 @@
-export const applicationName = 'Yukon Historic Sites';
+export const applicationName = 'Yukon Heritage Information System';
 export const applicationIcon = 'mdi-cash-register';
 export const hasSidebar = true;
 export const hasSidebarClosable = false;
@@ -7,7 +7,7 @@ export const sections = [
 	{
 		name: 'Summary',
 		icon: 'mdi-note-text-outline',
-		makeUrl: function(id) {
+		makeUrl: function (id) {
 			return `/sites/${id}/summary`;
 		},
 	},
@@ -21,7 +21,7 @@ export const sections = [
 	{
 		name: 'Dates & Condition',
 		icon: 'mdi-calendar-range',
-		makeUrl: function(id) {
+		makeUrl: function (id) {
 			return `/sites/${id}/dates_&_condition`;
 		},
 	},
@@ -42,7 +42,7 @@ export const sections = [
 	{
 		name: 'Legal & Zoning',
 		icon: 'mdi-script-text-outline',
-		makeUrl: function(id) {
+		makeUrl: function (id) {
 			return `/sites/${id}/legal_&_zoning`;
 		},
 	},
