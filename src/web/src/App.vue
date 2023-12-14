@@ -89,7 +89,12 @@
 						</v-list-item>
 						<v-list-item
 							to="/airplane"
-							v-if="userInRole(['Airplane Crash Editor'])"
+							v-if="
+								userInRole([
+									UserRoles.AIRPLANE_CRASH_EDITOR,
+									UserRoles.AIRPLANE_CRASH_VIEWER,
+								])
+							"
 						>
 							<v-list-item-title>Airplane Crash Sites</v-list-item-title>
 						</v-list-item>
