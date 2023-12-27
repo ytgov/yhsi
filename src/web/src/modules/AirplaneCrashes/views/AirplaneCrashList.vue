@@ -92,7 +92,7 @@
 								{{ filteredData.length }} results out of {{ totalLength }}
 							</h2>
 						</v-col>
-						<v-vol>
+						<v-col>
 							<v-btn
 								v-if="filterOptions.filter((x) => x.value).length > 0"
 								disabled
@@ -101,7 +101,7 @@
 							>
 								Filters Applied
 							</v-btn>
-						</v-vol>
+						</v-col>
 					</v-row>
 					<v-divider
 						inset

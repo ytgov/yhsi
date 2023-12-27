@@ -714,6 +714,7 @@ export default {
 				this.fields.inYukon = val.inYukon;
 				this.fields.crashlocation = val.crashlocation;
 				this.fields.accuracy = val.accuracy;
+				this.fields.Location = `POINT(${this.fields.long} ${this.fields.lat})`;
 			},
 		},
 		isAircrashEditor() {

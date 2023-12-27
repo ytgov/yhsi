@@ -70,6 +70,7 @@ export default {
 			});
 	},
 	async post(data) {
+		console.log('data', data);
 		return await api
 			.post(`aircrash/`, data)
 			.then((res) => {
