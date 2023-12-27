@@ -463,7 +463,6 @@ import MapLoader from '../components/MapLoader';
 import _ from 'lodash';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import InfoSources from '../components/InfoSources';
-import UserRoles from '@/authorization';
 export default {
 	name: 'crashForm',
 	components: { Photos, Breadcrumbs, MapLoader, InfoSources },
@@ -719,7 +718,7 @@ export default {
 		},
 		isAircrashEditor() {
 			return this.$store.state.auth.user.roles.includes(
-				UserRoles.AIRPLANE_CRASH_EDITOR
+				'Airplane Crash Editor'
 			);
 		},
 		isAdministrator() {
