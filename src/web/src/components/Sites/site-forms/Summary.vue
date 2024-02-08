@@ -72,6 +72,7 @@
 						outlined
 						label="Primary name"
 						required
+						:readonly="!isEditing"
 					/>
 					<v-card class="default mb-5">
 						<v-card-title
@@ -143,6 +144,7 @@
 										label="Comments"
 										required
 										hide-details
+										:readonly="!isEditing"
 									/>
 								</v-col>
 
@@ -225,6 +227,9 @@ export default {
 		...mapGetters({
 			place: 'places/place',
 		}),
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
 	},
 	mounted() {},
 	methods: {

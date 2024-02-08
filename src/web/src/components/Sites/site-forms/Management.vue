@@ -53,7 +53,8 @@ v-card.mb-0(
 										outlined
 										background-color="white"
 										v-bind="attrs"
-										v-on="on"
+										v-on="on",
+										:readonly="!isEditing"
 									)
 								v-date-picker(
 									ref="picker"
@@ -82,22 +83,26 @@ v-card.mb-0(
 				v-text-field(
 					v-model="place.yGBuildingNumber"
 					label="YG Building Number"
-					required
+					required,
+					:readonly="!isEditing"
 				)
 				v-text-field(
 					v-model="place.yGReserveNumber"
 					label="YG Reserve Number"
-					required
+					required,
+					:readonly="!isEditing"
 				)
 				v-text-field(
 					v-model="place.cIHBNumber"
 					label="CIHB Number"
-					required
+					required,
+					:readonly="!isEditing"
 				)
 				v-text-field(
 					v-model="place.fHBRONumber"
 					label="FHBRO Number"
-					required
+					required,
+					:readonly="!isEditing"
 				)
 		v-row
 			v-col(cols="12")
@@ -153,6 +158,9 @@ export default {
 		...mapGetters({
 			place: 'places/place',
 		}),
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
 		todaysDate() {
 			return new Date().toISOString().substr(0, 10);
 		},

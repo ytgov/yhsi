@@ -25,6 +25,11 @@ export default {
 		categoryTypeOptions: [],
 		loading: false,
 	}),
+	computer: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	mounted() {
 		this.getCategoryTypes();
 	},

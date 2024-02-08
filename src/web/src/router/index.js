@@ -228,6 +228,21 @@ const routes = [
 		meta: { requiresAuth: true },
 	},
 	{
+		path: '/sites/:id/edit',
+		name: 'Edit',
+		component: SiteForms,
+		props: true,
+		meta: {
+			requiresAuth: true,
+			authorize: [
+				UserRoles.SITE_ADMIN,
+				UserRoles.SITE_EDITOR,
+				UserRoles.SITE_VIEWER,
+				UserRoles.SITE_VIEWER_LIMITED,
+			],
+		},
+	},
+	{
 		path: '/sites/:id',
 		name: 'SiteForms',
 		component: SiteForms,

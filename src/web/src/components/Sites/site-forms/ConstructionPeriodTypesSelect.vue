@@ -25,6 +25,11 @@ export default {
 		constructionPeriodOptions: [],
 		loading: false,
 	}),
+	computed: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	mounted() {
 		this.getConstructionPeriods();
 	},

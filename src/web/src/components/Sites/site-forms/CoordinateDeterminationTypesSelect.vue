@@ -25,6 +25,11 @@ export default {
 		coordinateDeterminationTypeOptions: [],
 		loading: false,
 	}),
+	computed: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	mounted() {
 		this.getCoordinateDeterminationTypes();
 	},

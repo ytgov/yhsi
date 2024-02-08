@@ -26,6 +26,11 @@ export default {
 		recordTypeOptions: [],
 		loading: false,
 	}),
+	computed: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	mounted() {
 		this.getRecordTypes();
 	},

@@ -25,6 +25,11 @@ export default {
 		conditionTypeOptions: [],
 		loading: false,
 	}),
+	computed: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	mounted() {
 		this.getConditionTypes();
 	},

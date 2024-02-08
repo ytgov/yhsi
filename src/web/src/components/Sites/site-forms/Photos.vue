@@ -20,6 +20,7 @@
 						dense
 						outlined
 						background-color="white"
+						:readonly="!isEditing"
 					/>
 				</v-col>
 			</v-row>
@@ -74,6 +75,7 @@
 								dense
 								outlined
 								background-color="white"
+								:readonly="!isEditing"
 							/>
 
 							<v-text-field
@@ -82,6 +84,7 @@
 								dense
 								outlined
 								background-color="white"
+								:readonly="!isEditing"
 							/>
 
 							<v-text-field
@@ -90,6 +93,7 @@
 								dense
 								outlined
 								background-color="white"
+								:readonly="!isEditing"
 							/>
 
 							<v-text-field
@@ -98,6 +102,7 @@
 								dense
 								outlined
 								background-color="white"
+								:readonly="!isEditing"
 							/>
 
 							<v-text-field
@@ -106,6 +111,7 @@
 								dense
 								outlined
 								background-color="white"
+								:readonly="!isEditing"
 							/>
 							<v-file-input
 								:id="`fi-${index}`"
@@ -165,6 +171,11 @@ export default {
 		/* Placeholder variables below this line **Read above** */
 		categoryOfProperty: '',
 	}),
+	computed: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	created: function () {
 		let id = this.$route.params.id;
 

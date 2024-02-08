@@ -25,6 +25,9 @@ export default {
 	name: 'CommunitySelect',
 	computed: {
 		...mapGetters('communities', ['communities', 'loading']),
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
 	},
 	mounted() {
 		this.initialize();

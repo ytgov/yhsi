@@ -26,6 +26,11 @@ export default {
 		designationOptions: [],
 		loading: false,
 	}),
+	computed: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	mounted() {
 		this.getDesignations();
 	},

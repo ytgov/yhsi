@@ -26,6 +26,11 @@ export default {
 		siteCategoryTypeOptions: [],
 		loading: false,
 	}),
+	computed: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	mounted() {
 		this.getSiteCategoryTypes();
 	},
