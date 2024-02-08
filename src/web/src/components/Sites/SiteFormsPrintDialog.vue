@@ -44,9 +44,10 @@
 <script>
 //import { jsPDF } from "jspdf";
 import 'jspdf-autotable';
+import { PLACE_URL } from "@/urls";
 //import _ from 'lodash';
 export default {
-  props: ["dialog", "sitename"],
+  props: ["dialog", "sitename", "siteId"],
   data: () => ({
     selectAll: false,
     sections: [
@@ -74,6 +75,7 @@ export default {
       this.sections.forEach((s) => (s.print = newVal));
     },
     doPrint() {
+			window.open(`${PLACE_URL}/${this.siteId}/print/html`);
       this.$emit("closeDialog");
       this.$emit("showSuccess", "PRINTING COMPLETE");
     },

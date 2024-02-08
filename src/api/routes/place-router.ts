@@ -7,13 +7,17 @@ import {
 	validationResult,
 	matchedData,
 } from 'express-validator';
+import fs from 'fs';
+import { ExpressHandlebars } from 'express-handlebars';
 
-import { DB_CONFIG } from '../config';
+import { API_PORT, DB_CONFIG } from '../config';
 import { PlaceService } from '../services';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
-import { Place, UserRoles } from '../models';
+import { Place, User, UserRoles } from '../models';
 import PlacesController from '../controllers/places-controller';
+import { PlacePolicy } from '../policies';
+import { generatePDF } from '../utils/pdf-generator';
 
 const placeService = new PlaceService(DB_CONFIG);
 const PAGE_SIZE = 10;
@@ -87,6 +91,49 @@ placeRouter.get(
 	[check('id').notEmpty()],
 	ReturnValidationErrors,
 	PlacesController.getPlace
+);
+placeRouter.get(
+	'/:id/print/:format',
+	[check('id').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const id = parseInt(req.params.id);
+		const { format } = req.params;
+		const currentUser = req.user as User;
+
+		const place = await placeService
+			.getById(id, currentUser)
+			.then(({ place, relationships }) => {
+				const policy = new PlacePolicy(currentUser, place);
+				if (policy.show()) {
+					return {
+						place: place,
+						relationships,
+					};
+				}
+			});
+
+			console.log((place as any)?.place.names)
+
+		(place as any).API_PORT = API_PORT;
+		const PDF_TEMPLATE = fs.readFileSync(
+			__dirname + '/../templates/places/placePrint.handlebars'
+		);
+		const t = new ExpressHandlebars();
+		const template = t.handlebars.compile(PDF_TEMPLATE.toString(), {});
+		const data = template(place);
+
+		console.log(place);
+
+		if (format == 'html') {
+			res.send(data);
+		} else {
+			let pdf = await generatePDF(data, "letter", false);
+			res.setHeader('Content-disposition', `filename="SitePrint.pdf"`);
+			res.setHeader('Content-type', 'application/pdf');
+			res.send(pdf);
+		}
+	}
 );
 
 placeRouter.post(
