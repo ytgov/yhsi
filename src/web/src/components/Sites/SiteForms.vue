@@ -37,6 +37,7 @@
       <PrintDialog
         :dialog="dialog"
         :sitename="siteName"
+        :siteId="id"
         @closeDialog="closeDialog"
         @showError="showError"
         @showSuccess="showSuccess"
