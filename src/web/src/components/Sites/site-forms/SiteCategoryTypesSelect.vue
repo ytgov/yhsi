@@ -5,7 +5,9 @@ v-select(
 	:loading="loading"
 	multiple
 	v-bind="$attrs"
-	v-on="$listeners"
+	v-on="$listeners",
+	:readonly="!isEditing",
+	:clearable="isEditing"
 )
 	template(
 		v-for="(_, slot) of $scopedSlots"

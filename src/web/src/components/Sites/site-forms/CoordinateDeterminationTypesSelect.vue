@@ -4,7 +4,8 @@ v-select(
 	:items="coordinateDeterminationTypeOptions",
 	:loading="loading"
 	v-bind="$attrs"
-	v-on="$listeners"
+	v-on="$listeners",
+	:readonly="!isEditing"
 )
 	template(
 		v-for="(_, slot) of $scopedSlots"

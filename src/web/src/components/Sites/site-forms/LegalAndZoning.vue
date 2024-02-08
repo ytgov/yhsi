@@ -125,6 +125,7 @@
 		<v-card-actions>
 			<v-spacer />
 			<v-btn
+				v-if="isEditing"
 				class="my-0"
 				color="primary"
 				@click="saveChanges"

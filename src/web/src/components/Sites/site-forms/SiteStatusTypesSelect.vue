@@ -4,7 +4,8 @@ v-select(
 	:items="siteStatusTypeOptions",
 	:loading="loading"
 	v-bind="$attrs"
-	v-on="$listeners"
+	v-on="$listeners",
+	:readonly="!isEditing"
 )
 	template(
 		v-for="(_, slot) of $scopedSlots"

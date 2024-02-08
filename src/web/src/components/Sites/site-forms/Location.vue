@@ -140,6 +140,7 @@
 						color="secondary"
 						:disabled="!showMapButton"
 						@click="showMap"
+						:readonly="!isEditing"
 					>
 						<v-icon class="mr-2"> mdi-map-marker </v-icon>
 						Show on Map
@@ -187,6 +188,7 @@
 		<v-card-actions>
 			<v-spacer />
 			<v-btn
+				v-if="isEditing"
 				class="my-0"
 				color="primary"
 				@click="saveChanges"

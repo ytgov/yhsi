@@ -20,8 +20,8 @@
 						outlined
 						label="YHSI ID"
 						required
-						readonly
 						append-icon="mdi-lock"
+						:readonly="!isEditing"
 					/>
 
 					<DesignationTypesSelect
@@ -94,6 +94,7 @@
 										background-color="white"
 										label="Secondary name"
 										hide-details
+										:readonly="!isEditing"
 									/>
 								</v-col>
 								<v-col cols="2">
@@ -103,6 +104,7 @@
 										fab
 										title="Remove"
 										class="my-0 float-right"
+										:readonly="!isEditing"
 										@click="removeName(i)"
 									>
 										<v-icon>mdi-close</v-icon>
@@ -112,6 +114,7 @@
 						</v-card-text>
 						<v-card-actions>
 							<v-btn
+								v-if="isEditing"
 								class="my-0"
 								color="primary"
 								@click="addName"
@@ -150,6 +153,7 @@
 
 								<v-col cols="2">
 									<v-btn
+										v-if="isEditing"
 										color="warning"
 										x-small
 										fab
@@ -171,12 +175,11 @@
 						</v-card-text>
 						<v-card-actions>
 							<v-btn
+								v-if="isEditing"
 								class="my-0"
 								color="primary"
 								@click="addPattern"
-							>
-								Add Historical Pattern
-							</v-btn>
+							/>
 						</v-card-actions>
 					</v-card>
 				</v-col>

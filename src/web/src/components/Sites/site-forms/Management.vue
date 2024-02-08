@@ -61,7 +61,8 @@ v-card.mb-0(
 									v-model="place.recognitionDate",
 									:max="todaysDate"
 									min="1950-01-01"
-									@input="recognitionDateMenu = false"
+									@input="recognitionDateMenu = false",
+									:readonly="!isEditing"
 								)
 							OwnerConsentTypeSelect(
 								v-model="place.ownerConsent"
@@ -77,7 +78,8 @@ v-card.mb-0(
 									outlined
 									hide-details
 									color="primary"
-									background-color="white"
+									background-color="white",
+									:readonly="!isEditing"
 								)
 			v-col(cols="6")
 				v-text-field(
@@ -118,6 +120,7 @@ v-card.mb-0(
 	v-card-actions
 		v-spacer
 		v-btn.my-0(
+			v-if="isEditing"
 			color="primary"
 			@click="saveChanges"
 		)

@@ -6,7 +6,8 @@ v-select(
 	item-value="id"
 	item-text="name"
 	v-bind="$attrs"
-	v-on="$listeners"
+	v-on="$listeners",
+	:readonly="!isEditing"
 )
 	template(
 		v-for="(_, slot) of $scopedSlots"

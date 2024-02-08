@@ -63,6 +63,7 @@
 										fab
 										title="Remove"
 										class="my-0 float-right"
+										:readonly="!isEditing"
 										@click="removePhoto(index)"
 									>
 										<v-icon>mdi-close</v-icon>
@@ -128,6 +129,7 @@
 				</v-card-text>
 				<v-card-actions>
 					<v-btn
+						v-if="isEditing"
 						class="my-0"
 						color="primary"
 						@click="addPhoto"

@@ -98,6 +98,7 @@ v-card.mb-0(
 			template(#activator="{ on, attrs }")
 				div(v-on="on")
 					v-btn.my-0(
+						v-if="isEditing"
 						color="primary"
 						disabled
 					) Save
