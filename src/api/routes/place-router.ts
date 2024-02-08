@@ -113,9 +113,10 @@ placeRouter.get(
 				}
 			});
 
-			console.log((place as any)?.place.names)
+		console.log(place);
 
 		(place as any).API_PORT = API_PORT;
+
 		const PDF_TEMPLATE = fs.readFileSync(
 			__dirname + '/../templates/places/placePrint.handlebars'
 		);
@@ -128,7 +129,7 @@ placeRouter.get(
 		if (format == 'html') {
 			res.send(data);
 		} else {
-			let pdf = await generatePDF(data, "letter", false);
+			let pdf = await generatePDF(data, 'letter', false);
 			res.setHeader('Content-disposition', `filename="SitePrint.pdf"`);
 			res.setHeader('Content-type', 'application/pdf');
 			res.send(pdf);
