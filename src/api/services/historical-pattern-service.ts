@@ -2,6 +2,7 @@ import knex, { Knex } from 'knex';
 
 import { DB_CONFIG } from '../config';
 import { HistoricalPattern } from '../models/historical-pattern';
+import { HISTORICAL_PATTERN_TYPES } from '../models';
 
 export class HistoricalPatternService {
 	private db: Knex;
@@ -11,7 +12,7 @@ export class HistoricalPatternService {
 	}
 
 	async getFor(placeId: number): Promise<HistoricalPattern[]> {
-		return this.db('historicalpattern')
+		const list = await this.db('historicalpattern')
 			.where({ placeId })
 			.select<HistoricalPattern[]>([
 				'id',
@@ -19,6 +20,14 @@ export class HistoricalPatternService {
 				'comments',
 				'historicalPatternType',
 			]);
+
+		list.map((item) => {
+			item.historicalPatternTypeName =
+				Object.values(HISTORICAL_PATTERN_TYPES).find(
+					(i) => i.value == item.historicalPatternType
+				)?.text ?? '';
+		});
+		return list;
 	}
 
 	async upsertFor(placeId: number, historicalPatterns: HistoricalPattern[]) {

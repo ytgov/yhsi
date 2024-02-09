@@ -1,7 +1,7 @@
 import knex, { Knex } from 'knex';
 import moment from 'moment';
 import { get, isEmpty, isNull, uniq } from 'lodash';
-import { SITE_STATUS_TYPES } from '../models';
+import { COORDINATE_DETERMINATION_TYPES, SITE_STATUS_TYPES } from '../models';
 
 import {
 	AssociationService,
@@ -171,7 +171,9 @@ export class PlaceService {
 	async getById(id: number, user?: User) {
 		return this.db('place')
 			.first(PLACE_FIELDS)
-			.where({ id: id })
+			.where({ 'place.id': id })
+			.leftJoin('community', 'community.id', 'place.communityId')
+			.select('community.name as communityName')
 			.then(Place.decodeCommaDelimitedArrayColumns)
 			.then(async (place) => {
 				if (!place) {
@@ -179,6 +181,11 @@ export class PlaceService {
 						new NotFoundError(`Could not find Place for id=${id}`)
 					);
 				}
+
+				place.coordinateDeterminationName =
+					Object.values(COORDINATE_DETERMINATION_TYPES).find(
+						(i) => i.value == place.coordinateDetermination
+					)?.text ?? '';
 
 				place.hasPendingChanges = await this.placeEditService.existsForPlace(
 					id

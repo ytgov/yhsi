@@ -8,7 +8,8 @@ import {
 	matchedData,
 } from 'express-validator';
 import fs from 'fs';
-import { ExpressHandlebars } from 'express-handlebars';
+import { create } from 'handlebars';
+import handlebarsHelpers from '../utils/handlebars-helpers';
 
 import { API_PORT, DB_CONFIG } from '../config';
 import { PlaceService } from '../services';
@@ -107,30 +108,31 @@ placeRouter.get(
 				const policy = new PlacePolicy(currentUser, place);
 				if (policy.show()) {
 					return {
-						place: place,
+						...place,
 						relationships,
+						API_PORT,
 					};
 				}
 			});
 
-		console.log(place);
-
-		(place as any).API_PORT = API_PORT;
-
+		//(place as any).API_PORT = API_PORT;
 		const PDF_TEMPLATE = fs.readFileSync(
 			__dirname + '/../templates/places/placePrint.handlebars'
 		);
-		const t = new ExpressHandlebars();
-		const template = t.handlebars.compile(PDF_TEMPLATE.toString(), {});
+		const h = create();
+		h.registerHelper('joinArray', handlebarsHelpers.joinArray);
+		h.registerHelper('joinArrayPick', handlebarsHelpers.joinArrayPick);
+		const template = h.compile(PDF_TEMPLATE.toString(), {});
 		const data = template(place);
-
-		console.log(place);
 
 		if (format == 'html') {
 			res.send(data);
 		} else {
-			let pdf = await generatePDF(data, 'letter', false);
-			res.setHeader('Content-disposition', `filename="SitePrint.pdf"`);
+			const pdf = await generatePDF(data, 'letter', false);
+			res.setHeader(
+				'Content-disposition',
+				`filename="SitePrint-${(place as any).primaryName}.pdf"`
+			);
 			res.setHeader('Content-type', 'application/pdf');
 			res.send(pdf);
 		}

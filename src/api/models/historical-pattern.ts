@@ -3,4 +3,5 @@ export class HistoricalPattern {
 	placeId!: number;
 	comments!: string;
 	historicalPatternType!: number;
+	historicalPatternTypeName!: string;
 }
