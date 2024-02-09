@@ -1,0 +1,328 @@
+openapi: 3.0.0
+info:
+  description: "YHIS API"
+  version: 1.0.0
+  title: YHIS API
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://api.yukon.ca/yhis/api
+    description: Yukon Heritage Information System
+tags:
+  - name: maps
+    description: Endpoint for maps feature layer which handles much of the authentication and security group processing required by YHIS.
+  - name: places
+    description: Endpoint for places in YHIS
+#   - name: user
+#     description: Operations about user
+#     externalDocs:
+#       description: Find out more about our store
+#       url: http://swagger.io
+paths:
+  /places/public-places:
+    get:
+      tags:
+        - places
+      summary: Get a paginated list of public places
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            description: The page number
+            default: 1
+      responses:
+        "200":
+          description: "
+            **successful operation:**
+
+            ***
+
+           `return res.json({data: list, meta: { page, page_size: PAGE_SIZE, item_count, page_count },});`  "
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlaceLayer"
+        "500":
+          description: Internal server error
+  /places:
+    get:
+      tags:
+        - places
+      summary: Get a paginated list of places
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            description: The page number
+            default: 1
+      responses:
+        "200":
+          description: "
+            **successful operation:**
+
+            ***
+
+           `return res.json({data: list, meta: { page, page_size: PAGE_SIZE, item_count, page_count },});`  "
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlaceLayer"
+        "500":
+          description: Internal server error
+    post:
+      tags:
+        - places
+      summary: Create a new place
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                place:
+                  $ref: "#/components/schemas/PlaceLayer"
+      responses:
+        "200":
+          description: "
+            **successful operation:**
+
+            ***
+
+            see placeService"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlaceLayer"
+        "400":
+          description: Invalid Request Body
+  /places/search:
+    post:
+      tags:
+        - places
+      summary: Search for places
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search:
+                  type: string
+                  description: The search term
+                page:
+                  type: integer
+                  description: The page number
+                  default: 1
+      responses:
+        "200":
+          description: "
+            **successful operation:**
+
+            ***
+
+           `return res.json({data: list, meta: { page, page_size: PAGE_SIZE, item_count, page_count },});`  "
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlaceLayer"
+        "500":
+          description: Internal server error
+  /places/generate-id:
+    post:
+      tags:
+        - places
+      summary: Generate a new place id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                place:
+                  $ref: "#/components/schemas/PlaceLayer"
+      responses:
+        "200":
+          description: "
+            **successful operation:**
+
+            ***
+
+            `res.json({ data: { yHSIId: newId, nTSMapSheet } });`"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlaceLayer"
+        "400":
+          description: Invalid Request Body
+  /places/{id}:
+    get:
+      tags:
+        - places
+      summary: Get a place by id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The place id
+      responses:
+        "200":
+          description: "
+            **successful operation:**
+
+            ***
+            See PlacesController.getPlace
+            "
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlaceLayer"
+        "500":
+          description: Internal server error
+    patch:
+      tags:
+        - places
+      summary: Update a place by id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The place id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                place:
+                  $ref: "#/components/schemas/PlaceLayer"
+      responses:
+        "200":
+          description: "
+            **successful operation:**
+
+            ***
+            See PlacesController.updatePlace
+            "
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlaceLayer"
+        "400":
+          description: Invalid Request Body
+
+###### MAPS ######
+  /maps:
+    get:
+      tags:
+        - maps
+      security:
+        - myYukon:
+            - authenticated_user
+      summary: A valid portal token to an authorized user
+      description: "Load the portal token and return it to the client"
+      operationId: loadPortalToken
+      requestBody:
+        $ref: "#/components/requestBodies/PortalToken"
+      responses:
+        "405":
+          description: Invalid input
+  /maps/sites*:
+    get:
+      tags:
+        - maps
+      security:
+        - myYukon:
+            - authenticated_user
+      summary: Get a list of sites
+      description: "Get a list of sites"
+      operationId: getSites
+
+      responses:
+        "200":   # status code
+          description: successful operation
+          # content:
+          #   application/json:
+          #     schema:
+          #       type: array
+          #       items:
+          #         $ref: "#/components/schemas/PlaceLayer"
+        "405":
+          description: Invalid input
+
+components:
+  securitySchemes:
+    myYukon:
+      type: oauth2
+      description: This API uses OAuth 2 for users authenticated using MyYukon
+      flows:
+        clientCredentials:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+          tokenUrl:  https://api.example.com/oauth2/authorize
+          scopes:
+            authenticated_user: An authenticated user
+  requestBodies:
+    UserArray:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/User"
+      description: List of user object
+      required: true
+    PortalToken:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PlaceLayer"
+
+      description: A portal token issued by ArcGIS
+      required: false
+  schemas:
+    PlaceLayer:
+      type: object
+      required:
+        - name
+
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
