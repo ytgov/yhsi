@@ -175,7 +175,7 @@ export default {
 			return `/sites/${this.$route.params.id}/edit`;
 		},
 		showDoEdit() {
-			return this.isEditor && !this.$route.path.includes('edit');
+			return this.isEditor && !this.$route.path.includes('edit', 'new');
 		},
 		associationsComponent() {
 			if (this.hasPendingChanges) return AssociationsSiteFormViewer;
