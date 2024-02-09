@@ -1,102 +1,112 @@
 <template>
-  <div class="d-flex">
-    <SiteFormsSidebar :site-id="id" />
-    <div class="flex-grow-1">
-      <v-app-bar
-        color="primary"
-        dark
-        flat
-      >
-        <v-btn
-          color="primary"
-          to="/sites"
-          exact
-        >
-          <v-icon>mdi-arrow-left-drop-circle</v-icon>
-          <div class="ml-2">Back to Sites</div>
-        </v-btn>
-        <v-spacer />
-        <v-progress-circular
-          v-if="loading"
-          indeterminate
-          size="20"
-          width="2"
-        />
-        <span v-else>
-          {{ siteName }}
-        </span>
-        <v-spacer />
-        <v-btn
-          color="primary"
-          @click="showDialog"
-        >
-          <v-icon class="mr-2">mdi-printer</v-icon>
-          <div>Print Site</div>
-        </v-btn>
-      </v-app-bar>
-      <PrintDialog
-        :dialog="dialog"
-        :sitename="siteName"
-        :siteId="id"
-        @closeDialog="closeDialog"
-        @showError="showError"
-        @showSuccess="showSuccess"
-        @showAPIMessages="showAPIMessages"
-      />
-      <div>
-        <template v-if="loading">
-          <v-skeleton-loader
-            v-for="n in 9"
-            :key="n"
-            type="card"
-          />
-        </template>
-        <template v-else>
-          <component
-            :is="summaryComponent"
-            id="summary"
-            :place-id="id"
-          />
-          <component
-            :is="locationComponent"
-            id="location"
-            :place-id="id"
-          />
-          <component
-            :is="datesComponent"
-            id="dates-and-condition"
-            :place-id="id"
-          />
-          <component
-            :is="themesAndFunctionsComponent"
-            id="themes-and-function"
-            :place-id="id"
-          />
-          <component
-            :is="associationsComponent"
-            id="associations"
-            :place-id="id"
-          />
-          <component
-            :is="legalAndZoningComponent"
-            id="legal-and-zoning"
-            :place-id="id"
-          />
-          <Photos id="photos" />
-          <component
-            :is="managementComponent"
-            id="management"
-            :place-id="id"
-          />
-          <component
-            :is="descriptionComponent"
-            id="description"
-            :place-id="id"
-          />
-        </template>
-      </div>
-    </div>
-  </div>
+	<div class="d-flex">
+		<SiteFormsSidebar :site-id="id" />
+		<div class="flex-grow-1">
+			<v-app-bar
+				color="primary"
+				dark
+				flat
+			>
+				<v-btn
+					color="primary"
+					to="/sites"
+					exact
+				>
+					<v-icon>mdi-arrow-left-drop-circle</v-icon>
+					<div class="ml-2">Back to Sites</div>
+				</v-btn>
+				<v-spacer />
+				<v-progress-circular
+					v-if="loading"
+					indeterminate
+					size="20"
+					width="2"
+				/>
+				<span v-else>
+					{{ siteName }}
+				</span>
+				<v-spacer />
+				<v-btn
+					v-if="showDoEdit"
+					color="primary"
+					:to="editSiteURL"
+					exact
+				>
+					<v-icon class="mr-2">mdi-pencil</v-icon>
+
+					Edit
+				</v-btn>
+				<v-btn
+					color="primary"
+					@click="showDialog"
+				>
+					<v-icon class="mr-2">mdi-printer</v-icon>
+					<div>Print Site</div>
+				</v-btn>
+			</v-app-bar>
+			<PrintDialog
+				:dialog="dialog"
+				:sitename="siteName"
+				:siteId="id"
+				@closeDialog="closeDialog"
+				@showError="showError"
+				@showSuccess="showSuccess"
+				@showAPIMessages="showAPIMessages"
+			/>
+			<div>
+				<template v-if="loading">
+					<v-skeleton-loader
+						v-for="n in 9"
+						:key="n"
+						type="card"
+					/>
+				</template>
+				<template v-else>
+					<component
+						:is="summaryComponent"
+						id="summary"
+						:place-id="id"
+					/>
+					<component
+						:is="locationComponent"
+						id="location"
+						:place-id="id"
+					/>
+					<component
+						:is="datesComponent"
+						id="dates-and-condition"
+						:place-id="id"
+					/>
+					<component
+						:is="themesAndFunctionsComponent"
+						id="themes-and-function"
+						:place-id="id"
+					/>
+					<component
+						:is="associationsComponent"
+						id="associations"
+						:place-id="id"
+					/>
+					<component
+						:is="legalAndZoningComponent"
+						id="legal-and-zoning"
+						:place-id="id"
+					/>
+					<Photos id="photos" />
+					<component
+						:is="managementComponent"
+						id="management"
+						:place-id="id"
+					/>
+					<component
+						:is="descriptionComponent"
+						id="description"
+						:place-id="id"
+					/>
+				</template>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
@@ -124,122 +134,129 @@ import ThemesAndFunctions from '@/components/Sites/site-forms/ThemesAndFunctions
 import ThemesAndFunctionsViewer from '@/components/Sites/site-forms/ThemesAndFunctionsViewer';
 
 export default {
-  name: 'SiteForms',
-  components: {
-    AssociationsSiteFormEditor,
-    AssociationsSiteFormViewer,
-    DatesAndConditions,
-    DatesAndConditionsViewer,
-    Description,
-    DescriptionViewer,
-    LegalAndZoning,
-    LegalAndZoningViewer,
-    Location,
-    LocationReadonly,
-    Management,
-    Photos,
-    PrintDialog,
-    SiteFormsSidebar,
-    Summary,
-    SummaryReadonly,
-    ThemesAndFunctions,
-    ThemesAndFunctionsViewer,
-  },
-  props: {
-    id: {
-      type: [Number, String],
-      required: true,
-    },
-  },
-  data: () => ({
-    dialog: false, //tells the print dialog when to show itself
-  }),
-  computed: {
-    ...mapGetters('places', {
-      hasPendingChanges: 'hasPendingChanges',
-      loading: 'loading',
-      siteName: 'primaryName',
-    }),
-    associationsComponent() {
-      if (this.hasPendingChanges) return AssociationsSiteFormViewer;
+	name: 'SiteForms',
+	components: {
+		AssociationsSiteFormEditor,
+		AssociationsSiteFormViewer,
+		DatesAndConditions,
+		DatesAndConditionsViewer,
+		Description,
+		DescriptionViewer,
+		LegalAndZoning,
+		LegalAndZoningViewer,
+		Location,
+		LocationReadonly,
+		Management,
+		Photos,
+		PrintDialog,
+		SiteFormsSidebar,
+		Summary,
+		SummaryReadonly,
+		ThemesAndFunctions,
+		ThemesAndFunctionsViewer,
+	},
+	props: {
+		id: {
+			type: [Number, String],
+			required: true,
+		},
+	},
+	data: () => ({
+		dialog: false, //tells the print dialog when to show itself
+	}),
+	computed: {
+		...mapGetters('places', {
+			hasPendingChanges: 'hasPendingChanges',
+			loading: 'loading',
+			siteName: 'primaryName',
+			isEditor: 'isEditor',
+		}),
+		editSiteURL() {
+			return `/sites/${this.$route.params.id}/edit`;
+		},
+		showDoEdit() {
+			return this.isEditor && !this.$route.path.includes('edit');
+		},
+		associationsComponent() {
+			if (this.hasPendingChanges) return AssociationsSiteFormViewer;
 
-      return AssociationsSiteFormEditor;
-    },
-    datesComponent() {
-      if (this.hasPendingChanges) return DatesAndConditionsViewer;
+			return AssociationsSiteFormEditor;
+		},
+		datesComponent() {
+			if (this.hasPendingChanges) return DatesAndConditionsViewer;
 
-      return DatesAndConditions;
-    },
-    descriptionComponent() {
-      if (this.hasPendingChanges) return DescriptionViewer;
+			return DatesAndConditions;
+		},
+		descriptionComponent() {
+			if (this.hasPendingChanges) return DescriptionViewer;
 
-      return Description;
-    },
-    legalAndZoningComponent() {
-      if (this.hasPendingChanges) return LegalAndZoningViewer;
+			return Description;
+		},
+		legalAndZoningComponent() {
+			if (this.hasPendingChanges) return LegalAndZoningViewer;
 
-      return LegalAndZoning;
-    },
-    locationComponent() {
-      if (this.hasPendingChanges) return LocationReadonly;
+			return LegalAndZoning;
+		},
+		locationComponent() {
+			if (this.hasPendingChanges) return LocationReadonly;
 
-      return Location;
-    },
-    managementComponent() {
-      if (this.hasPendingChanges) return ManagementViewer;
+			return Location;
+		},
+		managementComponent() {
+			if (this.hasPendingChanges) return ManagementViewer;
 
-      return Management;
-    },
-    summaryComponent() {
-      if (this.hasPendingChanges) return SummaryReadonly;
+			return Management;
+		},
+		summaryComponent() {
+			if (this.hasPendingChanges) return SummaryReadonly;
 
-      return Summary;
-    },
-    themesAndFunctionsComponent() {
-      if (this.hasPendingChanges) return ThemesAndFunctionsViewer;
+			return Summary;
+		},
+		themesAndFunctionsComponent() {
+			if (this.hasPendingChanges) return ThemesAndFunctionsViewer;
 
-      return ThemesAndFunctions;
-    },
-  },
-  mounted() {
-    this.initializePlace(this.id)
-      .then((place) => {
-        this.addSiteHistory(place);
-        if (this.$route.hash) {
-          goTo(this.$route.hash, { offset: 75 });
-        }
-      })
-      .catch((error) => {
-        console.log('ERROR LOADING PLACE', error.message);
-        this.$router.push('/sites');
-      });
-  },
-  methods: {
-    ...mapActions({
-      initializePlace: 'places/initialize',
-      addSiteHistory: 'addSiteHistory',
-    }),
-    showDialog() {
-      this.dialog = true;
-    },
-    closeDialog() {
-      this.dialog = false;
-    },
-    showError: function (msg) {
-      this.$emit('showError', msg);
-    },
-    showSuccess: function (msg) {
-      this.$emit('showSuccess', msg);
-    },
-    showAPIMessages: function (msg) {
-      this.$emit('showAPIMessages', msg);
-    },
-  },
+			return ThemesAndFunctions;
+		},
+	},
+	mounted() {
+		this.initializePlace(this.id)
+			.then((place) => {
+				this.addSiteHistory(place);
+				if (this.$route.hash) {
+					goTo(this.$route.hash, { offset: 75 });
+				}
+			})
+			.catch((error) => {
+				console.log('ERROR LOADING PLACE', error.message);
+				this.$router.push('/sites');
+			});
+	},
+	methods: {
+		...mapActions({
+			initializePlace: 'places/initialize',
+			addSiteHistory: 'addSiteHistory',
+		}),
+		showDialog() {
+			this.dialog = true;
+		},
+		closeDialog() {
+			this.dialog = false;
+		},
+		showError: function (msg) {
+			this.$emit('showError', msg);
+		},
+		showSuccess: function (msg) {
+			this.$emit('showSuccess', msg);
+		},
+		showAPIMessages: function (msg) {
+			this.$emit('showAPIMessages', msg);
+		},
+	},
 };
 </script>
 
 <style scoped>
 .list-menu {
-  padding: 0px 8px 0px 0px;
+	padding: 0px 8px 0px 0px;
 }
 </style>
