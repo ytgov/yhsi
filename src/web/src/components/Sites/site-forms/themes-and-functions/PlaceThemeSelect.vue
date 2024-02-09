@@ -1,5 +1,6 @@
 <template lang="pug">
 v-autocomplete(
+	:readonly="!isEditing"
 	label="Category / Type",
 	:items="placeThemeOptions",
 	:loading="loading"
@@ -25,6 +26,11 @@ export default {
 		placeThemeOptions: [],
 		loading: false,
 	}),
+	computed: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	mounted() {
 		this.getPlaceThemes();
 	},

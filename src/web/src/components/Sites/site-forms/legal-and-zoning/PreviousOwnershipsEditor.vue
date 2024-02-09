@@ -9,6 +9,7 @@ v-card.default.mb-0(tag="section")
 		)
 			v-col(cols="5")
 				v-text-field(
+					:readonly="!isEditing"
 					v-model="previousOwnership.ownershipDate"
 					label="Dates"
 					dense
@@ -18,6 +19,7 @@ v-card.default.mb-0(tag="section")
 				)
 			v-col(cols="5")
 				v-text-field(
+					:readonly="!isEditing"
 					v-model="previousOwnership.ownershipNumber"
 					label="Title number"
 					dense
@@ -27,6 +29,7 @@ v-card.default.mb-0(tag="section")
 				)
 			v-col(cols="2")
 				v-btn.my-0.float-right(
+					v-if="isEditing"
 					color="warning"
 					x-small
 					fab
@@ -36,6 +39,7 @@ v-card.default.mb-0(tag="section")
 					v-icon mdi-close
 			v-col(cols="12")
 				v-text-field(
+					:readonly="!isEditing"
 					v-model="previousOwnership.ownershipName"
 					label="Names"
 					dense
@@ -50,6 +54,7 @@ v-card.default.mb-0(tag="section")
 				v-divider.black
 	v-card-actions
 		v-btn.my-0(
+			v-if="isEditing"
 			color="primary"
 			@click="addPreviousOwner"
 		)
@@ -72,6 +77,11 @@ export default {
 	computed: {
 		previousOwnerships() {
 			return this.value;
+		},
+		computed: {
+			isEditing() {
+				return this.$route.path.includes('/edit');
+			},
 		},
 	},
 	methods: {

@@ -17,6 +17,7 @@ v-card.default.mb-5(tag="section")
 				)
 			v-col(cols="5")
 				v-text-field(
+					:readonly="!isEditing"
 					v-model="association.description"
 					label="Association name"
 					dense
@@ -27,6 +28,7 @@ v-card.default.mb-5(tag="section")
 				)
 			v-col(cols="2")
 				v-btn.my-0.float-right(
+					v-if="isEditing"
 					color="warning"
 					x-small
 					fab
@@ -36,6 +38,7 @@ v-card.default.mb-5(tag="section")
 					v-icon mdi-close
 	v-card-actions
 		v-btn.my-0(
+			v-if="isEditing"
 			color="primary"
 			@click="addAssociation"
 		)
@@ -63,6 +66,9 @@ export default {
 	computed: {
 		associations() {
 			return this.value;
+		},
+		isEditing() {
+			return this.$route.path.includes('/edit');
 		},
 	},
 	methods: {

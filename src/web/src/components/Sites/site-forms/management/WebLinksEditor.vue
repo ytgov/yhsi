@@ -10,6 +10,7 @@ v-card.default
 			v-row.mb-2
 				v-col(cols="5")
 					WebLinkTypeSelect(
+						:readonly="!isEditing"
 						v-model="item.type"
 						dense
 						outlined
@@ -18,6 +19,7 @@ v-card.default
 					)
 				v-col(cols="5")
 					v-text-field(
+						:readonly="!isEditing"
 						v-model="item.address"
 						label="Web Address"
 						required
@@ -28,6 +30,7 @@ v-card.default
 					)
 				v-col(cols="2")
 					v-btn.my-0.float-right(
+						v-if="isEditing"
 						color="warning"
 						x-small
 						fab
@@ -37,6 +40,7 @@ v-card.default
 						v-icon(dark) mdi-close
 	v-card-actions
 		v-btn.my-0(
+			v-if="isEditing"
 			color="primary"
 			@click="addLink"
 		)
@@ -64,6 +68,9 @@ export default {
 	computed: {
 		webLinks() {
 			return this.value;
+		},
+		isEditing() {
+			return this.$route.path.includes('/edit');
 		},
 	},
 	methods: {

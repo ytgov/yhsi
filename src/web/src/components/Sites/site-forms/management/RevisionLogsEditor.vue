@@ -16,6 +16,7 @@ v-card.default(tag="section")
 						background-color="white"
 					)
 					v-text-field(
+						:readonly="!isEditing"
 						v-model="item.revisedBy"
 						label="Revised By"
 						required
@@ -26,6 +27,7 @@ v-card.default(tag="section")
 					)
 				v-col(cols="5")
 					v-text-field(
+						:readonly="!isEditing"
 						v-model="item.revisionDate"
 						label="Date"
 						required
@@ -34,6 +36,7 @@ v-card.default(tag="section")
 						background-color="white"
 					)
 					v-text-field(
+						:readonly="!isEditing"
 						v-model="item.details"
 						label="Details"
 						required
@@ -56,6 +59,7 @@ v-card.default(tag="section")
 					v-divider.my-1.black
 	v-card-actions
 		v-btn.my-0(
+			v-if="isEditing"
 			color="primary"
 			@click="addLog"
 		)
@@ -84,6 +88,9 @@ export default {
 		...mapGetters({ currentUserFullName: 'fullName' }),
 		revisionLogs() {
 			return this.value;
+		},
+		isEditing() {
+			return this.$route.path.includes('/edit');
 		},
 	},
 	methods: {

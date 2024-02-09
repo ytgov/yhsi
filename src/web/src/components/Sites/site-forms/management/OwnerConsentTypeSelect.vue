@@ -1,5 +1,6 @@
 <template lang="pug">
 v-select(
+	:readonly="!isEditing"
 	label="Owner Consent",
 	:items="ownerConsentTypeOptions"
 	v-bind="$attrs"
@@ -24,6 +25,11 @@ export default {
 		ownerConsentTypeOptions: [],
 		loading: false,
 	}),
+	computed: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	mounted() {
 		this.getOwnerConsentTypeOptions();
 	},

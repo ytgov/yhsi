@@ -27,6 +27,7 @@
 					<v-col cols="5">
 						<v-text-field
 							v-model="date.details"
+							:readonly="!isEditing"
 							label="Details"
 							dense
 							outlined
@@ -36,6 +37,7 @@
 					</v-col>
 					<v-col cols="2">
 						<v-btn
+							v-if="isEditing"
 							color="warning"
 							x-small
 							fab
@@ -121,6 +123,7 @@
 		</v-card-text>
 		<v-card-actions>
 			<v-btn
+				v-if="isEditing"
 				class="my-0"
 				color="primary"
 				@click="addDate"
@@ -156,6 +159,9 @@ export default {
 	computed: {
 		dates() {
 			return this.value;
+		},
+		isEditing() {
+			return this.$route.path.includes('/edit');
 		},
 	},
 	watch: {},

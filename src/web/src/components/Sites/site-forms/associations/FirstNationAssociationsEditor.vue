@@ -25,6 +25,7 @@ v-card.default.mb-0(tag="section")
 				)
 			v-col(cols="2")
 				v-btn.my-0.float-right(
+					v-if="isEditing"
 					color="warning"
 					x-small
 					fab
@@ -34,6 +35,7 @@ v-card.default.mb-0(tag="section")
 					v-icon mdi-close
 			v-col(cols="10")
 				v-text-field(
+					:readonly="!isEditing"
 					v-model="firstNationAssociation.comments"
 					label="Comments"
 					dense
@@ -48,6 +50,7 @@ v-card.default.mb-0(tag="section")
 				v-divider.black
 	v-card-actions
 		v-btn.my-0(
+			v-if="isEditing"
 			color="primary"
 			@click="addFNAssociation"
 		)
@@ -74,6 +77,9 @@ export default {
 	computed: {
 		firstNationAssociations() {
 			return this.value;
+		},
+		isEditing() {
+			return this.$route.path.includes('/edit');
 		},
 	},
 	watch: {},

@@ -1,5 +1,6 @@
 <template lang="pug">
 v-autocomplete(
+	:readonly="!isEditing"
 	label="Functional Category / Type",
 	:items="functionalTypeOptions"
 	item-value="id"
@@ -27,6 +28,11 @@ export default {
 		functionalTypeOptions: [],
 		loading: false,
 	}),
+	computed: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	mounted() {
 		this.getFunctionalTypes();
 	},

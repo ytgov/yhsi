@@ -26,6 +26,7 @@
 				</v-col>
 				<v-col cols="2">
 					<v-btn
+						v-if="isEditing"
 						title="Remove"
 						color="warning"
 						x-small
@@ -40,6 +41,7 @@
 		</v-card-text>
 		<v-card-actions>
 			<v-btn
+				v-if="isEditing"
 				class="my-0"
 				color="primary"
 				@click="addPeriod"
@@ -72,6 +74,9 @@ export default {
 	computed: {
 		constructionPeriods() {
 			return this.value;
+		},
+		isEditing() {
+			return this.$route.path.includes('/edit');
 		},
 	},
 	watch: {},

@@ -1,5 +1,6 @@
 <template lang="pug">
 v-select(
+	:readonly="!isEditing"
 	label="Use type",
 	:items="functionalUseTypeOptions",
 	:loading="loading"
@@ -25,6 +26,11 @@ export default {
 		functionalUseTypeOptions: [],
 		loading: false,
 	}),
+	computed: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	mounted() {
 		this.getFunctionalUseTypes();
 	},

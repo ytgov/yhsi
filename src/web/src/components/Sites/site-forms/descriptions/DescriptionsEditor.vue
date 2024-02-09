@@ -18,6 +18,7 @@ v-card.default
 					)
 				v-col(cols="6")
 					v-btn.my-0.float-right(
+						v-if="isEditing"
 						color="warning"
 						x-small
 						fab
@@ -28,6 +29,7 @@ v-card.default
 			v-row
 				v-col(cols="10")
 					v-textarea(
+						:readonly="!isEditing"
 						v-model="description.descriptionText"
 						label
 						dense
@@ -40,6 +42,7 @@ v-card.default
 					v-divider.my-1.black
 	v-card-actions
 		v-btn.my-0(
+			v-if="isEditing"
 			color="primary"
 			@click="addDescription"
 		)
@@ -65,6 +68,9 @@ export default {
 	computed: {
 		descriptions() {
 			return this.value;
+		},
+		isEditing() {
+			return this.$route.path.includes('/edit');
 		},
 	},
 	methods: {

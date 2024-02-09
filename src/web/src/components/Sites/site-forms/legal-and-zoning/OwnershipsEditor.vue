@@ -17,6 +17,7 @@ v-card.default.mb-0(tag="section")
 				)
 			v-col(cols="5")
 				v-text-field(
+					:readonly="!isEditing"
 					v-model="ownership.comments"
 					label="Comments"
 					dense
@@ -26,6 +27,7 @@ v-card.default.mb-0(tag="section")
 				)
 			v-col(cols="2")
 				v-btn.my-0.float-right(
+					v-if="isEditing"
 					color="warning"
 					x-small
 					fab
@@ -35,6 +37,7 @@ v-card.default.mb-0(tag="section")
 					v-icon mdi-close
 	v-card-actions
 		v-btn.my-0(
+			v-if="isEditing"
 			color="primary"
 			@click="addOwner"
 		)
@@ -62,6 +65,11 @@ export default {
 	computed: {
 		ownerships() {
 			return this.value;
+		},
+		computed: {
+			isEditing() {
+				return this.$route.path.includes('/edit');
+			},
 		},
 	},
 	methods: {

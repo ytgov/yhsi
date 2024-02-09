@@ -18,6 +18,7 @@ v-card.default.mb-0(tag="section")
 					)
 				v-col(cols="6")
 					v-btn.my-0.float-right(
+						v-if="isEditing"
 						color="warning"
 						x-small
 						fab
@@ -29,6 +30,7 @@ v-card.default.mb-0(tag="section")
 			v-row
 				v-col(cols="6")
 					v-text-field(
+						:readonly="!isEditing"
 						v-model="item.firstName"
 						label="First Name"
 						required
@@ -37,6 +39,7 @@ v-card.default.mb-0(tag="section")
 						background-color="white"
 					)
 					v-text-field(
+						:readonly="!isEditing"
 						v-model="item.phoneNumber"
 						label="Phone"
 						required
@@ -45,6 +48,7 @@ v-card.default.mb-0(tag="section")
 						background-color="white"
 					)
 					v-textarea(
+						:readonly="!isEditing"
 						v-model="item.mailingAddress"
 						label="Mailing Address"
 						dense
@@ -54,6 +58,7 @@ v-card.default.mb-0(tag="section")
 					)
 				v-col(cols="6")
 					v-text-field(
+						:readonly="!isEditing"
 						v-model="item.lastName"
 						label="Last Name"
 						required
@@ -62,6 +67,7 @@ v-card.default.mb-0(tag="section")
 						background-color="white"
 					)
 					v-text-field(
+						:readonly="!isEditing"
 						v-model="item.email"
 						label="Email"
 						required
@@ -70,6 +76,7 @@ v-card.default.mb-0(tag="section")
 						background-color="white"
 					)
 					v-textarea(
+						:readonly="!isEditing"
 						v-model="item.description"
 						label="Description"
 						dense
@@ -82,6 +89,7 @@ v-card.default.mb-0(tag="section")
 					v-divider.my-1.black
 	v-card-actions
 		v-btn.my-0(
+			v-if="isEditing"
 			color="primary"
 			@click="addContact"
 		)
@@ -109,6 +117,9 @@ export default {
 	computed: {
 		contacts() {
 			return this.value;
+		},
+		isEditing() {
+			return this.$route.path.includes('/edit');
 		},
 	},
 	methods: {

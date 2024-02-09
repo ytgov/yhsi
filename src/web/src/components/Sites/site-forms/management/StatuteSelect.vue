@@ -1,5 +1,6 @@
 <template lang="pug">
 v-autocomplete(
+	:readonly="!isEditing",
 	:label="$attrs.label || 'Statute: Recognition Authority / Recognition Type / Statute'",
 	:items="statuteOptions"
 	v-bind="$attrs"
@@ -26,6 +27,11 @@ export default {
 		statuteOptions: [],
 		loading: false,
 	}),
+	computed: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	mounted() {
 		this.getStatuteOptions();
 	},

@@ -1,5 +1,6 @@
 <template lang="pug">
 v-select(
+	:readonly="!isEditing"
 	label="Jurisdiction",
 	:items="jurisdictionTypeOptions"
 	v-bind="$attrs"
@@ -24,6 +25,11 @@ export default {
 		jurisdictionTypeOptions: [],
 		loading: false,
 	}),
+	computed: {
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
+	},
 	mounted() {
 		this.getJurisdictionTypeOptions();
 	},
