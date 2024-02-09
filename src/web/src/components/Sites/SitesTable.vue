@@ -7,7 +7,7 @@
 		</v-row>
 		<v-divider class="mb-5" />
 		<v-row>
-			<v-col cols="9">
+			<v-col cols="8">
 				<v-text-field
 					v-model="searchTerm"
 					label="Search"
@@ -20,6 +20,7 @@
 					@keyup="keyUp"
 				/>
 			</v-col>
+
 			<v-col cols="3">
 				<v-btn
 					class="my-0"
@@ -40,6 +41,16 @@
 					>
 						mdi-chevron-down
 					</v-icon>
+				</v-btn>
+			</v-col>
+			<v-col cols="1">
+				<v-btn
+					color="primary"
+					class="my-0 mr-5"
+					v-if="isEditor"
+				>
+					<v-icon>mdi-plus</v-icon>
+					Add new site
 				</v-btn>
 			</v-col>
 		</v-row>
@@ -84,7 +95,7 @@
 
 <script>
 import { cloneDeep, uniqueId } from 'lodash';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 import api from '@/apis/places-api';
 
@@ -106,6 +117,7 @@ export default {
 		totalLength: 0,
 	}),
 	computed: {
+		...mapGetters('places', ['isEditor']),
 		advancedSearchId() {
 			return uniqueId('advanced-search-');
 		},
