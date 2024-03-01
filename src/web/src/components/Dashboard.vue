@@ -1,33 +1,26 @@
 <template>
 	<div class="home">
 		<h1>Dashboard</h1>
-		<v-banner icon="mdi-account-clock" v-if="user.status == 'Pending'">
-			Your account is currently in a 'Pending' state awaiting approval from an
-			administrator.<br />
-			Once activated, you will have access to the application.
-		</v-banner>
-
-		<div v-if="user.status == 'Active'">
-			<v-card class="mt-5" color="#fff2d5">
-				<v-card-title>Card with info</v-card-title>
-				<v-card-text>This is the body of the text</v-card-text>
-			</v-card>
-
-			<div class="row">
-				<div class="col-md-6">
-					<v-card class="mt-5" color="#fff2d5">
-						<v-card-title>Another card</v-card-title>
-						<v-card-text>This is the body of the text</v-card-text>
-					</v-card>
-				</div>
-				<div class="col-md-6">
-					<v-card class="mt-5" color="#fff2d5">
-						<v-card-title>Yet another</v-card-title>
-						<v-card-text>This is the body of the text</v-card-text>
-					</v-card>
-				</div>
-			</div>
-		</div>
+		<v-row>
+			<v-col
+				cols="12"
+				sm="6"
+				md="4"
+				lg="3"
+				v-for="tile in tiles"
+				:key="tile.title"
+			>
+				<v-card
+					class="d-flex flex-column align-center justify-center"
+					color="#fff2d5"
+					elevation="2"
+					@click="navigateTo(tile.route)"
+				>
+					<v-icon large>{{ tile.icon }}</v-icon>
+					<span class="mt-2">{{ tile.title }}</span>
+				</v-card>
+			</v-col>
+		</v-row>
 	</div>
 </template>
 
@@ -36,9 +29,34 @@ import { mapGetters } from 'vuex';
 
 export default {
 	name: 'Home',
-	data: () => ({}),
+	data: () => ({
+		tiles: [
+			{ title: 'Sites', icon: 'mdi-web', route: '/sites' },
+			{ title: 'Places', icon: 'mdi-map-marker', route: '/places' },
+
+			{ title: 'People', icon: 'mdi-account-multiple', route: '/people' },
+			{ title: 'Boats', icon: 'mdi-ferry', route: '/boats' },
+			{ title: 'Burials', icon: 'mdi-crosshairs-gps', route: '/burials' },
+			{
+				title: 'Interpretive Sites',
+				icon: 'mdi-information',
+				route: '/interpretive-sites',
+			},
+			{ title: 'Photos', icon: 'mdi-image', route: '/photos' },
+			{
+				title: 'Site Change Requests',
+				icon: 'mdi-file-document-edit',
+				route: '/sites-change-requests',
+			},
+		],
+	}),
 	computed: {
 		...mapGetters(['user']),
+	},
+	methods: {
+		navigateTo(route) {
+			this.$router.push(route);
+		},
 	},
 };
 </script>
