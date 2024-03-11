@@ -33,7 +33,7 @@ export default {
 		tiles: [
 			{ title: 'Sites', icon: 'mdi-web', route: '/sites' },
 			{ title: 'Places', icon: 'mdi-map-marker', route: '/places' },
-
+			{ title: 'Planes', icon: 'mdi-airplane', route: '/airplane' },
 			{ title: 'People', icon: 'mdi-account-multiple', route: '/people' },
 			{ title: 'Boats', icon: 'mdi-ferry', route: '/boats' },
 			{ title: 'Burials', icon: 'mdi-crosshairs-gps', route: '/burials' },
