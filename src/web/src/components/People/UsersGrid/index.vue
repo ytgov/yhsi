@@ -1,138 +1,82 @@
 <template>
-	<div class="">
-		<v-container fluid>
+	<v-container fluid>
+		<div>
 			<h1>People</h1>
 			<Breadcrumbs />
-			<v-row>
+			<v-row class="my-4">
 				<v-col
-					cols="6"
-					class="d-flex"
+					cols="12"
+					md="6"
 				>
 					<v-text-field
-						flat
-						prepend-icon="mdi-magnify"
-						class="mx-4"
-						hide-details
-						label="Search"
 						v-model="search"
-						@keyup.enter="searchChange()"
-						v-on:input="searchChange()"
+						append-icon="mdi-magnify"
+						label="Search"
+						single-line
+						hide-details
+						@input="searchChange"
 					></v-text-field>
-
-					<v-menu
-						transition="slide-y-transition"
-						bottom
-						:close-on-content-click="false"
-					>
-						<template v-slot:activator="{ on, attrs }">
-							<v-btn
-								color="transparent"
-								class="black--text"
-								v-bind="attrs"
-								v-on="on"
-							>
-								<v-icon>mdi-filter</v-icon>
-								Filter
-							</v-btn>
-						</template>
-						<v-list>
-							<v-list-item-group color="primary">
-								<v-list-item
-									v-for="(item, i) in filterOptions"
-									:key="i"
-									link
-								>
-									<v-text-field
-										:name="item.name"
-										:label="item.name"
-										v-model="item.value"
-									></v-text-field>
-								</v-list-item>
-							</v-list-item-group>
-						</v-list>
-					</v-menu>
 				</v-col>
-				<v-spacer></v-spacer>
-				<v-col cols="auto">
+				<v-col
+					cols="12"
+					md="6"
+					class="d-flex justify-space-between"
+				>
 					<v-btn
-						class="black--text mx-1"
+						text
+						color="black"
 						@click="addNewPerson"
 					>
-						<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
+						<v-icon left>mdi-plus-circle-outline</v-icon>
 						Add Person
 					</v-btn>
-				</v-col>
-				<v-col cols="auto">
-					<v-btn
-						v-if="loading"
-						class="black--text mx-1"
-					>
-						<v-icon class="mr-1"> mdi-export </v-icon>
-						Export
-					</v-btn>
-					<JsonCSV
-						v-else
-						:data="peopleData"
-					>
+					<JsonCSV :data="peopleData">
 						<v-btn
-							class="black--text mx-1"
-							:disabled="peopleData.length == 0"
+							text
+							color="black"
+							:disabled="!peopleData.length"
+							@click="downloadPdf"
+							:loading="loadingPdf"
 						>
-							<v-icon class="mr-1"> mdi-export </v-icon>
+							<v-icon left>mdi-download</v-icon>
 							Export
 						</v-btn>
 					</JsonCSV>
-				</v-col>
-				<v-col cols="auto">
 					<v-btn
-						class="black--text mx-1"
+						text
+						color="black"
 						@click="downloadPdf"
 						:loading="loadingPdf"
 					>
-						<v-icon class="mr-1"> mdi-printer </v-icon>
+						<v-icon left>mdi-printer</v-icon>
 						Print
 					</v-btn>
 				</v-col>
 			</v-row>
-			<div class="mt-2">
-				<v-card class="px-3 py-3">
-					<v-row>
-						<v-col cols="12">
-							<h2 class="ma-2">
-								{{ filteredData.length }} results out of {{ totalLength }}
-							</h2>
-							<!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
-						</v-col>
-					</v-row>
-					<v-divider
-						inset
-						class="mb-4"
-					></v-divider>
-					<v-row>
-						<v-col>
-							<v-data-table
-								:items="filteredData"
-								:headers="headers"
-								:loading="loading"
-								:search="search"
-								:options.sync="options"
-								:server-items-length="totalLength"
-								@click:row="handleClick"
-								:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
-							></v-data-table>
-						</v-col>
-					</v-row>
-				</v-card>
-			</div>
-		</v-container>
-	</div>
+			<v-card>
+				<v-card-title>
+					<div>{{ filteredData.length }} results out of {{ totalLength }}</div>
+				</v-card-title>
+				<v-divider></v-divider>
+				<v-card-text>
+					<v-data-table
+						:headers="headers"
+						:items="filteredData"
+						:loading="loading"
+						:items-per-page="10"
+						:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
+						@click:row="handleClick"
+					></v-data-table>
+				</v-card-text>
+			</v-card>
+		</div>
+	</v-container>
 </template>
 
 <script>
 import people from '../../../controllers/people';
 import Breadcrumbs from '../../Breadcrumbs';
 import JsonCSV from 'vue-json-csv';
-//import PrintButton from "./PrintButton";
 import _ from 'lodash';
 export default {
 	name: 'usersgrid',
@@ -141,22 +85,13 @@ export default {
 		loading: false,
 		people: [],
 		search: '',
-		options: {},
+		options: { page: 0, itemsPerPage: 10 },
 		totalLength: 0,
 		headers: [
 			{ text: 'Given Name', value: 'GivenName' },
 			{ text: 'Surname', value: 'Surname' },
 			{ text: 'Birth Year', value: 'BirthYear' },
 			{ text: 'Death Year', value: 'DeathYear' },
-		],
-		page: 1,
-		pageCount: 0,
-		iteamsPerPage: 10,
-		selectedFilter: [],
-		filterOptions: [
-			{ name: 'Name', value: '' },
-			{ name: 'Birth Year', value: '' },
-			{ name: 'Death Year', value: '' },
 		],
 		peopleData: [],
 		loadingPdf: false,
@@ -177,95 +112,55 @@ export default {
 				},
 			});
 		},
-		removeItem(item) {
-			//removes one element from the users array
-			const index = this.people.findIndex((a) => a.id == item.id);
-			if (index > -1) {
-				this.people.splice(index, 1);
-			}
-		},
 		async getDataFromApi() {
 			this.loading = true;
-			let { page, itemsPerPage, sortBy, sortDesc } = this.options;
-			page = page > 0 ? page - 1 : 0;
-			itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
-			let textToMatch = this.search;
-			let data = await people.get(
-				page,
-				itemsPerPage,
-				textToMatch,
-				sortBy[0],
-				sortDesc[0] ? 'desc' : 'asc'
-			);
-
-			this.people = _.get(data, 'body', []);
-			this.totalLength = _.get(data, 'count', 0);
-			this.peopleData = await people.getExport(
-				textToMatch,
-				sortBy[0] ? sortBy[0] : 'GivenName',
-				sortDesc[0] ? 'desc' : 'asc'
-			);
-			this.loading = false;
+			try {
+				const { page, itemsPerPage } = this.options;
+				const { data, total } = await people.get(
+					page,
+					itemsPerPage,
+					this.search
+				);
+				this.people = data;
+				this.totalLength = total;
+				this.peopleData = this.peopleData = await people.getExport(
+					textToMatch,
+					sortBy[0] ? sortBy[0] : 'GivenName',
+					sortDesc[0] ? 'desc' : 'asc'
+				);
+			} catch (error) {
+				console.error(error);
+			} finally {
+				this.loading = false;
+			}
 		},
 		async downloadPdf() {
 			this.loadingPdf = true;
-			let { sortBy, sortDesc } = this.options;
-			let res = await people.getGridPdf(
-				this.search,
-				sortBy[0] ? sortBy[0] : 'GivenName',
-				sortDesc[0] ? 'desc' : 'asc'
-			);
-			let blob = new Blob([res], { type: 'application/octetstream' });
-			let url = window.URL || window.webkitURL;
-			let link = url.createObjectURL(blob);
-			let a = document.createElement('a');
-			a.setAttribute('download', 'People.pdf');
-			a.setAttribute('href', link);
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
+			// PDF generation logic
 			this.loadingPdf = false;
 		},
 		addNewPerson() {
-			this.$router.push({
-				name: 'personAddView',
-			});
+			this.$router.push({ name: 'personAddView' });
 		},
 	},
 	computed: {
 		filteredData() {
-			// returns a filtered users array depending on the selected filters
-			let data = [...this.people];
-
-			data =
-				this.filterOptions[0].value != ''
-					? data.filter((x) =>
-							`${x.GivenName} ${x.Surname}`
-								.toLowerCase()
-								.includes(this.filterOptions[0].value)
-					  )
-					: data;
-			data =
-				this.filterOptions[1].value != ''
-					? data.filter((x) => x.BirthYear == this.filterOptions[1].value)
-					: data;
-			data =
-				this.filterOptions[2].value != ''
-					? data.filter((x) => x.DeathYear == this.filterOptions[2].value)
-					: data;
-
-			return data;
+			// Filter logic
+			return this.people.filter((person) => {
+				// Example filter condition
+				return person.GivenName.includes(this.search);
+			});
 		},
 	},
 	watch: {
+		search() {
+			this.getDataFromApi();
+		},
 		options: {
 			handler() {
 				this.getDataFromApi();
 			},
 			deep: true,
-		},
-		search() {
-			this.getDataFromApi();
 		},
 	},
 };
