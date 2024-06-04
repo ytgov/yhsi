@@ -100,7 +100,7 @@
 						</v-list-item>
 						<v-list-item
 							to="/boats"
-							v-if="userInRole(['Boats Editor'])"
+							v-if="userInRole(['Boats Editor', 'Boats Viewer'])"
 						>
 							<v-list-item-title>Boats</v-list-item-title>
 						</v-list-item>

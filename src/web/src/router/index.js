@@ -287,16 +287,27 @@ const routes = [
 	{
 		path: '/boats',
 		component: Boats,
-		meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] },
+		meta: {
+			requiresAuth: true,
+			authorize: [UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER],
+		},
 		children: [
 			{
 				path: '',
 				name: 'Boats',
 				component: BoatsGrid,
+				meta: {
+					requiresAuth: true,
+					authorize: [UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER],
+				},
 			},
 			{
 				path: 'owner',
 				component: OwnerGrid,
+				meta: {
+					requiresAuth: true,
+					authorize: [UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER],
+				},
 			},
 		],
 	},
@@ -305,7 +316,10 @@ const routes = [
 		name: 'boatView',
 		component: BoatsForm,
 		props: true,
-		meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] },
+		meta: {
+			requiresAuth: true,
+			authorize: [UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER],
+		},
 	},
 	{
 		path: '/boats/edit/:name',
@@ -325,7 +339,10 @@ const routes = [
 		name: 'ownerView',
 		component: BoatsOwnerForm,
 		props: true,
-		meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] },
+		meta: {
+			requiresAuth: true,
+			authorize: [UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER],
+		},
 	},
 	{
 		path: '/boats/owner/edit/:name',
@@ -620,7 +637,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-	let requiresAuth = to.meta.requiresAuth || false;
+	const requiresAuth = to.meta.requiresAuth || false;
 
 	if (!requiresAuth) {
 		return next();
@@ -628,15 +645,22 @@ router.beforeEach(async (to, from, next) => {
 
 	await store.dispatch('checkAuthentication');
 
-	let isAuthenticated = store.getters.isAuthenticated;
+	const isAuthenticated = store.getters.isAuthenticated;
 
 	if (requiresAuth && !isAuthenticated) {
 		console.log("You aren't authenticatd, redirecting to sign-in");
 		return next('/sign-in');
 	}
 
-	let authorize = to.meta.authorize || [];
-	let isAuthorized = store.getters.userInRole(authorize);
+	const authorize = to.meta.authorize || [];
+	const isActive = store.getters.userIsActive;
+
+	if (authorize.length > 0 && !isActive) {
+		console.log("You aren't active, redirecting to dashboard");
+		next('/dashboard');
+	}
+
+	const isAuthorized = store.getters.userInRole(authorize);
 
 	if (!isAuthorized) {
 		console.log("You aren't authorized, redirecting to dashboard");

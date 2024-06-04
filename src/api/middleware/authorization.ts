@@ -15,6 +15,7 @@ export const UserRoleOptions = [
 	UserRoles.AIRPLANE_CRASH_EDITOR,
 	UserRoles.AIRPLANE_CRASH_VIEWER,
 	UserRoles.BOATS_EDITOR,
+	UserRoles.BOATS_VIEWER,
 	UserRoles.PLACE_EDITOR,
 	UserRoles.BURIALS_EDITOR,
 	UserRoles.PEOPLE_EDITOR,

@@ -7,7 +7,7 @@
 				sm="6"
 				md="4"
 				lg="3"
-				v-for="tile in tiles"
+				v-for="tile in relevantTiles"
 				:key="tile.title"
 			>
 				<v-card
@@ -35,7 +35,12 @@ export default {
 			{ title: 'Places', icon: 'mdi-map-marker', route: '/places' },
 			{ title: 'Planes', icon: 'mdi-airplane', route: '/airplane' },
 			{ title: 'People', icon: 'mdi-account-multiple', route: '/people' },
-			{ title: 'Boats', icon: 'mdi-ferry', route: '/boats' },
+			{
+				title: 'Boats',
+				icon: 'mdi-ferry',
+				route: '/boats',
+				roles: ['Boats Editor', 'Boats Viewer'],
+			},
 			{ title: 'Burials', icon: 'mdi-crosshairs-gps', route: '/burials' },
 			{
 				title: 'Interpretive Sites',
@@ -51,11 +56,19 @@ export default {
 		],
 	}),
 	computed: {
-		...mapGetters(['user']),
+		...mapGetters(['user', 'userInRole']),
+		relevantTiles() {
+			return this.tiles.filter((t) => this.canShow(t));
+		},
 	},
 	methods: {
 		navigateTo(route) {
 			this.$router.push(route);
+		},
+		canShow(item) {
+			if (item.roles) {
+				return this.userInRole(item.roles);
+			} else return true;
 		},
 	},
 };

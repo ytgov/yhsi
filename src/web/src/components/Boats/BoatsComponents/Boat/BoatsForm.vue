@@ -21,7 +21,7 @@
 				<v-btn
 					class="black--text mx-1"
 					@click="editMode"
-					v-if="mode == 'view'"
+					v-if="mode == 'view' && userIsEditor"
 				>
 					<v-icon class="mr-1">mdi-pencil</v-icon>
 					Edit
@@ -535,6 +535,7 @@ import HistoricRecord from '../HistoricRecord';
 import boats from '../../../../controllers/boats';
 import owners from '../../../../controllers/owners';
 import catalogs from '../../../../controllers/catalogs';
+import { UserRoles } from '../../../../authorization';
 import _ from 'lodash';
 export default {
 	name: 'boatsForm',
@@ -904,6 +905,9 @@ export default {
 		},
 	},
 	computed: {
+		userIsEditor() {
+			return this.$store.getters.userInRole([UserRoles.BOATS_EDITOR]);
+		},
 		getBoatID() {
 			if (this.$route.params.id) {
 				return this.$route.params.id;

@@ -30,6 +30,10 @@ const getters = {
 			);
 		};
 	},
+
+	userIsActive: (state) => {
+		return state.user.status == 'Active';
+	},
 };
 const actions = {
 	async checkAuthentication({ commit }) {

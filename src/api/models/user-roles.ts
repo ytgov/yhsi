@@ -10,6 +10,7 @@ export const UserRoles = {
 	AIRPLANE_CRASH_EDITOR: 'Airplane Crash Editor',
 	AIRPLANE_CRASH_VIEWER: 'Airplane Crash Viewer',
 	BOATS_EDITOR: 'Boats Editor',
+	BOATS_VIEWER: 'Boats Viewer',
 	PLACE_EDITOR: 'Places Editor',
 	BURIALS_EDITOR: 'Burials Editor',
 	PEOPLE_EDITOR: 'People Editor',
