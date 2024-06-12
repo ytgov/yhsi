@@ -41,7 +41,8 @@ export default {
 				route: '/boats',
 				roles: ['Boats Editor', 'Boats Viewer'],
 			},
-			{ title: 'Burials', icon: 'mdi-crosshairs-gps', route: '/burials' },
+			{ title: 'Burials', icon: 'mdi-crosshairs-gps', route: '/burials',
+				roles: ['Burials Editor', 'Burials Viewer'],},
 			{
 				title: 'Interpretive Sites',
 				icon: 'mdi-information',

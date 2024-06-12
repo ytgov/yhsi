@@ -17,7 +17,7 @@
 				<v-btn
 					class="black--text mx-1"
 					@click="editMode"
-					v-if="isView"
+					v-if="isView && userIsEditor"
 				>
 					<v-icon class="mr-1">mdi-pencil</v-icon>
 					Edit
@@ -755,6 +755,8 @@ import KinDialog from './Dialogs/KinDialog.vue';
 import SiteVisitDialog from './Dialogs/SiteVisitDialog.vue';
 import Photos from '../../PhotoEditor/Photos';
 import countries from '../../../misc/countries';
+import { UserRoles } from '../../../authorization';
+
 export default {
 	name: 'BurialComponent',
 	components: {
@@ -1128,6 +1130,9 @@ export default {
 		},
 	},
 	computed: {
+		userIsEditor() {
+			return this.$store.getters.userInRole([UserRoles.BURIALS_EDITOR]);
+		},
 		isEditable() {
 			return this.mode == 'edit' ? true : false;
 		},

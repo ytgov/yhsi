@@ -13,6 +13,7 @@ export const UserRoles = {
 	BOATS_VIEWER: 'Boats Viewer',
 	PLACE_EDITOR: 'Places Editor',
 	BURIALS_EDITOR: 'Burials Editor',
+	BURIALS_VIEWER: 'Burials Viewer',
 	PEOPLE_EDITOR: 'People Editor',
 	YRHP_EDITOR: 'YRHP Editor',
 	ADVANCED_MAPS: 'Advanced Mapping',

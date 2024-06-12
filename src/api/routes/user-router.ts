@@ -21,16 +21,16 @@ userRouter.get(
 	'/',
 	authorize([UserRoles.ADMINISTRATOR]),
 	async (req: Request, res: Response) => {
-		let users = await db.getAll();
+		const users = await db.getAll();
 
-		for (let user of users) {
+		for (const user of users) {
 			if (user.last_login_date)
 				user.last_login_date_display = moment(user.last_login_date)
 					.utc(true)
 					.format('YYYY-MM-DD @ h:mmA');
 
 			if (user.expire_date) {
-				let isExpired = moment().isAfter(moment(user.expire_date));
+				const isExpired = moment().isAfter(moment(user.expire_date));
 				if (user.status == 'Active' && isExpired) user.status = 'Expired';
 			}
 		}
@@ -47,7 +47,7 @@ userRouter.get(
 	'/me',
 	authorize([], true),
 	async (req: Request, res: Response) => {
-		let person = req.user;
+		const person = req.user;
 
 		if (person) return res.json({ data: await makeDTO(person) });
 	}
@@ -60,10 +60,10 @@ userRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
-		let user = await db.getById(parseInt(id));
+		const user = await db.getById(parseInt(id));
 
 		if (user?.expire_date) {
-			let isExpired = moment().isAfter(moment(user.expire_date));
+			const isExpired = moment().isAfter(moment(user.expire_date));
 			if (isExpired) user.status = 'Expired';
 
 			user.expire_date_display = moment(user.expire_date)
@@ -87,9 +87,9 @@ userRouter.put(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
-		let { first_name, last_name, expire_date_display, role_list, status } =
+		const { first_name, last_name, expire_date_display, role_list, status } =
 			req.body;
-		let item = {
+		const item = {
 			first_name,
 			last_name,
 			expire_date: expire_date_display,
@@ -119,8 +119,8 @@ userRouter.post(
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		let { email, first_name, last_name, password } = req.body;
-		let existingEmail = await db.getByEmail(email);
+		const { email, first_name, last_name, password } = req.body;
+		const existingEmail = await db.getByEmail(email);
 
 		if (existingEmail) {
 			return res.status(400).json({
@@ -130,7 +130,7 @@ userRouter.post(
 			});
 		}
 
-		let body = {
+		const body = {
 			email,
 			username: email,
 			given_name: first_name,
@@ -164,8 +164,8 @@ userRouter.post(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
-		let { access_type_id, access_text, user_id } = req.body;
-		let item = { access_type_id, access_text, user_id };
+		const { access_type_id, access_text, user_id } = req.body;
+		const item = { access_type_id, access_text, user_id };
 
 		await db.createAccess(item);
 
@@ -180,8 +180,8 @@ userRouter.put(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { id, accessId } = req.params;
-		let { access_type_id, access_text } = req.body;
-		let item = { access_type_id, access_text };
+		const { access_type_id, access_text } = req.body;
+		const item = { access_type_id, access_text };
 
 		await db.updateAccess(accessId, item);
 
@@ -204,7 +204,7 @@ userRouter.delete(
 );
 
 async function makeDTO(userRaw: any) {
-	let dto = userRaw;
+	const dto = userRaw;
 	dto.display_name = `${userRaw.first_name} ${userRaw.last_name}`;
 
 	if (userRaw.expire_date)

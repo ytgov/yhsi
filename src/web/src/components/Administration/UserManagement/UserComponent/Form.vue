@@ -118,7 +118,7 @@
 									></v-select>
 								</v-col>
 								<v-col cols="12">
-									<v-select
+									<v-autocomplete
 										label="Roles"
 										:items="roles"
 										outlined
@@ -128,7 +128,7 @@
 										v-model="user.role_list"
 										background-color="white"
 										hide-details
-									></v-select>
+									></v-autocomplete>
 								</v-col>
 							</v-row>
 						</v-form>

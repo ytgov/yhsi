@@ -18,6 +18,7 @@ export const UserRoleOptions = [
 	UserRoles.BOATS_VIEWER,
 	UserRoles.PLACE_EDITOR,
 	UserRoles.BURIALS_EDITOR,
+	UserRoles.BURIALS_VIEWER,
 	UserRoles.PEOPLE_EDITOR,
 	UserRoles.YRHP_EDITOR,
 	UserRoles.ADVANCED_MAPS,

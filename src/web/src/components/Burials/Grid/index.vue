@@ -59,6 +59,7 @@
 				<v-btn
 					class="black--text mx-1"
 					@click="addNew"
+					v-if="userIsEditor"
 				>
 					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
 					Add Burial
@@ -133,6 +134,8 @@ import Breadcrumbs from '../../Breadcrumbs';
 import _ from 'lodash';
 import downloadCsv from '../../../utils/dataToCsv';
 import burials from '../../../controllers/burials';
+import { UserRoles } from '../../../authorization';
+
 export default {
 	name: 'boatsgrid-index',
 	components: { Breadcrumbs },
@@ -317,6 +320,9 @@ export default {
 	computed: {
 		filteredData() {
 			return this.burials;
+		},
+		userIsEditor() {
+			return this.$store.getters.userInRole([UserRoles.BURIALS_EDITOR]);
 		},
 	},
 	watch: {

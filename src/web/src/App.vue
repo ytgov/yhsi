@@ -106,7 +106,7 @@
 						</v-list-item>
 						<v-list-item
 							to="/burials"
-							v-if="userInRole(['Burials Editor'])"
+							v-if="userInRole(['Burials Editor', 'Burials Viewer'])"
 						>
 							<v-list-item-title>Burials</v-list-item-title>
 						</v-list-item>
