@@ -26,7 +26,7 @@ export default {
 		categoryTypeOptions: [],
 		loading: false,
 	}),
-	computer: {
+	computed: {
 		isEditing() {
 			return this.$route.path.includes('/edit');
 		},

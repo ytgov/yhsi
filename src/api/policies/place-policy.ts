@@ -10,6 +10,8 @@ export class PlacePolicy extends BasePolicy<Place> {
 
 	show() {
 		if (this.user.roleList.includes(UserRoles.ADMINISTRATOR)) return true;
+		if (this.user.canAccessAllSites) return true;
+
 		if (
 			isEmpty(
 				intersection(this.user.roleList, [

@@ -41,6 +41,9 @@ export default {
 		...mapGetters({
 			place: 'places/place',
 		}),
+		isEditing() {
+			return this.$route.path.includes('/edit');
+		},
 	},
 };
 </script>

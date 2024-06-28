@@ -567,26 +567,31 @@ export class PlaceService {
 		}
 
 		if (user.site_access) {
-			let mapSheets = user.site_access
+			const mapSheets = user.site_access
 				.filter((a) => a.access_type_id == 1)
 				.map((a) => a.access_text);
-			let communities = user.site_access
+			const communities = user.site_access
 				.filter((a) => a.access_type_id == 2)
 				.map((a) => a.access_text);
-			let firstNations = user.site_access
+			const firstNations = user.site_access
 				.filter((a) => a.access_type_id == 3)
 				.map((a) => a.access_text);
+			const allAccess = user.site_access.find((a) => a.access_type_id == 4);
 
 			let scope = '(1=0';
 
-			if (mapSheets.length > 0)
-				scope += ` OR NTSMapSheet IN ('${mapSheets.join("','")}')`;
-			if (communities.length > 0)
-				scope += ` OR CommunityId IN (${communities.join(',')})`;
-			if (firstNations.length > 0)
-				scope += ` OR [FirstNationAssociation].[FirstNationId] IN (${firstNations.join(
-					','
-				)})`;
+			if (allAccess) {
+				scope += ' OR 1=1';
+			} else {
+				if (mapSheets.length > 0)
+					scope += ` OR NTSMapSheet IN ('${mapSheets.join("','")}')`;
+				if (communities.length > 0)
+					scope += ` OR CommunityId IN (${communities.join(',')})`;
+				if (firstNations.length > 0)
+					scope += ` OR [FirstNationAssociation].[FirstNationId] IN (${firstNations.join(
+						','
+					)})`;
+			}
 
 			scope += ')';
 

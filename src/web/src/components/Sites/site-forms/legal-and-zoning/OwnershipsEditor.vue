@@ -66,10 +66,8 @@ export default {
 		ownerships() {
 			return this.value;
 		},
-		computed: {
-			isEditing() {
-				return this.$route.path.includes('/edit');
-			},
+		isEditing() {
+			return this.$route.path.includes('/edit');
 		},
 	},
 	methods: {

@@ -19,6 +19,10 @@ export abstract class BasePolicyScope {
 		return this.scope.whereRaw('(1=0)');
 	}
 
+	get unlimitedAccessScope(): Knex.QueryBuilder {
+		return this.scope.whereRaw('(1=1)');
+	}
+
 	get scope(): Knex.QueryBuilder {
 		return this._scope.clone();
 	}

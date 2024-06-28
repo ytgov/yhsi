@@ -119,4 +119,11 @@ export class User {
 			.filter((a) => a.accessTypeId == SiteAccesType.FIRST_NATION)
 			.map((a) => toInteger(a.accessText));
 	}
+
+	get canAccessAllSites(): boolean {
+		return (
+			this.siteAccess.filter((a) => a.accessTypeId == SiteAccesType.ALL_SITES)
+				.length > 0
+		);
+	}
 }

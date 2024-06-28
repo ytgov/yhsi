@@ -1,8 +1,7 @@
 import { isEmpty, intersection } from 'lodash';
-import { Knex } from 'knex';
 
 import { BasePolicyScope } from '.';
-import { User, UserRoles } from '../models';
+import { UserRoles } from '../models';
 
 export class PlacePolicyScope extends BasePolicyScope {
 	resolve() {
@@ -29,7 +28,9 @@ export class PlacePolicyScope extends BasePolicyScope {
 			return this.emptyScope;
 		}
 
-		let clauses = [];
+		if (this.user.canAccessAllSites) return this.unlimitedAccessScope;
+
+		const clauses = [];
 		if (!isEmpty(this.user.permittedMapSheets)) {
 			const permittedMapSheets = this.user.permittedMapSheets.join(', ');
 			clauses.push(`NTSMapSheet IN ('${permittedMapSheets}')`);

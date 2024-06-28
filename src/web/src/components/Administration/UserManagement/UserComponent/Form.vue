@@ -15,7 +15,9 @@
 			<small
 				>{{ user.first_name }} {{ user.last_name }}
 
-				<small class="text-error" v-if="user.status != 'Active'"
+				<small
+					class="text-error"
+					v-if="user.status != 'Active'"
 					>({{ user.status }})</small
 				>
 			</small>
@@ -23,13 +25,19 @@
 
 		<hr class="mb-4" />
 		<v-row>
-			<v-col cols="12" md="6">
+			<v-col
+				cols="12"
+				md="6"
+			>
 				<v-card class="default">
 					<v-card-title>User Details</v-card-title>
 					<v-card-text>
 						<v-form>
 							<v-row>
-								<v-col cols="12" sm="6">
+								<v-col
+									cols="12"
+									sm="6"
+								>
 									<v-text-field
 										v-model="user.first_name"
 										label="First name"
@@ -40,7 +48,10 @@
 										hide-details
 									></v-text-field>
 								</v-col>
-								<v-col cols="12" sm="6">
+								<v-col
+									cols="12"
+									sm="6"
+								>
 									<v-text-field
 										v-model="user.last_name"
 										label="Last name"
@@ -51,7 +62,10 @@
 										hide-details
 									></v-text-field>
 								</v-col>
-								<v-col cols="12" sm="6">
+								<v-col
+									cols="12"
+									sm="6"
+								>
 									<v-text-field
 										v-model="user.email"
 										label="Email"
@@ -62,7 +76,10 @@
 										hide-details
 									></v-text-field>
 								</v-col>
-								<v-col cols="12" sm="6">
+								<v-col
+									cols="12"
+									sm="6"
+								>
 									<v-menu
 										ref="menu"
 										v-model="menu"
@@ -93,7 +110,11 @@
 											scrollable
 										>
 											<v-spacer></v-spacer>
-											<v-btn text color="primary" @click="menu = false">
+											<v-btn
+												text
+												color="primary"
+												@click="menu = false"
+											>
 												Cancel
 											</v-btn>
 											<v-btn
@@ -143,9 +164,16 @@
 							</v-col>
 						</v-row>
 						<v-row>
-							<v-col cols="12" class="d-flex py-0">
+							<v-col
+								cols="12"
+								class="d-flex py-0"
+							>
 								<v-spacer></v-spacer>
-								<v-btn color="primary" class="mr-5 mt-0" @click="doSave">
+								<v-btn
+									color="primary"
+									class="mr-5 mt-0"
+									@click="doSave"
+								>
 									Save user
 								</v-btn>
 							</v-col>
@@ -169,9 +197,14 @@
 						></v-data-table>
 
 						<v-row>
-							<v-col cols="12" class="d-flex pt-5 mb">
+							<v-col
+								cols="12"
+								class="d-flex pt-5 mb"
+							>
 								<v-spacer></v-spacer>
-								<v-btn color="info mb-1" @click="addAccess"
+								<v-btn
+									color="info mb-1"
+									@click="addAccess"
 									>Add site access</v-btn
 								>
 							</v-col>
@@ -182,10 +215,17 @@
 		</v-row>
 
 		<v-overlay :value="overlay">
-			<v-progress-circular indeterminate size="64"></v-progress-circular>
+			<v-progress-circular
+				indeterminate
+				size="64"
+			></v-progress-circular>
 		</v-overlay>
 
-		<v-dialog v-model="showAccessDialog" persistent max-width="600px">
+		<v-dialog
+			v-model="showAccessDialog"
+			persistent
+			max-width="600px"
+		>
 			<v-card>
 				<v-card-title>Add site access</v-card-title>
 				<v-card-text class="pt-5">
@@ -276,6 +316,7 @@ export default {
 			{ text: 'Map sheet', value: 1 },
 			{ text: 'Community', value: 2 },
 			{ text: 'First Nation', value: 3 },
+			{ text: 'All Sites', value: 4 },
 		],
 		statusOptions: ['Active', 'Pending', 'Inactive', 'Expired'],
 		accessItem: {},
@@ -301,6 +342,7 @@ export default {
 		}),
 		...mapGetters('users', ['roles', 'communities', 'firstNations']),
 		canSaveAccess: function () {
+			if (this.accessItem.access_type_id == 4) return false;
 			if (this.accessItem.access_text) return false;
 			return true;
 		},

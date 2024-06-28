@@ -18,4 +18,7 @@ export class SiteAccesType {
 	static get FIRST_NATION(): number {
 		return 3;
 	}
+	static get ALL_SITES(): number {
+		return 4;
+	}
 }
