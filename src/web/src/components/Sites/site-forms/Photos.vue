@@ -42,18 +42,11 @@
 							cols="6"
 						>
 							<v-row>
-								<v-col cols="10">
-									<v-img
-										v-if="item.img == null"
+								<v-col cols="10"> 
+									<img
 										class="center-img"
 										max-width="128"
-										:src="require('../../../assets/add_photo.png')"
-									/>
-									<v-img
-										v-else
-										class="center-img"
-										max-width="128"
-										:src="item.img"
+										:src="makeThumbnailUrl(item)"
 									/>
 								</v-col>
 								<v-col cols="2">
@@ -157,7 +150,7 @@
 import axios from 'axios';
 
 import store from '@/store';
-import { PLACE_URL } from '@/urls';
+import { PLACE_URL, PHOTO_URL } from '@/urls';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
@@ -208,6 +201,12 @@ export default {
 		},
 		save() {
 			console.error('Not implemented');
+		},
+		makeThumbnailUrl(photo) {
+			return `${PHOTO_URL}/${photo.rowId}/thumbfile`;
+		},
+		makePhotoUrl(photo) {
+			return `${PHOTO_URL}/${photo.rowId}/thumbfile`;
 		},
 	},
 };

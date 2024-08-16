@@ -144,8 +144,8 @@ photoRouter.get(
 			.getThumbFileById(req.params.id)
 			.then((photo) => {
 				if (photo && photo.thumbFile) {
-					//return res.contentType("image/jpg").send(photo.thumbFile);
-					return res.json({ data: photo.thumbFile });
+					return res.contentType('image/jpg').send(photo.thumbFile);
+					//return res.json({ data: photo.thumbFile });
 				}
 
 				return res.status(404).send('Photo not found');
@@ -171,7 +171,7 @@ photoRouter.get(
 			.getFileById(req.params.id)
 			.then(async (photo) => {
 				if (photo && photo.file) {
-					let t = await createThumbnail(photo.file);
+					const t = await createThumbnail(photo.file);
 					return res.contentType('image/jpg').send(t);
 				}
 

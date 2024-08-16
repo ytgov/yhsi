@@ -25,7 +25,7 @@ export class PhotoService {
 			.where({ rowId: id })
 			.first()
 			.catch((err: any) => {
-				//console.log('BOMBED', err);
+				console.log('BOMBED', err);
 				return undefined;
 			});
 	}
@@ -60,7 +60,7 @@ export class PhotoService {
 			.where({ rowId: id })
 			.first()
 			.catch((err: any) => {
-				//console.log('BOMBED', err);
+				console.log('BOMBED', err);
 				return undefined;
 			});
 	}
@@ -71,7 +71,7 @@ export class PhotoService {
 			.where({ rowId: id })
 			.first()
 			.catch((err: any) => {
-				//console.log('BOMBED', err);
+				console.log('BOMBED', err);
 				return undefined;
 			});
 	}
