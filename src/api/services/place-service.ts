@@ -254,7 +254,8 @@ export class PlaceService {
 	}
 
 	async addPlace(item: Place): Promise<Place | undefined> {
-		return this.db('place').insert(item).returning<Place>(PLACE_FIELDS);
+		const result = await this.db('place').insert(item).returning<Place[]>('*');
+		if (result) return result[0];
 	}
 
 	updateRelations(id: number, attributes: PlainObject) {

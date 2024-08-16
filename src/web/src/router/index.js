@@ -11,6 +11,7 @@ import NotFound from '../views/NotFound.vue';
 import Profile from '../views/Profile';
 import store from '../store';
 import SiteForms from '@/components/Sites/SiteForms';
+import SiteCreate from '@/components/Sites/SiteCreate';
 import MainPhotos from '../components/MainPhotos';
 import SitesTable from '@/components/Sites/SitesTable';
 import PhotosGrid from '../components/MainPhotos/PhotosGrid';
@@ -239,6 +240,19 @@ const routes = [
 				UserRoles.SITE_EDITOR,
 				UserRoles.SITE_VIEWER,
 				UserRoles.SITE_VIEWER_LIMITED,
+			],
+		},
+	},
+	{
+		path: '/sites/create',
+		name: 'SiteCreate',
+		component: SiteCreate,
+		props: true,
+		meta: {
+			requiresAuth: true,
+			authorize: [
+				UserRoles.SITE_ADMIN,
+				UserRoles.SITE_EDITOR,
 			],
 		},
 	},

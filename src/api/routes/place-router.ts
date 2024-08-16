@@ -143,13 +143,12 @@ placeRouter.post(
 	'/',
 	[
 		body('primaryName').isString().bail().notEmpty().trim(),
-		body('yHSIId').isString().bail().notEmpty().trim(),
+		//body('yHSIId').isString().bail().notEmpty().trim(),
 		body('jurisdiction').isInt().bail().notEmpty(),
 		body('statuteId').isInt().bail().notEmpty(),
 		body('statute2Id').isInt().bail().notEmpty(),
 		body('ownerConsent').isInt().bail().notEmpty(),
 		body('category').isInt().bail().notEmpty(),
-		body('isPubliclyAccessible').isBoolean().bail().notEmpty(),
 		body('communityId').isInt().bail().notEmpty(),
 		body('siteStatus').isInt().bail().notEmpty(),
 		body('floorCondition').isInt().bail().notEmpty(),
@@ -157,6 +156,7 @@ placeRouter.post(
 		body('doorCondition').isInt().bail().notEmpty(),
 		body('roofCondition').isInt().bail().notEmpty(),
 		body('coordinateDetermination').isInt().bail().notEmpty(),
+		body('isPubliclyAccessible').isBoolean().bail().notEmpty(),
 		body('showInRegister').isBoolean().bail().notEmpty(),
 	],
 	async (req: Request, res: Response) => {
@@ -166,11 +166,14 @@ placeRouter.post(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let result = await placeService
+		req.body.yHSIId = await placeService.generateIdFor(req.body.nTSMapSheet);
+
+		const result = await placeService
 			.addPlace(req.body as Place)
 			.then((item) => item)
 			.catch((err) => {
-				return res.json({ errors: [err.originalError.info.message] });
+				console.log('addPlace ERROR', err);
+				return res.json({ errors: err });
 			});
 
 		return res.json({ data: result });

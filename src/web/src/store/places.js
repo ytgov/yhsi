@@ -102,5 +102,17 @@ export default {
 					commit('setLoading', false);
 				});
 		},
+		create({ commit, state }, data) {
+			commit('setLoading', true);
+			return api
+				.post(data)
+				.then(({ data }) => {
+					commit('setPlace', data);
+					return state.place;
+				})
+				.finally(() => {
+					commit('setLoading', false);
+				});
+		},
 	},
 };

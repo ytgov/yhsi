@@ -28,7 +28,7 @@ export default {
 	}),
 	computed: {
 		isEditing() {
-			return this.$route.path.includes('/edit');
+			return this.$route.path.includes('/edit') ||  this.$route.path.includes('/create');
 		},
 	},
 	mounted() {

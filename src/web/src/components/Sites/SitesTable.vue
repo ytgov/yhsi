@@ -7,7 +7,7 @@
 		</v-row>
 		<v-divider class="mb-5" />
 		<v-row>
-			<v-col cols="8">
+			<v-col cols="12" class="d-flex">
 				<v-text-field
 					v-model="searchTerm"
 					label="Search"
@@ -19,11 +19,8 @@
 					@click:append="doSearch"
 					@keyup="keyUp"
 				/>
-			</v-col>
-
-			<v-col cols="3">
 				<v-btn
-					class="my-0"
+					class="my-0 mx-3"
 					color="secondary"
 					:aria-controls="advancedSearchId"
 					@click="toggleAdvancedSearch"
@@ -42,12 +39,11 @@
 						mdi-chevron-down
 					</v-icon>
 				</v-btn>
-			</v-col>
-			<v-col cols="1">
 				<v-btn
-					color="primary"
-					class="my-0 mr-5"
 					v-if="isEditor"
+					color="primary"
+					class="my-0"
+					to="/sites/create"
 				>
 					<v-icon>mdi-plus</v-icon>
 					Add new site
@@ -69,7 +65,6 @@
 			</v-col>
 		</v-row>
 		<v-divider
-			inset
 			class="mb-2"
 		/>
 		<v-row>
@@ -182,6 +177,9 @@ export default {
 			}
 			this.isShowingAdvancedSearch = !this.isShowingAdvancedSearch;
 		},
+		addSiteClick() {
+			console.log("ADDING")
+		}
 	},
 };
 </script>

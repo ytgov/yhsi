@@ -39,4 +39,13 @@ export default {
 				return Promise.reject(error);
 			});
 	},
+	post(data) {
+		return http
+			.post(`${placeUrl}`, data)
+			.then((response) => response.data)
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
+	},
 };

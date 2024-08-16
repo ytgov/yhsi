@@ -27,7 +27,10 @@ export default {
 	computed: {
 		...mapGetters('communities', ['communities', 'loading']),
 		isEditing() {
-			return this.$route.path.includes('/edit');
+			return (
+				this.$route.path.includes('/edit') ||
+				this.$route.path.includes('/create')
+			);
 		},
 	},
 	mounted() {
