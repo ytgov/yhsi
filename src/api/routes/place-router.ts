@@ -27,14 +27,21 @@ export const placeRouter = express.Router();
 
 placeRouter.get(
 	'/',
+	authorize([
+		UserRoles.SITE_ADMIN,
+		UserRoles.SITE_EDITOR,
+		UserRoles.SITE_VIEWER,
+		UserRoles.SITE_VIEWER_LIMITED,
+		UserRoles.ADMINISTRATOR,
+	]),
 	[query('page').default(1).isInt({ gt: 0 })],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		let page = parseInt(req.query.page as string);
-		let skip = (page - 1) * PAGE_SIZE;
-		let take = PAGE_SIZE;
+		const page = parseInt(req.query.page as string);
+		const skip = (page - 1) * PAGE_SIZE;
+		const take = PAGE_SIZE;
 
-		let list = await placeService
+		const list = await placeService
 			.getAll(skip, take)
 			.then((data) => data)
 			.catch((err) => {
@@ -42,7 +49,7 @@ placeRouter.get(
 				return undefined;
 			});
 
-		let item_count = await placeService
+		const item_count = await placeService
 			.getPlaceCount()
 			.then((data) => data)
 			.catch((err) => {
@@ -50,7 +57,7 @@ placeRouter.get(
 				return 0;
 			});
 
-		let page_count = Math.ceil(item_count / PAGE_SIZE);
+		const page_count = Math.ceil(item_count / PAGE_SIZE);
 
 		if (list) {
 			return res.json({
@@ -65,12 +72,24 @@ placeRouter.get(
 
 placeRouter.post(
 	'/search',
+	authorize([
+		UserRoles.SITE_ADMIN,
+		UserRoles.SITE_EDITOR,
+		UserRoles.SITE_VIEWER,
+		UserRoles.SITE_VIEWER_LIMITED,
+		UserRoles.ADMINISTRATOR,
+	]),
 	[body('page').isInt().default(1)],
 	PlacesController.searchPlaces
 );
 
 placeRouter.post(
 	'/generate-id',
+	authorize([
+		UserRoles.SITE_ADMIN,
+		UserRoles.SITE_EDITOR,
+		UserRoles.ADMINISTRATOR,
+	]),
 	[body('nTSMapSheet').isString().bail().notEmpty().trim()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
@@ -79,9 +98,9 @@ placeRouter.post(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let { nTSMapSheet } = req.body;
+		const { nTSMapSheet } = req.body;
 
-		let newId = await placeService.generateIdFor(nTSMapSheet);
+		const newId = await placeService.generateIdFor(nTSMapSheet);
 
 		res.json({ data: { yHSIId: newId, nTSMapSheet } });
 	}
@@ -89,12 +108,26 @@ placeRouter.post(
 
 placeRouter.get(
 	'/:id',
+	authorize([
+		UserRoles.SITE_ADMIN,
+		UserRoles.SITE_EDITOR,
+		UserRoles.SITE_VIEWER,
+		UserRoles.SITE_VIEWER_LIMITED,
+		UserRoles.ADMINISTRATOR,
+	]),
 	[check('id').notEmpty()],
 	ReturnValidationErrors,
 	PlacesController.getPlace
 );
 placeRouter.get(
 	'/:id/print/:format',
+	authorize([
+		UserRoles.SITE_ADMIN,
+		UserRoles.SITE_EDITOR,
+		UserRoles.SITE_VIEWER,
+		UserRoles.SITE_VIEWER_LIMITED,
+		UserRoles.ADMINISTRATOR,
+	]),
 	[check('id').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
@@ -141,6 +174,11 @@ placeRouter.get(
 
 placeRouter.post(
 	'/',
+	authorize([
+		UserRoles.SITE_ADMIN,
+		UserRoles.SITE_EDITOR,
+		UserRoles.ADMINISTRATOR,
+	]),
 	[
 		body('primaryName').isString().bail().notEmpty().trim(),
 		//body('yHSIId').isString().bail().notEmpty().trim(),

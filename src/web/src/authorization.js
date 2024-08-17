@@ -17,4 +17,6 @@ export const UserRoles = {
 	PEOPLE_EDITOR: 'People Editor',
 	YRHP_EDITOR: 'YRHP Editor',
 	ADVANCED_MAPS: 'Advanced Mapping',
+	INTERPRETIVE_SITES_VIEWER: 'Interpretive Sites Viewer',
+	INTERPRETIVE_SITES_EDITOR: 'Interpretive Sites Editor',
 };

@@ -22,6 +22,8 @@ export const UserRoleOptions = [
 	UserRoles.PEOPLE_EDITOR,
 	UserRoles.YRHP_EDITOR,
 	UserRoles.ADVANCED_MAPS,
+	UserRoles.INTERPRETIVE_SITES_EDITOR,
+	UserRoles.INTERPRETIVE_SITES_VIEWER,
 ];
 
 export function authorize(roles: string[] = [], allowPending = false) {

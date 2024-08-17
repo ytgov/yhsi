@@ -26,33 +26,80 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { UserRoles } from '../authorization';
 
 export default {
 	name: 'Home',
 	data: () => ({
 		tiles: [
-			{ title: 'Sites', icon: 'mdi-web', route: '/sites' },
-			{ title: 'Places', icon: 'mdi-map-marker', route: '/places' },
-			{ title: 'Planes', icon: 'mdi-airplane', route: '/airplane' },
-			{ title: 'People', icon: 'mdi-account-multiple', route: '/people' },
+			{
+				title: 'Sites',
+				icon: 'mdi-web',
+				route: '/sites',
+				roles: [
+					UserRoles.SITE_ADMIN,
+					UserRoles.SITE_EDITOR,
+					UserRoles.SITE_VIEWER,
+					UserRoles.SITE_VIEWER_LIMITED,
+				],
+			},
+			{
+				title: 'Places',
+				icon: 'mdi-map-marker',
+				route: '/places',
+				roles: [UserRoles.PLACE_EDITOR],
+			},
+			{
+				title: 'Planes',
+				icon: 'mdi-airplane',
+				route: '/airplane',
+				roles: [
+					UserRoles.AIRPLANE_CRASH_EDITOR,
+					UserRoles.AIRPLANE_CRASH_VIEWER,
+				],
+			},
+			{
+				title: 'People',
+				icon: 'mdi-account-multiple',
+				route: '/people',
+				roles: [UserRoles.PEOPLE_EDITOR],
+			},
 			{
 				title: 'Boats',
 				icon: 'mdi-ferry',
 				route: '/boats',
-				roles: ['Boats Editor', 'Boats Viewer'],
+				roles: [UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER],
 			},
-			{ title: 'Burials', icon: 'mdi-crosshairs-gps', route: '/burials',
-				roles: ['Burials Editor', 'Burials Viewer'],},
+			{
+				title: 'Burials',
+				icon: 'mdi-crosshairs-gps',
+				route: '/burials',
+				roles: [UserRoles.BURIALS_EDITOR, UserRoles.BURIALS_VIEWER],
+			},
 			{
 				title: 'Interpretive Sites',
 				icon: 'mdi-information',
 				route: '/interpretive-sites',
+				roles: [
+					UserRoles.INTERPRETIVE_SITES_EDITOR,
+					UserRoles.INTERPRETIVE_SITES_VIEWER,
+				],
 			},
-			{ title: 'Photos', icon: 'mdi-image', route: '/photos' },
+			{
+				title: 'Photos',
+				icon: 'mdi-image',
+				route: '/photos',
+				roles: [
+					UserRoles.PHOTO_ADMIN,
+					UserRoles.PHOTO_EDITOR,
+					UserRoles.PHOTO_VIEWER,
+				],
+			},
 			{
 				title: 'Site Change Requests',
 				icon: 'mdi-file-document-edit',
 				route: '/sites-change-requests',
+				roles: [UserRoles.SITE_ADMIN],
 			},
 		],
 	}),

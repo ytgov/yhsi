@@ -250,10 +250,7 @@ const routes = [
 		props: true,
 		meta: {
 			requiresAuth: true,
-			authorize: [
-				UserRoles.SITE_ADMIN,
-				UserRoles.SITE_EDITOR,
-			],
+			authorize: [UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR],
 		},
 	},
 	{
@@ -431,92 +428,131 @@ const routes = [
 		path: '/admin/causes',
 		name: 'CauseGrid',
 		component: Cause,
+		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
 	},
 	{
 		path: '/admin/cemetaries',
 		name: 'CemetaryGrid',
 		component: Cemetary,
+		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
 	},
 	{
 		path: '/admin/memberships',
 		name: 'MembershipGrid',
 		component: Membership,
+		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
 	},
 	{
 		path: '/admin/occupations',
 		name: 'OccupationGrid',
 		component: Occupation,
+		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
 	},
 	{
 		path: '/admin/relationships',
 		name: 'RelationsihpGrid',
 		component: Relationship,
+		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
 	},
 	{
 		path: '/admin/religions',
 		name: 'ReligionGrid',
 		component: Religion,
+		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
 	},
 	{
 		path: '/admin/categories',
 		name: 'CategoryGrid',
 		component: Category,
+		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
 	},
 	{
 		path: '/admin/asset-types',
 		name: 'AssetTypeGrid',
 		component: AssetType,
+		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
 	},
 	{
 		path: '/admin/maintainers',
 		name: 'IntSiteOwnerGrid',
 		component: IntSiteOwner,
+		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
 	},
 	{
 		path: '/admin/routes',
 		name: 'RouteGrid',
 		component: Route,
+		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
 	},
 	{
 		path: '/burials',
 		name: 'BurialsGrid',
 		component: BurialsGrid,
-		meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR, UserRoles.BURIALS_VIEWER] },
+		meta: {
+			requiresAuth: true,
+			authorize: [UserRoles.BURIALS_EDITOR, UserRoles.BURIALS_VIEWER],
+		},
 	},
 	{
 		path: '/burials/view/:name',
 		name: 'BurialsViewForm',
 		component: BurialsForm,
 		props: true,
-		meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR, UserRoles.BURIALS_VIEWER] },
+		meta: {
+			requiresAuth: true,
+			authorize: [UserRoles.BURIALS_EDITOR, UserRoles.BURIALS_VIEWER],
+		},
 	},
 	{
 		path: '/burials/edit/:id',
 		name: 'BurialsEditForm',
 		component: BurialsForm,
 		props: true,
-		meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR, UserRoles.BURIALS_VIEWER] },
+		meta: {
+			requiresAuth: true,
+			authorize: [UserRoles.BURIALS_EDITOR, UserRoles.BURIALS_VIEWER],
+		},
 	},
 	{
 		path: '/interpretive-sites',
 		name: 'InterpretiveSitesGrid',
 		component: InterpretiveSitesIndex,
-		meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] },
 		children: [
 			{
 				path: '',
 				name: 'InterpretiveSitesGrid',
 				component: InterpretiveSitesGrid,
+				meta: {
+					requiresAuth: true,
+					authorize: [
+						UserRoles.INTERPRETIVE_SITES_EDITOR,
+						UserRoles.INTERPRETIVE_SITES_VIEWER,
+					],
+				},
 			},
 			{
 				path: 'actions',
 				name: 'ActionGrid',
 				component: ActionGrid,
+				meta: {
+					requiresAuth: true,
+					authorize: [
+						UserRoles.INTERPRETIVE_SITES_EDITOR,
+						UserRoles.INTERPRETIVE_SITES_VIEWER,
+					],
+				},
 			},
 			{
 				path: 'assets',
 				name: 'AssetGrid',
 				component: AssetGrid,
+				meta: {
+					requiresAuth: true,
+					authorize: [
+						UserRoles.INTERPRETIVE_SITES_EDITOR,
+						UserRoles.INTERPRETIVE_SITES_VIEWER,
+					],
+				},
 			},
 		],
 	},
@@ -525,6 +561,13 @@ const routes = [
 		name: 'InterpretiveSitesView',
 		component: InterpretiveSitesForm,
 		props: true,
+		meta: {
+			requiresAuth: true,
+			authorize: [
+				UserRoles.INTERPRETIVE_SITES_EDITOR,
+				UserRoles.INTERPRETIVE_SITES_VIEWER,
+			],
+		},
 		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
 	},
 	{
@@ -532,12 +575,21 @@ const routes = [
 		name: 'InterpretiveSitesEdit',
 		component: InterpretiveSitesForm,
 		props: true,
+		meta: {
+			requiresAuth: true,
+			authorize: [UserRoles.INTERPRETIVE_SITES_EDITOR],
+		},
 		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
 	},
 	{
 		path: '/interpretive-sites/new',
 		name: 'InterpretiveSitesNew',
 		component: InterpretiveSitesForm,
+
+		meta: {
+			requiresAuth: true,
+			authorize: [UserRoles.INTERPRETIVE_SITES_EDITOR],
+		},
 		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
 	},
 	{

@@ -57,30 +57,36 @@
 							to="/sites"
 							v-if="
 								userInRole([
-									'Site Admin',
-									'Site Editor',
-									'Site Viewer',
-									'Site Viewer Limited',
+									UserRoles.SITE_ADMIN,
+									UserRoles.SITE_EDITOR,
+									UserRoles.SITE_VIEWER,
+									UserRoles.SITE_VIEWER_LIMITED,
 								])
 							"
 						>
 							<v-list-item-title>YHSI Sites</v-list-item-title>
 						</v-list-item>
 						<v-list-item
-							v-if="userInRole(['Site Admin'])"
+							v-if="userInRole([UserRoles.SITE_ADMIN])"
 							to="/sites-change-requests"
 						>
 							<v-list-item-title>YHSI Site Change Requests </v-list-item-title>
 						</v-list-item>
 						<v-list-item
 							to="/photos"
-							v-if="userInRole(['Photo Admin', 'Photo Editor', 'Photo Viewer'])"
+							v-if="
+								userInRole([
+									UserRoles.PHOTO_ADMIN,
+									UserRoles.PHOTO_EDITOR,
+									UserRoles.PHOTO_VIEWER,
+								])
+							"
 						>
 							<v-list-item-title>Photos</v-list-item-title>
 						</v-list-item>
 						<v-list-item
 							to="/photobatches"
-							v-if="userInRole(['Photo Editor', 'Photo Admin'])"
+							v-if="userInRole([UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR])"
 						>
 							<v-list-item-title>Photo Batches</v-list-item-title>
 						</v-list-item>
@@ -106,11 +112,21 @@
 						</v-list-item>
 						<v-list-item
 							to="/burials"
-							v-if="userInRole(['Burials Editor', 'Burials Viewer'])"
+							v-if="
+								userInRole([UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER])
+							"
 						>
 							<v-list-item-title>Burials</v-list-item-title>
 						</v-list-item>
-						<v-list-item to="/interpretive-sites">
+						<v-list-item
+							to="/interpretive-sites"
+							v-if="
+								userInRole([
+									UserRoles.INTERPRETIVE_SITES_EDITOR,
+									UserRoles.INTERPRETIVE_SITES_VIEWER,
+								])
+							"
+						>
 							<v-list-item-title>Interpretive Sites</v-list-item-title>
 						</v-list-item>
 						<v-list-item
@@ -121,7 +137,7 @@
 						</v-list-item>
 						<v-list-item
 							to="/people"
-							v-if="userInRole([UserRoles.ADMINISTRATOR])"
+							v-if="userInRole([UserRoles.PEOPLE_EDITOR])"
 						>
 							<v-list-item-title>People</v-list-item-title>
 						</v-list-item>

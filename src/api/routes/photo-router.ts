@@ -6,7 +6,6 @@ import { Photo, SavedFilter } from '../data';
 import multer from 'multer';
 import { createThumbnail } from '../utils/image';
 import { ReturnValidationErrors } from '../middleware';
-import sharp from 'sharp';
 
 const photoService = new PhotoService(DB_CONFIG);
 const ytPlaceService = new YtPlaceService(DB_CONFIG);
@@ -26,11 +25,11 @@ photoRouter.get(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let page = parseInt(req.query.page as string);
-		let skip = (page - 1) * PAGE_SIZE;
-		let take = PAGE_SIZE;
+		const page = parseInt(req.query.page as string);
+		const skip = (page - 1) * PAGE_SIZE;
+		const take = PAGE_SIZE;
 
-		let list = await photoService
+		const list = await photoService
 			.getAll(skip, take)
 			.then((data) => data)
 			.catch((err) => {
@@ -38,7 +37,7 @@ photoRouter.get(
 				return undefined;
 			});
 
-		let item_count = await photoService
+		const item_count = await photoService
 			.getPhotoCount()
 			.then((data) => data)
 			.catch((err) => {
@@ -46,7 +45,7 @@ photoRouter.get(
 				return 0;
 			});
 
-		let page_count = Math.ceil(item_count / PAGE_SIZE);
+		const page_count = Math.ceil(item_count / PAGE_SIZE);
 
 		if (list) {
 			return res.json({
@@ -63,10 +62,10 @@ photoRouter.post(
 	'/search',
 	[body('page').isInt().default(1)],
 	async (req: Request, res: Response) => {
-		let { query, sort, page } = req.body;
+		const { query, sort, page } = req.body;
 
-		let skip = (page - 1) * PAGE_SIZE;
-		let take = PAGE_SIZE;
+		const skip = (page - 1) * PAGE_SIZE;
+		const take = PAGE_SIZE;
 		await photoService
 			.doSearch(query, sort, page, PAGE_SIZE, skip, take)
 			.then((results) => {
@@ -211,7 +210,7 @@ photoRouter.post(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let result = await photoService
+		const result = await photoService
 			.addPhoto(req.body as Photo)
 			.then((item) => item)
 			.catch((err) => {
@@ -241,7 +240,7 @@ photoRouter.put(
 		body('isPrivate').notEmpty().bail().isBoolean(),
 	],
 	async (req: Request, res: Response) => {
-		let updater = req.body;
+		const updater = req.body;
 		const errors = validationResult(req);
 
 		delete updater.file;
@@ -262,7 +261,7 @@ photoRouter.put(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let result = await photoService
+		const result = await photoService
 			.updatePhoto(req.params.id, updater as Photo)
 			.then((item) => item)
 			.catch((err) => {
@@ -288,7 +287,7 @@ photoRouter.put(
 				//console.log(err);
 				return res.json({ errors: [err.originalError.info.message] });
 			});
-		let thumbnail = await createThumbnail(req.file.buffer);
+		const thumbnail = await createThumbnail(req.file.buffer);
 		result = await photoService.updateThumbFile(req.params.id, thumbnail);
 
 		return res.json({ data: result });
@@ -311,7 +310,7 @@ photoRouter.post(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let result = await photoService
+		const result = await photoService
 			.addSavedFilter(req.body as SavedFilter)
 			.then((item) => item)
 			.catch((err) => {
@@ -334,7 +333,7 @@ photoRouter.delete(
 		}
 
 		const id = req.params.id as string;
-		let list = await photoService.deleteSavedFilter(parseInt(id));
+		const list = await photoService.deleteSavedFilter(parseInt(id));
 		return res.json({ data: list });
 	}
 );
@@ -399,10 +398,10 @@ photoRouter.get(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let results = await photoService.getYtPlaceAssociations(req.params.id);
+		const results = await photoService.getYtPlaceAssociations(req.params.id);
 
 		if (results) {
-			for (let place of results) {
+			for (const place of results) {
 				place.placeTypes = await ytPlaceService.getPlaceTypesFor(place.id);
 				place.placeTypes = combine(
 					place.placeTypes,
@@ -440,10 +439,10 @@ photoRouter.get(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let results = await photoService.getBoatAssociations(req.params.id);
+		const results = await photoService.getBoatAssociations(req.params.id);
 
 		if (results) {
-			for (let boat of results) {
+			for (const boat of results) {
 				boat.owners = await boatService.getOwnerNames(boat.id);
 				boat.owners = boat.owners.map((x: any) => (x = x.ownerName));
 			}
@@ -464,7 +463,7 @@ photoRouter.get(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let results = await photoService.getAircrashAssociations(req.params.id);
+		const results = await photoService.getAircrashAssociations(req.params.id);
 
 		res.json({ data: results });
 	}
@@ -481,7 +480,7 @@ photoRouter.get(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let results = await photoService.getPeopleAssociations(req.params.id);
+		const results = await photoService.getPeopleAssociations(req.params.id);
 
 		res.json({ data: results });
 	}
@@ -498,7 +497,7 @@ photoRouter.get(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let results = await photoService.getBurialAssociations(req.params.id);
+		const results = await photoService.getBurialAssociations(req.params.id);
 
 		res.json({ data: results });
 	}
@@ -515,7 +514,7 @@ photoRouter.get(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let results = await photoService.getIntSiteAssociations(req.params.id);
+		const results = await photoService.getIntSiteAssociations(req.params.id);
 
 		res.json({ data: results });
 	}
@@ -712,10 +711,10 @@ function combine(
 	typeText: any = 'typeText'
 ): any[] {
 	list1.forEach((item) => {
-		let match = list2.filter((i) => i[linker] == item[linker2]);
+		const match = list2.filter((i) => i[linker] == item[linker2]);
 
 		if (match && match[0]) {
-			let add = { [typeText]: match[0][value] };
+			const add = { [typeText]: match[0][value] };
 			item = Object.assign(item, add);
 		} else item = Object.assign(item, { [typeText]: null });
 	});

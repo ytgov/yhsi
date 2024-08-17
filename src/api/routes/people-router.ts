@@ -6,6 +6,8 @@ import { param, query } from 'express-validator';
 import { PeopleService } from '../services';
 import { renderFile } from 'pug';
 import { generatePDF } from '../utils/pdf-generator';
+import { authorize } from '../middleware/authorization';
+import { UserRoles } from '../models';
 
 const peopleService = new PeopleService();
 export const peopleRouter = express.Router();
@@ -13,6 +15,7 @@ const db = knex(DB_CONFIG);
 
 peopleRouter.get(
 	'/',
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
 	[
 		query('page').default(0).isInt(),
 		query('limit').default(10).isInt({ gt: 0 }),
@@ -43,6 +46,7 @@ peopleRouter.get(
 
 peopleRouter.get(
 	'/:personId',
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { personId } = req.params;
@@ -63,6 +67,7 @@ peopleRouter.get(
 //Modify Person
 peopleRouter.put(
 	'/:personId',
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { personId } = req.params;
@@ -82,6 +87,7 @@ peopleRouter.put(
 
 peopleRouter.post(
 	'/',
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { person } = req.body;
@@ -102,6 +108,7 @@ peopleRouter.post(
 
 peopleRouter.get(
 	'/:personId/histories',
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { personId } = req.params;
@@ -124,6 +131,7 @@ peopleRouter.get(
 
 peopleRouter.put(
 	'/history/:historyId',
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { historyId } = req.params;
@@ -148,6 +156,7 @@ peopleRouter.put(
 
 peopleRouter.post(
 	'/:personId/history',
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { personId } = req.params;
@@ -182,6 +191,7 @@ peopleRouter.post(
 
 peopleRouter.post(
 	'/pdf',
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const {
@@ -212,6 +222,7 @@ peopleRouter.post(
 
 peopleRouter.post(
 	'/pdf/:personId',
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
 	[param('personId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
@@ -232,6 +243,7 @@ peopleRouter.post(
 
 peopleRouter.post(
 	'/export',
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const {
