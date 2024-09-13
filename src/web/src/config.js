@@ -143,8 +143,6 @@ export const sections = [
 export const environment = process.env.NODE_ENV;
 //export const apiBaseUrl = process.env.NODE_ENV == "production" ? "https://api.gov.yk.ca/heritage" : "http://localhost:4125";
 
-console.log('ORIGIN', window.location.origin);
-
 export const apiBaseUrl =
 	process.env.NODE_ENV == 'production' || process.env.NODE_ENV == 'test'
 		? window.location.origin
