@@ -131,8 +131,6 @@ export default {
 					config,
 					Search,
 				]) => {
-					console.log('LoadModules Callback');
-
 					IdentityManager.registerToken({
 						server: 'https://yukon.maps.arcgis.com',
 						token: resp.access_token,
@@ -142,19 +140,12 @@ export default {
 						token: resp.access_token,
 					});
 
-					console.log('INTERCEPTOR FOR', `${MAPS_URL}/sites`);
-					console.log(config);
-
 					config.request.interceptors.push({
 						urls: `${MAPS_URL}/sites`,
 						before: function (params) {
 							params.requestOptions.withCredentials = true;
 						},
 						after: function (response) {
-							console.log(
-								'AFTER',
-								response.data.supportedQueryFormats,
-							);
 							response.data.supportedQueryFormats = 'JSON';
 						},
 					});
