@@ -39,84 +39,120 @@
 						<v-col
 							v-for="(item, index) in photos"
 							:key="`photo-${index + 1}`"
-							cols="6"
+							cols="12"
+							md="6"
 						>
-							<v-row>
-								<v-col cols="10"> 
-									<img
-										class="center-img"
-										max-width="128"
+							<v-card>
+								<div style="width: 100%; overflow-x: hidden">
+									<v-img
+										v-if="item.img"
+										height="250px"
+										:src="item.img"
+										placeholder="No image selected"
+										aspect-ratio=".5"
+									/>
+									<v-img
+										v-else
+										height="250px"
 										:src="makeThumbnailUrl(item)"
 									/>
-								</v-col>
-								<v-col cols="2">
-									<v-btn
-										color="warning"
-										x-small
-										fab
-										title="Remove"
-										class="my-0 float-right"
+								</div>
+								<v-divider />
+								<v-card-text>
+									<v-file-input
+										v-if="isEditing"
+										v-model="item.file"
+										:id="`fi-${index}`"
+										label="Upload image"
+										prepend-inner-icon="mdi-camera"
+										prepend-icon=""
+										accept="image/*"
+										dense
+										outlined
+										background-color="white"
+										@change="onFileSelection($event, index)"
+									/>
+
+									<v-text-field
+										v-model="item.featureName"
+										label="Feature name"
+										dense
+										outlined
+										background-color="white"
 										:readonly="!isEditing"
-										@click="removePhoto(index)"
-									>
-										<v-icon>mdi-close</v-icon>
-									</v-btn>
-								</v-col>
-							</v-row>
-							<v-text-field
-								v-model="item.featureName"
-								label="Feature name"
-								dense
-								outlined
-								background-color="white"
-								:readonly="!isEditing"
-							/>
+									/>
 
-							<v-text-field
-								v-model="item.caption"
-								label="Caption"
-								dense
-								outlined
-								background-color="white"
-								:readonly="!isEditing"
-							/>
+									<v-text-field
+										v-model="item.caption"
+										label="Caption"
+										dense
+										outlined
+										background-color="white"
+										:readonly="!isEditing"
+									/>
 
-							<v-text-field
-								v-model="item.comments"
-								label="Comments"
-								dense
-								outlined
-								background-color="white"
-								:readonly="!isEditing"
-							/>
+									<v-text-field
+										v-model="item.comments"
+										label="Comments"
+										dense
+										outlined
+										background-color="white"
+										:readonly="!isEditing"
+									/>
 
-							<v-text-field
-								v-model="item.creditLine"
-								label="Credit line"
-								dense
-								outlined
-								background-color="white"
-								:readonly="!isEditing"
-							/>
+									<v-text-field
+										v-model="item.creditLine"
+										label="Credit line"
+										dense
+										outlined
+										background-color="white"
+										:readonly="!isEditing"
+									/>
 
-							<v-text-field
-								v-model="item.location"
-								label="Location"
-								dense
-								outlined
-								background-color="white"
-								:readonly="!isEditing"
-							/>
-							<v-file-input
-								:id="`fi-${index}`"
-								label="Upload image"
-								prepend-icon="mdi-camera"
-								accept="image/*"
-								dense
-								outlined
-								background-color="white"
-								@change="onFileSelection($event, index)"
-							/>
+									<v-text-field
+										v-model="item.location"
+										label="Location"
+										dense
+										outlined
+										background-color="white"
+										:readonly="!isEditing"
+									/>
+
+									<div class="d-flex">
+										<v-btn
+											color="primary"
+											small
+											title="Download"
+											class="my-0 mr-3"
+											@click="downloadPhoto(item)"
+										>
+											<v-icon>mdi-download</v-icon>
+										</v-btn>
+										<v-btn
+											color="info"
+											small
+											title="open"
+											class="my-0 mr-3"
+											@click="openPhotoPage(item)"
+										>
+											<v-icon>mdi-open-in-new</v-icon>
+										</v-btn>
+
+										<v-spacer />
+
+										<!-- <v-btn
+											v-if="isEditing"
+											color="warning"
+											small
+											title="Remove"
+											class="my-0"
+											@click="removePhoto(index)"
+										>
+											<v-icon>mdi-delete</v-icon>
+										</v-btn> -->
+									</div>
+								</v-card-text>
+							</v-card>
 						</v-col>
 					</v-row>
 				</v-card-text>
@@ -151,6 +187,7 @@ import axios from 'axios';
 
 import store from '@/store';
 import { PLACE_URL, PHOTO_URL } from '@/urls';
+import { mapActions } from 'vuex';
 
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
@@ -185,6 +222,7 @@ export default {
 			.catch((error) => console.error(error));
 	},
 	methods: {
+		...mapActions('places', ['savePhotos']),
 		addPhoto() {
 			this.photos.push({});
 		},
@@ -194,19 +232,30 @@ export default {
 		onFileSelection(event, i) {
 			if (event) {
 				//this.fields.photos[i].img = URL.createObjectURL(event.target.files[0]);
-				this.fields.photos[i].img = URL.createObjectURL(event);
+				this.photos[i].img = URL.createObjectURL(event);
 			} else {
-				this.fields.photos[i].img = null;
+				this.photos[i].img = null;
 			}
 		},
-		save() {
-			console.error('Not implemented');
+		async save() {
+			await this.savePhotos(this.photos);
 		},
 		makeThumbnailUrl(photo) {
 			return `${PHOTO_URL}/${photo.rowId}/thumbfile`;
 		},
 		makePhotoUrl(photo) {
 			return `${PHOTO_URL}/${photo.rowId}/thumbfile`;
+		},
+
+		downloadPhoto(item) {
+			console.log(item);
+			window.open(`${PHOTO_URL}/${item.rowId}/file/download`);
+		},
+
+		openPhotoPage(item) {
+			localStorage.setItem('currentRowId', item.rowId);
+			this.$store.commit('photos/setRowId', item.rowId);
+			window.open(`/photos/view`);
 		},
 	},
 };

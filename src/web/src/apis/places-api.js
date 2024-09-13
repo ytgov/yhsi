@@ -48,4 +48,17 @@ export default {
 				return Promise.reject(error);
 			});
 	},
+	uploadPhoto(id, data) {
+		return http
+			.post(`${placeUrl}/${id}/photo`, data, {
+				headers: {
+					'Content-Type': 'multipart/form-data',
+				},
+			})
+			.then((response) => response.data)
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
+	},
 };

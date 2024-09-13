@@ -8,17 +8,19 @@ import {
 	matchedData,
 } from 'express-validator';
 import fs from 'fs';
+import multer from 'multer';
 import { create } from 'handlebars';
 import handlebarsHelpers from '../utils/handlebars-helpers';
 
 import { API_PORT, DB_CONFIG } from '../config';
-import { PlaceService } from '../services';
+import { PhotoService, PlaceService } from '../services';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
 import { Place, User, UserRoles } from '../models';
 import PlacesController from '../controllers/places-controller';
 import { PlacePolicy } from '../policies';
 import { generatePDF } from '../utils/pdf-generator';
+import { createThumbnail } from '../utils/image';
 
 const placeService = new PlaceService(DB_CONFIG);
 const PAGE_SIZE = 10;
@@ -215,6 +217,37 @@ placeRouter.post(
 			});
 
 		return res.json({ data: result });
+	}
+);
+
+placeRouter.post(
+	'/:id/photo',
+	authorize([
+		UserRoles.SITE_ADMIN,
+		UserRoles.SITE_EDITOR,
+		UserRoles.ADMINISTRATOR,
+	]),
+	multer().single('file'),
+	async (req: Request, res: Response) => {
+		try {
+			const { id } = req.params;
+
+			const ThumbFile = await createThumbnail(req.file.buffer);
+			const body = {
+				File: req.file.buffer,
+				ThumbFile,
+				...req.body,
+				placeId: id,
+				dateCreated: new Date(),
+			};
+
+			const photoService = new PhotoService(DB_CONFIG);
+			photoService.addPhoto(body);
+
+			return res.json({ data: 'success' });
+		} catch (err) {
+			return res.json({ data: 'failuer', error: err });
+		}
 	}
 );
 

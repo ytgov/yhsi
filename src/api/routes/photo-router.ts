@@ -130,6 +130,32 @@ photoRouter.get(
 );
 
 photoRouter.get(
+	'/:id/file/download',
+	[check('id').notEmpty().isUUID()],
+	async (req: Request, res: Response) => {
+		const errors = validationResult(req);
+
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
+
+		await photoService
+			.getFileById(req.params.id)
+			.then((photo) => {
+				if (photo && photo.file) {
+					return res.contentType('image/jpg').send(photo.file);
+				}
+
+				return res.status(404).send('Photo not found');
+			})
+			.catch((err) => {
+				console.error(err);
+				return res.status(404).send('Photo not found');
+			});
+	}
+);
+
+photoRouter.get(
 	'/:id/thumbfile',
 	[check('id').notEmpty().isUUID()],
 	async (req: Request, res: Response) => {

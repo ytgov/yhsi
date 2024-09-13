@@ -114,5 +114,45 @@ export default {
 					commit('setLoading', false);
 				});
 		},
+
+		async savePhotos({ commit, state }, data) {
+			commit('setLoading', true);
+
+			for (const photo of data) {
+				if (photo.rowId) continue;
+
+				const formData = new FormData();
+				formData.append('caption', photo.caption || '');
+				formData.append('comments', photo.comments || '');
+				formData.append('creditLine', photo.creditLine || '');
+				formData.append('featureName', photo.featureName || '');
+				formData.append('yhsiRecord', state.place.yHSIId);
+				formData.append('ntsMapNumber', state.place.nTSMapSheet);
+				formData.append('file', photo.file);
+				formData.append('location', photo.location || '');
+				formData.append('communityId', state.place.communityId);
+				formData.append('isOtherRecord', false);
+				formData.append('originalMediaId', 1); // ditital
+				formData.append('mediaStorage', 4); // database
+				formData.append('copyright', 6); // incomplete
+				formData.append('ownerId', 1); // historic sites
+				formData.append('photoProjectId', 79); // none selected
+				formData.append('program', 4); // YHSI
+				formData.append('isComplete', false);
+				formData.append('rating', 1);
+				formData.append('isSiteDefault', false);
+
+				await api
+					.uploadPhoto(state.place.id, formData)
+					.then((resp) => {
+						console.log(resp);
+					})
+					.catch((err) => {
+						console.log('ERRROR', err);
+					});
+			}
+
+			commit('setLoading', false);
+		},
 	},
 };
