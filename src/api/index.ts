@@ -99,7 +99,7 @@ app.use(
 			'connect-src': [
 				"'self'",
 				'https://*.arcgis.com',
-				'https://services.arcgisonline.com',
+				'https://*.arcgisonline.com',
 				'https://mapservices.gov.yk.ca',
 			],
 		},
