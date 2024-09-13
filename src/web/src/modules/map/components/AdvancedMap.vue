@@ -146,6 +146,11 @@ export default {
 							params.requestOptions.withCredentials = true;
 						},
 						after: function (response) {
+							console.log(
+								'AFTER',
+								response.data.supportedQueryFormats,
+								response.data
+							);
 							response.data.supportedQueryFormats = 'JSON';
 						},
 					});
