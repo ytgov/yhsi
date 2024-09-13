@@ -105,6 +105,8 @@ export default {
 	mounted: function () {
 		let parent = this;
 
+		console.log('MOUNT');
+
 		this.loadToken().then((resp) => {
 			loadModules(
 				[
@@ -131,6 +133,8 @@ export default {
 					config,
 					Search,
 				]) => {
+					console.log('LoadModules Callback');
+
 					IdentityManager.registerToken({
 						server: 'https://yukon.maps.arcgis.com',
 						token: resp.access_token,
