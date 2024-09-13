@@ -1,9 +1,9 @@
 <template>
 	<div style="height: 100%">
 		<v-navigation-drawer
+			v-model="sidebarVisible"
 			absolute
 			temporary
-			v-model="sidebarVisible"
 			width="400"
 		>
 			<v-tabs
@@ -105,8 +105,6 @@ export default {
 	mounted: function () {
 		let parent = this;
 
-		console.log('MOUNT');
-
 		this.loadToken().then((resp) => {
 			loadModules(
 				[
@@ -143,6 +141,8 @@ export default {
 						server: `${MAPS_URL}/sites`,
 						token: resp.access_token,
 					});
+
+					console.log('INTERCEPTOR FOR', `${MAPS_URL}/sites`);
 
 					config.request.interceptors.push({
 						urls: `${MAPS_URL}/sites`,
