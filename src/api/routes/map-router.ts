@@ -35,15 +35,15 @@ mapsRouter.get('/', authorize(), async (req, res) => {
 mapsRouter.get('/sites*', authorize(), async (req: Request, res: Response) => {
 	await loadFeatureToken();
 
-	let currentUser = req.user as User;
-	let query = req.query;
+	const currentUser = req.user as User;
+	const query = req.query;
 	delete query.token;
-	let queryString = stringify(query as any);
+	const queryString = stringify(query as any);
 
 	let path = req.path;
 	path = path.replace(/^\/sites/, '');
 
-	let ms = `https://deptweb.gov.yk.ca/arcgis/rest/services/Tour_YHIS/YHIS_Internal/MapServer${path}?${queryString}`;
+	const ms = `https://deptweb.gov.yk.ca/prod/rest/services/TC-YHSI/YHIS_Internal/MapServer${path}?${queryString}`;
 
 	await axios
 		.get(ms, {
@@ -68,7 +68,7 @@ mapsRouter.get('/sites*', authorize(), async (req: Request, res: Response) => {
 });
 
 async function loadPortalToken() {
-	let now = moment().utc(true);
+	const now = moment().utc(true);
 
 	if (now.isBefore(PORTAL_TOKEN.renew_after)) return;
 
@@ -104,7 +104,7 @@ async function loadFeatureToken() {
 
 	await axios
 		.post(
-			`https://deptweb.gov.yk.ca/arcgis/tokens/generateToken`,
+			`https://deptweb.gov.yk.ca/prod/tokens/generateToken`,
 			stringify(body),
 			{ headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
 		)
@@ -119,15 +119,15 @@ async function loadFeatureToken() {
 }
 
 async function filterSites(portalResponse: any, user: User) {
-	let results = await placeService.getIdsForUser(user);
-	let accessList = results.map((r) => r.yHSIId);
+	const results = await placeService.getIdsForUser(user);
+	const accessList = results.map((r) => r.yHSIId);
 
 	if (portalResponse.features) {
-		let filtered = new Array();
+		const filtered = [];
 
-		for (let feature of portalResponse.features) {
+		for (const feature of portalResponse.features) {
 			if (feature.attributes && feature.attributes.YHSI_ID) {
-				let id = feature.attributes.YHSI_ID;
+				const id = feature.attributes.YHSI_ID;
 
 				if (accessList.indexOf(id) >= 0) filtered.push(feature);
 			} else {
