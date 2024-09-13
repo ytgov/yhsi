@@ -6,25 +6,44 @@
 			v-model="sidebarVisible"
 			width="400"
 		>
-			<v-tabs v-model="tab" background-color="#fff2d5" color="primary">
+			<v-tabs
+				v-model="tab"
+				background-color="#fff2d5"
+				color="primary"
+			>
 				<v-tab key="0">Layers</v-tab>
 				<v-tab key="1">Basemap</v-tab>
 				<v-tab key="2">Legend</v-tab>
 			</v-tabs>
-			<v-tabs-items v-model="tab" style="padding: 20px">
-				<v-tab-item key="0" eager>
+			<v-tabs-items
+				v-model="tab"
+				style="padding: 20px"
+			>
+				<v-tab-item
+					key="0"
+					eager
+				>
 					<div id="list"></div>
 				</v-tab-item>
-				<v-tab-item key="1" eager>
+				<v-tab-item
+					key="1"
+					eager
+				>
 					<div id="gallery"></div>
 				</v-tab-item>
-				<v-tab-item key="2" eager>
+				<v-tab-item
+					key="2"
+					eager
+				>
 					<div id="legend"></div>
 				</v-tab-item>
 			</v-tabs-items>
 		</v-navigation-drawer>
 
-		<div class="map" id="map"></div>
+		<div
+			class="map"
+			id="map"
+		></div>
 	</div>
 </template>
 
@@ -125,6 +144,9 @@ export default {
 						urls: `${MAPS_URL}/sites`,
 						before: function (params) {
 							params.requestOptions.withCredentials = true;
+						},
+						after: function (response) {
+							response.data.supportedQueryFormats = 'JSON';
 						},
 					});
 
@@ -263,6 +285,7 @@ export default {
 							url: `${MAPS_URL}/sites/0`,
 							popupTemplate: YHSIpopup,
 							outFields: ['YHSI_ID'],
+							format: 'json',
 						});
 
 						searchWidget.sources.push({
@@ -338,6 +361,7 @@ export default {
 						var crash = new FeatureLayer({
 							url: `${MAPS_URL}/sites/1`,
 							popupTemplate: CrashPopup,
+							format: 'json',
 						});
 
 						searchWidget.sources.push({
