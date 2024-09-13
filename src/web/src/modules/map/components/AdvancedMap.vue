@@ -143,6 +143,7 @@ export default {
 					});
 
 					console.log('INTERCEPTOR FOR', `${MAPS_URL}/sites`);
+					console.log(config);
 
 					config.request.interceptors.push({
 						urls: `${MAPS_URL}/sites`,
@@ -153,7 +154,6 @@ export default {
 							console.log(
 								'AFTER',
 								response.data.supportedQueryFormats,
-								response.data
 							);
 							response.data.supportedQueryFormats = 'JSON';
 						},
