@@ -24,13 +24,8 @@
 				class="default"
 				tag="section"
 			>
-				<v-card-title
-					tag="h3"
-					class="mb-0 text-h6"
-				>
-					Conditions
-				</v-card-title>
 				<v-card-text>
+					<h3>Conditions</h3>
 					<v-row>
 						<v-col cols="6">
 							<ConditionTypesSelect

@@ -251,6 +251,35 @@ placeRouter.post(
 	}
 );
 
+placeRouter.get(
+	'/:id/primary-photo',
+	authorize([
+		UserRoles.SITE_ADMIN,
+		UserRoles.SITE_EDITOR,
+		UserRoles.SITE_VIEWER,
+		UserRoles.SITE_VIEWER_LIMITED,
+		UserRoles.ADMINISTRATOR,
+	]),
+	multer().single('file'),
+	async (req: Request, res: Response) => {
+		try {
+			const { id } = req.params;
+			const photoService = new PhotoService(DB_CONFIG);
+			const placePhotos = await photoService.getForPlace(parseInt(id));
+
+			const defaultPhoto = placePhotos.find((photo) => photo.isSiteDefault);
+			if (defaultPhoto) return res.json({ data: defaultPhoto });
+
+			const otherPhotos = placePhotos.filter((photo) => !photo.isPrivate);
+			if (otherPhotos) return res.json({ data: otherPhotos[0] });
+
+			return res.json({ data: null });
+		} catch (err) {
+			return res.json({ data: 'failuer', error: err });
+		}
+	}
+);
+
 placeRouter.patch(
 	'/:id',
 	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),

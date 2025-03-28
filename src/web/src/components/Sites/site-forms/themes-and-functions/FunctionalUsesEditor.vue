@@ -1,47 +1,62 @@
-<template lang="pug">
-v-card.default.mb-0(tag="section")
-	v-card-title.mb-0.text-h6(tag="h3")
-		| Functional Uses
-	v-card-text(tag="form")
-		v-row(
-			v-for="(functionalUse, i) in functionalUses",
-			:key="i"
-		)
-			v-col(cols="10")
-				v-row
-					v-col(cols="4")
-						FunctionalUseTypeSelect(
-							v-model="functionalUse.functionalUseType"
-							dense
-							outlined
-							hide-details
-							background-color="white"
-						)
-					v-col(cols="8")
-						FunctionalTypeSelect(
-							v-model="functionalUse.functionalTypeId"
-							dense
-							outlined
-							hide-details
-							background-color="white"
-						)
-			v-col(cols="2")
-				v-btn.my-0.float-right(
-					v-if="isEditing"
-					color="warning"
-					x-small
-					fab
-					title="Remove"
-					@click="removeUse(i)"
-				)
-					v-icon mdi-close
-	v-card-actions
-		v-btn.my-0(
-			v-if="isEditing"
-			color="primary"
-			@click="addUse"
-		)
-			| Add Functional Use
+<template>
+	<v-card
+		class="default mb-0"
+		tag="section"
+	>
+		<v-card-text tag="form">
+			<h3>Functional Uses</h3>
+			<div v-if="!functionalUses.length">No functional uses found.</div>
+			<v-row
+				v-for="(functionalUse, i) in functionalUses"
+				:key="i"
+			>
+				<v-col cols="10">
+					<v-row>
+						<v-col cols="4">
+							<FunctionalUseTypeSelect
+								v-model="functionalUse.functionalUseType"
+								dense
+								outlined
+								hide-details
+								background-color="white"
+							/>
+						</v-col>
+						<v-col cols="8">
+							<FunctionalTypeSelect
+								v-model="functionalUse.functionalTypeId"
+								dense
+								outlined
+								hide-details
+								background-color="white"
+							/>
+						</v-col>
+					</v-row>
+				</v-col>
+				<v-col cols="2">
+					<v-btn
+						class="my-0 float-right"
+						v-if="isEditing"
+						color="warning"
+						x-small
+						fab
+						title="Remove"
+						@click="removeUse(i)"
+					>
+						<v-icon>mdi-close</v-icon>
+					</v-btn>
+				</v-col>
+			</v-row>
+		</v-card-text>
+		<v-card-actions v-if="isEditing">
+			<v-btn
+				class="my-0"
+				color="primary"
+				@click="addUse"
+			>
+				Add Functional Use
+			</v-btn>
+		</v-card-actions>
+	</v-card>
 </template>
 
 <script>

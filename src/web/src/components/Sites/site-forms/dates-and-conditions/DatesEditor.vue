@@ -3,13 +3,9 @@
 		tag="section"
 		class="default mb-4"
 	>
-		<v-card-title
-			tag="h3"
-			class="mb-0 text-h6"
-		>
-			Dates
-		</v-card-title>
 		<v-card-text tag="form">
+			<h3>Dates</h3>
+			<div v-if="!dates.length">No dates found.</div>
 			<div
 				v-for="(date, i) in dates"
 				:key="i"
@@ -121,9 +117,8 @@
 				</v-row>
 			</div>
 		</v-card-text>
-		<v-card-actions>
+		<v-card-actions v-if="isEditing">
 			<v-btn
-				v-if="isEditing"
 				class="my-0"
 				color="primary"
 				@click="addDate"

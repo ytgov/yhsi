@@ -1,50 +1,61 @@
-<template lang="pug">
-v-card.default
-	v-card-title.mb-0.text-h6(tag="h3")
-		| Web Links
-	v-card-text(tag="form")
-		div(
-			v-for="(item, i) in webLinks",
-			:key="`web-link-${i + 1}`"
-		)
-			v-row.mb-2
-				v-col(cols="5")
-					WebLinkTypeSelect(
-						:readonly="!isEditing"
-						v-model="item.type"
-						dense
-						outlined
-						hide-details
-						background-color="white"
-					)
-				v-col(cols="5")
-					v-text-field(
-						:readonly="!isEditing"
-						v-model="item.address"
-						label="Web Address"
-						required
-						dense
-						outlined
-						hide-details
-						background-color="white"
-					)
-				v-col(cols="2")
-					v-btn.my-0.float-right(
-						v-if="isEditing"
-						color="warning"
-						x-small
-						fab
-						title="Remove"
-						@click="removeLink(i)"
-					)
-						v-icon(dark) mdi-close
-	v-card-actions
-		v-btn.my-0(
-			v-if="isEditing"
-			color="primary"
-			@click="addLink"
-		)
-			| Add New
+<template>
+	<v-card class="default">
+		<v-card-text tag="form">
+			<h3>Web Links</h3>
+			<div v-if="!webLinks.length">No web links found.</div>
+			<div
+				v-for="(item, i) in webLinks"
+				:key="`web-link-${i + 1}`"
+			>
+				<v-row class="mb-2">
+					<v-col cols="5">
+						<WebLinkTypeSelect
+							:readonly="!isEditing"
+							v-model="item.type"
+							dense
+							outlined
+							hide-details
+							background-color="white"
+						/>
+					</v-col>
+					<v-col cols="5">
+						<v-text-field
+							:readonly="!isEditing"
+							v-model="item.address"
+							label="Web Address"
+							required
+							dense
+							outlined
+							hide-details
+							background-color="white"
+						/>
+					</v-col>
+					<v-col cols="2">
+						<v-btn
+							class="my-0 float-right"
+							v-if="isEditing"
+							color="warning"
+							x-small
+							fab
+							title="Remove"
+							@click="removeLink(i)"
+						>
+							<v-icon dark>mdi-close</v-icon>
+						</v-btn>
+					</v-col>
+				</v-row>
+			</div>
+		</v-card-text>
+		<v-card-actions v-if="isEditing">
+			<v-btn
+				class="my-0"
+				color="primary"
+				@click="addLink"
+			>
+				Add New
+			</v-btn>
+		</v-card-actions>
+	</v-card>
 </template>
 
 <script>

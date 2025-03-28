@@ -1,47 +1,60 @@
-<template lang="pug">
-v-card.default.mb-0(tag="section")
-	v-card-title.mb-0.text-h6(tag="h3")
-		| Ownerships
-	v-card-text(tag="form")
-		v-row(
-			v-for="(ownership, i) in ownerships",
-			:key="i"
-		)
-			v-col(cols="5")
-				OwnershipTypesSelect(
-					v-model="ownership.ownershipType"
-					dense
-					outlined
-					background-color="white"
-					hide-details
-				)
-			v-col(cols="5")
-				v-text-field(
-					:readonly="!isEditing"
-					v-model="ownership.comments"
-					label="Comments"
-					dense
-					outlined
-					background-color="white"
-					hide-details
-				)
-			v-col(cols="2")
-				v-btn.my-0.float-right(
-					v-if="isEditing"
-					color="warning"
-					x-small
-					fab
-					title="Remove"
-					@click="removeOwner(i)"
-				)
-					v-icon mdi-close
-	v-card-actions
-		v-btn.my-0(
-			v-if="isEditing"
-			color="primary"
-			@click="addOwner"
-		)
-			| Add Ownership
+<template>
+	<v-card
+		class="default mb-0"
+		tag="section"
+	>
+		<v-card-text tag="form">
+			<h3>Ownerships</h3>
+			<div v-if="ownerships.length === 0">No ownerships found</div>
+			<v-row
+				v-for="(ownership, i) in ownerships"
+				:key="i"
+			>
+				<v-col cols="5">
+					<OwnershipTypesSelect
+						v-model="ownership.ownershipType"
+						dense
+						outlined
+						background-color="white"
+						hide-details
+					/>
+				</v-col>
+				<v-col cols="5">
+					<v-text-field
+						:readonly="!isEditing"
+						v-model="ownership.comments"
+						label="Comments"
+						dense
+						outlined
+						background-color="white"
+						hide-details
+					/>
+				</v-col>
+				<v-col cols="2">
+					<v-btn
+						class="my-0 float-right"
+						v-if="isEditing"
+						color="warning"
+						x-small
+						fab
+						title="Remove"
+						@click="removeOwner(i)"
+					>
+						<v-icon>mdi-close</v-icon>
+					</v-btn>
+				</v-col>
+			</v-row>
+		</v-card-text>
+		<v-card-actions v-if="isEditing">
+			<v-btn
+				class="my-0"
+				color="primary"
+				@click="addOwner"
+			>
+				Add Ownership
+			</v-btn>
+		</v-card-actions>
+	</v-card>
 </template>
 
 <script>

@@ -46,13 +46,8 @@
 						class="default mb-4"
 						tag="section"
 					>
-						<v-card-title
-							tag="h3"
-							class="mb-0 text-h6"
-						>
-							Physical Address
-						</v-card-title>
 						<v-card-text>
+							<h3>Physical Address</h3>
 							<v-textarea
 								v-model="place.physicalAddress"
 								dense

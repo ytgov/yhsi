@@ -41,6 +41,18 @@ export class PhotoService {
 			});
 	}
 
+	async getForPlace(id: number): Promise<Photo[]> {
+
+		console.log("GETTING PHOTOS FOR PLACE", id);
+		return this.knex('photo')
+			.select<Photo[]>(PHOTO_FIELDS)
+			.where({ placeId: id })
+			.catch((err: any) => {
+				console.log('BOMBED', err);
+				return new Array<Photo>();
+			});
+	}
+
 	async getAllForRegisterPlace(id: number): Promise<Photo[]> {
 		return this.knex('place')
 			.select<Photo[]>(PHOTO_FIELDS)

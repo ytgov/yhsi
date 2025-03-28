@@ -24,6 +24,15 @@
 						:readonly="!isEditing"
 					/>
 
+					<v-text-field
+						v-model="place.primaryName"
+						dense
+						outlined
+						label="Primary name"
+						required
+						:readonly="!isEditing"
+					/>
+
 					<DesignationTypesSelect
 						v-model="place.designations"
 						dense
@@ -66,22 +75,12 @@
 					/>
 				</v-col>
 				<v-col cols="6">
-					<v-text-field
-						v-model="place.primaryName"
-						dense
-						outlined
-						label="Primary name"
-						required
-						:readonly="!isEditing"
-					/>
+					<PrimaryPhoto :placeId="placeId" />
+
 					<v-card class="default mb-5">
-						<v-card-title
-							tag="h3"
-							class="mb-0 text-h6"
-						>
-							Secondary Names
-						</v-card-title>
 						<v-card-text>
+							<h3>Secondary Names</h3>
+							<div v-if="!place.names.length">No secondary names found.</div>
 							<v-row
 								v-for="(item, i) in place.names"
 								:key="i"
@@ -112,9 +111,8 @@
 								</v-col>
 							</v-row>
 						</v-card-text>
-						<v-card-actions>
+						<v-card-actions v-if="isEditing">
 							<v-btn
-								v-if="isEditing"
 								class="my-0"
 								color="primary"
 								@click="addName"
@@ -127,6 +125,9 @@
 					<v-card class="default mb-5">
 						<v-card-text>
 							<h3>Historical Patterns</h3>
+							<div v-if="!place.historicalPatterns.length">
+								No historical patterns found.
+							</div>
 							<v-row
 								v-for="(item, i) of place.historicalPatterns"
 								:key="i"
@@ -173,9 +174,8 @@
 								</v-col>
 							</v-row>
 						</v-card-text>
-						<v-card-actions>
+						<v-card-actions v-if="isEditing">
 							<v-btn
-								v-if="isEditing"
 								class="my-0"
 								color="primary"
 								@click="addPattern"
@@ -209,6 +209,7 @@ import DesignationTypesSelect from '@/components/Sites/site-forms/DesignationTyp
 import HistoricalPatternTypesSelect from '@/components/Sites/site-forms/HistoricalPatternTypesSelect';
 import RecordTypesSelect from '@/components/Sites/site-forms/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/site-forms/SiteCategoryTypesSelect';
+import PrimaryPhoto from '@/components/Common/PrimaryPhoto.vue';
 
 export default {
 	name: 'Summary',
@@ -219,6 +220,7 @@ export default {
 		HistoricalPatternTypesSelect,
 		RecordTypesSelect,
 		SiteCategoryTypesSelect,
+		PrimaryPhoto,
 	},
 	props: {
 		placeId: {

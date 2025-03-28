@@ -1,99 +1,120 @@
-<template lang="pug">
-v-card.default.mb-0(tag="section")
-	v-card-title.mb-0.text-h6(tag="h3")
-		| Contacts
-	v-card-text(tag="form")
-		div(
-			v-for="(item, i) in contacts",
-			:key="`contact-${i + 1}`"
-		)
-			v-row
-				v-col(cols="6")
-					ContactTypeSelect(
-						v-model="item.contactType"
-						background-color="white"
-						dense
-						outlined
-						hide-details
-					)
-				v-col(cols="6")
-					v-btn.my-0.float-right(
-						v-if="isEditing"
-						color="warning"
-						x-small
-						fab
-						title="Remove"
-						background-color="white"
-						@click="removeContact(i)"
-					)
-						v-icon(dark) mdi-close
-			v-row
-				v-col(cols="6")
-					v-text-field(
-						:readonly="!isEditing"
-						v-model="item.firstName"
-						label="First Name"
-						required
-						dense
-						outlined
-						background-color="white"
-					)
-					v-text-field(
-						:readonly="!isEditing"
-						v-model="item.phoneNumber"
-						label="Phone"
-						required
-						dense
-						outlined
-						background-color="white"
-					)
-					v-textarea(
-						:readonly="!isEditing"
-						v-model="item.mailingAddress"
-						label="Mailing Address"
-						dense
-						outlined
-						hide-details
-						background-color="white"
-					)
-				v-col(cols="6")
-					v-text-field(
-						:readonly="!isEditing"
-						v-model="item.lastName"
-						label="Last Name"
-						required
-						dense
-						outlined
-						background-color="white"
-					)
-					v-text-field(
-						:readonly="!isEditing"
-						v-model="item.email"
-						label="Email"
-						required
-						dense
-						outlined
-						background-color="white"
-					)
-					v-textarea(
-						:readonly="!isEditing"
-						v-model="item.description"
-						label="Description"
-						dense
-						outlined
-						hide-details
-						background-color="white"
-					)
-			v-row.my-0(v-if="i < contacts.length - 1")
-				v-col(cols="12")
-					v-divider.my-1.black
-	v-card-actions
-		v-btn.my-0(
-			v-if="isEditing"
-			color="primary"
-			@click="addContact"
-		)
-			| Add New
+<template>
+	<v-card
+		class="default mb-0"
+		tag="section"
+	>
+		<v-card-text tag="form">
+			<h3>Contacts</h3>
+			<div v-if="!contacts.length">No contacts found.</div>
+			<div
+				v-for="(item, i) in contacts"
+				:key="`contact-${i + 1}`"
+			>
+				<v-row>
+					<v-col cols="6">
+						<ContactTypeSelect
+							v-model="item.contactType"
+							background-color="white"
+							dense
+							outlined
+							hide-details
+						/>
+					</v-col>
+					<v-col cols="6">
+						<v-btn
+							v-if="isEditing"
+							class="my-0 float-right"
+							color="warning"
+							x-small
+							fab
+							title="Remove"
+							background-color="white"
+							@click="removeContact(i)"
+						>
+							<v-icon dark>mdi-close</v-icon>
+						</v-btn>
+					</v-col>
+				</v-row>
+				<v-row>
+					<v-col cols="6">
+						<v-text-field
+							:readonly="!isEditing"
+							v-model="item.firstName"
+							label="First Name"
+							required
+							dense
+							outlined
+							background-color="white"
+						/>
+						<v-text-field
+							:readonly="!isEditing"
+							v-model="item.phoneNumber"
+							label="Phone"
+							required
+							dense
+							outlined
+							background-color="white"
+						/>
+						<v-textarea
+							:readonly="!isEditing"
+							v-model="item.mailingAddress"
+							label="Mailing Address"
+							dense
+							outlined
+							hide-details
+							background-color="white"
+						/>
+					</v-col>
+					<v-col cols="6">
+						<v-text-field
+							:readonly="!isEditing"
+							v-model="item.lastName"
+							label="Last Name"
+							required
+							dense
+							outlined
+							background-color="white"
+						/>
+						<v-text-field
+							:readonly="!isEditing"
+							v-model="item.email"
+							label="Email"
+							required
+							dense
+							outlined
+							background-color="white"
+						/>
+						<v-textarea
+							:readonly="!isEditing"
+							v-model="item.description"
+							label="Description"
+							dense
+							outlined
+							hide-details
+							background-color="white"
+						/>
+					</v-col>
+				</v-row>
+				<v-row
+					class="my-0"
+					v-if="i < contacts.length - 1"
+				>
+					<v-col cols="12">
+						<v-divider class="my-1 black"></v-divider>
+					</v-col>
+				</v-row>
+			</div>
+		</v-card-text>
+		<v-card-actions v-if="isEditing">
+			<v-btn
+				class="my-0"
+				color="primary"
+				@click="addContact"
+			>
+				Add New
+			</v-btn>
+		</v-card-actions>
+	</v-card>
 </template>
 
 <script>

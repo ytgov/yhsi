@@ -1,64 +1,80 @@
-<template lang="pug">
-v-card.default.mb-0(tag="section")
-	v-card-title.mb-0.text-h6(tag="h3")
-		| Previous Ownerships
-	v-card-text(tag="form")
-		v-row.row(
-			v-for="(previousOwnership, i) in previousOwnerships",
-			:key="i"
-		)
-			v-col(cols="5")
-				v-text-field(
-					:readonly="!isEditing"
-					v-model="previousOwnership.ownershipDate"
-					label="Dates"
-					dense
-					outlined
-					background-color="white"
-					hide-details
-				)
-			v-col(cols="5")
-				v-text-field(
-					:readonly="!isEditing"
-					v-model="previousOwnership.ownershipNumber"
-					label="Title number"
-					dense
-					outlined
-					background-color="white"
-					hide-details
-				)
-			v-col(cols="2")
-				v-btn.my-0.float-right(
-					v-if="isEditing"
-					color="warning"
-					x-small
-					fab
-					title="Remove"
-					@click="removePreviousOwner(i)"
-				)
-					v-icon mdi-close
-			v-col(cols="12")
-				v-text-field(
-					:readonly="!isEditing"
-					v-model="previousOwnership.ownershipName"
-					label="Names"
-					dense
-					outlined
-					background-color="white"
-					hide-details
-				)
-			v-col(
-				v-if="i < previousOwnerships.length - 1"
-				cols="12"
-			)
-				v-divider.black
-	v-card-actions
-		v-btn.my-0(
-			v-if="isEditing"
-			color="primary"
-			@click="addPreviousOwner"
-		)
-			| Add Previous Ownership
+<template>
+	<v-card
+		class="default mb-0"
+		tag="section"
+	>
+		<v-card-text tag="form">
+			<h3>Previous Ownerships</h3>
+			<div v-if="!previousOwnerships.length">No previous ownerships found</div>
+			<v-row
+				v-for="(previousOwnership, i) in previousOwnerships"
+				:key="i"
+				class="row"
+			>
+				<v-col cols="5">
+					<v-text-field
+						:readonly="!isEditing"
+						v-model="previousOwnership.ownershipDate"
+						label="Dates"
+						dense
+						outlined
+						background-color="white"
+						hide-details
+					/>
+				</v-col>
+				<v-col cols="5">
+					<v-text-field
+						:readonly="!isEditing"
+						v-model="previousOwnership.ownershipNumber"
+						label="Title number"
+						dense
+						outlined
+						background-color="white"
+						hide-details
+					/>
+				</v-col>
+				<v-col cols="2">
+					<v-btn
+						v-if="isEditing"
+						class="my-0 float-right"
+						color="warning"
+						x-small
+						fab
+						title="Remove"
+						@click="removePreviousOwner(i)"
+					>
+						<v-icon>mdi-close</v-icon>
+					</v-btn>
+				</v-col>
+				<v-col cols="12">
+					<v-text-field
+						:readonly="!isEditing"
+						v-model="previousOwnership.ownershipName"
+						label="Names"
+						dense
+						outlined
+						background-color="white"
+						hide-details
+					/>
+				</v-col>
+				<v-col
+					v-if="i < previousOwnerships.length - 1"
+					cols="12"
+				>
+					<v-divider class="black" />
+				</v-col>
+			</v-row>
+		</v-card-text>
+		<v-card-actions v-if="isEditing">
+			<v-btn
+				class="my-0"
+				color="primary"
+				@click="addPreviousOwner"
+			>
+				Add Previous Ownership
+			</v-btn>
+		</v-card-actions>
+	</v-card>
 </template>
 
 <script>

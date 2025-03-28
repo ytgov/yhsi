@@ -1,48 +1,61 @@
-<template lang="pug">
-v-card.default.mb-5(tag="section")
-	v-card-title.mb-0.text-h6(tag="h3")
-		| Associations
-	v-card-text(tag="form")
-		v-row(
-			v-for="(association, i) in associations",
-			:key="i"
-		)
-			v-col(cols="5")
-				AssociationTypesSelect(
-					v-model="association.type"
-					dense
-					outlined
-					hide-details
-					background-color="white"
-				)
-			v-col(cols="5")
-				v-text-field(
-					:readonly="!isEditing"
-					v-model="association.description"
-					label="Association name"
-					dense
-					outlined
-					hide-details
-					background-color="white"
-					required
-				)
-			v-col(cols="2")
-				v-btn.my-0.float-right(
-					v-if="isEditing"
-					color="warning"
-					x-small
-					fab
-					title="Remove"
-					@click="removeAssociation(i)"
-				)
-					v-icon mdi-close
-	v-card-actions
-		v-btn.my-0(
-			v-if="isEditing"
-			color="primary"
-			@click="addAssociation"
-		)
-			| Add Association
+<template>
+	<v-card
+		class="default mb-5"
+		tag="section"
+	>
+		<v-card-text tag="form">
+			<h3>Associations</h3>
+			<div v-if="associations.length === 0">No associations found.</div>
+			<v-row
+				v-for="(association, i) in associations"
+				:key="i"
+			>
+				<v-col cols="5">
+					<AssociationTypesSelect
+						v-model="association.type"
+						dense
+						outlined
+						hide-details
+						background-color="white"
+					/>
+				</v-col>
+				<v-col cols="5">
+					<v-text-field
+						:readonly="!isEditing"
+						v-model="association.description"
+						label="Association name"
+						dense
+						outlined
+						hide-details
+						background-color="white"
+						required
+					/>
+				</v-col>
+				<v-col cols="2">
+					<v-btn
+						v-if="isEditing"
+						class="my-0 float-right"
+						color="warning"
+						x-small
+						fab
+						title="Remove"
+						@click="removeAssociation(i)"
+					>
+						<v-icon>mdi-close</v-icon>
+					</v-btn>
+				</v-col>
+			</v-row>
+		</v-card-text>
+		<v-card-actions v-if="isEditing">
+			<v-btn
+				class="my-0"
+				color="primary"
+				@click="addAssociation"
+			>
+				Add Association
+			</v-btn>
+		</v-card-actions>
+	</v-card>
 </template>
 
 <script>

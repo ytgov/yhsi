@@ -12,54 +12,56 @@
 			Themes &amp; Function
 		</v-card-title>
 		<v-card-text tag="section">
-			<v-col cols="12">
-				<v-textarea
-					v-model="place.yHSThemes"
-					label="YHS Themes"
-					dense
-					rows="4"
-					outlined
-					hide-details
-					background-color="white"
-					:readonly="!isEditing"
-				/>
-			</v-col>
+			<v-row>
+				<v-col cols="12">
+					<v-textarea
+						v-model="place.yHSThemes"
+						label="YHS Themes"
+						dense
+						rows="4"
+						outlined
+						hide-details
+						background-color="white"
+						:readonly="!isEditing"
+					/>
+				</v-col>
 
-			<v-col cols="12">
-				<ThemesEditor
-					v-model="place.themes"
-					:place-id="placeId"
-				/>
-			</v-col>
+				<v-col cols="12">
+					<ThemesEditor
+						v-model="place.themes"
+						:place-id="placeId"
+					/>
+				</v-col>
 
-			<v-col cols="12">
-				<FunctionalUsesEditor
-					v-model="place.functionalUses"
-					:place-id="placeId"
-				/>
-			</v-col>
-			<v-col cols="6">
-				<v-textarea
-					v-model="place.currentUseComment"
-					label="YHS Current Use"
-					dense
-					outlined
-					background-color="white"
-					hide-details
-					:readonly="!isEditing"
-				/>
-			</v-col>
-			<v-col cols="6">
-				<v-textarea
-					v-model="place.yHSPastUse"
-					label="YHS Past Use"
-					dense
-					outlined
-					hide-details
-					background-color="white"
-					:readonly="!isEditing"
-				/>
-			</v-col>
+				<v-col cols="12">
+					<FunctionalUsesEditor
+						v-model="place.functionalUses"
+						:place-id="placeId"
+					/>
+				</v-col>
+				<v-col cols="6">
+					<v-textarea
+						v-model="place.currentUseComment"
+						label="YHS Current Use"
+						dense
+						outlined
+						background-color="white"
+						hide-details
+						:readonly="!isEditing"
+					/>
+				</v-col>
+				<v-col cols="6">
+					<v-textarea
+						v-model="place.yHSPastUse"
+						label="YHS Past Use"
+						dense
+						outlined
+						hide-details
+						background-color="white"
+						:readonly="!isEditing"
+					/>
+				</v-col>
+			</v-row>
 		</v-card-text>
 		<v-card-actions>
 			<v-spacer />

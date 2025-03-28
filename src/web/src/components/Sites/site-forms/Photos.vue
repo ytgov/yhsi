@@ -28,13 +28,9 @@
 				class="default mb-0"
 				tag="section"
 			>
-				<v-card-title
-					tag="h3"
-					class="mb-0 text-h6"
-				>
-					Photos
-				</v-card-title>
 				<v-card-text tag="form">
+					<h3>Photos</h3>
+					<div v-if="!photos.length">No photos found.</div>
 					<v-row>
 						<v-col
 							v-for="(item, index) in photos"

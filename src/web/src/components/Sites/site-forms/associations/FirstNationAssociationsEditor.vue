@@ -1,60 +1,77 @@
-<template lang="pug">
-v-card.default.mb-0(tag="section")
-	v-card-title.mb-0.text-h6(tag="h3")
-		| First Nation Associations
-	v-card-text(tag="form")
-		v-row(
-			v-for="(firstNationAssociation, i) in firstNationAssociations",
-			:key="i"
-		)
-			v-col(cols="5")
-				FirstNationAssociationTypesSelect(
-					v-model="firstNationAssociation.firstNationAssociationType"
-					dense
-					outlined
-					hide-details
-					background-color="white"
-				)
-			v-col(cols="5")
-				FirstNationSelect(
-					v-model="firstNationAssociation.firstNationId"
-					dense
-					outlined
-					hide-details
-					background-color="white"
-				)
-			v-col(cols="2")
-				v-btn.my-0.float-right(
-					v-if="isEditing"
-					color="warning"
-					x-small
-					fab
-					title="Remove"
-					@click="removeFNAssociation(i)"
-				)
-					v-icon mdi-close
-			v-col(cols="10")
-				v-text-field(
-					:readonly="!isEditing"
-					v-model="firstNationAssociation.comments"
-					label="Comments"
-					dense
-					outlined
-					hide-details
-					background-color="white"
-				)
-			v-col(
-				v-if="i < firstNationAssociations.length - 1"
-				cols="12"
-			)
-				v-divider.black
-	v-card-actions
-		v-btn.my-0(
-			v-if="isEditing"
-			color="primary"
-			@click="addFNAssociation"
-		)
-			| Add Association
+<template>
+	<v-card
+		class="default mb-0"
+		tag="section"
+	>
+		<v-card-text tag="form">
+			<h3>First Nation Associations</h3>
+			<div v-if="!firstNationAssociations.length">No associations found.</div>
+			<v-row
+				v-for="(firstNationAssociation, i) in firstNationAssociations"
+				:key="i"
+			>
+				<v-col cols="5">
+					<FirstNationAssociationTypesSelect
+						v-model="firstNationAssociation.firstNationAssociationType"
+						:readonly="!isEditing"
+						dense
+						outlined
+						hide-details
+						background-color="white"
+					/>
+				</v-col>
+				<v-col cols="5">
+					<FirstNationSelect
+						v-model="firstNationAssociation.firstNationId"
+						:readonly="!isEditing"
+						dense
+						outlined
+						hide-details
+						background-color="white"
+					/>
+				</v-col>
+				<v-col cols="2">
+					<v-btn
+						v-if="isEditing"
+						class="my-0 float-right"
+						color="warning"
+						x-small
+						fab
+						title="Remove"
+						@click="removeFNAssociation(i)"
+					>
+						<v-icon>mdi-close</v-icon>
+					</v-btn>
+				</v-col>
+				<v-col cols="10">
+					<v-text-field
+						:readonly="!isEditing"
+						v-model="firstNationAssociation.comments"
+						label="Comments"
+						dense
+						outlined
+						hide-details
+						background-color="white"
+					/>
+				</v-col>
+				<v-col
+					v-if="i < firstNationAssociations.length - 1"
+					cols="12"
+				>
+					<v-divider class="black" />
+				</v-col>
+			</v-row>
+		</v-card-text>
+		<v-card-actions v-if="isEditing">
+			<v-btn
+				class="my-0"
+				color="primary"
+				@click="addFNAssociation"
+			>
+				Add Association
+			</v-btn>
+		</v-card-actions>
+	</v-card>
 </template>
 
 <script>

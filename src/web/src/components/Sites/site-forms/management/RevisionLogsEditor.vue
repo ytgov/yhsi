@@ -1,69 +1,88 @@
-<template lang="pug">
-v-card.default(tag="section")
-	v-card-title.mb-0.text-h6(tag="h3")
-		| Revision Logs
-	v-card-text(tag="form")
-		div(
-			v-for="(item, i) in revisionLogs",
-			:key="`log-${i + 1}`"
-		)
-			v-row
-				v-col(cols="5")
-					RevisionLogTypeSelect(
-						v-model="item.revisionLogType"
-						outlined
-						dense
-						background-color="white"
-					)
-					v-text-field(
-						:readonly="!isEditing"
-						v-model="item.revisedBy"
-						label="Revised By"
-						required
-						outlined
-						dense
-						hide-details
-						background-color="white"
-					)
-				v-col(cols="5")
-					v-text-field(
-						:readonly="!isEditing"
-						v-model="item.revisionDate"
-						label="Date"
-						required
-						outlined
-						dense
-						background-color="white"
-					)
-					v-text-field(
-						:readonly="!isEditing"
-						v-model="item.details"
-						label="Details"
-						required
-						outlined
-						dense
-						hide-details
-						background-color="white"
-					)
-				v-col(cols="2")
-					v-btn.my-0.float-right(
-						color="warning"
-						x-small
-						fab
-						title="Remove"
-						@click="removeLog(i)"
-					)
-						v-icon(dark) mdi-close
-			v-row.my-0(v-if="i < revisionLogs.length - 1")
-				v-col(cols="10")
-					v-divider.my-1.black
-	v-card-actions
-		v-btn.my-0(
-			v-if="isEditing"
-			color="primary"
-			@click="addLog"
-		)
-			| Add New
+<template>
+	<v-card
+		class="default"
+		tag="section"
+	>
+		<v-card-text tag="form">
+			<h3>Revision Logs</h3>
+			<div v-if="!revisionLogs.length">No revision logs found.</div>
+			<div
+				v-for="(item, i) in revisionLogs"
+				:key="`log-${i + 1}`"
+			>
+				<v-row>
+					<v-col cols="5">
+						<RevisionLogTypeSelect
+							v-model="item.revisionLogType"
+							outlined
+							dense
+							background-color="white"
+						/>
+						<v-text-field
+							:readonly="!isEditing"
+							v-model="item.revisedBy"
+							label="Revised By"
+							required
+							outlined
+							dense
+							hide-details
+							background-color="white"
+						/>
+					</v-col>
+					<v-col cols="5">
+						<v-text-field
+							:readonly="!isEditing"
+							v-model="item.revisionDate"
+							label="Date"
+							required
+							outlined
+							dense
+							background-color="white"
+						/>
+						<v-text-field
+							:readonly="!isEditing"
+							v-model="item.details"
+							label="Details"
+							required
+							outlined
+							dense
+							hide-details
+							background-color="white"
+						/>
+					</v-col>
+					<v-col cols="2">
+						<v-btn
+							class="my-0 float-right"
+							color="warning"
+							x-small
+							fab
+							title="Remove"
+							@click="removeLog(i)"
+						>
+							<v-icon dark>mdi-close</v-icon>
+						</v-btn>
+					</v-col>
+				</v-row>
+				<v-row
+					class="my-0"
+					v-if="i < revisionLogs.length - 1"
+				>
+					<v-col cols="10">
+						<v-divider class="my-1 black"></v-divider>
+					</v-col>
+				</v-row>
+			</div>
+		</v-card-text>
+		<v-card-actions v-if="isEditing">
+			<v-btn
+				class="my-0"
+				color="primary"
+				@click="addLog"
+			>
+				Add New
+			</v-btn>
+		</v-card-actions>
+	</v-card>
 </template>
 
 <script>

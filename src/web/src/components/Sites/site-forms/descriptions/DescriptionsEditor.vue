@@ -1,52 +1,69 @@
-<template lang="pug">
-v-card.default
-	v-card-title.mb-0.text-h6(tag="h3")
-		| Descriptions
-	v-card-text(tag="form")
-		div(
-			v-for="(description, i) in descriptions",
-			:key="`description-${i + 1}`"
-		)
-			v-row
-				v-col(cols="6")
-					DescriptionTypeSelect(
-						v-model="description.type"
-						dense
-						outlined
-						background-color="white"
-						hide-details
-					)
-				v-col(cols="6")
-					v-btn.my-0.float-right(
-						v-if="isEditing"
-						color="warning"
-						x-small
-						fab
-						title="Remove"
-						@click="removeDescription(i)"
-					)
-						v-icon mdi-close
-			v-row
-				v-col(cols="10")
-					v-textarea(
-						:readonly="!isEditing"
-						v-model="description.descriptionText"
-						label
-						dense
-						outlined
-						background-color="white"
-						hide-details
-					)
-			v-row.mt-0(v-if="i < descriptions.length - 1")
-				v-col(cols="12")
-					v-divider.my-1.black
-	v-card-actions
-		v-btn.my-0(
-			v-if="isEditing"
-			color="primary"
-			@click="addDescription"
-		)
-			| Add Description
+<template>
+	<v-card class="default">
+		<v-card-text tag="form">
+			<h3>Descriptions</h3>
+			<div v-if="!descriptions.length">No descriptions found.</div>
+			<div
+				v-for="(description, i) in descriptions"
+				:key="`description-${i + 1}`"
+			>
+				<v-row>
+					<v-col cols="6">
+						<DescriptionTypeSelect
+							v-model="description.type"
+							dense
+							outlined
+							background-color="white"
+							hide-details
+						/>
+					</v-col>
+					<v-col cols="6">
+						<v-btn
+							v-if="isEditing"
+							class="my-0 float-right"
+							color="warning"
+							x-small
+							fab
+							title="Remove"
+							@click="removeDescription(i)"
+						>
+							<v-icon>mdi-close</v-icon>
+						</v-btn>
+					</v-col>
+				</v-row>
+				<v-row>
+					<v-col cols="10">
+						<v-textarea
+							:readonly="!isEditing"
+							v-model="description.descriptionText"
+							label
+							dense
+							outlined
+							background-color="white"
+							hide-details
+						/>
+					</v-col>
+				</v-row>
+				<v-row
+					v-if="i < descriptions.length - 1"
+					class="mt-0"
+				>
+					<v-col cols="12">
+						<v-divider class="my-1 black"></v-divider>
+					</v-col>
+				</v-row>
+			</div>
+		</v-card-text>
+		<v-card-actions v-if="isEditing">
+			<v-btn
+				class="my-0"
+				color="primary"
+				@click="addDescription"
+			>
+				Add Description
+			</v-btn>
+		</v-card-actions>
+	</v-card>
 </template>
 
 <script>

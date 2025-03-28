@@ -3,13 +3,8 @@
 		tag="section"
 		class="default mb-4"
 	>
-		<v-card-title
-			tag="h3"
-			class="mb-0 text-h6"
-		>
-			Construction Periods
-		</v-card-title>
 		<v-card-text tag="form">
+			<h3>Construction Periods</h3>
 			<v-row
 				v-for="(constructionPeriod, i) in constructionPeriods"
 				:key="i"

@@ -1,37 +1,49 @@
-<template lang="pug">
-v-card.default.mb-0(tag="section")
-	v-card-title.mb-0.text-h6(tag="h3")
-		| Themes
-	v-card-text(tag="form")
-		v-row(
-			v-for="(theme, i) in themes",
-			:key="i"
-		)
-			v-col(cols="10")
-				PlaceThemeSelect(
-					v-model="theme.placeThemeId"
-					dense
-					hide-details
-					outlined
-					background-color="white"
-				)
-			v-col(cols="2")
-				v-btn.my-0.float-right(
-					v-if="isEditing"
-					color="warning"
-					x-small
-					fab
-					title="Remove"
-					@click="removeTheme(i)"
-				)
-					v-icon mdi-close
-	v-card-actions
-		v-btn.my-0(
-			v-if="isEditing"
-			color="primary"
-			@click="addTheme"
-		)
-			| Add Theme
+<template>
+	<v-card
+		class="default mb-0"
+		tag="section"
+	>
+		<v-card-text tag="form">
+			<h3>Themes</h3>
+			<div v-if="!themes.length">No themes found.</div>
+			<v-row
+				v-for="(theme, i) in themes"
+				:key="i"
+			>
+				<v-col cols="10">
+					<PlaceThemeSelect
+						v-model="theme.placeThemeId"
+						dense
+						hide-details
+						outlined
+						background-color="white"
+					/>
+				</v-col>
+				<v-col cols="2">
+					<v-btn
+						v-if="isEditing"
+						class="my-0 float-right"
+						color="warning"
+						x-small
+						fab
+						title="Remove"
+						@click="removeTheme(i)"
+					>
+						<v-icon>mdi-close</v-icon>
+					</v-btn>
+				</v-col>
+			</v-row>
+		</v-card-text>
+		<v-card-actions v-if="isEditing">
+			<v-btn
+				class="my-0"
+				color="primary"
+				@click="addTheme"
+			>
+				Add Theme
+			</v-btn>
+		</v-card-actions>
+	</v-card>
 </template>
 
 <script>
