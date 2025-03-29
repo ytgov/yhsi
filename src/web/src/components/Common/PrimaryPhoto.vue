@@ -1,68 +1,70 @@
 <template>
-	<div v-if="item">
+	<div v-if="photos && photos.length > 0">
 		<v-card class="default mb-5">
-			<div
-				style="
-					width: 100%;
-					overflow-x: hidden;
-					background-color: #fff;
-					text-align: center;
-				"
-			>
-				<v-img
-					v-if="item.img"
-					height="150px"
-					:src="item.img"
-					placeholder="No image selected"
-					aspect-ratio=".5"
-				/>
-				<img
-					v-else
-					height="150px"
-					:src="makeThumbnailUrl(item)"
-				/>
+			<div style="background-color: #fff">
+				<v-carousel
+					v-model="model"
+					:show-arrows="false"
+					:hide-delimiters="true"
+					height="250"
+				>
+					<v-carousel-item
+						v-for="(item, i) in photos"
+						:key="i"
+					>
+						<v-img
+							v-if="item.img"
+							:src="item.img"
+							placeholder="No image selected"
+						/>
+						<img
+							v-else
+							:src="makeThumbnailUrl(item)"
+							style="width: 100%; height: 100%; object-fit: contain"
+						/>
+					</v-carousel-item>
+				</v-carousel>
 			</div>
 			<v-divider />
-
-			<v-card-text>
-				{{ item.featureName }} <a @click="gotoPhotos">(view all)</a>
+			<v-card-text class="py-1 text-center">
+				{{ selectedPhoto.featureName }}
+				<div>
+					<v-pagination
+						v-if="photos && photos.length > 0"
+						v-model="page"
+						:length="photos.length"
+						class="mt-2"
+					></v-pagination>
+				</div>
 			</v-card-text>
 		</v-card>
 	</div>
 </template>
 
 <script>
-import axios from 'axios';
-import { mapGetters } from 'vuex';
-import { PHOTO_URL, PLACE_URL } from '@/urls';
+import { PHOTO_URL } from '@/urls';
 
 export default {
 	components: {},
 	props: {
-		placeId: {
-			type: [Number, String],
+		photos: {
+			type: Array,
 			required: true,
 		},
 	},
 	data: () => ({
-		item: null,
+		model: 0,
+		page: 1,
 	}),
 	computed: {
-		...mapGetters({
-			place: 'places/place',
-		}),
+		selectedPhoto() {
+			return this.photos[this.model];
+		},
 	},
-	created() {
-		console.log('PrimaryPhoto created');
-
-		let id = this.$route.params.id;
-
-		axios
-			.get(`${PLACE_URL}/${id}/primary-photo`)
-			.then((resp) => {
-				this.item = resp.data.data;
-			})
-			.catch((error) => console.error(error));
+	watch: {
+		page: function (newPage) {
+			this.model = newPage - 1;
+		},
 	},
 	methods: {
 		makeThumbnailUrl(photo) {

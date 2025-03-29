@@ -75,7 +75,7 @@
 					/>
 				</v-col>
 				<v-col cols="6">
-					<PrimaryPhoto :placeId="placeId" />
+					<PrimaryPhoto :photos="place.photos" />
 
 					<v-card class="default mb-5">
 						<v-card-text>
@@ -125,7 +125,11 @@
 					<v-card class="default mb-5">
 						<v-card-text>
 							<h3>Historical Patterns</h3>
-							<div v-if="!place.historicalPatterns.length">
+							<div
+								v-if="
+									!place.historicalPatterns || !place.historicalPatterns.length
+								"
+							>
 								No historical patterns found.
 							</div>
 							<v-row
