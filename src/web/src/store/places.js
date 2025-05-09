@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, isArray } from 'lodash';
 
 import { UserRoles } from '@/authorization';
 import api from '@/apis/places-api';
@@ -28,12 +28,23 @@ export default {
 		names: (state) => state.place.names || [],
 		place: (state) => state.place,
 		primaryName: (state) => state.place.primaryName,
-		isEditor: (state, getters, rootState) =>
-			rootState.auth.user.roles.includes(
-				'Administrator',
-				'Site Editor',
-				'Site Admin'
-			),
+		isEditor: (state, getters, rootState) => {
+			{
+				const roles = isArray(rootState.auth.user.roles)
+					? rootState.auth.user.roles
+					: rootState.auth.user.roles.split(',').map((role) => role.trim());
+
+				const hasIt = roles.some((role) =>
+					[
+						UserRoles.ADMINISTRATOR,
+						UserRoles.SITE_EDITOR,
+						UserRoles.SITE_ADMIN,
+					].includes(role)
+				);
+
+				return hasIt;
+			}
+		},
 	},
 	mutations: {
 		setLoading: (state, value) => {
