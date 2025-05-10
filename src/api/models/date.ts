@@ -5,4 +5,6 @@ export class Date {
 	fromDate!: string;
 	toDate!: string;
 	details!: string;
+
+	typeName?: string;
 }

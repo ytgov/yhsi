@@ -1,6 +1,7 @@
 import knex, { Knex } from 'knex';
 
 import { Date } from '../models/date';
+import { DATE_TYPES } from '../models';
 
 export class DateService {
 	private db: Knex;
@@ -10,7 +11,7 @@ export class DateService {
 	}
 
 	async getFor(placeId: number) {
-		return this.db('Dates')
+		const dates = await this.db('Dates')
 			.where({ placeId })
 			.select<Date[]>([
 				'id',
@@ -20,6 +21,12 @@ export class DateService {
 				'toDate',
 				'details',
 			]);
+
+		dates.forEach((date) => {
+			date.typeName = DATE_TYPES.find((type) => type.value === date.type)?.text;
+		});
+
+		return dates;
 	}
 
 	async upsertFor(placeId: number, dates: Date[]) {
