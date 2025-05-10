@@ -36,6 +36,8 @@ EXPOSE 3000
 
 WORKDIR /home/node/app
 
+COPY src/api/templates /home/node/app/dist/templates
+
 ENV NODE_ENV=production
 #RUN npm install --platform=linux --arch=x64 sharp@0.29.1
 RUN npm run build
