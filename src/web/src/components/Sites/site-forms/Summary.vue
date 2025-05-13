@@ -183,7 +183,8 @@
 								class="my-0"
 								color="primary"
 								@click="addPattern"
-							>Add New Historical Pattern</v-btn>	
+								>Add New Historical Pattern</v-btn
+							>
 						</v-card-actions>
 					</v-card>
 				</v-col>

@@ -51,6 +51,7 @@
 				<tr>
 					<td>
 						<strong>YHSI ID</strong><div class='box'>{{yHSIId}}</div>
+						<strong>Primary Name</strong><div class='box'>{{primaryName}}</div>
 						<strong>Designations</strong><div class='box'>{{designations}}</div>
 						<strong>CRHP Category</strong><div class='box'>{{yHSIId}}</div>
 						<strong>Site Categories</strong><div
@@ -58,18 +59,17 @@
 							style='margin-bottom: 6px'
 						>{{joinArray siteCategories}}</div>
 						<strong>Records</strong><div class='box'>{{joinArray records}}</div>
+						<strong>Contributing Resources</strong><div class='box'>{{joinArray
+								contributingResources
+							}}</div>
 						<strong>Show In Register?</strong><div
 							class='box'
 						>{{showInRegister}}</div>
 					</td>
 					<td>
-						<strong>Primary Name</strong><div class='box'>{{primaryName}}</div>
 						<strong>Secondary Names</strong><div class='box'>{{joinArrayPick
 								names
 								'description'
-							}}</div>
-						<strong>Contributing Resources</strong><div class='box'>{{joinArray
-								contributingResources
 							}}</div>
 						<strong>Historical Patterns</strong>
 						<div class='box'>
@@ -91,9 +91,9 @@
 				<tr>
 					<td>
 						<strong>Community</strong><div class='box'>{{communityName}}</div>
-						<strong>Other Locality</strong><div
+						<strong>Other Community</strong><div
 							class='box'
-						>{{otherLocality}}</div>
+						>{{otherCommunity}}</div>
 
 						<strong>Physical Address</strong><div
 							class='box'
@@ -103,10 +103,6 @@
 							<br /><span>Postal Code:</span>{{physicalPostalCode}}
 						</div>
 
-						<strong>Previous Address</strong><div
-							class='box'
-						>{{previousAddress}}</div>
-
 						<strong>Latitude</strong><div class='box'>{{latitude}}</div>
 						<strong>Longitude</strong><div class='box'>{{longitude}}</div>
 						<strong>Coordinate Determination</strong><div
@@ -115,9 +111,13 @@
 
 					</td>
 					<td>
-						<strong>Other Community</strong><div
+						<strong>Other Locality</strong><div
 							class='box'
-						>{{otherCommunity}}</div>
+						>{{otherLocality}}</div>
+						<strong>Previous Address</strong><div
+							class='box'
+						>{{previousAddress}}</div>
+
 						<strong>Context</strong><div class='box'>{{locationContext}}</div>
 
 						<strong>NTS Map Sheet</strong><div class='box'>{{nTSMapSheet}}</div>
@@ -140,6 +140,14 @@
 			<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
 				<tr>
 					<td>
+						<strong>Dates</strong>
+						<div class='box'>
+							{{#each dates}}
+								-
+								<strong>{{typeName}}</strong> {{fromDate}} - {{toDate}}<br
+								/>{{details}}<br />
+							{{/each}}
+						</div>
 					</td>
 				</tr>
 			</table>

@@ -150,6 +150,8 @@ placeRouter.get(
 				}
 			});
 
+		console.log('place');
+
 		//(place as any).API_PORT = API_PORT;
 		const PDF_TEMPLATE = fs.readFileSync(
 			__dirname + '/../templates/places/placePrint.handlebars'
@@ -201,6 +203,7 @@ placeRouter.post(
 	],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
+		const currentUser = req.user as User;
 
 		if (!errors.isEmpty()) {
 			return res.status(400).json({ errors: errors.array() });
@@ -209,7 +212,7 @@ placeRouter.post(
 		req.body.yHSIId = await placeService.generateIdFor(req.body.nTSMapSheet);
 
 		const result = await placeService
-			.addPlace(req.body as Place)
+			.addPlace(req.body as Place, currentUser)
 			.then((item) => item)
 			.catch((err) => {
 				console.log('addPlace ERROR', err);

@@ -114,46 +114,46 @@ import { mapActions, mapGetters } from 'vuex';
 import goTo from 'vuetify/lib/services/goto';
 
 import AssociationsSiteFormEditor from '@/components/Sites/site-forms/AssociationsSiteFormEditor';
-import AssociationsSiteFormViewer from '@/components/Sites/site-forms/AssociationsSiteFormViewer';
+//import AssociationsSiteFormViewer from '@/components/Sites/site-forms/AssociationsSiteFormViewer';
 import DatesAndConditions from '@/components/Sites/site-forms/DatesAndConditions';
-import DatesAndConditionsViewer from '@/components/Sites/site-forms/DatesAndConditionsViewer';
+//import DatesAndConditionsViewer from '@/components/Sites/site-forms/DatesAndConditionsViewer';
 import Description from '@/components/Sites/site-forms/Description';
-import DescriptionViewer from '@/components/Sites/site-forms/DescriptionViewer';
+//import DescriptionViewer from '@/components/Sites/site-forms/DescriptionViewer';
 import LegalAndZoning from '@/components/Sites/site-forms/LegalAndZoning';
-import LegalAndZoningViewer from '@/components/Sites/site-forms/LegalAndZoningViewer';
+//import LegalAndZoningViewer from '@/components/Sites/site-forms/LegalAndZoningViewer';
 import Location from '@/components/Sites/site-forms/Location';
-import LocationReadonly from '@/components/Sites/site-forms/LocationReadonly';
+//import LocationReadonly from '@/components/Sites/site-forms/LocationReadonly';
 import Management from '@/components/Sites/site-forms/Management';
-import ManagementViewer from '@/components/Sites/site-forms/ManagementViewer';
+//import ManagementViewer from '@/components/Sites/site-forms/ManagementViewer';
 import Photos from '@/components/Sites/site-forms/Photos';
 import PrintDialog from '@/components/Sites/SiteFormsPrintDialog';
 import SiteFormsSidebar from '@/components/Sites/SiteFormsSidebar';
 import Summary from '@/components/Sites/site-forms/Summary';
-import SummaryReadonly from '@/components/Sites/site-forms/SummaryReadonly';
+//import SummaryReadonly from '@/components/Sites/site-forms/SummaryReadonly';
 import ThemesAndFunctions from '@/components/Sites/site-forms/ThemesAndFunctions';
-import ThemesAndFunctionsViewer from '@/components/Sites/site-forms/ThemesAndFunctionsViewer';
+//import ThemesAndFunctionsViewer from '@/components/Sites/site-forms/ThemesAndFunctionsViewer';
 
 export default {
 	name: 'SiteForms',
 	components: {
 		AssociationsSiteFormEditor,
-		AssociationsSiteFormViewer,
+		//AssociationsSiteFormViewer,
 		DatesAndConditions,
-		DatesAndConditionsViewer,
+		//DatesAndConditionsViewer,
 		Description,
-		DescriptionViewer,
+		//DescriptionViewer,
 		LegalAndZoning,
-		LegalAndZoningViewer,
+		//LegalAndZoningViewer,
 		Location,
-		LocationReadonly,
+		//LocationReadonly,
 		Management,
 		Photos,
 		PrintDialog,
 		SiteFormsSidebar,
 		Summary,
-		SummaryReadonly,
+		//SummaryReadonly,
 		ThemesAndFunctions,
-		ThemesAndFunctionsViewer,
+		//ThemesAndFunctionsViewer,
 	},
 	props: {
 		id: {
@@ -178,42 +178,42 @@ export default {
 			return this.isEditor && !this.$route.path.includes('edit', 'new');
 		},
 		associationsComponent() {
-			if (this.hasPendingChanges) return AssociationsSiteFormViewer;
+			//if (this.hasPendingChanges) return AssociationsSiteFormViewer;
 
 			return AssociationsSiteFormEditor;
 		},
 		datesComponent() {
-			if (this.hasPendingChanges) return DatesAndConditionsViewer;
+			//if (this.hasPendingChanges) return DatesAndConditionsViewer;
 
 			return DatesAndConditions;
 		},
 		descriptionComponent() {
-			if (this.hasPendingChanges) return DescriptionViewer;
+			//if (this.hasPendingChanges) return DescriptionViewer;
 
 			return Description;
 		},
 		legalAndZoningComponent() {
-			if (this.hasPendingChanges) return LegalAndZoningViewer;
+			//if (this.hasPendingChanges) return LegalAndZoningViewer;
 
 			return LegalAndZoning;
 		},
 		locationComponent() {
-			if (this.hasPendingChanges) return LocationReadonly;
+			//if (this.hasPendingChanges) return LocationReadonly;
 
 			return Location;
 		},
 		managementComponent() {
-			if (this.hasPendingChanges) return ManagementViewer;
+			//if (this.hasPendingChanges) return ManagementViewer;
 
 			return Management;
 		},
 		summaryComponent() {
-			if (this.hasPendingChanges) return SummaryReadonly;
+			//if (this.hasPendingChanges) return SummaryReadonly;
 
 			return Summary;
 		},
 		themesAndFunctionsComponent() {
-			if (this.hasPendingChanges) return ThemesAndFunctionsViewer;
+			//if (this.hasPendingChanges) return ThemesAndFunctionsViewer;
 
 			return ThemesAndFunctions;
 		},

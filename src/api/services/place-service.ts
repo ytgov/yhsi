@@ -1,6 +1,6 @@
 import knex, { Knex } from 'knex';
 import moment from 'moment';
-import { get, isEmpty, isNull, uniq } from 'lodash';
+import { get, isEmpty, isNil, isNull, uniq } from 'lodash';
 import { COORDINATE_DETERMINATION_TYPES, SITE_STATUS_TYPES } from '../models';
 
 import {
@@ -253,8 +253,16 @@ export class PlaceService {
 		});
 	}
 
-	async addPlace(item: Place): Promise<Place | undefined> {
+	async addPlace(item: Place, currentUser: User): Promise<Place | undefined> {
 		const result = await this.db('place').insert(item).returning<Place[]>('*');
+
+		this.placeEditService.create({
+			...item,
+			PlaceId: result[0].id,
+			editorUserId: currentUser.id,
+			editDate: moment().format('YYYY-MM-DD'),
+		});
+
 		if (result) return result[0];
 	}
 
@@ -339,22 +347,29 @@ export class PlaceService {
 	}
 
 	async generateIdFor(nTSMapSheet: string): Promise<string> {
-		let maxPlace = await this.db('place')
-			.where({ nTSMapSheet })
-			.max('yhsiId', { as: 'maxVal' });
+		let placeIndex = 0;
 
-		if (maxPlace && maxPlace.length == 1 && maxPlace[0].maxVal) {
-			let val = maxPlace[0].maxVal;
-			let parts = val.split('/');
-			let lastPart = parseInt(parts[2]);
+		const places = await this.db('place')
+			.whereILike('YHSIId', `${nTSMapSheet}/%`)
+			.select('YHSIId')
+			.orderBy('yHSIId');
 
-			lastPart++;
+		for (const place of places) {
+			placeIndex++;
 
-			let strVal = lastPart.toString().padStart(3, '0');
-			return `${nTSMapSheet}/${strVal}`;
+			const testValue = `${nTSMapSheet}/${placeIndex
+				.toString()
+				.padStart(3, '0')}`;
+
+			const isMatch = place.YHSIId == testValue;
+
+			if (!isMatch) {
+				break;
+			}
 		}
 
-		return `${nTSMapSheet}/001`;
+		placeIndex++;
+		return `${nTSMapSheet}/${placeIndex.toString().padStart(3, '0')}`;
 	}
 
 	async doSearch(
