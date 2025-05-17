@@ -12,7 +12,7 @@ const placeService = new PlaceService(DB_CONFIG);
 
 export function getPlace(req: Request, res: Response) {
 	const id = parseInt(req.params.id);
-	let currentUser = req.user as User;
+	const currentUser = req.user as User;
 
 	return placeService
 		.getById(id, currentUser)
@@ -48,15 +48,16 @@ export function getPlace(req: Request, res: Response) {
 }
 
 export function searchPlaces(req: Request, res: Response) {
-	let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
-	let currentUser = req.user as User;
+	const { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
+	const currentUser = req.user as User;
 	const sort = buildDatabaseSort(sortBy, sortDesc);
 
-	let skip = (page - 1) * itemsPerPage;
-	let take = itemsPerPage;
+	const skip = (page - 1) * itemsPerPage;
+	const take = itemsPerPage;
 
 	const allPlaces = db('Place');
 	const placePolicyScope = new PlacePolicyScope(allPlaces, currentUser);
+
 	const permittedPlaces = placePolicyScope.resolve();
 
 	return placeService
