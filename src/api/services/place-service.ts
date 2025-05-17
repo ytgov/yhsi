@@ -32,7 +32,6 @@ import {
 	UserRoles,
 } from '../models';
 import { NotFoundError } from '../utils/validation';
-import { group } from 'console';
 
 // This function can go away when the back-end serves the
 // relationship data as part of the data directly.
@@ -240,12 +239,12 @@ export class PlaceService {
 
 	async getPlaceCount(): Promise<number> {
 		return new Promise(async (resolve, reject) => {
-			let results = await this.db<number>('place').count('*', {
+			const results = await this.db<number>('place').count('*', {
 				as: 'count',
 			});
 
 			if (results) {
-				let val = results[0].count as number;
+				const val = results[0].count as number;
 				resolve(val);
 			}
 
@@ -398,6 +397,7 @@ export class PlaceService {
 				.leftOuterJoin('RevisionLog', 'Place.id', 'RevisionLog.PlaceId')
 				.leftOuterJoin('Description', 'Place.id', 'Description.PlaceId')
 				.leftOuterJoin('Ownership', 'Place.id', 'Ownership.PlaceId')
+				.leftOuterJoin('Name', 'Place.id', 'Name.PlaceId')
 				.leftOuterJoin(
 					this.db('Place')
 						.select({
@@ -422,6 +422,7 @@ export class PlaceService {
 						builder
 							.whereILike('PrimaryName', `%${value}%`)
 							.orWhereILike('YHSIId', `%${value}%`)
+							.orWhereILike('[Name].[Description]', `%${value}%`)
 					);
 				},
 				includingCommunityIds(base: Knex.QueryInterface, value: any) {
