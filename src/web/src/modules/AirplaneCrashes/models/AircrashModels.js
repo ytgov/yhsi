@@ -29,7 +29,7 @@ export class AircraftCrash {
 
 		this.militarycivilian = data.militarycivilian || '';
 		this.nation = data.nation || '';
-		this.otherlocationsofremains || '';
+		this.otherlocationsofremains = data.otherlocationsofremains || '';
 		this.photographs = data.photographs || '';
 		this.pilotfirstname = data.pilotfirstname || '';
 		this.pilotlastname = data.pilotlastname || '';
