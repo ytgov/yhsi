@@ -19,19 +19,21 @@
 
 				<!-- buttons for the view state -->
 				<v-btn
-					class="black--text mx-1"
-					@click="editMode"
 					v-if="isViewingCrash && canEdit"
+					class="mx-1"
+					color="primary"
+					@click="editMode"
 				>
 					<v-icon class="mr-1">mdi-pencil</v-icon>
 					Edit
 				</v-btn>
 
 				<v-btn
-					class="black--text mx-1"
-					@click="downloadPdf"
 					v-if="isViewingCrash"
+					class="mx-1"
+					color="info"
 					:loading="loadingPdf"
+					@click="downloadPdf"
 				>
 					<v-icon class="mr-1">mdi-printer</v-icon>
 					Print
@@ -192,17 +194,22 @@
 									<v-checkbox
 										label="Canadian"
 										value="Canadian"
+										class="mt-1 mb-0"
+										hide-details
 										v-model="fields.nation"
 										:readonly="isViewingCrash"
 									></v-checkbox>
 									<v-checkbox
 										label="American"
 										value="American"
+										class="my-0"
+										hide-details
 										v-model="fields.nation"
 										:readonly="isViewingCrash"
 									></v-checkbox>
 									<v-checkbox
 										label="Other"
+										class="my-0"
 										v-model="otherNation"
 										@click="changeNation"
 										:readonly="isViewingCrash"
@@ -221,12 +228,16 @@
 									<v-checkbox
 										label="Civilian"
 										value="Civilian"
+										class="mt-1 mb-0"
+										hide-details
 										v-model="fields.militarycivilian"
 										:readonly="isViewingCrash"
 									></v-checkbox>
 									<v-checkbox
 										label="Military"
 										value="Military"
+										class="my-0"
+										hide-details
 										v-model="fields.militarycivilian"
 										:readonly="isViewingCrash"
 									></v-checkbox>
@@ -603,7 +614,6 @@ export default {
 			};
 			console.log(data);
 			if (this.action == 'new') {
-				console.log('api call');
 				let resp = await aircrash.post(data);
 				if (resp.response) {
 					if (resp.status == 409) {
@@ -621,7 +631,6 @@ export default {
 					this.$router.push(`/airplane/`);
 				}
 			} else {
-				console.log('in the else');
 				await aircrash.put(this.crashID, data);
 				this.overlay = false;
 				this.$router.push({
@@ -632,7 +641,6 @@ export default {
 					},
 				});
 			}
-			console.log('At the end ');
 			this.overlay = false;
 		},
 		getSources() {
