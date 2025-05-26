@@ -29,7 +29,7 @@ export class AircraftCrash {
 
 		this.militarycivilian = data.militarycivilian || '';
 		this.nation = data.nation || '';
-		this.otherlocationsofremains = '';
+		this.otherlocationsofremains || '';
 		this.photographs = data.photographs || '';
 		this.pilotfirstname = data.pilotfirstname || '';
 		this.pilotlastname = data.pilotlastname || '';
@@ -37,7 +37,7 @@ export class AircraftCrash {
 		this.pilotrank = data.pilotrank || '';
 		this.remainsonsite = data.remainsonsite || '';
 		this.significanceofaircraft = data.significanceofaircraft || '';
-		this.soulsonboard = data.soulsonboard = '';
+		this.soulsonboard = data.soulsonboard || '';
 		this.infoSources = data.infoSources || [];
 		this.yacsinumber = data.yacsinumber || undefined;
 		this.datenote = data.datenote || '';
