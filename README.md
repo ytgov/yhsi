@@ -10,10 +10,16 @@ Writing code and developing in this application requires running three services:
 
 ---
 
-Boot the three app services:
+1. Create a the `yhsi_sqlvolume` volume in docker to hold the app database.
 
 ```bash
-docker-compose -f docker-compose.development.yml up
+docker volume create yhsi_sqlvolume
+```
+
+2. Boot the three app services:
+
+```bash
+docker compose -f docker-compose.development.yml up
 ```
 
 Or if you have `ruby` installed
