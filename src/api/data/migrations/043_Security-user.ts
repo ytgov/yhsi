@@ -20,7 +20,11 @@
 // GO
 
 import { Knex } from 'knex';
-exports.up = async function (knex: Knex, Promise: any) {
+exports.up = async function (knex: Knex) {
+	await knex.raw(
+		/* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Security') BEGIN EXEC('CREATE SCHEMA [Security]') END"
+	);
+
 	await knex.schema.createTable('Security.User', (table) => {
 		table.increments('id').primary();
 		table.string('email', 200).notNullable();
@@ -39,6 +43,6 @@ exports.up = async function (knex: Knex, Promise: any) {
 	// ('maxrparker@gmail.com', 'Max', 'Parker', '2023-06-06 17:53:18.000', 'Active')`);
 };
 
-exports.down = async function (knex: Knex, Promise: any) {
+exports.down = async function (knex: Knex) {
 	await knex.schema.dropTable('Security.User');
 };
