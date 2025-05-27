@@ -14,13 +14,19 @@
 // GO
 
 import { Knex } from 'knex';
-exports.up = async function (knex: Knex, Promise: any) {
+
+exports.up = async function (knex: Knex) {
+	await knex.raw(
+		/* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'YHIS') BEGIN EXEC('CREATE SCHEMA [YHIS]') END"
+	);
+
 	await knex.schema.createTable('YHIS.MapSheetLookup', (table) => {
 		table.integer('Id').notNullable();
 		table.string('Map50k', 8).notNullable();
 		table.string('Map250k', 8).notNullable();
 	});
 };
-exports.down = async function (knex: Knex, Promise: any) {
+
+exports.down = async function (knex: Knex) {
 	await knex.schema.dropTable('YHIS.MapSheetLookup');
 };
