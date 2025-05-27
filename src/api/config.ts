@@ -1,17 +1,18 @@
+import * as path from 'path';
 import * as dotenv from 'dotenv';
 
-let path;
+let dotEnvPath;
 switch (process.env.NODE_ENV) {
 	case 'test':
-		path = `.env.test`;
+		dotEnvPath = `.env.test`;
 		break;
 	case 'production':
-		path = `.env.production`;
+		dotEnvPath = `.env.production`;
 		break;
 	default:
-		path = `.env.development`;
+		dotEnvPath = `.env.development`;
 }
-dotenv.config({ path: path });
+dotenv.config({ path: dotEnvPath });
 
 export const API_PORT = parseInt(process.env.API_PORT || '3000');
 export const FRONTEND_URL = process.env.FRONTEND_URL || 'localhost:8080';
@@ -37,6 +38,11 @@ export const DB_CONFIG = {
 		password: DB_PASS,
 		database: DB_NAME,
 		port: parseInt(DB_PORT),
+	},
+	migrations: {
+		directory: path.resolve(__dirname, "./data/migrations"),
+		extension: "ts",
+		stub: path.resolve(__dirname, "./data/templates/sample-migration.ts"),
 	},
 };
 

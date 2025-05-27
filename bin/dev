@@ -149,7 +149,7 @@ class DevHelper
     if RUBY_PLATFORM =~ /linux/
       run(*%w[api npm run knex], *args, execution_mode: WAIT_FOR_PROCESS, **kwargs)
 
-      file_or_directory = "#{project_root}/api/src/db/migrations"
+      file_or_directory = "#{project_root}/src/api/data/migrations"
       exit(0) unless take_over_needed?(file_or_directory)
 
       ownit file_or_directory

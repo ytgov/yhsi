@@ -8,7 +8,8 @@
     "development": "pm2 start ecosystem.config.js --no-daemon",
     "test": "mocha --config ./.mocharc.js 'tests/**/*.test.ts'",
     "start-yhsif": "nodemon index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "knex": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex --knexfile ./config.d/knexfile.ts"
   },
   "author": "Michael Johnson",
   "license": "ISC",
