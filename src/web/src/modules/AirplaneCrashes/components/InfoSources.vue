@@ -122,7 +122,6 @@
 				>
 			</v-col>
 		</v-row>
-		{{ indexOfSourceBeingEdited }}
 	</div>
 </template>
 

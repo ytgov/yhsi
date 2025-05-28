@@ -121,23 +121,24 @@ aircrashRouter.put(
 		await db('AirCrash.AirCrash')
 			.update(aircrash)
 			.where('AirCrash.AirCrash.yacsinumber', aircrashId);
-		const doSources = false;
-		if (doSources) {
+
 			//Add the new info sources (in progress)
-			await db
-				.insert(
-					newInfoSources.map((source: any) => ({
-						YACSINumber: aircrashId,
-						...source,
-					}))
-				)
-				.into('AirCrash.InfoSource')
-				.then((rows: any) => {
-					return rows;
-				});
+
+			if (newInfoSources && newInfoSources.length > 0) {
+
+				await db
+					.insert(
+						newInfoSources.map((source: any) => ({
+							YACSINumber: aircrashId,
+							...source,
+						}))
+					)
+					.into('AirCrash.InfoSource');
+			}
 
 			//remove the previous owners (DONE)
 			for (const obj of removedInfoSources) {
+
 				await db('AirCrash.InfoSource')
 					.where('AirCrash.InfoSource.Id', obj.Id)
 					.del();
@@ -145,11 +146,12 @@ aircrashRouter.put(
 
 			//update the info sources (DONE)
 			for (const obj of editedInfoSources) {
+
 				await db('AirCrash.InfoSource')
 					.update({ Source: obj.Source })
 					.where('AirCrash.InfoSource.Id', obj.Id);
 			}
-		}
+		
 		res.status(200).send({ message: 'success' });
 	}
 );
@@ -187,13 +189,7 @@ aircrashRouter.post('/', async (req: Request, res: Response) => {
 						...source,
 					}));
 
-					await db
-						.insert(finalInfoSources)
-						.into('AirCrash.InfoSource')
-						.returning('*')
-						.then((rows: any) => {
-							return rows;
-						});
+					await db.insert(finalInfoSources).into('AirCrash.InfoSource');
 				}
 
 				return newAirCrash;
