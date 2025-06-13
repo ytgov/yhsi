@@ -12,19 +12,17 @@
 				<v-icon>mdi-arrow-left-drop-circle</v-icon>
 				<div class="ml-2">Back to Photos</div>
 			</v-btn>
+
 			<v-spacer></v-spacer>
-			<v-btn color="primary">
-				<v-icon>mdi-image</v-icon>
-				<div class="ml-2">
-					<v-toolbar-title> {{ this.modeTitle }} Photo </v-toolbar-title>
-				</div>
-			</v-btn>
+
+			<div class="d-flex">
+				<v-icon class="mr-2">mdi-image</v-icon>
+				<v-toolbar-title> {{ this.displayName }} </v-toolbar-title>
+			</div>
+
 			<v-spacer></v-spacer>
-			<!--<Search :data="photos"/>-->
-			<v-col
-				class="d-flex"
-				cols="3"
-			>
+
+			<div class="d-flex">
 				<v-text-field
 					dense
 					filled
@@ -45,242 +43,215 @@
 				>
 					<v-icon>mdi-magnify</v-icon>
 				</v-btn>
-			</v-col>
-
-			<!-- Not required for now
-        <v-btn color="primary" @click="showDialog()">
-        <v-icon class="mr-2">mdi-printer</v-icon> 
-        <div>
-          Print Record
-        </div>
-      </v-btn>-->
+			</div>
 		</v-app-bar>
+
+		<div>
+			<div class="page-header d-flex">
+				<v-row>
+					<v-col
+						v-if="mode != 'add'"
+						cols="6"
+						md="3"
+					>
+						<v-text-field
+							v-model="fields.originalFileName"
+							label="Original File Name"
+							readonly
+							outlined
+							dense
+							background-color="white"
+						/>
+						<v-text-field
+							v-model="fields.datePhotoTaken"
+							label="Date Photo Taken"
+							readonly
+							outlined
+							dense
+							background-color="white"
+							hide-details
+						/>
+					</v-col>
+					<v-col
+						v-if="mode != 'add'"
+						cols="6"
+						md="3"
+					>
+						<v-text-field
+							v-model="displayCommunity"
+							label="Community"
+							readonly
+							outlined
+							dense
+							background-color="white"
+						/>
+						<v-text-field
+							v-model="displayResolution"
+							label="Resolution"
+							readonly
+							outlined
+							dense
+							background-color="white"
+							hide-details
+						/>
+					</v-col>
+					<v-col class="d-flex">
+						<div v-if="mode != 'add'">
+							<p
+								class="mt-auto mb-auto grey--text text--darken-2"
+								style="font-size: 12px"
+							>
+								Rating
+							</p>
+							<v-rating
+								v-model="fields.rating"
+								background-color="orange lighten-3"
+								color="orange"
+								length="5"
+								readonly
+							/>
+						</div>
+						<v-spacer />
+						<div class="text-right">
+							<v-btn
+								v-if="mode == 'view'"
+								class="d-block mt-0"
+								color="primary"
+								@click="editMode"
+								block
+							>
+								<v-icon class="mr-1">mdi-pencil</v-icon>
+								Edit
+							</v-btn>
+							<v-btn
+								v-if="mode == 'view'"
+								class="d-block mt-0"
+								color="error"
+								block
+								small
+								outlined
+								@click="deletePhoto"
+							>
+								<v-icon class="mr-1">mdi-delete</v-icon>
+								Delete
+							</v-btn>
+
+							<!-- buttons for the edit state -->
+							<v-btn
+								v-if="mode == 'edit'"
+								color="primary"
+								block
+								:disabled="changesMade == 0"
+								@click="saveChanges"
+								class="d-block mt-0"
+							>
+								<v-icon class="mr-1">mdi-check</v-icon>
+								Save
+							</v-btn>
+							<v-btn
+								v-if="mode == 'edit'"
+								class="d-block mt-0"
+								color="warning"
+								small
+								outlined
+								block
+								@click="cancelEdit"
+								style="border: 1px #c9c9c9 solid"
+							>
+								<v-icon>mdi-close</v-icon>
+								Cancel
+							</v-btn>
+
+							<!-- buttons for the new state -->
+							<v-btn
+								v-if="mode == 'add'"
+								color="primary"
+								block
+								:disabled="changesMade == 0"
+								@click="createPhoto"
+								class="d-block mt-0"
+							>
+								<v-icon class="mr-1">mdi-check</v-icon>
+								Create Photo
+							</v-btn>
+							<v-btn
+								v-if="mode == 'add'"
+								class="d-block mt-0"
+								color="warning"
+								outlined
+								small
+								block
+								@click="cancelNew"
+								style="border: 1px #c9c9c9 solid"
+							>
+								<v-icon>mdi-close</v-icon>
+								Cancel
+							</v-btn>
+						</div>
+					</v-col>
+				</v-row>
+				<div
+					v-if="mode != 'add'"
+					class="ml-5"
+				>
+					<v-card>
+						<v-img
+							v-if="
+								infoLoaded && imageLoaded && fields.file && fields.file.base64
+							"
+							:src="fields.file.base64"
+							:lazy-src="fields.file.base64"
+							aspect-ratio="1"
+							max-height="113"
+							max-width="113"
+						/>
+					</v-card>
+				</div>
+			</div>
+
+			<Feature
+				v-if="infoLoaded"
+				:fields="fields"
+				:mode="mode"
+				:itemType="'photo'"
+				@featureChange="featureChange"
+				@featureValidChange="featureValidChange"
+				ref="feature"
+			/>
+			<SiteRecord
+				v-if="infoLoaded"
+				:fields="fields"
+				:mode="mode"
+				:itemType="'photo'"
+				@siteRecordChange="siteRecordChange"
+				ref="siteRecord"
+			/>
+			<HistoricSites
+				v-if="infoLoaded"
+				:fields="fields"
+				:mode="mode"
+				:itemType="'photo'"
+				@historicSiteChange="historicSiteChange"
+				@siteValidChange="siteValidChange"
+				ref="historicSites"
+			/>
+			<Photo
+				v-if="infoLoaded"
+				:fields="fields"
+				:mode="mode"
+				:itemType="'photo'"
+				:imageLoaded="imageLoaded"
+				@photoChange="photoChange"
+				@photoValidChange="photoValidChange"
+				@photoRotate="photoRotate"
+				ref="photo"
+			/>
+		</div>
 		<PrintDialog
 			:dialog="dialog"
 			:photoname="fields.featureName"
 			@closeDialog="closeDialog"
 		/>
-
-		<div>
-			<v-row>
-				<v-col id="main-content">
-					<div class="page-header">
-						<h2 class="display-name">{{ this.displayName }}</h2>
-
-						<v-btn
-							class="mx-1 form-header"
-							color="primary"
-							@click="editMode"
-							v-if="mode == 'view'"
-						>
-							<v-icon class="mr-1">mdi-pencil</v-icon>
-							Edit
-						</v-btn>
-
-						<!-- buttons for the edit state -->
-						<v-btn
-							class="black--text mx-1 form-header"
-							@click="cancelEdit"
-							v-if="mode == 'edit'"
-							style="border: 1px #c9c9c9 solid"
-						>
-							<v-icon>mdi-close</v-icon>
-							Cancel
-						</v-btn>
-						<v-btn
-							color="primary"
-							v-if="mode == 'edit'"
-							:disabled="changesMade == 0"
-							@click="saveChanges"
-							class="form-header"
-						>
-							<v-icon class="mr-1">mdi-check</v-icon>
-							Save
-						</v-btn>
-
-						<!-- buttons for the new state -->
-						<v-btn
-							class="black--text mx-1 form-header"
-							@click="cancelNew"
-							v-if="mode == 'add'"
-							style="border: 1px #c9c9c9 solid"
-						>
-							<v-icon>mdi-close</v-icon>
-							Cancel
-						</v-btn>
-						<v-btn
-							color="primary"
-							:disabled="changesMade == 0"
-							v-if="mode == 'add'"
-							@click="createPhoto"
-							class="form-header"
-						>
-							<v-icon class="mr-1">mdi-check</v-icon>
-							Create Photo
-						</v-btn>
-
-						<div
-							v-if="mode != 'add'"
-							style="
-								float: right;
-								display: inline-block;
-								height: 113px;
-								width: 113px;
-							"
-						>
-							<v-card class="mx-auto mr-2">
-								<v-img
-									v-if="
-										infoLoaded &&
-										imageLoaded &&
-										fields.file &&
-										fields.file.base64
-									"
-									:src="fields.file.base64"
-									:lazy-src="fields.file.base64"
-									class="white--text align-end"
-									aspect-ratio="1"
-									max-height="113"
-									max-width="113"
-								></v-img>
-							</v-card>
-						</div>
-
-						<div
-							id="header-tombstone"
-							v-if="mode != 'add'"
-						>
-							<v-row>
-								<v-col cols="2">
-									<v-text-field
-										v-model="fields.datePhotoTaken"
-										label="Date Photo Taken"
-										readonly
-										outlined
-										dense
-										background-color="white"
-									></v-text-field>
-								</v-col>
-								<v-col cols="3">
-									<v-text-field
-										v-model="fields.originalFileName"
-										label="Original File Name"
-										readonly
-										outlined
-										dense
-										background-color="white"
-									></v-text-field>
-								</v-col>
-								<v-col cols="2">
-									<v-text-field
-										v-model="displayCommunity"
-										label="Community"
-										readonly
-										outlined
-										dense
-										background-color="white"
-									></v-text-field>
-								</v-col>
-								<v-col cols="2">
-									<v-text-field
-										v-model="displayResolution"
-										label="Resolution"
-										readonly
-										outlined
-										dense
-										background-color="white"
-									></v-text-field>
-								</v-col>
-								<v-col
-									cols="2"
-									style="margin-top: -7px"
-								>
-									<p
-										class="mt-auto mb-auto grey--text text--darken-2"
-										style="font-size: 12px"
-									>
-										Rating
-									</p>
-									<v-rating
-										v-model="fields.rating"
-										background-color="orange lighten-3"
-										color="orange"
-										length="5"
-										readonly
-										small
-										style="display: inline-block"
-									></v-rating>
-								</v-col>
-							</v-row>
-						</div>
-					</div>
-
-					<Feature
-						v-if="infoLoaded"
-						:fields="fields"
-						:mode="mode"
-						:itemType="'photo'"
-						@featureChange="featureChange"
-						@featureValidChange="featureValidChange"
-						ref="feature"
-					/>
-					<SiteRecord
-						v-if="infoLoaded"
-						:fields="fields"
-						:mode="mode"
-						:itemType="'photo'"
-						@siteRecordChange="siteRecordChange"
-						ref="siteRecord"
-					/>
-					<HistoricSites
-						v-if="infoLoaded"
-						:fields="fields"
-						:mode="mode"
-						:itemType="'photo'"
-						@historicSiteChange="historicSiteChange"
-						@siteValidChange="siteValidChange"
-						ref="historicSites"
-					/>
-					<Photo
-						v-if="infoLoaded"
-						:fields="fields"
-						:mode="mode"
-						:itemType="'photo'"
-						:imageLoaded="imageLoaded"
-						@photoChange="photoChange"
-						@photoValidChange="photoValidChange"
-						@photoRotate="photoRotate"
-						ref="photo"
-					/>
-				</v-col>
-
-				<!-- Side menu - Leaving for now in case we want it back -->
-				<!--<v-col cols="2">
-          <affix class="sidebar-menu" relative-element-selector="#main-content" style="width: 200px; margin-top: 10px;">
-          <v-list shaped class="list-menu">
-            <v-list-item-group
-              v-model="selectedItem"
-              color="primary"
-            >
-              <v-list-item
-                v-for="(item, i) in menuItems"
-                :key="i"
-                @click="scrollToAnchorPoint(item.anchor)"
-                :id="item.id"
-              >
-                <v-list-item-icon>
-                  <v-icon v-text="item.icon"></v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title v-text="item.name"></v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-          </affix>
-        </v-col>-->
-			</v-row>
-		</div>
 	</div>
 </template>
 
@@ -377,7 +348,9 @@ export default {
 					this.fields.datePhotoTaken = this.fields.datePhotoTaken
 						? this.fields.datePhotoTaken.substr(0, 10)
 						: '';
-					this.displayName = this.fields.originalFileName;
+
+					this.displayName =
+						this.fields.originalFileName || this.fields.featureName;
 					axios.get(`${STATIC_URL}/community`).then((resp) => {
 						let community = resp.data.data.filter(
 							(a) => a.id == this.fields.communityId
@@ -644,7 +617,8 @@ export default {
 		editMode() {
 			this.$router.push(`/photos/edit`);
 			this.changesMade = 0;
-			this.displayName = 'Edit ' + this.fields.originalFileName;
+			this.displayName =
+				'Edit ' + (this.fields.originalFileName || this.fields.featureName);
 		},
 		cancelEdit() {
 			this.infoLoaded = false;
@@ -665,6 +639,27 @@ export default {
 			this.$refs.siteRecord.validate();
 			this.$refs.historicSites.validate();
 			this.$refs.photo.validate();
+		},
+		deletePhoto() {
+			if (confirm('Are you sure you want to delete this photo?')) {
+				axios
+					.delete(`${PHOTO_URL}/${localStorage.currentRowId}`)
+					.then(() => {
+						this.$store.commit('photos/setRowId', null);
+						localStorage.currentRowId = null;
+						this.$router.push(`/photos`);
+						this.$store.commit('alerts/setText', 'Photo deleted');
+						this.$store.commit('alerts/setType', 'success');
+						this.$store.commit('alerts/setTimeout', 5000);
+						this.$store.commit('alerts/setAlert', true);
+					})
+					.catch((err) => {
+						this.$store.commit('alerts/setText', err);
+						this.$store.commit('alerts/setType', 'warning');
+						this.$store.commit('alerts/setTimeout', 5000);
+						this.$store.commit('alerts/setAlert', true);
+					});
+			}
 		},
 	},
 	computed: {
@@ -688,22 +683,9 @@ export default {
 </script>
 
 <style scoped>
-.list-menu {
-	padding: 0px 8px 0px 0px;
-}
-.save-button {
-	margin-left: 30px !important;
-}
-.display-name {
-	display: inline-block;
-}
 .page-header {
-	padding-top: 15px;
-	padding-left: 20px;
-	border-bottom: 1px dotted grey;
+	padding: 15px 20px;
+	border: 1px solid #ddd;
 	background-color: #fff2d5;
-}
-.page-header button {
-	float: right;
 }
 </style>

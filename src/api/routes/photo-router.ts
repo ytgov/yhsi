@@ -6,6 +6,7 @@ import { Photo, SavedFilter } from '../data';
 import multer from 'multer';
 import { createThumbnail } from '../utils/image';
 import { ReturnValidationErrors } from '../middleware';
+import knex from 'knex';
 
 const photoService = new PhotoService(DB_CONFIG);
 const ytPlaceService = new YtPlaceService(DB_CONFIG);
@@ -248,6 +249,30 @@ photoRouter.post(
 	}
 );
 
+photoRouter.delete('/:id', async (req: Request, res: Response) => {
+	const { id } = req.params;
+	const db = knex(DB_CONFIG);
+
+	db.transaction(async (trx) => {
+		try {
+			await trx('place.photo').where({ photo_RowId: id }).delete();
+			await trx('boat.photo').where({ photo_RowId: id }).delete();
+			await trx('aircrash.photo').where({ photo_RowId: id }).delete();
+			await trx('person.photo').where({ photoId: id }).delete();
+			await trx('burial.photo').where({ photo_RowId: id }).delete();
+			await trx('interpretiveSite.photos').where({ photo_RowId: id }).delete();
+			await trx('photo').where({ RowID: id }).delete();
+			await trx.commit();
+
+			return res.json({ data: 'successfully deleted' });
+		} catch (err) {
+			console.error('Error deleting photo:', err);
+			trx.rollback();
+			res.status(500).json({ errors: err });
+		}
+	});
+});
+
 photoRouter.put(
 	'/:id',
 	multer().single('file'),
@@ -370,16 +395,15 @@ photoRouter.get(
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
-		if (!errors.isEmpty()) {
+		if (!errors.isEmpty())
 			return res.status(400).json({ errors: errors.array() });
-		}
 
 		await photoService
 			.getSavedFilterByUser(req.params.id)
 			.then((item) => {
 				if (item) return res.json({ data: item });
 
-				return res.status(404).send('Filters not found');
+				return res.json({ data: [] });
 			})
 			.catch((err) => {
 				console.error(err);

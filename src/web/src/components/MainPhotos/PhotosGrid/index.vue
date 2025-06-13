@@ -1,39 +1,5 @@
 <template>
 	<div>
-		<!-- <v-row>
-      <v-col cols="6" class="d-flex">
-        <h1>Photos {{this.filterText}} {{this.photoCountText}}</h1>
-        <v-menu transition="slide-y-transition" bottom>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn class="black--text ml-4" v-bind="attrs" v-on="on">
-            <v-icon>mdi-swap-vertical</v-icon>
-            Sort
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item-group v-model="selectedSorter" color="primary">
-            <v-list-item v-for="(item, i) in sortOptions" :key="i" link>
-              <v-list-item-title>{{ item.name }}</v-list-item-title>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </v-menu>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col cols="auto" class="d-flex">
-        <v-btn class="black--text mx-1" @click="handleClick('add')">
-          <v-icon class="mr-1">mdi-plus</v-icon>
-          Add Photo
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <Breadcrumbs />
-      </v-col>
-      
-    </v-row> -->
-
 		<v-app-bar
 			color="white"
 			flat
@@ -84,178 +50,179 @@
 			</v-btn>
 		</v-app-bar>
 
-		<v-container>
-			<v-card
-				class="mt-5"
-				color="#fff2d5"
-			>
-				<v-card-text style="font-size: 15px">
-					<a @click="showHideFilters()"
-						><span>{{ showFiltersText }} </span></a
-					>
-					<span>to refine results or choose from </span>
-					<v-menu
-						transition="slide-y-transition"
-						offset-y
-						class="ml-0"
-					>
-						<template v-slot:activator="{ on, attrs }">
-							<a
-								v-bind="attrs"
-								v-on="on"
+		<v-card
+			class="mt-5"
+			color="#fff2d5"
+		>
+			<v-card-text style="font-size: 15px">
+				<a @click="showHideFilters()"
+					><span>{{ showFiltersText }} </span></a
+				>
+				<span>to refine results or choose from </span>
+				<v-menu
+					transition="slide-y-transition"
+					offset-y
+					class="ml-0"
+				>
+					<template v-slot:activator="{ on, attrs }">
+						<a
+							v-bind="attrs"
+							v-on="on"
+						>
+							My Saved Filters <v-icon>mdi-menu-down</v-icon>
+						</a>
+					</template>
+					<v-list>
+						<v-list-item-group color="primary">
+							<div class="ml-3">My Saved Filters</div>
+							<v-list-item
+								link
+								v-for="(item, i) in savedFilters"
+								:title="item.name"
+								:key="i"
+								@click="handleFilterClick('load', item.id)"
 							>
-								My Saved Filters <v-icon>mdi-menu-down</v-icon>
-							</a>
-						</template>
-						<v-list>
-							<v-list-item-group color="primary">
-								<div class="ml-3">My Saved Filters</div>
-								<v-list-item
-									link
-									v-for="(item, i) in savedFilters"
-									:title="item.name"
-									:key="i"
-									@click="handleFilterClick('load', item.id)"
-								>
-									<v-list-item-title>{{ item.name }}</v-list-item-title>
-								</v-list-item>
-								<v-divider />
-								<div class="mt-2 ml-3">Remove a Filter</div>
-								<v-list-item
-									link
-									v-for="(item, i) in savedFilters"
-									:title="item.name"
-									:key="`delete-${i}`"
-									@click="handleFilterClick('delete', item.id)"
-								>
-									<v-list-item-title>{{ item.name }} </v-list-item-title>
-									<v-icon class="ml-1">mdi-close</v-icon>
-								</v-list-item>
-							</v-list-item-group>
-						</v-list>
-					</v-menu>
-				</v-card-text>
-				<div v-if="showFilterSection">
-					<VueQueryBuilder
-						:rules="queryRules"
-						:maxDepth="1"
-						:labels="queryLabels"
-						v-model="queryBuilder"
-					/>
-					<v-row class="ml-4 mb-3">
-						<v-btn
-							color="primary"
-							class="mr-2"
-							@click="runQuery()"
-						>
-							<v-icon>mdi-magnify</v-icon>
-							<div class="ml-2">View Results</div>
-						</v-btn>
-						<v-btn
-							color="secondary"
-							class="mr-2"
-							@click="clearFilters()"
-						>
-							<v-icon>mdi-refresh</v-icon>
-							<div class="ml-2">Clear Filters</div>
-						</v-btn>
-						<SaveDialog
-							@saveDialog="saveDialog"
-							:isDisabled="queryBuilderEmpty"
-							:itemType="`filter`"
-						/>
-					</v-row>
-				</div>
-			</v-card>
-		</v-container>
-
-		<v-container grid-list-xs>
-			<v-row>
-				<v-col class="d-flex">
-					<v-text-field
-						v-model="search"
-						@keyup.enter="getDataFromApi"
-						label="Search"
-					/>
+								<v-list-item-title>{{ item.name }}</v-list-item-title>
+							</v-list-item>
+							<v-divider />
+							<div class="mt-2 ml-3">Remove a Filter</div>
+							<v-list-item
+								link
+								v-for="(item, i) in savedFilters"
+								:title="item.name"
+								:key="`delete-${i}`"
+								@click="handleFilterClick('delete', item.id)"
+							>
+								<v-list-item-title>{{ item.name }} </v-list-item-title>
+								<v-icon class="ml-1">mdi-close</v-icon>
+							</v-list-item>
+						</v-list-item-group>
+					</v-list>
+				</v-menu>
+			</v-card-text>
+			<div v-if="showFilterSection">
+				<VueQueryBuilder
+					:rules="queryRules"
+					:maxDepth="1"
+					:labels="queryLabels"
+					v-model="queryBuilder"
+				/>
+				<v-row class="ml-4 mb-3">
 					<v-btn
-						@click="getDataFromApi"
-						icon
-						class="mt-auto mb-auto"
+						color="primary"
+						class="mr-2"
+						@click="runQuery()"
 					>
 						<v-icon>mdi-magnify</v-icon>
+						<div class="ml-2">View Results</div>
 					</v-btn>
-				</v-col>
-			</v-row>
-			<v-row v-if="!loading">
-				<v-col
-					v-for="(item, i) in sortedData"
-					:key="`photo-${i}`"
-					class="d-flex child-flex"
-					cols="2"
+					<v-btn
+						color="secondary"
+						class="mr-2"
+						@click="clearFilters()"
+					>
+						<v-icon>mdi-refresh</v-icon>
+						<div class="ml-2">Clear Filters</div>
+					</v-btn>
+					<SaveDialog
+						@saveDialog="saveDialog"
+						:isDisabled="queryBuilderEmpty"
+						:itemType="`filter`"
+					/>
+				</v-row>
+			</div>
+		</v-card>
+
+		<v-row>
+			<v-col class="d-flex mt-3">
+				<v-text-field
+					v-model="search"
+					@keyup.enter="getDataFromApi"
+					outlined
+					dense
+					c
+					label="Search"
+				/>
+				<v-btn
+					@click="getDataFromApi"
+					class="my-0 ml-3"
+					color="primary"
+					fab
+					small
 				>
-					<v-hover>
-						<template v-slot:default="{ hover }">
-							<v-card
-								class="mx-auto"
-								@click="sortData()"
-							>
-								<v-img
-									:src="item.thumbFile.base64"
-									:lazy-src="item.thumbFile.base64"
-									class="white--text align-end"
-									aspect-ratio="1"
-								/>
-
-								<v-card-actions>
-									<v-card-subtitle
-										v-if="selectedSorter == 0"
-										v-text="item.featureName"
-									/>
-									<v-card-subtitle
-										v-else-if="selectedSorter == 1"
-										v-text="`Rating: ${item.rating}`"
-									/>
-									<v-card-subtitle v-else>
-										v-text="`Photo taken, ${new
-										Date(item.datePhotoTaken).toLocaleDateString()}`"
-										></v-card-subtitle
-									>
-								</v-card-actions>
-
-								<v-fade-transition>
-									<v-overlay
-										v-if="hover"
-										absolute
-										color="#036358"
-									>
-										<v-btn @click="handleClick('view', item.rowId)"
-											>View Photo</v-btn
-										>
-									</v-overlay>
-								</v-fade-transition>
-							</v-card>
-						</template>
-					</v-hover>
-				</v-col>
-			</v-row>
-			<v-row v-if="loading">
-				<div class="loading">Loading...</div>
-			</v-row>
-			<v-row
-				class="mb-2"
-				v-if="!loading"
+					<v-icon>mdi-magnify</v-icon>
+				</v-btn>
+			</v-col>
+		</v-row>
+		<v-row v-if="!loading">
+			<v-col
+				v-for="(item, i) in sortedData"
+				:key="`photo-${i}`"
+				class="d-flex child-flex"
+				cols="2"
 			>
-				<v-col>
-					<div class="text-center">
-						<v-pagination
-							v-model="page"
-							:length="numberOfPages"
-							:total-visible="5"
-						/>
-					</div>
-				</v-col>
-			</v-row>
-		</v-container>
+				<v-hover>
+					<template v-slot:default="{ hover }">
+						<v-card
+							class="mx-auto"
+							@click="sortData()"
+						>
+							<v-img
+								:src="item.thumbFile.base64"
+								:lazy-src="item.thumbFile.base64"
+								class="white--text align-end"
+								aspect-ratio="1"
+							/>
+
+							<v-card-actions>
+								<v-card-subtitle
+									v-if="selectedSorter == 0"
+									v-text="item.featureName"
+								/>
+								<v-card-subtitle
+									v-else-if="selectedSorter == 1"
+									v-text="`Rating: ${item.rating}`"
+								/>
+								<v-card-subtitle v-else>
+									v-text="`Photo taken, ${new
+									Date(item.datePhotoTaken).toLocaleDateString()}`"
+									></v-card-subtitle
+								>
+							</v-card-actions>
+
+							<v-fade-transition>
+								<v-overlay
+									v-if="hover"
+									absolute
+									color="#036358"
+								>
+									<v-btn @click="handleClick('view', item.rowId)"
+										>View Photo</v-btn
+									>
+								</v-overlay>
+							</v-fade-transition>
+						</v-card>
+					</template>
+				</v-hover>
+			</v-col>
+		</v-row>
+		<v-row v-if="loading">
+			<div class="loading">Loading...</div>
+		</v-row>
+		<v-row
+			class="mb-2"
+			v-if="!loading"
+		>
+			<v-col>
+				<div class="text-center">
+					<v-pagination
+						v-model="page"
+						:length="numberOfPages"
+						:total-visible="5"
+					/>
+				</div>
+			</v-col>
+		</v-row>
 	</div>
 </template>
 
@@ -338,7 +305,6 @@ export default {
 				.post(`${PHOTO_URL}/search`, this.queryBody)
 				.then((resp) => {
 					this.photos = resp.data.data.map((x) => {
-						console.log(x);
 						//check if thumbFile is null
 						if (!x.thumbFile) {
 							x.thumbFile = {};
