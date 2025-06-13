@@ -1,12 +1,15 @@
 import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
 import { body, check, query, validationResult } from 'express-validator';
+import knex from 'knex';
+import multer from 'multer';
+
+import { DB_CONFIG } from '../config';
 import { PhotoService, YtPlaceService, BoatService } from '../services';
 import { Photo, SavedFilter } from '../data';
-import multer from 'multer';
 import { createThumbnail } from '../utils/image';
 import { ReturnValidationErrors } from '../middleware';
-import knex from 'knex';
+import { authorize } from '../middleware/authorization';
+import { UserRoles } from '../models';
 
 const photoService = new PhotoService(DB_CONFIG);
 const ytPlaceService = new YtPlaceService(DB_CONFIG);
@@ -249,29 +252,35 @@ photoRouter.post(
 	}
 );
 
-photoRouter.delete('/:id', async (req: Request, res: Response) => {
-	const { id } = req.params;
-	const db = knex(DB_CONFIG);
+photoRouter.delete(
+	'/:id',
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.PHOTO_ADMIN]),
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+		const db = knex(DB_CONFIG);
 
-	db.transaction(async (trx) => {
-		try {
-			await trx('place.photo').where({ photo_RowId: id }).delete();
-			await trx('boat.photo').where({ photo_RowId: id }).delete();
-			await trx('aircrash.photo').where({ photo_RowId: id }).delete();
-			await trx('person.photo').where({ photoId: id }).delete();
-			await trx('burial.photo').where({ photo_RowId: id }).delete();
-			await trx('interpretiveSite.photos').where({ photo_RowId: id }).delete();
-			await trx('photo').where({ RowID: id }).delete();
-			await trx.commit();
+		db.transaction(async (trx) => {
+			try {
+				await trx('place.photo').where({ photo_RowId: id }).delete();
+				await trx('boat.photo').where({ photo_RowId: id }).delete();
+				await trx('aircrash.photo').where({ photo_RowId: id }).delete();
+				await trx('person.photo').where({ photoId: id }).delete();
+				await trx('burial.photo').where({ photo_RowId: id }).delete();
+				await trx('interpretiveSite.photos')
+					.where({ photo_RowId: id })
+					.delete();
+				await trx('photo').where({ RowID: id }).delete();
+				await trx.commit();
 
-			return res.json({ data: 'successfully deleted' });
-		} catch (err) {
-			console.error('Error deleting photo:', err);
-			trx.rollback();
-			res.status(500).json({ errors: err });
-		}
-	});
-});
+				return res.json({ data: 'successfully deleted' });
+			} catch (err) {
+				console.error('Error deleting photo:', err);
+				trx.rollback();
+				res.status(500).json({ errors: err });
+			}
+		});
+	}
+);
 
 photoRouter.put(
 	'/:id',
