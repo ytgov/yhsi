@@ -73,7 +73,7 @@ typings/
 # dotenv environment variables file
 .env
 .envrc
-src/api/.env
+api/.env
 .env.development
 .env.test
 .env.production
