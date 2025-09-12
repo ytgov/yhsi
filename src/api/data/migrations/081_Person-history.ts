@@ -17,7 +17,12 @@
 // GO
 
 import { Knex } from 'knex';
-exports.up = async function (knex: Knex, Promise: any) {
+
+exports.up = async function (knex: Knex) {
+	await knex.raw(
+		/* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Person') BEGIN EXEC('CREATE SCHEMA [Person]') END"
+	);
+
 	await knex.schema.createTable('Person.History', (table) => {
 		table.increments('PersonHistID').primary();
 		table.integer('PersonID').nullable();
@@ -27,6 +32,6 @@ exports.up = async function (knex: Knex, Promise: any) {
 		table.integer('Restricted').nullable();
 	});
 };
-exports.down = async function (knex: Knex, Promise: any) {
+exports.down = async function (knex: Knex) {
 	await knex.schema.dropTable('Person.History');
 };

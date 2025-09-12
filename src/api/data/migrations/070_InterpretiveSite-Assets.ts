@@ -22,7 +22,12 @@
 // GO
 
 import { Knex } from 'knex';
-exports.up = async function (knex: Knex, Promise: any) {
+
+exports.up = async function (knex: Knex) {
+	await knex.raw(
+		/* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'InterpretiveSite') BEGIN EXEC('CREATE SCHEMA [InterpretiveSite]') END"
+	);
+
 	await knex.schema.createTable('InterpretiveSite.Assets', (table) => {
 		table.increments('AssetID').notNullable();
 		table.integer('SiteID').notNullable();
@@ -37,6 +42,6 @@ exports.up = async function (knex: Knex, Promise: any) {
 		table.string('Status', 50).nullable();
 	});
 };
-exports.down = async function (knex: Knex, Promise: any) {
+exports.down = async function (knex: Knex) {
 	await knex.schema.dropTable('InterpretiveSite.Assets');
 };

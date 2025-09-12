@@ -41,7 +41,11 @@
 // GO
 
 import { Knex } from 'knex';
-exports.up = async function (knex: Knex, Promise: any) {
+exports.up = async function (knex: Knex) {
+	await knex.raw(
+		/* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'AirCrash') BEGIN EXEC('CREATE SCHEMA [AirCrash]') END"
+	);
+
 	await knex.schema.createTable('AirCrash.AirCrash', (table) => {
 		table.string('YACSINumber', 256).notNullable();
 		table.dateTime('CrashDate').nullable();
@@ -76,6 +80,6 @@ exports.up = async function (knex: Knex, Promise: any) {
 	});
 };
 
-exports.down = async function (knex: Knex, Promise: any) {
+exports.down = async function (knex: Knex) {
 	await knex.schema.dropTable('AirCrash.AirCrash');
 };

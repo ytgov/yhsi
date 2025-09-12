@@ -19,7 +19,12 @@
 // GO
 
 import { Knex } from 'knex';
-exports.up = async function (knex: Knex, Promise: any) {
+
+exports.up = async function (knex: Knex) {
+	await knex.raw(
+		/* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Place') BEGIN EXEC('CREATE SCHEMA [Place]') END"
+	);
+
 	await knex.schema.createTable('Place.Place', (table) => {
 		table.string('Name', 255).notNullable();
 		table.string('LocationDesc', 512).nullable();
@@ -31,6 +36,7 @@ exports.up = async function (knex: Knex, Promise: any) {
 		table.increments('Id').primary();
 	});
 };
-exports.down = async function (knex: Knex, Promise: any) {
+
+exports.down = async function (knex: Knex) {
 	await knex.schema.dropTable('Place.Place');
 };

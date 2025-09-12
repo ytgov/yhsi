@@ -8,7 +8,8 @@
     "development": "pm2 start ecosystem.config.js --no-daemon",
     "test": "mocha --config ./.mocharc.js 'tests/**/*.test.ts'",
     "start-yhsif": "nodemon index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "knex": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex --knexfile ./config.d/knexfile.ts"
   },
   "author": "Michael Johnson",
   "license": "ISC",
@@ -55,11 +56,11 @@
     "eslint-plugin-prettier": "^4.0.0",
     "mocha": "^9.2.2",
     "nodemon": "^2.0.12",
-    "prettier": "^2.6.2",
     "reqresnext": "^1.7.0",
     "testdouble": "^3.16.5",
     "testdouble-chai": "^0.5.0",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^4.6.3"
   },
   "eslintConfig": {

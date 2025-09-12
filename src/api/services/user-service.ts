@@ -121,6 +121,7 @@ export class UserService {
 				email,
 				first_name,
 				last_name,
+				create_date: new Date(),
 				last_login_date: new Date(),
 				status: 'Pending',
 			})

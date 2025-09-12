@@ -10,17 +10,33 @@ Writing code and developing in this application requires running three services:
 
 ---
 
-Boot the three app services:
+1. Create a the `yhsi_sqlvolume` volume in docker to hold the app database.
 
-```bash
-docker-compose -f docker-compose.development.yml up
-```
+   ```bash
+   docker volume create yhsi_sqlvolume
+   ```
 
-Or if you have `ruby` installed
+2. Boot the three app services:
 
-```bash
-bin/dev up
-```
+   ```bash
+   dev build
+   dev up
+
+   # Or
+   docker compose -f docker-compose.development.yml build
+   docker compose -f docker-compose.development.yml up
+   ```
+
+3. Run the database migrations by going to http://localhost:3000/migrate/latest
+
+4. Create a new user account and log in to http://localhost:8080.
+
+5. Once you are logged in, open a database console with `dev sqlcmd` and run the following command to give your user admin permissions:
+
+   ```sql
+   UPDATE [Security].[User] SET [roles] = 'Administrator', [status] = 'Active' WHERE [email] = 'some-user@some-host.com';
+   GO
+   ```
 
 ### Legacy Development Setup
 
@@ -33,7 +49,10 @@ docker-compose -f docker-compose.dev.yml up -d
 This command will start SQL Server and bind it to your local machine's port 1433. When it starts the first time, the database will be empty. To load it with data, you must obtain a database backup and put it into `/db/backups/yhsi.bak` then run the follow commands:
 
 ```
-docker exec -it yhsi_sql_1 bash
+dev exec db bash
+
+# or
+docker compose -f docker-compose.development.yml exec db bash
 ```
 
 This connects you to the running SQL Server container. Once in, run the following commands to create and restore the database from the backup:

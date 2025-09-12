@@ -13,7 +13,11 @@
 // ALTER TABLE Burial.Source ADD CONSTRAINT PK__Source__16E019F95120B963 PRIMARY KEY (SourceID);
 // GO
 import { Knex } from 'knex';
-exports.up = async function (knex: Knex, Promise: any) {
+exports.up = async function (knex: Knex) {
+	await knex.raw(
+		/* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Burial') BEGIN EXEC('CREATE SCHEMA [Burial]') END"
+	);
+
 	await knex.schema.createTable('Burial.Source', (table) => {
 		table.increments('SourceID').primary();
 		table.integer('BurialID').notNullable();
@@ -21,6 +25,6 @@ exports.up = async function (knex: Knex, Promise: any) {
 	});
 };
 
-exports.down = async function (knex: Knex, Promise: any) {
+exports.down = async function (knex: Knex) {
 	await knex.schema.dropTable('Burial.Source');
 };

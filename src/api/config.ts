@@ -1,22 +1,22 @@
+import * as path from 'path';
 import * as dotenv from 'dotenv';
 
-let path;
+let dotEnvPath;
 switch (process.env.NODE_ENV) {
 	case 'test':
-		path = `.env.test`;
+		dotEnvPath = `.env.test`;
 		break;
 	case 'production':
-		path = `.env.production`;
+		dotEnvPath = `.env.production`;
 		break;
 	default:
-		path = `.env.development`;
+		dotEnvPath = `.env.development`;
 }
-dotenv.config({ path: path });
+dotenv.config({ path: dotEnvPath });
 
 export const API_PORT = parseInt(process.env.API_PORT || '3000');
 export const FRONTEND_URL = process.env.FRONTEND_URL || 'localhost:8080';
-export const AUTH_REDIRECT =
-	process.env.AUTH_REDIRECT || process.env.FRONTEND_URL || '';
+export const AUTH_REDIRECT = process.env.AUTH_REDIRECT || process.env.FRONTEND_URL || '';
 export const NODE_ENV = process.env.NODE_ENV;
 
 export const DB_NAME = process.env.DB_NAME || '';
@@ -38,11 +38,20 @@ export const DB_CONFIG = {
 		database: DB_NAME,
 		port: parseInt(DB_PORT),
 	},
+	migrations: {
+		directory: path.resolve(__dirname, './data/migrations'),
+		extension: 'ts',
+		stub: path.resolve(__dirname, './data/templates/sample-migration.ts'),
+	},
+	seeds: {
+		directory: path.resolve(__dirname, `./data/seeds/${NODE_ENV}`),
+		extension: 'ts',
+		stub: path.resolve(__dirname, './data/templates/sample-seed.ts'),
+	},
 };
 
 export const GIS_PORTAL_CLIENT_ID = process.env.GIS_PORTAL_CLIENT_ID || '';
-export const GIS_PORTAL_CLIENT_SECRET =
-	process.env.GIS_PORTAL_CLIENT_SECRET || '';
+export const GIS_PORTAL_CLIENT_SECRET = process.env.GIS_PORTAL_CLIENT_SECRET || '';
 export const GIS_FEATURE_USERNAME = process.env.GIS_FEATURE_USERNAME || '';
 export const GIS_FEATURE_PASSWORD = process.env.GIS_FEATURE_PASSWORD || '';
 

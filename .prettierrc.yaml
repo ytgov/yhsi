@@ -1,5 +1,6 @@
 # .prettierrc or .prettierrc.yaml
-embeddedLanguageFormatting: "auto"
+$schema: 'https://json.schemastore.org/prettierrc'
+embeddedLanguageFormatting: 'auto'
 jsxSingleQuote: true
 pugAttributeSeparator: 'as-needed'
 pugSingleQuote: false
@@ -8,5 +9,11 @@ semi: true
 singleAttributePerLine: true
 singleQuote: true
 tabWidth: 2
-trailingComma: "es5"
+trailingComma: 'es5'
 useTabs: true
+printWidth: 100
+plugins:
+  - prettier-plugin-embed
+  - prettier-plugin-sql
+language: 'tsql'
+paramTypes: "{ named: [':'] }"
