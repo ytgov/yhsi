@@ -1,3 +1,5 @@
-src/*/node_modules
-src/*/dist
+api/node_modules
+api/dist
+web/node_modules
+web/dist
 npm-debug.log

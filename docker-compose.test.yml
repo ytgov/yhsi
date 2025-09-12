@@ -3,11 +3,11 @@ version: '3'
 services:
   api:
     build:
-      context: ./src/api
+      context: ./api
       dockerfile: development.Dockerfile
     command: ['npm', 'run', 'test']
     env_file:
-      - ./src/api/.env.development
+      - ./api/.env.development
     environment:
       NODE_ENV: test
       DB_HOST: db
@@ -20,7 +20,7 @@ services:
       - 'host.docker.internal:host-gateway'
       - 'host.docker.internal:172.17.0.1'
     volumes:
-      - ./src/api:/usr/src/api
+      - ./api:/usr/src/api
     depends_on:
       - db
   db:

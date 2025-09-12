@@ -5,8 +5,8 @@
 Writing code and developing in this application requires running three services:
 
 - A local Microsoft SQL Server (2019 Linux) database running in Docker
-- The server-side Node.js application written in TypeScript: `/src/api`
-- The Vue.js and Vuetify based front-end: `/src/web`
+- The server-side Node.js application written in TypeScript: `/api`
+- The Vue.js and Vuetify based front-end: `/web`
 
 ---
 
@@ -65,7 +65,7 @@ cd /opt/mssql-tools/bin
 You will now have a local database with data ready for the API. To run the API, run the following commands:
 
 ```
-cd src/api
+cd api
 npm install
 cp .env .env.development
 ```
@@ -81,17 +81,17 @@ The API will bind to your local machines port 3000 and be available at http://lo
 Last to start is the the Vue.js web front-end. To run this, open a second terminal window at this directory and run the following commands:
 
 ```
-cd src/web
+cd web
 npm install
 npm run start
 ```
 
-You will now have the Vue CLI server hosting the application at http://localhost:8080 and you can begin editing the API or front-end code. **All changes to the files in the `src/api` and `src/web` will automatically reload theie respective applications.**
+You will now have the Vue CLI server hosting the application at http://localhost:8080 and you can begin editing the API or front-end code. **All changes to the files in the `api` and `web` will automatically reload theie respective applications.**
 
 ## Local Testing
 
 Currently there is very minimal support for testing.
-Only `src/api` has a test suite.
+Only `api` has a test suite.
 **The development and test databases are shared, so don't write tests that change database state yet.**
 
 To boot the test suite go to the top level of the app and run:
@@ -103,7 +103,7 @@ bin/dev test up
 docker-compose -f docker-cmpose.test.yml up
 
 # or if you don't have docker
-cd src/api
+cd api
 npm install
 npm run test
 ```
@@ -157,8 +157,8 @@ the appropriate environment variables set using the following commands:
 1. Set the environment variables for the back-end.
 
 ```
-cp /src/api/.env /src/api/.env.production
-vi /src/api/.env.production
+cp /api/.env /api/.env.production
+vi /api/.env.production
 ```
 
 2. Set the global host port.
