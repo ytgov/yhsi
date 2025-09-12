@@ -14,21 +14,21 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 RUN mkdir /home/node/app && chown -R node:node /home/node/app
 RUN mkdir /home/node/web && chown -R node:node /home/node/web
 
-COPY --chown=node:node src/web/package*.json /home/node/web/
-COPY --chown=node:node src/api/package*.json /home/node/app/
+COPY --chown=node:node web/package*.json /home/node/web/
+COPY --chown=node:node api/package*.json /home/node/app/
 
 RUN npm install -g npm@8.5.5
 USER node
 
 WORKDIR /home/node/app
 RUN npm install && npm cache clean --force --loglevel=error
-COPY --chown=node:node src/api/.env* ./
+COPY --chown=node:node api/.env* ./
 
 WORKDIR /home/node/web
 
 RUN npm install && npm cache clean --force --loglevel=error
-COPY --chown=node:node src/api /home/node/app/
-COPY --chown=node:node src/web /home/node/web/
+COPY --chown=node:node api /home/node/app/
+COPY --chown=node:node web /home/node/web/
 
 RUN npm run build:docker
 
@@ -36,7 +36,7 @@ EXPOSE 3000
 
 WORKDIR /home/node/app
 
-COPY src/api/templates /home/node/app/dist/templates
+COPY api/templates /home/node/app/dist/templates
 
 ENV NODE_ENV=production
 #RUN npm install --platform=linux --arch=x64 sharp@0.29.1
