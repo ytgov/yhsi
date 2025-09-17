@@ -10,7 +10,7 @@ import { API_PORT, DB_CONFIG } from '../config';
 import { PhotoService, PlaceService } from '../services';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
-import { Place, User, UserRoles, DESCRIPTION_TYPES, Description } from '../models';
+import { Place, User, UserRoles, DESCRIPTION_TYPES } from '../models';
 import PlacesController from '../controllers/places-controller';
 import { PlacePolicy } from '../policies';
 import { generatePDF } from '../utils/pdf-generator';
@@ -154,7 +154,6 @@ placeRouter.get(
 		}[] = [];
 
 		if (!isNil(place.descriptions)) {
-			console.log(DESCRIPTION_TYPES);
 			place.descriptions.forEach((description) => {
 				const d = DESCRIPTION_TYPES.find(
 					(descriptionType) => descriptionType.value == description.type
@@ -318,16 +317,16 @@ placeRouter.get(
 			descriptions,
 		};
 
+		console.log(handlebarsData);
+
 		const data = template(handlebarsData);
 
 		if (format == 'html') {
 			res.send(data);
 		} else {
 			const pdf = await generatePDF(data, 'letter', false);
-			res.setHeader(
-				'Content-disposition',
-				`filename="SitePrint-${(place as any).primaryName}.pdf"`
-			);
+			const primaryName = place.primaryName;
+			res.setHeader('Content-disposition', `filename="SitePrint-${primaryName}.pdf"`);
 			res.setHeader('Content-type', 'application/pdf');
 			res.send(pdf);
 		}
