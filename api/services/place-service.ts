@@ -167,7 +167,7 @@ export class PlaceService {
 		return selectStatement.then((list) => list);
 	}
 
-	async getById(id: number, user?: User) {
+	async getById(id: number, user?: User): Promise<{ place: Place; relationships: any }> {
 		return this.db('place')
 			.first(PLACE_FIELDS)
 			.where({ 'place.id': id })
