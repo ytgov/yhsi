@@ -1,22 +1,16 @@
 import express, { Request, Response } from 'express';
-import {
-	body,
-	check,
-	param,
-	query,
-	validationResult,
-	matchedData,
-} from 'express-validator';
+import { body, check, param, query, validationResult, matchedData } from 'express-validator';
 import fs from 'fs';
 import multer from 'multer';
 import { create } from 'handlebars';
 import handlebarsHelpers from '../utils/handlebars-helpers';
+import { isNil } from 'lodash';
 
 import { API_PORT, DB_CONFIG } from '../config';
 import { PhotoService, PlaceService } from '../services';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
-import { Place, User, UserRoles } from '../models';
+import { Place, User, UserRoles, DESCRIPTION_TYPES, Description } from '../models';
 import PlacesController from '../controllers/places-controller';
 import { PlacePolicy } from '../policies';
 import { generatePDF } from '../utils/pdf-generator';
@@ -87,11 +81,7 @@ placeRouter.post(
 
 placeRouter.post(
 	'/generate-id',
-	authorize([
-		UserRoles.SITE_ADMIN,
-		UserRoles.SITE_EDITOR,
-		UserRoles.ADMINISTRATOR,
-	]),
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
 	[body('nTSMapSheet').isString().bail().notEmpty().trim()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
@@ -137,30 +127,198 @@ placeRouter.get(
 		const { format } = req.params;
 		const currentUser = req.user as User;
 
-		const place = await placeService
+		const placeData = await placeService
 			.getById(id, currentUser)
 			.then(({ place, relationships }) => {
 				const policy = new PlacePolicy(currentUser, place);
 				if (policy.show()) {
 					return {
-						...place,
+						place,
 						relationships,
 						API_PORT,
 					};
 				}
 			});
 
-		console.log('place');
+		if (isNil(placeData)) {
+			res.status(500).send('Failed to load place');
+			return;
+		}
+
+		const { place } = placeData;
+
+		// Generating data for description
+		const descriptions: {
+			value: string;
+			text: string;
+		}[] = [];
+
+		if (!isNil(place.descriptions)) {
+			console.log(DESCRIPTION_TYPES);
+			place.descriptions.forEach((description) => {
+				const d = DESCRIPTION_TYPES.find(
+					(descriptionType) => descriptionType.value == description.type
+				);
+
+				if (isNil(d)) return;
+
+				descriptions.push({
+					value: d.text,
+					text: description.descriptionText,
+				});
+			});
+		}
 
 		//(place as any).API_PORT = API_PORT;
-		const PDF_TEMPLATE = fs.readFileSync(
-			__dirname + '/../templates/places/placePrint.handlebars'
-		);
+		const PDF_TEMPLATE = fs.readFileSync(__dirname + '/../templates/places/placePrint.handlebars');
 		const h = create();
 		h.registerHelper('joinArray', handlebarsHelpers.joinArray);
 		h.registerHelper('joinArrayPick', handlebarsHelpers.joinArrayPick);
 		const template = h.compile(PDF_TEMPLATE.toString(), {});
-		const data = template(place);
+
+		const {
+			primaryName,
+			yHSIId,
+			jurisdiction,
+			statuteId,
+			statute2Id,
+			recognitionDate,
+			ownerConsent,
+			category,
+			isPubliclyAccessible,
+			nTSMapSheet,
+			bordenNumber,
+			geocode,
+			hectareArea,
+			latitude,
+			longitude,
+			locationComment,
+			resourceType,
+			buildingSize,
+			conditionComment,
+			currentUseComment,
+			yHSPastUse,
+			cIHBNumber,
+			groupYHSI,
+			yGBuildingNumber,
+			yGReserveNumber,
+			fHBRONumber,
+			zoning,
+			townSiteMapNumber,
+			siteDistrictNumber,
+			planNumber,
+			block,
+			lot,
+			slideNegativeIndex,
+			otherCommunity,
+			otherLocality,
+			previousAddress,
+			yHSThemes,
+			rollNumber,
+			locationContext,
+			communityId,
+			lAGroup,
+			siteStatus,
+			floorCondition,
+			wallCondition,
+			doorCondition,
+			roofCondition,
+			coordinateDetermination,
+			physicalAddress,
+			physicalProvince,
+			physicalCountry,
+			physicalPostalCode,
+			mailingAddress,
+			mailingProvince,
+			mailingCountry,
+			mailingPostalCode,
+			showInRegister,
+			siteCategories,
+			designations,
+			contributingResources,
+			records,
+			communityName,
+			coordinateDeterminationName,
+			hasPendingChanges,
+			associations,
+			constructionPeriods,
+			contacts,
+			dates,
+		} = place;
+
+		// Main object to passed to placePrint.handlebars
+		const handlebarsData = {
+			primaryName,
+			yHSIId,
+			jurisdiction,
+			statuteId,
+			statute2Id,
+			recognitionDate,
+			ownerConsent,
+			category,
+			isPubliclyAccessible,
+			nTSMapSheet,
+			bordenNumber,
+			geocode,
+			hectareArea,
+			latitude,
+			longitude,
+			locationComment,
+			resourceType,
+			buildingSize,
+			conditionComment,
+			currentUseComment,
+			yHSPastUse,
+			cIHBNumber,
+			groupYHSI,
+			yGBuildingNumber,
+			yGReserveNumber,
+			fHBRONumber,
+			zoning,
+			townSiteMapNumber,
+			siteDistrictNumber,
+			planNumber,
+			block,
+			lot,
+			slideNegativeIndex,
+			otherCommunity,
+			otherLocality,
+			previousAddress,
+			yHSThemes,
+			rollNumber,
+			locationContext,
+			communityId,
+			lAGroup,
+			siteStatus,
+			floorCondition,
+			wallCondition,
+			doorCondition,
+			roofCondition,
+			coordinateDetermination,
+			physicalAddress,
+			physicalProvince,
+			physicalCountry,
+			physicalPostalCode,
+			mailingAddress,
+			mailingProvince,
+			mailingCountry,
+			mailingPostalCode,
+			showInRegister,
+			siteCategories,
+			designations,
+			contributingResources,
+			records,
+			communityName,
+			coordinateDeterminationName,
+			hasPendingChanges,
+			associations,
+			constructionPeriods,
+			contacts,
+			dates,
+			descriptions,
+		};
+
+		const data = template(handlebarsData);
 
 		if (format == 'html') {
 			res.send(data);
@@ -178,11 +336,7 @@ placeRouter.get(
 
 placeRouter.post(
 	'/',
-	authorize([
-		UserRoles.SITE_ADMIN,
-		UserRoles.SITE_EDITOR,
-		UserRoles.ADMINISTRATOR,
-	]),
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
 	[
 		body('primaryName').isString().bail().notEmpty().trim(),
 		//body('yHSIId').isString().bail().notEmpty().trim(),
@@ -225,11 +379,7 @@ placeRouter.post(
 
 placeRouter.post(
 	'/:id/photo',
-	authorize([
-		UserRoles.SITE_ADMIN,
-		UserRoles.SITE_EDITOR,
-		UserRoles.ADMINISTRATOR,
-	]),
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
 	multer().single('file'),
 	async (req: Request, res: Response) => {
 		try {
