@@ -24,23 +24,14 @@ import {
 	WebLinkService,
 } from './';
 import { PLACE_FIELDS, REGISTER_FIELDS } from '../data';
-import {
-	DescriptionTypeEnums,
-	Place,
-	PlainObject,
-	User,
-	UserRoles,
-} from '../models';
+import { DescriptionTypeEnums, Place, PlainObject, User, UserRoles } from '../models';
 import { NotFoundError } from '../utils/validation';
 
 // This function can go away when the back-end serves the
 // relationship data as part of the data directly.
 // e.g. { data: { names: [{ id: 1, placeId: 1, description: "SomeName" }] } }
 // instead of { data: {}, relationships: { names: { data: [{ id: 1, placeId: 1, description: "SomeName" }] } } }
-function injectRelationshipData(
-	attributes: PlainObject,
-	relationships: PlainObject
-) {
+function injectRelationshipData(attributes: PlainObject, relationships: PlainObject) {
 	Object.keys(relationships).forEach((key) => {
 		if (attributes.hasOwnProperty(key)) {
 			console.error('Relationship data conflicts with source data.');
@@ -78,9 +69,7 @@ export class PlaceService {
 		this.contactService = new ContactService(config);
 		this.dateService = new DateService(config);
 		this.descriptionService = new DescriptionService(config);
-		this.firstNationAssociationService = new FirstNationAssociationService(
-			config
-		);
+		this.firstNationAssociationService = new FirstNationAssociationService(config);
 		this.functionalUseService = new FunctionalUseService(config);
 		this.historicalPatternService = new HistoricalPatternService();
 		this.nameService = new NameService();
@@ -95,11 +84,7 @@ export class PlaceService {
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Place>> {
-		return this.db('place')
-			.select<Place[]>(PLACE_FIELDS)
-			.orderBy('id')
-			.offset(skip)
-			.limit(take);
+		return this.db('place').select<Place[]>(PLACE_FIELDS).orderBy('id').offset(skip).limit(take);
 	}
 
 	async getAllWithPhoto(skip: number, take: number): Promise<Array<Place>> {
@@ -113,9 +98,7 @@ export class PlaceService {
 					.andOn(
 						'PH.DateCreated',
 						'=',
-						db.raw(
-							'(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)'
-						)
+						db.raw('(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)')
 					);
 			});
 	}
@@ -131,9 +114,7 @@ export class PlaceService {
 					.andOn(
 						'PH.DateCreated',
 						'=',
-						db.raw(
-							'(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)'
-						)
+						db.raw('(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)')
 					);
 			})
 			.where({ showInRegister: true })
@@ -151,7 +132,7 @@ export class PlaceService {
 				.where({ showInRegister: true });
 
 			if (results) {
-				let val = results[0].count as number;
+				const val = results[0].count as number;
 				resolve(val);
 			}
 
@@ -160,7 +141,7 @@ export class PlaceService {
 	}
 
 	async getIdsForUser(user?: User) {
-		let selectStatement = this.db('place').select('yHSIId');
+		const selectStatement = this.db('place').select('yHSIId');
 
 		this.scopeSitesToUser(selectStatement, user);
 
@@ -176,9 +157,7 @@ export class PlaceService {
 			.then(Place.decodeCommaDelimitedArrayColumns)
 			.then(async (place) => {
 				if (!place) {
-					return Promise.reject(
-						new NotFoundError(`Could not find Place for id=${id}`)
-					);
+					return Promise.reject(new NotFoundError(`Could not find Place for id=${id}`));
 				}
 
 				place.coordinateDeterminationName =
@@ -186,22 +165,15 @@ export class PlaceService {
 						(i) => i.value == place.coordinateDetermination
 					)?.text ?? '';
 
-				place.hasPendingChanges = await this.placeEditService.existsForPlace(
-					id
-				);
+				place.hasPendingChanges = await this.placeEditService.existsForPlace(id);
 				place.associations = await this.assocationService.getFor(id);
-				place.constructionPeriods = await this.constructionPeriodService.getFor(
-					id
-				);
+				place.constructionPeriods = await this.constructionPeriodService.getFor(id);
 				place.contacts = await this.contactService.getFor(id);
 				place.dates = await this.dateService.getFor(id);
 				place.descriptions = await this.descriptionService.getForPlace(id);
-				place.firstNationAssociations =
-					await this.firstNationAssociationService.getFor(id);
+				place.firstNationAssociations = await this.firstNationAssociationService.getFor(id);
 				place.functionalUses = await this.functionalUseService.getFor(id);
-				place.historicalPatterns = await this.historicalPatternService.getFor(
-					id
-				);
+				place.historicalPatterns = await this.historicalPatternService.getFor(id);
 				place.names = await this.nameService.getFor(id);
 				place.ownerships = await this.ownershipService.getFor(id);
 				place.recognitionDate = isNull(place.recognitionDate)
@@ -209,9 +181,7 @@ export class PlaceService {
 					: moment(place.recognitionDate).add(7, 'hours').format('YYYY-MM-DD');
 				place.revisionLogs = await this.revisionLogService.getFor(id);
 				place.themes = await this.themeService.getFor(id);
-				place.previousOwnerships = await this.previousOwnershipService.getFor(
-					id
-				);
+				place.previousOwnerships = await this.previousOwnershipService.getFor(id);
 				place.webLinks = await this.webLinkService.getForPlace(id);
 
 				const photos = await this.photoService.getAllForPlace(id);
@@ -271,10 +241,7 @@ export class PlaceService {
 				await this.assocationService.upsertFor(id, attrs['associations']);
 			}
 			if (Object.prototype.hasOwnProperty.call(attrs, 'constructionPeriods')) {
-				await this.constructionPeriodService.upsertFor(
-					id,
-					attrs['constructionPeriods']
-				);
+				await this.constructionPeriodService.upsertFor(id, attrs['constructionPeriods']);
 			}
 			if (Object.prototype.hasOwnProperty.call(attrs, 'contacts')) {
 				await this.contactService.upsertFor(id, attrs['contacts']);
@@ -285,22 +252,14 @@ export class PlaceService {
 			if (Object.prototype.hasOwnProperty.call(attrs, 'descriptions')) {
 				await this.descriptionService.upsertForPlace(id, attrs['descriptions']);
 			}
-			if (
-				Object.prototype.hasOwnProperty.call(attrs, 'firstNationAssociations')
-			) {
-				await this.firstNationAssociationService.upsertFor(
-					id,
-					attrs['firstNationAssociations']
-				);
+			if (Object.prototype.hasOwnProperty.call(attrs, 'firstNationAssociations')) {
+				await this.firstNationAssociationService.upsertFor(id, attrs['firstNationAssociations']);
 			}
 			if (Object.prototype.hasOwnProperty.call(attrs, 'functionalUses')) {
 				await this.functionalUseService.upsertFor(id, attrs['functionalUses']);
 			}
 			if (Object.prototype.hasOwnProperty.call(attrs, 'historicalPatterns')) {
-				await this.historicalPatternService.upsertFor(
-					id,
-					attrs['historicalPatterns']
-				);
+				await this.historicalPatternService.upsertFor(id, attrs['historicalPatterns']);
 			}
 			if (Object.prototype.hasOwnProperty.call(attrs, 'names')) {
 				await this.nameService.upsertFor(id, attrs['names']);
@@ -309,10 +268,7 @@ export class PlaceService {
 				await this.ownershipService.upsertFor(id, attrs['ownerships']);
 			}
 			if (Object.prototype.hasOwnProperty.call(attrs, 'previousOwnerships')) {
-				await this.previousOwnershipService.upsertFor(
-					id,
-					attrs['previousOwnerships']
-				);
+				await this.previousOwnershipService.upsertFor(id, attrs['previousOwnerships']);
 			}
 			if (Object.prototype.hasOwnProperty.call(attrs, 'revisionLogs')) {
 				await this.revisionLogService.upsertFor(id, attrs['revisionLogs']);
@@ -356,9 +312,7 @@ export class PlaceService {
 		for (const place of places) {
 			placeIndex++;
 
-			const testValue = `${nTSMapSheet}/${placeIndex
-				.toString()
-				.padStart(3, '0')}`;
+			const testValue = `${nTSMapSheet}/${placeIndex.toString().padStart(3, '0')}`;
 
 			const isMatch = place.YHSIId == testValue;
 
@@ -384,16 +338,8 @@ export class PlaceService {
 			const selectStatement = scope
 				.distinct()
 				.select(...PLACE_FIELDS, { status: 'StatusTable.Status' })
-				.leftOuterJoin(
-					'FirstNationAssociation',
-					'Place.Id',
-					'FirstNationAssociation.PlaceId'
-				)
-				.leftOuterJoin(
-					'ConstructionPeriod',
-					'Place.Id',
-					'ConstructionPeriod.PlaceId'
-				)
+				.leftOuterJoin('FirstNationAssociation', 'Place.Id', 'FirstNationAssociation.PlaceId')
+				.leftOuterJoin('ConstructionPeriod', 'Place.Id', 'ConstructionPeriod.PlaceId')
 				.leftOuterJoin('RevisionLog', 'Place.id', 'RevisionLog.PlaceId')
 				.leftOuterJoin('Description', 'Place.id', 'Description.PlaceId')
 				.leftOuterJoin('Ownership', 'Place.id', 'Ownership.PlaceId')
@@ -437,16 +383,10 @@ export class PlaceService {
 				excludingNtsMapSheets(base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('NTSMapSheet', value);
 				},
-				includingConstructionPeriodValues(
-					base: Knex.QueryInterface,
-					value: any
-				) {
+				includingConstructionPeriodValues(base: Knex.QueryInterface, value: any) {
 					return base.whereIn('[ConstructionPeriod].[Type]', value);
 				},
-				excludingConstructionPeriodValues(
-					base: Knex.QueryInterface,
-					value: any
-				) {
+				excludingConstructionPeriodValues(base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('[ConstructionPeriod].[Type]', value);
 				},
 				includingSiteStatusIds(base: Knex.QueryInterface, value: any) {
@@ -456,34 +396,16 @@ export class PlaceService {
 					return base.whereNotIn('SiteStatus', value);
 				},
 				includingFirstNationIds(base: Knex.QueryInterface, value: any) {
-					return base.whereIn(
-						'[FirstNationAssociation].[FirstNationId]',
-						value
-					);
+					return base.whereIn('[FirstNationAssociation].[FirstNationId]', value);
 				},
 				excludingFirstNationIds(base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn(
-						'[FirstNationAssociation].[FirstNationId]',
-						value
-					);
+					return base.whereNotIn('[FirstNationAssociation].[FirstNationId]', value);
 				},
-				includingFirstNationAssociationTypes(
-					base: Knex.QueryInterface,
-					value: any
-				) {
-					return base.whereIn(
-						'[FirstNationAssociation].[FirstNationAssociationType]',
-						value
-					);
+				includingFirstNationAssociationTypes(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('[FirstNationAssociation].[FirstNationAssociationType]', value);
 				},
-				excludingFirstNationAssociationTypes(
-					base: Knex.QueryInterface,
-					value: any
-				) {
-					return base.whereNotIn(
-						'[FirstNationAssociation].[FirstNationAssociationType]',
-						value
-					);
+				excludingFirstNationAssociationTypes(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('[FirstNationAssociation].[FirstNationAssociationType]', value);
 				},
 				includingRevisionTypes(base: Knex.QueryInterface, value: any) {
 					return base.whereIn('[RevisionLog].[RevisionLogType]', value);
@@ -503,18 +425,12 @@ export class PlaceService {
 				constructionStyleContains(base: Knex.QueryInterface, value: any) {
 					return base
 						.whereILike('[Description].[DescriptionText]', `%${value}%`)
-						.where(
-							'[Description].[Type]',
-							DescriptionTypeEnums.ConstructionStyle
-						);
+						.where('[Description].[Type]', DescriptionTypeEnums.ConstructionStyle);
 				},
 				culturalHistoryContains(base: Knex.QueryInterface, value: any) {
 					return base
 						.whereILike('[Description].[DescriptionText]', `%${value}%`)
-						.where(
-							'[Description].[Type]',
-							DescriptionTypeEnums.CulturalHistory
-						);
+						.where('[Description].[Type]', DescriptionTypeEnums.CulturalHistory);
 				},
 				includingOwnershipTypes(base: Knex.QueryInterface, value: any) {
 					return base.whereIn('[Ownership].[OwnershipType]', value);
@@ -574,8 +490,7 @@ export class PlaceService {
 		}
 
 		// Administrators see everything
-		if (user.role_list && user.role_list.indexOf(UserRoles.ADMINISTRATOR) >= 0)
-			return;
+		if (user.role_list && user.role_list.indexOf(UserRoles.ADMINISTRATOR) >= 0) return;
 
 		// If you don't have one of the site roles, you see nothing
 		if (user.roles && user.roles.indexOf('Site') == -1) {
@@ -600,14 +515,10 @@ export class PlaceService {
 			if (allAccess) {
 				scope += ' OR 1=1';
 			} else {
-				if (mapSheets.length > 0)
-					scope += ` OR NTSMapSheet IN ('${mapSheets.join("','")}')`;
-				if (communities.length > 0)
-					scope += ` OR CommunityId IN (${communities.join(',')})`;
+				if (mapSheets.length > 0) scope += ` OR NTSMapSheet IN ('${mapSheets.join("','")}')`;
+				if (communities.length > 0) scope += ` OR CommunityId IN (${communities.join(',')})`;
 				if (firstNations.length > 0)
-					scope += ` OR [FirstNationAssociation].[FirstNationId] IN (${firstNations.join(
-						','
-					)})`;
+					scope += ` OR [FirstNationAssociation].[FirstNationId] IN (${firstNations.join(',')})`;
 			}
 
 			scope += ')';
