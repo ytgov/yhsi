@@ -7,7 +7,7 @@
 		<v-card>
 			<v-card-title>Print {{ sitename }}</v-card-title>
 			<v-card-text>
-				<v-divider class="mb-4"></v-divider>
+				<v-divider class="mb-4" />
 				<v-row>
 					<v-col
 						class="py-0"
@@ -17,35 +17,35 @@
 							v-model="selectAll"
 							dense
 							label="Include all sections"
-							@click="toggleAll()"
 							hide-details
-						></v-checkbox>
+							@click="toggleAll()"
+						/>
 					</v-col>
 					<v-col
+					v-for="(item, i) in sections"
+					:key="`dcheck-${i}`"
 						class="py-0"
 						cols="6"
-						v-for="(item, i) in sections"
-						:key="`dcheck-${i}`"
 					>
 						<v-checkbox
 							v-model="item.print"
 							dense
 							hide-details
 							:label="`Include ${item.name}`"
-						></v-checkbox>
+						/>
 					</v-col>
 				</v-row>
 			</v-card-text>
-			<v-divider></v-divider>
+			<v-divider />
 			<v-card-actions>
 				<v-btn
 					color="primary"
-					@click="doPrint"
 					:disabled="hasChecks"
+					@click="doPrint"
 				>
 					Print
 				</v-btn>
-				<v-spacer></v-spacer>
+				<v-spacer />
 				<v-btn
 					color="secondary"
 					@click="closeDialog"
@@ -92,8 +92,10 @@ export default {
 		},
 		doPrint() {
 			// if you replace /html with /pdf, it will generate a pdf to download
-			// it currently doesn't support choosing sections but that will be done once it's all working
-			window.open(`${PLACE_URL}/${this.siteId}/print/html`);
+			const params = new URLSearchParams({
+				sections: this.sections.filter((s) => s.print).map((s) => s.name),
+			});
+			window.open(`${PLACE_URL}/${this.siteId}/print/html?${params.toString()}`);
 			this.$emit('closeDialog');
 			this.$emit('showSuccess', 'PRINTING COMPLETE');
 		},

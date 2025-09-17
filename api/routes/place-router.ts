@@ -4,7 +4,7 @@ import fs from 'fs';
 import multer from 'multer';
 import { create } from 'handlebars';
 import handlebarsHelpers from '../utils/handlebars-helpers';
-import { isNil } from 'lodash';
+import { isNil, isString } from 'lodash';
 
 import { API_PORT, DB_CONFIG } from '../config';
 import { PhotoService, PlaceService } from '../services';
@@ -147,6 +147,21 @@ placeRouter.get(
 
 		const { place } = placeData;
 
+		// Get sections from query string
+		const { sections } = req.query;
+
+		const selectedSections = isString(sections) ? sections.split(',') : [];
+
+		const includeSummarySection = selectedSections.includes('Summary');
+		const includeLocationSection = selectedSections.includes('Location');
+		const includeDatesAndConditionSection = selectedSections.includes('Dates & Condition');
+		const includeThemesAndFunctionSection = selectedSections.includes('Themes & Function');
+		const includeAssociationsSection = selectedSections.includes('Associations');
+		const includeLegalAndZoningSection = selectedSections.includes('Legal & Zoning');
+		const includePhotosSection = selectedSections.includes('Photos');
+		const includeManagementSection = selectedSections.includes('Management');
+		const includeDescriptionSection = selectedSections.includes('Description');
+
 		// Generating data for description
 		const descriptions: {
 			value: string;
@@ -247,6 +262,15 @@ placeRouter.get(
 
 		// Main object to passed to placePrint.handlebars
 		const handlebarsData = {
+			includeSummarySection,
+			includeLocationSection,
+			includeDatesAndConditionSection,
+			includeThemesAndFunctionSection,
+			includeAssociationsSection,
+			includeLegalAndZoningSection,
+			includePhotosSection,
+			includeManagementSection,
+			includeDescriptionSection,
 			primaryName,
 			yHSIId,
 			jurisdiction,
