@@ -218,22 +218,62 @@
 			<div class='section'>
 				<h1>Dates & Condition</h1>
 				<hr />
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+					<strong>Dates</strong>
+					{{#each dates}}
 					<tr>
 						<td>
-							<strong>Dates</strong>
 							<div class='box'>
-								{{#each dates}}
-									-
-									<strong>{{typeName}}</strong>
-									{{fromDate}}
-									-
-									{{toDate}}<br />{{details}}<br />
-								{{/each}}
+								<strong>{{typeName}}</strong>
+								{{fromDate}}
+								-
+								{{toDate}}<br />{{details}}<br />
 							</div>
+						</td>
+						<td>
+
+						</td>
+					</tr>
+					{{/each}}
+				</table>
+
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">					
+					<strong >Construction Period</strong>
+					{{#if constructionPeriods}}
+					{{else}}
+					<tr>
+						<td>
+							<div class='box'></div>
+						</td>
+					</tr>
+					{{/if}}
+					{{#each constructionPeriods}}
+					<tr>
+						<td>
+							<div class='box'>{{type}}</div>
+						</td>
+					</tr>
+					{{/each}}
+				</table>
+
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
+					<tr>
+						<strong>Conditions</strong>
+						<td>
+							<p>Floor condition</p><div class='box'>{{yHSIId}}</div>
+							<p>Roof condition</p><div class='box'>{{yHSIId}}</div>
+							<p>Wall condition</p><div class='box'>{{yHSIId}}</div>
+							<p>Door condition</p><div class='box'>{{yHSIId}}</div>
+						</td>
+						<td>
+							<p>Site status</p><div class='box'>{{yHSIId}}</div>
+							<p>Building size</p><div class='box'>{{yHSIId}}</div>
+							<p>All other resource types</p><div class='box'>{{yHSIId}}</div>
+							<p>Condition notes</p><textarea>{{conditionComment}}</textarea>
 						</td>
 					</tr>
 				</table>
+
 			</div>
 		{{/if}}
 
@@ -241,9 +281,34 @@
 			<div class='section'>
 				<h1>Themes & Function</h1>
 				<hr />
+
+				<p>YHS Themes</p><div class='box' style="margin-bottom: 1em;">{{yHSThemes}}</div>
+
+				<strong>Themes</strong>
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+					<tr>
+						<td>
+							<div class='box'>{{yHSIId}}</div>
+						</td>
+					</tr>
+				</table>
+
+				<strong>Functional Uses</strong>
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+					<tr>
+						<td>
+							<div class='box'>{{yHSIId}}</div>
+						</td>
+					</tr>
+				</table>
+
 				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
 					<tr>
 						<td>
+							<p>YHS Current Use</p><div class='box'>{{yHSIId}}</div>
+						</td>
+						<td>
+							<p>YHS Past Use</p><div class='box'>{{yHSIId}}</div>
 						</td>
 					</tr>
 				</table>
@@ -254,6 +319,16 @@
 			<div class='section'>
 				<h1>Associations</h1>
 				<hr />
+
+				<strong>Associations</strong>
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+					<tr>
+						<td>
+						</td>
+					</tr>
+				</table>
+
+				<strong>First Nation Associations</strong>
 				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
 					<tr>
 						<td>
@@ -267,6 +342,33 @@
 			<div class='section'>
 				<h1>Legal & Zoning</h1>
 				<hr />
+
+				<strong>Ownerships</strong>
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+					<tr>
+						<td>
+						</td>
+					</tr>
+				</table>
+
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+					<tr>
+						<td>
+							<p>Zoning</p><div class="box"></div>
+							<p>Site district</p><div class="box"></div>
+							<p>Group</p><div class="box"></div>
+							<p>Block</p><div class="box"></div>
+						</td>
+						<td>
+							<p>Town site map number</p><div class="box"></div>
+							<p>Group YHSI</p><div class="box"></div>
+							<p>Lot</p><div class="box"></div>
+							<p>Plan number</p><div class="box"></div>
+						</td>
+					</tr>
+				</table>
+
+				<strong>Previous Ownerships</strong>
 				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
 					<tr>
 						<td>
@@ -293,12 +395,50 @@
 			<div class='section'>
 				<h1>Management</h1>
 				<hr />
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
+
+				<strong>Revision Logs</strong>
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
 					<tr>
 						<td>
 						</td>
 					</tr>
 				</table>
+
+				<strong>Contacts</strong>
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+					<tr>
+						<td>
+						</td>
+					</tr>
+				</table>
+
+				<strong>Web Links</strong>
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+					<tr>
+						<td>
+						</td>
+					</tr>
+				</table>
+
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+					<tr>
+						<td>
+							<strong>Designation Information</strong>
+							<p>Jurisdiction</p><div class="box"></div>
+							<p>Recognition Date</p><div class="box"></div>
+							<p>Owner Consent</p><div class="box"></div>
+						</td>
+						<td>
+							<p>YG Building Number</p><div class="box"></div>
+							<p>YG Reserve Number</p><div class="box"></div>
+							<p>CIHB Number</p><div class="box"></div>
+							<p>FHBRO Number</p><div class="box"></div>
+						</td>
+					</tr>
+				</table>
+
+				<p>Statue - Recognition Authority / Recognition Type / Statute</p><div class="box"></div>
+				<p>Secondary Statue - Recognition Authority / Recognition Type / Statute</p><div class="box"></div>
 			</div>
 		{{/if}}
 

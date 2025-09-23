@@ -10,7 +10,7 @@ import { API_PORT, DB_CONFIG } from '../config';
 import { PhotoService, PlaceService } from '../services';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
-import { Place, User, UserRoles, DESCRIPTION_TYPES } from '../models';
+import { Place, User, UserRoles, DESCRIPTION_TYPES, CONSTRUCTION_PERIOD_TYPES } from '../models';
 import PlacesController from '../controllers/places-controller';
 import { PlacePolicy } from '../policies';
 import { generatePDF } from '../utils/pdf-generator';
@@ -162,6 +162,101 @@ placeRouter.get(
 		const includeManagementSection = selectedSections.includes('Management');
 		const includeDescriptionSection = selectedSections.includes('Description');
 
+		//(place as any).API_PORT = API_PORT;
+		const PDF_TEMPLATE = fs.readFileSync(__dirname + '/../templates/places/placePrint.handlebars');
+		const h = create();
+		h.registerHelper('joinArray', handlebarsHelpers.joinArray);
+		h.registerHelper('joinArrayPick', handlebarsHelpers.joinArrayPick);
+		const template = h.compile(PDF_TEMPLATE.toString(), {});
+
+		const {
+			primaryName,
+			names,
+			historicalPatterns,
+			yHSIId,
+			jurisdiction,
+			statuteId,
+			statute2Id,
+			recognitionDate,
+			ownerConsent,
+			category,
+			isPubliclyAccessible,
+			nTSMapSheet,
+			bordenNumber,
+			geocode,
+			hectareArea,
+			latitude,
+			longitude,
+			locationComment,
+			resourceType,
+			buildingSize,
+			conditionComment,
+			currentUseComment,
+			yHSPastUse,
+			cIHBNumber,
+			groupYHSI,
+			yGBuildingNumber,
+			yGReserveNumber,
+			fHBRONumber,
+			zoning,
+			townSiteMapNumber,
+			siteDistrictNumber,
+			planNumber,
+			block,
+			lot,
+			slideNegativeIndex,
+			otherCommunity,
+			otherLocality,
+			previousAddress,
+			yHSThemes,
+			rollNumber,
+			locationContext,
+			communityId,
+			lAGroup,
+			siteStatus,
+			floorCondition,
+			wallCondition,
+			doorCondition,
+			roofCondition,
+			coordinateDetermination,
+			physicalAddress,
+			physicalProvince,
+			physicalCountry,
+			physicalPostalCode,
+			mailingAddress,
+			mailingProvince,
+			mailingCountry,
+			mailingPostalCode,
+			showInRegister,
+			siteCategories,
+			designations,
+			contributingResources,
+			records,
+			communityName,
+			coordinateDeterminationName,
+			hasPendingChanges,
+			associations,
+			constructionPeriods,
+			contacts,
+			dates,
+			themes,
+		} = place;
+
+		const constructionPeriodsHandlebarData: { type: string }[] = [];
+		if (!isNil(constructionPeriods)) {
+			constructionPeriods.forEach((constructionPeriod) => {
+				const c = CONSTRUCTION_PERIOD_TYPES.find(
+					(constructionPeriodType) => constructionPeriodType.value == constructionPeriod.type
+				);
+
+				if (isNil(c)) return;
+
+				constructionPeriodsHandlebarData.push({
+					type: c.text,
+				});
+			});
+		}
+
 		// Generating data for description
 		const descriptions: {
 			value: string;
@@ -183,83 +278,6 @@ placeRouter.get(
 			});
 		}
 
-		//(place as any).API_PORT = API_PORT;
-		const PDF_TEMPLATE = fs.readFileSync(__dirname + '/../templates/places/placePrint.handlebars');
-		const h = create();
-		h.registerHelper('joinArray', handlebarsHelpers.joinArray);
-		h.registerHelper('joinArrayPick', handlebarsHelpers.joinArrayPick);
-		const template = h.compile(PDF_TEMPLATE.toString(), {});
-
-		const {
-			primaryName,
-			yHSIId,
-			jurisdiction,
-			statuteId,
-			statute2Id,
-			recognitionDate,
-			ownerConsent,
-			category,
-			isPubliclyAccessible,
-			nTSMapSheet,
-			bordenNumber,
-			geocode,
-			hectareArea,
-			latitude,
-			longitude,
-			locationComment,
-			resourceType,
-			buildingSize,
-			conditionComment,
-			currentUseComment,
-			yHSPastUse,
-			cIHBNumber,
-			groupYHSI,
-			yGBuildingNumber,
-			yGReserveNumber,
-			fHBRONumber,
-			zoning,
-			townSiteMapNumber,
-			siteDistrictNumber,
-			planNumber,
-			block,
-			lot,
-			slideNegativeIndex,
-			otherCommunity,
-			otherLocality,
-			previousAddress,
-			yHSThemes,
-			rollNumber,
-			locationContext,
-			communityId,
-			lAGroup,
-			siteStatus,
-			floorCondition,
-			wallCondition,
-			doorCondition,
-			roofCondition,
-			coordinateDetermination,
-			physicalAddress,
-			physicalProvince,
-			physicalCountry,
-			physicalPostalCode,
-			mailingAddress,
-			mailingProvince,
-			mailingCountry,
-			mailingPostalCode,
-			showInRegister,
-			siteCategories,
-			designations,
-			contributingResources,
-			records,
-			communityName,
-			coordinateDeterminationName,
-			hasPendingChanges,
-			associations,
-			constructionPeriods,
-			contacts,
-			dates,
-		} = place;
-
 		// Main object to passed to placePrint.handlebars
 		const handlebarsData = {
 			includeSummarySection,
@@ -272,6 +290,8 @@ placeRouter.get(
 			includeManagementSection,
 			includeDescriptionSection,
 			primaryName,
+			names,
+			historicalPatterns,
 			yHSIId,
 			jurisdiction,
 			statuteId,
@@ -335,9 +355,10 @@ placeRouter.get(
 			coordinateDeterminationName,
 			hasPendingChanges,
 			associations,
-			constructionPeriods,
+			constructionPeriods: constructionPeriodsHandlebarData,
 			contacts,
 			dates,
+			themes,
 			descriptions,
 		};
 
