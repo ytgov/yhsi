@@ -306,12 +306,15 @@
 			<div class='section'>
 				<h1>Description</h1>
 				<hr />
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
-					<tr>
-						<td>
-						</td>
-					</tr>
-				</table>
+				{{#each descriptions}}
+					<div style='margin-bottom: 1em'>
+						<strong>Description type</strong><div class='box'>
+							{{value}}
+						</div>
+						<textarea>{{text}}</textarea>
+					</div>
+					<div style='border-top: 1px #ccc solid; margin-bottom: 2em'></div>
+				{{/each}}
 			</div>
 		{{/if}}
 	</body>
