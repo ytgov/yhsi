@@ -11,6 +11,9 @@ import {
 	Contact,
 	Theme,
 	FunctionalUse,
+	Ownership,
+	RevisionLog,
+	WebLink,
 } from '.';
 import { Date as DateModel } from '../models/date';
 
@@ -94,6 +97,10 @@ export class Place {
 	descriptions?: Description[];
 	themes?: Theme[];
 	functionalUses?: FunctionalUse[];
+	ownerships?: Ownership[];
+	previousOwnerships?: Ownership[];
+	revisionLogs?: RevisionLog[];
+	webLinks?: WebLink[];
 
 	static FIELDS: ReadonlyArray<string> = Object.freeze([
 		'id',

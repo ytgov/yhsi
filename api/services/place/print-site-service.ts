@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import { isNil, isString } from 'lodash';
 import fs from 'fs';
 import { create } from 'handlebars';
 import knex from 'knex';
@@ -7,10 +7,20 @@ import { DB_CONFIG } from '../../config';
 
 import handlebarsHelpers from '../../utils/handlebars-helpers';
 import {
+	ASSOCIATION_TYPES,
+	CONDITION_TYPES,
 	CONSTRUCTION_PERIOD_TYPES,
+	CONTACT_TYPES,
 	DESCRIPTION_TYPES,
+	FIRST_NATION_ASSOCIATION_TYPES,
 	FUNCTIONAL_USE_TYPES,
+	JURISDICTION_TYPES,
+	OWNER_CONSENT_TYPES,
+	OWNERSHIP_TYPES,
 	Place,
+	REVISION_LOG_TYPES,
+	SITE_STATUS_TYPES,
+	WEB_LINK_TYPES,
 } from '../../models';
 import BaseService from '../base-service';
 
@@ -48,11 +58,7 @@ export class PrintSiteService extends BaseService {
 			names,
 			historicalPatterns,
 			yHSIId,
-			jurisdiction,
-			statuteId,
-			statute2Id,
 			recognitionDate,
-			ownerConsent,
 			category,
 			isPubliclyAccessible,
 			nTSMapSheet,
@@ -109,15 +115,69 @@ export class PrintSiteService extends BaseService {
 			communityName,
 			coordinateDeterminationName,
 			hasPendingChanges,
-			associations,
-			contacts,
 			dates,
+			previousOwnerships,
 		} = this.place;
 
 		const constructionPeriodsHandlebarData = this.makeConstructionPeriodsHandlebarData();
+
+		const foundFloorCondition = CONDITION_TYPES.find(
+			(conditionType) => conditionType.value == floorCondition
+		);
+		const floorConditionName = foundFloorCondition ? foundFloorCondition.text : 'Not Applicable';
+
+		const foundRoofCondition = CONDITION_TYPES.find(
+			(conditionType) => conditionType.value == roofCondition
+		);
+		const roofConditionName = foundRoofCondition ? foundRoofCondition.text : 'Not Applicable';
+
+		const foundWallCondition = CONDITION_TYPES.find(
+			(conditionType) => conditionType.value == wallCondition
+		);
+		const wallConditionName = foundWallCondition ? foundWallCondition.text : 'Not Applicable';
+
+		const foundDoorCondition = CONDITION_TYPES.find(
+			(conditionType) => conditionType.value == doorCondition
+		);
+		const doorConditionName = foundDoorCondition ? foundDoorCondition.text : 'Not Applicable';
+
+		const foundSiteStatus = SITE_STATUS_TYPES.find(
+			(siteStatusType) => siteStatusType.value == siteStatus
+		);
+		const siteStatusName = foundSiteStatus ? foundSiteStatus.text : 'Not Applicable';
+
 		const themesHandlebarData = await this.makeThemesHandlebarData();
 		const functionalUsesHandlebarData = await this.makeFunctionalUsesHandlebarData();
+		const associationsHandlebarData = this.makeAssociationsHandlebarData();
+		const firstNationAssociationsHandlebarData =
+			await this.makeFirstNationAssociationsHandlebarData();
+		const ownershipsHandlebarData = this.makeOwnershipsHandlebarData();
+		const contactsHandlebarData = this.makeContactsHandlebarData();
+		const revisionLogsHandlebarData = this.makeRevisionLogsHandlebarData();
+		const webLinksHandlebarData = this.makeWebLinksHandlebarData();
 		const descriptionsHandlebarData = this.makeDescriptionsHandlebarData();
+
+		const foundJurisdiction = JURISDICTION_TYPES.find(
+			(jurisdictionType) => jurisdictionType.value == this.place.jurisdiction
+		);
+
+		const jurisdictionHandlebarData = foundJurisdiction ? foundJurisdiction.text : 'None Selected';
+
+		const foundOwnerConsent = OWNER_CONSENT_TYPES.find(
+			(ownerConsentType) => ownerConsentType.value == this.place.ownerConsent
+		);
+
+		const ownerConsentHandlebarData = foundOwnerConsent ? foundOwnerConsent.text : 'None Selected';
+
+		let statuteHandlebarData = '';
+		if (!isNil(this.place.statuteId)) {
+			statuteHandlebarData = await this.makeStatuteHandlebarData(this.place.statuteId);
+		}
+
+		let secondaryStatuteHandlebarData = '';
+		if (!isNil(this.place.statute2Id)) {
+			secondaryStatuteHandlebarData = await this.makeStatuteHandlebarData(this.place.statute2Id);
+		}
 
 		const handlebarsData = {
 			includeSummarySection,
@@ -133,11 +193,7 @@ export class PrintSiteService extends BaseService {
 			names,
 			historicalPatterns,
 			yHSIId,
-			jurisdiction,
-			statuteId,
-			statute2Id,
 			recognitionDate,
-			ownerConsent,
 			category,
 			isPubliclyAccessible,
 			nTSMapSheet,
@@ -172,11 +228,11 @@ export class PrintSiteService extends BaseService {
 			locationContext,
 			communityId,
 			lAGroup,
-			siteStatus,
-			floorCondition,
-			wallCondition,
-			doorCondition,
-			roofCondition,
+			siteStatus: siteStatusName,
+			floorCondition: floorConditionName,
+			wallCondition: wallConditionName,
+			doorCondition: doorConditionName,
+			roofCondition: roofConditionName,
 			coordinateDetermination,
 			physicalAddress,
 			physicalProvince,
@@ -194,12 +250,21 @@ export class PrintSiteService extends BaseService {
 			communityName,
 			coordinateDeterminationName,
 			hasPendingChanges,
-			associations,
 			constructionPeriods: constructionPeriodsHandlebarData,
-			contacts,
 			dates,
 			themes: themesHandlebarData,
 			functionalUses: functionalUsesHandlebarData,
+			associations: associationsHandlebarData,
+			firstNationAssociations: firstNationAssociationsHandlebarData,
+			ownerships: ownershipsHandlebarData,
+			previousOwnerships,
+			revisionLogs: revisionLogsHandlebarData,
+			contacts: contactsHandlebarData,
+			webLinks: webLinksHandlebarData,
+			jurisdiction: jurisdictionHandlebarData,
+			ownerConsent: ownerConsentHandlebarData,
+			statute: statuteHandlebarData,
+			secondaryStatute: secondaryStatuteHandlebarData,
 			descriptions: descriptionsHandlebarData,
 		};
 
@@ -277,6 +342,180 @@ export class PrintSiteService extends BaseService {
 		}
 
 		return functionalUsesHandlebarData;
+	}
+
+	private makeAssociationsHandlebarData() {
+		const associationsHandlebarData: { type: string; description: string }[] = [];
+		if (isNil(this.place.associations)) return [];
+
+		for (const association of this.place.associations) {
+			const a = ASSOCIATION_TYPES.find(
+				(associationType) => associationType.value == association.type
+			);
+
+			if (isNil(a)) continue;
+
+			associationsHandlebarData.push({
+				type: a.text,
+				description: association.description,
+			});
+		}
+
+		return associationsHandlebarData;
+	}
+
+	private async makeFirstNationAssociationsHandlebarData() {
+		const firstNationAssociationsHandlebarData: {
+			firstNation: string;
+			firstNationAssociationType: string;
+			comments: string;
+		}[] = [];
+		if (isNil(this.place.firstNationAssociations)) return [];
+
+		for (const firstNationAssociation of this.place.firstNationAssociations) {
+			const firstNationAssociationType = FIRST_NATION_ASSOCIATION_TYPES.find(
+				(firstNationAssociationType) =>
+					firstNationAssociationType.value == firstNationAssociation.firstNationAssociationType
+			);
+
+			if (isNil(firstNationAssociationType)) continue;
+
+			const firstNation = await db('FirstNation')
+				.select('description')
+				.where({ id: firstNationAssociation.firstNationId })
+				.then((results) => {
+					return results[0].description;
+				});
+
+			if (isNil(firstNation)) continue;
+
+			firstNationAssociationsHandlebarData.push({
+				firstNation: firstNation,
+				firstNationAssociationType: firstNationAssociationType.text,
+				comments: firstNationAssociation.comments,
+			});
+		}
+
+		return firstNationAssociationsHandlebarData;
+	}
+
+	private makeOwnershipsHandlebarData() {
+		const ownershipsHandlebarData: { ownershipType: string; comments: string }[] = [];
+		if (isNil(this.place.ownerships)) return [];
+
+		for (const ownership of this.place.ownerships) {
+			const ownershipType = OWNERSHIP_TYPES.find(
+				(ownershipType) => ownershipType.value == ownership.ownershipType
+			);
+
+			if (isNil(ownershipType)) continue;
+
+			ownershipsHandlebarData.push({
+				ownershipType: ownershipType.text,
+				comments: ownership.comments,
+			});
+		}
+
+		return ownershipsHandlebarData;
+	}
+
+	private makeRevisionLogsHandlebarData() {
+		const revisionLogsHandlebarData: {
+			revisionLogType: string;
+			revisionDate: string;
+			revisedBy: string;
+			details: string;
+		}[] = [];
+
+		if (isNil(this.place.revisionLogs)) return [];
+
+		this.place.revisionLogs.forEach((revisionLog) => {
+			const d = REVISION_LOG_TYPES.find(
+				(revisionLogType) => revisionLogType.value == revisionLog.revisionLogType
+			);
+
+			if (isNil(d)) return;
+
+			revisionLogsHandlebarData.push({
+				revisionLogType: d.text,
+				revisionDate: revisionLog.revisionDate,
+				revisedBy: revisionLog.revisedBy,
+				details: revisionLog.details,
+			});
+		});
+
+		return revisionLogsHandlebarData;
+	}
+
+	private makeContactsHandlebarData() {
+		const contactsHandlebarData: {
+			contactType: string;
+			description: string;
+			email: string;
+			firstName: string;
+			lastName: string;
+			mailingAddress: string;
+			phoneNumber: string;
+		}[] = [];
+
+		if (isNil(this.place.contacts)) return [];
+
+		this.place.contacts.forEach((contact) => {
+			const d = CONTACT_TYPES.find((contactType) => contactType.value == contact.contactType);
+
+			if (isNil(d)) return;
+
+			contactsHandlebarData.push({
+				contactType: d.text,
+				description: contact.description,
+				email: contact.email,
+				firstName: contact.firstName,
+				lastName: contact.lastName,
+				mailingAddress: contact.mailingAddress,
+				phoneNumber: contact.phoneNumber,
+			});
+		});
+
+		return contactsHandlebarData;
+	}
+
+	private makeWebLinksHandlebarData() {
+		const webLinksHandlebarData: { type: string; address: string }[] = [];
+
+		if (isNil(this.place.webLinks)) return [];
+
+		this.place.webLinks.forEach((webLink) => {
+			const d = WEB_LINK_TYPES.find((webLinkType) => webLinkType.value == webLink.type);
+
+			if (isNil(d)) return;
+
+			webLinksHandlebarData.push({
+				type: d.text,
+				address: webLink.address,
+			});
+		});
+
+		return webLinksHandlebarData;
+	}
+
+	private async makeStatuteHandlebarData(statuteId: number) {
+		const statute = await db('Statute')
+			.select('RecognitionAuthority', 'RecognitionType', 'Description', 'AllStatute')
+			.where({ Id: statuteId })
+			.then((results) => {
+				return results[0];
+			});
+
+		if (isNil(statute)) return '';
+
+		const { RecognitionAuthority, RecognitionType, Description, AllStatute } = statute;
+
+		if (!isString(RecognitionAuthority)) return '';
+		if (!isString(RecognitionType)) return '';
+		if (!isString(Description)) return '';
+		if (!isString(AllStatute)) return '';
+
+		return `${RecognitionAuthority} / ${RecognitionType} / ${Description} / ${AllStatute}`;
 	}
 
 	private makeDescriptionsHandlebarData() {
