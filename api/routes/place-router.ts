@@ -1,19 +1,11 @@
 import express, { Request, Response } from 'express';
-import {
-	body,
-	check,
-	param,
-	query,
-	validationResult,
-	matchedData,
-} from 'express-validator';
-import fs from 'fs';
+import { body, check, param, query, validationResult, matchedData } from 'express-validator';
 import multer from 'multer';
-import { create } from 'handlebars';
-import handlebarsHelpers from '../utils/handlebars-helpers';
+import { isNil, isString } from 'lodash';
 
 import { API_PORT, DB_CONFIG } from '../config';
 import { PhotoService, PlaceService } from '../services';
+import PrintSiteService from '../services/place/print-site-service';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
 import { Place, User, UserRoles } from '../models';
@@ -87,11 +79,7 @@ placeRouter.post(
 
 placeRouter.post(
 	'/generate-id',
-	authorize([
-		UserRoles.SITE_ADMIN,
-		UserRoles.SITE_EDITOR,
-		UserRoles.ADMINISTRATOR,
-	]),
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
 	[body('nTSMapSheet').isString().bail().notEmpty().trim()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
@@ -137,39 +125,38 @@ placeRouter.get(
 		const { format } = req.params;
 		const currentUser = req.user as User;
 
-		const place = await placeService
+		const placeData = await placeService
 			.getById(id, currentUser)
 			.then(({ place, relationships }) => {
 				const policy = new PlacePolicy(currentUser, place);
 				if (policy.show()) {
 					return {
-						...place,
+						place,
 						relationships,
 						API_PORT,
 					};
 				}
 			});
 
-		console.log('place');
+		if (isNil(placeData)) {
+			res.status(500).send('Failed to load place');
+			return;
+		}
 
-		//(place as any).API_PORT = API_PORT;
-		const PDF_TEMPLATE = fs.readFileSync(
-			__dirname + '/../templates/places/placePrint.handlebars'
-		);
-		const h = create();
-		h.registerHelper('joinArray', handlebarsHelpers.joinArray);
-		h.registerHelper('joinArrayPick', handlebarsHelpers.joinArrayPick);
-		const template = h.compile(PDF_TEMPLATE.toString(), {});
-		const data = template(place);
+		const { place } = placeData;
+
+		const { sections } = req.query;
+
+		const selectedSections = isString(sections) ? sections.split(',') : [];
+
+		const data = await PrintSiteService.perform(place, selectedSections);
 
 		if (format == 'html') {
 			res.send(data);
 		} else {
 			const pdf = await generatePDF(data, 'letter', false);
-			res.setHeader(
-				'Content-disposition',
-				`filename="SitePrint-${(place as any).primaryName}.pdf"`
-			);
+			const primaryName = place.primaryName;
+			res.setHeader('Content-disposition', `filename="SitePrint-${primaryName}.pdf"`);
 			res.setHeader('Content-type', 'application/pdf');
 			res.send(pdf);
 		}
@@ -178,11 +165,7 @@ placeRouter.get(
 
 placeRouter.post(
 	'/',
-	authorize([
-		UserRoles.SITE_ADMIN,
-		UserRoles.SITE_EDITOR,
-		UserRoles.ADMINISTRATOR,
-	]),
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
 	[
 		body('primaryName').isString().bail().notEmpty().trim(),
 		//body('yHSIId').isString().bail().notEmpty().trim(),
@@ -225,11 +208,7 @@ placeRouter.post(
 
 placeRouter.post(
 	'/:id/photo',
-	authorize([
-		UserRoles.SITE_ADMIN,
-		UserRoles.SITE_EDITOR,
-		UserRoles.ADMINISTRATOR,
-	]),
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
 	multer().single('file'),
 	async (req: Request, res: Response) => {
 		try {

@@ -1,223 +1,650 @@
 <html>
 	<head>
 		<style>
-			html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p,
-			blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd,
-			q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
-			fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr,
-			th, td, article, aside, canvas, details, figcaption, figure, footer,
-			header, hgroup, menu, nav, section, summary, time, mark, audio, video {
-			margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%;
-			vertical-align: baseline; background: transparent; } @page { size: letter
-			landscape; margin: 30px 0; } body { padding: 0 30px; line-height: 1;
-			font-family: Arial, Helvetica, sans-serif; font-size: 14px; } .infoTable {
-			border-collapse: collapse; width: 100% } h1 {font-size: 22px} .infoTable
-			td { padding-top: 2px; width: 50% } .infoTable tr td:first-child
-			{padding-right: 15px} .box {border: 1px #ccc solid; padding: 3px;
-			border-radius: 3px; margin-top: 3px; min-height: 16px; margin-bottom: 6px;
-			} .box span { font-weight: 700; display: inline-block; min-width: 100px}
-			.section {margin-bottom: 25px; page-break-inside: avoid;}
-
+			html,
+			body,
+			div,
+			span,
+			object,
+			iframe,
+			h1,
+			h2,
+			h3,
+			h4,
+			h5,
+			h6,
+			p,
+			blockquote,
+			pre,
+			abbr,
+			address,
+			cite,
+			code,
+			del,
+			dfn,
+			em,
+			img,
+			ins,
+			kbd,
+			q,
+			samp,
+			small,
+			strong,
+			sub,
+			sup,
+			var,
+			b,
+			i,
+			dl,
+			dt,
+			dd,
+			ol,
+			ul,
+			li,
+			fieldset,
+			form,
+			label,
+			legend,
+			table,
+			caption,
+			tbody,
+			tfoot,
+			thead,
+			tr,
+			th,
+			td,
+			article,
+			aside,
+			canvas,
+			details,
+			figcaption,
+			figure,
+			footer,
+			header,
+			hgroup,
+			menu,
+			nav,
+			section,
+			summary,
+			time,
+			mark,
+			audio,
+			video {
+				margin: 0;
+				padding: 0;
+				border: 0;
+				outline: 0;
+				font-size: 100%;
+				vertical-align: baseline;
+				background: transparent;
+			}
+			@page {
+				size: letter landscape;
+				margin: 30px 0;
+			}
+			body {
+				padding: 0 30px;
+				line-height: 1;
+				font-family: Arial, Helvetica, sans-serif;
+				font-size: 14px;
+			}
+			.infoTable {
+				border-collapse: collapse;
+				width: 100%;
+			}
+			h1 {
+				font-size: 22px;
+			}
+			.infoTable td {
+				padding-top: 2px;
+				width: 50%;
+			}
+			.infoTable tr td:first-child {
+				padding-right: 15px;
+			}
+			.box {
+				border: 1px #ccc solid;
+				padding: 3px;
+				border-radius: 3px;
+				margin-top: 3px;
+				min-height: 16px;
+				margin-bottom: 6px;
+			}
+			.box span {
+				font-weight: 700;
+				display: inline-block;
+				min-width: 100px;
+			}
+			.textbox {
+				border: 1px #ccc solid;
+				padding: 3px;
+				border-radius: 3px;
+				margin-top: 3px;
+				min-height: 32px;
+				margin-bottom: 6px;
+			}
+			.textbox span {
+				font-weight: 700;
+				display: inline-block;
+				min-width: 100px;
+			}
+			.section {
+				margin-bottom: 25px;
+				page-break-inside: avoid;
+			}
 		</style>
 	</head>
 
 	<body>
-		<table
-			style='width: 100%; margin-bottom: 15px'
-			border='0'
-			cellspacing='0'
-			cellpadding='0'
-		>
+		<table style='width: 100%; margin-bottom: 15px' border='0' cellspacing='0' cellpadding='0'>
 			<tr style='height: 90px'>
 				<td style='width: 180px'>
-					<img
-						src='http://localhost:{{API_PORT}}/yukon.svg'
-						style='height: 80px; width: 160px'
-					/>
+					<img src='http://localhost:{{API_PORT}}/yukon.svg' style='height: 80px; width: 160px' />
 				</td>
-				<td
-					style='text-align: right; vertical-align: bottom; padding-top: 25px'
-				>
+				<td style='text-align: right; vertical-align: bottom; padding-top: 25px'>
 					<h4 style='font-size: 1.4rem'>Yukon Historic Sites</h4>
 					<p style='font-size: 1.0rem'>{{primaryName}}</p>
 				</td>
 			</tr>
 		</table>
 
-		<div class='section'>
-			<h1>Summary</h1>
-			<hr />
-			<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
-				<tr>
-					<td>
-						<strong>YHSI ID</strong><div class='box'>{{yHSIId}}</div>
-						<strong>Primary Name</strong><div class='box'>{{primaryName}}</div>
-						<strong>Designations</strong><div class='box'>{{designations}}</div>
-						<strong>CRHP Category</strong><div class='box'>{{yHSIId}}</div>
-						<strong>Site Categories</strong><div
-							class='box'
-							style='margin-bottom: 6px'
-						>{{joinArray siteCategories}}</div>
-						<strong>Records</strong><div class='box'>{{joinArray records}}</div>
-						<strong>Contributing Resources</strong><div class='box'>{{joinArray
-								contributingResources
-							}}</div>
-						<strong>Show In Register?</strong><div
-							class='box'
-						>{{showInRegister}}</div>
-					</td>
-					<td>
-						<strong>Secondary Names</strong><div class='box'>{{joinArrayPick
-								names
-								'description'
-							}}</div>
-						<strong>Historical Patterns</strong>
+		{{#if includeSummarySection}}
+			<div class='section'>
+				<h1>Summary</h1>
+				<hr />
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
+					<tr>
+						<td>
+							<strong>YHSI ID</strong><div class='box'>{{yHSIId}}</div>
+							<strong>Primary Name</strong><div class='box'>{{primaryName}}</div>
+							<strong>Designations</strong><div class='box'>{{designations}}</div>
+							<strong>CRHP Category</strong><div class='box'>{{yHSIId}}</div>
+							<strong>Site Categories</strong><div
+								class='box'
+								style='margin-bottom: 6px'
+							>{{joinArray siteCategories}}</div>
+							<strong>Records</strong><div class='box'>{{joinArray records}}</div>
+							<strong>Contributing Resources</strong><div class='box'>{{joinArray
+									contributingResources
+								}}</div>
+							<strong>Show In Register?</strong><div class='box'>{{showInRegister}}</div>
+						</td>
+						<td>
+							<strong>Secondary Names</strong><div class='box'>{{joinArrayPick
+									names
+									'description'
+								}}</div>
+							<strong>Historical Patterns</strong>
+							<div class='box'>
+								{{#each historicalPatterns}}
+									-
+									<strong>{{historicalPatternTypeName}}</strong><br />{{comments}}<br />
+								{{/each}}
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+		{{/if}}
+
+		{{#if includeLocationSection}}
+			<div class='section'>
+				<h1>Location</h1>
+				<hr />
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
+					<tr>
+						<td>
+							<strong>Community</strong><div class='box'>{{communityName}}</div>
+							<strong>Other Community</strong><div class='box'>{{otherCommunity}}</div>
+
+							<strong>Physical Address</strong><div class='box'>{{physicalAddress}}
+								<br /><span>Province:</span>{{physicalProvince}}
+								<br /><span>Country:</span>{{physicalCountry}}
+								<br /><span>Postal Code:</span>{{physicalPostalCode}}
+							</div>
+
+							<strong>Latitude</strong><div class='box'>{{latitude}}</div>
+							<strong>Longitude</strong><div class='box'>{{longitude}}</div>
+							<strong>Coordinate Determination</strong><div
+								class='box'
+							>{{coordinateDeterminationName}}</div>
+
+						</td>
+						<td>
+							<strong>Other Locality</strong><div class='box'>{{otherLocality}}</div>
+							<strong>Previous Address</strong><div class='box'>{{previousAddress}}</div>
+
+							<strong>Context</strong><div class='box'>{{locationContext}}</div>
+
+							<strong>NTS Map Sheet</strong><div class='box'>{{nTSMapSheet}}</div>
+							<strong>Area (m2)</strong><div class='box'>{{hectareArea}}</div>
+							<strong>Borden Number</strong><div class='box'>{{bordenNumber}}</div>
+							<strong>Misc. Info</strong><div class='box'>{{locationComment}}</div>
+
+						</td>
+					</tr>
+				</table>
+			</div>
+		{{/if}}
+
+		{{#if includeDatesAndConditionSection}}
+			<div class='section'>
+				<h1>Dates & Condition</h1>
+				<hr />
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
+					<strong>Dates</strong>
+					{{#each dates}}
+						<tr>
+							<td>
+								<div class='box'>
+									<strong>{{typeName}}</strong>
+									{{fromDate}}
+									-
+									{{toDate}}<br />{{details}}<br />
+								</div>
+							</td>
+							<td>
+
+							</td>
+						</tr>
+					{{/each}}
+				</table>
+
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
+					<strong>Construction Period</strong>
+					{{#if constructionPeriods}}{{else}}
+						<tr>
+							<td>
+								<div class='box'></div>
+							</td>
+						</tr>
+					{{/if}}
+					{{#each constructionPeriods}}
+						<tr>
+							<td>
+								<div class='box'>{{type}}</div>
+							</td>
+						</tr>
+					{{/each}}
+				</table>
+
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
+					<tr>
+						<strong>Conditions</strong>
+						<td>
+							<p>Floor condition</p><div class='box'>{{floorCondition}}</div>
+							<p>Roof condition</p><div class='box'>{{roofCondition}}</div>
+							<p>Wall condition</p><div class='box'>{{wallCondition}}</div>
+							<p>Door condition</p><div class='box'>{{doorCondition}}</div>
+						</td>
+						<td>
+							<p>Site status</p><div class='box'>{{siteStatus}}</div>
+							<p>Building size</p><div class='box'>{{buildingSize}}</div>
+							<p>All other resource types</p><div class='box'>{{resourceType}}</div>
+							<p>Condition notes</p><textarea>{{conditionComment}}</textarea>
+						</td>
+					</tr>
+				</table>
+
+			</div>
+		{{/if}}
+
+		{{#if includeThemesAndFunctionSection}}
+			<div class='section'>
+				<h1>Themes & Function</h1>
+				<hr />
+
+				<strong>YHS Themes</strong>
+				<div class='box'>{{yHSThemes}}</div>
+
+				<strong>Themes</strong>
+				{{#if themes}}
+					{{#each themes}}
 						<div class='box'>
-							{{#each historicalPatterns}}
+							{{category}}
+							-
+							{{type}}
+						</div>
+					{{/each}}
+				{{else}}
+					<div class='box'></div>
+				{{/if}}
+
+				<strong>Functional Uses</strong>
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
+					{{#each functionalUses}}
+						<tr>
+							<td>
+								<div class='box'>{{functionalUseType}} - {{functionalType}}</div>
+							</td>
+						</tr>
+					{{/each}}
+				</table>
+
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
+					<tr>
+						<td>
+							<strong>YHS Current Use</strong><div class='box'>{{currentUseComment}}</div>
+						</td>
+						<td>
+							<strong>YHS Past Use</strong><div class='box'>{{yHSPastUse}}</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+		{{/if}}
+
+		{{#if includeAssociationsSection}}
+			<div class='section'>
+				<h1>Associations</h1>
+				<hr />
+
+				<div style='margin-bottom: 1em;'>
+					<strong>Associations</strong>
+					{{#if associations}}
+						{{#each associations}}
+							<div class='box'>
+								{{type}}
 								-
-								<strong>{{historicalPatternTypeName}}</strong><br
-								/>{{comments}}<br />
-							{{/each}}
-						</div>
-					</td>
-				</tr>
-			</table>
-		</div>
+								{{description}}
+							</div>
+						{{/each}}
+					{{else}}
+						<div class='box'></div>
+					{{/if}}
+				</div>
 
-		<div class='section'>
-			<h1>Location</h1>
-			<hr />
-			<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
-				<tr>
-					<td>
-						<strong>Community</strong><div class='box'>{{communityName}}</div>
-						<strong>Other Community</strong><div
-							class='box'
-						>{{otherCommunity}}</div>
+				<strong>First Nation Associations</strong>
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
+					{{#if firstNationAssociations}}
+						{{#each firstNationAssociations}}
+							<tr>
+								<td>
+									<div class='box'>
+										{{firstNationAssociationType}}
+										-
+										{{firstNation}}
+										-
+										{{comments}}
+									</div>
+								</td>
+							</tr>
+						{{/each}}
+					{{else}}
+						<tr>
+							<td>
+								<div class='box'></div>
+							</td>
+						</tr>
+					{{/if}}
+				</table>
+			</div>
+		{{/if}}
 
-						<strong>Physical Address</strong><div
-							class='box'
-						>{{physicalAddress}}
-							<br /><span>Province:</span>{{physicalProvince}}
-							<br /><span>Country:</span>{{physicalCountry}}
-							<br /><span>Postal Code:</span>{{physicalPostalCode}}
-						</div>
+		{{#if includeLegalAndZoningSection}}
+			<div class='section'>
+				<h1>Legal & Zoning</h1>
+				<hr />
 
-						<strong>Latitude</strong><div class='box'>{{latitude}}</div>
-						<strong>Longitude</strong><div class='box'>{{longitude}}</div>
-						<strong>Coordinate Determination</strong><div
-							class='box'
-						>{{coordinateDeterminationName}}</div>
-
-					</td>
-					<td>
-						<strong>Other Locality</strong><div
-							class='box'
-						>{{otherLocality}}</div>
-						<strong>Previous Address</strong><div
-							class='box'
-						>{{previousAddress}}</div>
-
-						<strong>Context</strong><div class='box'>{{locationContext}}</div>
-
-						<strong>NTS Map Sheet</strong><div class='box'>{{nTSMapSheet}}</div>
-						<strong>Area (m2)</strong><div class='box'>{{hectareArea}}</div>
-						<strong>Borden Number</strong><div
-							class='box'
-						>{{bordenNumber}}</div>
-						<strong>Misc. Info</strong><div
-							class='box'
-						>{{locationComment}}</div>
-
-					</td>
-				</tr>
-			</table>
-		</div>
-
-		<div class='section'>
-			<h1>Dates & Condition</h1>
-			<hr />
-			<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
-				<tr>
-					<td>
-						<strong>Dates</strong>
+				<strong>Ownerships</strong>
+				{{#if ownerships}}
+					{{#each ownerships}}
 						<div class='box'>
-							{{#each dates}}
-								-
-								<strong>{{typeName}}</strong> {{fromDate}} - {{toDate}}<br
-								/>{{details}}<br />
-							{{/each}}
+							{{ownershipType}}
+							-
+							{{comments}}
 						</div>
-					</td>
-				</tr>
-			</table>
-		</div>
+					{{/each}}
+				{{else}}
+					<div class='box'></div>
+				{{/if}}
 
-		<div class='section'>
-			<h1>Themes & Function</h1>
-			<hr />
-			<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
-				<tr>
-					<td>
-					</td>
-				</tr>
-			</table>
-		</div>
+				<div style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'></div>
 
-		<div class='section'>
-			<h1>Associations</h1>
-			<hr />
-			<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
-				<tr>
-					<td>
-					</td>
-				</tr>
-			</table>
-		</div>
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
+					<tr>
+						<td>
+							<strong>Zoning</strong><div class='box'>{{zoning}}</div>
+							<strong>Site district</strong><div class='box'>{{siteDistrictNumber}}</div>
+							<strong>Group</strong><div class='box'>{{groupYHSI}}</div>
+							<strong>Block</strong><div class='box'>{{block}}</div>
+						</td>
+						<td>
+							<strong>Town site map number</strong><div class='box'>{{townSiteMapNumber}}</div>
+							<strong>Group YHSI</strong><div class='box'>{{groupYHSI}}</div>
+							<strong>Lot</strong><div class='box'>{{lot}}</div>
+							<strong>Plan number</strong><div class='box'>{{planNumber}}</div>
+						</td>
+					</tr>
+				</table>
 
-		<div class='section'>
-			<h1>Legal & Zoning</h1>
-			<hr />
-			<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
-				<tr>
-					<td>
-					</td>
-				</tr>
-			</table>
-		</div>
+				<div style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'></div>
 
-		<div class='section'>
-			<h1>Photos</h1>
-			<hr />
-			<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
-				<tr>
-					<td>
-					</td>
-				</tr>
-			</table>
-		</div>
+				<strong>Previous Ownerships</strong>
+				{{#if previousOwnerships}}
+					{{#each previousOwnerships}}
+						<div style='margin-top: 1em;'>
+							<div style='display: flex; gap: 1em;'>
+								<div>
+									<p>Ownership Date</p><div class='box'>{{ownershipDate}}</div>
+								</div>
+								<div>
+									<p>Ownership Number</p><div class='box'>{{ownershipNumber}}</div>
+								</div>
+							</div>
+							<p>Ownership Name</p><div class='box'>{{ownershipName}}</div>
+						</div>
 
-		<div class='section'>
-			<h1>Management</h1>
-			<hr />
-			<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
-				<tr>
-					<td>
-					</td>
-				</tr>
-			</table>
-		</div>
+						<div style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'></div>
+					{{/each}}
+				{{else}}
+					<div class='box'></div>
+				{{/if}}
+			</div>
+		{{/if}}
 
-		<div class='section'>
-			<h1>Description</h1>
-			<hr />
-			<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
-				<tr>
-					<td>
-					</td>
-				</tr>
-			</table>
-		</div>
+		{{#if includePhotosSection}}
+			<div class='section'>
+				<h1>Photos</h1>
+				<hr />
+				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
+					<tr>
+						<td>
+						</td>
+					</tr>
+				</table>
+			</div>
+		{{/if}}
 
+		{{#if includeManagementSection}}
+			<div class='section'>
+				<h1>Management</h1>
+				<hr />
+
+				<strong>Revision Logs</strong>
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-top: 1em;'
+				>
+					{{#if revisionLogs}}
+						{{#each revisionLogs}}
+							<tr>
+								<td>
+									<p>Revision Type</p><div class='box'>{{revisionLogType}}</div>
+									<p>Revised By</p><div class='box'>{{revisedBy}}</div>
+								</td>
+								<td>
+									<p>Date</p><div class='box'>{{revisionDate}}</div>
+									<p>Details</p><div class='box'>{{details}}</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan='2'>
+									<div
+										style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'
+									></div>
+								</td>
+							</tr>
+						{{/each}}
+					{{else}}
+						<tr>
+							<td>
+								<div class='box'></div>
+							</td>
+						</tr>
+					{{/if}}
+				</table>
+
+				<strong>Contacts</strong>
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-top: 1em;'
+				>
+					{{#if contacts}}
+						{{#each contacts}}
+							<tr>
+								<td>
+									<p>Type</p><div class='box'>{{contactType}}</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<p>First Name</p><div class='box'>{{firstName}}</div>
+									<p>Phone</p><div class='box'>{{phoneNumber}}</div>
+									<p>Mailing Address</p><div class='box'>{{mailingAddress}}</div>
+								</td>
+								<td>
+									<p>Last Name</p><div class='box'>{{lastName}}</div>
+									<p>Email</p><div class='box'>{{email}}</div>
+									<p>Description</p><div class='textbox'>{{description}}</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan='2'>
+									<div
+										style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'
+									></div>
+								</td>
+							</tr>
+						{{/each}}
+					{{else}}
+						<tr>
+							<td>
+								<div class='box'></div>
+							</td>
+						</tr>
+					{{/if}}
+				</table>
+
+				<strong>Web Links</strong>
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-top: 1em;'
+				>
+					{{#if webLinks}}
+						{{#each webLinks}}
+							<tr>
+								<td>
+									<p>Link Type</p><div class='box'>{{type}}</div>
+								</td>
+								<td>
+									<p>Web Address</p><div class='box'>{{address}}</div>
+								</td>
+							</tr>
+						{{/each}}
+					{{else}}
+						<tr>
+							<td>
+								<div class='box'></div>
+							</td>
+						</tr>
+					{{/if}}
+				</table>
+
+				<div style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'></div>
+
+				<strong>Designation Information</strong>
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-top: 1em;'
+				>
+					<tr>
+						<td>
+							<strong>Jurisdiction</strong><div class='box'>{{jurisdiction}}</div>
+							<strong>Recognition Date</strong><div class='box'>{{recognitionDate}}</div>
+							<strong>Owner Consent</strong><div class='box'>{{ownerConsent}}</div>
+							<strong>Publicly Accessible</strong><div class='box'>{{isPubliclyAccessible}}</div>
+						</td>
+						<td>
+							<strong>YG Building Number</strong><div class='box'>{{yGBuildingNumber}}</div>
+							<strong>YG Reserve Number</strong><div class='box'>{{yGReserveNumber}}</div>
+							<strong>CIHB Number</strong><div class='box'>{{cIHBNumber}}</div>
+							<strong>FHBRO Number</strong><div class='box'>{{fHBRONumber}}</div>
+						</td>
+					</tr>
+				</table>
+
+				<div style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'></div>
+
+				<p>Statue - Recognition Authority / Recognition Type / Statute</p><div
+					class='box'
+				>{{statute}}</div>
+				<p>Secondary Statue - Recognition Authority / Recognition Type / Statute</p><div
+					class='box'
+				>{{secondaryStatute}}</div>
+			</div>
+		{{/if}}
+
+		{{#if includeDescriptionSection}}
+			<div class='section'>
+				<h1>Description</h1>
+				<hr />
+				{{#each descriptions}}
+					<div style='margin-bottom: 1em'>
+						<strong>Description type</strong><div class='box'>
+							{{value}}
+						</div>
+						<textarea>{{text}}</textarea>
+					</div>
+					<div style='border-top: 1px #ccc solid; margin-bottom: 2em'></div>
+				{{/each}}
+			</div>
+		{{/if}}
 	</body>
 </html>

@@ -5,7 +5,17 @@ import {
 	FirstNationAssociation,
 	Name,
 	PlainObject,
+	Description,
+	Association,
+	ConstructionPeriod,
+	Contact,
+	Theme,
+	FunctionalUse,
+	Ownership,
+	RevisionLog,
+	WebLink,
 } from '.';
+import { Date as DateModel } from '../models/date';
 
 export class Place {
 	id?: number;
@@ -76,6 +86,21 @@ export class Place {
 	firstNationAssociations?: FirstNationAssociation[];
 	historicalPatterns?: HistoricalPattern[];
 	names?: Name[];
+
+	// Virtual fields
+	communityName?: string;
+	coordinateDeterminationName?: string;
+	associations?: Association[];
+	constructionPeriods?: ConstructionPeriod[];
+	contacts?: Contact[];
+	dates?: DateModel[];
+	descriptions?: Description[];
+	themes?: Theme[];
+	functionalUses?: FunctionalUse[];
+	ownerships?: Ownership[];
+	previousOwnerships?: Ownership[];
+	revisionLogs?: RevisionLog[];
+	webLinks?: WebLink[];
 
 	static FIELDS: ReadonlyArray<string> = Object.freeze([
 		'id',
@@ -148,24 +173,14 @@ export class Place {
 		'siteCategories',
 	]);
 
-	static encodeCommaDelimitedArray(
-		value: undefined | null | string | string[]
-	): string | null {
-		if (
-			value === undefined ||
-			value === null ||
-			value === '' ||
-			value.length === 0
-		)
-			return null;
+	static encodeCommaDelimitedArray(value: undefined | null | string | string[]): string | null {
+		if (value === undefined || value === null || value === '' || value.length === 0) return null;
 		if (isString(value)) return value;
 
 		return value.join(',');
 	}
 
-	static decodeCommaDelimitedArray(
-		value: undefined | null | string | string[]
-	): string[] {
+	static decodeCommaDelimitedArray(value: undefined | null | string | string[]): string[] {
 		if (value === undefined || value === null || value === '') return [];
 		if (Array.isArray(value)) return value;
 
