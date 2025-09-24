@@ -10,6 +10,7 @@ import {
 	ConstructionPeriod,
 	Contact,
 	Theme,
+	FunctionalUse,
 } from '.';
 import { Date as DateModel } from '../models/date';
 
@@ -92,6 +93,7 @@ export class Place {
 	dates?: DateModel[];
 	descriptions?: Description[];
 	themes?: Theme[];
+	functionalUses?: FunctionalUse[];
 
 	static FIELDS: ReadonlyArray<string> = Object.freeze([
 		'id',

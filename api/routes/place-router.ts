@@ -1,16 +1,14 @@
 import express, { Request, Response } from 'express';
 import { body, check, param, query, validationResult, matchedData } from 'express-validator';
-import fs from 'fs';
 import multer from 'multer';
-import { create } from 'handlebars';
-import handlebarsHelpers from '../utils/handlebars-helpers';
 import { isNil, isString } from 'lodash';
 
 import { API_PORT, DB_CONFIG } from '../config';
 import { PhotoService, PlaceService } from '../services';
+import PrintSiteService from '../services/place/print-site-service';
 import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
-import { Place, User, UserRoles, DESCRIPTION_TYPES, CONSTRUCTION_PERIOD_TYPES } from '../models';
+import { Place, User, UserRoles } from '../models';
 import PlacesController from '../controllers/places-controller';
 import { PlacePolicy } from '../policies';
 import { generatePDF } from '../utils/pdf-generator';
@@ -147,224 +145,11 @@ placeRouter.get(
 
 		const { place } = placeData;
 
-		// Get sections from query string
 		const { sections } = req.query;
 
 		const selectedSections = isString(sections) ? sections.split(',') : [];
 
-		const includeSummarySection = selectedSections.includes('Summary');
-		const includeLocationSection = selectedSections.includes('Location');
-		const includeDatesAndConditionSection = selectedSections.includes('Dates & Condition');
-		const includeThemesAndFunctionSection = selectedSections.includes('Themes & Function');
-		const includeAssociationsSection = selectedSections.includes('Associations');
-		const includeLegalAndZoningSection = selectedSections.includes('Legal & Zoning');
-		const includePhotosSection = selectedSections.includes('Photos');
-		const includeManagementSection = selectedSections.includes('Management');
-		const includeDescriptionSection = selectedSections.includes('Description');
-
-		//(place as any).API_PORT = API_PORT;
-		const PDF_TEMPLATE = fs.readFileSync(__dirname + '/../templates/places/placePrint.handlebars');
-		const h = create();
-		h.registerHelper('joinArray', handlebarsHelpers.joinArray);
-		h.registerHelper('joinArrayPick', handlebarsHelpers.joinArrayPick);
-		const template = h.compile(PDF_TEMPLATE.toString(), {});
-
-		const {
-			primaryName,
-			names,
-			historicalPatterns,
-			yHSIId,
-			jurisdiction,
-			statuteId,
-			statute2Id,
-			recognitionDate,
-			ownerConsent,
-			category,
-			isPubliclyAccessible,
-			nTSMapSheet,
-			bordenNumber,
-			geocode,
-			hectareArea,
-			latitude,
-			longitude,
-			locationComment,
-			resourceType,
-			buildingSize,
-			conditionComment,
-			currentUseComment,
-			yHSPastUse,
-			cIHBNumber,
-			groupYHSI,
-			yGBuildingNumber,
-			yGReserveNumber,
-			fHBRONumber,
-			zoning,
-			townSiteMapNumber,
-			siteDistrictNumber,
-			planNumber,
-			block,
-			lot,
-			slideNegativeIndex,
-			otherCommunity,
-			otherLocality,
-			previousAddress,
-			yHSThemes,
-			rollNumber,
-			locationContext,
-			communityId,
-			lAGroup,
-			siteStatus,
-			floorCondition,
-			wallCondition,
-			doorCondition,
-			roofCondition,
-			coordinateDetermination,
-			physicalAddress,
-			physicalProvince,
-			physicalCountry,
-			physicalPostalCode,
-			mailingAddress,
-			mailingProvince,
-			mailingCountry,
-			mailingPostalCode,
-			showInRegister,
-			siteCategories,
-			designations,
-			contributingResources,
-			records,
-			communityName,
-			coordinateDeterminationName,
-			hasPendingChanges,
-			associations,
-			constructionPeriods,
-			contacts,
-			dates,
-			themes,
-		} = place;
-
-		const constructionPeriodsHandlebarData: { type: string }[] = [];
-		if (!isNil(constructionPeriods)) {
-			constructionPeriods.forEach((constructionPeriod) => {
-				const c = CONSTRUCTION_PERIOD_TYPES.find(
-					(constructionPeriodType) => constructionPeriodType.value == constructionPeriod.type
-				);
-
-				if (isNil(c)) return;
-
-				constructionPeriodsHandlebarData.push({
-					type: c.text,
-				});
-			});
-		}
-
-		// Generating data for description
-		const descriptions: {
-			value: string;
-			text: string;
-		}[] = [];
-
-		if (!isNil(place.descriptions)) {
-			place.descriptions.forEach((description) => {
-				const d = DESCRIPTION_TYPES.find(
-					(descriptionType) => descriptionType.value == description.type
-				);
-
-				if (isNil(d)) return;
-
-				descriptions.push({
-					value: d.text,
-					text: description.descriptionText,
-				});
-			});
-		}
-
-		// Main object to passed to placePrint.handlebars
-		const handlebarsData = {
-			includeSummarySection,
-			includeLocationSection,
-			includeDatesAndConditionSection,
-			includeThemesAndFunctionSection,
-			includeAssociationsSection,
-			includeLegalAndZoningSection,
-			includePhotosSection,
-			includeManagementSection,
-			includeDescriptionSection,
-			primaryName,
-			names,
-			historicalPatterns,
-			yHSIId,
-			jurisdiction,
-			statuteId,
-			statute2Id,
-			recognitionDate,
-			ownerConsent,
-			category,
-			isPubliclyAccessible,
-			nTSMapSheet,
-			bordenNumber,
-			geocode,
-			hectareArea,
-			latitude,
-			longitude,
-			locationComment,
-			resourceType,
-			buildingSize,
-			conditionComment,
-			currentUseComment,
-			yHSPastUse,
-			cIHBNumber,
-			groupYHSI,
-			yGBuildingNumber,
-			yGReserveNumber,
-			fHBRONumber,
-			zoning,
-			townSiteMapNumber,
-			siteDistrictNumber,
-			planNumber,
-			block,
-			lot,
-			slideNegativeIndex,
-			otherCommunity,
-			otherLocality,
-			previousAddress,
-			yHSThemes,
-			rollNumber,
-			locationContext,
-			communityId,
-			lAGroup,
-			siteStatus,
-			floorCondition,
-			wallCondition,
-			doorCondition,
-			roofCondition,
-			coordinateDetermination,
-			physicalAddress,
-			physicalProvince,
-			physicalCountry,
-			physicalPostalCode,
-			mailingAddress,
-			mailingProvince,
-			mailingCountry,
-			mailingPostalCode,
-			showInRegister,
-			siteCategories,
-			designations,
-			contributingResources,
-			records,
-			communityName,
-			coordinateDeterminationName,
-			hasPendingChanges,
-			associations,
-			constructionPeriods: constructionPeriodsHandlebarData,
-			contacts,
-			dates,
-			themes,
-			descriptions,
-		};
-
-		console.log(handlebarsData);
-
-		const data = template(handlebarsData);
+		const data = await PrintSiteService.perform(place, selectedSections);
 
 		if (format == 'html') {
 			res.send(data);

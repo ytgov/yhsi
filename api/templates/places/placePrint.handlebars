@@ -218,41 +218,52 @@
 			<div class='section'>
 				<h1>Dates & Condition</h1>
 				<hr />
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
 					<strong>Dates</strong>
 					{{#each dates}}
-					<tr>
-						<td>
-							<div class='box'>
-								<strong>{{typeName}}</strong>
-								{{fromDate}}
-								-
-								{{toDate}}<br />{{details}}<br />
-							</div>
-						</td>
-						<td>
+						<tr>
+							<td>
+								<div class='box'>
+									<strong>{{typeName}}</strong>
+									{{fromDate}}
+									-
+									{{toDate}}<br />{{details}}<br />
+								</div>
+							</td>
+							<td>
 
-						</td>
-					</tr>
+							</td>
+						</tr>
 					{{/each}}
 				</table>
 
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">					
-					<strong >Construction Period</strong>
-					{{#if constructionPeriods}}
-					{{else}}
-					<tr>
-						<td>
-							<div class='box'></div>
-						</td>
-					</tr>
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
+					<strong>Construction Period</strong>
+					{{#if constructionPeriods}}{{else}}
+						<tr>
+							<td>
+								<div class='box'></div>
+							</td>
+						</tr>
 					{{/if}}
 					{{#each constructionPeriods}}
-					<tr>
-						<td>
-							<div class='box'>{{type}}</div>
-						</td>
-					</tr>
+						<tr>
+							<td>
+								<div class='box'>{{type}}</div>
+							</td>
+						</tr>
 					{{/each}}
 				</table>
 
@@ -282,33 +293,46 @@
 				<h1>Themes & Function</h1>
 				<hr />
 
-				<p>YHS Themes</p><div class='box' style="margin-bottom: 1em;">{{yHSThemes}}</div>
+				<strong>YHS Themes</strong>
+				<div class='box'>{{yHSThemes}}</div>
 
 				<strong>Themes</strong>
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
-					<tr>
-						<td>
-							<div class='box'>{{yHSIId}}</div>
-						</td>
-					</tr>
-				</table>
+				{{#if themes}}
+					{{#each themes}}
+						<div class='box'>
+							{{category}}
+							-
+							{{type}}
+						</div>
+					{{/each}}
+				{{else}}
+					<div class='box'></div>
+				{{/if}}
 
 				<strong>Functional Uses</strong>
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
-					<tr>
-						<td>
-							<div class='box'>{{yHSIId}}</div>
-						</td>
-					</tr>
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
+					{{#each functionalUses}}
+						<tr>
+							<td>
+								<div class='box'>{{functionalUseType}} - {{functionalType}}</div>
+							</td>
+						</tr>
+					{{/each}}
 				</table>
 
 				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
 					<tr>
 						<td>
-							<p>YHS Current Use</p><div class='box'>{{yHSIId}}</div>
+							<strong>YHS Current Use</strong><div class='box'>{{currentUseComment}}</div>
 						</td>
 						<td>
-							<p>YHS Past Use</p><div class='box'>{{yHSIId}}</div>
+							<strong>YHS Past Use</strong><div class='box'>{{yHSPastUse}}</div>
 						</td>
 					</tr>
 				</table>
@@ -321,7 +345,13 @@
 				<hr />
 
 				<strong>Associations</strong>
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
 					<tr>
 						<td>
 						</td>
@@ -344,26 +374,38 @@
 				<hr />
 
 				<strong>Ownerships</strong>
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
 					<tr>
 						<td>
 						</td>
 					</tr>
 				</table>
 
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
 					<tr>
 						<td>
-							<p>Zoning</p><div class="box"></div>
-							<p>Site district</p><div class="box"></div>
-							<p>Group</p><div class="box"></div>
-							<p>Block</p><div class="box"></div>
+							<p>Zoning</p><div class='box'></div>
+							<p>Site district</p><div class='box'></div>
+							<p>Group</p><div class='box'></div>
+							<p>Block</p><div class='box'></div>
 						</td>
 						<td>
-							<p>Town site map number</p><div class="box"></div>
-							<p>Group YHSI</p><div class="box"></div>
-							<p>Lot</p><div class="box"></div>
-							<p>Plan number</p><div class="box"></div>
+							<p>Town site map number</p><div class='box'></div>
+							<p>Group YHSI</p><div class='box'></div>
+							<p>Lot</p><div class='box'></div>
+							<p>Plan number</p><div class='box'></div>
 						</td>
 					</tr>
 				</table>
@@ -397,7 +439,13 @@
 				<hr />
 
 				<strong>Revision Logs</strong>
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
 					<tr>
 						<td>
 						</td>
@@ -405,7 +453,13 @@
 				</table>
 
 				<strong>Contacts</strong>
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
 					<tr>
 						<td>
 						</td>
@@ -413,32 +467,46 @@
 				</table>
 
 				<strong>Web Links</strong>
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
 					<tr>
 						<td>
 						</td>
 					</tr>
 				</table>
 
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0' style="margin-bottom: 1em;">
+				<table
+					class='infoTable'
+					border='0'
+					cellspacing='0'
+					cellpadding='0'
+					style='margin-bottom: 1em;'
+				>
 					<tr>
 						<td>
 							<strong>Designation Information</strong>
-							<p>Jurisdiction</p><div class="box"></div>
-							<p>Recognition Date</p><div class="box"></div>
-							<p>Owner Consent</p><div class="box"></div>
+							<p>Jurisdiction</p><div class='box'></div>
+							<p>Recognition Date</p><div class='box'></div>
+							<p>Owner Consent</p><div class='box'></div>
 						</td>
 						<td>
-							<p>YG Building Number</p><div class="box"></div>
-							<p>YG Reserve Number</p><div class="box"></div>
-							<p>CIHB Number</p><div class="box"></div>
-							<p>FHBRO Number</p><div class="box"></div>
+							<p>YG Building Number</p><div class='box'></div>
+							<p>YG Reserve Number</p><div class='box'></div>
+							<p>CIHB Number</p><div class='box'></div>
+							<p>FHBRO Number</p><div class='box'></div>
 						</td>
 					</tr>
 				</table>
 
-				<p>Statue - Recognition Authority / Recognition Type / Statute</p><div class="box"></div>
-				<p>Secondary Statue - Recognition Authority / Recognition Type / Statute</p><div class="box"></div>
+				<p>Statue - Recognition Authority / Recognition Type / Statute</p><div class='box'></div>
+				<p>Secondary Statue - Recognition Authority / Recognition Type / Statute</p><div
+					class='box'
+				></div>
 			</div>
 		{{/if}}
 
