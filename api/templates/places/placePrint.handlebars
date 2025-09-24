@@ -115,6 +115,19 @@
 				display: inline-block;
 				min-width: 100px;
 			}
+			.textbox {
+				border: 1px #ccc solid;
+				padding: 3px;
+				border-radius: 3px;
+				margin-top: 3px;
+				min-height: 32px;
+				margin-bottom: 6px;
+			}
+			.textbox span {
+				font-weight: 700;
+				display: inline-block;
+				min-width: 100px;
+			}
 			.section {
 				margin-bottom: 25px;
 				page-break-inside: avoid;
@@ -271,15 +284,15 @@
 					<tr>
 						<strong>Conditions</strong>
 						<td>
-							<p>Floor condition</p><div class='box'>{{yHSIId}}</div>
-							<p>Roof condition</p><div class='box'>{{yHSIId}}</div>
-							<p>Wall condition</p><div class='box'>{{yHSIId}}</div>
-							<p>Door condition</p><div class='box'>{{yHSIId}}</div>
+							<p>Floor condition</p><div class='box'>{{floorCondition}}</div>
+							<p>Roof condition</p><div class='box'>{{roofCondition}}</div>
+							<p>Wall condition</p><div class='box'>{{wallCondition}}</div>
+							<p>Door condition</p><div class='box'>{{doorCondition}}</div>
 						</td>
 						<td>
-							<p>Site status</p><div class='box'>{{yHSIId}}</div>
-							<p>Building size</p><div class='box'>{{yHSIId}}</div>
-							<p>All other resource types</p><div class='box'>{{yHSIId}}</div>
+							<p>Site status</p><div class='box'>{{siteStatus}}</div>
+							<p>Building size</p><div class='box'>{{buildingSize}}</div>
+							<p>All other resource types</p><div class='box'>{{resourceType}}</div>
 							<p>Condition notes</p><textarea>{{conditionComment}}</textarea>
 						</td>
 					</tr>
@@ -344,26 +357,44 @@
 				<h1>Associations</h1>
 				<hr />
 
-				<strong>Associations</strong>
-				<table
-					class='infoTable'
-					border='0'
-					cellspacing='0'
-					cellpadding='0'
-					style='margin-bottom: 1em;'
-				>
-					<tr>
-						<td>
-						</td>
-					</tr>
-				</table>
+				<div style='margin-bottom: 1em;'>
+					<strong>Associations</strong>
+					{{#if associations}}
+						{{#each associations}}
+							<div class='box'>
+								{{type}}
+								-
+								{{description}}
+							</div>
+						{{/each}}
+					{{else}}
+						<div class='box'></div>
+					{{/if}}
+				</div>
 
 				<strong>First Nation Associations</strong>
 				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
-					<tr>
-						<td>
-						</td>
-					</tr>
+					{{#if firstNationAssociations}}
+						{{#each firstNationAssociations}}
+							<tr>
+								<td>
+									<div class='box'>
+										{{firstNationAssociationType}}
+										-
+										{{firstNation}}
+										-
+										{{comments}}
+									</div>
+								</td>
+							</tr>
+						{{/each}}
+					{{else}}
+						<tr>
+							<td>
+								<div class='box'></div>
+							</td>
+						</tr>
+					{{/if}}
 				</table>
 			</div>
 		{{/if}}
@@ -374,18 +405,19 @@
 				<hr />
 
 				<strong>Ownerships</strong>
-				<table
-					class='infoTable'
-					border='0'
-					cellspacing='0'
-					cellpadding='0'
-					style='margin-bottom: 1em;'
-				>
-					<tr>
-						<td>
-						</td>
-					</tr>
-				</table>
+				{{#if ownerships}}
+					{{#each ownerships}}
+						<div class='box'>
+							{{ownershipType}}
+							-
+							{{comments}}
+						</div>
+					{{/each}}
+				{{else}}
+					<div class='box'></div>
+				{{/if}}
+
+				<div style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'></div>
 
 				<table
 					class='infoTable'
@@ -396,27 +428,42 @@
 				>
 					<tr>
 						<td>
-							<p>Zoning</p><div class='box'></div>
-							<p>Site district</p><div class='box'></div>
-							<p>Group</p><div class='box'></div>
-							<p>Block</p><div class='box'></div>
+							<strong>Zoning</strong><div class='box'>{{zoning}}</div>
+							<strong>Site district</strong><div class='box'>{{siteDistrictNumber}}</div>
+							<strong>Group</strong><div class='box'>{{groupYHSI}}</div>
+							<strong>Block</strong><div class='box'>{{block}}</div>
 						</td>
 						<td>
-							<p>Town site map number</p><div class='box'></div>
-							<p>Group YHSI</p><div class='box'></div>
-							<p>Lot</p><div class='box'></div>
-							<p>Plan number</p><div class='box'></div>
+							<strong>Town site map number</strong><div class='box'>{{townSiteMapNumber}}</div>
+							<strong>Group YHSI</strong><div class='box'>{{groupYHSI}}</div>
+							<strong>Lot</strong><div class='box'>{{lot}}</div>
+							<strong>Plan number</strong><div class='box'>{{planNumber}}</div>
 						</td>
 					</tr>
 				</table>
+
+				<div style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'></div>
 
 				<strong>Previous Ownerships</strong>
-				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
-					<tr>
-						<td>
-						</td>
-					</tr>
-				</table>
+				{{#if previousOwnerships}}
+					{{#each previousOwnerships}}
+						<div style='margin-top: 1em;'>
+							<div style='display: flex; gap: 1em;'>
+								<div>
+									<p>Ownership Date</p><div class='box'>{{ownershipDate}}</div>
+								</div>
+								<div>
+									<p>Ownership Number</p><div class='box'>{{ownershipNumber}}</div>
+								</div>
+							</div>
+							<p>Ownership Name</p><div class='box'>{{ownershipName}}</div>
+						</div>
+
+						<div style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'></div>
+					{{/each}}
+				{{else}}
+					<div class='box'></div>
+				{{/if}}
 			</div>
 		{{/if}}
 
@@ -444,12 +491,35 @@
 					border='0'
 					cellspacing='0'
 					cellpadding='0'
-					style='margin-bottom: 1em;'
+					style='margin-top: 1em;'
 				>
-					<tr>
-						<td>
-						</td>
-					</tr>
+					{{#if revisionLogs}}
+						{{#each revisionLogs}}
+							<tr>
+								<td>
+									<p>Revision Type</p><div class='box'>{{revisionLogType}}</div>
+									<p>Revised By</p><div class='box'>{{revisedBy}}</div>
+								</td>
+								<td>
+									<p>Date</p><div class='box'>{{revisionDate}}</div>
+									<p>Details</p><div class='box'>{{details}}</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan='2'>
+									<div
+										style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'
+									></div>
+								</td>
+							</tr>
+						{{/each}}
+					{{else}}
+						<tr>
+							<td>
+								<div class='box'></div>
+							</td>
+						</tr>
+					{{/if}}
 				</table>
 
 				<strong>Contacts</strong>
@@ -458,12 +528,42 @@
 					border='0'
 					cellspacing='0'
 					cellpadding='0'
-					style='margin-bottom: 1em;'
+					style='margin-top: 1em;'
 				>
-					<tr>
-						<td>
-						</td>
-					</tr>
+					{{#if contacts}}
+						{{#each contacts}}
+							<tr>
+								<td>
+									<p>Type</p><div class='box'>{{contactType}}</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<p>First Name</p><div class='box'>{{firstName}}</div>
+									<p>Phone</p><div class='box'>{{phoneNumber}}</div>
+									<p>Mailing Address</p><div class='box'>{{mailingAddress}}</div>
+								</td>
+								<td>
+									<p>Last Name</p><div class='box'>{{lastName}}</div>
+									<p>Email</p><div class='box'>{{email}}</div>
+									<p>Description</p><div class='textbox'>{{description}}</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan='2'>
+									<div
+										style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'
+									></div>
+								</td>
+							</tr>
+						{{/each}}
+					{{else}}
+						<tr>
+							<td>
+								<div class='box'></div>
+							</td>
+						</tr>
+					{{/if}}
 				</table>
 
 				<strong>Web Links</strong>
@@ -472,41 +572,62 @@
 					border='0'
 					cellspacing='0'
 					cellpadding='0'
-					style='margin-bottom: 1em;'
+					style='margin-top: 1em;'
 				>
-					<tr>
-						<td>
-						</td>
-					</tr>
+					{{#if webLinks}}
+						{{#each webLinks}}
+							<tr>
+								<td>
+									<p>Link Type</p><div class='box'>{{type}}</div>
+								</td>
+								<td>
+									<p>Web Address</p><div class='box'>{{address}}</div>
+								</td>
+							</tr>
+						{{/each}}
+					{{else}}
+						<tr>
+							<td>
+								<div class='box'></div>
+							</td>
+						</tr>
+					{{/if}}
 				</table>
 
+				<div style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'></div>
+
+				<strong>Designation Information</strong>
 				<table
 					class='infoTable'
 					border='0'
 					cellspacing='0'
 					cellpadding='0'
-					style='margin-bottom: 1em;'
+					style='margin-top: 1em;'
 				>
 					<tr>
 						<td>
-							<strong>Designation Information</strong>
-							<p>Jurisdiction</p><div class='box'></div>
-							<p>Recognition Date</p><div class='box'></div>
-							<p>Owner Consent</p><div class='box'></div>
+							<strong>Jurisdiction</strong><div class='box'>{{jurisdiction}}</div>
+							<strong>Recognition Date</strong><div class='box'>{{recognitionDate}}</div>
+							<strong>Owner Consent</strong><div class='box'>{{ownerConsent}}</div>
+							<strong>Publicly Accessible</strong><div class='box'>{{isPubliclyAccessible}}</div>
 						</td>
 						<td>
-							<p>YG Building Number</p><div class='box'></div>
-							<p>YG Reserve Number</p><div class='box'></div>
-							<p>CIHB Number</p><div class='box'></div>
-							<p>FHBRO Number</p><div class='box'></div>
+							<strong>YG Building Number</strong><div class='box'>{{yGBuildingNumber}}</div>
+							<strong>YG Reserve Number</strong><div class='box'>{{yGReserveNumber}}</div>
+							<strong>CIHB Number</strong><div class='box'>{{cIHBNumber}}</div>
+							<strong>FHBRO Number</strong><div class='box'>{{fHBRONumber}}</div>
 						</td>
 					</tr>
 				</table>
 
-				<p>Statue - Recognition Authority / Recognition Type / Statute</p><div class='box'></div>
+				<div style='border-top: 1px #ccc solid; margin-top: 1em; margin-bottom: 1em;'></div>
+
+				<p>Statue - Recognition Authority / Recognition Type / Statute</p><div
+					class='box'
+				>{{statute}}</div>
 				<p>Secondary Statue - Recognition Authority / Recognition Type / Statute</p><div
 					class='box'
-				></div>
+				>{{secondaryStatute}}</div>
 			</div>
 		{{/if}}
 
