@@ -20,21 +20,11 @@ export function ReturnValidationErrors(req: Request, res: Response, next: NextFu
 	next();
 }
 
-export function RequiresRoleAdmin(req: Request, res: Response, next: NextFunction) {
-	if (req.user && req.user.roles.indexOf('Admin') == -1) {
-		return res.status(401).send('You are not an Administrator');
-	}
-
-	next();
-}
-
-export async function doHealthCheck(req: Request, res: Response) {
+export async function doHealthCheck(_req: Request, res: Response) {
 	//let dbConnected = await data.isConnected();
 
 	//if (!dbConnected)
 	//    return res.status(500).send(`Not able to connect to <strong>MONGODB</strong> database on <strong>${MONGO_HOST}</strong>.`);
 
-	res.send(
-		`Connection to database on '<strong>${DB_HOST}</strong>' is connected and functioning.`
-	);
+	res.send(`Connection to database on '<strong>${DB_HOST}</strong>' is connected and functioning.`);
 }

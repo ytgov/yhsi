@@ -125,7 +125,6 @@ export default {
 					commit('setLoading', false);
 				});
 		},
-
 		async savePhotos({ commit, state }, data) {
 			commit('setLoading', true);
 
@@ -164,6 +163,18 @@ export default {
 			}
 
 			commit('setLoading', false);
+		},
+		delete({ commit }, placeId) {
+			commit('setLoading', true);
+			return api
+				.delete(placeId)
+				.then(({ data }) => {
+					commit('setPlace', {});
+					return data;
+				})
+				.finally(() => {
+					commit('setLoading', false);
+				});
 		},
 	},
 };

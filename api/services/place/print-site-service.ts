@@ -268,8 +268,6 @@ export class PrintSiteService extends BaseService {
 			descriptions: descriptionsHandlebarData,
 		};
 
-		console.log(handlebarsData);
-
 		return template(handlebarsData);
 	}
 

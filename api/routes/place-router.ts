@@ -13,6 +13,7 @@ import PlacesController from '../controllers/places-controller';
 import { PlacePolicy } from '../policies';
 import { generatePDF } from '../utils/pdf-generator';
 import { createThumbnail } from '../utils/image';
+import { DestroyService } from '../services/place';
 
 const placeService = new PlaceService(DB_CONFIG);
 const PAGE_SIZE = 10;
@@ -355,5 +356,20 @@ placeRouter.patch(
 					messages: [{ variant: 'error', text: error.message }],
 				});
 			});
+	}
+);
+
+placeRouter.delete(
+	'/:id',
+	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
+	async (req: Request, res: Response) => {
+		try {
+			const id = parseInt(req.params.id);
+			await DestroyService.perform(id);
+			return res.status(204).json({ messages: 'Place was deleted' });
+		} catch (error) {
+			console.error(`Place deletion failed: ${error}`, { error });
+			return res.status(422).json({ messages: `Place deletion failed: ${error}` });
+		}
 	}
 );

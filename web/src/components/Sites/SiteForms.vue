@@ -26,6 +26,15 @@
 					{{ siteName }}
 				</span>
 				<v-spacer />
+				<v-btn 
+					v-if="isEditor" 
+					color="primary" 
+					:loading="isDeleting" 
+					@click="confirmThenDeleteThisSite"
+				>
+					<v-icon class="mr-2">mdi-delete</v-icon>
+					Delete
+				</v-btn>
 				<v-btn
 					v-if="showDoEdit"
 					color="primary"
@@ -163,6 +172,7 @@ export default {
 	},
 	data: () => ({
 		dialog: false, //tells the print dialog when to show itself
+		isDeleting: false,
 	}),
 	computed: {
 		...mapGetters('places', {
@@ -235,6 +245,7 @@ export default {
 		...mapActions({
 			initializePlace: 'places/initialize',
 			addSiteHistory: 'addSiteHistory',
+			deletePlace: 'places/delete',
 		}),
 		showDialog() {
 			this.dialog = true;
@@ -251,6 +262,20 @@ export default {
 		showAPIMessages: function (msg) {
 			this.$emit('showAPIMessages', msg);
 		},
+		confirmThenDeleteThisSite() {
+			const result = confirm('Are you sure you want to delete this site?');
+			if(result === false) return
+			
+			this.isDeleting = true;
+			try {	
+				this.deletePlace(this.id);
+				this.$router.push('/sites');
+			} catch (error) {
+				console.log(`Failed to delete place: ${error}`, {error});
+			} finally {
+				this.isDeleting = false;
+			}
+		}
 	},
 };
 </script>

@@ -3,12 +3,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { body, param } from 'express-validator';
 
-import {
-	DB_CONFIG,
-	ISSUER_BASE_URL,
-	CLIENT_ID,
-	AUTH_DB_CONNECTION,
-} from '../config';
+import { DB_CONFIG, ISSUER_BASE_URL, CLIENT_ID, AUTH_DB_CONNECTION } from '../config';
 import { UserService } from '../services';
 import { ReturnValidationErrors } from '../middleware';
 import { UserRoles } from '../models/user-roles';
@@ -17,41 +12,33 @@ import { authorize, UserRoleOptions } from '../middleware/authorization';
 export const userRouter = express.Router();
 const db = new UserService(DB_CONFIG);
 
-userRouter.get(
-	'/',
-	authorize([UserRoles.ADMINISTRATOR]),
-	async (req: Request, res: Response) => {
-		const users = await db.getAll();
+userRouter.get('/', authorize([UserRoles.ADMINISTRATOR]), async (req: Request, res: Response) => {
+	const users = await db.getAll();
 
-		for (const user of users) {
-			if (user.last_login_date)
-				user.last_login_date_display = moment(user.last_login_date)
-					.utc(true)
-					.format('YYYY-MM-DD @ h:mmA');
+	for (const user of users) {
+		if (user.last_login_date)
+			user.last_login_date_display = moment(user.last_login_date)
+				.utc(true)
+				.format('YYYY-MM-DD @ h:mmA');
 
-			if (user.expire_date) {
-				const isExpired = moment().isAfter(moment(user.expire_date));
-				if (user.status == 'Active' && isExpired) user.status = 'Expired';
-			}
+		if (user.expire_date) {
+			const isExpired = moment().isAfter(moment(user.expire_date));
+			if (user.status == 'Active' && isExpired) user.status = 'Expired';
 		}
-
-		res.json({ data: users });
 	}
-);
+
+	res.json({ data: users });
+});
 
 userRouter.get('/roles', authorize(), async (req: Request, res: Response) => {
 	return res.json({ data: UserRoleOptions });
 });
 
-userRouter.get(
-	'/me',
-	authorize([], true),
-	async (req: Request, res: Response) => {
-		const person = req.user;
+userRouter.get('/me', authorize([], true), async (req: Request, res: Response) => {
+	const person = req.user;
 
-		if (person) return res.json({ data: await makeDTO(person) });
-	}
-);
+	if (person) return res.json({ data: await makeDTO(person) });
+});
 
 userRouter.get(
 	'/:id',
@@ -66,9 +53,7 @@ userRouter.get(
 			const isExpired = moment().isAfter(moment(user.expire_date));
 			if (isExpired) user.status = 'Expired';
 
-			user.expire_date_display = moment(user.expire_date)
-				.utc(false)
-				.format('YYYY-MM-DD');
+			user.expire_date_display = moment(user.expire_date).utc(false).format('YYYY-MM-DD');
 		}
 
 		res.json({ data: user });
@@ -87,8 +72,7 @@ userRouter.put(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
-		const { first_name, last_name, expire_date_display, role_list, status } =
-			req.body;
+		const { first_name, last_name, expire_date_display, role_list, status } = req.body;
 		const item = {
 			first_name,
 			last_name,
@@ -106,10 +90,7 @@ userRouter.put(
 userRouter.post(
 	'/sign-up-external',
 	[
-		body('email')
-			.isEmail()
-			.normalizeEmail()
-			.withMessage('This email appears invalid'),
+		body('email').isEmail().normalizeEmail().withMessage('This email appears invalid'),
 		body('first_name').notEmpty(),
 		body('last_name').notEmpty(),
 		body('password')
@@ -124,9 +105,7 @@ userRouter.post(
 
 		if (existingEmail) {
 			return res.status(400).json({
-				errors: [
-					{ msg: 'A user with that email already exists, try to sign in' },
-				],
+				errors: [{ msg: 'A user with that email already exists, try to sign in' }],
 			});
 		}
 
@@ -150,9 +129,7 @@ userRouter.post(
 				});
 			})
 			.catch((err: any) => {
-				return res
-					.status(400)
-					.json({ errors: [{ msg: err.response.data.description }] });
+				return res.status(400).json({ errors: [{ msg: err.response.data.description }] });
 			});
 	}
 );
@@ -208,9 +185,7 @@ async function makeDTO(userRaw: any) {
 	dto.display_name = `${userRaw.first_name} ${userRaw.last_name}`;
 
 	if (userRaw.expire_date)
-		dto.expire_date_display = moment(userRaw.expire_date)
-			.utc(false)
-			.format('YYYY-MM-DD');
+		dto.expire_date_display = moment(userRaw.expire_date).utc(false).format('YYYY-MM-DD');
 
 	//dto.roles = _.split(userRaw.roles, ",").filter(r => r.length > 0);
 	//dto.access = await db.getAccessFor(userRaw.email);

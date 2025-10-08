@@ -61,4 +61,13 @@ export default {
 				return Promise.reject(error);
 			});
 	},
+	delete(id) {
+		return http
+			.delete(`${placeUrl}/${id}`)
+			.then((response) => response.data)
+			.catch((error) => {
+				console.error(error);
+				return Promise.reject(error);
+			});
+	}
 };

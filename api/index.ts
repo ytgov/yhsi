@@ -119,7 +119,7 @@ CreateMigrationRoutes(app);
 
 configureAuthentication(app);
 
-app.get('/api/healthCheck', (req: Request, res: Response) => {
+app.get('/api/healthCheck', (_req: Request, res: Response) => {
 	doHealthCheck(res);
 });
 
@@ -195,7 +195,7 @@ app.use('/api', RequiresAuthentication, staticRouter);
 app.use(express.static(path.join(__dirname, 'web')));
 
 // if no other routes match, just send the front-end
-app.use((req: Request, res: Response) => {
+app.use((_req: Request, res: Response) => {
 	res.sendFile(path.join(__dirname, 'web') + '/index.html');
 });
 
