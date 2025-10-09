@@ -1,7 +1,7 @@
 import knex, { Knex } from 'knex';
 import moment from 'moment';
-import { get, isEmpty, isNil, isNull, uniq } from 'lodash';
-import { COORDINATE_DETERMINATION_TYPES, SITE_STATUS_TYPES } from '../models';
+import { get, isEmpty, isNull, isUndefined, uniq } from 'lodash';
+import { COORDINATE_DETERMINATION_TYPES } from '../models';
 
 import {
 	AssociationService,
@@ -302,27 +302,26 @@ export class PlaceService {
 	}
 
 	async generateIdFor(nTSMapSheet: string): Promise<string> {
-		let placeIndex = 0;
-
 		const places = await this.db('place')
 			.whereILike('YHSIId', `${nTSMapSheet}/%`)
 			.select('YHSIId')
 			.orderBy('yHSIId');
 
-		for (const place of places) {
-			placeIndex++;
+		// Note: The following loop runs in O(999 * n) (or O(n) where n is the number of places)
+		// If performance becomes an issue as number of places grows, consider using a Set
+		let placeIndex = 1;
+		for (; placeIndex <= 999; placeIndex++) {
+			const candidateYHSIId = `${nTSMapSheet}/${placeIndex.toString().padStart(3, '0')}`;
+			const isMatch = places.find((place) => place.YHSIId == candidateYHSIId);
 
-			const testValue = `${nTSMapSheet}/${placeIndex.toString().padStart(3, '0')}`;
-
-			const isMatch = place.YHSIId == testValue;
-
-			if (!isMatch) {
-				break;
+			if (isUndefined(isMatch)) {
+				return `${nTSMapSheet}/${placeIndex.toString().padStart(3, '0')}`;
 			}
 		}
 
-		placeIndex++;
-		return `${nTSMapSheet}/${placeIndex.toString().padStart(3, '0')}`;
+		throw new Error(
+			`Unable to generate YHSIId: ${nTSMapSheet}/001 to ${nTSMapSheet}/999 are currently in use`
+		);
 	}
 
 	async doSearch(
