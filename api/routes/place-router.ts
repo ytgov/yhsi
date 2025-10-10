@@ -268,6 +268,7 @@ placeRouter.patch(
 	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
 	[
 		param('id').isInt({ gt: 0 }),
+		body('yHSIId').isString().optional({ nullable: true }),
 		body('associations').isArray().optional({ nullable: true }),
 		body('block').isString().optional({ nullable: true }),
 		body('bordenNumber').isString().optional({ nullable: true }),
@@ -342,6 +343,16 @@ placeRouter.patch(
 		const attributes = matchedData(req, {
 			locations: ['body'],
 		});
+
+		// Should be using BaseController and loading currentUser into req here
+		const user = req.user as User;
+		if (isNil(user) || isNil(user.roles)) {
+			return res.status(401).json({ message: 'Unauthorized' });
+		}
+
+		if (!user.roles.includes(UserRoles.ADMINISTRATOR)) {
+			attributes.yHSIId = undefined;
+		}
 
 		return placeService
 			.update(id, attributes)

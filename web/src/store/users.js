@@ -1,4 +1,5 @@
 import axios from "axios";
+import { UserRoles } from '@/authorization';
 import { COMMUNITY_URL, FIRST_NATION_URL, USER_URL } from "../urls";
 
 const state = {
@@ -10,6 +11,7 @@ const getters = {
     roles: state => state.roles,
     communities: state => state.communities,
     firstNations: state => state.firstNations,
+    isSystemAdmin: state => state.roles.includes(UserRoles.ADMINISTRATOR),
 };
 const mutations = {
     setRoles(state, value) {
