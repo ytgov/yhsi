@@ -1,6 +1,6 @@
  {
     "include": [
-      "./src/web/**/*"
+      "./web/**/*"
     ],
     "compilerOptions": {
         "baseUrl": ".",

@@ -72,7 +72,8 @@ typings/
 
 # dotenv environment variables file
 .env
-src/api/.env
+.envrc
+api/.env
 .env.development
 .env.test
 .env.production
@@ -114,5 +115,4 @@ db/photo_data.sql
 db/place_data.sql
 
 # Other
-package-lock.json
 .DS_Store

@@ -1,9 +1,7 @@
-version: '3.7'
-
 services:
   web:
     build:
-      context: ./src/web
+      context: ./web
       dockerfile: development.Dockerfile
     environment:
       NODE_ENV: development
@@ -11,16 +9,16 @@ services:
     ports:
       - '8080:8080'
     volumes:
-      - ./src/web:/usr/src/web
+      - ./web:/usr/src/web
     depends_on:
       - api
       - db
   api:
     build:
-      context: ./src/api
+      context: ./api
       dockerfile: development.Dockerfile
     env_file:
-      - ./src/api/.env.development
+      - ./api/.env.development
     environment:
       NODE_ENV: development
       DB_HOST: db
@@ -33,7 +31,7 @@ services:
       - 'host.docker.internal:host-gateway'
       - 'host.docker.internal:172.17.0.1'
     volumes:
-      - ./src/api:/usr/src/api
+      - ./api:/usr/src/api
     depends_on:
       - db
   db:

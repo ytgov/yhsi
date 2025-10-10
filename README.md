@@ -5,22 +5,38 @@
 Writing code and developing in this application requires running three services:
 
 - A local Microsoft SQL Server (2019 Linux) database running in Docker
-- The server-side Node.js application written in TypeScript: `/src/api`
-- The Vue.js and Vuetify based front-end: `/src/web`
+- The server-side Node.js application written in TypeScript: `/api`
+- The Vue.js and Vuetify based front-end: `/web`
 
 ---
 
-Boot the three app services:
+1. Create a the `yhsi_sqlvolume` volume in docker to hold the app database.
 
-```bash
-docker-compose -f docker-compose.development.yml up
-```
+   ```bash
+   docker volume create yhsi_sqlvolume
+   ```
 
-Or if you have `ruby` installed
+2. Boot the three app services:
 
-```bash
-bin/dev up
-```
+   ```bash
+   dev build
+   dev up
+
+   # Or
+   docker compose -f docker-compose.development.yml build
+   docker compose -f docker-compose.development.yml up
+   ```
+
+3. Run the database migrations by going to http://localhost:3000/migrate/latest
+
+4. Create a new user account and log in to http://localhost:8080.
+
+5. Once you are logged in, open a database console with `dev sqlcmd` and run the following command to give your user admin permissions:
+
+   ```sql
+   UPDATE [Security].[User] SET [roles] = 'Administrator', [status] = 'Active' WHERE [email] = 'some-user@some-host.com';
+   GO
+   ```
 
 ### Legacy Development Setup
 
@@ -33,7 +49,10 @@ docker-compose -f docker-compose.dev.yml up -d
 This command will start SQL Server and bind it to your local machine's port 1433. When it starts the first time, the database will be empty. To load it with data, you must obtain a database backup and put it into `/db/backups/yhsi.bak` then run the follow commands:
 
 ```
-docker exec -it yhsi_sql_1 bash
+dev exec db bash
+
+# or
+docker compose -f docker-compose.development.yml exec db bash
 ```
 
 This connects you to the running SQL Server container. Once in, run the following commands to create and restore the database from the backup:
@@ -46,7 +65,7 @@ cd /opt/mssql-tools/bin
 You will now have a local database with data ready for the API. To run the API, run the following commands:
 
 ```
-cd src/api
+cd api
 npm install
 cp .env .env.development
 ```
@@ -62,17 +81,17 @@ The API will bind to your local machines port 3000 and be available at http://lo
 Last to start is the the Vue.js web front-end. To run this, open a second terminal window at this directory and run the following commands:
 
 ```
-cd src/web
+cd web
 npm install
 npm run start
 ```
 
-You will now have the Vue CLI server hosting the application at http://localhost:8080 and you can begin editing the API or front-end code. **All changes to the files in the `src/api` and `src/web` will automatically reload theie respective applications.**
+You will now have the Vue CLI server hosting the application at http://localhost:8080 and you can begin editing the API or front-end code. **All changes to the files in the `api` and `web` will automatically reload theie respective applications.**
 
 ## Local Testing
 
 Currently there is very minimal support for testing.
-Only `src/api` has a test suite.
+Only `api` has a test suite.
 **The development and test databases are shared, so don't write tests that change database state yet.**
 
 To boot the test suite go to the top level of the app and run:
@@ -84,7 +103,7 @@ bin/dev test up
 docker-compose -f docker-cmpose.test.yml up
 
 # or if you don't have docker
-cd src/api
+cd api
 npm install
 npm run test
 ```
@@ -138,8 +157,8 @@ the appropriate environment variables set using the following commands:
 1. Set the environment variables for the back-end.
 
 ```
-cp /src/api/.env /src/api/.env.production
-vi /src/api/.env.production
+cp /api/.env /api/.env.production
+vi /api/.env.production
 ```
 
 2. Set the global host port.
