@@ -20,8 +20,8 @@
 						outlined
 						label="YHSI ID"
 						required
-						append-icon="mdi-lock"
-						:readonly="!isEditing"
+						:append-icon="isSystemAdmin ? '' : 'mdi-lock'"
+						:readonly="!isSystemAdmin || !isEditing"
 					/>
 
 					<v-text-field
@@ -237,6 +237,7 @@ export default {
 	computed: {
 		...mapGetters({
 			place: 'places/place',
+			isSystemAdmin: 'users/isSystemAdmin',
 		}),
 		isEditing() {
 			return this.$route.path.includes('/edit');
