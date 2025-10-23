@@ -15,12 +15,11 @@ const upload = multer.default();
 //GET ALL AVAILABLE PHOTOS
 photosExtraRouter.get(
 	'/',
-	[
-		query('page').default(0).isInt(),
-		query('limit').default(10).isInt({ gt: 0 }),
-	],
+	[query('page').default(0).isInt(), query('limit').default(10).isInt({ gt: 0 })],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
+		return res.status(200).send({ message: 'Successfully retrieved photos' });
+
 		const { textToMatch } = req.query;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
@@ -43,14 +42,7 @@ photosExtraRouter.get(
 
 			photos = await db
 				.column(
-					[
-						'RowId',
-						'Address',
-						'Caption',
-						'OriginalFileName',
-						'FeatureName',
-						'ThumbFile',
-					],
+					['RowId', 'Address', 'Caption', 'OriginalFileName', 'FeatureName', 'ThumbFile'],
 					{ CommunityName: 'CO.Name' },
 					{ PlaceName: 'PL.PrimaryName' }
 				)
@@ -73,14 +65,7 @@ photosExtraRouter.get(
 
 			photos = await db
 				.column(
-					[
-						'RowId',
-						'Address',
-						'Caption',
-						'OriginalFileName',
-						'FeatureName',
-						'ThumbFile',
-					],
+					['RowId', 'Address', 'Caption', 'OriginalFileName', 'FeatureName', 'ThumbFile'],
 					{ CommunityName: 'CO.Name' },
 					{ PlaceName: 'PL.PrimaryName' }
 				)
@@ -107,10 +92,7 @@ photosExtraRouter.post(
 		const { BoatId } = req.params;
 		const { linkPhotos } = req.body;
 
-		let currentPhotos = await db
-			.select('Photo_RowID')
-			.from('boat.Photo')
-			.where('BoatId', BoatId);
+		let currentPhotos = await db.select('Photo_RowID').from('boat.Photo').where('BoatId', BoatId);
 		let filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x) => {
@@ -354,48 +336,44 @@ photosExtraRouter.get(
 );
 
 // ADD NEW BOAT PHOTO
-photosExtraRouter.post(
-	'/boat',
-	[upload.single('file')],
-	async (req: Request, res: Response) => {
-		/* const db = req.app.get('db');
+photosExtraRouter.post('/boat', [upload.single('file')], async (req: Request, res: Response) => {
+	/* const db = req.app.get('db');
   
     const permissions = req.decodedToken['yg-claims'].permissions;
     if (!permissions.includes('create')) res.sendStatus(403); */
 
-		const { boatId, ...restBody } = req.body;
-		const ThumbFile = await createThumbnail(req.file.buffer);
-		const DateCreated = new Date();
-		const OriginalFileName = req.file.originalname;
+	const { boatId, ...restBody } = req.body;
+	const ThumbFile = await createThumbnail(req.file.buffer);
+	const DateCreated = new Date();
+	const OriginalFileName = req.file.originalname;
 
-		const body = {
-			File: req.file.buffer,
-			ThumbFile,
-			DateCreated,
-			OriginalFileName,
-			...restBody,
-		};
+	const body = {
+		File: req.file.buffer,
+		ThumbFile,
+		DateCreated,
+		OriginalFileName,
+		...restBody,
+	};
 
-		const response = await db
-			.insert(body)
-			.into('dbo.photo')
-			.returning('*')
-			.then(async (rows) => {
-				const newBoatPhoto = rows[0];
+	const response = await db
+		.insert(body)
+		.into('dbo.photo')
+		.returning('*')
+		.then(async (rows) => {
+			const newBoatPhoto = rows[0];
 
-				await db
-					.insert({ boatId, Photo_RowID: newBoatPhoto.RowId })
-					.into('boat.photo')
-					.returning('*')
-					.then((rows) => {
-						return rows;
-					});
+			await db
+				.insert({ boatId, Photo_RowID: newBoatPhoto.RowId })
+				.into('boat.photo')
+				.returning('*')
+				.then((rows) => {
+					return rows;
+				});
 
-				return newBoatPhoto;
-			});
-		res.status(200).send({ message: 'Upload Success' });
-	}
-);
+			return newBoatPhoto;
+		});
+	res.status(200).send({ message: 'Upload Success' });
+});
 
 // ADD NEW AIRCRASH PHOTO
 photosExtraRouter.post(
@@ -482,43 +460,39 @@ photosExtraRouter.post(
 );
 
 // Add ytplace photo
-photosExtraRouter.post(
-	'/ytplace',
-	[upload.single('file')],
-	async (req: Request, res: Response) => {
-		const { placeId, ...restBody } = req.body;
-		const ThumbFile = await createThumbnail(req.file.buffer);
-		const DateCreated = new Date();
-		const OriginalFileName = req.file.originalname;
+photosExtraRouter.post('/ytplace', [upload.single('file')], async (req: Request, res: Response) => {
+	const { placeId, ...restBody } = req.body;
+	const ThumbFile = await createThumbnail(req.file.buffer);
+	const DateCreated = new Date();
+	const OriginalFileName = req.file.originalname;
 
-		const body = {
-			File: req.file.buffer,
-			ThumbFile,
-			DateCreated,
-			OriginalFileName,
-			...restBody,
-		};
+	const body = {
+		File: req.file.buffer,
+		ThumbFile,
+		DateCreated,
+		OriginalFileName,
+		...restBody,
+	};
 
-		const response = await db
-			.insert(body)
-			.into('dbo.photo')
-			.returning('*')
-			.then(async (rows) => {
-				const newPlacePhoto = rows[0];
+	const response = await db
+		.insert(body)
+		.into('dbo.photo')
+		.returning('*')
+		.then(async (rows) => {
+			const newPlacePhoto = rows[0];
 
-				await db
-					.insert({ placeId, Photo_RowID: newPlacePhoto.RowId })
-					.into('place.photo')
-					.returning('*')
-					.then((rows) => {
-						return rows;
-					});
+			await db
+				.insert({ placeId, Photo_RowID: newPlacePhoto.RowId })
+				.into('place.photo')
+				.returning('*')
+				.then((rows) => {
+					return rows;
+				});
 
-				return newPlacePhoto;
-			});
-		res.status(200).send({ message: 'Upload Success' });
-	}
-);
+			return newPlacePhoto;
+		});
+	res.status(200).send({ message: 'Upload Success' });
+});
 
 // LINK BURIAL PHOTOS
 photosExtraRouter.post(
@@ -656,10 +630,7 @@ photosExtraRouter.post(
 	async (req: Request, res: Response) => {
 		const { personID } = req.params;
 		const { linkPhotos } = req.body;
-		let currentPhotos = await db
-			.select('PhotoID')
-			.from('Person.Photo')
-			.where('PersonID', personID);
+		let currentPhotos = await db.select('PhotoID').from('Person.Photo').where('PersonID', personID);
 		let filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x) => {
@@ -680,32 +651,28 @@ photosExtraRouter.post(
 );
 
 // ADD NEW BOAT PHOTO
-photosExtraRouter.post(
-	'/boat',
-	[upload.single('file')],
-	async (req: Request, res: Response) => {
-		const { burialId, ...restBody } = req.body;
-		const ThumbFile = await createThumbnail(req.file.buffer);
+photosExtraRouter.post('/boat', [upload.single('file')], async (req: Request, res: Response) => {
+	const { burialId, ...restBody } = req.body;
+	const ThumbFile = await createThumbnail(req.file.buffer);
 
-		const body = { File: req.file.buffer, ThumbFile, ...restBody };
+	const body = { File: req.file.buffer, ThumbFile, ...restBody };
 
-		const response = await db
-			.insert(body)
-			.into('dbo.photo')
-			.returning('*')
-			.then(async (rows) => {
-				const newBurialPhoto = rows[0];
+	const response = await db
+		.insert(body)
+		.into('dbo.photo')
+		.returning('*')
+		.then(async (rows) => {
+			const newBurialPhoto = rows[0];
 
-				await db
-					.insert({ burialId, Photo_RowID: newBurialPhoto.RowId })
-					.into('Burial.Photo')
-					.returning('*')
-					.then((rows) => {
-						return rows;
-					});
+			await db
+				.insert({ burialId, Photo_RowID: newBurialPhoto.RowId })
+				.into('Burial.Photo')
+				.returning('*')
+				.then((rows) => {
+					return rows;
+				});
 
-				return newBurialPhoto;
-			});
-		res.status(200).send({ message: 'Upload Success' });
-	}
-);
+			return newBurialPhoto;
+		});
+	res.status(200).send({ message: 'Upload Success' });
+});

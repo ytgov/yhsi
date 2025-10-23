@@ -82,29 +82,25 @@ photoRouter.post(
 	}
 );
 
-photoRouter.get(
-	'/:id',
-	[check('id').notEmpty().isUUID()],
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
+photoRouter.get('/:id', [check('id').notEmpty().isUUID()], async (req: Request, res: Response) => {
+	const errors = validationResult(req);
 
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
-
-		await photoService
-			.getById(req.params.id)
-			.then((photo) => {
-				if (photo) return res.json({ data: photo });
-
-				return res.status(404).send('Photo not found');
-			})
-			.catch((err) => {
-				console.error(err);
-				return res.status(404).send('Photo not found');
-			});
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ errors: errors.array() });
 	}
-);
+
+	await photoService
+		.getById(req.params.id)
+		.then((photo) => {
+			if (photo) return res.json({ data: photo });
+
+			return res.status(404).send('Photo not found');
+		})
+		.catch((err) => {
+			console.error(err);
+			return res.status(404).send('Photo not found');
+		});
+});
 
 photoRouter.get(
 	'/:id/file',
@@ -266,9 +262,7 @@ photoRouter.delete(
 				await trx('aircrash.photo').where({ photo_RowId: id }).delete();
 				await trx('person.photo').where({ photoId: id }).delete();
 				await trx('burial.photo').where({ photo_RowId: id }).delete();
-				await trx('interpretiveSite.photos')
-					.where({ photo_RowId: id })
-					.delete();
+				await trx('interpretiveSite.photos').where({ photo_RowId: id }).delete();
 				await trx('photo').where({ RowID: id }).delete();
 				await trx.commit();
 
@@ -404,8 +398,7 @@ photoRouter.get(
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
-		if (!errors.isEmpty())
-			return res.status(400).json({ errors: errors.array() });
+		if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
 		await photoService
 			.getSavedFilterByUser(req.params.id)
@@ -473,12 +466,8 @@ photoRouter.get(
 
 				place.placeTypes = place.placeTypes.map((x: any) => (x = x.placeType));
 				place.placeTypes = place.placeTypes.toString();
-				place.firstNationNames = await ytPlaceService.getFirstNationNamesFor(
-					place.id
-				);
-				place.firstNationNames = place.firstNationNames.map(
-					(x: any) => (x = x.fnName)
-				);
+				place.firstNationNames = await ytPlaceService.getFirstNationNamesFor(place.id);
+				place.firstNationNames = place.firstNationNames.map((x: any) => (x = x.fnName));
 				place.firstNationNames = place.firstNationNames.toString();
 			}
 		}
