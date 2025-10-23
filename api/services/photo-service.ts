@@ -30,10 +30,10 @@ export class PhotoService {
 			});
 	}
 
+	// actually getAllForSite
 	async getAllForPlace(id: number): Promise<Photo[]> {
 		return this.knex('photo')
 			.select<Photo[]>(PHOTO_FIELDS)
-			.limit(4)
 			.where({ placeId: id })
 			.catch((err: any) => {
 				//console.log('BOMBED', err);
@@ -41,6 +41,7 @@ export class PhotoService {
 			});
 	}
 
+	// actually getForSite
 	async getForPlace(id: number): Promise<Photo[]> {
 		return this.knex('photo')
 			.select<Photo[]>(PHOTO_FIELDS)
