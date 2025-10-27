@@ -14,6 +14,7 @@ import { PlacePolicy } from '../policies';
 import { generatePDF } from '../utils/pdf-generator';
 import { createThumbnail } from '../utils/image';
 import { DestroyService } from '../services/place';
+import { Photo } from 'data/photo-entities';
 
 const placeService = new PlaceService(DB_CONFIG);
 const PAGE_SIZE = 10;
@@ -216,20 +217,25 @@ placeRouter.post(
 			const { id } = req.params;
 
 			const ThumbFile = await createThumbnail(req.file.buffer);
-			const body = {
+			const body: Photo = {
 				File: req.file.buffer,
 				ThumbFile,
 				...req.body,
-				placeId: id,
+				communityId: parseInt(req.body.communityId),
+				originalMediaId: parseInt(req.body.originalMediaId),
+				ownerId: parseInt(req.body.ownerId),
+				photoProjectId: parseInt(req.body.photoProjectId),
+				placeId: parseInt(id),
 				dateCreated: new Date(),
 			};
 
 			const photoService = new PhotoService(DB_CONFIG);
-			photoService.addPhoto(body);
+			await photoService.addPhoto(body);
 
-			return res.json({ data: 'success' });
+			return res.status(200).json({ data: 'success' });
 		} catch (err) {
-			return res.json({ data: 'failuer', error: err });
+			console.log(err);
+			return res.status(500).json({ data: 'failuer', error: err });
 		}
 	}
 );
