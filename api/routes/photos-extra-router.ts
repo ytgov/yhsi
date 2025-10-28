@@ -18,8 +18,6 @@ photosExtraRouter.get(
 	[query('page').default(0).isInt(), query('limit').default(10).isInt({ gt: 0 })],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		return res.status(200).send({ message: 'Successfully retrieved photos' });
-
 		const { textToMatch } = req.query;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
@@ -181,6 +179,29 @@ photosExtraRouter.post(
 				});
 
 		res.status(200).send({ message: 'Successfully linked the photos' });
+	}
+);
+
+//GET Place(site) photos
+photosExtraRouter.get(
+	'/place/:placeId',
+	[param('placeId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { placeId } = req.params;
+
+		const page = parseInt(req.query.page as string);
+		const limit = parseInt(req.query.limit as string);
+		const offset = page * limit || 0;
+
+		const photos = await db
+			.select('*')
+			.from('Photo')
+			.where('Photo.PlaceId', placeId)
+			.limit(limit)
+			.offset(offset);
+
+		res.status(200).send(photos);
 	}
 );
 
