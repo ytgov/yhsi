@@ -82,8 +82,10 @@ photoRouter.post(
 	}
 );
 
-photoRouter.get('/:id', [check('id').notEmpty().isUUID()], async (req: Request, res: Response) => {
+photoRouter.get('/:id', [check('id').notEmpty().isInt()], async (req: Request, res: Response) => {
 	const errors = validationResult(req);
+
+	console.log('PHOTOS ', req.params.id);
 
 	if (!errors.isEmpty()) {
 		return res.status(400).json({ errors: errors.array() });
@@ -104,7 +106,7 @@ photoRouter.get('/:id', [check('id').notEmpty().isUUID()], async (req: Request, 
 
 photoRouter.get(
 	'/:id/file',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
@@ -131,7 +133,7 @@ photoRouter.get(
 
 photoRouter.get(
 	'/:id/file/download',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
@@ -157,7 +159,7 @@ photoRouter.get(
 
 photoRouter.get(
 	'/:id/thumbfile',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
@@ -184,7 +186,7 @@ photoRouter.get(
 
 photoRouter.get(
 	'/:id/file/thumbnail',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
@@ -280,7 +282,7 @@ photoRouter.put(
 	'/:id',
 	multer().single('file'),
 	[
-		check('id').notEmpty().isUUID(),
+		check('id').notEmpty().isInt(),
 		body('communityId').notEmpty().bail().isInt(),
 		body('isOtherRecord').notEmpty().bail().isBoolean(),
 		body('originalMediaId').notEmpty().bail().isInt(),
@@ -330,7 +332,7 @@ photoRouter.put(
 photoRouter.put(
 	'/:id/file',
 	multer().single('file'),
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
@@ -417,7 +419,7 @@ photoRouter.get(
 // Get all site records associated with photo
 photoRouter.get(
 	'/:id/place',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
@@ -442,7 +444,7 @@ photoRouter.get(
 // Place associations
 photoRouter.get(
 	'/:id/ytplace',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
@@ -479,7 +481,7 @@ photoRouter.get(
 // Boat associations
 photoRouter.get(
 	'/:id/boat',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
@@ -503,7 +505,7 @@ photoRouter.get(
 // Aircrash associations
 photoRouter.get(
 	'/:id/aircrash',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
@@ -520,7 +522,7 @@ photoRouter.get(
 // People associations
 photoRouter.get(
 	'/:id/people',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
@@ -537,7 +539,7 @@ photoRouter.get(
 // Burial associations
 photoRouter.get(
 	'/:id/burial',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
@@ -554,7 +556,7 @@ photoRouter.get(
 // Interpretive Sites associations
 photoRouter.get(
 	'/:id/interpretive-sites',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
@@ -571,7 +573,7 @@ photoRouter.get(
 // Delete the site id (placeId) from the photo
 photoRouter.delete(
 	'/:id/place/:placeId',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	[check('placeId').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
@@ -597,7 +599,7 @@ photoRouter.delete(
 // Delete ytplace association
 photoRouter.delete(
 	'/:id/ytplace/:ytplaceId',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	[check('ytplaceId').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
@@ -623,7 +625,7 @@ photoRouter.delete(
 // Delete boat association
 photoRouter.delete(
 	'/:id/boat/:boatId',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	[check('boatId').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
@@ -649,7 +651,7 @@ photoRouter.delete(
 // Delete aircrash association
 photoRouter.delete(
 	'/:id/aircrash/:yacsinumber',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	[check('yacsinumber').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
@@ -675,7 +677,7 @@ photoRouter.delete(
 // Delete people association
 photoRouter.delete(
 	'/:id/people/:personId',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	[check('personId').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
@@ -701,7 +703,7 @@ photoRouter.delete(
 // Delete burial association
 photoRouter.delete(
 	'/:id/burial/:burialId',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	[check('burialId').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
@@ -727,7 +729,7 @@ photoRouter.delete(
 // Delete interpretive site association
 photoRouter.delete(
 	'/:id/interpretive-sites/:siteId',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	[check('siteId').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
