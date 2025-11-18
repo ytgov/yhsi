@@ -4,7 +4,7 @@ import {
 } from './config';
 
 export default {
-	async getAll(page, textToMatch) {
+	async getAll(page, textToMatch, excludeIfHasPlaceId) {
 		return await api
 			.get(`photos`, {
 				crossdomain: true,
@@ -12,6 +12,7 @@ export default {
 					page: page,
 					limit: 6,
 					textToMatch,
+					excludeIfHasPlaceId,
 				},
 			})
 			.then((res) => {

@@ -550,7 +550,7 @@ export default {
 		async getAll() {
 			this.showSkeletons = true;
 
-			let resp = await photos.getAll(this.page, this.searchPhotos);
+			let resp = await photos.getAll(this.page, this.searchPhotos, true);
 			if (resp) {
 				this.availablePhotos = resp.body.map((x) => {
 					x.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(

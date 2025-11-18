@@ -18,70 +18,109 @@ photosExtraRouter.get(
 	[query('page').default(0).isInt(), query('limit').default(10).isInt({ gt: 0 })],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { textToMatch } = req.query;
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = (page - 1) * limit;
-		let counter = [{ count: 0 }];
-		let photos = [];
+		try {
+			const { textToMatch } = req.query;
+			const page = parseInt(req.query.page as string);
+			const limit = parseInt(req.query.limit as string);
+			const offset = (page - 1) * limit;
+			let counter = [{ count: 0 }];
+			let photos = [];
 
-		if (textToMatch) {
-			counter = await db
-				.from('dbo.photo as PH')
-				.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-				.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
-				.where('PH.FeatureName', 'like', `%${textToMatch}%`)
-				.whereNotNull('ThumbFile')
-				.orWhere('PH.OriginalFileName', 'like', `%${textToMatch}%`)
-				.orWhere('PH.Address', 'like', `%${textToMatch}%`)
-				.orWhere('PH.Caption', 'like', `%${textToMatch}%`)
-				.orWhere('CO.Name', 'like', `%${textToMatch}%`)
-				.orWhere('PL.PrimaryName', 'like', `%${textToMatch}%`)
-				.count('RowId', { as: 'count' });
+			const excludeIfHasPlaceId = req.query.excludeIfHasPlaceId;
 
-			photos = await db
-				.column(
-					['RowId', 'Address', 'Caption', 'OriginalFileName', 'FeatureName', 'ThumbFile'],
-					{ CommunityName: 'CO.Name' },
-					{ PlaceName: 'PL.PrimaryName' }
-				)
-				.select()
-				.from('dbo.photo as PH')
-				.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-				.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
-				.where('FeatureName', 'like', `%${textToMatch}%`)
-				.whereNotNull('ThumbFile')
-				.orWhere('OriginalFileName', 'like', `%${textToMatch}%`)
-				.orWhere('Address', 'like', `%${textToMatch}%`)
-				.orWhere('Caption', 'like', `%${textToMatch}%`)
-				.orWhere('CO.Name', 'like', `%${textToMatch}%`)
-				.orWhere('PL.PrimaryName', 'like', `%${textToMatch}%`)
-				.orderBy('PH.RowId', 'asc')
-				.limit(limit)
-				.offset(offset);
-		} else {
-			counter = await db.from('dbo.photo').count('RowId', { as: 'count' });
+			if (textToMatch) {
+				const counterQuery = db
+					.from('dbo.photo as PH')
+					.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
+					.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
+					.where('PH.FeatureName', 'like', `%${textToMatch}%`)
+					.whereNotNull('ThumbFile')
+					.orWhere('PH.OriginalFileName', 'like', `%${textToMatch}%`)
+					.orWhere('PH.Address', 'like', `%${textToMatch}%`)
+					.orWhere('PH.Caption', 'like', `%${textToMatch}%`)
+					.orWhere('CO.Name', 'like', `%${textToMatch}%`)
+					.orWhere('PL.PrimaryName', 'like', `%${textToMatch}%`);
 
-			photos = await db
-				.select(
-					'PH.RowId',
-					'PH.Address',
-					'PH.Caption',
-					'PH.OriginalFileName',
-					'PH.FeatureName',
-					'PH.ThumbFile',
-					'CO.Name as CommunityName',
-					'PL.PrimaryName as PlaceName'
-				)
-				.from('dbo.photo as PH')
-				.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-				.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
-				.whereNotNull('ThumbFile')
-				.orderBy('PH.RowId', 'asc')
-				.limit(limit)
-				.offset(offset);
+				if (excludeIfHasPlaceId) {
+					counterQuery.whereNull('PH.PlaceId');
+				}
+
+				counter = await counterQuery.count('RowId', { as: 'count' });
+
+				const photosQuery = db
+					.column(
+						[
+							'RowId',
+							'PlaceId',
+							'Address',
+							'Caption',
+							'OriginalFileName',
+							'FeatureName',
+							'ThumbFile',
+						],
+						{ CommunityName: 'CO.Name' },
+						{ PlaceName: 'PL.PrimaryName' }
+					)
+					.select()
+					.from('dbo.photo as PH')
+					.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
+					.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
+					.where('FeatureName', 'like', `%${textToMatch}%`)
+					.whereNotNull('ThumbFile')
+					.orWhere('OriginalFileName', 'like', `%${textToMatch}%`)
+					.orWhere('Address', 'like', `%${textToMatch}%`)
+					.orWhere('Caption', 'like', `%${textToMatch}%`)
+					.orWhere('CO.Name', 'like', `%${textToMatch}%`)
+					.orWhere('PL.PrimaryName', 'like', `%${textToMatch}%`)
+					.orderBy('PH.RowId', 'asc')
+					.limit(limit)
+					.offset(offset);
+
+				if (excludeIfHasPlaceId) {
+					photosQuery.whereNull('PH.PlaceId');
+				}
+
+				photos = await photosQuery;
+			} else {
+				const counterQuery = db.from('dbo.photo as PH');
+
+				if (excludeIfHasPlaceId) {
+					counterQuery.whereNull('PH.PlaceId');
+				}
+
+				counter = await counterQuery.count('PH.RowId', { as: 'count' });
+
+				const photosQuery = db
+					.select(
+						'PH.RowId',
+						'PH.PlaceId',
+						'PH.Address',
+						'PH.Caption',
+						'PH.OriginalFileName',
+						'PH.FeatureName',
+						'PH.ThumbFile',
+						'CO.Name as CommunityName',
+						'PL.PrimaryName as PlaceName'
+					)
+					.from('dbo.photo as PH')
+					.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
+					.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
+					.whereNotNull('ThumbFile')
+					.orderBy('PH.RowId', 'asc')
+					.limit(limit)
+					.offset(offset);
+
+				if (excludeIfHasPlaceId) {
+					photosQuery.whereNull('PH.PlaceId');
+				}
+
+				photos = await photosQuery;
+			}
+			res.status(200).send({ count: counter[0].count, body: photos });
+		} catch (error) {
+			console.error(error);
+			res.status(500).send({ error: 'Failed to fetch photos' });
 		}
-		res.status(200).send({ count: counter[0].count, body: photos });
 	}
 );
 
