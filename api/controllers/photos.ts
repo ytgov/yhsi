@@ -1,8 +1,8 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response } from 'express';
 import { RequiresAuthentication } from '../middleware';
-import _ from "lodash";
-import { createThumbnail } from "../utils/image";
-import multer from "multer";
+import _ from 'lodash';
+import { createThumbnail } from '../utils/image';
+import multer from 'multer';
 
 var router = express.Router();
 
@@ -28,11 +28,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.count('RowId', { as: 'count' });
 
 		photos = await db
-			.column(
-				'PH.*',
-				{ CommunityName: 'CO.Name' },
-				{ PlaceName: 'PL.PrimaryName' }
-			)
+			.column('PH.*', { CommunityName: 'CO.Name' }, { PlaceName: 'PL.PrimaryName' })
 			.select()
 			.from('dbo.photo as PH')
 			.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
@@ -47,17 +43,10 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.limit(limit)
 			.offset(offset);
 	} else {
-		counter = await db
-			.from('dbo.photo')
-			.count('RowId', { as: 'count' })
-			.first();
+		counter = await db.from('dbo.photo').count('RowId', { as: 'count' }).first();
 
 		photos = await db
-			.column(
-				'PH.*',
-				{ CommunityName: 'CO.Name' },
-				{ PlaceName: 'PL.PrimaryName' }
-			)
+			.column('PH.*', { CommunityName: 'CO.Name' }, { PlaceName: 'PL.PrimaryName' })
 			.select()
 			.from('dbo.photo as PH')
 			.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
@@ -71,38 +60,31 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 });
 
 //LINK BOAT PHOTOS
-router.post(
-	'/boat/link/:BoatId',
-	RequiresAuthentication,
-	async (req: Request, res: Response) => {
-		const db = req.app.get('db');
+router.post('/boat/link/:BoatId', RequiresAuthentication, async (req: Request, res: Response) => {
+	const db = req.app.get('db');
 
-		const { BoatId } = req.params;
-		const { linkPhotos } = req.body;
+	const { BoatId } = req.params;
+	const { linkPhotos } = req.body;
 
-		let currentPhotos = await db
-			.select('Photo_RowID')
-			.from('boat.Photo')
-			.where('BoatId', BoatId);
-		let filteredLinkPhotos = _.difference(
-			linkPhotos,
-			currentPhotos.map((x: any) => {
-				return x.Photo_RowID;
-			})
-		);
+	const currentPhotos = await db.select('Photo_RowID').from('boat.Photo').where('BoatId', BoatId);
+	const filteredLinkPhotos = _.difference(
+		linkPhotos,
+		currentPhotos.map((x: any) => {
+			return x.Photo_RowID;
+		})
+	);
 
-		for (const rowId of filteredLinkPhotos) {
-			await db
-				.insert({ BoatId, Photo_RowID: rowId })
-				.into('boat.photo')
-				.returning('*')
-				.then((rows: any) => {
-					return rows;
-				});
-		}
-		res.status(200).send({ message: 'Successfully linked the photos' });
+	for (const rowId of filteredLinkPhotos) {
+		await db
+			.insert({ BoatId, Photo_RowID: rowId })
+			.into('boat.photo')
+			.returning('*')
+			.then((rows: any) => {
+				return rows;
+			});
 	}
-);
+	res.status(200).send({ message: 'Successfully linked the photos' });
+});
 
 //LINK PERSON PHOTOS
 router.post(
@@ -114,11 +96,11 @@ router.post(
 		const { PersonID } = req.params;
 		const { linkPhotos } = req.body;
 
-		let currentPhotos = await db
+		const currentPhotos = await db
 			.select('PhotoID')
 			.from('Person.Photo')
 			.where('PersonID', PersonID);
-		let filteredLinkPhotos = _.difference(
+		const filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x: any) => {
 				return x.Photo_RowID;
@@ -147,11 +129,11 @@ router.post(
 
 		const { AirCrashId } = req.params;
 		const { linkPhotos } = req.body;
-		let currentPhotos = await db
+		const currentPhotos = await db
 			.select('Photo_RowID')
 			.from('AirCrash.Photo')
 			.where('YACSINumber', AirCrashId);
-		let filteredLinkPhotos = _.difference(
+		const filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x: any) => {
 				return x.Photo_RowID;
@@ -172,72 +154,60 @@ router.post(
 );
 
 //GET BOAT PHOTOS
-router.get(
-	'/boat/:boatId',
-	RequiresAuthentication,
-	async (req: Request, res: Response) => {
-		const { boatId } = req.params;
+router.get('/boat/:boatId', RequiresAuthentication, async (req: Request, res: Response) => {
+	const { boatId } = req.params;
 
-		const db = req.app.get('db');
-		const { page = 0, limit = 10 } = req.query;
-		const offset = Number(page) * Number(limit) || 0;
+	const db = req.app.get('db');
+	const { page = 0, limit = 10 } = req.query;
+	const offset = Number(page) * Number(limit) || 0;
 
-		const photos = await db
-			.select('*')
-			.from('boat.photo as BP')
-			.join('dbo.photo', 'BP.Photo_RowID', '=', 'dbo.photo.RowID')
-			.where('BP.boatid', boatId)
-			.limit(limit)
-			.offset(offset);
+	const photos = await db
+		.select('*')
+		.from('boat.photo as BP')
+		.join('dbo.photo', 'BP.Photo_RowID', '=', 'dbo.photo.RowID')
+		.where('BP.boatid', boatId)
+		.limit(limit)
+		.offset(offset);
 
-		res.status(200).send(photos);
-	}
-);
+	res.status(200).send(photos);
+});
 
 // GET AIRCRASH PHOTOS
-router.get(
-	'/aircrash/:aircrashId',
-	RequiresAuthentication,
-	async (req: Request, res: Response) => {
-		const { aircrashId } = req.params;
+router.get('/aircrash/:aircrashId', RequiresAuthentication, async (req: Request, res: Response) => {
+	const { aircrashId } = req.params;
 
-		const db = req.app.get('db');
-		const { page = 0, limit = 10 } = req.query;
-		const offset = Number(page) * Number(limit) || 0;
+	const db = req.app.get('db');
+	const { page = 0, limit = 10 } = req.query;
+	const offset = Number(page) * Number(limit) || 0;
 
-		const photos = await db
-			.select('*')
-			.from('AirCrash.Photo as AP')
-			.join('dbo.photo', 'AP.Photo_RowID', '=', 'dbo.photo.RowID')
-			.where('AP.YACSINumber', aircrashId)
-			.limit(limit)
-			.offset(offset);
+	const photos = await db
+		.select('*')
+		.from('AirCrash.Photo as AP')
+		.join('dbo.photo', 'AP.Photo_RowID', '=', 'dbo.photo.RowID')
+		.where('AP.YACSINumber', aircrashId)
+		.limit(limit)
+		.offset(offset);
 
-		res.status(200).send(photos);
-	}
-);
+	res.status(200).send(photos);
+});
 
 //GET PERSON PHOTOS
-router.get(
-	'/people/:PersonID',
-	RequiresAuthentication,
-	async (req: Request, res: Response) => {
-		const { PersonID } = req.params;
+router.get('/people/:PersonID', RequiresAuthentication, async (req: Request, res: Response) => {
+	const { PersonID } = req.params;
 
-		const db = req.app.get('db');
-		const { page = 0, limit = 10 } = req.query;
-		const offset = Number(page) * Number(limit) || 0;
+	const db = req.app.get('db');
+	const { page = 0, limit = 10 } = req.query;
+	const offset = Number(page) * Number(limit) || 0;
 
-		const photos = await db
-			.select('*')
-			.from('Person.Photo as PP')
-			.join('dbo.photo', 'PP.PhotoID', '=', 'dbo.photo.RowID')
-			.where('PP.PersonID', PersonID)
-			.limit(limit)
-			.offset(offset);
-		res.status(200).send(photos);
-	}
-);
+	const photos = await db
+		.select('*')
+		.from('Person.Photo as PP')
+		.join('dbo.photo', 'PP.PhotoID', '=', 'dbo.photo.RowID')
+		.where('PP.PersonID', PersonID)
+		.limit(limit)
+		.offset(offset);
+	res.status(200).send(photos);
+});
 
 // ADD NEW BOAT PHOTO
 router.post(
