@@ -559,7 +559,7 @@ export default {
 					x.selected = false;
 					return x;
 				});
-				this.numberOfPages = Math.round(resp.count / 6);
+				this.numberOfPages = Math.ceil(resp.count / 6);
 				this.showSkeletons = false;
 			}
 		},
