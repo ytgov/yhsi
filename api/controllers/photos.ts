@@ -59,6 +59,36 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 	res.status(200).send({ count: counter, body: photos });
 });
 
+//LINK PLACE (aka site) PHOTOS
+router.post('/place/link/:PlaceId', RequiresAuthentication, async (req: Request, res: Response) => {
+	try {
+		const db = req.app.get('db');
+
+		const { PlaceId } = req.params;
+		const { linkPhotos } = req.body;
+
+		const currentPhotosForPlace = await db
+			.select('PhotoId')
+			.from('dbo.Photo')
+			.where('PlaceId', PlaceId);
+
+		const filteredLinkPhotos = _.difference(
+			linkPhotos,
+			currentPhotosForPlace.map((x: any) => {
+				return x.PhotoId;
+			})
+		);
+
+		for (const rowId of filteredLinkPhotos) {
+			console.log('LINKING', { rowId });
+		}
+		res.status(200).send({ message: 'Successfully linked the photos' });
+	} catch (error) {
+		console.error(error);
+		res.status(500).send({ message: 'Failed to link photos' });
+	}
+});
+
 //LINK BOAT PHOTOS
 router.post('/boat/link/:BoatId', RequiresAuthentication, async (req: Request, res: Response) => {
 	const db = req.app.get('db');

@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { DB_CONFIG } from '../config';
 import { createThumbnail } from '../utils/image';
 import knex from 'knex';
-import { ReturnValidationErrors } from '../middleware';
+import { ReturnValidationErrors, RequiresAuthentication } from '../middleware';
 import { param, query } from 'express-validator';
 import * as multer from 'multer';
 import _ from 'lodash';
@@ -120,6 +120,39 @@ photosExtraRouter.get(
 		} catch (error) {
 			console.error(error);
 			res.status(500).send({ error: 'Failed to fetch photos' });
+		}
+	}
+);
+
+//LINK PLACE (aka site) PHOTOS
+photosExtraRouter.post(
+	'/place/link/:PlaceId',
+	RequiresAuthentication,
+	async (req: Request, res: Response) => {
+		try {
+			const { PlaceId } = req.params;
+			const { linkPhotos } = req.body;
+
+			const currentPhotosForPlace = await db
+				.select('RowId', 'PlaceId')
+				.from('dbo.Photo')
+				.where('PlaceId', PlaceId);
+
+			const filteredLinkPhotos = _.difference(
+				linkPhotos,
+				currentPhotosForPlace.map((x: any) => {
+					return x.RowId;
+				})
+			);
+
+			for (const rowId of filteredLinkPhotos) {
+				console.log('LINKING', { rowId });
+				await db('dbo.Photo').where('RowId', rowId).update({ PlaceId: PlaceId });
+			}
+			res.status(200).send({ message: 'Successfully linked the photos' });
+		} catch (error) {
+			console.error(error);
+			res.status(500).send({ message: 'Failed to link photos' });
 		}
 	}
 );
