@@ -35,8 +35,19 @@ export class PhotoService {
 		return this.knex('photo')
 			.select<Photo[]>(PHOTO_FIELDS)
 			.where({ placeId: id })
-			.catch((err: any) => {
-				//console.log('BOMBED', err);
+			.catch((err) => {
+				console.error(err);
+				return new Array<Photo>();
+			});
+	}
+
+	// actually getAllWithoutSite
+	async getAllWithoutPlace(): Promise<Photo[]> {
+		return this.knex('photo')
+			.select<Photo[]>(PHOTO_FIELDS)
+			.where({ placeId: null })
+			.catch((err) => {
+				console.error(err);
 				return new Array<Photo>();
 			});
 	}
@@ -46,8 +57,8 @@ export class PhotoService {
 		return this.knex('photo')
 			.select<Photo[]>(PHOTO_FIELDS)
 			.where({ placeId: id })
-			.catch((err: any) => {
-				console.log('BOMBED', err);
+			.catch((err) => {
+				console.error(err);
 				return new Array<Photo>();
 			});
 	}
@@ -59,8 +70,8 @@ export class PhotoService {
 				this.on('PH.placeId', '=', 'place.id');
 			})
 			.where({ showInRegister: true })
-			.catch((err: any) => {
-				//console.log('BOMBED', err);
+			.catch((err) => {
+				console.error(err);
 				return new Array<Photo>();
 			});
 	}
@@ -70,8 +81,8 @@ export class PhotoService {
 			.select<Photo>('file')
 			.where({ rowId: id })
 			.first()
-			.catch((err: any) => {
-				console.log('BOMBED', err);
+			.catch((err) => {
+				console.error(err);
 				return undefined;
 			});
 	}
@@ -81,8 +92,8 @@ export class PhotoService {
 			.select<Photo>('thumbFile')
 			.where({ rowId: id })
 			.first()
-			.catch((err: any) => {
-				console.log('BOMBED', err);
+			.catch((err) => {
+				console.error(err);
 				return undefined;
 			});
 	}
