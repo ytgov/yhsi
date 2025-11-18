@@ -21,9 +21,10 @@ photosExtraRouter.get(
 		const { textToMatch } = req.query;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
+		const offset = (page - 1) * limit;
 		let counter = [{ count: 0 }];
 		let photos = [];
+
 		if (textToMatch) {
 			counter = await db
 				.from('dbo.photo as PH')
@@ -62,12 +63,16 @@ photosExtraRouter.get(
 			counter = await db.from('dbo.photo').count('RowId', { as: 'count' });
 
 			photos = await db
-				.column(
-					['RowId', 'Address', 'Caption', 'OriginalFileName', 'FeatureName', 'ThumbFile'],
-					{ CommunityName: 'CO.Name' },
-					{ PlaceName: 'PL.PrimaryName' }
+				.select(
+					'PH.RowId',
+					'PH.Address',
+					'PH.Caption',
+					'PH.OriginalFileName',
+					'PH.FeatureName',
+					'PH.ThumbFile',
+					'CO.Name as CommunityName',
+					'PL.PrimaryName as PlaceName'
 				)
-				.select()
 				.from('dbo.photo as PH')
 				.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
 				.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
@@ -90,8 +95,8 @@ photosExtraRouter.post(
 		const { BoatId } = req.params;
 		const { linkPhotos } = req.body;
 
-		let currentPhotos = await db.select('Photo_RowID').from('boat.Photo').where('BoatId', BoatId);
-		let filteredLinkPhotos = _.difference(
+		const currentPhotos = await db.select('Photo_RowID').from('boat.Photo').where('BoatId', BoatId);
+		const filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x) => {
 				return x.Photo_RowID;
@@ -124,11 +129,11 @@ photosExtraRouter.post(
 
 		const { AirCrashId } = req.params;
 		const { linkPhotos } = req.body;
-		let currentPhotos = await db
+		const currentPhotos = await db
 			.select('Photo_RowID')
 			.from('AirCrash.Photo')
 			.where('YACSINumber', AirCrashId);
-		let filteredLinkPhotos = _.difference(
+		const filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x) => {
 				return x.Photo_RowID;
@@ -158,11 +163,11 @@ photosExtraRouter.post(
 		const { placeId } = req.params;
 		const { linkPhotos } = req.body;
 
-		let currentPhotos = await db
+		const currentPhotos = await db
 			.select('Photo_RowID')
 			.from('place.Photo')
 			.where('placeId', placeId);
-		let filteredLinkPhotos = _.difference(
+		const filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x) => {
 				return x.Photo_RowID;
