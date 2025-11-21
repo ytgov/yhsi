@@ -472,10 +472,21 @@
 				<h1>Photos</h1>
 				<hr />
 				<table class='infoTable' border='0' cellspacing='0' cellpadding='0'>
-					<tr>
-						<td>
-						</td>
-					</tr>
+					{{#each photos}}
+						<tr>
+							<td>
+								<img src='{{dataUri}}' style='border: 1px solid black;' />
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<strong>File Name</strong><div class='box'>{{originalFileName}}</div>
+								<strong>Feature Name</strong><div class='box'>{{featureName}}</div>
+								<strong>Date Created</strong><div class='box'>{{dateCreated}}</div>
+								<strong>Date Photo Taken</strong><div class='box'>{{datePhotoTaken}}</div>
+							</td>
+						</tr>
+					{{/each}}
 				</table>
 			</div>
 		{{/if}}
