@@ -64,7 +64,7 @@ photoRouter.get(
 
 photoRouter.post(
 	'/search',
-	[body('page').isUUID().default(1)],
+	[body('page').isInt().default(1)],
 	async (req: Request, res: Response) => {
 		const { query, sort, page } = req.body;
 
@@ -280,7 +280,7 @@ photoRouter.put(
 	'/:id',
 	multer().single('file'),
 	[
-		check('id').notEmpty().isInt(),
+		check('id').notEmpty().isUUID(),
 		body('communityId').notEmpty().bail().isInt(),
 		body('isOtherRecord').notEmpty().bail().isBoolean(),
 		body('originalMediaId').notEmpty().bail().isInt(),
@@ -351,7 +351,7 @@ photoRouter.put(
 photoRouter.post(
 	'/saved-filter',
 	[
-		body('userId').notEmpty().isUUID(),
+		body('userId').notEmpty().isInt(),
 		body('name').notEmpty().bail().isString(),
 		body('resultType').notEmpty().bail().isString(),
 		body('value').notEmpty().bail().isString(),
@@ -378,7 +378,7 @@ photoRouter.post(
 
 photoRouter.delete(
 	'/saved-filter/:id',
-	[check('id').isUUID().notEmpty()],
+	[check('id').isInt().notEmpty()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
@@ -394,7 +394,7 @@ photoRouter.delete(
 
 photoRouter.get(
 	'/saved-filter/user/:id',
-	[check('id').notEmpty().isUUID()],
+	[check('id').notEmpty().isInt()],
 	async (req: Request, res: Response) => {
 		const errors = validationResult(req);
 
