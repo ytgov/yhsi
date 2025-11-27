@@ -164,6 +164,42 @@ export default {
 
 			commit('setLoading', false);
 		},
+		async savePhoto({ commit, state }, data) {
+			commit('setLoading', true);
+
+			const formData = new FormData();
+			formData.append('caption', data.caption || '');
+			formData.append('comments', data.comments || '');
+			formData.append('creditLine', data.creditLine || '');
+			formData.append('featureName', data.featureName || '');
+			formData.append('yhsiRecord', state.place.yHSIId);
+			formData.append('ntsMapNumber', state.place.nTSMapSheet);
+			formData.append('file', data.file);
+			formData.append('location', data.location || '');
+			formData.append('communityId', state.place.communityId);
+			formData.append('isOtherRecord', false);
+			formData.append('originalMediaId', 1); // ditital
+			formData.append('mediaStorage', 4); // database
+			formData.append('copyright', 6); // incomplete
+			formData.append('ownerId', 1); // historic sites
+			formData.append('photoProjectId', 79); // none selected
+			formData.append('program', 4); // YHSI
+			formData.append('isComplete', false);
+			formData.append('rating', 1);
+			formData.append('isSiteDefault', false);
+			formData.append('isPrivate', data.isPrivate || false);
+
+			await api
+				.uploadPhoto(state.place.id, formData)
+				.then((resp) => {
+					console.log(resp);
+				})
+				.catch((err) => {
+					console.log('ERRROR', err);
+				});
+
+			commit('setLoading', false);
+		},
 		delete({ commit }, placeId) {
 			commit('setLoading', true);
 			return api

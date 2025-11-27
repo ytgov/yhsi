@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { DB_CONFIG } from '../config';
 import { createThumbnail } from '../utils/image';
 import knex from 'knex';
-import { ReturnValidationErrors } from '../middleware';
+import { ReturnValidationErrors, RequiresAuthentication } from '../middleware';
 import { param, query } from 'express-validator';
 import * as multer from 'multer';
 import _ from 'lodash';
@@ -15,85 +15,145 @@ const upload = multer.default();
 //GET ALL AVAILABLE PHOTOS
 photosExtraRouter.get(
 	'/',
-	[
-		query('page').default(0).isInt(),
-		query('limit').default(10).isInt({ gt: 0 }),
-	],
+	[query('page').default(0).isInt(), query('limit').default(10).isInt({ gt: 0 })],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { textToMatch } = req.query;
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
-		let counter = [{ count: 0 }];
-		let photos = [];
-		if (textToMatch) {
-			counter = await db
-				.from('dbo.photo as PH')
-				.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-				.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
-				.where('PH.FeatureName', 'like', `%${textToMatch}%`)
-				.whereNotNull('ThumbFile')
-				.orWhere('PH.OriginalFileName', 'like', `%${textToMatch}%`)
-				.orWhere('PH.Address', 'like', `%${textToMatch}%`)
-				.orWhere('PH.Caption', 'like', `%${textToMatch}%`)
-				.orWhere('CO.Name', 'like', `%${textToMatch}%`)
-				.orWhere('PL.PrimaryName', 'like', `%${textToMatch}%`)
-				.count('RowId', { as: 'count' });
+		try {
+			const { textToMatch } = req.query;
+			const page = parseInt(req.query.page as string);
+			const limit = parseInt(req.query.limit as string);
+			const offset = (page - 1) * limit;
+			let counter = [{ count: 0 }];
+			let photos = [];
 
-			photos = await db
-				.column(
-					[
-						'RowId',
-						'Address',
-						'Caption',
-						'OriginalFileName',
-						'FeatureName',
-						'ThumbFile',
-					],
-					{ CommunityName: 'CO.Name' },
-					{ PlaceName: 'PL.PrimaryName' }
-				)
-				.select()
-				.from('dbo.photo as PH')
-				.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-				.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
-				.where('FeatureName', 'like', `%${textToMatch}%`)
-				.whereNotNull('ThumbFile')
-				.orWhere('OriginalFileName', 'like', `%${textToMatch}%`)
-				.orWhere('Address', 'like', `%${textToMatch}%`)
-				.orWhere('Caption', 'like', `%${textToMatch}%`)
-				.orWhere('CO.Name', 'like', `%${textToMatch}%`)
-				.orWhere('PL.PrimaryName', 'like', `%${textToMatch}%`)
-				.orderBy('PH.RowId', 'asc')
-				.limit(limit)
-				.offset(offset);
-		} else {
-			counter = await db.from('dbo.photo').count('RowId', { as: 'count' });
+			const excludeIfHasPlaceId = req.query.excludeIfHasPlaceId;
 
-			photos = await db
-				.column(
-					[
-						'RowId',
-						'Address',
-						'Caption',
-						'OriginalFileName',
-						'FeatureName',
-						'ThumbFile',
-					],
-					{ CommunityName: 'CO.Name' },
-					{ PlaceName: 'PL.PrimaryName' }
-				)
-				.select()
-				.from('dbo.photo as PH')
-				.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
-				.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
-				.whereNotNull('ThumbFile')
-				.orderBy('PH.RowId', 'asc')
-				.limit(limit)
-				.offset(offset);
+			if (textToMatch) {
+				const counterQuery = db
+					.from('dbo.photo as PH')
+					.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
+					.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
+					.where('PH.FeatureName', 'like', `%${textToMatch}%`)
+					.whereNotNull('ThumbFile')
+					.orWhere('PH.OriginalFileName', 'like', `%${textToMatch}%`)
+					.orWhere('PH.Address', 'like', `%${textToMatch}%`)
+					.orWhere('PH.Caption', 'like', `%${textToMatch}%`)
+					.orWhere('CO.Name', 'like', `%${textToMatch}%`)
+					.orWhere('PL.PrimaryName', 'like', `%${textToMatch}%`);
+
+				if (excludeIfHasPlaceId) {
+					counterQuery.whereNull('PH.PlaceId');
+				}
+
+				counter = await counterQuery.count('RowId', { as: 'count' });
+
+				const photosQuery = db
+					.column(
+						[
+							'RowId',
+							'PlaceId',
+							'Address',
+							'Caption',
+							'OriginalFileName',
+							'FeatureName',
+							'ThumbFile',
+						],
+						{ CommunityName: 'CO.Name' },
+						{ PlaceName: 'PL.PrimaryName' }
+					)
+					.select()
+					.from('dbo.photo as PH')
+					.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
+					.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
+					.where('FeatureName', 'like', `%${textToMatch}%`)
+					.whereNotNull('ThumbFile')
+					.orWhere('OriginalFileName', 'like', `%${textToMatch}%`)
+					.orWhere('Address', 'like', `%${textToMatch}%`)
+					.orWhere('Caption', 'like', `%${textToMatch}%`)
+					.orWhere('CO.Name', 'like', `%${textToMatch}%`)
+					.orWhere('PL.PrimaryName', 'like', `%${textToMatch}%`)
+					.orderBy('PH.RowId', 'asc')
+					.limit(limit)
+					.offset(offset);
+
+				if (excludeIfHasPlaceId) {
+					photosQuery.whereNull('PH.PlaceId');
+				}
+
+				photos = await photosQuery;
+			} else {
+				const counterQuery = db.from('dbo.photo as PH');
+
+				if (excludeIfHasPlaceId) {
+					counterQuery.whereNull('PH.PlaceId');
+				}
+
+				counter = await counterQuery.count('PH.RowId', { as: 'count' });
+
+				const photosQuery = db
+					.select(
+						'PH.RowId',
+						'PH.PlaceId',
+						'PH.Address',
+						'PH.Caption',
+						'PH.OriginalFileName',
+						'PH.FeatureName',
+						'PH.ThumbFile',
+						'CO.Name as CommunityName',
+						'PL.PrimaryName as PlaceName'
+					)
+					.from('dbo.photo as PH')
+					.join('dbo.Community as CO', 'PH.CommunityId', '=', 'CO.Id')
+					.leftOuterJoin('dbo.Place as PL', 'PH.PlaceId', 'PL.Id')
+					.whereNotNull('ThumbFile')
+					.orderBy('PH.RowId', 'asc')
+					.limit(limit)
+					.offset(offset);
+
+				if (excludeIfHasPlaceId) {
+					photosQuery.whereNull('PH.PlaceId');
+				}
+
+				photos = await photosQuery;
+			}
+			res.status(200).send({ count: counter[0].count, body: photos });
+		} catch (error) {
+			console.error(error);
+			res.status(500).send({ error: 'Failed to fetch photos' });
 		}
-		res.status(200).send({ count: counter[0].count, body: photos });
+	}
+);
+
+//LINK PLACE (aka site) PHOTOS
+photosExtraRouter.post(
+	'/place/link/:PlaceId',
+	RequiresAuthentication,
+	async (req: Request, res: Response) => {
+		try {
+			const { PlaceId } = req.params;
+			const { linkPhotos } = req.body;
+
+			const currentPhotosForPlace = await db
+				.select('RowId', 'PlaceId')
+				.from('dbo.Photo')
+				.where('PlaceId', PlaceId);
+
+			const filteredLinkPhotos = _.difference(
+				linkPhotos,
+				currentPhotosForPlace.map((x: any) => {
+					return x.RowId;
+				})
+			);
+
+			for (const rowId of filteredLinkPhotos) {
+				console.log('LINKING', { rowId });
+				await db('dbo.Photo').where('RowId', rowId).update({ PlaceId: PlaceId });
+			}
+			res.status(200).send({ message: 'Successfully linked the photos' });
+		} catch (error) {
+			console.error(error);
+			res.status(500).send({ message: 'Failed to link photos' });
+		}
 	}
 );
 
@@ -107,11 +167,8 @@ photosExtraRouter.post(
 		const { BoatId } = req.params;
 		const { linkPhotos } = req.body;
 
-		let currentPhotos = await db
-			.select('Photo_RowID')
-			.from('boat.Photo')
-			.where('BoatId', BoatId);
-		let filteredLinkPhotos = _.difference(
+		const currentPhotos = await db.select('Photo_RowID').from('boat.Photo').where('BoatId', BoatId);
+		const filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x) => {
 				return x.Photo_RowID;
@@ -144,11 +201,11 @@ photosExtraRouter.post(
 
 		const { AirCrashId } = req.params;
 		const { linkPhotos } = req.body;
-		let currentPhotos = await db
+		const currentPhotos = await db
 			.select('Photo_RowID')
 			.from('AirCrash.Photo')
 			.where('YACSINumber', AirCrashId);
-		let filteredLinkPhotos = _.difference(
+		const filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x) => {
 				return x.Photo_RowID;
@@ -178,11 +235,11 @@ photosExtraRouter.post(
 		const { placeId } = req.params;
 		const { linkPhotos } = req.body;
 
-		let currentPhotos = await db
+		const currentPhotos = await db
 			.select('Photo_RowID')
 			.from('place.Photo')
 			.where('placeId', placeId);
-		let filteredLinkPhotos = _.difference(
+		const filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x) => {
 				return x.Photo_RowID;
@@ -199,6 +256,29 @@ photosExtraRouter.post(
 				});
 
 		res.status(200).send({ message: 'Successfully linked the photos' });
+	}
+);
+
+//GET Place(site) photos
+photosExtraRouter.get(
+	'/place/:placeId',
+	[param('placeId').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { placeId } = req.params;
+
+		const page = parseInt(req.query.page as string);
+		const limit = parseInt(req.query.limit as string);
+		const offset = page * limit || 0;
+
+		const photos = await db
+			.select('*')
+			.from('Photo')
+			.where('Photo.PlaceId', placeId)
+			.limit(limit)
+			.offset(offset);
+
+		res.status(200).send(photos);
 	}
 );
 
@@ -354,48 +434,44 @@ photosExtraRouter.get(
 );
 
 // ADD NEW BOAT PHOTO
-photosExtraRouter.post(
-	'/boat',
-	[upload.single('file')],
-	async (req: Request, res: Response) => {
-		/* const db = req.app.get('db');
+photosExtraRouter.post('/boat', [upload.single('file')], async (req: Request, res: Response) => {
+	/* const db = req.app.get('db');
   
     const permissions = req.decodedToken['yg-claims'].permissions;
     if (!permissions.includes('create')) res.sendStatus(403); */
 
-		const { boatId, ...restBody } = req.body;
-		const ThumbFile = await createThumbnail(req.file.buffer);
-		const DateCreated = new Date();
-		const OriginalFileName = req.file.originalname;
+	const { boatId, ...restBody } = req.body;
+	const ThumbFile = await createThumbnail(req.file.buffer);
+	const DateCreated = new Date();
+	const OriginalFileName = req.file.originalname;
 
-		const body = {
-			File: req.file.buffer,
-			ThumbFile,
-			DateCreated,
-			OriginalFileName,
-			...restBody,
-		};
+	const body = {
+		File: req.file.buffer,
+		ThumbFile,
+		DateCreated,
+		OriginalFileName,
+		...restBody,
+	};
 
-		const response = await db
-			.insert(body)
-			.into('dbo.photo')
-			.returning('*')
-			.then(async (rows) => {
-				const newBoatPhoto = rows[0];
+	const response = await db
+		.insert(body)
+		.into('dbo.photo')
+		.returning('*')
+		.then(async (rows) => {
+			const newBoatPhoto = rows[0];
 
-				await db
-					.insert({ boatId, Photo_RowID: newBoatPhoto.RowId })
-					.into('boat.photo')
-					.returning('*')
-					.then((rows) => {
-						return rows;
-					});
+			await db
+				.insert({ boatId, Photo_RowID: newBoatPhoto.RowId })
+				.into('boat.photo')
+				.returning('*')
+				.then((rows) => {
+					return rows;
+				});
 
-				return newBoatPhoto;
-			});
-		res.status(200).send({ message: 'Upload Success' });
-	}
-);
+			return newBoatPhoto;
+		});
+	res.status(200).send({ message: 'Upload Success' });
+});
 
 // ADD NEW AIRCRASH PHOTO
 photosExtraRouter.post(
@@ -482,43 +558,39 @@ photosExtraRouter.post(
 );
 
 // Add ytplace photo
-photosExtraRouter.post(
-	'/ytplace',
-	[upload.single('file')],
-	async (req: Request, res: Response) => {
-		const { placeId, ...restBody } = req.body;
-		const ThumbFile = await createThumbnail(req.file.buffer);
-		const DateCreated = new Date();
-		const OriginalFileName = req.file.originalname;
+photosExtraRouter.post('/ytplace', [upload.single('file')], async (req: Request, res: Response) => {
+	const { placeId, ...restBody } = req.body;
+	const ThumbFile = await createThumbnail(req.file.buffer);
+	const DateCreated = new Date();
+	const OriginalFileName = req.file.originalname;
 
-		const body = {
-			File: req.file.buffer,
-			ThumbFile,
-			DateCreated,
-			OriginalFileName,
-			...restBody,
-		};
+	const body = {
+		File: req.file.buffer,
+		ThumbFile,
+		DateCreated,
+		OriginalFileName,
+		...restBody,
+	};
 
-		const response = await db
-			.insert(body)
-			.into('dbo.photo')
-			.returning('*')
-			.then(async (rows) => {
-				const newPlacePhoto = rows[0];
+	const response = await db
+		.insert(body)
+		.into('dbo.photo')
+		.returning('*')
+		.then(async (rows) => {
+			const newPlacePhoto = rows[0];
 
-				await db
-					.insert({ placeId, Photo_RowID: newPlacePhoto.RowId })
-					.into('place.photo')
-					.returning('*')
-					.then((rows) => {
-						return rows;
-					});
+			await db
+				.insert({ placeId, Photo_RowID: newPlacePhoto.RowId })
+				.into('place.photo')
+				.returning('*')
+				.then((rows) => {
+					return rows;
+				});
 
-				return newPlacePhoto;
-			});
-		res.status(200).send({ message: 'Upload Success' });
-	}
-);
+			return newPlacePhoto;
+		});
+	res.status(200).send({ message: 'Upload Success' });
+});
 
 // LINK BURIAL PHOTOS
 photosExtraRouter.post(
@@ -656,10 +728,7 @@ photosExtraRouter.post(
 	async (req: Request, res: Response) => {
 		const { personID } = req.params;
 		const { linkPhotos } = req.body;
-		let currentPhotos = await db
-			.select('PhotoID')
-			.from('Person.Photo')
-			.where('PersonID', personID);
+		let currentPhotos = await db.select('PhotoID').from('Person.Photo').where('PersonID', personID);
 		let filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x) => {
@@ -680,32 +749,28 @@ photosExtraRouter.post(
 );
 
 // ADD NEW BOAT PHOTO
-photosExtraRouter.post(
-	'/boat',
-	[upload.single('file')],
-	async (req: Request, res: Response) => {
-		const { burialId, ...restBody } = req.body;
-		const ThumbFile = await createThumbnail(req.file.buffer);
+photosExtraRouter.post('/boat', [upload.single('file')], async (req: Request, res: Response) => {
+	const { burialId, ...restBody } = req.body;
+	const ThumbFile = await createThumbnail(req.file.buffer);
 
-		const body = { File: req.file.buffer, ThumbFile, ...restBody };
+	const body = { File: req.file.buffer, ThumbFile, ...restBody };
 
-		const response = await db
-			.insert(body)
-			.into('dbo.photo')
-			.returning('*')
-			.then(async (rows) => {
-				const newBurialPhoto = rows[0];
+	const response = await db
+		.insert(body)
+		.into('dbo.photo')
+		.returning('*')
+		.then(async (rows) => {
+			const newBurialPhoto = rows[0];
 
-				await db
-					.insert({ burialId, Photo_RowID: newBurialPhoto.RowId })
-					.into('Burial.Photo')
-					.returning('*')
-					.then((rows) => {
-						return rows;
-					});
+			await db
+				.insert({ burialId, Photo_RowID: newBurialPhoto.RowId })
+				.into('Burial.Photo')
+				.returning('*')
+				.then((rows) => {
+					return rows;
+				});
 
-				return newBurialPhoto;
-			});
-		res.status(200).send({ message: 'Upload Success' });
-	}
-);
+			return newBurialPhoto;
+		});
+	res.status(200).send({ message: 'Upload Success' });
+});

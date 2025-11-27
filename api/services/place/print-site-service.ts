@@ -1,4 +1,4 @@
-import { isNil, isString } from 'lodash';
+import { isNil, isString, isUndefined } from 'lodash';
 import fs from 'fs';
 import { create } from 'handlebars';
 import knex from 'knex';
@@ -22,9 +22,11 @@ import {
 	SITE_STATUS_TYPES,
 	WEB_LINK_TYPES,
 } from '../../models';
+import { PhotoService } from '../photo-service';
 import BaseService from '../base-service';
 
 const db = knex(DB_CONFIG);
+const photoService = new PhotoService(DB_CONFIG);
 
 export class PrintSiteService extends BaseService {
 	constructor(
@@ -54,6 +56,7 @@ export class PrintSiteService extends BaseService {
 		const template = h.compile(PDF_TEMPLATE.toString(), {});
 
 		const {
+			id: placeId,
 			primaryName,
 			names,
 			historicalPatterns,
@@ -179,6 +182,18 @@ export class PrintSiteService extends BaseService {
 			secondaryStatuteHandlebarData = await this.makeStatuteHandlebarData(this.place.statute2Id);
 		}
 
+		let photos: any[] = [];
+		if (includePhotosSection && !isUndefined(placeId)) {
+			photos = await photoService.getAllForPlace(placeId);
+		}
+		//console.log(photos[0]);
+		const photosWithDataUris = photos
+			.filter((photo) => photo.ThumbFile && Buffer.isBuffer(photo.ThumbFile))
+			.map((photo) => ({
+				...photo,
+				dataUri: `data:image/jpeg;base64,${photo.ThumbFile.toString('base64')}`,
+			}));
+
 		const handlebarsData = {
 			includeSummarySection,
 			includeLocationSection,
@@ -266,6 +281,7 @@ export class PrintSiteService extends BaseService {
 			statute: statuteHandlebarData,
 			secondaryStatute: secondaryStatuteHandlebarData,
 			descriptions: descriptionsHandlebarData,
+			photos: photosWithDataUris,
 		};
 
 		return template(handlebarsData);

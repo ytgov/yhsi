@@ -30,23 +30,35 @@ export class PhotoService {
 			});
 	}
 
+	// actually getAllForSite
 	async getAllForPlace(id: number): Promise<Photo[]> {
 		return this.knex('photo')
 			.select<Photo[]>(PHOTO_FIELDS)
-			.limit(4)
 			.where({ placeId: id })
-			.catch((err: any) => {
-				//console.log('BOMBED', err);
+			.catch((err) => {
+				console.error(err);
 				return new Array<Photo>();
 			});
 	}
 
+	// actually getAllWithoutSite
+	async getAllWithoutPlace(): Promise<Photo[]> {
+		return this.knex('photo')
+			.select<Photo[]>(PHOTO_FIELDS)
+			.where({ placeId: null })
+			.catch((err) => {
+				console.error(err);
+				return new Array<Photo>();
+			});
+	}
+
+	// actually getForSite
 	async getForPlace(id: number): Promise<Photo[]> {
 		return this.knex('photo')
 			.select<Photo[]>(PHOTO_FIELDS)
 			.where({ placeId: id })
-			.catch((err: any) => {
-				console.log('BOMBED', err);
+			.catch((err) => {
+				console.error(err);
 				return new Array<Photo>();
 			});
 	}
@@ -58,8 +70,8 @@ export class PhotoService {
 				this.on('PH.placeId', '=', 'place.id');
 			})
 			.where({ showInRegister: true })
-			.catch((err: any) => {
-				//console.log('BOMBED', err);
+			.catch((err) => {
+				console.error(err);
 				return new Array<Photo>();
 			});
 	}
@@ -69,8 +81,8 @@ export class PhotoService {
 			.select<Photo>('file')
 			.where({ rowId: id })
 			.first()
-			.catch((err: any) => {
-				console.log('BOMBED', err);
+			.catch((err) => {
+				console.error(err);
 				return undefined;
 			});
 	}
@@ -80,8 +92,8 @@ export class PhotoService {
 			.select<Photo>('thumbFile')
 			.where({ rowId: id })
 			.first()
-			.catch((err: any) => {
-				console.log('BOMBED', err);
+			.catch((err) => {
+				console.error(err);
 				return undefined;
 			});
 	}
@@ -106,10 +118,7 @@ export class PhotoService {
 	}
 
 	async updatePhoto(id: string, item: Photo): Promise<Photo | undefined> {
-		return this.knex('photo')
-			.where({ rowId: id })
-			.update(item)
-			.returning<Photo>(PHOTO_FIELDS);
+		return this.knex('photo').where({ rowId: id }).update(item).returning<Photo>(PHOTO_FIELDS);
 	}
 
 	async doSearch(
@@ -171,21 +180,13 @@ export class PhotoService {
 							break;
 						}
 						case 'contains': {
-							selectStmt.whereRaw(
-								`LOWER(${stmt.field}) like '%${stmt.value.toLowerCase()}%'`
-							);
-							countStmt.whereRaw(
-								`LOWER(${stmt.field}) like '%${stmt.value.toLowerCase()}%'`
-							);
+							selectStmt.whereRaw(`LOWER(${stmt.field}) like '%${stmt.value.toLowerCase()}%'`);
+							countStmt.whereRaw(`LOWER(${stmt.field}) like '%${stmt.value.toLowerCase()}%'`);
 							break;
 						}
 						case 'notcontains': {
-							selectStmt.whereRaw(
-								`LOWER(${stmt.field}) not like '%${stmt.value.toLowerCase()}%'`
-							);
-							countStmt.whereRaw(
-								`LOWER(${stmt.field}) not like '%${stmt.value.toLowerCase()}%'`
-							);
+							selectStmt.whereRaw(`LOWER(${stmt.field}) not like '%${stmt.value.toLowerCase()}%'`);
+							countStmt.whereRaw(`LOWER(${stmt.field}) not like '%${stmt.value.toLowerCase()}%'`);
 							break;
 						}
 						default: {
@@ -223,10 +224,7 @@ export class PhotoService {
 			let page_count = Math.ceil(count / page_size);
 			let fields = _.clone(PHOTO_FIELDS);
 			fields.push('thumbFile');
-			let data = await selectStmt
-				.select<Photo[]>(fields)
-				.offset(skip)
-				.limit(take);
+			let data = await selectStmt.select<Photo[]>(fields).offset(skip).limit(take);
 			let results = {
 				data,
 				meta: { page, page_size, item_count: count, page_count },
@@ -261,10 +259,7 @@ export class PhotoService {
 		return this.knex('photo').where({ rowId: id }).update({ File: loadFile });
 	}
 
-	async updateThumbFile(
-		id: string,
-		thumbnail: Buffer
-	): Promise<Photo | undefined> {
+	async updateThumbFile(id: string, thumbnail: Buffer): Promise<Photo | undefined> {
 		return this.knex('photo')
 			.where({ rowId: id })
 			.update({ ThumbFile: thumbnail })
@@ -276,12 +271,7 @@ export class PhotoService {
 			.where('RowID', id)
 			.join('dbo.place as PL', 'PL.id', '=', 'photo.placeId')
 			.leftOuterJoin('community', 'community.id', 'PL.communityid')
-			.select([
-				'PL.id',
-				'PL.primaryName',
-				'PL.yHSIId',
-				'community.name as communityName',
-			])
+			.select(['PL.id', 'PL.primaryName', 'PL.yHSIId', 'community.name as communityName'])
 			.catch((err: any) => {
 				//console.log('BOMBED', err);
 				return undefined;
@@ -374,16 +364,10 @@ export class PhotoService {
 	}
 
 	async deleteBoatAssociation(id: string, boatId: string): Promise<any> {
-		return this.knex('boat.photo')
-			.where({ photo_RowId: id })
-			.where({ boatId: boatId })
-			.delete();
+		return this.knex('boat.photo').where({ photo_RowId: id }).where({ boatId: boatId }).delete();
 	}
 
-	async deleteAircrashAssociation(
-		id: string,
-		yacsinumber: string
-	): Promise<any> {
+	async deleteAircrashAssociation(id: string, yacsinumber: string): Promise<any> {
 		return this.knex('aircrash.photo')
 			.where({ photo_RowId: id })
 			.where({ yacsinumber: yacsinumber })
@@ -391,10 +375,7 @@ export class PhotoService {
 	}
 
 	async deletePeopleAssociation(id: string, personId: string): Promise<any> {
-		return this.knex('person.photo')
-			.where({ photoId: id })
-			.where({ personId: personId })
-			.delete();
+		return this.knex('person.photo').where({ photoId: id }).where({ personId: personId }).delete();
 	}
 
 	async deleteBurialAssociation(id: string, burialId: string): Promise<any> {
