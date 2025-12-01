@@ -24,11 +24,11 @@ photoBatchRouter.get(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let page = parseInt(req.query.page as string);
-		let skip = (page - 1) * PAGE_SIZE;
-		let take = PAGE_SIZE;
+		const page = parseInt(req.query.page as string);
+		const skip = (page - 1) * PAGE_SIZE;
+		const take = PAGE_SIZE;
 
-		let list = await photoBatchService
+		const list = await photoBatchService
 			.getAll(skip, take)
 			.then((data) => data)
 			.catch((err) => {
@@ -36,7 +36,7 @@ photoBatchRouter.get(
 				return undefined;
 			});
 
-		let item_count = await photoBatchService
+		const item_count = await photoBatchService
 			.getPhotoBatchCount()
 			.then((data) => data)
 			.catch((err) => {
@@ -44,7 +44,7 @@ photoBatchRouter.get(
 				return 0;
 			});
 
-		let page_count = Math.ceil(item_count / PAGE_SIZE);
+		const page_count = Math.ceil(item_count / PAGE_SIZE);
 
 		if (list) {
 			return res.json({
@@ -61,8 +61,8 @@ photoBatchRouter.post(
 	'/search',
 	[body('page').isInt().default(1)],
 	async (req: Request, res: Response) => {
-		let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
-		let sort = new Array<SortStatement>();
+		const { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
+		const sort = new Array<SortStatement>();
 
 		sortBy.forEach((s: string, i: number) => {
 			sort.push({
@@ -71,9 +71,9 @@ photoBatchRouter.post(
 			});
 		});
 
-		let skip = (page - 1) * itemsPerPage;
-		let take = itemsPerPage;
-		let results = await photoBatchService.doSearch(query, sort, page, itemsPerPage, skip, take);
+		const skip = (page - 1) * itemsPerPage;
+		const take = itemsPerPage;
+		const results = await photoBatchService.doSearch(query, sort, page, itemsPerPage, skip, take);
 
 		res.json(results);
 	}
@@ -135,7 +135,7 @@ photoBatchRouter.get(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let list = await photoBatchService
+		const list = await photoBatchService
 			.getPhotos(req.params.id)
 			.then((data) => data)
 			.catch((err) => {
@@ -190,7 +190,7 @@ photoBatchRouter.put(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let result = await photoBatchService
+		const result = await photoBatchService
 			.updateBatch(req.params.id, req.body as PhotoBatch)
 			.then((item) => item)
 			.catch((err) => {
