@@ -49,8 +49,14 @@
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="auto" class="d-flex" >
-          
-            <SaveDialog @saveDialog="saveDialog" :isDisabled="false" :itemType="`photobatch`" />
+          <v-btn
+            class="black--text mx-1"
+            @click="openDialog"
+          >
+            <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
+            Add Batch
+          </v-btn>
+          <PhotoBatchCreateDialog ref="photoBatchCreateDialog" @created="handleCreatedPhotoBatch" />
         </v-col>
     </v-row>
     <div class="mt-2">
@@ -91,13 +97,13 @@ import _ from 'lodash';
 
 import axios from "axios";
 import { PHOTO_BATCH_URL } from "../../../urls";
-import SaveDialog from "../SaveDialog";
+import PhotoBatchCreateDialog from "./PhotoBatchCreateDialog";
 
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: "photobatchgrid",
-  components: { Breadcrumbs, SaveDialog },
+  components: { Breadcrumbs, PhotoBatchCreateDialog },
   data: () => ({
     route: "",
     loading: false,
@@ -127,9 +133,15 @@ export default {
     searchChange: _.debounce(function () {
       this.getDataFromApi();
     }, 400),
-    handleClick(value){   //Redirects the user to the view batch component
-      this.$store.commit("photos/setBatchId", value.batchId);
-      this.$router.push(`/photobatches/upload`);
+    async handleClick(value){   //Redirects the user to the view batch component
+      console.log("clicked batch: ", value.batchId)
+      await this.$store.commit("photos/setBatchId", value.batchId);
+      this.$router.push(`/photobatches/attributes`);
+    },
+    async handleCreatedPhotoBatch(batchId){
+      this.$store.commit("photos/setBatchId", batchId);
+      await this.getDataFromApi();
+      this.$refs.photoBatchCreateDialog.closeDialog();
     },
     async getDataFromApi() {
       this.loading = true;
@@ -155,6 +167,9 @@ export default {
           this.loading = false;
         });
       },
+    openDialog() {
+      this.$refs.photoBatchCreateDialog.openDialog();
+    },
     formatDate (date) {
         if (!date) return null
         date = date.substr(0, 10);
@@ -167,7 +182,7 @@ export default {
         .post(`${PHOTO_BATCH_URL}`, body)
         .then((resp) => {
           this.$store.commit("photos/setBatchId", resp.data.data[0].id);
-          this.$router.push(`/photobatches/upload`);
+          this.$router.push(`/photobatches/attributes`);
           this.$store.commit("alerts/setText",'Batch added');
           this.$store.commit("alerts/setType", "success");
           this.$store.commit("alerts/setTimeout", 5000);
@@ -217,8 +232,7 @@ export default {
         else{
           return this.batches;
         }
-    },    
-      
+    },
     ...mapGetters({
       currentUserId: 'profile/id',
     }),  
