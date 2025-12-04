@@ -1,13 +1,9 @@
- {
-    "include": [
-      "./web/**/*"
-    ],
-    "compilerOptions": {
-        "baseUrl": ".",
-        "paths": {
-            "components/*": [
-                "src/components/*"
-            ]
-        }
-    }
-  }
+{
+	"include": ["./web/**/*"],
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"components/*": ["src/components/*"]
+		}
+	}
+}

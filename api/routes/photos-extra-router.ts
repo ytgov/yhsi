@@ -453,7 +453,7 @@ photosExtraRouter.post('/boat', [upload.single('file')], async (req: Request, re
 		...restBody,
 	};
 
-	const response = await db
+	await db
 		.insert(body)
 		.into('dbo.photo')
 		.returning('*')
@@ -496,7 +496,7 @@ photosExtraRouter.post(
 			...restBody,
 		};
 
-		const response = await db
+		await db
 			.insert(body)
 			.into('dbo.photo')
 			.returning('*')
@@ -535,7 +535,7 @@ photosExtraRouter.post(
 			...restBody,
 		};
 
-		const response = await db
+		await db
 			.insert(body)
 			.into('dbo.photo')
 			.returning('*')
@@ -572,7 +572,7 @@ photosExtraRouter.post('/ytplace', [upload.single('file')], async (req: Request,
 		...restBody,
 	};
 
-	const response = await db
+	await db
 		.insert(body)
 		.into('dbo.photo')
 		.returning('*')
@@ -600,11 +600,11 @@ photosExtraRouter.post(
 	async (req: Request, res: Response) => {
 		const { burialId } = req.params;
 		const { linkPhotos } = req.body;
-		let currentPhotos = await db
+		const currentPhotos = await db
 			.select('Photo_RowID')
 			.from('Burial.Photo')
 			.where('BurialID', burialId);
-		let filteredLinkPhotos = _.difference(
+		const filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x) => {
 				return x.Photo_RowID;
@@ -632,11 +632,11 @@ photosExtraRouter.post(
 	async (req: Request, res: Response) => {
 		const { siteId } = req.params;
 		const { linkPhotos } = req.body;
-		let currentPhotos = await db
+		const currentPhotos = await db
 			.select('Photo_RowID')
 			.from('InterpretiveSite.Photos')
 			.where('SiteID', siteId);
-		let filteredLinkPhotos = _.difference(
+		const filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x) => {
 				return x.Photo_RowID;
@@ -667,7 +667,7 @@ photosExtraRouter.post(
 		const ThumbFile = await createThumbnail(req.file.buffer);
 		const body = { File: req.file.buffer, ThumbFile, ...restBody };
 		delete body.BurialID;
-		const response = await db
+		await db
 			.insert(body)
 			.into('dbo.photo')
 			.returning('*')
@@ -699,7 +699,7 @@ photosExtraRouter.post(
 		const ThumbFile = await createThumbnail(req.file.buffer);
 		const body = { File: req.file.buffer, ThumbFile, ...restBody };
 		delete body.personID;
-		const response = await db
+		await db
 			.insert(body)
 			.into('dbo.photo')
 			.returning('*')
@@ -728,8 +728,11 @@ photosExtraRouter.post(
 	async (req: Request, res: Response) => {
 		const { personID } = req.params;
 		const { linkPhotos } = req.body;
-		let currentPhotos = await db.select('PhotoID').from('Person.Photo').where('PersonID', personID);
-		let filteredLinkPhotos = _.difference(
+		const currentPhotos = await db
+			.select('PhotoID')
+			.from('Person.Photo')
+			.where('PersonID', personID);
+		const filteredLinkPhotos = _.difference(
 			linkPhotos,
 			currentPhotos.map((x) => {
 				return x.Photo_RowID;
@@ -755,7 +758,7 @@ photosExtraRouter.post('/boat', [upload.single('file')], async (req: Request, re
 
 	const body = { File: req.file.buffer, ThumbFile, ...restBody };
 
-	const response = await db
+	await db
 		.insert(body)
 		.into('dbo.photo')
 		.returning('*')

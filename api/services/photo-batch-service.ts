@@ -1,13 +1,6 @@
 import knex, { Knex } from 'knex';
 import { QueryStatement, SortStatement } from './';
-import {
-	Photo,
-	PhotoBatch,
-	PhotoBatchPhoto,
-	PHOTO_FIELDS,
-	PHOTO_BATCH_FIELDS,
-	SavedFilter,
-} from '../data';
+import { PhotoBatch, PhotoBatchPhoto, PHOTO_BATCH_FIELDS } from '../data';
 import _ from 'lodash';
 
 export class PhotoBatchService {
@@ -21,11 +14,7 @@ export class PhotoBatchService {
 		return this.knex('photobatch')
 			.select(PHOTO_BATCH_FIELDS)
 			.select(this.knex.raw('photobatch.id as batchId'))
-			.leftOuterJoin(
-				'photobatchphoto',
-				'photobatch.id',
-				'photobatchphoto.photobatchid'
-			)
+			.leftOuterJoin('photobatchphoto', 'photobatch.id', 'photobatchphoto.photobatchid')
 			.count('photobatchphoto.id', { as: 'photoCount' })
 			.groupBy(PHOTO_BATCH_FIELDS)
 			.groupBy(this.knex.raw('photobatch.id'))
@@ -62,20 +51,10 @@ export class PhotoBatchService {
 				.select(PHOTO_BATCH_FIELDS)
 				.select(this.knex.raw('photobatch.id as batchId'))
 				.select(
-					this.knex.raw(
-						"security.[user].first_name + ' ' + security.[user].last_name as userName"
-					)
+					this.knex.raw("security.[user].first_name + ' ' + security.[user].last_name as userName")
 				)
-				.leftOuterJoin(
-					'photobatchphoto',
-					'photobatch.id',
-					'photobatchphoto.photobatchid'
-				)
-				.leftOuterJoin(
-					'security.[user]',
-					'photobatch.userid',
-					'security.[user].id'
-				)
+				.leftOuterJoin('photobatchphoto', 'photobatch.id', 'photobatchphoto.photobatchid')
+				.leftOuterJoin('security.[user]', 'photobatch.userid', 'security.[user].id')
 				.count('photobatchphoto.id', { as: 'photoCount' })
 				.groupBy(PHOTO_BATCH_FIELDS)
 				.groupBy(this.knex.raw('security.[user].first_name'))
@@ -121,9 +100,7 @@ export class PhotoBatchService {
 							break;
 						}
 						case 'contains': {
-							selectStmt.orWhereRaw(
-								`LOWER(${stmt.field}) like '%${stmt.value.toLowerCase()}%'`
-							);
+							selectStmt.orWhereRaw(`LOWER(${stmt.field}) like '%${stmt.value.toLowerCase()}%'`);
 							break;
 						}
 						default: {
@@ -194,12 +171,13 @@ export class PhotoBatchService {
 			`insert into Photo (
             [placeId], [communityId], [nTSMapNumber], [address], [dateCreated], [yHSIRecord], [bordenRecord], [paleoRecord], [archivalRecord]
             , [isOtherRecord], [originalMediaId], [originalRecord], [mediaStorage], [comments], [caption], [copyright], [creditLine], [ownerId], [photoProjectId]
-            , [program], [creator], [communityName], [location], [usageRights], [isComplete], [subjects], [isPrivate]
-            , "file", featureName, originalFileName 
+            , [program], [creator], [communityName], [location], [usageRights], [isComplete], [subjects], [isPrivate],
+						[IsSiteDefault], 
+						"file", featureName, originalFileName 
             ) OUTPUT Inserted.rowid
             select [placeId], [communityId], [nTSMapNumber], [address], [dateCreated], [yHSIRecord], [bordenRecord], [paleoRecord], [archivalRecord]
             , [isOtherRecord], [originalMediaId], [originalRecord], [mediaStorage], [comments], [caption], [copyright], [creditLine], [ownerId], [photoProjectId]
-            , [program], [creator], [communityName], [location], [usageRights], [isComplete], [subjects], [isPrivate]
+            , [program], [creator], [communityName], [location], [usageRights], [isComplete], [subjects], [isPrivate], 0 as [IsSiteDefault]
             , photobatchphoto.photoFile as "file", photobatchphoto.photoFileName as featureName, photobatchphoto.photoFileName as originalFileName 
             from [photobatch] left outer join [photobatchphoto] on [photobatch].[id] = [photobatchphoto].[photobatchid]
             where photobatch.id = ?`,
@@ -208,14 +186,11 @@ export class PhotoBatchService {
 	}
 
 	async deleteBatch(id: number): Promise<any> {
-		this.knex('photobatchphoto').where({ photoBatchId: id }).delete();
+		await this.knex('photobatchphoto').where({ photoBatchId: id }).delete();
 		return this.knex('photobatch').where({ id }).delete();
 	}
 
-	async updateBatch(
-		id: string,
-		item: PhotoBatch
-	): Promise<PhotoBatch | undefined> {
+	async updateBatch(id: string, item: PhotoBatch): Promise<PhotoBatch | undefined> {
 		return this.knex('PhotoBatch')
 			.where({ id: id })
 			.update(item)
