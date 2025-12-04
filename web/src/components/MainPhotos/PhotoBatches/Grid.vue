@@ -134,7 +134,6 @@ export default {
       this.getDataFromApi();
     }, 400),
     async handleClick(value){   //Redirects the user to the view batch component
-      console.log("clicked batch: ", value.batchId)
       await this.$store.commit("photos/setBatchId", value.batchId);
       this.$router.push(`/photobatches/attributes`);
     },
