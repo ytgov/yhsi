@@ -250,12 +250,34 @@ photoBatchRouter.post(
 photoBatchRouter.put(
 	'/:id/process-batch',
 	[check('id').isInt().notEmpty()],
+	[body('record').optional().isString()],
+	[body('id').optional().isString()],
 	async (req: Request, res: Response) => {
 		try {
 			const errors = validationResult(req);
 
 			if (!errors.isEmpty()) {
-				return res.status(400).json({ errors: errors.array() });
+				console.log(errors);
+				throw new Error('Validation failed');
+			}
+
+			const { record, id } = req.body;
+			switch (record) {
+				case undefined:
+					break;
+				case 'place':
+				case 'boat':
+				case 'aircrash':
+				case 'ytplace':
+				case 'burial':
+				case 'interpretive-sites':
+				case 'people':
+					if (id === undefined) {
+						throw new Error('Invalid record id');
+					}
+					break;
+				default:
+					throw new Error('Invalid record type');
 			}
 
 			const result = await photoBatchService.processBatch(req.params.id).then((item) => item);
@@ -265,6 +287,30 @@ photoBatchRouter.put(
 				if (photo && photo.file) {
 					const thumbnail = await createThumbnail(photo.file);
 					await photoService.updateThumbFile(result[i].rowid, thumbnail);
+
+					switch (record) {
+						case 'place':
+							await photoService.associatePhotoToPlace(result[i].rowid, id);
+							break;
+						case 'boat':
+							await photoService.associatePhotoToBoat(result[i].rowid, id);
+							break;
+						case 'aircrash':
+							await photoService.associatePhotoToAircrash(result[i].rowid, id);
+							break;
+						case 'ytplace':
+							await photoService.associatePhotoToYtPlace(result[i].rowid, id);
+							break;
+						case 'burial':
+							await photoService.associatePhotoToBurial(result[i].rowid, id);
+							break;
+						case 'interpretive-sites':
+							await photoService.associatePhotoToInterpretiveSite(result[i].rowid, id);
+							break;
+						case 'people':
+							await photoService.associatePhotoToPerson(result[i].rowid, id);
+							break;
+					}
 				}
 			}
 
