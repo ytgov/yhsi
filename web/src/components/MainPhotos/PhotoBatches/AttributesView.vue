@@ -2,7 +2,7 @@
 	<div>
 		<h1>Batch Attributes</h1>
 		<Breadcrumbs />
-		    <v-row>
+		<v-row>
       <v-col cols="12" class="d-flex">
         <h1>{{displayName}}</h1>
         <v-spacer></v-spacer>       
@@ -105,6 +105,8 @@
 				ref="photo"
 			/>
 		</div>
+
+		<PhotoBatchProcessBatchDialog ref="photoBatchProcessBatchDialog"/>
 	</div>
 </template>
 
@@ -116,6 +118,7 @@ import { PHOTO_BATCH_URL } from '../../../urls';
 
 import Breadcrumbs from '../../Breadcrumbs';
 
+import PhotoBatchProcessBatchDialog from "./PhotoBatchProcessBatchDialog";
 import Feature from '../PhotosComponents/Feature';
 import SiteRecord from '../PhotosComponents/SiteRecord';
 import HistoricSites from '../PhotosComponents/HistoricSites';
@@ -123,7 +126,7 @@ import Photo from '../PhotosComponents/Photo';
 
 export default {
 	name: 'PhotoBatchAttributes',
-	components: { Feature, SiteRecord, HistoricSites, Photo, Breadcrumbs },
+	components: { Feature, SiteRecord, HistoricSites, Photo, Breadcrumbs, PhotoBatchProcessBatchDialog },
 	data: () => ({
 		photos: [],
 		displayName: null,
@@ -143,7 +146,6 @@ export default {
 	methods: {
 		loadBatch() {
 			this.loading = true;
-			console.log("Loading batch: ", this.batchId);
 			axios
 				.get(`${PHOTO_BATCH_URL}/${this.batchId}`)
 				.then((resp) => {
@@ -234,43 +236,7 @@ export default {
 			this.displayName = 'Edit ' + this.fields.name;
 		},
 		async processBatch() {
-			// Use community to check that fields have been filled in (user can't save without filling out all required fields)
-			if (!this.fields.communityId) {
-				this.$store.commit(
-					'alerts/setText',
-					'Batch attributes must be filled in before processing the batch'
-				);
-				this.$store.commit('alerts/setType', 'warning');
-				this.$store.commit('alerts/setTimeout', 5000);
-				this.$store.commit('alerts/setAlert', true);
-			} else {
-				if (
-					confirm(
-						'When you hit OK this batch and all photos will be added into the photo database. Are you sure you want to process this photo batch?'
-					)
-				) {
-					axios
-						.put(
-							`${PHOTO_BATCH_URL}/${this.batchId}/process-batch`
-						)
-						.then(() => {
-							this.$router.push(`/photobatches`);
-							this.$store.commit(
-								'alerts/setText',
-								'Batch processed successfully'
-							);
-							this.$store.commit('alerts/setType', 'success');
-							this.$store.commit('alerts/setTimeout', 5000);
-							this.$store.commit('alerts/setAlert', true);
-						})
-						.catch((err) => {
-							this.$store.commit('alerts/setText', err);
-							this.$store.commit('alerts/setType', 'warning');
-							this.$store.commit('alerts/setTimeout', 5000);
-							this.$store.commit('alerts/setAlert', true);
-						});
-				}
-			}
+			this.$refs.photoBatchProcessBatchDialog.openDialog();
 		},
 		runFormValidations() {
 			this.$refs.feature.validate();
