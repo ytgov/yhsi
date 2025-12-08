@@ -450,6 +450,7 @@ photosExtraRouter.post('/boat', [upload.single('file')], async (req: Request, re
 		ThumbFile,
 		DateCreated,
 		OriginalFileName,
+		IsSiteDefault: false,
 		...restBody,
 	};
 
@@ -493,6 +494,7 @@ photosExtraRouter.post(
 			ThumbFile,
 			DateCreated,
 			OriginalFileName,
+			IsSiteDefault: false,
 			...restBody,
 		};
 
@@ -532,6 +534,7 @@ photosExtraRouter.post(
 			ThumbFile,
 			DateCreated,
 			OriginalFileName,
+			IsSiteDefault: false,
 			...restBody,
 		};
 
@@ -569,6 +572,7 @@ photosExtraRouter.post('/ytplace', [upload.single('file')], async (req: Request,
 		ThumbFile,
 		DateCreated,
 		OriginalFileName,
+		IsSiteDefault: false,
 		...restBody,
 	};
 
