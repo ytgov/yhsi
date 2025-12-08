@@ -237,8 +237,7 @@
 													color="primary darken-1"
 													text
 													class="ma-1"
-													@click="savePhoto"
-													:disabled="!valid"
+													@click="validateAndSavePhoto"
 												>
 													Save
 												</v-btn>
@@ -605,8 +604,12 @@ export default {
 				})
 				.catch((error) => console.error(error));
 		},
-		async savePhoto() {
+		async validateAndSavePhoto() {
+			this.$refs.photoForm.validate();
+			if (!this.valid) return;
+
 			this.overlay = true;
+			
 			this.sendObj = this.fields;
 			let {
 				IsComplete,
@@ -654,8 +657,8 @@ export default {
 			formData.append('file', this.file);
 
 			await photos.postGeneral(this.photoType, formData);
-			// this.reset();
-			// this.$router.go();
+			this.reset();
+			this.$router.go();
 			this.overlay = false;
 		},
 		async saveAndLink() {
