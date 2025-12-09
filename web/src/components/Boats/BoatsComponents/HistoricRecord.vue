@@ -184,7 +184,7 @@ export default {
         referenceHelper: "",
         overlay: false,
         addingItem: false,
-        options: { itemsPerPage: 20},
+        options: { itemsPerPage: 50},
         pagination: { itemsLength: 0 }
     }),
     mounted(){
