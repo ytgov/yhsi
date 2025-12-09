@@ -132,6 +132,9 @@
 				margin-bottom: 25px;
 				page-break-inside: avoid;
 			}
+			.textarea {
+				width: 100%;
+			}
 		</style>
 	</head>
 
@@ -139,7 +142,7 @@
 		<table style='width: 100%; margin-bottom: 15px' border='0' cellspacing='0' cellpadding='0'>
 			<tr style='height: 90px'>
 				<td style='width: 180px'>
-					<img src='http://localhost:{{API_PORT}}/yukon.svg' style='height: 80px; width: 160px' />
+					<img src='/yukon.svg' style='height: 80px; width: 160px' />
 				</td>
 				<td style='text-align: right; vertical-align: bottom; padding-top: 25px'>
 					<h4 style='font-size: 1.4rem'>Yukon Historic Sites</h4>
@@ -293,7 +296,7 @@
 							<p>Site status</p><div class='box'>{{siteStatus}}</div>
 							<p>Building size</p><div class='box'>{{buildingSize}}</div>
 							<p>All other resource types</p><div class='box'>{{resourceType}}</div>
-							<p>Condition notes</p><textarea>{{conditionComment}}</textarea>
+							<p>Condition notes</p><textarea rows='10'>{{conditionComment}}</textarea>
 						</td>
 					</tr>
 				</table>
@@ -647,11 +650,10 @@
 				<h1>Description</h1>
 				<hr />
 				{{#each descriptions}}
-					<div style='margin-bottom: 1em'>
-						<strong>Description type</strong><div class='box'>
-							{{value}}
-						</div>
-						<textarea>{{text}}</textarea>
+					<div style='margin-bottom: 1em; width: 100%'>
+						<strong>Description type</strong>
+						<div class='box'>{{value}}</div>
+						<textarea class='textarea' rows='5'>{{text}}</textarea>
 					</div>
 					<div style='border-top: 1px #ccc solid; margin-bottom: 2em'></div>
 				{{/each}}
