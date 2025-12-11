@@ -1,13 +1,8 @@
 import express, { Request, Response } from 'express';
 import { DB_CONFIG } from '../config';
 import { body, check, query, validationResult } from 'express-validator';
-import {
-	PhotoService,
-	PhotoBatchService,
-	SortStatement,
-	SortDirection,
-} from '../services';
-import { Photo, PhotoBatch, PhotoBatchPhoto } from '../data';
+import { PhotoService, PhotoBatchService, SortStatement, SortDirection } from '../services';
+import { PhotoBatch, PhotoBatchPhoto } from '../data';
 import multer from 'multer';
 import { createThumbnail } from '../utils/image';
 import { ReturnValidationErrors } from '../middleware';
@@ -29,11 +24,11 @@ photoBatchRouter.get(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let page = parseInt(req.query.page as string);
-		let skip = (page - 1) * PAGE_SIZE;
-		let take = PAGE_SIZE;
+		const page = parseInt(req.query.page as string);
+		const skip = (page - 1) * PAGE_SIZE;
+		const take = PAGE_SIZE;
 
-		let list = await photoBatchService
+		const list = await photoBatchService
 			.getAll(skip, take)
 			.then((data) => data)
 			.catch((err) => {
@@ -41,7 +36,7 @@ photoBatchRouter.get(
 				return undefined;
 			});
 
-		let item_count = await photoBatchService
+		const item_count = await photoBatchService
 			.getPhotoBatchCount()
 			.then((data) => data)
 			.catch((err) => {
@@ -49,7 +44,7 @@ photoBatchRouter.get(
 				return 0;
 			});
 
-		let page_count = Math.ceil(item_count / PAGE_SIZE);
+		const page_count = Math.ceil(item_count / PAGE_SIZE);
 
 		if (list) {
 			return res.json({
@@ -66,80 +61,66 @@ photoBatchRouter.post(
 	'/search',
 	[body('page').isInt().default(1)],
 	async (req: Request, res: Response) => {
-		let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
-		let sort = new Array<SortStatement>();
+		const { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
+		const sort = new Array<SortStatement>();
 
 		sortBy.forEach((s: string, i: number) => {
 			sort.push({
 				field: s,
-				direction: sortDesc[i]
-					? SortDirection.ASCENDING
-					: SortDirection.DESCENDING,
+				direction: sortDesc[i] ? SortDirection.ASCENDING : SortDirection.DESCENDING,
 			});
 		});
 
-		let skip = (page - 1) * itemsPerPage;
-		let take = itemsPerPage;
-		let results = await photoBatchService.doSearch(
-			query,
-			sort,
-			page,
-			itemsPerPage,
-			skip,
-			take
-		);
+		const skip = (page - 1) * itemsPerPage;
+		const take = itemsPerPage;
+		const results = await photoBatchService.doSearch(query, sort, page, itemsPerPage, skip, take);
 
 		res.json(results);
 	}
 );
 
-photoBatchRouter.get(
-	'/:id',
-	[check('id').notEmpty()],
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
+photoBatchRouter.get('/:id', [check('id').notEmpty()], async (req: Request, res: Response) => {
+	const errors = validationResult(req);
 
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
-
-		await photoBatchService
-			.getById(req.params.id)
-			.then((item) => {
-				if (item) return res.json({ data: item });
-
-				return res.status(404).send('Photo batch not found');
-			})
-			.catch((err) => {
-				console.error(err);
-				return res.status(404).send('Photo batch not found');
-			});
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ errors: errors.array() });
 	}
-);
+
+	await photoBatchService
+		.getById(req.params.id)
+		.then((item) => {
+			if (item) return res.json({ data: item });
+
+			return res.status(404).send('Photo batch not found');
+		})
+		.catch((err) => {
+			console.error(err);
+			return res.status(404).send('Photo batch not found');
+		});
+});
 
 photoBatchRouter.post(
 	'/',
 	[body('name').notEmpty().bail()],
 	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
+		try {
+			const errors = validationResult(req);
 
-		if (!errors.isEmpty()) {
-			//console.log(errors);
-			return res.status(400).json({ errors: errors.array() });
+			if (!errors.isEmpty()) {
+				//console.log(errors);
+				return res.status(400).json({ errors: errors.array() });
+			}
+
+			const DateCreated = new Date();
+			req.body.dateCreated = DateCreated;
+
+			const result = await photoBatchService.addBatch(req.body as PhotoBatch).then((item) => item);
+
+			return res.json({ data: result });
+		} catch (error) {
+			console.error(error);
+			return res.status(422).json({ message: 'Photo batch creation failed' });
 		}
-
-		const DateCreated = new Date();
-		req.body.dateCreated = DateCreated;
-
-		let result = await photoBatchService
-			.addBatch(req.body as PhotoBatch)
-			.then((item) => item)
-			.catch((err) => {
-				//console.log(err);
-				return res.json({ errors: [err.originalError.info.message] });
-			});
-
-		return res.json({ data: result });
 	}
 );
 
@@ -154,7 +135,7 @@ photoBatchRouter.get(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let list = await photoBatchService
+		const list = await photoBatchService
 			.getPhotos(req.params.id)
 			.then((data) => data)
 			.catch((err) => {
@@ -181,7 +162,7 @@ photoBatchRouter.delete(
 		}
 
 		const id = req.params.id as string;
-		let list = await photoBatchService.deleteBatch(parseInt(id));
+		const list = await photoBatchService.deleteBatch(parseInt(id));
 		return res.json({ data: list });
 	}
 );
@@ -209,7 +190,7 @@ photoBatchRouter.put(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let result = await photoBatchService
+		const result = await photoBatchService
 			.updateBatch(req.params.id, req.body as PhotoBatch)
 			.then((item) => item)
 			.catch((err) => {
@@ -232,7 +213,7 @@ photoBatchRouter.delete(
 		}
 
 		const id = req.params.id as string;
-		let list = await photoBatchService.deletePhoto(parseInt(id));
+		const list = await photoBatchService.deletePhoto(parseInt(id));
 		return res.json({ data: list });
 	}
 );
@@ -242,60 +223,102 @@ photoBatchRouter.post(
 	multer().single('file'),
 	[check('photoBatchId').isInt().notEmpty()],
 	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
-		const ThumbFile = await createThumbnail(req.file.buffer);
-		req.body.photoFile = req.file.buffer;
-		req.body.photoFileName = req.file.originalname;
-		req.body.ThumbFile = ThumbFile;
+		try {
+			const errors = validationResult(req);
+			const ThumbFile = await createThumbnail(req.file.buffer);
+			req.body.photoFile = req.file.buffer;
+			req.body.photoFileName = req.file.originalname;
+			req.body.ThumbFile = ThumbFile;
 
-		if (!errors.isEmpty()) {
-			//console.log(errors);
-			return res.status(400).json({ errors: errors.array() });
+			if (!errors.isEmpty()) {
+				//console.log(errors);
+				return res.status(400).json({ errors: errors.array() });
+			}
+
+			const result = await photoBatchService
+				.addPhoto(req.body as PhotoBatchPhoto)
+				.then((item) => item);
+
+			return res.json({ data: result });
+		} catch (error) {
+			console.error(error);
+			return res.status(500).json({ message: 'Photo upload failed' });
 		}
-
-		let result = await photoBatchService
-			.addPhoto(req.body as PhotoBatchPhoto)
-			.then((item) => item)
-			.catch((err) => {
-				//console.log(err);
-				return res.json({ errors: [err.originalError.info.message] });
-			});
-
-		return res.json({ data: result });
 	}
 );
 
 photoBatchRouter.put(
 	'/:id/process-batch',
 	[check('id').isInt().notEmpty()],
+	[body('record').optional().isString()],
+	[body('id').optional().isString()],
 	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
+		try {
+			const errors = validationResult(req);
 
-		if (!errors.isEmpty()) {
-			//console.log(errors);
-			return res.status(400).json({ errors: errors.array() });
-		}
-
-		let result = await photoBatchService
-			.processBatch(req.params.id)
-			.then((item) => item)
-			.catch((err) => {
-				//console.log(err);
-				return res.json({ errors: [err.originalError.info.message] });
-			});
-
-		for (let i = 0; i < result.length; i++) {
-			let photo = await photoService.getFileById(result[i].rowid);
-			if (photo && photo.file) {
-				let thumbnail = await createThumbnail(photo.file);
-				let res = await photoService.updateThumbFile(
-					result[i].rowid,
-					thumbnail
-				);
+			if (!errors.isEmpty()) {
+				console.log(errors);
+				throw new Error('Validation failed');
 			}
-		}
 
-		let list = await photoBatchService.deleteBatch(parseInt(req.params.id));
-		return res.json({ data: list });
+			const { record, id } = req.body;
+			switch (record) {
+				case undefined:
+					break;
+				case 'place':
+				case 'boat':
+				case 'aircrash':
+				case 'ytplace':
+				case 'burial':
+				case 'interpretive-sites':
+				case 'people':
+					if (id === undefined) {
+						throw new Error('Invalid record id');
+					}
+					break;
+				default:
+					throw new Error('Invalid record type');
+			}
+
+			const result = await photoBatchService.processBatch(req.params.id).then((item) => item);
+
+			for (let i = 0; i < result.length; i++) {
+				const photo = await photoService.getFileById(result[i].rowid);
+				if (photo && photo.file) {
+					const thumbnail = await createThumbnail(photo.file);
+					await photoService.updateThumbFile(result[i].rowid, thumbnail);
+
+					switch (record) {
+						case 'place':
+							await photoService.associatePhotoToPlace(result[i].rowid, id);
+							break;
+						case 'boat':
+							await photoService.associatePhotoToBoat(result[i].rowid, id);
+							break;
+						case 'aircrash':
+							await photoService.associatePhotoToAircrash(result[i].rowid, id);
+							break;
+						case 'ytplace':
+							await photoService.associatePhotoToYtPlace(result[i].rowid, id);
+							break;
+						case 'burial':
+							await photoService.associatePhotoToBurial(result[i].rowid, id);
+							break;
+						case 'interpretive-sites':
+							await photoService.associatePhotoToInterpretiveSite(result[i].rowid, id);
+							break;
+						case 'people':
+							await photoService.associatePhotoToPerson(result[i].rowid, id);
+							break;
+					}
+				}
+			}
+
+			const list = await photoBatchService.deleteBatch(parseInt(req.params.id));
+			return res.json({ data: list });
+		} catch (error) {
+			console.error(error);
+			return res.status(500).json({ message: 'Photo batch processing failed' });
+		}
 	}
 );

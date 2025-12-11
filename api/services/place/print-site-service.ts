@@ -186,7 +186,7 @@ export class PrintSiteService extends BaseService {
 		if (includePhotosSection && !isUndefined(placeId)) {
 			photos = await photoService.getAllForPlace(placeId);
 		}
-		//console.log(photos[0]);
+
 		const photosWithDataUris = photos
 			.filter((photo) => photo.ThumbFile && Buffer.isBuffer(photo.ThumbFile))
 			.map((photo) => ({

@@ -1,7 +1,11 @@
 import knex, { Knex } from 'knex';
+import _ from 'lodash';
 import { QueryStatement, SortStatement } from './';
 import { Photo, PHOTO_FIELDS, SavedFilter } from '../data';
-import _ from 'lodash';
+
+import { DB_CONFIG } from '../config';
+
+const db = knex(DB_CONFIG);
 
 export class PhotoService {
 	private knex: Knex;
@@ -390,5 +394,139 @@ export class PhotoService {
 			.where({ photo_RowId: id })
 			.where({ siteId: siteId })
 			.delete();
+	}
+
+	async associatePhotoToPlace(photoRowId: string, placeId: string) {
+		const currentPhoto = await db
+			.select('RowId', 'PlaceId')
+			.from('dbo.Photo')
+			.where('PlaceId', placeId)
+			.where('RowId', photoRowId);
+
+		if (currentPhoto.length > 0) {
+			throw new Error('Photo already associated to place');
+		}
+
+		return db('dbo.Photo').where('RowId', photoRowId).update({ PlaceId: placeId });
+	}
+
+	async associatePhotoToBoat(photoRowId: string, boatId: string) {
+		const currentPhoto = await db
+			.select('Photo_RowID')
+			.from('boat.Photo')
+			.where('BoatId', boatId)
+			.where('Photo_RowID', photoRowId);
+
+		if (currentPhoto.length > 0) {
+			throw new Error('Photo already associated to boat');
+		}
+
+		return db
+			.insert({ BoatId: boatId, Photo_RowID: photoRowId })
+			.into('boat.photo')
+			.returning('*')
+			.then((rows) => {
+				return rows;
+			});
+	}
+
+	async associatePhotoToAircrash(photoRowId: string, yacsinumber: string) {
+		const currentPhoto = await db
+			.select('Photo_RowID')
+			.from('AirCrash.Photo')
+			.where('YACSINumber', yacsinumber)
+			.where('Photo_RowID', photoRowId);
+
+		if (currentPhoto.length > 0) {
+			throw new Error('Photo already associated to aircrash');
+		}
+
+		return db
+			.insert({ YACSINumber: yacsinumber, Photo_RowID: photoRowId })
+			.into('AirCrash.Photo')
+			.returning('*')
+			.then((rows) => {
+				return rows;
+			});
+	}
+
+	async associatePhotoToYtPlace(photoRowId: string, ytplaceId: string) {
+		const currentPhoto = await db
+			.select('Photo_RowID')
+			.from('place.photo')
+			.where('placeId', ytplaceId)
+			.where('Photo_RowID', photoRowId);
+
+		if (currentPhoto.length > 0) {
+			throw new Error('Photo already associated to ytplace');
+		}
+
+		return db
+			.insert({ placeId: ytplaceId, Photo_RowID: photoRowId })
+			.into('place.photo')
+			.returning('*')
+			.then((rows) => {
+				return rows;
+			});
+	}
+
+	async associatePhotoToBurial(photoRowId: string, burialId: string) {
+		const currentPhoto = await db
+			.select('Photo_RowID')
+			.from('Burial.Photo')
+			.where('BurialId', burialId)
+			.where('Photo_RowID', photoRowId);
+
+		if (currentPhoto.length > 0) {
+			throw new Error('Photo already associated to burial');
+		}
+
+		return db
+			.insert({ BurialId: burialId, Photo_RowID: photoRowId })
+			.into('Burial.Photo')
+			.returning('*')
+			.then((rows) => {
+				return rows;
+			});
+	}
+
+	async associatePhotoToInterpretiveSite(photoRowId: string, interpretiveSiteId: string) {
+		const currentPhoto = await db
+			.select('Photo_RowID')
+			.from('InterpretiveSite.Photos')
+			.where('SiteId', interpretiveSiteId)
+			.where('Photo_RowID', photoRowId);
+
+		if (currentPhoto.length > 0) {
+			throw new Error('Photo already associated to interpretive site');
+		}
+
+		return db
+			.insert({ SiteId: interpretiveSiteId, Photo_RowID: photoRowId })
+			.into('InterpretiveSite.Photos')
+			.returning('*')
+			.then((rows) => {
+				return rows;
+			});
+	}
+
+	async associatePhotoToPerson(photoRowId: string, personId: string) {
+		const currentPhoto = await db
+			.select('PhotoID')
+			.from('Person.Photo')
+			.where('PersonID', personId)
+			.where('PhotoID', photoRowId);
+
+		if (currentPhoto.length > 0) {
+			throw new Error('Photo already associated to person');
+		}
+
+		return db
+			.insert({ PersonID: personId, PhotoID: photoRowId })
+			.into('Person.Photo')
+			.returning('*')
+			.then((rows) => {
+				return rows;
+			});
 	}
 }

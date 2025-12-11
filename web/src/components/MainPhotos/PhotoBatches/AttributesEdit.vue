@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h3>Batch Attributes</h3>
+		<h1>Edit Batch Attributes</h1>
 		<Breadcrumbs />
 		<v-row>
 			<v-col
@@ -10,55 +10,53 @@
 				<h1>{{ displayName }}</h1>
 				<v-spacer></v-spacer>
 				<v-btn
-					v-if="mode == 'view'"
 					class="black--text mx-1 form-header"
 					@click="goBack"
 				>
 					<v-icon class="mr-1">mdi-arrow-left</v-icon>
-					Back
+					Go Back
 				</v-btn>
 
-				<v-btn
-					v-if="mode == 'view'"
-					class="mx-1 form-header"
-					color="secondary"
-					@click="processBatch()"
-				>
-					<v-icon class="mr-1">mdi-check</v-icon>
-					Process Batch
-				</v-btn>
-
-				<v-btn
-					v-if="mode == 'view'"
-					class="mx-1 form-header"
-					color="primary"
-					@click="editMode"
-				>
-					<v-icon class="mr-1">mdi-pencil</v-icon>
-					Edit
-				</v-btn>
-
-				<!-- buttons for the edit state -->
-				<v-btn
-					class="black--text mx-1 form-header"
-					@click="cancelEdit"
-					v-if="mode == 'edit'"
-				>
-					<v-icon>mdi-close</v-icon>
-					Cancel
-				</v-btn>
 				<v-btn
 					color="primary"
 					:disabled="changesMade == 0"
-					v-if="mode == 'edit'"
 					@click="saveChanges"
 					class="form-header"
 				>
 					<v-icon class="mr-1">mdi-check</v-icon>
-					Save
+					Save Changes
 				</v-btn>
+
+				<v-btn class="mx-1 form-header" color="red" @click="deleteBatch()">
+          <v-icon class="mr-1">mdi-close</v-icon>
+          Remove Batch
+        </v-btn> 
 			</v-col>
 		</v-row>
+
+		<v-row>
+      <v-col cols="6">
+        <v-img 
+          class="mr-auto ml-auto"
+          max-width="128"
+          :src="require('../../../assets/add_photo.png')">
+          </v-img>
+
+        <v-file-input
+          ref="fileupload"
+          label="Choose photo to upload"
+          prepend-icon="mdi-camera"
+          accept="image/*"
+          @change="onFileSelection"
+          class="default mb-5" 
+          dense
+          outlined
+          background-color="white"
+          hide-details
+					multiple
+        ></v-file-input>
+      </v-col>
+    </v-row>
 
 		<v-row
 			v-if="imagesLoaded"
@@ -70,19 +68,30 @@
 				class="d-flex child-flex"
 				cols="2"
 			>
+				<v-btn
+					icon
+					color="orange"
+					@click="deletePhoto(item.id)"
+					class="delete-photo-btn"
+					>
+					<v-icon size="40">mdi-close-circle</v-icon>
+				</v-btn>
 				<v-card class="mx-auto">
 					<v-img
-						:src="item.thumbFile.base64"
-						:lazy-src="item.thumbFile.base64"
+					:src="item.thumbFile.base64"
+					:lazy-src="item.thumbFile.base64"
 						class="white--text align-end"
 						aspect-ratio="1"
 					>
-					</v-img>
-
-					<v-card-actions>
-						<v-card-subtitle v-text="item.photoFileName"></v-card-subtitle>
-					</v-card-actions>
+				</v-img>	
+				<v-card-actions>
+					<v-card-subtitle v-text="item.photoFileName"></v-card-subtitle>
+				</v-card-actions>
 				</v-card>
+
+			</v-col>
+			<v-col v-if="photos.length == 0">
+				<div class="loading">No images found</div>
 			</v-col>
 		</v-row>
 		<v-row v-if="!imagesLoaded">
@@ -139,12 +148,16 @@
 
 <script>
 import axios from 'axios';
+import { mapGetters } from 'vuex';
+
+import { PHOTO_BATCH_URL } from '../../../urls';
+
+import Breadcrumbs from '../../Breadcrumbs';
+
 import Feature from '../PhotosComponents/Feature';
 import SiteRecord from '../PhotosComponents/SiteRecord';
 import HistoricSites from '../PhotosComponents/HistoricSites';
 import Photo from '../PhotosComponents/Photo';
-import { PHOTO_BATCH_URL } from '../../../urls';
-import Breadcrumbs from '../../Breadcrumbs';
 
 export default {
 	name: 'PhotoBatchAttributes',
@@ -169,7 +182,7 @@ export default {
 		loadBatch() {
 			this.loading = true;
 			axios
-				.get(`${PHOTO_BATCH_URL}/${localStorage.currentBatchId}`)
+				.get(`${PHOTO_BATCH_URL}/${this.batchId}`)
 				.then((resp) => {
 					this.fields = resp.data.data;
 					this.fields.subjects = this.fields.subjects
@@ -187,7 +200,7 @@ export default {
 		},
 		loadPhotos() {
 			axios
-				.get(`${PHOTO_BATCH_URL}/${localStorage.currentBatchId}/photos`)
+				.get(`${PHOTO_BATCH_URL}/${this.batchId}/photos`)
 				.then((resp) => {
 					this.photos = resp.data.data.map((x) => {
 						x.thumbFile.base64 = `data:image/png;base64,${this.toBase64(
@@ -206,8 +219,38 @@ export default {
 				arr.reduce((data, byte) => data + String.fromCharCode(byte), '')
 			);
 		},
+		async deletePhoto(photoId) {
+			console.log("Deleting photo: ", photoId);
+			if(confirm("Are you sure want to delete this photo?")){
+				await axios
+					.delete(`${PHOTO_BATCH_URL}/photo/${photoId}`)
+					.then(() => {
+						this.loadPhotos();
+						this.$store.commit("alerts/setText",'Photo deleted');
+            this.$store.commit("alerts/setType", "success");
+            this.$store.commit("alerts/setTimeout", 5000);
+            this.$store.commit("alerts/setAlert", true);
+					})
+					.catch((error) => console.error(error));
+			}
+		},
+		deleteBatch() {
+      if(confirm("Are you sure want to delete this photo batch?")){
+        axios
+          .delete(`${PHOTO_BATCH_URL}/${this.batchId}`)
+          .then(() => { 
+            this.$router.push('/photobatches');
+            this.$store.commit("alerts/setText",'Batch deleted');
+            this.$store.commit("alerts/setType", "success");
+            this.$store.commit("alerts/setTimeout", 5000);
+            this.$store.commit("alerts/setAlert", true);
+          })
+          .catch((error) => console.error(error))
+          ;  
+      }
+    },
 		goBack() {
-			this.$router.push(`/photobatches/upload`);
+			this.$router.push(`/photobatches/attributes`);
 		},
 		featureChange(val) {
 			this.fields.address = val.address;
@@ -312,11 +355,11 @@ export default {
 			this.setBody();
 
 			axios
-				.put(`${PHOTO_BATCH_URL}/${localStorage.currentBatchId}`, this.body)
+				.put(`${PHOTO_BATCH_URL}/${this.batchId}`, this.body)
 				.then(() => {
-					this.$router.push(`/photobatches/attributes/view`);
+					this.$router.push(`/photobatches/attributes`);
 					this.loadBatch();
-					//this.loadPhotos();
+					this.loadPhotos();
 					this.$store.commit('alerts/setText', 'Batch attributes saved');
 					this.$store.commit('alerts/setType', 'success');
 					this.$store.commit('alerts/setTimeout', 5000);
@@ -329,15 +372,10 @@ export default {
 					this.$store.commit('alerts/setAlert', true);
 				});
 		},
-		editMode() {
-			this.$router.push(`/photobatches/attributes/edit`);
-			this.changesMade = 0;
-			this.displayName = 'Edit ' + this.fields.name;
-		},
 		cancelEdit() {
 			this.infoLoaded = false;
 			//this.imagesLoaded = false;
-			this.$router.push(`/photobatches/attributes/view`);
+			this.$router.push(`/photobatches/attributes`);
 			this.loadBatch();
 			//this.loadPhotos();
 		},
@@ -347,45 +385,46 @@ export default {
 			this.$refs.historicSites.validate();
 			this.$refs.photo.validate();
 		},
-		async processBatch() {
-			// Use community to check that fields have been filled in (user can't save without filling out all required fields)
-			if (!this.fields.communityId) {
-				this.$store.commit(
-					'alerts/setText',
-					'Batch attributes must be filled in before processing the batch'
-				);
-				this.$store.commit('alerts/setType', 'warning');
-				this.$store.commit('alerts/setTimeout', 5000);
-				this.$store.commit('alerts/setAlert', true);
-			} else {
-				if (
-					confirm(
-						'When you hit OK this batch and all photos will be added into the photo database. Are you sure you want to process this photo batch?'
-					)
-				) {
-					axios
-						.put(
-							`${PHOTO_BATCH_URL}/${localStorage.currentBatchId}/process-batch`
-						)
-						.then(() => {
-							this.$router.push(`/photobatches`);
-							this.$store.commit(
-								'alerts/setText',
-								'Batch processed successfully'
-							);
-							this.$store.commit('alerts/setType', 'success');
-							this.$store.commit('alerts/setTimeout', 5000);
-							this.$store.commit('alerts/setAlert', true);
-						})
-						.catch((err) => {
-							this.$store.commit('alerts/setText', err);
-							this.$store.commit('alerts/setType', 'warning');
-							this.$store.commit('alerts/setTimeout', 5000);
-							this.$store.commit('alerts/setAlert', true);
-						});
+		async onFileSelection(event){
+			if(!event) return
+
+			const files = Array.isArray(event) ? event : [event];
+
+			for (const file of files){
+				this.uploadFile = file;
+				let body = {};
+				body.photoBatchId = this.batchId;
+				body.photoContentType = this.uploadFile.type;
+
+				const formData = new FormData();
+				let prevFields = Object.entries(body);
+				for (let i = 0; i < prevFields.length; i++) {
+					if(prevFields[i][1] != null && prevFields[i][1] != 'undefined') {
+						formData.append(prevFields[i][0], prevFields[i][1]);
+					}
 				}
+				formData.append("file", this.uploadFile);
+				//console.log(this.uploadFile);
+				await axios
+				.post(`${PHOTO_BATCH_URL}/photo/`, formData)
+					.then((resp) => {
+						let photo = resp.data.data[0];
+						photo.thumbFile.base64 = `data:image/png;base64,${this.toBase64(photo.thumbFile.data)}`;
+						this.photos.push(photo);
+						this.$refs.fileupload.reset();
+						this.$store.commit("alerts/setText",'Photo added');
+						this.$store.commit("alerts/setType", "success");
+						this.$store.commit("alerts/setTimeout", 5000);
+						this.$store.commit("alerts/setAlert", true);
+					})
+					.catch(() => {
+						this.$store.commit("alerts/setText",'Error during photo upload');
+						this.$store.commit("alerts/setType", "warning");
+						this.$store.commit("alerts/setTimeout", 5000);
+						this.$store.commit("alerts/setAlert", true);
+					});
 			}
-		},
+    },
 	},
 	computed: {
 		mode() {
@@ -399,6 +438,9 @@ export default {
 				this.changesMade > 0
 			);
 		},
+		...mapGetters({
+			batchId: 'photos/batchId',
+		}),
 	},
 };
 </script>
@@ -407,5 +449,12 @@ export default {
 .scroll {
 	max-height: 340px;
 	overflow: auto;
+}	
+
+.delete-photo-btn {
+	z-index: 10;
+	position: relative;
+	top: 25%;
+	left: 50%;
 }
 </style>

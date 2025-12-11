@@ -44,8 +44,8 @@ import PlacesGrid from '../components/Places/PlacesGrid';
 import PlaceTypeGrid from '../components/Administration/LookupTableManagement/PlaceType/PlaceType';
 import PlacesForm from '../components/Places/PlacesComponents/PlacesForm';
 import PhotoBatchGrid from '../components/MainPhotos/PhotoBatches/Grid';
-import PhotoBatchUpload from '../components/MainPhotos/PhotoBatches/Upload';
-import PhotoBatchAttributes from '../components/MainPhotos/PhotoBatches/Attributes';
+import PhotoBatchAttributesView from '../components/MainPhotos/PhotoBatches/AttributesView';
+import PhotoBatchAttributesEdit from '../components/MainPhotos/PhotoBatches/AttributesEdit';
 import CommunityGrid from '../components/Administration/LookupTableManagement/Community/CommunityGrid';
 import PhotoOwnerGrid from '../components/Administration/LookupTableManagement/PhotoOwner/PhotoOwnerGrid';
 import PhotoProjectGrid from '../components/Administration/LookupTableManagement/PhotoProject/PhotoProjectGrid';
@@ -658,18 +658,18 @@ const routes = [
 		},
 	},
 	{
-		path: '/photobatches/upload',
-		name: 'PhotoBatchUpload',
-		component: PhotoBatchUpload,
+		path: '/photobatches/attributes',
+		name: 'PhotoBatchAttributesView',
+		component: PhotoBatchAttributesView,
 		meta: {
 			requiresAuth: true,
 			authorize: [UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR],
 		},
 	},
 	{
-		path: '/photobatches/attributes/:mode',
-		name: 'PhotoBatchAttributes',
-		component: PhotoBatchAttributes,
+		path: '/photobatches/attributes/edit',
+		name: 'PhotoBatchAttributesEdit',
+		component: PhotoBatchAttributesEdit,
 		meta: {
 			requiresAuth: true,
 			authorize: [UserRoles.PHOTO_ADMIN, UserRoles.PHOTO_EDITOR],
