@@ -29,7 +29,7 @@ export class DestroyService extends BaseService {
 			await this.deleteThemes(trx);
 			await this.deleteWebLinks(trx);
 
-			await trx('place').where({ id: this.placeId }).delete();
+			await trx('place').where({ id: this.placeId }).update({ deleted_at: new Date() });
 		});
 	}
 
