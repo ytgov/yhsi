@@ -461,26 +461,6 @@ export default {
       }
 		},
     async associatePhoto() {
-			// Use community to check that fields have been filled in (user can't save without filling out all required fields)
-			if (!this.fields.communityId) {
-				this.$store.commit(
-					'alerts/setText',
-					'Attributes must be filled in before associating a record with this photo'
-				);
-				this.$store.commit('alerts/setType', 'warning');
-				this.$store.commit('alerts/setTimeout', 5000);
-				this.$store.commit('alerts/setAlert', true);
-        return
-			}
-      
-			if (
-        !confirm(
-          'When you hit OK this photo will be associated with the selected record. Are you sure you want to associate this photo with the selected record?'
-        )
-      ) {
-        return
-      }
-
       let id = undefined
       switch (this.record) {
         case 'place':
@@ -505,10 +485,32 @@ export default {
           id = this.selectedRecord.PersonID;
           break;
       }
+
+			if (!id) {
+				this.$store.commit(
+					'alerts/setText',
+					'No record selected'
+				);
+				this.$store.commit('alerts/setType', 'warning');
+				this.$store.commit('alerts/setTimeout', 5000);
+				this.$store.commit('alerts/setAlert', true);
+        return
+			}
+
+      if (
+        !confirm(
+          'When you hit OK this photo will be associated with the selected record. Are you sure you want to associate this photo with the selected record?'
+        )
+      ) {
+        return
+      }
       
-      await axios
+      console.log("Associating photo ", this.record, " with id ", id)
+      console.log("Photo: ", this.fields)
+
+      await api
         .post(
-          `${PHOTO_URL}/${this.record}/link/${id}`,
+          `/photos/${this.record}/link/${id}`,
           {
             linkPhotos: [this.fields]
           }
