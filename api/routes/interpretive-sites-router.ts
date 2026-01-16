@@ -1,18 +1,23 @@
-import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
-import knex from 'knex';
-import { ReturnValidationErrors } from '../middleware';
-import { param, query } from 'express-validator';
-import { InterpretiveSiteService } from '../services';
 import { renderFile } from 'pug';
-import { generatePDF } from '../utils/pdf-generator';
+import { difference } from 'lodash';
+import express, { Request, Response } from 'express';
+import { param, query } from 'express-validator';
 const {
 	Parser,
 	transforms: { unwind },
 } = require('json2csv');
 import * as multer from 'multer';
+
+import db from '@/db/db-client';
+
+import { ReturnValidationErrors } from '../middleware';
+import { InterpretiveSiteService } from '../services';
+import { generatePDF } from '../utils/pdf-generator';
+import { authorize } from '../middleware/authorization';
+import { UserRoles } from '../models';
+
 export const intSitesRouter = express.Router();
-const db = knex(DB_CONFIG);
+
 const intSiteService = new InterpretiveSiteService();
 
 const upload = multer.default();
@@ -30,28 +35,26 @@ intSitesRouter.get(
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const {
-			SiteName = '',
-			RouteName = '',
-			KMNum = '',
-			MapSheet = '',
-			sortBy,
-			sort,
-		} = req.query;
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
+		try {
+			const { SiteName = '', RouteName = '', KMNum = '', MapSheet = '', sortBy, sort } = req.query;
+			const page = parseInt(req.query.page as string);
+			const limit = parseInt(req.query.limit as string);
+			const offset = (page - 1) * limit || 0;
 
-		const data = await intSiteService.doSiteSearch(page, limit, offset, {
-			SiteName,
-			RouteName,
-			KMNum,
-			MapSheet,
-			sortBy,
-			sort,
-		});
+			const data = await intSiteService.doSiteSearch(page, limit, offset, {
+				SiteName,
+				RouteName,
+				KMNum,
+				MapSheet,
+				sortBy,
+				sort,
+			});
 
-		res.status(200).send(data);
+			res.status(200).send(data);
+		} catch (error) {
+			console.log(error);
+			res.status(500).send({ message: 'Error fetching Interpretive Sites' });
+		}
 	}
 );
 
@@ -75,12 +78,7 @@ intSitesRouter.get(
 intSitesRouter.post('/', async (req: Request, res: Response) => {
 	const { item = {}, actions = [], assets = [], inspections = [] } = req.body;
 
-	const resObj = await intSiteService.addSite(
-		item,
-		assets,
-		actions,
-		inspections
-	);
+	const resObj = await intSiteService.addSite(item, assets, actions, inspections);
 	if (!resObj) {
 		res.status(401).send({ message: 'Conflict' });
 		return;
@@ -104,11 +102,7 @@ intSitesRouter.post('/inspection', async (req: Request, res: Response) => {
 intSitesRouter.put('/:siteId', async (req: Request, res: Response) => {
 	const { item = {}, maintainers = [] } = req.body;
 	const { siteId } = req.params;
-	const resObj = await intSiteService.modifySite(
-		parseInt(siteId),
-		item,
-		maintainers
-	);
+	const resObj = await intSiteService.modifySite(parseInt(siteId), item, maintainers);
 	if (!resObj) {
 		res.sendStatus(404).send({ message: 'Site not found' });
 		return;
@@ -127,18 +121,12 @@ intSitesRouter.post(
 
 		const item = await intSiteService.getSiteById(parseInt(siteID));
 
-		let data = renderFile(
-			'./templates/interpretive-sites/interpretiveSitesView.pug',
-			{
-				data: item,
-			}
-		);
+		const data = renderFile('./templates/interpretive-sites/interpretiveSitesView.pug', {
+			data: item,
+		});
 
-		let pdf = await generatePDF(data);
-		res.setHeader(
-			'Content-disposition',
-			'attachment; filename="interpretiveSite.html"'
-		);
+		const pdf = await generatePDF(data);
+		res.setHeader('Content-disposition', 'attachment; filename="interpretiveSite.html"');
 		res.setHeader('Content-type', 'application/pdf');
 		res.send(pdf);
 	}
@@ -164,14 +152,12 @@ intSitesRouter.post('/pdf', async (req: Request, res: Response) => {
 		sortBy,
 		sort,
 	});
-	let pdfData = renderFile(
-		'./templates/interpretive-sites/interpretiveSitesGrid.pug',
-		{
-			data: data.body,
-		}
-	);
 
-	let pdf = await generatePDF(pdfData);
+	const pdfData = renderFile('./templates/interpretive-sites/interpretiveSitesGrid.pug', {
+		data: data.body,
+	});
+
+	const pdf = await generatePDF(pdfData);
 	res.setHeader('Content-disposition', 'attachment; filename="sites.html"');
 	res.setHeader('Content-type', 'application/pdf');
 	res.send(pdf);
@@ -221,7 +207,7 @@ intSitesRouter.post(
 		} = req.body;
 
 		// const OriginalFileName = req.file.originalname;
-		let resObj = (
+		const resObj = (
 			await db
 				.insert({
 					...(ActionID && { ActionID }),
@@ -251,11 +237,46 @@ intSitesRouter.post(
 		const { docID } = req.params;
 		const doc: any = await intSiteService.getDocumentsByID(parseInt(docID));
 
-		res.setHeader(
-			'Content-disposition',
-			`attachment; filename="${doc.DocDesc}.${doc.FileType}"`
-		);
+		res.setHeader('Content-disposition', `attachment; filename="${doc.DocDesc}.${doc.FileType}"`);
 		res.setHeader('Content-type', 'application/json');
 		res.send(doc);
+	}
+);
+
+intSitesRouter.post(
+	'/:id/photos/link',
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+	async (request: Request, response: Response) => {
+		try {
+			const { id } = request.params;
+			const { linkPhotos } = request.body;
+
+			const currentPhotos = await db
+				.select('Photo_RowID')
+				.from('InterpretiveSite.Photos')
+				.where('SiteId', id);
+
+			const filteredLinkPhotos = difference(
+				linkPhotos,
+				currentPhotos.map((x: any) => {
+					return x.Photo_RowID;
+				})
+			);
+
+			for (const photo of filteredLinkPhotos) {
+				await db
+					.insert({ SiteId: id, Photo_RowID: photo.rowId })
+					.into('InterpretiveSite.Photos')
+					.returning('*')
+					.then((rows: any) => {
+						return rows;
+					});
+			}
+
+			return response.json({ message: 'Successfully linked the photos' });
+		} catch (error) {
+			console.log(error);
+			return response.status(500).json({ data: 'failed to link' });
+		}
 	}
 );

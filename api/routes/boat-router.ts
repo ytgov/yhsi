@@ -1,28 +1,27 @@
+import { difference } from 'lodash';
 import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
-import knex from 'knex';
-import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
-import { BoatService } from '../services';
 import { renderFile } from 'pug';
-import { generatePDF } from '../utils/pdf-generator';
-import { authorize } from '../middleware/authorization';
-import { UserRoles } from '../models';
 const {
 	Parser,
 	transforms: { unwind },
 } = require('json2csv');
+
+import db from '@/db/db-client';
+
+import { ReturnValidationErrors } from '../middleware';
+import { BoatService } from '../services';
+import { generatePDF } from '../utils/pdf-generator';
+import { authorize } from '../middleware/authorization';
+import { UserRoles } from '../models';
+
 export const boatsRouter = express.Router();
-const db = knex(DB_CONFIG);
+
 const boatService = new BoatService();
 
 boatsRouter.get(
 	'/',
-	authorize([
-		UserRoles.ADMINISTRATOR,
-		UserRoles.BOATS_EDITOR,
-		UserRoles.BOATS_VIEWER,
-	]),
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
 	[
 		query('textToMatch').default('').isString(),
 		query('sortBy').default('Name').isString(),
@@ -61,11 +60,7 @@ boatsRouter.get(
 
 boatsRouter.get(
 	'/:boatId',
-	authorize([
-		UserRoles.ADMINISTRATOR,
-		UserRoles.BOATS_EDITOR,
-		UserRoles.BOATS_VIEWER,
-	]),
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
 	[param('boatId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
@@ -91,12 +86,7 @@ boatsRouter.post(
     const permissions = req.decodedToken['yg-claims'].permissions;
     if (!permissions.includes('create')) res.sendStatus(403);
    */
-		const {
-			boat = {},
-			ownerNewArray = [],
-			histories = [],
-			pastNamesNewArray = [],
-		} = req.body;
+		const { boat = {}, ownerNewArray = [], histories = [], pastNamesNewArray = [] } = req.body;
 
 		const response = await db
 			.insert(boat)
@@ -197,9 +187,7 @@ boatsRouter.put(
 
 		//Add the new past names (done)
 		await db
-			.insert(
-				pastNamesNewArray.map((name: any) => ({ BoatId: boatId, ...name }))
-			)
+			.insert(pastNamesNewArray.map((name: any) => ({ BoatId: boatId, ...name })))
 			.into('boat.pastnames')
 			.then((rows: any) => {
 				return rows;
@@ -212,11 +200,7 @@ boatsRouter.put(
 //PDF AND EXPORTS
 boatsRouter.post(
 	'/pdf/:boatId',
-	authorize([
-		UserRoles.ADMINISTRATOR,
-		UserRoles.BOATS_EDITOR,
-		UserRoles.BOATS_VIEWER,
-	]),
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
 	[param('boatId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
@@ -237,11 +221,7 @@ boatsRouter.post(
 
 boatsRouter.post(
 	'/pdf',
-	authorize([
-		UserRoles.ADMINISTRATOR,
-		UserRoles.BOATS_EDITOR,
-		UserRoles.BOATS_VIEWER,
-	]),
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
 	async (req: Request, res: Response) => {
 		const {
 			textToMatch = '',
@@ -277,11 +257,7 @@ boatsRouter.post(
 
 boatsRouter.post(
 	'/export',
-	authorize([
-		UserRoles.ADMINISTRATOR,
-		UserRoles.BOATS_EDITOR,
-		UserRoles.BOATS_VIEWER,
-	]),
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
 	async (req: Request, res: Response) => {
 		const {
 			textToMatch = '',
@@ -311,5 +287,43 @@ boatsRouter.post(
 
 		res.setHeader('Content-Type', 'text/csv');
 		res.attachment('boats.csv').send(csv);
+	}
+);
+
+boatsRouter.post(
+	'/:boatId/photos/link',
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+	async (request: Request, response: Response) => {
+		try {
+			const { boatId } = request.params;
+			const { linkPhotos } = request.body;
+
+			const currentPhotos = await db
+				.select('Photo_RowID')
+				.from('Boat.Photo')
+				.where('BoatId', boatId);
+
+			const filteredLinkPhotos = difference(
+				linkPhotos,
+				currentPhotos.map((x: any) => {
+					return x.Photo_RowID;
+				})
+			);
+
+			for (const photo of filteredLinkPhotos) {
+				await db
+					.insert({ BoatId: boatId, Photo_RowID: photo.rowId })
+					.into('Boat.Photo')
+					.returning('*')
+					.then((rows: any) => {
+						return rows;
+					});
+			}
+
+			return response.json({ message: 'Successfully linked the photos' });
+		} catch (error) {
+			console.log(error);
+			return response.status(500).json({ data: 'failed to link' });
+		}
 	}
 );

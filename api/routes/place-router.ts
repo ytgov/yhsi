@@ -1,22 +1,24 @@
 import express, { Request, Response } from 'express';
 import { body, check, param, query, validationResult, matchedData } from 'express-validator';
 import multer from 'multer';
-import { isNil, isString } from 'lodash';
+import { isNil, isString, difference } from 'lodash';
 
-import { API_PORT, DB_CONFIG } from '../config';
-import { PhotoService, PlaceService } from '../services';
-import PrintSiteService from '../services/place/print-site-service';
-import { ReturnValidationErrors } from '../middleware';
-import { authorize } from '../middleware/authorization';
-import { Place, User, UserRoles } from '../models';
-import PlacesController from '../controllers/places-controller';
-import { PlacePolicy } from '../policies';
-import { generatePDF } from '../utils/pdf-generator';
-import { createThumbnail } from '../utils/image';
-import { DestroyService } from '../services/place';
-import { Photo } from 'data/photo-entities';
+import db from '@/db/db-client';
+import { API_PORT, DB_CONFIG } from '@/config';
+import { PhotoService, PlaceService } from '@/services';
+import PrintSiteService from '@/services/place/print-site-service';
+import { DestroyService } from '@/services/place';
+import { ReturnValidationErrors } from '@/middleware';
+import { authorize } from '@/middleware/authorization';
+import { Place, User, UserRoles } from '@/models';
+import PlacesController from '@/controllers/places-controller';
+import { PlacePolicy } from '@/policies';
+import { generatePDF } from '@/utils/pdf-generator';
+import { createThumbnail } from '@/utils/image';
+import { Photo } from '@/data/photo-entities';
 
 const placeService = new PlaceService(DB_CONFIG);
+const photoService = new PhotoService(DB_CONFIG);
 const PAGE_SIZE = 10;
 
 export const placeRouter = express.Router();
@@ -229,13 +231,55 @@ placeRouter.post(
 				dateCreated: new Date(),
 			};
 
-			const photoService = new PhotoService(DB_CONFIG);
 			await photoService.addPhoto(body);
 
 			return res.status(200).json({ data: 'success' });
 		} catch (err) {
 			console.log(err);
 			return res.status(500).json({ data: 'failuer', error: err });
+		}
+	}
+);
+
+placeRouter.post(
+	'/:placeId/photos/link',
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+	async (request: Request, response: Response) => {
+		try {
+			const { placeId } = request.params;
+
+			const { linkPhotos } = request.body;
+			const currentPhotosForPlace = await db
+				.select('RowId')
+				.from('dbo.Photo')
+				.where('PlaceId', placeId);
+
+			const filteredLinkPhotos = difference(
+				linkPhotos,
+				currentPhotosForPlace.map((x: any) => {
+					return x.PhotoId;
+				})
+			);
+
+			for (const photo of filteredLinkPhotos) {
+				if (isNil(photo)) {
+					throw new Error('photo in filteredLinkPhotos is null');
+				}
+
+				const { rowId } = photo;
+				const rowIdString = String(rowId);
+
+				if (isNil(rowIdString)) {
+					throw new Error('rowId in photo from filteredLinkPhotos is null');
+				}
+
+				await photoService.associatePhotoToPlace(rowIdString, placeId);
+			}
+
+			return response.json({ message: 'Successfully linked the photos' });
+		} catch (error) {
+			console.log(error);
+			return response.status(500).json({ data: 'failed to link' });
 		}
 	}
 );
@@ -253,7 +297,6 @@ placeRouter.get(
 	async (req: Request, res: Response) => {
 		try {
 			const { id } = req.params;
-			const photoService = new PhotoService(DB_CONFIG);
 			const placePhotos = await photoService.getForPlace(parseInt(id));
 
 			const defaultPhoto = placePhotos.find((photo) => photo.isSiteDefault);
