@@ -212,6 +212,7 @@
 
 <script>
 import axios from "axios";
+import { isNil } from "lodash";
 import { mapActions, mapGetters } from 'vuex';
 
 import { PHOTO_URL, PLACE_URL, YTPLACE_URL } from "../../urls";
@@ -252,6 +253,11 @@ export default {
       this.dialog = true;
     },
     close() {
+      this.record = undefined
+      this.query = "";
+      this.search = null
+      this.items = []
+      this.selectedRecord = null
       this.dialog = false;
       this.reset();
     },
@@ -275,7 +281,6 @@ export default {
           text: item.primaryName + " (" + item.yHSIId + ")",
           value: item
         }));
-        console.log(this.items)
       } catch (error) {
         console.error(error)
       } finally {
@@ -295,7 +300,6 @@ export default {
           text: item.Name,
           value: item
         }));
-        console.log(this.items)
       } catch (error) {
         console.error(error)
       } finally {
@@ -315,7 +319,6 @@ export default {
           text: item.yacsinumber + " " + item.aircrafttype + " (" + item.aircraftregistration + ")",
           value: item
         }));
-        console.log(this.items)
       } catch (error) {
         console.error(error)
       } finally {
@@ -337,7 +340,6 @@ export default {
           text: item.name,
           value: item
         }));
-        console.log(this.items)
       } catch (error) {
         console.error(error)
       } finally {
@@ -357,7 +359,6 @@ export default {
           text: item.FirstName + " " + item.LastName,
           value: item
         }));
-        console.log(this.items)
       } catch (error) {
         console.error(error)
       } finally {
@@ -379,7 +380,6 @@ export default {
           text: item.SiteName,
           value: item
         }));
-        console.log(this.items)
       } catch (error) {
         console.error(error)
       } finally {
@@ -399,7 +399,6 @@ export default {
           text: item.GivenName + " " + item.Surname,
           value: item
         }));
-        console.log(this.items)
       } catch (error) {
         console.error(error)
       } finally {
@@ -461,6 +460,25 @@ export default {
       }
 		},
     async associatePhoto() {
+			if (isNil(this.selectedRecord)) {
+				this.$store.commit(
+					'alerts/setText',
+					'You must pick a record to associate with this photo'
+				);
+				this.$store.commit('alerts/setType', 'warning');
+				this.$store.commit('alerts/setTimeout', 5000);
+				this.$store.commit('alerts/setAlert', true);
+        return
+			}
+      
+			if (
+        !confirm(
+          'When you hit OK this photo will be associated with the selected record. Are you sure you want to associate this photo with the selected record?'
+        )
+      ) {
+        return
+      }
+
       let id = undefined
       switch (this.record) {
         case 'place':
@@ -484,39 +502,21 @@ export default {
         case 'people':
           id = this.selectedRecord.PersonID;
           break;
+        default:
+          throw new Error('Invalid record type');
       }
 
-			if (!id) {
-				this.$store.commit(
-					'alerts/setText',
-					'No record selected'
-				);
-				this.$store.commit('alerts/setType', 'warning');
-				this.$store.commit('alerts/setTimeout', 5000);
-				this.$store.commit('alerts/setAlert', true);
-        return
-			}
-
-      if (
-        !confirm(
-          'When you hit OK this photo will be associated with the selected record. Are you sure you want to associate this photo with the selected record?'
-        )
-      ) {
-        return
-      }
-      
-      console.log("Associating photo ", this.record, " with id ", id)
-      console.log("Photo: ", this.fields)
+      // eslint-disable-next-line no-unused-vars
+      const { ThumbFile, ...photoData } = this.fields
 
       await api
         .post(
-          `/photos/${this.record}/link/${id}`,
+          `/${this.record}/${id}/photos/link`,
           {
-            linkPhotos: [this.fields]
+            linkPhotos: [photoData]
           }
         )
         .then(() => {
-          this.$router.push(`/photos`);
           this.$store.commit(
             'alerts/setText',
             'Photo associated with record successfully'
@@ -531,6 +531,8 @@ export default {
           this.$store.commit('alerts/setTimeout', 5000);
           this.$store.commit('alerts/setAlert', true);
         });
+
+        this.close()
 		},
     reset() {
       this.dialog = false;
@@ -541,12 +543,9 @@ export default {
   },
   watch: {
     query(newVal) {
-      console.log("Query: ");
-      console.log({newVal})
       if (newVal) {
         this.selectedRecord = newVal.value;
       }
-      console.log(this.selectedRecord)
     }
   }
 };
