@@ -173,7 +173,6 @@ app.use('/api/ownership-types', RequiresAuthentication, ownershipTypesRouter);
 app.use('/api/aircrash', RequiresAuthentication, aircrashRouter);
 app.use('/api/histories', RequiresAuthentication, historiesRouter);
 app.use('/api/catalogs', RequiresAuthentication, catalogsRouter);
-app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
 app.use('/api/photos', photosExtraRouter); //removed auth check for testing
 app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
@@ -184,7 +183,6 @@ app.use('/api/site-category-types', RequiresAuthentication, siteCategoryTypesRou
 app.use('/api/site-status-types', RequiresAuthentication, siteStatusTypesRouter);
 app.use('/api/statutes', RequiresAuthentication, statutesRouter);
 app.use('/api/users', RequiresAuthentication, usersExtraRouter);
-app.use('/api/people', RequiresAuthentication, peopleRouter);
 app.use('/api/burials', RequiresAuthentication, burialsRouter);
 app.use('/api/maps', mapsRouter);
 app.use('/api/web-link-types', webLinkTypesRouter);
