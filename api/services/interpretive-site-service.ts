@@ -1,29 +1,21 @@
-import knex, { Knex } from 'knex';
-import { QueryStatement, SortStatement } from './';
-import { Photo, PHOTO_FIELDS } from '../data';
-import { DB_CONFIG } from '../config';
-import { burialsRouter } from 'routes';
-import { filter } from 'lodash';
-const db = knex(DB_CONFIG);
+import db from '@/db/db-client';
+
 export class InterpretiveSiteService {
 	//SITES
 	async getAllSites() {
 		const sortBy = 'SiteName';
 		const sort = 'asc';
 
-		return await db
-			.select('*')
-			.from('InterpretiveSite.Sites')
-			.orderBy(`${sortBy}`, `${sort}`);
+		return await db.select('*').from('InterpretiveSite.Sites').orderBy(`${sortBy}`, `${sort}`);
 	}
 	async getMaintainersByID(param: any) {
-		let { AssetID = '', SiteID = '' } = param;
+		const { AssetID = '', SiteID = '' } = param;
 		const filterColumn = {
 			...(SiteID && { SiteID }),
 			...(AssetID && { AssetID }),
 		};
 
-		let [key] = Object.keys(filterColumn);
+		const [key] = Object.keys(filterColumn);
 		return await db
 			.select('*')
 			.from('InterpretiveSite.Maintainer')
@@ -52,11 +44,7 @@ export class InterpretiveSiteService {
 						action.Inspection = await db
 							.select('*')
 							.from('InterpretiveSite.Inspections')
-							.where(
-								'InterpretiveSite.Inspections.InspectID',
-								'=',
-								action.InspectID
-							)
+							.where('InterpretiveSite.Inspections.InspectID', '=', action.InspectID)
 							.first();
 					}
 				}
@@ -170,7 +158,7 @@ export class InterpretiveSiteService {
 			...(AssetID && { AssetID }),
 		};
 
-		let [key] = Object.keys(filterColumn);
+		const [key] = Object.keys(filterColumn);
 		return await db
 			.select('*')
 			.from(`InterpretiveSite.${objName}`)
@@ -188,7 +176,7 @@ export class InterpretiveSiteService {
 		}
 
 		//maintainers
-		let newMaintainers = maintainers
+		const newMaintainers = maintainers
 			.filter((x: any) => x.new == true && !x.deleted)
 			.map((x: any) => ({ Maintainer: x.Maintainer, SiteID: x.SiteID }));
 		if (newMaintainers.length > 0) {
@@ -261,12 +249,8 @@ export class InterpretiveSiteService {
 		return res;
 	}
 
-	async doSiteSearch(
-		page: number,
-		limit: number,
-		offset: number,
-		filters: any
-	) {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async doSiteSearch(page: number, limit: number, offset: number, filters: any) {
 		let counter = [{ count: 0 }];
 		let sites = [];
 		const {
@@ -274,69 +258,29 @@ export class InterpretiveSiteService {
 			RouteName = '',
 			KMNum = '',
 			MapSheet = '',
-			sortBy,
-			sort,
+			sortBy = 'SiteID',
+			sort = 'asc',
 		} = filters;
+
+		const query = db('InterpretiveSite.Sites').where((builder) => {
+			if (SiteName !== '') builder.where('SiteName', 'like', `%${SiteName}%`);
+			if (RouteName !== '') builder.where('RouteName', 'like', `%${RouteName}%`);
+			if (KMNum !== '') builder.where('KMNum', 'like', `%${KMNum}%`);
+			if (MapSheet !== '') builder.where('MapSheet', 'like', `%${MapSheet}%`);
+			// if(MapSheet !== '') builder.where('MapSheet', 'like', `%${ServiceEnd}%`);
+			// if(MapSheet !== '') builder.where('MapSheet', 'like', `%${ServiceEnd}%`);
+		});
+
+		counter = await query.clone().count('SiteID', { as: 'count' });
+		const dataQuery = query.clone().select('*');
+
 		//name,  route, km, mapsheet, established and maintained by
 		if (limit === 0) {
-			counter = await db
-				.from('InterpretiveSite.Sites')
-				.where((builder) => {
-					if (SiteName !== '')
-						builder.where('SiteName', 'like', `%${SiteName}%`);
-					if (RouteName !== '')
-						builder.where('RouteName', 'like', `%${RouteName}%`);
-					if (KMNum !== '') builder.where('KMNum', 'like', `%${KMNum}%`);
-					if (MapSheet !== '')
-						builder.where('MapSheet', 'like', `%${MapSheet}%`);
-					// if(MapSheet !== '') builder.where('MapSheet', 'like', `%${ServiceEnd}%`);
-					// if(MapSheet !== '') builder.where('MapSheet', 'like', `%${ServiceEnd}%`);
-				})
-				.count('SiteID', { as: 'count' });
-
-			sites = await db
-				.select('*')
-				.from('InterpretiveSite.Sites')
-				.where((builder) => {
-					if (SiteName !== '')
-						builder.where('SiteName', 'like', `%${SiteName}%`);
-					if (RouteName !== '')
-						builder.where('RouteName', 'like', `%${RouteName}%`);
-					if (KMNum !== '') builder.where('KMNum', 'like', `%${KMNum}%`);
-					if (MapSheet !== '')
-						builder.where('MapSheet', 'like', `%${MapSheet}%`);
-				})
-				.orderBy(`${sortBy}`, `${sort}`);
+			sites = await dataQuery.orderBy(`${sortBy}`, `${sort}`);
 		} else {
-			counter = await db
-				.from('InterpretiveSite.Sites')
-				.where((builder) => {
-					if (SiteName !== '')
-						builder.where('SiteName', 'like', `%${SiteName}%`);
-					if (RouteName !== '')
-						builder.where('RouteName', 'like', `%${RouteName}%`);
-					if (KMNum !== '') builder.where('KMNum', 'like', `%${KMNum}%`);
-					if (MapSheet !== '')
-						builder.where('MapSheet', 'like', `%${MapSheet}%`);
-				})
-				.count('SiteID', { as: 'count' });
-
-			sites = await db
-				.select('*')
-				.from('InterpretiveSite.Sites')
-				.where((builder) => {
-					if (SiteName !== '')
-						builder.where('SiteName', 'like', `%${SiteName}%`);
-					if (RouteName !== '')
-						builder.where('RouteName', 'like', `%${RouteName}%`);
-					if (KMNum !== '') builder.where('KMNum', 'like', `%${KMNum}%`);
-					if (MapSheet !== '')
-						builder.where('MapSheet', 'like', `%${MapSheet}%`);
-				})
-				.orderBy(`${sortBy}`, `${sort}`)
-				.limit(limit)
-				.offset(offset);
+			sites = await dataQuery.orderBy(`${sortBy}`, `${sort}`).limit(limit).offset(offset);
 		}
+
 		return { count: counter[0].count, body: sites };
 	}
 	//INSPECTIONS
@@ -359,12 +303,9 @@ export class InterpretiveSiteService {
 			});
 		return res;
 	}
-	async doInspectionSearch(
-		page: number,
-		limit: number,
-		offset: number,
-		filters: any
-	) {
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async doInspectionSearch(page: number, limit: number, offset: number, filters: any) {
 		let counter = [{ count: 0 }];
 		let inspections = [''];
 		const {
@@ -380,12 +321,9 @@ export class InterpretiveSiteService {
 				.from('InterpretiveSite.Inspections as AC')
 				.where((builder) => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
-					if (InspectionDate !== '')
-						builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
-					if (Description !== '')
-						builder.where('Description', 'like', `%${Description}%`);
-					if (InspectedBy !== '')
-						builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
+					if (InspectionDate !== '') builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
+					if (Description !== '') builder.where('Description', 'like', `%${Description}%`);
+					if (InspectedBy !== '') builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.count('InspectID', { as: 'count' });
@@ -395,12 +333,9 @@ export class InterpretiveSiteService {
 				.from('InterpretiveSite.Inspections as AC')
 				.where((builder) => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
-					if (InspectionDate !== '')
-						builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
-					if (Description !== '')
-						builder.where('Description', 'like', `%${Description}%`);
-					if (InspectedBy !== '')
-						builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
+					if (InspectionDate !== '') builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
+					if (Description !== '') builder.where('Description', 'like', `%${Description}%`);
+					if (InspectedBy !== '') builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.orderBy(`${sortBy}`, `${sort}`);
@@ -409,12 +344,9 @@ export class InterpretiveSiteService {
 				.from('InterpretiveSite.Inspections as AC')
 				.where((builder) => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
-					if (InspectionDate !== '')
-						builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
-					if (Description !== '')
-						builder.where('Description', 'like', `%${Description}%`);
-					if (InspectedBy !== '')
-						builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
+					if (InspectionDate !== '') builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
+					if (Description !== '') builder.where('Description', 'like', `%${Description}%`);
+					if (InspectedBy !== '') builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.count('InspectID', { as: 'count' });
@@ -424,12 +356,9 @@ export class InterpretiveSiteService {
 				.from('InterpretiveSite.Inspections as AC')
 				.where((builder) => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
-					if (InspectionDate !== '')
-						builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
-					if (Description !== '')
-						builder.where('Description', 'like', `%${Description}%`);
-					if (InspectedBy !== '')
-						builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
+					if (InspectionDate !== '') builder.where('InspectionDate', 'like', `%${InspectionDate}%`);
+					if (Description !== '') builder.where('Description', 'like', `%${Description}%`);
+					if (InspectedBy !== '') builder.where('InspectedBy', 'like', `%${InspectedBy}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.orderBy(`${sortBy}`, `${sort}`)
@@ -481,12 +410,8 @@ export class InterpretiveSiteService {
 			.returning('*');
 	}
 
-	async doActionSearch(
-		page: number,
-		limit: number,
-		offset: number,
-		filters: any
-	) {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async doActionSearch(page: number, limit: number, offset: number, filters: any) {
 		let counter = [{ count: 0 }];
 		let actions = [''];
 		const {
@@ -507,26 +432,16 @@ export class InterpretiveSiteService {
 				.from('InterpretiveSite.Actions as AC')
 				.where((builder) => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
-					if (ActionDesc !== '')
-						builder.where('ActionDesc', 'like', `%${ActionDesc}%`);
+					if (ActionDesc !== '') builder.where('ActionDesc', 'like', `%${ActionDesc}%`);
 					if (ToBeCompleteDate !== '')
 						builder.where('ToBeCompleteDate', 'like', `%${ToBeCompleteDate}%`);
 					if (ActionCompleteDate !== '')
-						builder.where(
-							'ActionCompleteDate',
-							'like',
-							`%${ActionCompleteDate}%`
-						);
-					if (CompletionDesc !== '')
-						builder.where('CompletionDesc', 'like', `%${CompletionDesc}%`);
-					if (Priority !== '')
-						builder.where('Priority', 'like', `%${Priority}%`);
-					if (CreatedBy !== '')
-						builder.where('CreatedBy', 'like', `%${CreatedBy}%`);
-					if (CreatedDate !== '')
-						builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
-					if (CompletedBy !== '')
-						builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
+						builder.where('ActionCompleteDate', 'like', `%${ActionCompleteDate}%`);
+					if (CompletionDesc !== '') builder.where('CompletionDesc', 'like', `%${CompletionDesc}%`);
+					if (Priority !== '') builder.where('Priority', 'like', `%${Priority}%`);
+					if (CreatedBy !== '') builder.where('CreatedBy', 'like', `%${CreatedBy}%`);
+					if (CreatedDate !== '') builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
+					if (CompletedBy !== '') builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.count('ActionID', { as: 'count' });
@@ -536,26 +451,16 @@ export class InterpretiveSiteService {
 				.from('InterpretiveSite.Actions as AC')
 				.where((builder) => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
-					if (ActionDesc !== '')
-						builder.where('ActionDesc', 'like', `%${ActionDesc}%`);
+					if (ActionDesc !== '') builder.where('ActionDesc', 'like', `%${ActionDesc}%`);
 					if (ToBeCompleteDate !== '')
 						builder.where('ToBeCompleteDate', 'like', `%${ToBeCompleteDate}%`);
 					if (ActionCompleteDate !== '')
-						builder.where(
-							'ActionCompleteDate',
-							'like',
-							`%${ActionCompleteDate}%`
-						);
-					if (CompletionDesc !== '')
-						builder.where('CompletionDesc', 'like', `%${CompletionDesc}%`);
-					if (Priority !== '')
-						builder.where('Priority', 'like', `%${Priority}%`);
-					if (CreatedBy !== '')
-						builder.where('CreatedBy', 'like', `%${CreatedBy}%`);
-					if (CreatedDate !== '')
-						builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
-					if (CompletedBy !== '')
-						builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
+						builder.where('ActionCompleteDate', 'like', `%${ActionCompleteDate}%`);
+					if (CompletionDesc !== '') builder.where('CompletionDesc', 'like', `%${CompletionDesc}%`);
+					if (Priority !== '') builder.where('Priority', 'like', `%${Priority}%`);
+					if (CreatedBy !== '') builder.where('CreatedBy', 'like', `%${CreatedBy}%`);
+					if (CreatedDate !== '') builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
+					if (CompletedBy !== '') builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.orderBy(`${sortBy}`, `${sort}`);
@@ -565,26 +470,16 @@ export class InterpretiveSiteService {
 				.from('InterpretiveSite.Actions as AC')
 				.where((builder) => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
-					if (ActionDesc !== '')
-						builder.where('ActionDesc', 'like', `%${ActionDesc}%`);
+					if (ActionDesc !== '') builder.where('ActionDesc', 'like', `%${ActionDesc}%`);
 					if (ToBeCompleteDate !== '')
 						builder.where('ToBeCompleteDate', 'like', `%${ToBeCompleteDate}%`);
 					if (ActionCompleteDate !== '')
-						builder.where(
-							'ActionCompleteDate',
-							'like',
-							`%${ActionCompleteDate}%`
-						);
-					if (CompletionDesc !== '')
-						builder.where('CompletionDesc', 'like', `%${CompletionDesc}%`);
-					if (Priority !== '')
-						builder.where('Priority', 'like', `%${Priority}%`);
-					if (CreatedBy !== '')
-						builder.where('CreatedBy', 'like', `%${CreatedBy}%`);
-					if (CreatedDate !== '')
-						builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
-					if (CompletedBy !== '')
-						builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
+						builder.where('ActionCompleteDate', 'like', `%${ActionCompleteDate}%`);
+					if (CompletionDesc !== '') builder.where('CompletionDesc', 'like', `%${CompletionDesc}%`);
+					if (Priority !== '') builder.where('Priority', 'like', `%${Priority}%`);
+					if (CreatedBy !== '') builder.where('CreatedBy', 'like', `%${CreatedBy}%`);
+					if (CreatedDate !== '') builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
+					if (CompletedBy !== '') builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.count('ActionID', { as: 'count' });
@@ -594,26 +489,16 @@ export class InterpretiveSiteService {
 				.from('InterpretiveSite.Actions as AC')
 				.where((builder) => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
-					if (ActionDesc !== '')
-						builder.where('ActionDesc', 'like', `%${ActionDesc}%`);
+					if (ActionDesc !== '') builder.where('ActionDesc', 'like', `%${ActionDesc}%`);
 					if (ToBeCompleteDate !== '')
 						builder.where('ToBeCompleteDate', 'like', `%${ToBeCompleteDate}%`);
 					if (ActionCompleteDate !== '')
-						builder.where(
-							'ActionCompleteDate',
-							'like',
-							`%${ActionCompleteDate}%`
-						);
-					if (CompletionDesc !== '')
-						builder.where('CompletionDesc', 'like', `%${CompletionDesc}%`);
-					if (Priority !== '')
-						builder.where('Priority', 'like', `%${Priority}%`);
-					if (CreatedBy !== '')
-						builder.where('CreatedBy', 'like', `%${CreatedBy}%`);
-					if (CreatedDate !== '')
-						builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
-					if (CompletedBy !== '')
-						builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
+						builder.where('ActionCompleteDate', 'like', `%${ActionCompleteDate}%`);
+					if (CompletionDesc !== '') builder.where('CompletionDesc', 'like', `%${CompletionDesc}%`);
+					if (Priority !== '') builder.where('Priority', 'like', `%${Priority}%`);
+					if (CreatedBy !== '') builder.where('CreatedBy', 'like', `%${CreatedBy}%`);
+					if (CreatedDate !== '') builder.where('CreatedDate', 'like', `%${CreatedDate}%`);
+					if (CompletedBy !== '') builder.where('CompletedBy', 'like', `%${CompletedBy}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.orderBy(`${sortBy}`, `${sort}`)
@@ -646,10 +531,7 @@ export class InterpretiveSiteService {
 	}
 
 	async addAsset(item: any, maintainer: any) {
-		let res: any = await db
-			.insert(item)
-			.into('InterpretiveSite.Assets')
-			.returning('*');
+		const res: any = await db.insert(item).into('InterpretiveSite.Assets').returning('*');
 		console.log(res);
 		if (res) {
 			maintainer.SiteID = res[0].SiteID;
@@ -665,7 +547,7 @@ export class InterpretiveSiteService {
 
 	async modifyAsset(item: any, maintainers: any, AssetId: number) {
 		//maintainers
-		let newMaintainers = maintainers
+		const newMaintainers = maintainers
 			.filter((x: any) => x.new == true && !x.deleted)
 			.map((x: any) => ({ Maintainer: x.Maintainer, AssetID: x.AssetID }));
 		if (newMaintainers.length > 0) {
@@ -692,12 +574,8 @@ export class InterpretiveSiteService {
 			.returning('*');
 	}
 
-	async doAssetSearch(
-		page: number,
-		limit: number,
-		offset: number,
-		filters: any
-	) {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async doAssetSearch(page: number, limit: number, offset: number, filters: any) {
 		let counter = [{ count: 0 }];
 		let assets = [''];
 		const {
@@ -720,24 +598,16 @@ export class InterpretiveSiteService {
 				.from('InterpretiveSite.Assets as ASS')
 				.where((builder) => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
-					if (Category !== '')
-						builder.where('Category', 'like', `%${Category}%`);
+					if (Category !== '') builder.where('Category', 'like', `%${Category}%`);
 					if (Type !== '') builder.where('Type', 'like', `%${Type}%`);
 					if (Size !== '') builder.where('Size', 'like', `%${Size}%`);
-					if (Description !== '')
-						builder.where('Description', 'like', `%${Description}%`);
-					if (SignText !== '')
-						builder.where('SignText', 'like', `%${SignText}%`);
-					if (InstallDate !== '')
-						builder.where('InstallDate', 'like', `%${InstallDate}%`);
+					if (Description !== '') builder.where('Description', 'like', `%${Description}%`);
+					if (SignText !== '') builder.where('SignText', 'like', `%${SignText}%`);
+					if (InstallDate !== '') builder.where('InstallDate', 'like', `%${InstallDate}%`);
 					if (DecommissionDate !== '')
 						builder.where('DecommissionDate', 'like', `%${DecommissionDate}%`);
 					if (DecommissionNotes !== '')
-						builder.where(
-							'DecommissionNotes',
-							'like',
-							`%${DecommissionNotes}%`
-						);
+						builder.where('DecommissionNotes', 'like', `%${DecommissionNotes}%`);
 					if (Status !== '') builder.where('Status', 'like', `%${Status}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'ASS.SiteID', '=', 'ST.SiteID')
@@ -748,24 +618,16 @@ export class InterpretiveSiteService {
 				.from('InterpretiveSite.Assets as ASS')
 				.where((builder) => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
-					if (Category !== '')
-						builder.where('Category', 'like', `%${Category}%`);
+					if (Category !== '') builder.where('Category', 'like', `%${Category}%`);
 					if (Type !== '') builder.where('Type', 'like', `%${Type}%`);
 					if (Size !== '') builder.where('Size', 'like', `%${Size}%`);
-					if (Description !== '')
-						builder.where('Description', 'like', `%${Description}%`);
-					if (SignText !== '')
-						builder.where('SignText', 'like', `%${SignText}%`);
-					if (InstallDate !== '')
-						builder.where('InstallDate', 'like', `%${InstallDate}%`);
+					if (Description !== '') builder.where('Description', 'like', `%${Description}%`);
+					if (SignText !== '') builder.where('SignText', 'like', `%${SignText}%`);
+					if (InstallDate !== '') builder.where('InstallDate', 'like', `%${InstallDate}%`);
 					if (DecommissionDate !== '')
 						builder.where('DecommissionDate', 'like', `%${DecommissionDate}%`);
 					if (DecommissionNotes !== '')
-						builder.where(
-							'DecommissionNotes',
-							'like',
-							`%${DecommissionNotes}%`
-						);
+						builder.where('DecommissionNotes', 'like', `%${DecommissionNotes}%`);
 					if (Status !== '') builder.where('Status', 'like', `%${Status}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'ASS.SiteID', '=', 'ST.SiteID')
@@ -775,24 +637,16 @@ export class InterpretiveSiteService {
 				.from('InterpretiveSite.Assets as ASS')
 				.where((builder) => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
-					if (Category !== '')
-						builder.where('Category', 'like', `%${Category}%`);
+					if (Category !== '') builder.where('Category', 'like', `%${Category}%`);
 					if (Type !== '') builder.where('Type', 'like', `%${Type}%`);
 					if (Size !== '') builder.where('Size', 'like', `%${Size}%`);
-					if (Description !== '')
-						builder.where('Description', 'like', `%${Description}%`);
-					if (SignText !== '')
-						builder.where('SignText', 'like', `%${SignText}%`);
-					if (InstallDate !== '')
-						builder.where('InstallDate', 'like', `%${InstallDate}%`);
+					if (Description !== '') builder.where('Description', 'like', `%${Description}%`);
+					if (SignText !== '') builder.where('SignText', 'like', `%${SignText}%`);
+					if (InstallDate !== '') builder.where('InstallDate', 'like', `%${InstallDate}%`);
 					if (DecommissionDate !== '')
 						builder.where('DecommissionDate', 'like', `%${DecommissionDate}%`);
 					if (DecommissionNotes !== '')
-						builder.where(
-							'DecommissionNotes',
-							'like',
-							`%${DecommissionNotes}%`
-						);
+						builder.where('DecommissionNotes', 'like', `%${DecommissionNotes}%`);
 					if (Status !== '') builder.where('Status', 'like', `%${Status}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'ASS.SiteID', '=', 'ST.SiteID')
@@ -803,24 +657,16 @@ export class InterpretiveSiteService {
 				.from('InterpretiveSite.Assets as ASS')
 				.where((builder) => {
 					//if(textToMatch !== '') builder.where('SiteName', 'like', `%${textToMatch}%`);
-					if (Category !== '')
-						builder.where('Category', 'like', `%${Category}%`);
+					if (Category !== '') builder.where('Category', 'like', `%${Category}%`);
 					if (Type !== '') builder.where('Type', 'like', `%${Type}%`);
 					if (Size !== '') builder.where('Size', 'like', `%${Size}%`);
-					if (Description !== '')
-						builder.where('Description', 'like', `%${Description}%`);
-					if (SignText !== '')
-						builder.where('SignText', 'like', `%${SignText}%`);
-					if (InstallDate !== '')
-						builder.where('InstallDate', 'like', `%${InstallDate}%`);
+					if (Description !== '') builder.where('Description', 'like', `%${Description}%`);
+					if (SignText !== '') builder.where('SignText', 'like', `%${SignText}%`);
+					if (InstallDate !== '') builder.where('InstallDate', 'like', `%${InstallDate}%`);
 					if (DecommissionDate !== '')
 						builder.where('DecommissionDate', 'like', `%${DecommissionDate}%`);
 					if (DecommissionNotes !== '')
-						builder.where(
-							'DecommissionNotes',
-							'like',
-							`%${DecommissionNotes}%`
-						);
+						builder.where('DecommissionNotes', 'like', `%${DecommissionNotes}%`);
 					if (Status !== '') builder.where('Status', 'like', `%${Status}%`);
 				})
 				.join('InterpretiveSite.Sites as ST', 'ASS.SiteID', '=', 'ST.SiteID')
@@ -842,7 +688,7 @@ export class InterpretiveSiteService {
 			...(AssetID && { AssetID }),
 		};
 
-		let [key] = Object.keys(filterColumn);
+		const [key] = Object.keys(filterColumn);
 
 		const res = await db
 			.select(`DocID`, `${key}`, `DocDesc`, `UploadedBy`, `UploadDate`)

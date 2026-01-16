@@ -84,7 +84,12 @@ export class PlaceService {
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Place>> {
-		return this.db('place').select<Place[]>(PLACE_FIELDS).orderBy('id').offset(skip).limit(take);
+		return this.db('place')
+			.select<Place[]>(PLACE_FIELDS)
+			.whereNull('deleted_at')
+			.orderBy('id')
+			.offset(skip)
+			.limit(take);
 	}
 
 	async getAllWithPhoto(skip: number, take: number): Promise<Array<Place>> {
@@ -92,6 +97,7 @@ export class PlaceService {
 		return this.db('place')
 			.distinct('Place.Id')
 			.select<Place[]>([...PLACE_FIELDS, 'PH.ThumbFile', 'PH.caption'])
+			.whereNull('deleted_at')
 			.leftJoin('dbo.photo as PH', function () {
 				this.on('PH.PlaceId', '=', 'Place.Id')
 					/* The new line here */
@@ -118,6 +124,7 @@ export class PlaceService {
 					);
 			})
 			.where({ showInRegister: true })
+			.whereNull('Place.deleted_at')
 			.orderBy('Place.Id')
 			.offset(skip)
 			.limit(take);
@@ -125,11 +132,12 @@ export class PlaceService {
 
 	async getPlaceInRegisterCount(): Promise<number> {
 		return new Promise(async (resolve, reject) => {
-			let results = await this.db('place')
+			const results = await this.db('place')
 				.count('*', {
 					as: 'count',
 				})
-				.where({ showInRegister: true });
+				.where({ showInRegister: true })
+				.whereNull('deleted_at');
 
 			if (results) {
 				const val = results[0].count as number;
@@ -209,7 +217,7 @@ export class PlaceService {
 
 	async getPlaceCount(): Promise<number> {
 		return new Promise(async (resolve, reject) => {
-			const results = await this.db<number>('place').count('*', {
+			const results = await this.db<number>('place').whereNull('deleted_at').count('*', {
 				as: 'count',
 			});
 
@@ -351,11 +359,13 @@ export class PlaceService {
 								`CASE WHEN PlaceEdit.PlaceId IS NULL THEN 'Editable' ELSE 'Editing' END`
 							),
 						})
+						.whereNull('Place.deleted_at')
 						.as('StatusTable')
 						.leftJoin('PlaceEdit', 'PlaceEdit.PlaceId', 'Place.Id'),
 					'Place.Id',
 					'StatusTable.PlaceId'
-				);
+				)
+				.whereNull('deleted_at');
 
 			type QueryBuilder = {
 				(base: Knex.QueryInterface, value: any): Knex.QueryInterface;

@@ -135,6 +135,15 @@
 								<v-icon class="mr-1">mdi-delete</v-icon>
 								Delete
 							</v-btn>
+							<v-btn v-if="mode == 'view'"
+								class="mx-1 form-header"
+								color="secondary"
+								block
+								@click="showPhotoRecordAssociateDialog"
+							>
+								<v-icon class="mr-1">mdi-search-web</v-icon>
+								Associate with Record
+							</v-btn>
 
 							<!-- buttons for the edit state -->
 							<v-btn
@@ -252,26 +261,39 @@
 			:photoname="fields.featureName"
 			@closeDialog="closeDialog"
 		/>
+
+		<PhotoRecordAssociateDialog ref="photoRecordAssociateDialogRef" />
 	</div>
 </template>
 
 <script>
 import axios from 'axios';
-import PrintDialog from './PrintDialog';
+import Vue from 'vue';
+import Affix from 'vue-affix';
+
+import { PHOTO_URL, STATIC_URL } from '../../urls';
+
 //import Search from "./PhotosComponents/Search";
 import Feature from './PhotosComponents/Feature';
 import SiteRecord from './PhotosComponents/SiteRecord';
 import HistoricSites from './PhotosComponents/HistoricSites';
 import Photo from './PhotosComponents/Photo';
-import { PHOTO_URL, STATIC_URL } from '../../urls';
-import Vue from 'vue';
-import Affix from 'vue-affix';
+
+import PrintDialog from './PrintDialog';
+import PhotoRecordAssociateDialog from './PhotoRecordAssociateDialog';
 
 Vue.use(Affix);
 
 export default {
 	name: 'Photos',
-	components: { PrintDialog, Feature, SiteRecord, HistoricSites, Photo },
+	components: { 
+		PrintDialog, 
+		Feature, 
+		SiteRecord, 
+		HistoricSites, 
+		Photo, 
+		PhotoRecordAssociateDialog 
+	},
 	data: () => ({
 		menuItems: null,
 		selectedItem: 0,
@@ -661,6 +683,9 @@ export default {
 					});
 			}
 		},
+		showPhotoRecordAssociateDialog(){
+			this.$refs.photoRecordAssociateDialogRef.show();
+		}
 	},
 	computed: {
 		mode() {

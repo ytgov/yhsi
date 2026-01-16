@@ -15,7 +15,7 @@ const actions = {
             .catch((err) => { return { error: err.response.data } })
     },
     searchByYHSIId(store, id) {
-        return axios.post(`${PLACE_URL}/search`, { query: { search: id }, sortBy: [], page: 1, itemsPerPage: 20, groupBy: [], groupDesc: [] }).then(resp => resp.data.data);
+        return axios.post(`${PLACE_URL}/search`, { query: { search: id }, sortBy: [], page: 1, itemsPerPage: 50, groupBy: [], groupDesc: [] }).then(resp => resp.data.data);
     }
 };
 
