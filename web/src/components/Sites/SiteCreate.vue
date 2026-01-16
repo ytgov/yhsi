@@ -26,7 +26,7 @@
 					<v-card class="default mt-5">
 						<v-card-title>Add New Site</v-card-title>
 						<v-card-text>
-							<v-form v-model="isValid">
+							<v-form ref="formRef">
 								<v-row>
 									<v-col
 										cols="6"
@@ -209,7 +209,6 @@
 
 								<v-btn
 									class="mb-0"
-									:disabled="!isValid"
 									@click="saveClick"
 									color="primary"
 									>Save</v-btn
@@ -269,7 +268,6 @@ export default {
 			isPubliclyAccessible: false,
 		},
 		ntsMapSheets: [],
-		isValid: false,
 		requiredRules: [(v) => !isEmpty(v) || 'This field is required'],
 		requiredNumRules: [(v) => !!isNumber(v) || 'This field is required'],
 	}),
@@ -283,6 +281,12 @@ export default {
 			createPlace: 'places/create',
 		}),
 		async saveClick() {
+			const isValid = this.$refs.formRef.validate();
+			
+			if (!isValid) {
+				return;
+			}
+
 			await this.createPlace(this.place)
 				.then((resp) => {
 					if (resp.Id) {
