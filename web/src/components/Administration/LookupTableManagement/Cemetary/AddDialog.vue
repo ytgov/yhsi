@@ -4,12 +4,12 @@
       <template v-slot:activator="{ on, attrs }">
         <v-btn v-bind="attrs" v-on="on" class="black--text mx-1">
           <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-          Add Cemetary
+          Add Cemetery
         </v-btn>
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">New Cemetary</span>
+          <span class="text-h5">New Cemetery</span>
         </v-card-title>
         <v-card-text>
             <v-row>
@@ -22,7 +22,7 @@
                   <v-row class="mt-2">
                       <v-col class="pa-0" cols="6">
                         <v-text-field class="mr-2" outlined dense
-                          label="Cemetary Name"
+                          label="Cemetery Name"
                           v-model="Cemetary"
                           :rules="generalRules"
                         ></v-text-field>
