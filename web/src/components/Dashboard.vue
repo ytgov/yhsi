@@ -101,6 +101,11 @@ export default {
 				route: '/sites-change-requests',
 				roles: [UserRoles.SITE_ADMIN],
 			},
+			{
+				title: "Maps",
+				icon: "mdi-map",
+				route: "/maps",
+			}
 		],
 	}),
 	computed: {
