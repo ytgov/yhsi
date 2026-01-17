@@ -431,7 +431,7 @@ const routes = [
 		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
 	},
 	{
-		path: '/admin/cemetaries',
+		path: '/admin/cemeteries',
 		name: 'CemetaryGrid',
 		component: Cemetary,
 		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },

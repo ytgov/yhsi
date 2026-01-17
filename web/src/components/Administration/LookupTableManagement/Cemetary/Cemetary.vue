@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <v-container fluid>
-      <h1>Cemetaries</h1>
+      <h1>Cemeteries</h1>
       <Breadcrumbs />
       <v-row class="mb-2">
         <v-col cols="6" class="d-flex">
@@ -82,7 +82,7 @@ export default {
     options: {},
     totalLength: 10,
     headers: [
-      { text: "Cemetary", value: "Cemetary" },
+      { text: "Cemetery", value: "Cemetary" },
       { text: "Community", value: "Community" },
       { text: "Address", value: "Address" },
       { text: "Notes", value: "Notes" },

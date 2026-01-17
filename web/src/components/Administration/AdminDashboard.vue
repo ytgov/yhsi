@@ -87,8 +87,8 @@ export default {
 			},
 			{
 				icon: 'mdi-database',
-				text: 'Burials - Cementeries',
-				url: '/admin/cementeries',
+				text: 'Burials - Cemeteries',
+				url: '/admin/cemeteries',
 			},
 			{
 				icon: 'mdi-shape',
