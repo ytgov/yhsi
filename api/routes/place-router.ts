@@ -113,6 +113,7 @@ placeRouter.get(
 	ReturnValidationErrors,
 	PlacesController.getPlace
 );
+
 placeRouter.get(
 	'/:id/print/:format',
 	authorize([
