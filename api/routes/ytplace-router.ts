@@ -1,29 +1,21 @@
+import { difference } from 'lodash';
 import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
 import { body, check, param, query, validationResult } from 'express-validator';
-import {
-	PhotoService,
-	YtPlaceService,
-	SortDirection,
-	SortStatement,
-	StaticService,
-} from '../services';
-import {
-	AlternateName,
-	PlaceType,
-	FnAssociation,
-	FirstNationName,
-} from '../data';
 
+import { authorize } from '@/middleware/authorization';
+import { UserRoles } from '@/models';
+import db from '@/db/db-client';
+
+import { YtPlaceService, SortDirection, SortStatement, StaticService } from '../services';
+import { DB_CONFIG } from '../config';
+import { AlternateName, PlaceType, FnAssociation, FirstNationName } from '../data';
 import { ReturnValidationErrors } from '../middleware';
-import knex from 'knex';
 
 const ytPlaceService = new YtPlaceService(DB_CONFIG);
 const staticService = new StaticService(DB_CONFIG);
 const PAGE_SIZE = 10;
 
 export const ytPlaceRouter = express.Router();
-const db = knex(DB_CONFIG);
 
 ytPlaceRouter.get(
 	'/',
@@ -73,22 +65,13 @@ ytPlaceRouter.post(
 		sortBy.forEach((s: string, i: number) => {
 			sort.push({
 				field: s,
-				direction: sortDesc[i]
-					? SortDirection.ASCENDING
-					: SortDirection.DESCENDING,
+				direction: sortDesc[i] ? SortDirection.ASCENDING : SortDirection.DESCENDING,
 			});
 		});
 
 		let skip = (page - 1) * itemsPerPage;
 		let take = itemsPerPage;
-		let results = await ytPlaceService.doSearch(
-			query,
-			sort,
-			page,
-			itemsPerPage,
-			skip,
-			take
-		);
+		let results = await ytPlaceService.doSearch(query, sort, page, itemsPerPage, skip, take);
 
 		for (let place of results.data) {
 			place.placeTypes = await ytPlaceService.getPlaceTypesFor(place.id);
@@ -100,12 +83,8 @@ ytPlaceRouter.post(
 				'placeType',
 				'placeType'
 			);
-			place.firstNationNames = await ytPlaceService.getFirstNationNamesFor(
-				place.id
-			);
-			place.alternateNames = await ytPlaceService.getAlternateNamesFor(
-				place.id
-			);
+			place.firstNationNames = await ytPlaceService.getFirstNationNamesFor(place.id);
+			place.alternateNames = await ytPlaceService.getAlternateNamesFor(place.id);
 		}
 
 		res.json(results);
@@ -137,9 +116,7 @@ ytPlaceRouter.get(
 					let altNames = await ytPlaceService.getAlternateNamesFor(place.id);
 					let histories = await ytPlaceService.getPlaceHistoriesFor(place.id);
 
-					let fnAssociations = await ytPlaceService.getFNAssociationsFor(
-						place.id
-					);
+					let fnAssociations = await ytPlaceService.getFNAssociationsFor(place.id);
 					fnAssociations = combine(
 						fnAssociations,
 						fnList,
@@ -266,15 +243,11 @@ ytPlaceRouter.post(
 
 ytPlaceRouter.put(
 	'/:id',
-	[
-		param('id').isInt().notEmpty(),
-		body('name').isString().bail().notEmpty().trim(),
-	],
+	[param('id').isInt().notEmpty(), body('name').isString().bail().notEmpty().trim()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		let { id } = req.params;
-		let { photos, placeTypes, fnNames, altNames, histories, fnAssociations } =
-			req.body;
+		let { photos, placeTypes, fnNames, altNames, histories, fnAssociations } = req.body;
 		let updater = req.body;
 		delete updater.photos;
 		delete updater.placeTypes;
@@ -292,17 +265,13 @@ ytPlaceRouter.put(
 		);
 
 		for (let on of oldNames) {
-			let match = altNames.filter(
-				(n: AlternateName) => n.alternateName == on.alternateName
-			);
+			let match = altNames.filter((n: AlternateName) => n.alternateName == on.alternateName);
 			if (match.length == 0) {
 				await ytPlaceService.removeAlternateName(on.id);
 			}
 		}
 		for (let on of altNames) {
-			let match = oldNames.filter(
-				(n: AlternateName) => n.alternateName == on.alternateName
-			);
+			let match = oldNames.filter((n: AlternateName) => n.alternateName == on.alternateName);
 			if (match.length == 0) {
 				delete on.id;
 				await ytPlaceService.addAlternateName(on);
@@ -322,9 +291,7 @@ ytPlaceRouter.put(
 			}
 		}
 		for (let on of placeTypes) {
-			let match = oldPlaceTypes.filter(
-				(n: PlaceType) => n.placeTypeLookupId == on
-			);
+			let match = oldPlaceTypes.filter((n: PlaceType) => n.placeTypeLookupId == on);
 			if (match.length == 0) {
 				let placeTypeInsert = new PlaceType();
 				placeTypeInsert.placeId = parseInt(id);
@@ -334,14 +301,11 @@ ytPlaceRouter.put(
 		}
 
 		// FnAssociations
-		let oldFnAssocations = await ytPlaceService.getFNAssociationsFor(
-			parseInt(id)
-		);
+		let oldFnAssocations = await ytPlaceService.getFNAssociationsFor(parseInt(id));
 		for (let on of oldFnAssocations) {
 			let match = fnAssociations.filter(
 				(n: FnAssociation) =>
-					n.fnAssociationType == on.fnAssociationType &&
-					n.firstNationId == on.firstNationId
+					n.fnAssociationType == on.fnAssociationType && n.firstNationId == on.firstNationId
 			);
 			if (match.length == 0) {
 				let FnAssociationInsert = new FnAssociation();
@@ -354,8 +318,7 @@ ytPlaceRouter.put(
 		for (let on of fnAssociations) {
 			let match = oldFnAssocations.filter(
 				(n: FnAssociation) =>
-					n.fnAssociationType == on.fnAssociationType &&
-					n.firstNationId == on.firstNationId
+					n.fnAssociationType == on.fnAssociationType && n.firstNationId == on.firstNationId
 			);
 			if (match.length == 0) {
 				on.placeId = parseInt(id);
@@ -395,6 +358,44 @@ ytPlaceRouter.put(
 		return res.json({
 			messages: [{ variant: 'success', text: 'Place updated' }],
 		});
+	}
+);
+
+ytPlaceRouter.post(
+	'/:placeId/photos/link',
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+	async (request: Request, response: Response) => {
+		try {
+			const { placeId } = request.params;
+			const { linkPhotos } = request.body;
+
+			const currentPhotos = await db
+				.select('Photo_RowID')
+				.from('Place.Photo')
+				.where('PlaceId', placeId);
+
+			const filteredLinkPhotos = difference(
+				linkPhotos,
+				currentPhotos.map((x: any) => {
+					return x.Photo_RowID;
+				})
+			);
+
+			for (const photo of filteredLinkPhotos) {
+				await db
+					.insert({ PlaceId: placeId, Photo_RowID: photo.rowId })
+					.into('Place.Photo')
+					.returning('*')
+					.then((rows: any) => {
+						return rows;
+					});
+			}
+
+			return response.json({ message: 'Successfully linked the photos' });
+		} catch (error) {
+			console.log(error);
+			return response.status(500).json({ data: 'failed to link' });
+		}
 	}
 );
 

@@ -1,17 +1,18 @@
-import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
-import knex from 'knex';
-import { ReturnValidationErrors } from '../middleware';
-import { param, query } from 'express-validator';
-import { PeopleService } from '../services';
+import { difference } from 'lodash';
 import { renderFile } from 'pug';
+import express, { Request, Response } from 'express';
+import { param, query } from 'express-validator';
+
+import db from '@/db/db-client';
+
+import { ReturnValidationErrors } from '../middleware';
+import { PeopleService } from '../services';
 import { generatePDF } from '../utils/pdf-generator';
 import { authorize } from '../middleware/authorization';
 import { UserRoles } from '../models';
 
 const peopleService = new PeopleService();
 export const peopleRouter = express.Router();
-const db = knex(DB_CONFIG);
 
 peopleRouter.get(
 	'/',
@@ -50,10 +51,7 @@ peopleRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { personId } = req.params;
-		const person = await db
-			.from('Person.Person')
-			.where('Person.PersonID', personId)
-			.first();
+		const person = await db.from('Person.Person').where('Person.PersonID', personId).first();
 
 		if (!person) {
 			res.status(403).send('Person id not found');
@@ -92,10 +90,7 @@ peopleRouter.post(
 	async (req: Request, res: Response) => {
 		const { person } = req.body;
 
-		const newPerson = await db
-			.insert(person)
-			.into('Person.Person')
-			.returning('*');
+		const newPerson = await db.insert(person).into('Person.Person').returning('*');
 
 		if (!newPerson) {
 			res.status(400).send({ message: `The data sent is wrong or incomplete` });
@@ -144,9 +139,7 @@ peopleRouter.put(
 			.returning('*');
 
 		if (updateHistory.length == 0) {
-			res
-				.status(404)
-				.send({ message: `Couldn't find the desired history record` });
+			res.status(404).send({ message: `Couldn't find the desired history record` });
 			return;
 		}
 
@@ -175,10 +168,7 @@ peopleRouter.post(
 			return;
 		}
 
-		const newHistory = await db
-			.insert(history)
-			.into('Person.History')
-			.returning('*');
+		const newHistory = await db.insert(history).into('Person.History').returning('*');
 
 		if (!newHistory) {
 			res.status(400).send({ message: `The data sent is wrong or incomplete` });
@@ -194,13 +184,7 @@ peopleRouter.post(
 	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const {
-			page = 0,
-			limit = 0,
-			textToMatch = '',
-			sortBy = '',
-			sort,
-		} = req.body;
+		const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
 		const offset = 0;
 		let people = await peopleService.doSearch(page, limit, offset, {
 			sortBy,
@@ -246,13 +230,7 @@ peopleRouter.post(
 	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const {
-			page = 0,
-			limit = 0,
-			textToMatch = '',
-			sortBy = '',
-			sort,
-		} = req.body;
+		const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
 
 		let data = await peopleService.doSearch(page, limit, 0, {
 			sortBy,
@@ -261,5 +239,43 @@ peopleRouter.post(
 		});
 
 		res.status(200).send(data.body);
+	}
+);
+
+peopleRouter.post(
+	'/:personId/photos/link',
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+	async (request: Request, response: Response) => {
+		try {
+			const { personId } = request.params;
+			const { linkPhotos } = request.body;
+
+			const currentPhotos = await db
+				.select('PhotoID')
+				.from('Person.Photo')
+				.where('PersonID', personId);
+
+			const filteredLinkPhotos = difference(
+				linkPhotos,
+				currentPhotos.map((x: any) => {
+					return x.PhotoID;
+				})
+			);
+
+			for (const photo of filteredLinkPhotos) {
+				await db
+					.insert({ PersonID: personId, PhotoID: photo.rowId })
+					.into('Person.Photo')
+					.returning('*')
+					.then((rows: any) => {
+						return rows;
+					});
+			}
+
+			return response.json({ message: 'Successfully linked the photos' });
+		} catch (error) {
+			console.log(error);
+			return response.status(500).json({ data: 'failed to link' });
+		}
 	}
 );

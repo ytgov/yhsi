@@ -1,19 +1,22 @@
-import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
-import knex from 'knex';
-import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
-import { AircrashService } from '../services';
+import express, { Request, Response } from 'express';
+import { difference } from 'lodash';
 import { renderFile } from 'pug';
-import { generatePDF } from '../utils/pdf-generator';
-import { UserRoles } from '../models/user-roles';
-import { authorize } from '../middleware/authorization';
 const {
 	Parser,
 	transforms: { unwind },
 } = require('json2csv');
+
+import db from '@/db/db-client';
+
+import { ReturnValidationErrors } from '../middleware';
+import { AircrashService } from '../services';
+import { generatePDF } from '../utils/pdf-generator';
+import { UserRoles } from '../models/user-roles';
+import { authorize } from '../middleware/authorization';
+
 export const aircrashRouter = express.Router();
-const db = knex(DB_CONFIG);
+
 const aircrashService = new AircrashService();
 
 /* Routes which are available to
@@ -31,10 +34,7 @@ aircrashRouter.use(authorize(airCrashViewers));
 
 aircrashRouter.get(
 	'/',
-	[
-		query('page').default(0).isInt(),
-		query('limit').default(10).isInt({ gt: 0 }),
-	],
+	[query('page').default(0).isInt(), query('limit').default(10).isInt({ gt: 0 })],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const {
@@ -93,10 +93,7 @@ aircrashRouter.get(
 	}
 );
 
-const airCrashEditors = [
-	UserRoles.AIRPLANE_CRASH_EDITOR,
-	UserRoles.ADMINISTRATOR,
-];
+const airCrashEditors = [UserRoles.AIRPLANE_CRASH_EDITOR, UserRoles.ADMINISTRATOR];
 
 aircrashRouter.use(authorize(airCrashEditors));
 
@@ -111,47 +108,37 @@ aircrashRouter.put(
 
 		const { aircrashId } = req.params;
 
-		const {
-			aircrash = {},
-			removedInfoSources,
-			newInfoSources,
-			editedInfoSources,
-		} = req.body;
+		const { aircrash = {}, removedInfoSources, newInfoSources, editedInfoSources } = req.body;
 		//make the update
 		await db('AirCrash.AirCrash')
 			.update(aircrash)
 			.where('AirCrash.AirCrash.yacsinumber', aircrashId);
 
-			//Add the new info sources (in progress)
+		//Add the new info sources (in progress)
 
-			if (newInfoSources && newInfoSources.length > 0) {
+		if (newInfoSources && newInfoSources.length > 0) {
+			await db
+				.insert(
+					newInfoSources.map((source: any) => ({
+						YACSINumber: aircrashId,
+						...source,
+					}))
+				)
+				.into('AirCrash.InfoSource');
+		}
 
-				await db
-					.insert(
-						newInfoSources.map((source: any) => ({
-							YACSINumber: aircrashId,
-							...source,
-						}))
-					)
-					.into('AirCrash.InfoSource');
-			}
+		//remove the previous owners (DONE)
+		for (const obj of removedInfoSources) {
+			await db('AirCrash.InfoSource').where('AirCrash.InfoSource.Id', obj.Id).del();
+		}
 
-			//remove the previous owners (DONE)
-			for (const obj of removedInfoSources) {
+		//update the info sources (DONE)
+		for (const obj of editedInfoSources) {
+			await db('AirCrash.InfoSource')
+				.update({ Source: obj.Source })
+				.where('AirCrash.InfoSource.Id', obj.Id);
+		}
 
-				await db('AirCrash.InfoSource')
-					.where('AirCrash.InfoSource.Id', obj.Id)
-					.del();
-			}
-
-			//update the info sources (DONE)
-			for (const obj of editedInfoSources) {
-
-				await db('AirCrash.InfoSource')
-					.update({ Source: obj.Source })
-					.where('AirCrash.InfoSource.Id', obj.Id);
-			}
-		
 		res.status(200).send({ message: 'success' });
 	}
 );
@@ -275,3 +262,41 @@ aircrashRouter.post('/export', async (req: Request, res: Response) => {
 	res.setHeader('Content-Type', 'text/csv');
 	res.attachment('boats.csv').send(csv);
 });
+
+aircrashRouter.post(
+	'/:yacsiNumber/photos/link',
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+	async (request: Request, response: Response) => {
+		try {
+			const { yacsiNumber } = request.params;
+			const { linkPhotos } = request.body;
+
+			const currentPhotos = await db
+				.select('Photo_RowID')
+				.from('AirCrash.Photo')
+				.where('YACSINumber', yacsiNumber);
+
+			const filteredLinkPhotos = difference(
+				linkPhotos,
+				currentPhotos.map((x: any) => {
+					return x.Photo_RowID;
+				})
+			);
+
+			for (const photo of filteredLinkPhotos) {
+				await db
+					.insert({ YACSINumber: yacsiNumber, Photo_RowID: photo.rowId })
+					.into('AirCrash.Photo')
+					.returning('*')
+					.then((rows: any) => {
+						return rows;
+					});
+			}
+
+			return response.json({ message: 'Successfully linked the photos' });
+		} catch (error) {
+			console.log(error);
+			return response.status(500).json({ data: 'failed to link' });
+		}
+	}
+);
