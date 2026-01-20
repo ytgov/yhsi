@@ -149,16 +149,14 @@
 				</v-row>
 			</v-col>
 			<v-col cols="5">
-				<!-- Photos component, it includes a carousel and some dialogs for the button actions   -->
-				<Photos
-					v-if="infoLoaded"
-					:showDefault="isNewMode"
-					:photoType="'people'"
-					:itemId="getPersonID"
-					:mode="mode"
-					@updateSelectedImage="selectedImageChanged"
-					:selectedImage="selectedImage"
-					@loadingPhotosChange="loadingPhotosChange"
+				<GenericRecordPhotosCard
+					v-if="infoLoaded && !isNewMode"
+					record="people"
+					:recordId="getPersonID"
+					:showAddPhotoButton="isEditMode"
+				/>
+				<EmptyPhotosCard 
+					v-else 
 				/>
 			</v-col>
 		</v-row>
@@ -183,14 +181,16 @@
 
 <script>
 import Breadcrumbs from '../../Breadcrumbs.vue';
-import Photos from '../../PhotoEditor/Photos.vue';
 import HistoricRecord from './HistoricRecord';
 import people from '../../../controllers/people';
+
+import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard.vue';
+import EmptyPhotosCard from "@/components/photos/EmptyPhotosCard.vue"
 
 //import _ from 'lodash';
 export default {
 	name: 'boatsForm',
-	components: { Breadcrumbs, HistoricRecord, Photos },
+	components: { Breadcrumbs, HistoricRecord, GenericRecordPhotosCard, EmptyPhotosCard },
 	data: () => ({
 		overlay: false,
 		infoLoaded: false,

@@ -101,7 +101,12 @@
 						id="legal-and-zoning"
 						:place-id="id"
 					/>
-					<Photos id="photos" :place-id="id" />
+					<GenericRecordPhotosCard
+						id="photos"
+						record="place"
+						:recordId="id"
+						:showAddPhotoButton="!showDoEdit"
+					/>
 					<component
 						:is="managementComponent"
 						id="management"
@@ -134,7 +139,7 @@ import Location from '@/components/Sites/site-forms/Location';
 //import LocationReadonly from '@/components/Sites/site-forms/LocationReadonly';
 import Management from '@/components/Sites/site-forms/Management';
 //import ManagementViewer from '@/components/Sites/site-forms/ManagementViewer';
-import Photos from '@/components/Sites/site-forms/Photos';
+import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard.vue';
 import PrintDialog from '@/components/Sites/SiteFormsPrintDialog';
 import SiteFormsSidebar from '@/components/Sites/SiteFormsSidebar';
 import Summary from '@/components/Sites/site-forms/Summary';
@@ -156,7 +161,7 @@ export default {
 		Location,
 		//LocationReadonly,
 		Management,
-		Photos,
+		GenericRecordPhotosCard,
 		PrintDialog,
 		SiteFormsSidebar,
 		Summary,

@@ -495,16 +495,14 @@
 						></v-textarea>
 					</v-col>
 					<v-col cols="8">
-						<!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-						<Photos
-							v-if="infoLoaded"
-							:photoType="'boat'"
-							:showDefault="mode == 'new'"
-							:mode="mode"
-							:itemId="getBoatID"
-							@updateSelectedImage="selectedImageChanged"
-							:selectedImage="selectedImage"
-							@loadingPhotosChange="loadingPhotosChange"
+						<GenericRecordPhotosCard
+							v-if="infoLoaded && mode != 'new'"
+							record="boat"
+							:recordId="getBoatID"
+							:showAddPhotoButton="mode == 'edit'"
+						/>
+						<EmptyPhotosCard 
+							v-else 
 						/>
 					</v-col>
 				</v-row>
@@ -529,17 +527,21 @@
 </template>
 
 <script>
+import _ from 'lodash';
+
+import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard.vue';
+import EmptyPhotosCard from "@/components/photos/EmptyPhotosCard.vue"
+
 import Breadcrumbs from '../../../Breadcrumbs.vue';
-import Photos from '../../../PhotoEditor/Photos';
 import HistoricRecord from '../HistoricRecord';
 import boats from '../../../../controllers/boats';
 import owners from '../../../../controllers/owners';
 import catalogs from '../../../../controllers/catalogs';
 import { UserRoles } from '../../../../authorization';
-import _ from 'lodash';
+
 export default {
 	name: 'boatsForm',
-	components: { Photos, Breadcrumbs, HistoricRecord },
+	components: { Breadcrumbs, HistoricRecord, GenericRecordPhotosCard, EmptyPhotosCard },
 	data: () => ({
 		overlay: false,
 		infoLoaded: false,

@@ -222,15 +222,14 @@
 									</v-row>
 								</v-col>
 								<v-col cols="4">
-									<h4>Photos</h4>
-									<Photos
-										v-if="infoLoaded"
-										:showDefault="isNew"
-										:mode="mode"
-										:photoType="'burial'"
-										:itemId="currentBurialID"
-										@updateSelectedImage="selectedImageChanged"
-										:selectedImage="selectedImage"
+									<GenericRecordPhotosCard
+										v-if="infoLoaded && !isNew"
+										record="burial"
+										:recordId="currentBurialID"
+										:showAddPhotoButton="isEdit"
+									/>
+									<EmptyPhotosCard 
+										v-else 
 									/>
 								</v-col>
 							</v-row>
@@ -745,6 +744,9 @@
 </template>
 
 <script>
+import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard.vue';
+import EmptyPhotosCard from "@/components/photos/EmptyPhotosCard.vue"
+
 import Breadcrumbs from '../../Breadcrumbs';
 import burials from '../../../controllers/burials';
 import catalogs from '../../../controllers/catalogs';
@@ -753,7 +755,6 @@ import OccupationDialog from './Dialogs/OccupationDialog.vue';
 import SourceDialog from './Dialogs/SourceDialog.vue';
 import KinDialog from './Dialogs/KinDialog.vue';
 import SiteVisitDialog from './Dialogs/SiteVisitDialog.vue';
-import Photos from '../../PhotoEditor/Photos';
 import countries from '../../../misc/countries';
 import { UserRoles } from '../../../authorization';
 
@@ -766,7 +767,8 @@ export default {
 		SiteVisitDialog,
 		KinDialog,
 		SourceDialog,
-		Photos,
+		GenericRecordPhotosCard,
+		EmptyPhotosCard,
 	},
 	data: () => ({
 		username: 'username',

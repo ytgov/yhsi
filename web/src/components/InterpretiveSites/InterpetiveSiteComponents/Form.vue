@@ -130,15 +130,14 @@
 										</v-row>
 									</v-col>
 									<v-col cols="4">
-										<Photos
-											v-if="true"
-											:mode="mode"
-											:showDefault="isNew"
-											:photoType="'interpretive-sites'"
-											:itemId="currentIntSiteID"
-											@updateSelectedImage="selectedImageChanged"
-											:selectedImage="selectedImage"
-											@loadingPhotosChange="loadingPhotosChange"
+										<GenericRecordPhotosCard
+											v-if="!isNew"
+											record="interpretive-sites"
+											:recordId="currentIntSiteID"
+											:showAddPhotoButton="isEdit"
+										/>
+										<EmptyPhotosCard 
+											v-else 
 										/>
 									</v-col>
 								</v-row>
@@ -380,6 +379,9 @@
 </template>
 
 <script>
+import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard.vue';
+import EmptyPhotosCard from "@/components/photos/EmptyPhotosCard.vue"
+
 import MaintainerList from './MaintainerList';
 import Breadcrumbs from '../../Breadcrumbs';
 import interpretiveSites from '../../../controllers/interpretive-sites';
@@ -388,7 +390,7 @@ import InspectionDialog from '../Dialogs/InspectionDialog.vue';
 import ActionDialog from '../Dialogs/ActionDialog.vue';
 import AssetDialog from '../Dialogs/AssetDialog.vue';
 import MapLoader from '../../MapLoader.vue';
-import Photos from '../../PhotoEditor/Photos';
+
 export default {
 	name: 'IntSiteComponent',
 	components: {
@@ -398,7 +400,8 @@ export default {
 		ActionDialog,
 		AssetDialog,
 		MaintainerList,
-		Photos,
+		GenericRecordPhotosCard,
+		EmptyPhotosCard
 	},
 	data: () => ({
 		username: 'username',

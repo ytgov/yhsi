@@ -1,15 +1,15 @@
 import { difference } from 'lodash';
+import { param, query } from 'express-validator';
 import { renderFile } from 'pug';
 import express, { Request, Response } from 'express';
-import { param, query } from 'express-validator';
 
 import db from '@/db/db-client';
 
-import { ReturnValidationErrors } from '../middleware';
-import { PeopleService } from '../services';
-import { generatePDF } from '../utils/pdf-generator';
-import { authorize } from '../middleware/authorization';
-import { UserRoles } from '../models';
+import { ReturnValidationErrors } from '@/middleware';
+import { PeopleService } from '@/services';
+import { generatePDF } from '@/utils/pdf-generator';
+import { authorize } from '@/middleware/authorization';
+import { UserRoles } from '@/models';
 
 const peopleService = new PeopleService();
 export const peopleRouter = express.Router();
@@ -34,8 +34,7 @@ peopleRouter.get(
 
 		const offset = page * limit || 0;
 
-		let counter = 0;
-		let data = await peopleService.doSearch(page, limit, offset, {
+		const data = await peopleService.doSearch(page, limit, offset, {
 			sortBy,
 			sort,
 			textToMatch,
@@ -186,18 +185,18 @@ peopleRouter.post(
 	async (req: Request, res: Response) => {
 		const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
 		const offset = 0;
-		let people = await peopleService.doSearch(page, limit, offset, {
+		const people = await peopleService.doSearch(page, limit, offset, {
 			sortBy,
 			sort,
 			textToMatch,
 		});
 		// not working right now
 		// Compile template.pug, and render a set of data
-		let data = renderFile('./templates/people/peopleGrid.pug', {
+		const data = renderFile('./templates/people/peopleGrid.pug', {
 			data: people.body,
 		});
 
-		let pdf = await generatePDF(data);
+		const pdf = await generatePDF(data);
 		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 		res.setHeader('Content-type', 'application/pdf');
 		res.send(pdf);
@@ -214,11 +213,11 @@ peopleRouter.post(
 
 		const person = await peopleService.getById(personId);
 
-		let data = renderFile('./templates/people/peopleView.pug', {
+		const data = renderFile('./templates/people/peopleView.pug', {
 			data: person,
 		});
 
-		let pdf = await generatePDF(data);
+		const pdf = await generatePDF(data);
 		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 		res.setHeader('Content-type', 'application/pdf');
 		res.send(pdf);
@@ -232,7 +231,7 @@ peopleRouter.post(
 	async (req: Request, res: Response) => {
 		const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
 
-		let data = await peopleService.doSearch(page, limit, 0, {
+		const data = await peopleService.doSearch(page, limit, 0, {
 			sortBy,
 			sort,
 			textToMatch,
@@ -245,6 +244,7 @@ peopleRouter.post(
 peopleRouter.post(
 	'/:personId/photos/link',
 	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+	[param('personId').notEmpty()],
 	async (request: Request, response: Response) => {
 		try {
 			const { personId } = request.params;
