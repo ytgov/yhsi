@@ -167,6 +167,11 @@ export default {
 			);
 		},
   },
+  watch: {
+    selectedPhoto(val) {
+      this.$emit('newSelectedImage', this.photos[val]);
+    }
+  }
 };
 </script>
 
