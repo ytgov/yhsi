@@ -327,14 +327,15 @@
 
 			<!-- Photos component -->
 			<div class="col-md-4">
-				<Photos
-					v-if="infoLoaded"
-					:showDefault="mode == 'new'"
-					:mode="mode"
-					:photoType="'ytplace'"
-					:itemId="placeId"
-					@updateSelectedImage="selectedImageChanged"
-					:selectedImage="selectedImage"
+				<GenericRecordPhotosCard
+					v-if="mode != 'new'"
+					record="ytplace"
+					:recordId="placeId"
+					:showAddPhotoButton="mode == 'edit'"
+					@newSelectedImage="updateSelectedImage"
+				/>
+				<EmptyPhotosCard 
+					v-else 
 				/>
 			</div>
 		</div>
@@ -369,8 +370,10 @@
 </template>
 
 <script>
+import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard.vue';
+import EmptyPhotosCard from "@/components/photos/EmptyPhotosCard.vue"
+
 import Breadcrumbs from '../../Breadcrumbs.vue';
-import Photos from '../../PhotoEditor/Photos';
 import HistoricRecord from './HistoricRecord';
 import PrintButton from './PrintButton';
 import MapLoader from '../../MapLoader';
@@ -381,7 +384,7 @@ import axios from 'axios';
 
 export default {
 	name: 'placesForm',
-	components: { Breadcrumbs, PrintButton, HistoricRecord, MapLoader, Photos },
+	components: { Breadcrumbs, PrintButton, HistoricRecord, MapLoader, GenericRecordPhotosCard, EmptyPhotosCard },
 	data: () => ({
 		mode: '',
 		fields: {},

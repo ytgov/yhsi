@@ -274,7 +274,11 @@ placeRouter.post(
 					throw new Error('rowId in photo from filteredLinkPhotos is null');
 				}
 
-				await photoService.associatePhotoToPlace(rowIdString, placeId);
+				try {
+					await photoService.associatePhotoToPlace(rowIdString, placeId);
+				} catch (error) {
+					console.log(error);
+				}
 			}
 
 			return response.json({ message: 'Successfully linked the photos' });

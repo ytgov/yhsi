@@ -285,31 +285,17 @@
 						</v-col>
 					</v-row>
 				</v-col>
-				<!-- <v-col cols="5">
-                        <v-col cols="12"> -->
-				<!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-				<!-- <Photos
-                            v-if="infoLoaded"
-                            :showDefault="isNewCrash"
-                            :yacsiNumber="getYACSINumber"
-                            @updateSelectedImage="selectedImageChanged"
-                            @loadingPhotosChange="loadingPhotosChange"/>
-                            </v-row>
-                        </v-alert>
-
-                    </v-col>
-                </v-row>
-            </v-col> -->
 				<v-col cols="5">
 					<v-col cols="12">
-						<!-- Photos component, it includes a carousel and some dialogs for the button actions -->
-						<Photos
-							:showDefault="isNewCrash"
-							:mode="action"
-							:photoType="'aircrash'"
-							:itemId="getYACSINumber"
-							@updateSelectedImage="selectedImageChanged"
-							:selectedImage="selectedImage"
+						<GenericRecordPhotosCard
+							v-if="!isNewCrash"
+							record="aircrash"
+							:recordId="getYACSINumber"
+							:showAddPhotoButton="isEditingCrash"
+							@newSelectedImage="updateSelectedImage"
+						/>
+						<EmptyPhotosCard 
+							v-else 
 						/>
 					</v-col>
 				</v-col>
@@ -466,17 +452,22 @@
 </template>
 
 <script>
-import { AirCrashLocation } from '../models/AircrashModels';
-import Breadcrumbs from '@/components/Breadcrumbs.vue';
-import Photos from '@/components/PhotoEditor/Photos';
-import aircrash from '@/controllers/aircrash';
-import MapLoader from '../components/MapLoader';
 import _ from 'lodash';
 import { mapActions, mapGetters, mapState } from 'vuex';
+
+import { AirCrashLocation } from '../models/AircrashModels';
+
+import MapLoader from '../components/MapLoader';
 import InfoSources from '../components/InfoSources';
+
+import Breadcrumbs from '@/components/Breadcrumbs.vue';
+import aircrash from '@/controllers/aircrash';
+import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard.vue';
+import EmptyPhotosCard from "@/components/photos/EmptyPhotosCard.vue"
+
 export default {
 	name: 'crashForm',
-	components: { Photos, Breadcrumbs, MapLoader, InfoSources },
+	components: { Breadcrumbs, MapLoader, InfoSources, GenericRecordPhotosCard, EmptyPhotosCard },
 	props: {
 		action: {
 			type: String,
