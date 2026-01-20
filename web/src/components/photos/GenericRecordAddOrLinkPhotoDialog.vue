@@ -661,7 +661,8 @@ export default {
         this.$store.commit('alerts/setTimeout', 5000);
         this.$store.commit('alerts/setAlert', true);
 
-        this.close()
+        this.reset()
+        this.$router.go()
       } catch(error){
         this.$store.commit('alerts/setText', error);
         this.$store.commit('alerts/setType', 'warning');
