@@ -593,7 +593,7 @@ export default {
         this.$store.commit('alerts/setAlert', true);
 
         this.reset()
-			  this.$router.go()
+			  this.$router.go(0)
       } catch (error){
         console.error(error)
         this.$store.commit('alerts/setText', error);
@@ -662,7 +662,7 @@ export default {
         this.$store.commit('alerts/setAlert', true);
 
         this.reset()
-        this.$router.go()
+        this.$router.go(0)
       } catch(error){
         this.$store.commit('alerts/setText', error);
         this.$store.commit('alerts/setType', 'warning');
