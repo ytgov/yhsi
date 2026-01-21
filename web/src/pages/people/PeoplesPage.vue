@@ -135,11 +135,13 @@
 </template>
 
 <script>
-import people from '../../../controllers/people';
-import Breadcrumbs from '../../Breadcrumbs';
+import _ from 'lodash';
 import JsonCSV from 'vue-json-csv';
 //import PrintButton from "./PrintButton";
-import _ from 'lodash';
+
+import people from '@/controllers/people';
+import Breadcrumbs from '@/components/Breadcrumbs';
+
 export default {
 	name: 'usersgrid',
 	components: { Breadcrumbs, JsonCSV },

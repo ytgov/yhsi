@@ -1,76 +1,73 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-
 import goTo from 'vuetify/lib/services/goto';
 
-//new Style router imports
+import { UserRoles } from '@/authorization';
+import store from '@/store';
+
+// new Style router imports
 import aircrashRoutes from '@/modules/AirplaneCrashes/router/AircrashRouter.js';
-
-import Dashboard from '../components/Dashboard.vue';
-import NotFound from '../views/NotFound.vue';
-import Profile from '../views/Profile';
-import store from '../store';
-import SiteForms from '@/components/Sites/SiteForms';
-import SiteCreate from '@/components/Sites/SiteCreate';
-import MainPhotos from '../components/MainPhotos';
-import SitesTable from '@/components/Sites/SitesTable';
-import PhotosGrid from '../components/MainPhotos/PhotosGrid';
-import Feature from '../components/MainPhotos/PhotosComponents/Feature';
-import SiteRecord from '../components/MainPhotos/PhotosComponents/SiteRecord';
-import HistoricSites from '../components/MainPhotos/PhotosComponents/HistoricSites';
-import Photo from '../components/MainPhotos/PhotosComponents/Photo';
-import Users from '../components/People/UsersGrid';
-import UserForm from '../components/People/UsersComponents/Form';
-import OwnersGrid from '../components/PhotoOwners/OwnersGrid';
-import OwnerForm from '../components/PhotoOwners/OwnersComponents/Form';
-import Communities from '../components/Communities/CommunitiesGrid';
-import CommunitiesForm from '../components/Communities/CommunitiesComponents/Form';
-import Boats from '../components/Boats/Grid';
-import BoatsGrid from '../components/Boats/Grid/Boats';
-import OwnerGrid from '../components/Boats/Grid/Owner';
-import BoatsForm from '../components/Boats/BoatsComponents/Boat/BoatsForm';
-import BoatsOwnerForm from '../components/Boats/BoatsComponents/Owner/OwnerForm';
-
-// import AirplaneGrid from '../components/AirplaneCrashes/Grid';
-// import AirplaneViewForm from '../components/AirplaneCrashes/AirplaneComponents/AirplaneForm';
-// import AirplaneEditForm from '../components/AirplaneCrashes/AirplaneComponents/AirplaneForm';
-import AdminDashboard from '../components/Administration/AdminDashboard';
-import AdminUserGrid from '../components/Administration/UserManagement/Grid';
-import AdminUserForm from '../components/Administration/UserManagement/UserComponent/Form';
-import VesselTypeGrid from '../components/Administration/LookupTableManagement/VesselType/VesselType';
-import BurialsGrid from '../components/Burials/Grid';
-import BurialsForm from '../components/Burials/BurialsComponents/Form';
-import PlacesGrid from '../components/Places/PlacesGrid';
-import PlaceTypeGrid from '../components/Administration/LookupTableManagement/PlaceType/PlaceType';
-import PlacesForm from '../components/Places/PlacesComponents/PlacesForm';
-import PhotoBatchGrid from '../components/MainPhotos/PhotoBatches/Grid';
-import PhotoBatchAttributesView from '../components/MainPhotos/PhotoBatches/AttributesView';
-import PhotoBatchAttributesEdit from '../components/MainPhotos/PhotoBatches/AttributesEdit';
-import CommunityGrid from '../components/Administration/LookupTableManagement/Community/CommunityGrid';
-import PhotoOwnerGrid from '../components/Administration/LookupTableManagement/PhotoOwner/PhotoOwnerGrid';
-import PhotoProjectGrid from '../components/Administration/LookupTableManagement/PhotoProject/PhotoProjectGrid';
-import PhotoSubjectGrid from '../components/Administration/LookupTableManagement/PhotoSubject/PhotoSubjectGrid';
-import { UserRoles } from '../authorization';
-
-import Cause from '../components/Administration/LookupTableManagement/Cause/Cause';
-import Cemetary from '../components/Administration/LookupTableManagement/Cemetary/Cemetary';
-import Membership from '../components/Administration/LookupTableManagement/Membership/Membership';
-import Occupation from '../components/Administration/LookupTableManagement/Occupation/Occupation';
-import Relationship from '../components/Administration/LookupTableManagement/Relationship/Relationship';
-import Religion from '../components/Administration/LookupTableManagement/Religion/Religion';
-
 import MapRoutes from '@/modules/map/router';
 
-import InterpretiveSitesIndex from '../components/InterpretiveSites/Grid';
-import InterpretiveSitesGrid from '../components/InterpretiveSites/Grid/Sites';
-import ActionGrid from '../components/InterpretiveSites/Grid/Actions';
-import AssetGrid from '../components/InterpretiveSites/Grid/Assets';
-import InterpretiveSitesForm from '../components/InterpretiveSites/InterpetiveSiteComponents/Form';
+import NotFound from '@/views/NotFound.vue';
+import Profile from '@/views/Profile';
 
-import Category from '../components/Administration/LookupTableManagement/Category/Category';
-import AssetType from '../components/Administration/LookupTableManagement/AssetType/AssetType';
-import IntSiteOwner from '../components/Administration/LookupTableManagement/IntSiteOwner/IntSiteOwner';
-import Route from '../components/Administration/LookupTableManagement/Route/Route';
+// import AirplaneEditForm from '@/components/AirplaneCrashes/AirplaneComponents/AirplaneForm';
+// import AirplaneGrid from '@/components/AirplaneCrashes/Grid';
+// import AirplaneViewForm from '@/components/AirplaneCrashes/AirplaneComponents/AirplaneForm';
+import ActionGrid from '@/components/InterpretiveSites/Grid/Actions';
+import AssetGrid from '@/components/InterpretiveSites/Grid/Assets';
+import Boats from '@/components/Boats/Grid';
+import BoatsForm from '@/components/Boats/BoatsComponents/Boat/BoatsForm';
+import BoatsGrid from '@/components/Boats/Grid/Boats';
+import BoatsOwnerForm from '@/components/Boats/BoatsComponents/Owner/OwnerForm';
+import BurialsForm from '@/components/Burials/BurialsComponents/Form';
+import BurialsGrid from '@/components/Burials/Grid';
+import Communities from '@/components/Communities/CommunitiesGrid';
+import CommunitiesForm from '@/components/Communities/CommunitiesComponents/Form';
+import Dashboard from '@/components/Dashboard.vue';
+import InterpretiveSitesForm from '@/components/InterpretiveSites/InterpetiveSiteComponents/Form';
+import InterpretiveSitesGrid from '@/components/InterpretiveSites/Grid/Sites';
+import InterpretiveSitesIndex from '@/components/InterpretiveSites/Grid';
+import OwnerForm from '@/components/PhotoOwners/OwnersComponents/Form';
+import OwnerGrid from '@/components/Boats/Grid/Owner';
+import OwnersGrid from '@/components/PhotoOwners/OwnersGrid';
+import PlacesForm from '@/components/Places/PlacesComponents/PlacesForm';
+import PlacesGrid from '@/components/Places/PlacesGrid';
+import SiteCreate from '@/components/Sites/SiteCreate';
+import SiteForms from '@/components/Sites/SiteForms';
+import SitesTable from '@/components/Sites/SitesTable';
+import UserForm from '@/components/People/UsersComponents/Form';
+
+import Feature from '@/components/MainPhotos/PhotosComponents/Feature';
+import HistoricSites from '@/components/MainPhotos/PhotosComponents/HistoricSites';
+import MainPhotos from '@/components/MainPhotos';
+import Photo from '@/components/MainPhotos/PhotosComponents/Photo';
+import PhotoBatchAttributesEdit from '@/components/MainPhotos/PhotoBatches/AttributesEdit';
+import PhotoBatchAttributesView from '@/components/MainPhotos/PhotoBatches/AttributesView';
+import PhotoBatchGrid from '@/components/MainPhotos/PhotoBatches/Grid';
+import PhotosGrid from '@/components/MainPhotos/PhotosGrid';
+import SiteRecord from '@/components/MainPhotos/PhotosComponents/SiteRecord';
+
+import AdminDashboard from '@/components/Administration/AdminDashboard';
+import AdminUserForm from '@/components/Administration/UserManagement/UserComponent/Form';
+import AdminUserGrid from '@/components/Administration/UserManagement/Grid';
+import AssetType from '@/components/Administration/LookupTableManagement/AssetType/AssetType';
+import Category from '@/components/Administration/LookupTableManagement/Category/Category';
+import Cause from '@/components/Administration/LookupTableManagement/Cause/Cause';
+import Cemetary from '@/components/Administration/LookupTableManagement/Cemetary/Cemetary';
+import CommunityGrid from '@/components/Administration/LookupTableManagement/Community/CommunityGrid';
+import IntSiteOwner from '@/components/Administration/LookupTableManagement/IntSiteOwner/IntSiteOwner';
+import Membership from '@/components/Administration/LookupTableManagement/Membership/Membership';
+import Occupation from '@/components/Administration/LookupTableManagement/Occupation/Occupation';
+import PhotoOwnerGrid from '@/components/Administration/LookupTableManagement/PhotoOwner/PhotoOwnerGrid';
+import PhotoProjectGrid from '@/components/Administration/LookupTableManagement/PhotoProject/PhotoProjectGrid';
+import PhotoSubjectGrid from '@/components/Administration/LookupTableManagement/PhotoSubject/PhotoSubjectGrid';
+import PlaceTypeGrid from '@/components/Administration/LookupTableManagement/PlaceType/PlaceType';
+import Relationship from '@/components/Administration/LookupTableManagement/Relationship/Relationship';
+import Religion from '@/components/Administration/LookupTableManagement/Religion/Religion';
+import Route from '@/components/Administration/LookupTableManagement/Route/Route';
+import VesselTypeGrid from '@/components/Administration/LookupTableManagement/VesselType/VesselType';
 
 Vue.use(VueRouter);
 
@@ -78,16 +75,8 @@ const routes = [
 	{
 		path: '/',
 		name: 'Home',
-		component: () => import('../components/Home.vue'),
+		component: () => import('@/components/Home.vue'),
 	},
-
-	// {
-	// 	path: '/dev',
-	// 	name: 'tinerking',
-	// 	component: () => import('../modules/tinkering/parent.vue'),
-	// 	meta: { requiresAuth: false },
-	// },
-
 	{
 		path: '/dashboard',
 		name: 'Dashboard',
@@ -97,17 +86,17 @@ const routes = [
 	{
 		path: '/sign-up',
 		name: 'SignUp',
-		component: () => import('../views/Signup.vue'),
+		component: () => import('@/views/Signup.vue'),
 	},
 	{
 		path: '/sign-in',
 		name: 'Login',
-		component: () => import('../views/Login.vue'),
+		component: () => import('@/views/Login.vue'),
 	},
 	{
 		path: '/login-complete',
 		name: 'LoginComplete',
-		component: () => import('../views/LoginComplete.vue'),
+		component: () => import('@/views/LoginComplete.vue'),
 	},
 	{
 		path: '/profile',
@@ -162,12 +151,6 @@ const routes = [
 		},
 	},
 	{
-		path: '/people',
-		name: 'People',
-		component: Users,
-		meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] },
-	},
-	{
 		path: '/photo-owners',
 		name: 'PhotoOwners',
 		component: OwnersGrid,
@@ -181,6 +164,12 @@ const routes = [
 		name: 'Communities',
 		component: Communities,
 		meta: { requiresAuth: true },
+	},
+	{
+		path: '/people',
+		name: 'People',
+		component: () => import('@/pages/people/PeoplesPage.vue'),
+		meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] },
 	},
 	{
 		path: '/people/edit/:name',
