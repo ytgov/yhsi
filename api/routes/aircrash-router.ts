@@ -37,43 +37,47 @@ aircrashRouter.get(
 	[query('page').default(0).isInt(), query('limit').default(10).isInt({ gt: 0 })],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const {
-			textToMatch = '',
-			sortBy = 'yacsinumber',
-			sort = 'asc',
-			crashdate = '',
-			aircrafttype = '',
-			aircraftregistration = '',
-			nation = '',
-			militarycivilian = '',
-			crashlocation = '',
-			pilot = '',
-			soulsonboard = '',
-			injuries = '',
-			fatalities = '',
-		} = req.query;
+		try {
+			const {
+				textToMatch = '',
+				sortBy = 'yacsinumber',
+				sort = 'asc',
+				crashdate = '',
+				aircrafttype = '',
+				aircraftregistration = '',
+				nation = '',
+				militarycivilian = '',
+				crashlocation = '',
+				pilot = '',
+				soulsonboard = '',
+				injuries = '',
+				fatalities = '',
+			} = req.query;
 
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string) || 0;
-		const offset = page * limit || 0;
+			const page = parseInt(req.query.page?.toString() || '') || 1;
+			const perPage = parseInt(req.query.limit?.toString() || '') || 10;
 
-		const data = await aircrashService.doSearch(page, limit, offset, {
-			textToMatch,
-			sortBy,
-			sort,
-			crashdate,
-			aircrafttype,
-			aircraftregistration,
-			nation,
-			militarycivilian,
-			crashlocation,
-			pilot,
-			soulsonboard,
-			injuries,
-			fatalities,
-		});
+			const data = await aircrashService.doSearch(page, perPage, {
+				textToMatch,
+				sortBy,
+				sort,
+				crashdate,
+				aircrafttype,
+				aircraftregistration,
+				nation,
+				militarycivilian,
+				crashlocation,
+				pilot,
+				soulsonboard,
+				injuries,
+				fatalities,
+			});
 
-		res.status(200).send(data);
+			return res.status(200).send(data);
+		} catch (error) {
+			console.error(error);
+			return res.status(400).send({ message: 'Error fetching airplane crashes' });
+		}
 	}
 );
 
@@ -219,18 +223,18 @@ aircrashRouter.post(
 	async (req: Request, res: Response) => {
 		const { aircrashId } = req.params;
 
-		let aircrash = await aircrashService.getById(aircrashId);
+		const aircrash = await aircrashService.getById(aircrashId);
 
 		if (!aircrash) {
 			res.status(404).send({ message: 'Data not found' });
 			return;
 		}
 		// Compile template.pug, and render a set of data
-		let data = renderFile('./templates/aircrashes/aircrashView.pug', {
+		const data = renderFile('./templates/aircrashes/aircrashView.pug', {
 			data: aircrash,
 		});
 
-		let pdf = await generatePDF(data);
+		const pdf = await generatePDF(data);
 		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 		res.setHeader('Content-type', 'application/pdf');
 		res.send(pdf);
@@ -238,24 +242,24 @@ aircrashRouter.post(
 );
 
 aircrashRouter.post('/pdf', async (req: Request, res: Response) => {
-	const { page = 0, limit = 0, filters = {} } = req.body;
-	let aircrashes = await aircrashService.doSearch(page, limit, 0, filters);
+	const { page = 1, limit = 0, filters = {} } = req.body;
+	const aircrashes = await aircrashService.doSearch(page, limit, filters);
 
 	// Compile template.pug, and render a set of data
-	let data = renderFile('./templates/aircrashes/aircrashGrid.pug', {
+	const data = renderFile('./templates/aircrashes/aircrashGrid.pug', {
 		data: aircrashes.body,
 	});
 
-	let pdf = await generatePDF(data);
+	const pdf = await generatePDF(data);
 	res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 	res.setHeader('Content-type', 'application/pdf');
 	res.send(pdf);
 });
 
 aircrashRouter.post('/export', async (req: Request, res: Response) => {
-	const { page = 0, limit = 0, filters = {} } = req.body;
+	const { page = 1, limit = 0, filters = {} } = req.body;
 
-	let aircrashes = await aircrashService.doSearch(page, limit, 0, filters);
+	const aircrashes = await aircrashService.doSearch(page, limit, filters);
 	const json2csvParser = new Parser();
 
 	const csv = json2csvParser.parse(aircrashes.body);
