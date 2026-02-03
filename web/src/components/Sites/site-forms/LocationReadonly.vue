@@ -144,7 +144,7 @@ v-card.mb-0(
           readonly
           dense
           outlined
-          label="Border number"
+          label="Borden number"
         )
         v-textarea(
           v-model="place.locationComment"

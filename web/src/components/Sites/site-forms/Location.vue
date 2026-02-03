@@ -166,7 +166,7 @@
 						v-model="place.bordenNumber"
 						dense
 						outlined
-						label="Border number"
+						label="Borden number"
 						:readonly="!isEditing"
 					/>
 					<v-textarea

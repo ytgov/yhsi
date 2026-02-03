@@ -176,7 +176,7 @@
 						dense
 						outlined
 						v-model="fields.bordenNumber"
-						label="Border number"
+						label="Borden number"
 					></v-text-field>
 					<v-textarea
 						dense
