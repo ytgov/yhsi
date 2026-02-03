@@ -75,9 +75,13 @@
 					/>
 				</v-col>
 				<v-col cols="6">
-					<PrimaryPhoto :photos="place.photos" />
+					<GenericRecordPhotosCard
+						record="place"
+						:recordId="placeId"
+						:showAddPhotoButton="isEditing"
+					/>
 
-					<v-card class="default mb-5">
+					<v-card class="default my-5">
 						<v-card-text>
 							<h3>Secondary Names</h3>
 							<div v-if="!place.names.length">No secondary names found.</div>
@@ -214,7 +218,7 @@ import DesignationTypesSelect from '@/components/Sites/site-forms/DesignationTyp
 import HistoricalPatternTypesSelect from '@/components/Sites/site-forms/HistoricalPatternTypesSelect';
 import RecordTypesSelect from '@/components/Sites/site-forms/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/site-forms/SiteCategoryTypesSelect';
-import PrimaryPhoto from '@/components/Common/PrimaryPhoto.vue';
+import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard.vue';
 
 export default {
 	name: 'Summary',
@@ -225,7 +229,7 @@ export default {
 		HistoricalPatternTypesSelect,
 		RecordTypesSelect,
 		SiteCategoryTypesSelect,
-		PrimaryPhoto,
+		GenericRecordPhotosCard,
 	},
 	props: {
 		placeId: {
