@@ -65,41 +65,54 @@
               :key="index"
               cols="4"
               class="d-flex child-flex"
+              @click.stop="goToPhotoPage(photo)"
             >
-              <v-card outlined hover>
-                <v-img
-                  :src="photo.ThumbFile.base64"
-                  :lazy-src="photo.ThumbFile.base64"
-                  aspect-ratio="1"
-                  class="grey lighten-2"
-                >
-                  <template v-slot:placeholder>
-                    <v-row
-                      class="fill-height ma-0"
-                      align="center"
-                      justify="center"
+              <v-hover v-slot="{ hover }">
+                <v-card outlined hover>
+                  <v-img
+                    :src="photo.ThumbFile.base64"
+                    :lazy-src="photo.ThumbFile.base64"
+                    aspect-ratio="1"
+                    class="grey lighten-2"
+                  >
+                    <template v-slot:placeholder>
+                      <v-row
+                        class="fill-height ma-0"
+                        align="center"
+                        justify="center"
+                      >
+                        <v-progress-circular
+                          indeterminate
+                          color="grey lighten-5"
+                        ></v-progress-circular>
+                      </v-row>
+                    </template>
+
+                    <v-overlay
+                      absolute
+                      :value="hover"
+                      opacity="0.75"
                     >
-                      <v-progress-circular
-                        indeterminate
-                        color="grey lighten-5"
-                      ></v-progress-circular>
-                    </v-row>
-                  </template>
-                </v-img>
-                <v-row>
-                  <v-col cols="12" class="d-flex">
-                    <v-card-text
-                      v-if="photo[filters[selectedFilter].value]"
-                      class="text-truncate text-caption"
-                    >
-                      {{ photo[filters[selectedFilter].value] }}
-                    </v-card-text>
-                    <v-card-text v-else class="text-caption">
-                      No {{ filters[selectedFilter].text }} Available
-                    </v-card-text>
-                  </v-col>
-                </v-row>
-              </v-card>
+                      <v-btn icon color="white">
+                        <v-icon>mdi-eye</v-icon>
+                      </v-btn>
+                    </v-overlay>
+                  </v-img>
+                  <v-row>
+                    <v-col cols="12" class="d-flex">
+                      <v-card-text
+                        v-if="photo[filters[selectedFilter].value]"
+                        class="text-truncate text-caption"
+                      >
+                        {{ photo[filters[selectedFilter].value] }}
+                      </v-card-text>
+                      <v-card-text v-else class="text-caption">
+                        No {{ filters[selectedFilter].text }} Available
+                      </v-card-text>
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-hover>
             </v-col>
           </v-row>
       </v-container>
@@ -149,6 +162,11 @@ export default {
     },
     close(){
       this.dialog = false;
+    },
+    goToPhotoPage(photo){
+      // _TODO_ this code is very confusing, consider refactoring web/router.js
+      this.$store.commit("photos/setRowId", photo.RowId)
+      this.$router.push("/photos/view")
     }
   },
   computed: {
