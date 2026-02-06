@@ -1,9 +1,8 @@
 import express, { Request, Response } from 'express';
 import { body, check, query, validationResult } from 'express-validator';
-import knex from 'knex';
 import multer from 'multer';
 
-import { DB_CONFIG } from '../config';
+import db from '@/db/db-client';
 import { PhotoService, YtPlaceService, BoatService } from '../services';
 import { Photo, SavedFilter } from '../data';
 import { createThumbnail } from '../utils/image';
@@ -11,8 +10,8 @@ import { ReturnValidationErrors } from '../middleware';
 import { authorize } from '../middleware/authorization';
 import { UserRoles } from '../models';
 
-const photoService = new PhotoService(DB_CONFIG);
-const ytPlaceService = new YtPlaceService(DB_CONFIG);
+const photoService = new PhotoService();
+const ytPlaceService = new YtPlaceService();
 const boatService = new BoatService();
 const PAGE_SIZE = 12;
 
@@ -253,7 +252,6 @@ photoRouter.delete(
 	authorize([UserRoles.ADMINISTRATOR, UserRoles.PHOTO_ADMIN]),
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
-		const db = knex(DB_CONFIG);
 
 		db.transaction(async (trx) => {
 			try {

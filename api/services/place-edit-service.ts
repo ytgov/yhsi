@@ -1,7 +1,8 @@
-import knex, { Knex } from 'knex';
+import { Knex } from 'knex';
 
-import { DB_CONFIG } from '../config';
-import { Place, PlaceEdit, PlainObject } from '../models';
+import db from '@/db/db-client';
+
+import { PlaceEdit, PlainObject } from '../models';
 import PlaceEditSerializer from '../serializers/place-edit-serializer';
 
 interface CountQuery {
@@ -9,12 +10,10 @@ interface CountQuery {
 }
 
 export class PlaceEditService {
-	private db: Knex;
 	private _defaultScope: Knex.QueryBuilder;
 
 	constructor() {
-		this.db = knex(DB_CONFIG);
-		this._defaultScope = this.db
+		this._defaultScope = db
 			.select({
 				id: 'PlaceEdit.Id',
 				placeId: 'PlaceId',
@@ -25,11 +24,7 @@ export class PlaceEditService {
 				editDate: 'EditDate',
 			})
 			.from('PlaceEdit')
-			.leftOuterJoin(
-				'Security.User',
-				'Security.User.Id',
-				'PlaceEdit.EditorUserId'
-			);
+			.leftOuterJoin('Security.User', 'Security.User.Id', 'PlaceEdit.EditorUserId');
 	}
 
 	get defaultScope(): Knex.QueryBuilder {
@@ -37,7 +32,7 @@ export class PlaceEditService {
 	}
 
 	count(scope: Knex.QueryBuilder): Promise<number> {
-		return this.db
+		return db
 			.count('PlaceEdit.Id', { as: 'count' })
 			.from('PlaceEdit')
 			.innerJoin(scope.as('t2'), 't2.Id', 'PlaceEdit.Id')
@@ -152,16 +147,16 @@ export class PlaceEditService {
 
 	create(data: PlainObject) {
 		return Promise.resolve(new PlaceEdit(data)).then((placeEdit) => {
-			return this.db('PlaceEdit').insert(placeEdit.toDbObject());
+			return db('PlaceEdit').insert(placeEdit.toDbObject());
 		});
 	}
 
 	delete(id: number) {
-		return this.db.where({ 'PlaceEdit.Id': id }).from('PlaceEdit').delete();
+		return db.where({ 'PlaceEdit.Id': id }).from('PlaceEdit').delete();
 	}
 
 	existsForPlace(id: number) {
-		return this.db
+		return db
 			.first('Id')
 			.from('PlaceEdit')
 			.where({ PlaceId: id })

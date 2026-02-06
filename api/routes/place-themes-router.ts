@@ -1,12 +1,10 @@
 import express, { Request, Response } from 'express';
-import knex from 'knex';
 
-import { DB_CONFIG } from '../config';
+import db from '@/db/db-client';
 
 export const placeThemesRouter = express.Router();
-const db = knex(DB_CONFIG);
 
-placeThemesRouter.get('/', (req: Request, res: Response) => {
+placeThemesRouter.get('/', (_req: Request, res: Response) => {
 	return db('PlaceTheme')
 		.select('id', 'category', 'type')
 		.then((results) => {

@@ -1,24 +1,14 @@
-import knex, { Knex } from 'knex';
+import db from '@/db/db-client';
 
 import { PreviousOwnership } from '../models';
 
 export class PreviousOwnershipService {
-	private db: Knex;
-
-	constructor(config: Knex.Config<any>) {
-		this.db = knex(config);
-	}
-
 	async getFor(placeId: number) {
-		return this.db('PreviousOwnership')
+		return db('PreviousOwnership')
 			.where({ placeId })
-			.select<PreviousOwnership[]>([
-				'id',
-				'placeId',
-				'ownershipNumber',
-				'ownershipName',
-				'ownershipDate',
-			]);
+			.select<
+				PreviousOwnership[]
+			>(['id', 'placeId', 'ownershipNumber', 'ownershipName', 'ownershipDate']);
 	}
 
 	async upsertFor(placeId: number, previousOwnerships: PreviousOwnership[]) {
@@ -32,13 +22,10 @@ export class PreviousOwnershipService {
 				}))
 			);
 		}).then((cleanPreviousOwnerships) => {
-			return this.db.transaction(async (trx) => {
+			return db.transaction(async (trx) => {
 				await trx('PreviousOwnership').where({ placeId }).delete();
 
-				if (
-					Array.isArray(cleanPreviousOwnerships) &&
-					cleanPreviousOwnerships.length === 0
-				) {
+				if (Array.isArray(cleanPreviousOwnerships) && cleanPreviousOwnerships.length === 0) {
 					return [];
 				}
 

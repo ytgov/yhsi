@@ -1,14 +1,14 @@
 import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
 import { body, check, query, validationResult } from 'express-validator';
+import multer from 'multer';
+
 import { PhotoService, PhotoBatchService, SortStatement, SortDirection } from '../services';
 import { PhotoBatch, PhotoBatchPhoto } from '../data';
-import multer from 'multer';
 import { createThumbnail } from '../utils/image';
 import { ReturnValidationErrors } from '../middleware';
 
-const photoBatchService = new PhotoBatchService(DB_CONFIG);
-const photoService = new PhotoService(DB_CONFIG);
+const photoBatchService = new PhotoBatchService();
+const photoService = new PhotoService();
 const PAGE_SIZE = 36;
 
 export const photoBatchRouter = express.Router();

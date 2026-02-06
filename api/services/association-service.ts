@@ -1,16 +1,10 @@
-import knex, { Knex } from 'knex';
+import db from '@/db/db-client';
 
 import { Association } from '../models';
 
 export class AssociationService {
-	private db: Knex;
-
-	constructor(config: Knex.Config<any>) {
-		this.db = knex(config);
-	}
-
 	async getFor(placeId: number) {
-		return this.db('Association')
+		return db('Association')
 			.where({ placeId })
 			.select<Association[]>(['id', 'placeId', 'type', 'description']);
 	}
@@ -25,13 +19,10 @@ export class AssociationService {
 				}))
 			);
 		}).then((cleanAssociations) => {
-			return this.db.transaction(async (trx) => {
+			return db.transaction(async (trx) => {
 				await trx('Association').where({ placeId }).delete();
 
-				if (
-					Array.isArray(cleanAssociations) &&
-					cleanAssociations.length === 0
-				) {
+				if (Array.isArray(cleanAssociations) && cleanAssociations.length === 0) {
 					return [];
 				}
 

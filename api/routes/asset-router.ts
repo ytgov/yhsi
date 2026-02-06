@@ -1,6 +1,4 @@
 import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
-import knex from 'knex';
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { InterpretiveSiteService } from '../services';
@@ -11,7 +9,7 @@ const {
 	transforms: { unwind },
 } = require('json2csv');
 export const assetRouter = express.Router();
-const db = knex(DB_CONFIG);
+
 const intSiteService = new InterpretiveSiteService();
 
 // ASSETS
@@ -95,11 +93,7 @@ assetRouter.put('/:assetId', async (req: Request, res: Response) => {
 	const { item = {}, maintainers = [] } = req.body;
 	const { assetId } = req.params;
 
-	const resObj = await intSiteService.modifyAsset(
-		item,
-		maintainers,
-		parseInt(assetId)
-	);
+	const resObj = await intSiteService.modifyAsset(item, maintainers, parseInt(assetId));
 	if (!resObj) {
 		res.status(404).send({ message: 'Asset not found' });
 		return;
@@ -115,9 +109,6 @@ assetRouter.get(
 	async (req: Request, res: Response) => {
 		const { assetID } = req.params;
 
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
 		const docs = await intSiteService.getDocumentsByOwnerID({
 			AssetID: assetID,
 		});
@@ -131,15 +122,12 @@ assetRouter.delete(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { assetID } = req.params;
-		const exists = await intSiteService.objExists(
-			{ AssetID: parseInt(assetID) },
-			'assets'
-		);
+		const exists = await intSiteService.objExists({ AssetID: parseInt(assetID) }, 'assets');
 		if (!exists) {
 			res.sendStatus(404).send('The Asset doesnt exist');
 			return;
 		}
-		let resObj = await intSiteService.removeAsset(parseInt(assetID));
+		const resObj = await intSiteService.removeAsset(parseInt(assetID));
 		res.sendStatus(200).send(resObj);
 	}
 );
@@ -151,7 +139,7 @@ assetRouter.delete(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
 
-		let resObj = await intSiteService.removeDocumentByID(parseInt(id));
+		const resObj = await intSiteService.removeDocumentByID(parseInt(id));
 		if (!resObj) {
 			res.sendStatus(404).send('The Action doesnt exist');
 			return;
@@ -211,11 +199,11 @@ assetRouter.post('/pdf', async (req: Request, res: Response) => {
 		sortBy,
 		sort,
 	});
-	let pdfData = renderFile('./templates/interpretive-sites/assetGrid.pug', {
+	const pdfData = renderFile('./templates/interpretive-sites/assetGrid.pug', {
 		data: data.body,
 	});
 
-	let pdf = await generatePDF(pdfData);
+	const pdf = await generatePDF(pdfData);
 	res.setHeader('Content-disposition', 'attachment; filename="assets.html"');
 	res.setHeader('Content-type', 'application/pdf');
 	res.send(pdf);

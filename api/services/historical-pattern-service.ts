@@ -1,31 +1,18 @@
-import knex, { Knex } from 'knex';
+import db from '@/db/db-client';
 
-import { DB_CONFIG } from '../config';
 import { HistoricalPattern } from '../models/historical-pattern';
 import { HISTORICAL_PATTERN_TYPES } from '../models';
 
 export class HistoricalPatternService {
-	private db: Knex;
-
-	constructor() {
-		this.db = knex(DB_CONFIG);
-	}
-
 	async getFor(placeId: number): Promise<HistoricalPattern[]> {
-		const list = await this.db('historicalpattern')
+		const list = await db('historicalpattern')
 			.where({ placeId })
-			.select<HistoricalPattern[]>([
-				'id',
-				'placeId',
-				'comments',
-				'historicalPatternType',
-			]);
+			.select<HistoricalPattern[]>(['id', 'placeId', 'comments', 'historicalPatternType']);
 
 		list.map((item) => {
 			item.historicalPatternTypeName =
-				Object.values(HISTORICAL_PATTERN_TYPES).find(
-					(i) => i.value == item.historicalPatternType
-				)?.text ?? '';
+				Object.values(HISTORICAL_PATTERN_TYPES).find((i) => i.value == item.historicalPatternType)
+					?.text ?? '';
 		});
 		return list;
 	}
@@ -40,13 +27,10 @@ export class HistoricalPatternService {
 				}))
 			);
 		}).then((cleanHistoricalPatterns) => {
-			return this.db.transaction(async (trx) => {
+			return db.transaction(async (trx) => {
 				await trx('HistoricalPattern').where({ placeId }).delete();
 
-				if (
-					Array.isArray(cleanHistoricalPatterns) &&
-					cleanHistoricalPatterns.length === 0
-				) {
+				if (Array.isArray(cleanHistoricalPatterns) && cleanHistoricalPatterns.length === 0) {
 					return [];
 				}
 

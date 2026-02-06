@@ -1,25 +1,14 @@
-import knex, { Knex } from 'knex';
+import db from '@/db/db-client';
 
 import { RevisionLog } from '../models';
 
 export class RevisionLogService {
-	private db: Knex;
-
-	constructor(config: Knex.Config<any>) {
-		this.db = knex(config);
-	}
-
 	async getFor(placeId: number) {
-		return this.db('RevisionLog')
+		return db('RevisionLog')
 			.where({ placeId })
-			.select<RevisionLog[]>([
-				'id',
-				'placeId',
-				'revisionLogType',
-				'revisionDate',
-				'revisedBy',
-				'details',
-			])
+			.select<
+				RevisionLog[]
+			>(['id', 'placeId', 'revisionLogType', 'revisionDate', 'revisedBy', 'details'])
 			.orderBy('revisionDate');
 	}
 
@@ -35,13 +24,10 @@ export class RevisionLogService {
 				}))
 			);
 		}).then((cleanRevisionLogs) => {
-			return this.db.transaction(async (trx) => {
+			return db.transaction(async (trx) => {
 				await trx('RevisionLog').where({ placeId }).delete();
 
-				if (
-					Array.isArray(cleanRevisionLogs) &&
-					cleanRevisionLogs.length === 0
-				) {
+				if (Array.isArray(cleanRevisionLogs) && cleanRevisionLogs.length === 0) {
 					return [];
 				}
 

@@ -1,18 +1,10 @@
-import knex, { Knex } from 'knex';
+import db from '@/db/db-client';
 
 import { Theme } from '../models';
 
 export class ThemeService {
-	private db: Knex;
-
-	constructor(config: Knex.Config<any>) {
-		this.db = knex(config);
-	}
-
 	async getFor(placeId: number) {
-		return this.db('Theme')
-			.where({ placeId })
-			.select<Theme[]>(['id', 'placeId', 'placeThemeId']);
+		return db('Theme').where({ placeId }).select<Theme[]>(['id', 'placeId', 'placeThemeId']);
 	}
 
 	async upsertFor(placeId: number, themes: Theme[]) {
@@ -24,7 +16,7 @@ export class ThemeService {
 				}))
 			);
 		}).then((cleanThemes) => {
-			return this.db.transaction(async (trx) => {
+			return db.transaction(async (trx) => {
 				await trx('Theme').where({ placeId }).delete();
 
 				if (Array.isArray(cleanThemes) && cleanThemes.length === 0) {

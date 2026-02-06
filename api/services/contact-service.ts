@@ -1,28 +1,14 @@
-import knex, { Knex } from 'knex';
+import db from '@/db/db-client';
 
 import { Contact } from '../models';
 
 export class ContactService {
-	private db: Knex;
-
-	constructor(config: Knex.Config<any>) {
-		this.db = knex(config);
-	}
-
 	async getFor(placeId: number) {
-		return this.db('Contact')
+		return db('Contact')
 			.where({ placeId })
-			.select<Contact[]>([
-				'id',
-				'placeId',
-				'contactType',
-				'description',
-				'email',
-				'firstName',
-				'lastName',
-				'mailingAddress',
-				'phoneNumber',
-			]);
+			.select<
+				Contact[]
+			>(['id', 'placeId', 'contactType', 'description', 'email', 'firstName', 'lastName', 'mailingAddress', 'phoneNumber']);
 	}
 
 	async upsertFor(placeId: number, contacts: Contact[]) {
@@ -40,7 +26,7 @@ export class ContactService {
 				}))
 			);
 		}).then((cleanContacts) => {
-			return this.db.transaction(async (trx) => {
+			return db.transaction(async (trx) => {
 				await trx('Contact').where({ placeId }).delete();
 
 				if (Array.isArray(cleanContacts) && cleanContacts.length === 0) {

@@ -1,12 +1,10 @@
 import express, { Request, Response } from 'express';
-import knex from 'knex';
 
-import { DB_CONFIG } from '../config';
+import db from '@/db/db-client';
 
 export const functionalTypesRouter = express.Router();
-const db = knex(DB_CONFIG);
 
-functionalTypesRouter.get('/', (req: Request, res: Response) => {
+functionalTypesRouter.get('/', (_req: Request, res: Response) => {
 	return db('FunctionalType')
 		.select('id', 'description')
 		.then((results) => {

@@ -1,16 +1,10 @@
-import knex, { Knex } from 'knex';
+import db from '@/db/db-client';
 
 import { Description } from '../models';
 
 export class DescriptionService {
-	private db: Knex;
-
-	constructor(config: Knex.Config<any>) {
-		this.db = knex(config);
-	}
-
 	async getForPlace(placeId: number) {
-		return this.db('Description')
+		return db('Description')
 			.where({ placeId })
 			.select<Description[]>(['id', 'placeId', 'type', 'descriptionText']);
 	}
@@ -25,13 +19,10 @@ export class DescriptionService {
 				}))
 			);
 		}).then((cleanDescriptions) => {
-			return this.db.transaction(async (trx) => {
+			return db.transaction(async (trx) => {
 				await trx('Description').where({ placeId }).delete();
 
-				if (
-					Array.isArray(cleanDescriptions) &&
-					cleanDescriptions.length === 0
-				) {
+				if (Array.isArray(cleanDescriptions) && cleanDescriptions.length === 0) {
 					return [];
 				}
 

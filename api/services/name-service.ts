@@ -1,19 +1,10 @@
-import knex, { Knex } from 'knex';
+import db from '@/db/db-client';
 
-import { DB_CONFIG } from '../config';
 import { Name } from '../models/name';
 
 export class NameService {
-	private db: Knex;
-
-	constructor() {
-		this.db = knex(DB_CONFIG);
-	}
-
 	async getFor(placeId: number) {
-		return this.db('name')
-			.where({ placeId })
-			.select<Name[]>(['id', 'placeId', 'description']);
+		return db('name').where({ placeId }).select<Name[]>(['id', 'placeId', 'description']);
 	}
 
 	async upsertFor(placeId: number, names: Name[]) {
@@ -25,7 +16,7 @@ export class NameService {
 				}))
 			);
 		}).then((cleanNames) => {
-			return this.db.transaction(async (trx) => {
+			return db.transaction(async (trx) => {
 				await trx('Name').where({ placeId }).delete();
 
 				if (Array.isArray(cleanNames) && cleanNames.length === 0) {
