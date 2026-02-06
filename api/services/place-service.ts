@@ -373,11 +373,18 @@ export class PlaceService {
 
 			const SUPPORTED_QUERIES: { [key: string]: QueryBuilder } = Object.freeze({
 				search(base: Knex.QueryInterface, value: any) {
-					return base.where((builder: any) =>
+					return base.where((builder: Knex.QueryBuilder) =>
 						builder
 							.whereILike('PrimaryName', `%${value}%`)
 							.orWhereILike('YHSIId', `%${value}%`)
 							.orWhereILike('[Name].[Description]', `%${value}%`)
+							.orWhereExists((subquery) => {
+								subquery
+									.select('*')
+									.from('dbo.Name as names')
+									.whereRaw('names.PlaceId = Place.Id')
+									.whereILike('names.Description', `%${value}%`);
+							})
 					);
 				},
 				includingCommunityIds(base: Knex.QueryInterface, value: any) {
