@@ -1,21 +1,21 @@
+import { param } from 'express-validator';
+
+import db from '@/db/db-client';
+
 import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
-import knex from 'knex';
 import { ReturnValidationErrors } from '../middleware';
-import { param, query } from 'express-validator';
 import { CatalogService } from '../services';
+
 const catalogService = new CatalogService();
 export const catalogsRouter = express.Router();
-const db = knex(DB_CONFIG);
-//const staticService = new StaticService(DB_CONFIG);
 
-catalogsRouter.get('/community', async (req: Request, res: Response) => {
+catalogsRouter.get('/community', async (_req: Request, res: Response) => {
 	const community = await db('Community').orderBy('Community.id', 'asc');
 
 	res.send(community);
 });
 
-catalogsRouter.get('/originalmedia', async (req: Request, res: Response) => {
+catalogsRouter.get('/originalmedia', async (_req: Request, res: Response) => {
 	const media = await db('OriginalMedia').orderBy('OriginalMedia.id', 'asc');
 
 	res.send(media);
@@ -106,9 +106,7 @@ catalogsRouter.get('/placetype', async (req: Request, res: Response) => {
 			.limit(limit)
 			.offset(offset);
 	} else {
-		counter = await db
-			.from('Place.PlaceTypeLookup')
-			.count('Id', { as: 'count' });
+		counter = await db.from('Place.PlaceTypeLookup').count('Id', { as: 'count' });
 
 		types = await db
 			.select('*')
@@ -124,10 +122,7 @@ catalogsRouter.get('/placetype', async (req: Request, res: Response) => {
 catalogsRouter.post('/placetype', async (req: Request, res: Response) => {
 	const { placeType = {} } = req.body;
 
-	const response = await db
-		.insert(placeType)
-		.into('Place.PlaceTypeLookup')
-		.returning('*');
+	const response = await db.insert(placeType).into('Place.PlaceTypeLookup').returning('*');
 
 	res.status(200).send(response);
 });
@@ -155,7 +150,7 @@ catalogsRouter.get('/religion/search', async (req: Request, res: Response) => {
 	const page = parseInt(req.query.page as string);
 	const limit = parseInt(req.query.limit as string);
 	const offset = page * limit || 0;
-	let counter = [{ count: 0 }];
+
 	const data = await catalogService.doReligionSearch(page, limit, offset, {
 		textToMatch,
 		sortBy,
@@ -165,7 +160,7 @@ catalogsRouter.get('/religion/search', async (req: Request, res: Response) => {
 	res.send(data);
 });
 
-catalogsRouter.get('/religion', async (req: Request, res: Response) => {
+catalogsRouter.get('/religion', async (_req: Request, res: Response) => {
 	const data = await catalogService.getAllReligions();
 
 	res.send(data);
@@ -179,9 +174,7 @@ catalogsRouter.put(
 		const { id } = req.params;
 		const { data = {} } = req.body;
 
-		await db('Burial.ReligionLookup')
-			.update(data)
-			.where('Burial.ReligionLookup.ReligionLupID', id);
+		await db('Burial.ReligionLookup').update(data).where('Burial.ReligionLookup.ReligionLupID', id);
 
 		res.status(200).send({ message: 'success' });
 	}
@@ -190,10 +183,7 @@ catalogsRouter.put(
 catalogsRouter.post('/religion', async (req: Request, res: Response) => {
 	const { data = {} } = req.body;
 
-	const response = await db
-		.insert(data)
-		.into('Burial.ReligionLookup')
-		.returning('*');
+	const response = await db.insert(data).into('Burial.ReligionLookup').returning('*');
 
 	res.status(200).send(response);
 });
@@ -205,7 +195,7 @@ catalogsRouter.get('/cause/search', async (req: Request, res: Response) => {
 	const page = parseInt(req.query.page as string);
 	const limit = parseInt(req.query.limit as string);
 	const offset = page * limit || 0;
-	let counter = [{ count: 0 }];
+
 	const data = await catalogService.doCauseSearch(page, limit, offset, {
 		textToMatch,
 		sortBy,
@@ -215,7 +205,7 @@ catalogsRouter.get('/cause/search', async (req: Request, res: Response) => {
 	res.send(data);
 });
 
-catalogsRouter.get('/cause', async (req: Request, res: Response) => {
+catalogsRouter.get('/cause', async (_req: Request, res: Response) => {
 	const data = await catalogService.getAllCauses();
 
 	res.send(data);
@@ -229,9 +219,7 @@ catalogsRouter.put(
 		const { id } = req.params;
 		const { data = {} } = req.body;
 
-		await db('Burial.CauseLookup')
-			.update(data)
-			.where('Burial.CauseLookup.CauseLUpID', id);
+		await db('Burial.CauseLookup').update(data).where('Burial.CauseLookup.CauseLUpID', id);
 
 		res.status(200).send({ message: 'success' });
 	}
@@ -239,10 +227,7 @@ catalogsRouter.put(
 
 catalogsRouter.post('/cause', async (req: Request, res: Response) => {
 	const { data = {} } = req.body;
-	const response = await db
-		.insert(data)
-		.into('Burial.CauseLookup')
-		.returning('*');
+	const response = await db.insert(data).into('Burial.CauseLookup').returning('*');
 
 	res.status(200).send(response);
 });
@@ -263,7 +248,7 @@ catalogsRouter.get('/cemetary/search', async (req: Request, res: Response) => {
 	res.send(data);
 });
 
-catalogsRouter.get('/cemetary', async (req: Request, res: Response) => {
+catalogsRouter.get('/cemetary', async (_req: Request, res: Response) => {
 	const data = await catalogService.getAllCemetaries();
 
 	res.send(data);
@@ -277,9 +262,7 @@ catalogsRouter.put(
 		const { id } = req.params;
 		const { data = {} } = req.body;
 
-		await db('Burial.CemetaryLookup')
-			.update(data)
-			.where('Burial.CemetaryLookup.CemetaryLUpID', id);
+		await db('Burial.CemetaryLookup').update(data).where('Burial.CemetaryLookup.CemetaryLUpID', id);
 
 		res.status(200).send({ message: 'success' });
 	}
@@ -288,34 +271,28 @@ catalogsRouter.put(
 catalogsRouter.post('/cemetary', async (req: Request, res: Response) => {
 	const { data = {} } = req.body;
 
-	const response = await db
-		.insert(data)
-		.into('Burial.CemetaryLookup')
-		.returning('*');
+	const response = await db.insert(data).into('Burial.CemetaryLookup').returning('*');
 
 	res.status(200).send(response);
 });
 
 //OCCUPATIONS
 
-catalogsRouter.get(
-	'/occupation/search',
-	async (req: Request, res: Response) => {
-		const { textToMatch = '', sortBy = 'Occupation', sort = 'asc' } = req.query;
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
-		const data = await catalogService.doOccupationSearch(page, limit, offset, {
-			textToMatch,
-			sortBy,
-			sort,
-		});
+catalogsRouter.get('/occupation/search', async (req: Request, res: Response) => {
+	const { textToMatch = '', sortBy = 'Occupation', sort = 'asc' } = req.query;
+	const page = parseInt(req.query.page as string);
+	const limit = parseInt(req.query.limit as string);
+	const offset = page * limit || 0;
+	const data = await catalogService.doOccupationSearch(page, limit, offset, {
+		textToMatch,
+		sortBy,
+		sort,
+	});
 
-		res.send(data);
-	}
-);
+	res.send(data);
+});
 
-catalogsRouter.get('/occupation', async (req: Request, res: Response) => {
+catalogsRouter.get('/occupation', async (_req: Request, res: Response) => {
 	const data = await catalogService.getAllOcupations();
 
 	res.send(data);
@@ -340,34 +317,28 @@ catalogsRouter.put(
 catalogsRouter.post('/occupation', async (req: Request, res: Response) => {
 	const { data = {} } = req.body;
 
-	const response = await db
-		.insert(data)
-		.into('Burial.OccupationLookup')
-		.returning('*');
+	const response = await db.insert(data).into('Burial.OccupationLookup').returning('*');
 
 	res.status(200).send(response);
 });
 
 //MEMBERSHIPS
 
-catalogsRouter.get(
-	'/membership/search',
-	async (req: Request, res: Response) => {
-		const { textToMatch = '', sortBy = 'Membership', sort = 'asc' } = req.query;
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
-		const data = await catalogService.doMembershipSearch(page, limit, offset, {
-			textToMatch,
-			sortBy,
-			sort,
-		});
+catalogsRouter.get('/membership/search', async (req: Request, res: Response) => {
+	const { textToMatch = '', sortBy = 'Membership', sort = 'asc' } = req.query;
+	const page = parseInt(req.query.page as string);
+	const limit = parseInt(req.query.limit as string);
+	const offset = page * limit || 0;
+	const data = await catalogService.doMembershipSearch(page, limit, offset, {
+		textToMatch,
+		sortBy,
+		sort,
+	});
 
-		res.send(data);
-	}
-);
+	res.send(data);
+});
 
-catalogsRouter.get('/membership', async (req: Request, res: Response) => {
+catalogsRouter.get('/membership', async (_req: Request, res: Response) => {
 	const data = await catalogService.getAllMemberships();
 
 	res.send(data);
@@ -392,39 +363,28 @@ catalogsRouter.put(
 catalogsRouter.post('/membership', async (req: Request, res: Response) => {
 	const { data = {} } = req.body;
 
-	const response = await db
-		.insert(data)
-		.into('Burial.MembershipLookup')
-		.returning('*');
+	const response = await db.insert(data).into('Burial.MembershipLookup').returning('*');
 
 	res.status(200).send(response);
 });
 
 //RELATIONSHIPS
 
-catalogsRouter.get(
-	'/relationship/search',
-	async (req: Request, res: Response) => {
-		const {
-			textToMatch = '',
-			sortBy = 'Relationship',
-			sort = 'asc',
-		} = req.query;
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
-		const data = await catalogService.doRelationshipSearch(
-			page,
-			limit,
-			offset,
-			{ textToMatch, sortBy, sort }
-		);
+catalogsRouter.get('/relationship/search', async (req: Request, res: Response) => {
+	const { textToMatch = '', sortBy = 'Relationship', sort = 'asc' } = req.query;
+	const page = parseInt(req.query.page as string);
+	const limit = parseInt(req.query.limit as string);
+	const offset = page * limit || 0;
+	const data = await catalogService.doRelationshipSearch(page, limit, offset, {
+		textToMatch,
+		sortBy,
+		sort,
+	});
 
-		res.send(data);
-	}
-);
+	res.send(data);
+});
 
-catalogsRouter.get('/relationship', async (req: Request, res: Response) => {
+catalogsRouter.get('/relationship', async (_req: Request, res: Response) => {
 	const data = await catalogService.getAllRelationships();
 
 	res.send(data);
@@ -438,9 +398,7 @@ catalogsRouter.put(
 		const { id } = req.params;
 		const { data = {} } = req.body;
 
-		await db('Burial.RelationLookup')
-			.update(data)
-			.where('Burial.RelationLookup.RelationLupID', id);
+		await db('Burial.RelationLookup').update(data).where('Burial.RelationLookup.RelationLupID', id);
 
 		res.status(200).send({ message: 'success' });
 	}
@@ -449,16 +407,13 @@ catalogsRouter.put(
 catalogsRouter.post('/relationship', async (req: Request, res: Response) => {
 	const { data = {} } = req.body;
 
-	const response = await db
-		.insert(data)
-		.into('Burial.RelationLookup')
-		.returning('*');
+	const response = await db.insert(data).into('Burial.RelationLookup').returning('*');
 
 	res.status(200).send(response);
 });
 
 //ASSET TYPES
-catalogsRouter.get('/asset-type', async (req: Request, res: Response) => {
+catalogsRouter.get('/asset-type', async (_req: Request, res: Response) => {
 	const response = await catalogService.getAllAssetTypes();
 	res.status(200).send(response);
 });
@@ -479,31 +434,28 @@ catalogsRouter.put(
 		const { id } = req.params;
 		const { data = {} } = req.body;
 
-		let resObj = await catalogService.modifyAssetType(parseInt(id), data);
+		await catalogService.modifyAssetType(parseInt(id), data);
 
 		res.status(200).send({ message: 'success' });
 	}
 );
 
-catalogsRouter.get(
-	'/asset-type/search',
-	async (req: Request, res: Response) => {
-		const { textToMatch = '', sortBy = 'Type', sort = 'asc' } = req.query;
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
-		const data = await catalogService.doAssetTypeSearch(page, limit, offset, {
-			textToMatch,
-			sortBy,
-			sort,
-		});
+catalogsRouter.get('/asset-type/search', async (req: Request, res: Response) => {
+	const { textToMatch = '', sortBy = 'Type', sort = 'asc' } = req.query;
+	const page = parseInt(req.query.page as string);
+	const limit = parseInt(req.query.limit as string);
+	const offset = page * limit || 0;
+	const data = await catalogService.doAssetTypeSearch(page, limit, offset, {
+		textToMatch,
+		sortBy,
+		sort,
+	});
 
-		res.send(data);
-	}
-);
+	res.send(data);
+});
 
 //CATEGORIES
-catalogsRouter.get('/category', async (req: Request, res: Response) => {
+catalogsRouter.get('/category', async (_req: Request, res: Response) => {
 	const response = await catalogService.getAllCategories();
 	res.status(200).send(response);
 });
@@ -538,13 +490,13 @@ catalogsRouter.put(
 		const { id } = req.params;
 		const { data = {} } = req.body;
 
-		let resObj = await catalogService.modifyCategory(parseInt(id), data);
+		await catalogService.modifyCategory(parseInt(id), data);
 
 		res.status(200).send({ message: 'success' });
 	}
 );
 //MAINTAINERS
-catalogsRouter.get('/maintainer', async (req: Request, res: Response) => {
+catalogsRouter.get('/maintainer', async (_req: Request, res: Response) => {
 	const response = await catalogService.getAllMaintainers();
 	res.status(200).send(response);
 });
@@ -557,26 +509,19 @@ catalogsRouter.post('/maintainer', async (req: Request, res: Response) => {
 	res.status(200).send(response);
 });
 
-catalogsRouter.get(
-	'/maintainer/search',
-	async (req: Request, res: Response) => {
-		const {
-			textToMatch = '',
-			sortBy = 'MaintOwnName',
-			sort = 'asc',
-		} = req.query;
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
-		const data = await catalogService.doMaintainerSearch(page, limit, offset, {
-			textToMatch,
-			sortBy,
-			sort,
-		});
+catalogsRouter.get('/maintainer/search', async (req: Request, res: Response) => {
+	const { textToMatch = '', sortBy = 'MaintOwnName', sort = 'asc' } = req.query;
+	const page = parseInt(req.query.page as string);
+	const limit = parseInt(req.query.limit as string);
+	const offset = page * limit || 0;
+	const data = await catalogService.doMaintainerSearch(page, limit, offset, {
+		textToMatch,
+		sortBy,
+		sort,
+	});
 
-		res.send(data);
-	}
-);
+	res.send(data);
+});
 
 catalogsRouter.put(
 	'/maintainer/:id',
@@ -586,13 +531,13 @@ catalogsRouter.put(
 		const { id } = req.params;
 		const { data = {} } = req.body;
 
-		let resObj = await catalogService.modifyMaintainer(parseInt(id), data);
+		await catalogService.modifyMaintainer(parseInt(id), data);
 		res.status(200).send({ message: 'success' });
 	}
 );
 
 //ROUTES
-catalogsRouter.get('/route', async (req: Request, res: Response) => {
+catalogsRouter.get('/route', async (_req: Request, res: Response) => {
 	const response = await catalogService.getAllRoutes();
 	res.status(200).send(response);
 });
@@ -627,7 +572,7 @@ catalogsRouter.put(
 		const { id } = req.params;
 		const { data = {} } = req.body;
 
-		let resObj = await catalogService.modifyRoute(parseInt(id), data);
+		await catalogService.modifyRoute(parseInt(id), data);
 
 		res.status(200).send({ message: 'success' });
 	}

@@ -1,4 +1,4 @@
-import knex, { Knex } from 'knex';
+import db from 'db/db-client';
 import {
 	Community,
 	FirstNation,
@@ -8,7 +8,6 @@ import {
 	PhotoSubject,
 	PhotoProject,
 	PlaceTheme,
-	Statute,
 	MapSheetLookup,
 } from '../data';
 import {
@@ -21,32 +20,24 @@ import {
 } from '../models';
 
 export class StaticService {
-	private knex: Knex;
-
-	constructor(config: Knex.Config<any>) {
-		this.knex = knex(config);
-	}
-
 	async getCommunities(): Promise<Array<Community>> {
-		return this.knex<Community>('Community').select('id', 'name');
+		return db<Community>('Community').select('id', 'name');
 	}
 
 	async getFirstNations(): Promise<Array<FirstNation>> {
-		return this.knex<FirstNation>('FirstNation').select('id', 'description');
+		return db<FirstNation>('FirstNation').select('id', 'description');
 	}
 
 	async getFunctionalTypes(): Promise<Array<FunctionalType>> {
-		return this.knex<FunctionalType>('FunctionalType')
-			.select('id', 'description')
-			.orderBy('description');
+		return db<FunctionalType>('FunctionalType').select('id', 'description').orderBy('description');
 	}
 
 	async getOriginalMedias(): Promise<Array<OriginalMedia>> {
-		return this.knex<OriginalMedia>('OriginalMedia').select('id', 'type');
+		return db<OriginalMedia>('OriginalMedia').select('id', 'type');
 	}
 
 	async getPhotoOwners(): Promise<Array<PhotoOwner>> {
-		return this.knex<PhotoOwner>('PhotoOwner').select(
+		return db<PhotoOwner>('PhotoOwner').select(
 			'id',
 			'name',
 			'email',
@@ -57,124 +48,88 @@ export class StaticService {
 	}
 
 	async getPhotoOwner(id: number): Promise<PhotoOwner | undefined> {
-		return this.knex<PhotoOwner>('PhotoOwner')
+		return db<PhotoOwner>('PhotoOwner')
 			.where({ id })
 			.select('id', 'name', 'email', 'address', 'telephone', 'contactPerson')
 			.first();
 	}
 
 	async addPhotoOwner(owner: PhotoOwner): Promise<PhotoOwner | undefined> {
-		return this.knex('PhotoOwner')
+		return db('PhotoOwner')
 			.insert(owner)
-			.returning<PhotoOwner>([
-				'id',
-				'name',
-				'email',
-				'address',
-				'telephone',
-				'contactPerson',
-			]);
+			.returning<PhotoOwner>(['id', 'name', 'email', 'address', 'telephone', 'contactPerson']);
 	}
 
-	async updatePhotoOwner(
-		id: number,
-		item: PhotoOwner
-	): Promise<PhotoOwner | undefined> {
-		return this.knex('PhotoOwner')
+	async updatePhotoOwner(id: number, item: PhotoOwner): Promise<PhotoOwner | undefined> {
+		return db('PhotoOwner')
 			.where({ id: id })
 			.update(item)
-			.returning<PhotoOwner>([
-				'id',
-				'name',
-				'email',
-				'address',
-				'telephone',
-				'contactPerson',
-			]);
+			.returning<PhotoOwner>(['id', 'name', 'email', 'address', 'telephone', 'contactPerson']);
 	}
 
 	async deletePhotoOwner(id: number): Promise<any> {
-		return this.knex('PhotoOwner').where({ id }).delete();
+		return db('PhotoOwner').where({ id }).delete();
 	}
 
 	async getPhotoProjects(): Promise<Array<PhotoProject>> {
-		return this.knex<PhotoProject>('PhotoProject').select(
-			'id',
-			'name',
-			'permit',
-			'year',
-			'section'
-		);
+		return db<PhotoProject>('PhotoProject').select('id', 'name', 'permit', 'year', 'section');
 	}
 
 	async getPhotoProject(id: number): Promise<PhotoProject | undefined> {
-		return this.knex<PhotoProject>('PhotoProject')
+		return db<PhotoProject>('PhotoProject')
 			.where({ id })
 			.select('id', 'name', 'permit', 'year', 'section')
 			.first();
 	}
 
 	async addPhotoProject(item: PhotoProject): Promise<PhotoProject | undefined> {
-		return this.knex('PhotoProject')
+		return db('PhotoProject')
 			.insert(item)
 			.returning<PhotoProject>(['id', 'name', 'permit', 'year', 'section']);
 	}
 
-	async updatePhotoProject(
-		id: number,
-		item: PhotoProject
-	): Promise<PhotoProject | undefined> {
-		return this.knex('PhotoProject')
+	async updatePhotoProject(id: number, item: PhotoProject): Promise<PhotoProject | undefined> {
+		return db('PhotoProject')
 			.where({ id: id })
 			.update(item)
 			.returning<PhotoProject>(['id', 'name', 'permit', 'year', 'section']);
 	}
 
 	async deletePhotoProject(id: number): Promise<any> {
-		return this.knex('PhotoProject').where({ id }).delete();
+		return db('PhotoProject').where({ id }).delete();
 	}
 
 	async getPlaceThemes(): Promise<Array<PlaceTheme>> {
-		return this.knex<PlaceTheme>('PlaceTheme').select('id', 'category', 'type');
+		return db<PlaceTheme>('PlaceTheme').select('id', 'category', 'type');
 	}
 
 	async getMapSheets(): Promise<Array<MapSheetLookup>> {
-		return this.knex<MapSheetLookup>('YHIS.MapSheetLookup')
+		return db<MapSheetLookup>('YHIS.MapSheetLookup')
 			.select('id', 'map50k', 'map250k')
 			.orderBy('map50k');
 	}
 
 	async getPhotoSubjects(): Promise<Array<PhotoSubject>> {
-		return this.knex<PhotoSubject>('PhotoSubject').select('id', 'name');
+		return db<PhotoSubject>('PhotoSubject').select('id', 'name');
 	}
 
 	async getPhotoSubject(id: number): Promise<PhotoSubject | undefined> {
-		return this.knex<PhotoSubject>('PhotoSubject')
-			.where({ id })
-			.select('id', 'name')
-			.first();
+		return db<PhotoSubject>('PhotoSubject').where({ id }).select('id', 'name').first();
 	}
 
-	async addPhotoSubject(
-		owner: PhotoSubject
-	): Promise<PhotoSubject | undefined> {
-		return this.knex('PhotoSubject')
-			.insert(owner)
-			.returning<PhotoSubject>(['id', 'name']);
+	async addPhotoSubject(owner: PhotoSubject): Promise<PhotoSubject | undefined> {
+		return db('PhotoSubject').insert(owner).returning<PhotoSubject>(['id', 'name']);
 	}
 
-	async updatePhotoSubject(
-		id: number,
-		item: PhotoSubject
-	): Promise<PhotoSubject | undefined> {
-		return this.knex('PhotoSubject')
+	async updatePhotoSubject(id: number, item: PhotoSubject): Promise<PhotoSubject | undefined> {
+		return db('PhotoSubject')
 			.where({ id: id })
 			.update(item)
 			.returning<PhotoSubject>(['id', 'name']);
 	}
 
 	async deletePhotoSubject(id: number): Promise<any> {
-		return this.knex('PhotoSubject').where({ id }).delete();
+		return db('PhotoSubject').where({ id }).delete();
 	}
 
 	getPhotoProjectSections(): GenericEnum[] {

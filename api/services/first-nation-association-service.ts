@@ -1,24 +1,14 @@
-import knex, { Knex } from 'knex';
+import db from '@/db/db-client';
 
 import { FirstNationAssociation } from '../models';
 
 export class FirstNationAssociationService {
-	private db: Knex;
-
-	constructor(config: Knex.Config<any>) {
-		this.db = knex(config);
-	}
-
 	async getFor(placeId: number) {
-		return this.db('FirstNationAssociation')
+		return db('FirstNationAssociation')
 			.where({ placeId })
-			.select<FirstNationAssociation[]>([
-				'id',
-				'placeId',
-				'firstNationId',
-				'firstNationAssociationType',
-				'comments',
-			]);
+			.select<
+				FirstNationAssociation[]
+			>(['id', 'placeId', 'firstNationId', 'firstNationAssociationType', 'comments']);
 	}
 
 	async upsertFor(placeId: number, associations: FirstNationAssociation[]) {
@@ -32,7 +22,7 @@ export class FirstNationAssociationService {
 				}))
 			);
 		}).then((cleanFirstNationAssociations) => {
-			return this.db.transaction(async (trx) => {
+			return db.transaction(async (trx) => {
 				await trx('FirstNationAssociation').where({ placeId }).delete();
 
 				if (
@@ -42,9 +32,7 @@ export class FirstNationAssociationService {
 					return [];
 				}
 
-				return trx
-					.insert(cleanFirstNationAssociations)
-					.into('FirstNationAssociation');
+				return trx.insert(cleanFirstNationAssociations).into('FirstNationAssociation');
 			});
 		});
 	}

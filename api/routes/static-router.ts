@@ -1,95 +1,89 @@
 import express, { Request, Response } from 'express';
 import { body, check, validationResult } from 'express-validator';
+
 import { nullIfEmpty } from '../utils/validation';
-import { DB_CONFIG } from '../config';
 import { StaticService } from '../services';
 
-const staticService = new StaticService(DB_CONFIG);
+const staticService = new StaticService();
 export const staticRouter = express.Router();
 
-staticRouter.get('/community', async (req: Request, res: Response) => {
-	let list = await staticService.getCommunities();
+staticRouter.get('/community', async (_req: Request, res: Response) => {
+	const list = await staticService.getCommunities();
 	return res.json({ data: list });
 });
 
-staticRouter.get('/first-nation', async (req: Request, res: Response) => {
-	let list = await staticService.getFirstNations();
+staticRouter.get('/first-nation', async (_req: Request, res: Response) => {
+	const list = await staticService.getFirstNations();
 	return res.json({ data: list });
 });
 
-staticRouter.get(
-	'/photo-project-section',
-	async (req: Request, res: Response) => {
-		let list = await staticService.getPhotoProjectSections();
-		return res.json({ data: list });
-	}
-);
-
-staticRouter.get('/original-media', async (req: Request, res: Response) => {
-	let list = await staticService.getOriginalMedias();
+staticRouter.get('/photo-project-section', async (_req: Request, res: Response) => {
+	const list = await staticService.getPhotoProjectSections();
 	return res.json({ data: list });
 });
 
-staticRouter.get('/photo-copyright', async (req: Request, res: Response) => {
-	let list = await staticService.getCopyrights();
+staticRouter.get('/original-media', async (_req: Request, res: Response) => {
+	const list = await staticService.getOriginalMedias();
 	return res.json({ data: list });
 });
 
-staticRouter.get('/usage-right', async (req: Request, res: Response) => {
-	let list = await staticService.getUsageRights();
+staticRouter.get('/photo-copyright', async (_req: Request, res: Response) => {
+	const list = await staticService.getCopyrights();
 	return res.json({ data: list });
 });
 
-staticRouter.get('/category', async (req: Request, res: Response) => {
-	let list = staticService.getCategories();
+staticRouter.get('/usage-right', async (_req: Request, res: Response) => {
+	const list = await staticService.getUsageRights();
 	return res.json({ data: list });
 });
 
-staticRouter.get('/designation-type', async (req: Request, res: Response) => {
-	let list = staticService.getDesignationTypes();
+staticRouter.get('/category', async (_req: Request, res: Response) => {
+	const list = staticService.getCategories();
 	return res.json({ data: list });
 });
 
-staticRouter.get('/record-type', async (req: Request, res: Response) => {
-	let list = staticService.getRecordTypes();
+staticRouter.get('/designation-type', async (_req: Request, res: Response) => {
+	const list = staticService.getDesignationTypes();
 	return res.json({ data: list });
 });
 
-staticRouter.get('/site-category', async (req: Request, res: Response) => {
-	let list = staticService.getSiteCategories();
+staticRouter.get('/record-type', async (_req: Request, res: Response) => {
+	const list = staticService.getRecordTypes();
 	return res.json({ data: list });
 });
 
-staticRouter.get(
-	'/contributing-resource-type',
-	async (req: Request, res: Response) => {
-		let list = staticService.getContributingResourceTypes();
-		return res.json({ data: list });
-	}
-);
-
-staticRouter.get('/mapsheet', async (req: Request, res: Response) => {
-	let list = await staticService.getMapSheets();
+staticRouter.get('/site-category', async (_req: Request, res: Response) => {
+	const list = staticService.getSiteCategories();
 	return res.json({ data: list });
 });
 
-staticRouter.get('/photo-program', async (req: Request, res: Response) => {
-	let list = staticService.getPhotoPrograms();
+staticRouter.get('/contributing-resource-type', async (_req: Request, res: Response) => {
+	const list = staticService.getContributingResourceTypes();
 	return res.json({ data: list });
 });
 
-staticRouter.get('/media-storage', async (req: Request, res: Response) => {
-	let list = staticService.getMediaStorages();
+staticRouter.get('/mapsheet', async (_req: Request, res: Response) => {
+	const list = await staticService.getMapSheets();
 	return res.json({ data: list });
 });
 
-staticRouter.get('/photo-owner', async (req: Request, res: Response) => {
-	let list = await staticService.getPhotoOwners();
+staticRouter.get('/photo-program', async (_req: Request, res: Response) => {
+	const list = staticService.getPhotoPrograms();
 	return res.json({ data: list });
 });
 
-staticRouter.get('/photo-rating', async (req: Request, res: Response) => {
-	let list = await staticService.getPhotoRatings();
+staticRouter.get('/media-storage', async (_req: Request, res: Response) => {
+	const list = staticService.getMediaStorages();
+	return res.json({ data: list });
+});
+
+staticRouter.get('/photo-owner', async (_req: Request, res: Response) => {
+	const list = await staticService.getPhotoOwners();
+	return res.json({ data: list });
+});
+
+staticRouter.get('/photo-rating', async (_req: Request, res: Response) => {
+	const list = await staticService.getPhotoRatings();
 	return res.json({ data: list });
 });
 
@@ -104,7 +98,7 @@ staticRouter.get(
 		}
 
 		const id = req.params.id as string;
-		let list = await staticService.getPhotoOwner(parseInt(id));
+		const list = await staticService.getPhotoOwner(parseInt(id));
 		return res.json({ data: list });
 	}
 );
@@ -125,8 +119,8 @@ staticRouter.post(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let { name, email, address, telephone, contactPerson } = req.body;
-		let result = await staticService.addPhotoOwner({
+		const { name, email, address, telephone, contactPerson } = req.body;
+		const result = await staticService.addPhotoOwner({
 			name,
 			email,
 			address,
@@ -155,8 +149,8 @@ staticRouter.put(
 		}
 
 		const id = req.params.id as string;
-		let { name, email, address, telephone, contactPerson } = req.body;
-		let result = await staticService.updatePhotoOwner(parseInt(id), {
+		const { name, email, address, telephone, contactPerson } = req.body;
+		const result = await staticService.updatePhotoOwner(parseInt(id), {
 			name,
 			email,
 			address,
@@ -178,13 +172,13 @@ staticRouter.delete(
 		}
 
 		const id = req.params.id as string;
-		let list = await staticService.deletePhotoOwner(parseInt(id));
+		const list = await staticService.deletePhotoOwner(parseInt(id));
 		return res.json({ data: list });
 	}
 );
 
-staticRouter.get('/photo-project', async (req: Request, res: Response) => {
-	let list = await staticService.getPhotoProjects();
+staticRouter.get('/photo-project', async (_req: Request, res: Response) => {
+	const list = await staticService.getPhotoProjects();
 	return res.json({ data: list });
 });
 
@@ -199,7 +193,7 @@ staticRouter.get(
 		}
 
 		const id = req.params.id as string;
-		let list = await staticService.getPhotoProject(parseInt(id));
+		const list = await staticService.getPhotoProject(parseInt(id));
 		return res.json({ data: list });
 	}
 );
@@ -219,8 +213,8 @@ staticRouter.post(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let { name, permit, year, section } = req.body;
-		let result = await staticService.addPhotoProject({
+		const { name, permit, year, section } = req.body;
+		const result = await staticService.addPhotoProject({
 			name,
 			permit,
 			year,
@@ -247,8 +241,8 @@ staticRouter.put(
 		}
 
 		const id = req.params.id as string;
-		let { name, permit, year, section } = req.body;
-		let result = await staticService.updatePhotoProject(parseInt(id), {
+		const { name, permit, year, section } = req.body;
+		const result = await staticService.updatePhotoProject(parseInt(id), {
 			name,
 			permit,
 			year,
@@ -269,13 +263,13 @@ staticRouter.delete(
 		}
 
 		const id = req.params.id as string;
-		let list = await staticService.deletePhotoProject(parseInt(id));
+		const list = await staticService.deletePhotoProject(parseInt(id));
 		return res.json({ data: list });
 	}
 );
 
-staticRouter.get('/photo-subject', async (req: Request, res: Response) => {
-	let list = await staticService.getPhotoSubjects();
+staticRouter.get('/photo-subject', async (_req: Request, res: Response) => {
+	const list = await staticService.getPhotoSubjects();
 	return res.json({ data: list });
 });
 
@@ -290,7 +284,7 @@ staticRouter.get(
 		}
 
 		const id = req.params.id as string;
-		let list = await staticService.getPhotoSubject(parseInt(id));
+		const list = await staticService.getPhotoSubject(parseInt(id));
 		return res.json({ data: list });
 	}
 );
@@ -305,8 +299,8 @@ staticRouter.post(
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		let { name } = req.body;
-		let result = await staticService.addPhotoSubject({ name });
+		const { name } = req.body;
+		const result = await staticService.addPhotoSubject({ name });
 		return res.json({ data: result });
 	}
 );
@@ -322,8 +316,8 @@ staticRouter.put(
 		}
 
 		const id = req.params.id as string;
-		let { name } = req.body;
-		let result = await staticService.updatePhotoSubject(parseInt(id), { name });
+		const { name } = req.body;
+		const result = await staticService.updatePhotoSubject(parseInt(id), { name });
 		return res.json({ data: result });
 	}
 );
@@ -339,7 +333,7 @@ staticRouter.delete(
 		}
 
 		const id = req.params.id as string;
-		let list = await staticService.deletePhotoSubject(parseInt(id));
+		const list = await staticService.deletePhotoSubject(parseInt(id));
 		return res.json({ data: list });
 	}
 );

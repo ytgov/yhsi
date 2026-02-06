@@ -1,12 +1,10 @@
 import express, { Request, Response } from 'express';
-import knex from 'knex';
 
-import { DB_CONFIG } from '../config';
+import db from '@/db/db-client';
 
 export const communitiesRouter = express.Router();
-const db = knex(DB_CONFIG);
 
-communitiesRouter.get('/', (req: Request, res: Response) => {
+communitiesRouter.get('/', (_req: Request, res: Response) => {
 	return db
 		.select('id', 'name')
 		.from('community')

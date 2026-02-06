@@ -1,13 +1,12 @@
 import express, { Request, Response } from 'express';
 import { query } from 'express-validator';
-import { DB_CONFIG } from '../config';
 import { DescriptionService, PhotoService, PlaceService } from '../services';
 import moment from 'moment';
 import { createThumbnail } from '../utils/image';
 
-const descriptionService = new DescriptionService(DB_CONFIG);
-const placeService = new PlaceService(DB_CONFIG);
-const photoService = new PhotoService(DB_CONFIG);
+const descriptionService = new DescriptionService();
+const placeService = new PlaceService();
+const photoService = new PhotoService();
 
 export const registerRouter = express.Router();
 const PAGE_SIZE = 12;
@@ -16,19 +15,16 @@ registerRouter.get(
 	'/',
 	[query('page').default(1).isInt({ gt: 0 })],
 	async (req: Request, res: Response) => {
-		let page = parseInt(req.query.page as string);
-		let skip = (page - 1) * PAGE_SIZE;
-		let take = PAGE_SIZE;
+		const page = parseInt(req.query.page as string);
+		const skip = (page - 1) * PAGE_SIZE;
+		const take = PAGE_SIZE;
 
-		let data = await placeService.getRegisterAll(skip, take);
+		const data = await placeService.getRegisterAll(skip, take);
 		data.map(
-			(d) =>
-				(d.recognitionDate = moment(d.recognitionDate)
-					.add(7, 'hours')
-					.format('YYYY-MM-DD'))
+			(d) => (d.recognitionDate = moment(d.recognitionDate).add(7, 'hours').format('YYYY-MM-DD'))
 		);
 
-		let item_count = await placeService
+		const item_count = await placeService
 			.getPlaceInRegisterCount()
 			.then((data) => data)
 			.catch((err) => {
@@ -36,7 +32,7 @@ registerRouter.get(
 				return 0;
 			});
 
-		let page_count = Math.ceil(item_count / PAGE_SIZE);
+		const page_count = Math.ceil(item_count / PAGE_SIZE);
 
 		if (data) {
 			return res.json({
@@ -50,8 +46,8 @@ registerRouter.get(
 );
 
 registerRouter.get('/:id', async (req: Request, res: Response) => {
-	let { id } = req.params;
-	let data = await placeService.getRegisterById(parseInt(id));
+	const { id } = req.params;
+	const data = await placeService.getRegisterById(parseInt(id));
 
 	if (!data) {
 		return res.status(404).send();
@@ -68,9 +64,9 @@ registerRouter.get('/:id', async (req: Request, res: Response) => {
 	data.additionalInfoEn = '';
 	data.additionalInfoFr = '';
 
-	let descs = await descriptionService.getForPlace(parseInt(id));
+	const descs = await descriptionService.getForPlace(parseInt(id));
 
-	for (let desc of descs) {
+	for (const desc of descs) {
 		if (desc.type == 5) {
 			data.placeDescriptionEn = desc.descriptionText;
 			data.placeDescriptionFr = 'FRENCH: ' + desc.descriptionText;
@@ -93,41 +89,38 @@ registerRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 registerRouter.get('/:id/photos', async (req: Request, res: Response) => {
-	let { id } = req.params;
-	let data = await placeService.getRegisterById(parseInt(id));
+	const { id } = req.params;
+	const data = await placeService.getRegisterById(parseInt(id));
 
 	if (!data) {
 		return res.status(404).send();
 	}
 
-	let photos = await photoService.getAllForPlace(parseInt(id));
+	const photos = await photoService.getAllForPlace(parseInt(id));
 
 	res.json({ data: photos });
 });
 
-registerRouter.get(
-	'/:id/photos/:photoId',
-	async (req: Request, res: Response) => {
-		let { id, photoId } = req.params;
-		let data = await placeService.getRegisterById(parseInt(id));
+registerRouter.get('/:id/photos/:photoId', async (req: Request, res: Response) => {
+	const { id, photoId } = req.params;
+	const data = await placeService.getRegisterById(parseInt(id));
 
-		if (!data) {
-			return res.status(404).send();
-		}
-
-		await photoService
-			.getFileById(photoId)
-			.then(async (photo) => {
-				if (photo && photo.file) {
-					let t = await createThumbnail(photo.file);
-					return res.contentType('image/jpg').send(t);
-				}
-
-				return res.status(404).send('Photo not found');
-			})
-			.catch((err) => {
-				console.error(err);
-				return res.status(404).send('Photo not found');
-			});
+	if (!data) {
+		return res.status(404).send();
 	}
-);
+
+	await photoService
+		.getFileById(photoId)
+		.then(async (photo) => {
+			if (photo && photo.file) {
+				const t = await createThumbnail(photo.file);
+				return res.contentType('image/jpg').send(t);
+			}
+
+			return res.status(404).send('Photo not found');
+		})
+		.catch((err) => {
+			console.error(err);
+			return res.status(404).send('Photo not found');
+		});
+});

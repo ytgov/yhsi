@@ -3,7 +3,6 @@ import axios from 'axios';
 import { stringify } from 'querystring';
 import moment from 'moment';
 import {
-	DB_CONFIG,
 	GIS_FEATURE_PASSWORD,
 	GIS_FEATURE_USERNAME,
 	GIS_PORTAL_CLIENT_ID,
@@ -25,9 +24,9 @@ let FEATURE_TOKEN = {
 	expires_in: 0,
 	renew_after: moment().utc(true),
 };
-const placeService = new PlaceService(DB_CONFIG);
+const placeService = new PlaceService();
 
-mapsRouter.get('/', authorize(), async (req, res) => {
+mapsRouter.get('/', authorize(), async (_req, res) => {
 	await loadPortalToken();
 	res.json(PORTAL_TOKEN);
 });
@@ -90,27 +89,25 @@ async function loadPortalToken() {
 }
 
 async function loadFeatureToken() {
-	let now = moment().utc(true);
+	const now = moment().utc(true);
 
 	if (now.isBefore(FEATURE_TOKEN.renew_after)) return;
 
 	console.log('GIS: NEW FEATURE TOKEN');
 
-	let body = {
+	const body = {
 		username: GIS_FEATURE_USERNAME,
 		password: GIS_FEATURE_PASSWORD,
 		f: 'json',
 	};
 
 	await axios
-		.post(
-			`https://deptweb.gov.yk.ca/prod/tokens/generateToken`,
-			stringify(body),
-			{ headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-		)
+		.post(`https://deptweb.gov.yk.ca/prod/tokens/generateToken`, stringify(body), {
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+		})
 		.then((resp: any) => {
-			let { token, expires } = resp.data;
-			let renew_after = moment(expires).utc(true).subtract(30, 'minutes');
+			const { token, expires } = resp.data;
+			const renew_after = moment(expires).utc(true).subtract(30, 'minutes');
 			FEATURE_TOKEN = { access_token: token, expires_in: 3600, renew_after };
 		})
 		.catch((err: any) => {

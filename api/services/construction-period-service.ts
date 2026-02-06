@@ -1,16 +1,10 @@
-import knex, { Knex } from 'knex';
+import db from '@/db/db-client';
 
 import { ConstructionPeriod } from '../models/construction-period';
 
 export class ConstructionPeriodService {
-	private db: Knex;
-
-	constructor(config: Knex.Config<any>) {
-		this.db = knex(config);
-	}
-
 	async getFor(placeId: number) {
-		return this.db('ConstructionPeriod')
+		return db('ConstructionPeriod')
 			.where({ placeId })
 			.select<ConstructionPeriod[]>(['id', 'placeId', 'type']);
 	}
@@ -24,13 +18,10 @@ export class ConstructionPeriodService {
 				}))
 			);
 		}).then((cleanConstructionPeriods) => {
-			return this.db.transaction(async (trx) => {
+			return db.transaction(async (trx) => {
 				await trx('ConstructionPeriod').where({ placeId }).delete();
 
-				if (
-					Array.isArray(cleanConstructionPeriods) &&
-					cleanConstructionPeriods.length === 0
-				) {
+				if (Array.isArray(cleanConstructionPeriods) && cleanConstructionPeriods.length === 0) {
 					return [];
 				}
 
