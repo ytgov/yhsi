@@ -267,7 +267,7 @@ const FIELD_TYPES = Object.freeze([
 		key: 'bordenNumber',
 		type: 'v-text-field',
 		fieldAttrs: {
-			label: 'Border number',
+			label: 'Borden number',
 		},
 	},
 	{

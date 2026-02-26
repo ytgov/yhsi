@@ -1,16 +1,9 @@
-import knex, { Knex } from 'knex';
-
+import db from 'db/db-client';
 import { Statute } from '../models';
 
 export class StatuteService {
-	private db: Knex;
-
-	constructor(config: Knex.Config<any>) {
-		this.db = knex(config);
-	}
-
 	getAll() {
-		return this.db<Statute>('Statute').select(
+		return db<Statute>('Statute').select(
 			'id',
 			'recognitionAuthority',
 			'recognitionType',

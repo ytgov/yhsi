@@ -1,15 +1,11 @@
-import knex, { Knex } from 'knex';
-import { DB_CONFIG } from '../config';
-const db = knex(DB_CONFIG);
+import db from '@/db/db-client';
+
 export class AircrashService {
 	async getAll() {
 		const sortBy = 'YACSINumber';
 		const sort = 'asc';
 
-		return await db
-			.select('*')
-			.from('dbo.vAircrash')
-			.orderBy(`${sortBy}`, `${sort}`);
+		return await db.select('*').from('dbo.vAircrash').orderBy(`${sortBy}`, `${sort}`);
 	}
 
 	async getById(aircrashId: string) {
@@ -31,7 +27,7 @@ export class AircrashService {
 		return aircrash;
 	}
 
-	async doSearch(page: number, limit: number, offset: number, filters: any) {
+	async doSearch(page: number, perPage: number, filters: any) {
 		const {
 			textToMatch = '',
 			sortBy = 'yacsinumber',
@@ -48,87 +44,41 @@ export class AircrashService {
 			injuries = '',
 			fatalities = '',
 		} = filters;
-		let aircrashes = [];
 
-		if (limit === 0) {
-			aircrashes = await db
-				.select('*')
-				.from('dbo.vAircrash')
-				.modify(function (builder) {
-					if (textToMatch !== '')
-						builder.where('yacsinumber', 'like', `%${textToMatch}%`);
-					if (crashdate !== '')
-						builder.where('crashdate', 'like', `%${crashdate}%`);
-					if (aircrafttype !== '')
-						builder.where('aircrafttype', 'like', `%${aircrafttype}%`);
-					if (aircraftregistration !== '')
-						builder.where(
-							'aircraftregistration',
+		// _TODO_ move into base-controller.ts
+		const MAX_PER_PAGE = 1000;
+		const limit = Math.max(1, Math.min(perPage, MAX_PER_PAGE));
+		const offset = (page - 1) * limit;
+
+		const aircrashes = await db
+			.select('*')
+			.from('dbo.vAircrash')
+			.modify(function (builder) {
+				if (textToMatch !== '') builder.where('yacsinumber', 'like', `%${textToMatch}%`);
+				if (crashdate !== '') builder.where('crashdate', 'like', `%${crashdate}%`);
+				if (aircrafttype !== '') builder.where('aircrafttype', 'like', `%${aircrafttype}%`);
+				if (aircraftregistration !== '')
+					builder.where('aircraftregistration', 'like', `%${aircraftregistration}%`);
+				if (nation !== '') builder.where('nation', 'like', `%${nation}%`);
+				if (militarycivilian !== '')
+					builder.where('militarycivilian', 'like', `%${militarycivilian}%`);
+				if (crashlocation !== '') builder.where('crashlocation', 'like', `%${crashlocation}%`);
+				if (pilot !== '') {
+					builder.where(function () {
+						this.where('pilotfirstname', 'like', `%${pilot}%`).orWhere(
+							'pilotlastname',
 							'like',
-							`%${aircraftregistration}%`
+							`%${pilot}%`
 						);
-					if (nation !== '') builder.where('nation', 'like', `%${nation}%`);
-					if (militarycivilian !== '')
-						builder.where('militarycivilian', 'like', `%${militarycivilian}%`);
-					if (crashlocation !== '')
-						builder.where('crashlocation', 'like', `%${crashlocation}%`);
-					if (pilot !== '') {
-						builder.where(function () {
-							this.where('pilotfirstname', 'like', `%${pilot}%`).orWhere(
-								'pilotlastname',
-								'like',
-								`%${pilot}%`
-							);
-						});
-					}
-					if (injuries !== '') builder.where('injuries', '=', `${injuries}`);
-					if (fatalities !== '')
-						builder.where('fatalities', '=', `${fatalities}`);
-					if (soulsonboard !== '')
-						builder.where('soulsonboard', '=', `${soulsonboard}`);
-				})
-				.orderBy(`${sortBy}`, `${sort}`);
-		} else {
-			aircrashes = await db
-				.select('*')
-				.from('dbo.vAircrash')
-				.modify(function (builder) {
-					if (textToMatch !== '')
-						builder.where('yacsinumber', 'like', `%${textToMatch}%`);
-					if (crashdate !== '')
-						builder.where('crashdate', 'like', `%${crashdate}%`);
-					if (aircrafttype !== '')
-						builder.where('aircrafttype', 'like', `%${aircrafttype}%`);
-					if (aircraftregistration !== '')
-						builder.where(
-							'aircraftregistration',
-							'like',
-							`%${aircraftregistration}%`
-						);
-					if (nation !== '') builder.where('nation', 'like', `%${nation}%`);
-					if (militarycivilian !== '')
-						builder.where('militarycivilian', 'like', `%${militarycivilian}%`);
-					if (crashlocation !== '')
-						builder.where('crashlocation', 'like', `%${crashlocation}%`);
-					if (pilot !== '') {
-						builder.where(function () {
-							this.where('pilotfirstname', 'like', `%${pilot}%`).orWhere(
-								'pilotlastname',
-								'like',
-								`%${pilot}%`
-							);
-						});
-					}
-					if (injuries !== '') builder.where('injuries', '=', `${injuries}`);
-					if (fatalities !== '')
-						builder.where('fatalities', '=', `${fatalities}`);
-					if (soulsonboard !== '')
-						builder.where('soulsonboard', '=', `${soulsonboard}`);
-				})
-				.orderBy(`${sortBy}`, `${sort}`)
-				.limit(limit)
-				.offset(offset);
-		}
+					});
+				}
+				if (injuries !== '') builder.where('injuries', '=', `${injuries}`);
+				if (fatalities !== '') builder.where('fatalities', '=', `${fatalities}`);
+				if (soulsonboard !== '') builder.where('soulsonboard', '=', `${soulsonboard}`);
+			})
+			.orderBy(`${sortBy}`, `${sort}`)
+			.limit(limit)
+			.offset(offset);
 
 		return { count: aircrashes.length, body: aircrashes };
 	}

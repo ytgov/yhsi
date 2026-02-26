@@ -1,6 +1,4 @@
 import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
-import knex from 'knex';
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { InterpretiveSiteService } from '../services';
@@ -11,7 +9,6 @@ const {
 	transforms: { unwind },
 } = require('json2csv');
 export const actionRouter = express.Router();
-const db = knex(DB_CONFIG);
 const intSiteService = new InterpretiveSiteService();
 
 // ACTIONS
@@ -84,7 +81,7 @@ actionRouter.delete(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
 
-		let resObj = await intSiteService.removeDocumentByID(parseInt(id));
+		const resObj = await intSiteService.removeDocumentByID(parseInt(id));
 		if (!resObj) {
 			res.sendStatus(404).send('The Action doesnt exist');
 			return;
@@ -99,16 +96,13 @@ actionRouter.delete(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { actionID } = req.params;
-		const exists = await intSiteService.objExists(
-			{ ActionID: parseInt(actionID) },
-			'actions'
-		);
+		const exists = await intSiteService.objExists({ ActionID: parseInt(actionID) }, 'actions');
 		if (!exists) {
 			res.sendStatus(404).send('The Action doesnt exist');
 			return;
 		}
 
-		let resObj = await intSiteService.removeAction(parseInt(actionID));
+		const resObj = await intSiteService.removeAction(parseInt(actionID));
 		res.sendStatus(200).send(resObj);
 	}
 );
@@ -119,9 +113,7 @@ actionRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { inspectId } = req.params;
-		const list = await intSiteService.getActionsByInspectID(
-			parseInt(inspectId)
-		);
+		const list = await intSiteService.getActionsByInspectID(parseInt(inspectId));
 
 		if (!list) {
 			res.status(404).send({ message: 'Data not found' });
@@ -187,10 +179,6 @@ actionRouter.get(
 	async (req: Request, res: Response) => {
 		const { actionID } = req.params;
 
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
-
 		const photos = await intSiteService.getDocumentsByOwnerID({
 			ActionID: actionID,
 		});
@@ -227,11 +215,11 @@ actionRouter.post('/pdf', async (req: Request, res: Response) => {
 		sortBy,
 		sort,
 	});
-	let pdfData = renderFile('./templates/interpretive-sites/actionGrid.pug', {
+	const pdfData = renderFile('./templates/interpretive-sites/actionGrid.pug', {
 		data: data.body,
 	});
 
-	let pdf = await generatePDF(pdfData);
+	const pdf = await generatePDF(pdfData);
 	res.setHeader('Content-disposition', 'attachment; filename="actions.html"');
 	res.setHeader('Content-type', 'application/pdf');
 	res.send(pdf);

@@ -7,12 +7,11 @@ import { UserRoles } from '@/models';
 import db from '@/db/db-client';
 
 import { YtPlaceService, SortDirection, SortStatement, StaticService } from '../services';
-import { DB_CONFIG } from '../config';
 import { AlternateName, PlaceType, FnAssociation, FirstNationName } from '../data';
 import { ReturnValidationErrors } from '../middleware';
 
-const ytPlaceService = new YtPlaceService(DB_CONFIG);
-const staticService = new StaticService(DB_CONFIG);
+const ytPlaceService = new YtPlaceService();
+const staticService = new StaticService();
 const PAGE_SIZE = 10;
 
 export const ytPlaceRouter = express.Router();
@@ -22,11 +21,11 @@ ytPlaceRouter.get(
 	[query('page').default(1).isInt({ gt: 0 })],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		let page = parseInt(req.query.page as string);
-		let skip = (page - 1) * PAGE_SIZE;
-		let take = PAGE_SIZE;
+		const page = parseInt(req.query.page as string);
+		const skip = (page - 1) * PAGE_SIZE;
+		const take = PAGE_SIZE;
 
-		let list = await ytPlaceService
+		const list = await ytPlaceService
 			.getAll(skip, take)
 			.then((data) => data)
 			.catch((err) => {
@@ -34,7 +33,7 @@ ytPlaceRouter.get(
 				return undefined;
 			});
 
-		let item_count = await ytPlaceService
+		const item_count = await ytPlaceService
 			.getPlaceCount()
 			.then((data) => data)
 			.catch((err) => {
@@ -42,7 +41,7 @@ ytPlaceRouter.get(
 				return 0;
 			});
 
-		let page_count = Math.ceil(item_count / PAGE_SIZE);
+		const page_count = Math.ceil(item_count / PAGE_SIZE);
 
 		if (list) {
 			return res.json({
@@ -59,8 +58,8 @@ ytPlaceRouter.post(
 	'/search',
 	[body('page').isInt().default(1)],
 	async (req: Request, res: Response) => {
-		let { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
-		let sort = new Array<SortStatement>();
+		const { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
+		const sort = new Array<SortStatement>();
 
 		sortBy.forEach((s: string, i: number) => {
 			sort.push({
@@ -69,11 +68,11 @@ ytPlaceRouter.post(
 			});
 		});
 
-		let skip = (page - 1) * itemsPerPage;
-		let take = itemsPerPage;
-		let results = await ytPlaceService.doSearch(query, sort, page, itemsPerPage, skip, take);
+		const skip = (page - 1) * itemsPerPage;
+		const take = itemsPerPage;
+		const results = await ytPlaceService.doSearch(query, sort, page, itemsPerPage, skip, take);
 
-		for (let place of results.data) {
+		for (const place of results.data) {
 			place.placeTypes = await ytPlaceService.getPlaceTypesFor(place.id);
 			place.placeTypes = combine(
 				place.placeTypes,
@@ -96,8 +95,8 @@ ytPlaceRouter.get(
 	[check('id').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		let id = parseInt(req.params.id);
-		let fnList = await staticService.getFirstNations();
+		const id = parseInt(req.params.id);
+		const fnList = await staticService.getFirstNations();
 
 		await ytPlaceService
 			.getById(id)
@@ -112,9 +111,9 @@ ytPlaceRouter.get(
 						'placeType',
 						'placeType'
 					);
-					let fnNames = await ytPlaceService.getFirstNationNamesFor(place.id);
-					let altNames = await ytPlaceService.getAlternateNamesFor(place.id);
-					let histories = await ytPlaceService.getPlaceHistoriesFor(place.id);
+					const fnNames = await ytPlaceService.getFirstNationNamesFor(place.id);
+					const altNames = await ytPlaceService.getAlternateNamesFor(place.id);
+					const histories = await ytPlaceService.getPlaceHistoriesFor(place.id);
 
 					let fnAssociations = await ytPlaceService.getFNAssociationsFor(place.id);
 					fnAssociations = combine(
@@ -134,7 +133,7 @@ ytPlaceRouter.get(
 						'fnAssocationDesc'
 					);
 
-					let relationships = {
+					const relationships = {
 						placeTypes: { data: placeTypes },
 						fnNames: { data: fnNames },
 						altNames: { data: altNames },
@@ -190,7 +189,7 @@ ytPlaceRouter.post(
 						...x,
 						placeId: newPlace.Id,
 					}));
-					for (let on of newAltNames) {
+					for (const on of newAltNames) {
 						delete on.id;
 						await ytPlaceService.addAlternateName(on);
 					}
@@ -201,7 +200,7 @@ ytPlaceRouter.post(
 						...x,
 						placeId: newPlace.Id,
 					}));
-					for (let on of newFnNames) {
+					for (const on of newFnNames) {
 						delete on.id;
 						await ytPlaceService.addFirstNationName(on);
 					}
@@ -212,7 +211,7 @@ ytPlaceRouter.post(
 						...x,
 						placeId: newPlace.Id,
 					}));
-					for (let on of newFnAssocations) {
+					for (const on of newFnAssocations) {
 						await ytPlaceService.addFNAssociation(on);
 					}
 				}
@@ -222,7 +221,7 @@ ytPlaceRouter.post(
 						placeTypeLookupId: x,
 						placeId: newPlace.Id,
 					}));
-					for (let on of newPlaceTypes) {
+					for (const on of newPlaceTypes) {
 						await ytPlaceService.addPlaceType(on);
 					}
 				}
@@ -246,9 +245,11 @@ ytPlaceRouter.put(
 	[param('id').isInt().notEmpty(), body('name').isString().bail().notEmpty().trim()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		let { id } = req.params;
-		let { photos, placeTypes, fnNames, altNames, histories, fnAssociations } = req.body;
-		let updater = req.body;
+		const { id } = req.params;
+		const { placeTypes, fnNames, fnAssociations } = req.body;
+		let { altNames } = req.body;
+
+		const updater = req.body;
 		delete updater.photos;
 		delete updater.placeTypes;
 		delete updater.fnNames;
@@ -259,19 +260,19 @@ ytPlaceRouter.put(
 		await ytPlaceService.updatePlace(parseInt(id), updater);
 
 		// Update alternate names
-		let oldNames = await ytPlaceService.getAltNamesFor(parseInt(id));
+		const oldNames = await ytPlaceService.getAltNamesFor(parseInt(id));
 		altNames = altNames.map((n: AlternateName) =>
 			Object.assign(n, { alternateName: n.alternateName.trim() })
 		);
 
-		for (let on of oldNames) {
-			let match = altNames.filter((n: AlternateName) => n.alternateName == on.alternateName);
+		for (const on of oldNames) {
+			const match = altNames.filter((n: AlternateName) => n.alternateName == on.alternateName);
 			if (match.length == 0) {
 				await ytPlaceService.removeAlternateName(on.id);
 			}
 		}
-		for (let on of altNames) {
-			let match = oldNames.filter((n: AlternateName) => n.alternateName == on.alternateName);
+		for (const on of altNames) {
+			const match = oldNames.filter((n: AlternateName) => n.alternateName == on.alternateName);
 			if (match.length == 0) {
 				delete on.id;
 				await ytPlaceService.addAlternateName(on);
@@ -279,21 +280,21 @@ ytPlaceRouter.put(
 		}
 
 		// Update place types - note that placeTypes is just an array of placeTypeLookupIds
-		let oldPlaceTypes = await ytPlaceService.getPlaceTypesFor(parseInt(id));
+		const oldPlaceTypes = await ytPlaceService.getPlaceTypesFor(parseInt(id));
 
-		for (let on of oldPlaceTypes) {
-			let match = placeTypes.filter((n: Number) => n == on.placeTypeLookupId);
+		for (const on of oldPlaceTypes) {
+			const match = placeTypes.filter((n: number) => n == on.placeTypeLookupId);
 			if (match.length == 0) {
-				let placeTypeInsert = new PlaceType();
+				const placeTypeInsert = new PlaceType();
 				placeTypeInsert.placeId = parseInt(id);
 				placeTypeInsert.placeTypeLookupId = on.placeTypeLookupId;
 				await ytPlaceService.removePlaceType(placeTypeInsert);
 			}
 		}
-		for (let on of placeTypes) {
-			let match = oldPlaceTypes.filter((n: PlaceType) => n.placeTypeLookupId == on);
+		for (const on of placeTypes) {
+			const match = oldPlaceTypes.filter((n: PlaceType) => n.placeTypeLookupId == on);
 			if (match.length == 0) {
-				let placeTypeInsert = new PlaceType();
+				const placeTypeInsert = new PlaceType();
 				placeTypeInsert.placeId = parseInt(id);
 				placeTypeInsert.placeTypeLookupId = on;
 				await ytPlaceService.addPlaceType(placeTypeInsert);
@@ -301,22 +302,22 @@ ytPlaceRouter.put(
 		}
 
 		// FnAssociations
-		let oldFnAssocations = await ytPlaceService.getFNAssociationsFor(parseInt(id));
-		for (let on of oldFnAssocations) {
-			let match = fnAssociations.filter(
+		const oldFnAssocations = await ytPlaceService.getFNAssociationsFor(parseInt(id));
+		for (const on of oldFnAssocations) {
+			const match = fnAssociations.filter(
 				(n: FnAssociation) =>
 					n.fnAssociationType == on.fnAssociationType && n.firstNationId == on.firstNationId
 			);
 			if (match.length == 0) {
-				let FnAssociationInsert = new FnAssociation();
+				const FnAssociationInsert = new FnAssociation();
 				FnAssociationInsert.placeId = parseInt(id);
 				FnAssociationInsert.fnAssociationType = on.fnAssociationType;
 				FnAssociationInsert.firstNationId = on.firstNationId;
 				await ytPlaceService.removeFNAssociation(FnAssociationInsert);
 			}
 		}
-		for (let on of fnAssociations) {
-			let match = oldFnAssocations.filter(
+		for (const on of fnAssociations) {
+			const match = oldFnAssocations.filter(
 				(n: FnAssociation) =>
 					n.fnAssociationType == on.fnAssociationType && n.firstNationId == on.firstNationId
 			);
@@ -329,9 +330,9 @@ ytPlaceRouter.put(
 		}
 
 		// FnNames
-		let oldFnNames = await ytPlaceService.getFirstNationNamesFor(parseInt(id));
-		for (let on of oldFnNames) {
-			let match = fnNames.filter(
+		const oldFnNames = await ytPlaceService.getFirstNationNamesFor(parseInt(id));
+		for (const on of oldFnNames) {
+			const match = fnNames.filter(
 				(n: FirstNationName) =>
 					n.fnName == on.fnName &&
 					n.fnDesription == on.fnDesription &&
@@ -341,8 +342,8 @@ ytPlaceRouter.put(
 				await ytPlaceService.removeFirstNationName(on.id);
 			}
 		}
-		for (let on of fnNames) {
-			let match = oldFnNames.filter(
+		for (const on of fnNames) {
+			const match = oldFnNames.filter(
 				(n: FirstNationName) =>
 					n.fnName == on.fnName &&
 					n.fnDesription == on.fnDesription &&
@@ -408,10 +409,10 @@ function combine(
 	typeText: any = 'typeText'
 ): any[] {
 	list1.forEach((item) => {
-		let match = list2.filter((i) => i[linker] == item[linker2]);
+		const match = list2.filter((i) => i[linker] == item[linker2]);
 
 		if (match && match[0]) {
-			let add = { [typeText]: match[0][value] };
+			const add = { [typeText]: match[0][value] };
 			item = Object.assign(item, add);
 		} else item = Object.assign(item, { [typeText]: null });
 	});

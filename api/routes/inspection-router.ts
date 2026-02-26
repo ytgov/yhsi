@@ -1,6 +1,4 @@
 import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
-import knex from 'knex';
 import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 import { InterpretiveSiteService } from '../services';
@@ -11,7 +9,7 @@ const {
 	transforms: { unwind },
 } = require('json2csv');
 export const inspectionRouter = express.Router();
-const db = knex(DB_CONFIG);
+
 const intSiteService = new InterpretiveSiteService();
 
 // ACTIONS
@@ -26,13 +24,7 @@ inspectionRouter.get(
 	],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const {
-			InspectionDate = '',
-			Description = '',
-			InspectedBy = '',
-			sortBy,
-			sort,
-		} = req.query;
+		const { InspectionDate = '', Description = '', InspectedBy = '', sortBy, sort } = req.query;
 		const page = parseInt(req.query.page as string);
 		const limit = parseInt(req.query.limit as string);
 		const offset = page * limit || 0;
@@ -83,10 +75,7 @@ inspectionRouter.put('/:inspectID', async (req: Request, res: Response) => {
 		// assets = [], actions = [], inspections = []
 	} = req.body;
 	const { inspectID } = req.params;
-	const resObj = await intSiteService.modifyInspection(
-		item,
-		parseInt(inspectID)
-	);
+	const resObj = await intSiteService.modifyInspection(item, parseInt(inspectID));
 	if (!resObj) {
 		res.status(404).send({ message: 'Inspection not found' });
 		return;
@@ -110,7 +99,7 @@ inspectionRouter.delete(
 			return;
 		}
 
-		let resObj = await intSiteService.removeInspection(parseInt(inspectID));
+		const resObj = await intSiteService.removeInspection(parseInt(inspectID));
 		res.sendStatus(200).send(resObj);
 	}
 );
@@ -122,7 +111,7 @@ inspectionRouter.delete(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
 
-		let resObj = await intSiteService.removeDocumentByID(parseInt(id));
+		const resObj = await intSiteService.removeDocumentByID(parseInt(id));
 		if (!resObj) {
 			res.sendStatus(404).send('The Action doesnt exist');
 			return;
@@ -158,10 +147,6 @@ inspectionRouter.get(
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { inspectID } = req.params;
-
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
 
 		const docs = await intSiteService.getDocumentsByOwnerID({
 			InspectID: inspectID,
@@ -199,11 +184,11 @@ inspectionRouter.post('/pdf', async (req: Request, res: Response) => {
 		sortBy,
 		sort,
 	});
-	let pdfData = renderFile('./templates/interpretive-sites/actionGrid.pug', {
+	const pdfData = renderFile('./templates/interpretive-sites/actionGrid.pug', {
 		data: data.body,
 	});
 
-	let pdf = await generatePDF(pdfData);
+	const pdf = await generatePDF(pdfData);
 	res.setHeader('Content-disposition', 'attachment; filename="actions.html"');
 	res.setHeader('Content-type', 'application/pdf');
 	res.send(pdf);

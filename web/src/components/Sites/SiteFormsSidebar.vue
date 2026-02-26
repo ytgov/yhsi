@@ -74,11 +74,6 @@ export default {
 					to: `/sites/${this.siteId}${doEdit}#legal-and-zoning`,
 				},
 				{
-					name: 'Photos (combined)',
-					icon: 'mdi-image',
-					to: `/sites/${this.siteId}${doEdit}#photos`,
-				},
-				{
 					name: 'Management',
 					icon: 'mdi-hammer-wrench',
 					to: `/sites/${this.siteId}${doEdit}#management`,

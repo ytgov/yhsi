@@ -4,7 +4,7 @@ import multer from 'multer';
 import { isNil, isString, difference } from 'lodash';
 
 import db from '@/db/db-client';
-import { API_PORT, DB_CONFIG } from '@/config';
+import { API_PORT } from '@/config';
 import { PhotoService, PlaceService } from '@/services';
 import PrintSiteService from '@/services/place/print-site-service';
 import { DestroyService } from '@/services/place';
@@ -17,8 +17,8 @@ import { generatePDF } from '@/utils/pdf-generator';
 import { createThumbnail } from '@/utils/image';
 import { Photo } from '@/data/photo-entities';
 
-const placeService = new PlaceService(DB_CONFIG);
-const photoService = new PhotoService(DB_CONFIG);
+const placeService = new PlaceService();
+const photoService = new PhotoService();
 const PAGE_SIZE = 10;
 
 export const placeRouter = express.Router();

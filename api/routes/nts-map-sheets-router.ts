@@ -1,11 +1,10 @@
 import express, { Request, Response } from 'express';
-import knex from 'knex';
 
-import { DB_CONFIG } from '../config';
+import db from '@/db/db-client';
 
 export const ntsMapSheetsRouter = express.Router();
-const db = knex(DB_CONFIG);
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 ntsMapSheetsRouter.get('/', (req: Request, res: Response) => {
 	return db
 		.select('NTSMapSheet as name')

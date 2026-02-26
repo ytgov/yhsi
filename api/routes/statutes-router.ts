@@ -1,13 +1,11 @@
 import express, { Request, Response } from 'express';
 
-import { DB_CONFIG } from '../config';
-
 import { StatuteService } from '../services';
 
 export const statutesRouter = express.Router();
-const statuteService = new StatuteService(DB_CONFIG);
+const statuteService = new StatuteService();
 
-statutesRouter.get('/', (req: Request, res: Response) => {
+statutesRouter.get('/', (_req: Request, res: Response) => {
 	return statuteService
 		.getAll()
 		.then((results) => {

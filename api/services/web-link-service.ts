@@ -1,18 +1,10 @@
-import knex, { Knex } from 'knex';
+import db from '@/db/db-client';
 
 import { WebLink } from '../models';
 
 export class WebLinkService {
-	private db: Knex;
-
-	constructor(config: Knex.Config<any>) {
-		this.db = knex(config);
-	}
-
 	async getForPlace(placeId: number) {
-		return this.db('WebLink')
-			.where({ placeId })
-			.select<WebLink[]>(['id', 'placeId', 'type', 'address']);
+		return db('WebLink').where({ placeId }).select<WebLink[]>(['id', 'placeId', 'type', 'address']);
 	}
 
 	async upsertForPlace(placeId: number, webLinks: WebLink[]) {
@@ -25,7 +17,7 @@ export class WebLinkService {
 				}))
 			);
 		}).then((cleanWebLinks) => {
-			return this.db.transaction(async (trx) => {
+			return db.transaction(async (trx) => {
 				await trx('WebLink').where({ placeId }).delete();
 
 				if (Array.isArray(cleanWebLinks) && cleanWebLinks.length === 0) {

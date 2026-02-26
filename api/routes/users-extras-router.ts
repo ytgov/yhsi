@@ -1,18 +1,15 @@
 import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
-import knex from 'knex';
-import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 
+import db from '@/db/db-client';
+
+import { ReturnValidationErrors } from '../middleware';
+
 export const usersExtraRouter = express.Router();
-const db = knex(DB_CONFIG);
 
 usersExtraRouter.get(
 	'/',
-	[
-		query('page').default(0).isInt(),
-		query('limit').default(10).isInt({ gt: 0 }),
-	],
+	[query('page').default(0).isInt(), query('limit').default(10).isInt({ gt: 0 })],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		/* const permissions = req.decodedToken['yg-claims'].permissions;
@@ -46,9 +43,7 @@ usersExtraRouter.get(
 				.limit(limit)
 				.offset(offset);
 		} else {
-			counter = await db
-				.from('dbo.Ibbit_User')
-				.count('UserId', { as: 'count' });
+			counter = await db.from('dbo.Ibbit_User').count('UserId', { as: 'count' });
 
 			aircrashes = await db
 				.from('dbo.Ibbit_User')
@@ -105,7 +100,7 @@ usersExtraRouter.put(
 
 		const { userId } = req.params;
 
-		const { user = {}, expirationDate, access } = req.body;
+		const { user = {}, expirationDate } = req.body;
 
 		//updates the main user table
 		const updatedUser = await db('dbo.Ibbit_User')

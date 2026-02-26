@@ -163,7 +163,7 @@ export default {
 			{ text: 'Fatalities', value: 'fatalities' },
 		],
 		//table options
-		page: 0,
+		page: 1,
 		pageCount: 6,
 		totalLength: 0,
 		options: { itemsPerPage: 50 },

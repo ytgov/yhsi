@@ -1,9 +1,7 @@
+import { Knex } from 'knex';
+
+import db from '@/db/db-client';
 import BaseService from '../base-service';
-
-import { DB_CONFIG } from '../../config';
-import knex, { Knex } from 'knex';
-
-const db = knex(DB_CONFIG);
 
 export class DestroyService extends BaseService {
 	constructor(private placeId: number) {

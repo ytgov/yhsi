@@ -1,6 +1,9 @@
-import knex, { Knex } from 'knex';
+import { Knex } from 'knex';
 import moment from 'moment';
 import { get, isEmpty, isNull, isUndefined, uniq } from 'lodash';
+
+import db from '@/db/db-client';
+
 import { COORDINATE_DETERMINATION_TYPES } from '../models';
 
 import {
@@ -19,7 +22,6 @@ import {
 	PreviousOwnershipService,
 	RevisionLogService,
 	SortStatement,
-	StaticService,
 	ThemeService,
 	WebLinkService,
 } from './';
@@ -43,7 +45,6 @@ function injectRelationshipData(attributes: PlainObject, relationships: PlainObj
 }
 
 export class PlaceService {
-	private db: Knex;
 	private assocationService: AssociationService;
 	private constructionPeriodService: ConstructionPeriodService;
 	private contactService: ContactService;
@@ -58,33 +59,30 @@ export class PlaceService {
 	private placeEditService: PlaceEditService;
 	private previousOwnershipService: PreviousOwnershipService;
 	private revisionLogService: RevisionLogService;
-	private staticService: StaticService;
 	private themeService: ThemeService;
 	private webLinkService: WebLinkService;
 
-	constructor(config: Knex.Config<any>) {
-		this.db = knex(config);
-		this.assocationService = new AssociationService(config);
-		this.constructionPeriodService = new ConstructionPeriodService(config);
-		this.contactService = new ContactService(config);
-		this.dateService = new DateService(config);
-		this.descriptionService = new DescriptionService(config);
-		this.firstNationAssociationService = new FirstNationAssociationService(config);
-		this.functionalUseService = new FunctionalUseService(config);
+	constructor() {
+		this.assocationService = new AssociationService();
+		this.constructionPeriodService = new ConstructionPeriodService();
+		this.contactService = new ContactService();
+		this.dateService = new DateService();
+		this.descriptionService = new DescriptionService();
+		this.firstNationAssociationService = new FirstNationAssociationService();
+		this.functionalUseService = new FunctionalUseService();
 		this.historicalPatternService = new HistoricalPatternService();
 		this.nameService = new NameService();
-		this.ownershipService = new OwnershipService(config);
-		this.photoService = new PhotoService(config);
+		this.ownershipService = new OwnershipService();
+		this.photoService = new PhotoService();
 		this.placeEditService = new PlaceEditService();
-		this.previousOwnershipService = new PreviousOwnershipService(config);
-		this.revisionLogService = new RevisionLogService(config);
-		this.staticService = new StaticService(config);
-		this.themeService = new ThemeService(config);
-		this.webLinkService = new WebLinkService(config);
+		this.previousOwnershipService = new PreviousOwnershipService();
+		this.revisionLogService = new RevisionLogService();
+		this.themeService = new ThemeService();
+		this.webLinkService = new WebLinkService();
 	}
 
 	async getAll(skip: number, take: number): Promise<Array<Place>> {
-		return this.db('place')
+		return db('place')
 			.select<Place[]>(PLACE_FIELDS)
 			.whereNull('deleted_at')
 			.orderBy('id')
@@ -93,8 +91,7 @@ export class PlaceService {
 	}
 
 	async getAllWithPhoto(skip: number, take: number): Promise<Array<Place>> {
-		const db = this.db;
-		return this.db('place')
+		return db('place')
 			.distinct('Place.Id')
 			.select<Place[]>([...PLACE_FIELDS, 'PH.ThumbFile', 'PH.caption'])
 			.whereNull('deleted_at')
@@ -110,8 +107,7 @@ export class PlaceService {
 	}
 
 	async getRegisterAll(skip: number, take: number): Promise<Array<any>> {
-		const db = this.db;
-		return this.db('place')
+		return db('place')
 			.select([...REGISTER_FIELDS, 'PH.ThumbFile', 'PH.caption'])
 			.join('community', 'community.id', 'place.communityid')
 			.leftJoin('dbo.photo as PH', function () {
@@ -132,7 +128,7 @@ export class PlaceService {
 
 	async getPlaceInRegisterCount(): Promise<number> {
 		return new Promise(async (resolve, reject) => {
-			const results = await this.db('place')
+			const results = await db('place')
 				.count('*', {
 					as: 'count',
 				})
@@ -149,7 +145,7 @@ export class PlaceService {
 	}
 
 	async getIdsForUser(user?: User) {
-		const selectStatement = this.db('place').select('yHSIId');
+		const selectStatement = db('place').select('yHSIId');
 
 		this.scopeSitesToUser(selectStatement, user);
 
@@ -157,7 +153,7 @@ export class PlaceService {
 	}
 
 	async getById(id: number, user?: User): Promise<{ place: Place; relationships: any }> {
-		return this.db('place')
+		return db('place')
 			.first(PLACE_FIELDS)
 			.where({ 'place.id': id })
 			.leftJoin('community', 'community.id', 'place.communityId')
@@ -203,7 +199,7 @@ export class PlaceService {
 	}
 
 	async getRegisterById(id: number): Promise<any | undefined> {
-		return this.db('place')
+		return db('place')
 			.join('community', 'community.id', 'place.communityid')
 			.select(REGISTER_FIELDS)
 			.where({ 'place.id': id })
@@ -217,7 +213,7 @@ export class PlaceService {
 
 	async getPlaceCount(): Promise<number> {
 		return new Promise(async (resolve, reject) => {
-			const results = await this.db<number>('place').whereNull('deleted_at').count('*', {
+			const results = await db<number>('place').whereNull('deleted_at').count('*', {
 				as: 'count',
 			});
 
@@ -231,7 +227,7 @@ export class PlaceService {
 	}
 
 	async addPlace(item: Place, currentUser: User): Promise<Place | undefined> {
-		const result = await this.db('place').insert(item).returning<Place[]>('*');
+		const result = await db('place').insert(item).returning<Place[]>('*');
 
 		this.placeEditService.create({
 			...item,
@@ -299,7 +295,7 @@ export class PlaceService {
 			.then((encodedAttributes) => {
 				if (isEmpty(encodedAttributes)) return;
 
-				return this.db('place').where({ id }).update(encodedAttributes);
+				return db('place').where({ id }).update(encodedAttributes);
 			})
 			.then(() => {
 				return this.getById(id).then(({ place, relationships }) => {
@@ -310,7 +306,7 @@ export class PlaceService {
 	}
 
 	async generateIdFor(nTSMapSheet: string): Promise<string> {
-		const places = await this.db('place')
+		const places = await db('place')
 			.whereILike('YHSIId', `${nTSMapSheet}/%`)
 			.select('YHSIId')
 			.orderBy('yHSIId');
@@ -352,10 +348,10 @@ export class PlaceService {
 				.leftOuterJoin('Ownership', 'Place.id', 'Ownership.PlaceId')
 				.leftOuterJoin('Name', 'Place.id', 'Name.PlaceId')
 				.leftOuterJoin(
-					this.db('Place')
+					db('Place')
 						.select({
 							PlaceId: 'Place.Id',
-							Status: this.db.raw(
+							Status: db.raw(
 								`CASE WHEN PlaceEdit.PlaceId IS NULL THEN 'Editable' ELSE 'Editing' END`
 							),
 						})
@@ -373,11 +369,18 @@ export class PlaceService {
 
 			const SUPPORTED_QUERIES: { [key: string]: QueryBuilder } = Object.freeze({
 				search(base: Knex.QueryInterface, value: any) {
-					return base.where((builder: any) =>
+					return base.where((builder: Knex.QueryBuilder) =>
 						builder
 							.whereILike('PrimaryName', `%${value}%`)
 							.orWhereILike('YHSIId', `%${value}%`)
 							.orWhereILike('[Name].[Description]', `%${value}%`)
+							.orWhereExists((subquery) => {
+								subquery
+									.select('*')
+									.from('dbo.Name as names')
+									.whereRaw('names.PlaceId = Place.Id')
+									.whereILike('names.Description', `%${value}%`);
+							})
 					);
 				},
 				includingCommunityIds(base: Knex.QueryInterface, value: any) {

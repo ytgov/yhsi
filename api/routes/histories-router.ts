@@ -1,19 +1,16 @@
 import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
-import knex from 'knex';
-import { ReturnValidationErrors } from '../middleware';
 import { param, query } from 'express-validator';
 
+import db from '@/db/db-client';
+
+import { ReturnValidationErrors } from '../middleware';
+
 export const historiesRouter = express.Router();
-const db = knex(DB_CONFIG);
 
 historiesRouter.get(
 	'/:id',
 	[param('id').notEmpty()],
-	[
-		query('page').default(0).isInt(),
-		query('limit').default(10).isInt({ gt: 0 }),
-	],
+	[query('page').default(0).isInt(), query('limit').default(10).isInt({ gt: 0 })],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const page = parseInt(req.query.page as string);
@@ -21,7 +18,7 @@ historiesRouter.get(
 		const offset = page * limit || 0;
 
 		// this parameter is used in the query below, but not sure what this means
-		let boatId = parseInt(req.params.id as string);
+		const boatId = parseInt(req.params.id as string);
 
 		const histories = await db
 			.select('*')
@@ -56,9 +53,7 @@ historiesRouter.put(
 		const { history } = req.body;
 		const { historyId } = req.params;
 		//make the update
-		await db('boat.History')
-			.update(history)
-			.where('boat.History.id', historyId);
+		await db('boat.History').update(history).where('boat.History.id', historyId);
 
 		res.status(200).send({ message: 'success' });
 	}
@@ -66,38 +61,31 @@ historiesRouter.put(
 
 //OWNER HISTORIES
 
-historiesRouter.get(
-	'/owner/:id',
-	[param('id').notEmpty()],
-	async (req: Request, res: Response) => {
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
+historiesRouter.get('/owner/:id', [param('id').notEmpty()], async (req: Request, res: Response) => {
+	const page = parseInt(req.query.page as string);
+	const limit = parseInt(req.query.limit as string);
+	const offset = page * limit || 0;
 
-		// this parameter is used in the query below, but not sure what this means - Resp : sorry this was unfinished code mb.
-		const ownerid = parseInt(req.params.id as string);
+	// this parameter is used in the query below, but not sure what this means - Resp : sorry this was unfinished code mb.
+	const ownerid = parseInt(req.params.id as string);
 
-		const histories = await db
-			.select('*')
-			.from('Boat.OwnerHistory')
-			// .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
-			// .orderBy('boat.boatowner.ownerid', 'asc')
-			.where('Boat.OwnerHistory.OwnerId', ownerid)
-			.orderBy('')
-			.limit(limit)
-			.offset(offset);
+	const histories = await db
+		.select('*')
+		.from('Boat.OwnerHistory')
+		// .join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
+		// .orderBy('boat.boatowner.ownerid', 'asc')
+		.where('Boat.OwnerHistory.OwnerId', ownerid)
+		.orderBy('')
+		.limit(limit)
+		.offset(offset);
 
-		res.status(200).send(histories);
-	}
-);
+	res.status(200).send(histories);
+});
 
 historiesRouter.post('/owner', async (req: Request, res: Response) => {
 	const { history = {} } = req.body;
 
-	const response = await db
-		.insert(history)
-		.into('boat.OwnerHistory')
-		.returning('*');
+	const response = await db.insert(history).into('boat.OwnerHistory').returning('*');
 
 	res.status(200).send(response);
 });
@@ -110,7 +98,7 @@ historiesRouter.put(
 		const { history } = req.body;
 		const { historyId } = req.params;
 		//make the update
-		let resp = await db('boat.OwnerHistory')
+		const resp = await db('boat.OwnerHistory')
 			.update(history)
 			.where('boat.OwnerHistory.Id', historyId);
 

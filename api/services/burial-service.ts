@@ -1,107 +1,113 @@
-import knex, { Knex } from 'knex';
-import { QueryStatement, SortStatement } from './';
-import { Photo, PHOTO_FIELDS } from '../data';
-import { DB_CONFIG } from '../config';
-import { burialsRouter } from 'routes';
-const db = knex(DB_CONFIG);
-export class BurialService {
+import db from '@/db/db-client';
 
-	async getAll(){
-        const sortBy = 'LastName';
+export class BurialService {
+	async getAll() {
+		const sortBy = 'LastName';
 		const sort = 'asc';
 
-		return await db.select(
-						'BUR.BurialID',
-						'BUR.LastName',
-						'BUR.FirstName',
-						'BUR.Gender',
-						'BUR.GenderOther',
-						'BUR.BirthYear',
-						'BUR.BirthMonth',
-						'BUR.BirthDay',
-						'BUR.BirthDateNotes',
-						'BUR.DeathYear',
-						'BUR.DeathMonth',
-						'BUR.DeathDay',
-						'BUR.DeathDateNotes',
-						'BUR.Age',
-						'BUR.Manner',
-						'CL.Cause',
-						'CE.Cemetary',
-						'BUR.OtherCemetaryDesc',
-						'BUR.PlotDescription',
-						'BUR.ShippedIndicator',
-						'BUR.DestinationShipped',
-						'BUR.FuneralPaidBy',
-						'BUR.OriginCity',
-						'BUR.OriginState',
-						'BUR.OriginCountry',
-						'BUR.OtherCountry',
-						'BUR.PersonNotes',
-						'RE.Religion'
-						)
-					.from('Burial.Burial as BUR')
-					.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
-					.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
-					.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
-					.orderBy(`${sortBy}`, `${sort}`);
+		return await db
+			.select(
+				'BUR.BurialID',
+				'BUR.LastName',
+				'BUR.FirstName',
+				'BUR.Gender',
+				'BUR.GenderOther',
+				'BUR.BirthYear',
+				'BUR.BirthMonth',
+				'BUR.BirthDay',
+				'BUR.BirthDateNotes',
+				'BUR.DeathYear',
+				'BUR.DeathMonth',
+				'BUR.DeathDay',
+				'BUR.DeathDateNotes',
+				'BUR.Age',
+				'BUR.Manner',
+				'CL.Cause',
+				'CE.Cemetary',
+				'BUR.OtherCemetaryDesc',
+				'BUR.PlotDescription',
+				'BUR.ShippedIndicator',
+				'BUR.DestinationShipped',
+				'BUR.FuneralPaidBy',
+				'BUR.OriginCity',
+				'BUR.OriginState',
+				'BUR.OriginCountry',
+				'BUR.OtherCountry',
+				'BUR.PersonNotes',
+				'RE.Religion'
+			)
+			.from('Burial.Burial as BUR')
+			.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
+			.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
+			.leftJoin('Burial.ReligionLookup as RE', 'RE.ReligionLUpID', '=', 'BUR.ReligionID')
+			.orderBy(`${sortBy}`, `${sort}`);
 	}
 
-	async getById(burialId: string) {	
-        const burial = await db
-            .select("BUR.*")
-            .from('Burial.Burial as BUR')
-            .where('BUR.BurialID', burialId)
-            .first();
+	async getById(burialId: string) {
+		const burial = await db
+			.select('BUR.*')
+			.from('Burial.Burial as BUR')
+			.where('BUR.BurialID', burialId)
+			.first();
 
-        if (!burial) {
-            return null;
-        }
+		if (!burial) {
+			return null;
+		}
 
-        burial.Cause = await db
-            .select('CL.*').from('Burial.Burial as BUR')
-            .join('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID').first();
+		burial.Cause = await db
+			.select('CL.*')
+			.from('Burial.Burial as BUR')
+			.join('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
+			.first();
 
-        burial.Cemetary = await db
-            .select('CL.*').from('Burial.Burial as BUR')
-            .join('Burial.CemetaryLookup as CL', 'CL.CemetaryLUpID', '=', 'BUR.CemetaryID').first();
+		burial.Cemetary = await db
+			.select('CL.*')
+			.from('Burial.Burial as BUR')
+			.join('Burial.CemetaryLookup as CL', 'CL.CemetaryLUpID', '=', 'BUR.CemetaryID')
+			.first();
 
-        burial.Religion = await db
-            .select('CL.*').from('Burial.Burial as BUR')
-            .join('Burial.ReligionLookup as CL', 'CL.ReligionLUpID', '=', 'BUR.ReligionID').first();
+		burial.Religion = await db
+			.select('CL.*')
+			.from('Burial.Burial as BUR')
+			.join('Burial.ReligionLookup as CL', 'CL.ReligionLUpID', '=', 'BUR.ReligionID')
+			.first();
 
-        burial.Occupations = await db
-            .select('OC.*', 'BOC.*').from('Burial.Occupation AS BOC')
-            .where('BOC.BurialID', burialId)
-            .join('Burial.OccupationLookup as OC', 'OC.OccupationLUpID', '=', 'BOC.OccupationID');
+		burial.Occupations = await db
+			.select('OC.*', 'BOC.*')
+			.from('Burial.Occupation AS BOC')
+			.where('BOC.BurialID', burialId)
+			.join('Burial.OccupationLookup as OC', 'OC.OccupationLUpID', '=', 'BOC.OccupationID');
 
-        burial.Memberships = await db
-            .select('ML.*', 'MEM.Chapter', 'MEM.Notes', 'MEM.ID').from('Burial.Membership AS MEM')
-            .where('MEM.BurialID', burialId)
-            .join('Burial.MembershipLookup as ML', 'ML.MembershipLUpID', '=', 'MEM.MembershipID');
+		burial.Memberships = await db
+			.select('ML.*', 'MEM.Chapter', 'MEM.Notes', 'MEM.ID')
+			.from('Burial.Membership AS MEM')
+			.where('MEM.BurialID', burialId)
+			.join('Burial.MembershipLookup as ML', 'ML.MembershipLUpID', '=', 'MEM.MembershipID');
 
-        burial.SiteVisits = await db
-            .select('*').from('Burial.SiteVisit')
-            .where('Burial.SiteVisit.BurialID', burialId);
+		burial.SiteVisits = await db
+			.select('*')
+			.from('Burial.SiteVisit')
+			.where('Burial.SiteVisit.BurialID', burialId);
 
-        burial.Kinships = await db
-            .select('KIN.*', 'REL.*').from('Burial.NOKin AS KIN')
-            .where('KIN.BurialID', burialId)
-            .join('Burial.RelationLookup as REL', 'REL.RelationLUpID', '=', 'KIN.RelationshipID');
-        
-        burial.Sources = await db
-            .select('SO.*').from('Burial.Source AS SO')
-            .where('SO.BurialID', burialId);
-            
-        return burial;
-    }
+		burial.Kinships = await db
+			.select('KIN.*', 'REL.*')
+			.from('Burial.NOKin AS KIN')
+			.where('KIN.BurialID', burialId)
+			.join('Burial.RelationLookup as REL', 'REL.RelationLUpID', '=', 'KIN.RelationshipID');
 
-	async doSearch(page: number, limit: number, offset: number, filters: any){
+		burial.Sources = await db
+			.select('SO.*')
+			.from('Burial.Source AS SO')
+			.where('SO.BurialID', burialId);
 
-		const { 
-			textToMatch = '', 
-			sortBy = 'LastName', 
-			sort = 'asc', 
+		return burial;
+	}
+
+	async doSearch(_page: number, limit: number, offset: number, filters: any) {
+		const {
+			textToMatch = '',
+			sortBy = 'LastName',
+			sort = 'asc',
 			BirthYear = '',
 			BirthMonth = '',
 			BirthDay = '',
@@ -112,13 +118,13 @@ export class BurialService {
 			Cause = '',
 			Manner = '',
 			Cemetary = '',
-			OriginCountry = ''  } = filters;
+			OriginCountry = '',
+		} = filters;
 
 		let burials = [];
-		let counter = [{count: 0}];
-			if(limit === 0){
-
-				counter = await db
+		let counter = [{ count: 0 }];
+		if (limit === 0) {
+			counter = await db
 				.from('Burial.Burial as BUR')
 				.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
 				.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
@@ -142,7 +148,7 @@ export class BurialService {
 				//.andWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
 				.count('BurialID', { as: 'count' });
 
-				burials = await db
+			burials = await db
 				.select(
 					'BUR.BurialID',
 					'BUR.LastName',
@@ -172,7 +178,7 @@ export class BurialService {
 					'BUR.OtherCountry',
 					'BUR.PersonNotes',
 					'RE.Religion'
-					)
+				)
 				.from('Burial.Burial as BUR')
 				.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
 				.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
@@ -195,10 +201,9 @@ export class BurialService {
 				.andWhere('BUR.OriginCountry', 'like', `%${OriginCountry}%`)
 				//.andWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
 				.orderBy(`${sortBy}`, `${sort}`);
-				//console.log(burials);
-			}
-			else{
-				counter = await db
+			//console.log(burials);
+		} else {
+			counter = await db
 				.from('Burial.Burial as BUR')
 				.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
 				.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
@@ -222,7 +227,7 @@ export class BurialService {
 				//.andWhere('BUR.OtherCountry', 'like', `%${OtherCountry}%`)
 				.count('BurialID', { as: 'count' });
 
-				burials = await db
+			burials = await db
 				.select(
 					'BUR.BurialID',
 					'BUR.LastName',
@@ -252,7 +257,7 @@ export class BurialService {
 					'BUR.OtherCountry',
 					'BUR.PersonNotes',
 					'RE.Religion'
-					)
+				)
 				.from('Burial.Burial as BUR')
 				.leftJoin('Burial.CauseLookup as CL', 'CL.CauseLUpID', '=', 'BUR.CauseID')
 				.leftJoin('Burial.CemetaryLookup as CE', 'CE.CemetaryLUpID', '=', 'BUR.CemetaryID')
@@ -277,12 +282,8 @@ export class BurialService {
 				.orderBy(`${sortBy}`, `${sort}`)
 				.limit(limit)
 				.offset(offset);
-			}
-
+		}
 
 		return { count: counter[0].count, body: burials };
-
-		
 	}
-
 }

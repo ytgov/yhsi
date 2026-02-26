@@ -1,14 +1,13 @@
 import express, { Request, Response } from 'express';
-import { DB_CONFIG } from '../config';
-import { createThumbnail } from '../utils/image';
-import knex from 'knex';
-import { ReturnValidationErrors, RequiresAuthentication } from '../middleware';
 import { param, query } from 'express-validator';
 import * as multer from 'multer';
 import _ from 'lodash';
 
+import db from '@/db/db-client';
+import { createThumbnail } from '../utils/image';
+import { ReturnValidationErrors, RequiresAuthentication } from '../middleware';
+
 export const photosExtraRouter = express.Router();
-const db = knex(DB_CONFIG);
 
 const upload = multer.default();
 

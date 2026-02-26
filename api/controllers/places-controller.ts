@@ -1,14 +1,13 @@
-import knex from 'knex';
 import { Request, Response } from 'express';
 
-import { DB_CONFIG } from '../config';
+import db from '@/db/db-client';
+
 import { buildDatabaseSort, PlaceService } from '../services';
 import { User } from '../models';
 import { NotFoundError } from '../utils/validation';
 import { PlacePolicy, PlacePolicyScope } from '../policies';
 
-const db = knex(DB_CONFIG);
-const placeService = new PlaceService(DB_CONFIG);
+const placeService = new PlaceService();
 
 export function getPlace(req: Request, res: Response) {
 	const id = parseInt(req.params.id);

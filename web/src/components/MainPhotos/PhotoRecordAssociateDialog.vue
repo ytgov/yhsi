@@ -533,6 +533,7 @@ export default {
         });
 
         this.close()
+        this.$router.go(0)
 		},
     reset() {
       this.dialog = false;

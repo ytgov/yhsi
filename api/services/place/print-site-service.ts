@@ -1,9 +1,8 @@
 import { isNil, isString, isUndefined } from 'lodash';
 import fs from 'fs';
 import { create } from 'handlebars';
-import knex from 'knex';
 
-import { DB_CONFIG } from '../../config';
+import db from '@/db/db-client';
 
 import handlebarsHelpers from '../../utils/handlebars-helpers';
 import {
@@ -25,8 +24,7 @@ import {
 import { PhotoService } from '../photo-service';
 import BaseService from '../base-service';
 
-const db = knex(DB_CONFIG);
-const photoService = new PhotoService(DB_CONFIG);
+const photoService = new PhotoService();
 
 export class PrintSiteService extends BaseService {
 	constructor(

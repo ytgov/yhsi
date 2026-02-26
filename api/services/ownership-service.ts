@@ -1,16 +1,10 @@
-import knex, { Knex } from 'knex';
+import db from '@/db/db-client';
 
 import { Ownership } from '../models';
 
 export class OwnershipService {
-	private db: Knex;
-
-	constructor(config: Knex.Config<any>) {
-		this.db = knex(config);
-	}
-
 	async getFor(placeId: number) {
-		return this.db('Ownership')
+		return db('Ownership')
 			.where({ placeId })
 			.select<Ownership[]>(['id', 'placeId', 'ownershipType', 'comments']);
 	}
@@ -25,7 +19,7 @@ export class OwnershipService {
 				}))
 			);
 		}).then((cleanOwnerships) => {
-			return this.db.transaction(async (trx) => {
+			return db.transaction(async (trx) => {
 				await trx('Ownership').where({ placeId }).delete();
 
 				if (Array.isArray(cleanOwnerships) && cleanOwnerships.length === 0) {
