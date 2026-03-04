@@ -483,6 +483,15 @@ const routes = [
 		},
 	},
 	{
+		path: '/burials/new',
+		name: "BurialsCreatePage",
+		component: () => import("@/pages/burials/BurialsNewPage.vue"),
+		meta: {
+			requiresAuth: true,
+			authorize: [UserRoles.BURIALS_EDITOR],
+		},
+	},
+	{
 		path: '/burials/view/:name',
 		name: 'BurialsViewForm',
 		component: BurialsForm,

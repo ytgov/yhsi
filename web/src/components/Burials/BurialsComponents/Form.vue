@@ -991,9 +991,9 @@ export default {
 				PlotDescription,
 				ShippedIndicator,
 				//Ids directly on the burial table
-				CauseID: Cause.CauseLUpID,
-				CemetaryID: Cemetary.CemetaryLUpID,
-				ReligionID: Religion.ReligionLUpID,
+				CauseID: (Cause && Cause.CauseLUpID) ? Cause.CauseLUpID : null,
+				CemetaryID: (Cemetary && Cemetary.CemetaryLUpID) ? Cemetary.CemetaryLUpID : null,
+				ReligionLUpID: (Religion && Religion.ReligionLUpID) ? Religion.ReligionLUpID : null
 			};
 			////console.log(data);
 			const data = {
