@@ -1,4 +1,4 @@
-import { difference } from 'lodash';
+import { difference, isEmpty } from 'lodash';
 import express, { Request, Response } from 'express';
 import { param, query } from 'express-validator';
 import { renderFile } from 'pug';
@@ -85,90 +85,107 @@ burialsRouter.get(
 	}
 );
 
-// changed this route from "/new" to "/" to follow RESTFUL conventions
 burialsRouter.post('/', async (req: Request, res: Response) => {
-	const { burial = {}, Memberships, SiteVisits, Kinships, Occupations, Sources } = req.body;
+	const {
+		burial = {},
+		Memberships = [],
+		SiteVisits = [],
+		Kinships = [],
+		Occupations = [],
+		Sources = [],
+	} = req.body;
 
-	const response = await db
-		.insert(burial)
-		.into('Burial.Burial')
-		.returning('*')
-		.then(async (rows: any) => {
+	try {
+		const result = await db.transaction(async (trx) => {
+			const rows = await trx.insert(burial).into('Burial.Burial').returning('*');
 			const newBurial = rows[0];
-			//OCCUPATIONS
-			await db
-				.insert(
-					Occupations.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({
-						BurialID: newBurial.BurialID,
-						OccupationID: x.OccupationLupID,
-					}))
-				)
-				.into('Burial.Occupation')
-				.then((rows: any) => {
-					return rows;
-				});
-			//MEMBERSHIPS
-			await db
-				.insert(
-					Memberships.filter((x: any) => x.new == true).map((x: any) => ({
-						BurialID: newBurial.BurialID,
-						MembershipID: x.MembershipLUpID,
-						Chapter: x.Chapter,
-						Notes: x.Notes,
-					}))
-				)
-				.into('Burial.Membership')
-				.then((rows: any) => {
-					return rows;
-				});
-			//KINSHIPS
-			await db
-				.insert(
-					Kinships.filter((x: any) => x.new == true).map((x: any) => ({
-						BurialID: newBurial.BurialID,
-						RelationshipID: x.RelationshipID,
-						Quantity: x.Quantity,
-						Name: x.Name,
-						Location: x.Location,
-					}))
-				)
-				.into('Burial.NOKin')
-				.then((rows: any) => {
-					return rows;
-				});
-			//SITE VISITS
-			await db
-				.insert(
-					SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({
-						BurialID: newBurial.BurialID,
-						VisitYear: x.VisitYear,
-						Condition: x.Condition,
-						MarkerDescription: x.MarkerDescription,
-						Inscription: x.Inscription,
-						RecordedBy: x.RecordedBy,
-					}))
-				)
-				.into('Burial.SiteVisit')
-				.then((rows: any) => {
-					return rows;
-				});
-			//SOURCES
-			await db
-				.insert(
-					Sources.filter((x: any) => x.new == true).map((x: any) => ({
-						BurialID: newBurial.BurialID,
-						Source: x.Source,
-					}))
-				)
-				.into('Burial.Source')
-				.then((rows: any) => {
-					return rows;
-				});
+
+			if (!isEmpty(Occupations)) {
+				await trx
+					.insert(
+						Occupations.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({
+							BurialID: newBurial.BurialID,
+							OccupationID: x.OccupationLupID,
+						}))
+					)
+					.into('Burial.Occupation')
+					.then((rows: any) => {
+						return rows;
+					});
+			}
+
+			if (!isEmpty(Memberships)) {
+				await trx
+					.insert(
+						Memberships.filter((x: any) => x.new == true).map((x: any) => ({
+							BurialID: newBurial.BurialID,
+							MembershipID: x.MembershipLUpID,
+							Chapter: x.Chapter,
+							Notes: x.Notes,
+						}))
+					)
+					.into('Burial.Membership')
+					.then((rows: any) => {
+						return rows;
+					});
+			}
+
+			if (!isEmpty(Kinships)) {
+				await trx
+					.insert(
+						Kinships.filter((x: any) => x.new == true).map((x: any) => ({
+							BurialID: newBurial.BurialID,
+							RelationshipID: x.RelationshipID,
+							Quantity: x.Quantity,
+							Name: x.Name,
+							Location: x.Location,
+						}))
+					)
+					.into('Burial.NOKin')
+					.then((rows: any) => {
+						return rows;
+					});
+			}
+
+			if (!isEmpty(SiteVisits)) {
+				await trx
+					.insert(
+						SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({
+							BurialID: newBurial.BurialID,
+							VisitYear: x.VisitYear,
+							Condition: x.Condition,
+							MarkerDescription: x.MarkerDescription,
+							Inscription: x.Inscription,
+							RecordedBy: x.RecordedBy,
+						}))
+					)
+					.into('Burial.SiteVisit')
+					.then((rows: any) => {
+						return rows;
+					});
+			}
+
+			if (!isEmpty(Sources)) {
+				await trx
+					.insert(
+						Sources.filter((x: any) => x.new == true).map((x: any) => ({
+							BurialID: newBurial.BurialID,
+							Source: x.Source,
+						}))
+					)
+					.into('Burial.Source')
+					.then((rows: any) => {
+						return rows;
+					});
+			}
 
 			return newBurial;
 		});
-
-	res.send(response);
+		return res.status(201).json(result);
+	} catch (error) {
+		console.error(error);
+		return res.status(422).send({ message: 'Burial creation failed' });
+	}
 });
 
 burialsRouter.put(
