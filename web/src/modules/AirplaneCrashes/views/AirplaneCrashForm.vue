@@ -302,6 +302,7 @@
 			</v-row>
 
 			<MapLoader
+				ref="mapLoaderRef"
 				:mode="action"
 				:mapType="'planeCrash'"
 				:airCrashLocation.sync="crashMapData"
@@ -573,6 +574,9 @@ export default {
 		},
 
 		async saveChanges() {
+			const valid = this.$refs.mapLoaderRef.validate();
+			if (!valid) return
+
 			this.overlay = true;
 			//Mapping coordinate data
 			//Mapping general fields
