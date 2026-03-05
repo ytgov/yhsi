@@ -8,7 +8,7 @@ export const ntsMapSheetsRouter = express.Router();
 ntsMapSheetsRouter.get('/', (req: Request, res: Response) => {
 	return db
 		.select('Map50k as name')
-		.from('MapSheetLookUp')
+		.from('YHIS.MapSheetLookup')
 		.distinct()
 		.then((results) => {
 			return res.json({ data: results });
