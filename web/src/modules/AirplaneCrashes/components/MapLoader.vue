@@ -34,6 +34,7 @@
 					</v-col>
 				</v-row>
 				<v-form
+					ref="coordinateFormRef"
 					:readonly="mode == 'view'"
 					:disabled="mode == 'view'"
 				>
@@ -45,10 +46,11 @@
 						<v-col cols="1" />
 						<v-col cols="9">
 							<v-text-field
+								v-model="lat"
 								outlined
 								dense
 								label="Latitude"
-								v-model="lat"
+								:rules="[requiredCoordinateRule]"
 							>
 							</v-text-field>
 						</v-col>
@@ -57,10 +59,11 @@
 						<v-col cols="1" />
 						<v-col cols="9">
 							<v-text-field
+								v-model="long"
 								outlined
 								dense
 								label="Longitude"
-								v-model="long"
+								:rules="[requiredCoordinateRule]"
 							>
 							</v-text-field>
 						</v-col>
@@ -352,13 +355,22 @@ export default {
 		yukonPolygon,
 		zoom: 6,
 		center: [64.0, -135.0],
+		requiredCoordinateRule: (value) => {
+			if (!value || value === '') {
+				return 'Coordinate is required';
+			}
+
+			if(value == 0) {
+				return 'Coordinate cannot be 0';
+			}
+			return true;
+		},
 	}),
 	mounted() {
 		// this.getFields();
 		this.fixMarkers();
 		////console.log(proj4);
 	},
-
 	methods: {
 		fixMarkers() {
 			//This code snippet fixes an issue where the marker icons dont appear (according to the vueleaflet docs)
@@ -390,7 +402,6 @@ export default {
 			// this.addMarker(lat, long);
 			// this.setCenter(lat, long);
 		},
-
 		decimalToDMS: function (decimalDegrees, isLongitude) {
 			// is a duplicate of convertDDToDMS but uses less 'magic'
 			let degrees = 0;
@@ -415,6 +426,10 @@ export default {
 
 			return `${Math.abs(degrees)}°${minutes}'${seconds}"${direction}`;
 		},
+		validate(){
+			// quick and dirt validation for a hot fix, this should be refactored
+			return this.$refs.coordinateFormRef.validate()
+		}
 	},
 	computed: {
 		siteLocation: function () {
