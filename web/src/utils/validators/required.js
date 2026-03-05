@@ -1,6 +1,6 @@
 import { isArray, isEmpty, isString, isNull, isObject, isUndefined } from "lodash"
 
-export function required(v: unknown): boolean | string {
+export function required(v) {
   if (isNull(v) || isUndefined(v)) {
     return "This field is required"
   }
