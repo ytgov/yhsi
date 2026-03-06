@@ -3,7 +3,7 @@ import { api } from './config';
 export default {
 	async get(
 		page,
-		limit,
+		perPage,
 		textToMatch,
 		sortBy,
 		sort,
@@ -23,7 +23,7 @@ export default {
 				crossdomain: true,
 				params: {
 					page,
-					limit,
+					perPage,
 					textToMatch,
 					sortBy,
 					sort,

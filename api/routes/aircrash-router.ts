@@ -34,7 +34,7 @@ aircrashRouter.use(authorize(airCrashViewers));
 
 aircrashRouter.get(
 	'/',
-	[query('page').default(0).isInt(), query('limit').default(10).isInt({ gt: 0 })],
+	[query('page').default(0).isInt(), query('perPage').default(10).isInt({ gt: 0 })],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		try {
@@ -55,7 +55,7 @@ aircrashRouter.get(
 			} = req.query;
 
 			const page = parseInt(req.query.page?.toString() || '') || 1;
-			const perPage = parseInt(req.query.limit?.toString() || '') || 10;
+			const perPage = parseInt(req.query.perPage?.toString() || '') || 10;
 
 			const data = await aircrashService.doSearch(page, perPage, {
 				textToMatch,
