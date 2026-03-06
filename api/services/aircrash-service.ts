@@ -47,7 +47,12 @@ export class AircrashService {
 
 		// _TODO_ move into base-controller.ts
 		const MAX_PER_PAGE = 1000;
-		const limit = Math.max(1, Math.min(perPage, MAX_PER_PAGE));
+		let limit = 0;
+		if (perPage === -1) {
+			limit = MAX_PER_PAGE;
+		} else {
+			limit = Math.max(1, Math.min(perPage, MAX_PER_PAGE));
+		}
 		const offset = (page - 1) * limit;
 
 		const aircrashes = await db
