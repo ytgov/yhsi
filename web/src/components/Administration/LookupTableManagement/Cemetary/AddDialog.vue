@@ -17,7 +17,6 @@
                 <v-form
                   ref="addCemetaryForm"
                   :lazy-validation="false"
-                  v-model="valid"
                 >
                   <v-row class="mt-2">
                       <v-col class="pa-0" cols="6">
@@ -76,7 +75,7 @@
         <v-card-actions>
           <v-btn text @click="closeDialog" class="black--text"> Close </v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="success" text :disabled="!valid" @click="save">
+          <v-btn color="success" text @click="save">
             Save
           </v-btn>
         </v-card-actions>
@@ -92,7 +91,6 @@ export default {
   data: () => ({
     dialog: false,
     input: null,
-    valid: false,
     Cemetary: "",
     Community: "",
     Address: "",
@@ -108,6 +106,10 @@ export default {
       this.resetValidation();
     },
     async save() {
+      if (!this.validate()) {
+        return;
+      }
+      
       let { Cemetary, Community, Address, Notes, Latitude, Longitude } = this;
       let data = {
         data: { Cemetary, Community, Address, Notes, Latitude, Longitude },
@@ -117,7 +119,7 @@ export default {
     },
     //not needed
     validate() {
-      this.$refs.addCemetaryForm.validate();
+      return this.$refs.addCemetaryForm.validate();
     },
     reset() {
       this.$refs.addCemetaryForm.reset();
