@@ -9,7 +9,7 @@
 <script>
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 
-import BurialCreateForm from "@/components/burials/BurialCreateForm.vue";
+import BurialCreateForm from "@/components/Burials/BurialCreateForm.vue";
 
 export default {
     name: "BurialsNewPage",

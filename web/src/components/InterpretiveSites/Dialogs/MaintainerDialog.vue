@@ -334,6 +334,7 @@ export default {
 			this.loading = true;
 
 			let data = {
+				MaintOwnLUpID: this.selectedMaintainer.MaintOwnLUpID,
 				Maintainer: this.selectedMaintainer.MaintOwnName,
 				new: true,
 			};

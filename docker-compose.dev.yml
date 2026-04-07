@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
     sql:
-        image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+        image: mcr.microsoft.com/mssql/server:2019-latest
         restart: unless-stopped
         environment: 
             - "ACCEPT_EULA=Y"
@@ -11,9 +11,8 @@ services:
         ports: 
             - "1433:1433"
         volumes: 
-            - yhsi_sqlvolume:/var/opt/mssql
+            - sqlsystem:/var/opt/mssql/
             - ./db/backups/:/backups
 
 volumes: 
-    yhsi_sqlvolume:
-        external: true
+    sqlsystem:

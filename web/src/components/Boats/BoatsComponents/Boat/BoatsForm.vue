@@ -475,6 +475,7 @@
 							label="Vessel Type"
 							:items="vesselTypeOptions"
 							item-text="Type"
+							item-value="Type"
 							:readonly="mode == 'view'"
 						></v-select>
 
@@ -676,6 +677,7 @@ export default {
 			this.fields.originalOwners = JSON.parse(
 				JSON.stringify(this.fields.owners)
 			);
+			await this.getVesselTypes();
 			this.infoLoaded = true;
 			this.overlay = false;
 			////console.log(this.fields);

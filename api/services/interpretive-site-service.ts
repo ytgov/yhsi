@@ -65,8 +65,9 @@ export class InterpretiveSiteService {
 			.where('InterpretiveSite.Inspections.SiteID', siteId);
 
 		item.maintainers = await db
-			.select('*')
+			.select('InterpretiveSite.Maintainer.*', 'InterpretiveSite.MaintOwnLookup.MaintOwnName as Maintainer')
 			.from('InterpretiveSite.Maintainer')
+			.leftJoin('InterpretiveSite.MaintOwnLookup', 'InterpretiveSite.Maintainer.MaintOwnLUpID', 'InterpretiveSite.MaintOwnLookup.MaintOwnLUpID')
 			.where('InterpretiveSite.Maintainer.SiteID', siteId)
 			.andWhere('InterpretiveSite.Maintainer.AssetID', null);
 
@@ -167,18 +168,22 @@ export class InterpretiveSiteService {
 	}
 
 	async modifySite(SiteID: number, item: any, maintainers: any) {
-		const res = await db('InterpretiveSite.Sites')
-			.update(item)
-			.where('InterpretiveSite.Sites.SiteID', SiteID);
+		const siteExists = await db('InterpretiveSite.Sites')
+			.where('InterpretiveSite.Sites.SiteID', SiteID)
+			.first();
 
-		if (!res) {
+		if (!siteExists) {
 			return null;
 		}
+
+		await db('InterpretiveSite.Sites')
+			.update(item)
+			.where('InterpretiveSite.Sites.SiteID', SiteID);
 
 		//maintainers
 		const newMaintainers = maintainers
 			.filter((x: any) => x.new == true && !x.deleted)
-			.map((x: any) => ({ Maintainer: x.Maintainer, SiteID: x.SiteID }));
+			.map((x: any) => ({ MaintOwnLUpID: x.MaintOwnLUpID, SiteID: x.SiteID }));
 		if (newMaintainers.length > 0) {
 			await db
 				.insert(newMaintainers)
@@ -246,7 +251,7 @@ export class InterpretiveSiteService {
 		// 		.update({ BurialID: burialId, OccupationID: item.OccupationID })
 		// 		.where('Burial.Occupation.ID', item.ID);
 		// }
-		return res;
+		return siteExists;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

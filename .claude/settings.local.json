@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"module.exports\\\\|export \" /c/dev/yhsi/api/controllers/*.ts)",
+      "Bash(iconv -f UTF-16LE -t UTF-8 c:/dev/yhsi/db/YHISTEST.sql)",
+      "Bash(gh issue:*)",
+      "Bash(grep -E \"\\\\.\\(ts|js\\)$\")"
+    ]
+  }
+}

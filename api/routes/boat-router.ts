@@ -59,6 +59,24 @@ boatsRouter.get(
 );
 
 boatsRouter.get(
+	'/available_number/:RegistrationNumber',
+	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR]),
+	[param('RegistrationNumber').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { RegistrationNumber } = req.params;
+
+		const exists = await db
+			.select('*')
+			.from('boat.boat')
+			.where('boat.boat.RegistrationNumber', RegistrationNumber)
+			.first();
+
+		res.status(200).send({ available: !exists });
+	}
+);
+
+boatsRouter.get(
 	'/:boatId',
 	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
 	[param('boatId').notEmpty()],
@@ -76,9 +94,8 @@ boatsRouter.get(
 	}
 );
 
-// changed this route from "/new" to "/" to follow RESTFUL conventions
 boatsRouter.post(
-	'/',
+	'/new',
 	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR]),
 	async (req: Request, res: Response) => {
 		/*   const db = req.app.get('db');
@@ -97,6 +114,7 @@ boatsRouter.post(
 
 				if (ownerNewArray.length) {
 					const newOwners = ownerNewArray.map((owner: any) => ({
+						CurrentOwner: 0,
 						...owner,
 						BoatId: newBoat.Id,
 					}));
@@ -111,17 +129,19 @@ boatsRouter.post(
 				}
 
 				//Add the new past names (done)
-				await db
-					.insert(
-						pastNamesNewArray.map((name: any) => ({
-							BoatId: newBoat.Id,
-							...name,
-						}))
-					)
-					.into('boat.pastnames')
-					.then((rows: any) => {
-						return rows;
-					});
+				if (pastNamesNewArray.length) {
+					await db
+						.insert(
+							pastNamesNewArray.map((name: any) => ({
+								BoatId: newBoat.Id,
+								...name,
+							}))
+						)
+						.into('boat.pastnames')
+						.then((rows: any) => {
+							return rows;
+						});
+				}
 
 				if (histories.length) {
 					const newHistories = histories.map((history: any) => ({
@@ -165,12 +185,14 @@ boatsRouter.put(
 		await db('boat.boat').update(boat).where('boat.boat.id', boatId);
 
 		//Add the new owners (done)
-		await db
-			.insert(ownerNewArray.map((owner: any) => ({ BoatId: boatId, ...owner })))
-			.into('boat.boatowner')
-			.then((rows: any) => {
-				return rows;
-			});
+		if (ownerNewArray.length) {
+			await db
+				.insert(ownerNewArray.map((owner: any) => ({ CurrentOwner: 0, ...owner, BoatId: boatId })))
+				.into('boat.boatowner')
+				.then((rows: any) => {
+					return rows;
+				});
+		}
 
 		//remove the previous owners (done)
 		for (const obj of ownerRemovedArray) {
@@ -186,12 +208,14 @@ boatsRouter.put(
 		}
 
 		//Add the new past names (done)
-		await db
-			.insert(pastNamesNewArray.map((name: any) => ({ BoatId: boatId, ...name })))
-			.into('boat.pastnames')
-			.then((rows: any) => {
-				return rows;
-			});
+		if (pastNamesNewArray.length) {
+			await db
+				.insert(pastNamesNewArray.map((name: any) => ({ BoatId: boatId, ...name })))
+				.into('boat.pastnames')
+				.then((rows: any) => {
+					return rows;
+				});
+		}
 
 		res.status(200).send({ message: 'success' });
 	}

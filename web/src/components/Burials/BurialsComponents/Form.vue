@@ -256,6 +256,7 @@
 										v-model="fields.Religion"
 										outlined
 										dense
+										return-object
 										item-value="ReligionLUpID"
 										item-text="Religion"
 										label="Religion"
@@ -892,13 +893,22 @@ export default {
 			if (this.$route.params.id) {
 				this.saveCurrentBurial();
 			}
-			this.fields = await burials.getById(localStorage.currentBurialID);
-			this.cemetaries = await catalogs.getCemetaries();
-			this.causes = await catalogs.getCauses();
-			this.religions = await catalogs.getReligions();
-			this.occupations = await catalogs.getOccupations();
-			this.memberships = await catalogs.getMemberships();
-			this.relationships = await catalogs.getRelationships();
+			const [fields, cemetaries, causes, religions, occupations, memberships, relationships] = await Promise.all([
+				burials.getById(localStorage.currentBurialID),
+				catalogs.getCemetaries(),
+				catalogs.getCauses(),
+				catalogs.getReligions(),
+				catalogs.getOccupations(),
+				catalogs.getMemberships(),
+				catalogs.getRelationships(),
+			]);
+			this.cemetaries = cemetaries;
+			this.causes = causes;
+			this.religions = religions;
+			this.occupations = occupations;
+			this.memberships = memberships;
+			this.relationships = relationships;
+			this.fields = fields;
 			//console.log(this.fields)
 			this.infoLoaded = true;
 			this.overlay = false;
@@ -993,7 +1003,7 @@ export default {
 				//Ids directly on the burial table
 				CauseID: (Cause && Cause.CauseLUpID) ? Cause.CauseLUpID : null,
 				CemetaryID: (Cemetary && Cemetary.CemetaryLUpID) ? Cemetary.CemetaryLUpID : null,
-				ReligionLUpID: (Religion && Religion.ReligionLUpID) ? Religion.ReligionLUpID : null
+				ReligionID: (Religion && Religion.ReligionLUpID) ? Religion.ReligionLUpID : null
 			};
 			////console.log(data);
 			const data = {
