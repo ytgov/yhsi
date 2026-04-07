@@ -37,9 +37,9 @@ intSitesRouter.get(
 	async (req: Request, res: Response) => {
 		try {
 			const { SiteName = '', RouteName = '', KMNum = '', MapSheet = '', sortBy, sort } = req.query;
-			const page = parseInt(req.query.page as string);
-			const limit = parseInt(req.query.limit as string);
-			const offset = (page - 1) * limit || 0;
+			const page = parseInt(req.query.page as string) || 1;
+			const limit = parseInt(req.query.limit as string) || 0;
+			const offset = (page - 1) * limit;
 
 			const data = await intSiteService.doSiteSearch(page, limit, offset, {
 				SiteName,
@@ -63,52 +63,72 @@ intSitesRouter.get(
 	[param('siteId').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { siteId } = req.params;
-		const boat = await intSiteService.getSiteById(parseInt(siteId));
+		try {
+			const { siteId } = req.params;
+			const boat = await intSiteService.getSiteById(parseInt(siteId));
 
-		if (!boat) {
-			res.status(404).send({ message: 'Data not found' });
-			return;
+			if (!boat) {
+				res.status(404).send({ message: 'Data not found' });
+				return;
+			}
+
+			res.status(200).send(boat);
+		} catch (error) {
+			console.log(error);
+			res.status(500).send({ message: 'Error fetching site' });
 		}
-
-		res.status(200).send(boat);
 	}
 );
 
 intSitesRouter.post('/', async (req: Request, res: Response) => {
-	const { item = {}, actions = [], assets = [], inspections = [] } = req.body;
+	try {
+		const { item = {}, actions = [], assets = [], inspections = [] } = req.body;
 
-	const resObj = await intSiteService.addSite(item, assets, actions, inspections);
-	if (!resObj) {
-		res.status(401).send({ message: 'Conflict' });
-		return;
+		const resObj = await intSiteService.addSite(item, assets, actions, inspections);
+		if (!resObj) {
+			res.status(401).send({ message: 'Conflict' });
+			return;
+		}
+
+		res.send(resObj);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send({ message: 'Error creating site' });
 	}
-
-	res.send(resObj);
 });
 
 intSitesRouter.post('/inspection', async (req: Request, res: Response) => {
-	const { item = {} } = req.body;
+	try {
+		const { item = {} } = req.body;
 
-	const resObj = await intSiteService.addInspection(item);
-	if (!resObj) {
-		res.status(401).send({ message: 'Conflict' });
-		return;
+		const resObj = await intSiteService.addInspection(item);
+		if (!resObj) {
+			res.status(401).send({ message: 'Conflict' });
+			return;
+		}
+
+		res.send(resObj);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send({ message: 'Error creating inspection' });
 	}
-
-	res.send(resObj);
 });
 
 intSitesRouter.put('/:siteId', async (req: Request, res: Response) => {
-	const { item = {}, maintainers = [] } = req.body;
-	const { siteId } = req.params;
-	const resObj = await intSiteService.modifySite(parseInt(siteId), item, maintainers);
-	if (!resObj) {
-		res.sendStatus(404).send({ message: 'Site not found' });
-		return;
-	}
+	try {
+		const { item = {}, maintainers = [] } = req.body;
+		const { siteId } = req.params;
+		const resObj = await intSiteService.modifySite(parseInt(siteId), item, maintainers);
+		if (!resObj) {
+			res.status(404).send({ message: 'Site not found' });
+			return;
+		}
 
-	res.sendStatus(200).send(resObj);
+		res.status(200).send(resObj);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send({ message: 'Error updating site' });
+	}
 });
 
 //PDF AND EXPORTS
@@ -117,115 +137,135 @@ intSitesRouter.post(
 	[param('siteID').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { siteID } = req.params;
+		try {
+			const { siteID } = req.params;
 
-		const item = await intSiteService.getSiteById(parseInt(siteID));
+			const item = await intSiteService.getSiteById(parseInt(siteID));
 
-		const data = renderFile('./templates/interpretive-sites/interpretiveSitesView.pug', {
-			data: item,
-		});
+			const data = renderFile('./templates/interpretive-sites/interpretiveSitesView.pug', {
+				data: item,
+			});
 
-		const pdf = await generatePDF(data);
-		res.setHeader('Content-disposition', 'attachment; filename="interpretiveSite.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		res.send(pdf);
+			const pdf = await generatePDF(data);
+			res.setHeader('Content-disposition', 'attachment; filename="interpretiveSite.html"');
+			res.setHeader('Content-type', 'application/pdf');
+			res.send(pdf);
+		} catch (error) {
+			console.log(error);
+			res.status(500).send({ message: 'Error generating PDF' });
+		}
 	}
 );
 
 intSitesRouter.post('/pdf', async (req: Request, res: Response) => {
-	const {
-		SiteName = '',
-		RouteName = '',
-		KMNum = '',
-		MapSheet = '',
-		sortBy = 'SiteName',
-		sort = 'asc',
-		page = 0,
-		limit = 0,
-	} = req.body;
+	try {
+		const {
+			SiteName = '',
+			RouteName = '',
+			KMNum = '',
+			MapSheet = '',
+			sortBy = 'SiteName',
+			sort = 'asc',
+			page = 0,
+			limit = 0,
+		} = req.body;
 
-	const data = await intSiteService.doSiteSearch(page, limit, 0, {
-		SiteName,
-		RouteName,
-		KMNum,
-		MapSheet,
-		sortBy,
-		sort,
-	});
+		const data = await intSiteService.doSiteSearch(page, limit, 0, {
+			SiteName,
+			RouteName,
+			KMNum,
+			MapSheet,
+			sortBy,
+			sort,
+		});
 
-	const pdfData = renderFile('./templates/interpretive-sites/interpretiveSitesGrid.pug', {
-		data: data.body,
-	});
+		const pdfData = renderFile('./templates/interpretive-sites/interpretiveSitesGrid.pug', {
+			data: data.body,
+		});
 
-	const pdf = await generatePDF(pdfData);
-	res.setHeader('Content-disposition', 'attachment; filename="sites.html"');
-	res.setHeader('Content-type', 'application/pdf');
-	res.send(pdf);
+		const pdf = await generatePDF(pdfData);
+		res.setHeader('Content-disposition', 'attachment; filename="sites.html"');
+		res.setHeader('Content-type', 'application/pdf');
+		res.send(pdf);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send({ message: 'Error generating PDF' });
+	}
 });
 
 intSitesRouter.post('/export', async (req: Request, res: Response) => {
-	const {
-		SiteName = '',
-		RouteName = '',
-		KMNum = '',
-		MapSheet = '',
-		sortBy = 'SiteName',
-		sort = 'asc',
-		page = 0,
-		limit = 0,
-	} = req.body;
+	try {
+		const {
+			SiteName = '',
+			RouteName = '',
+			KMNum = '',
+			MapSheet = '',
+			sortBy = 'SiteName',
+			sort = 'asc',
+			page = 0,
+			limit = 0,
+		} = req.body;
 
-	const data = await intSiteService.doSiteSearch(page, limit, 0, {
-		SiteName,
-		RouteName,
-		KMNum,
-		MapSheet,
-		sortBy,
-		sort,
-	});
-	const json2csvParser = new Parser();
+		const data = await intSiteService.doSiteSearch(page, limit, 0, {
+			SiteName,
+			RouteName,
+			KMNum,
+			MapSheet,
+			sortBy,
+			sort,
+		});
+		const json2csvParser = new Parser();
 
-	const csv = json2csvParser.parse(data.body);
-	res.setHeader('Content-Type', 'text/csv');
-	res.attachment('sites.csv').send(csv);
+		const csv = json2csvParser.parse(data.body);
+		res.setHeader('Content-Type', 'text/csv');
+		res.attachment('sites.csv').send(csv);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send({ message: 'Error exporting CSV' });
+	}
 });
 
 intSitesRouter.post(
 	'/file/upload',
 	[upload.single('file')],
 	async (req: Request, res: Response) => {
-		const {
-			Document = req.file.buffer,
-			ActionID = '',
-			InspectID = '',
-			SiteID = '',
-			AssetID = '',
-			DocDesc,
-			UploadedBy,
-			FileType = '',
-			UploadDate = new Date(),
-		} = req.body;
+		try {
+			const {
+				Document = req.file.buffer,
+				ActionID = '',
+				InspectID = '',
+				SiteID = '',
+				AssetID = '',
+				DocDesc,
+				UploadedBy,
+				FileType = '',
+				UploadDate = new Date(),
+			} = req.body;
 
-		// const OriginalFileName = req.file.originalname;
-		const resObj = (
-			await db
-				.insert({
-					...(ActionID && { ActionID }),
-					...(InspectID && { InspectID }),
-					...(SiteID && { SiteID }),
-					...(AssetID && { AssetID }),
-					DocDesc,
-					UploadedBy,
-					FileType,
-					UploadDate,
-					Document,
-				})
-				.into('InterpretiveSite.Documents')
-				.returning('*')
-		)[0];
+			// const OriginalFileName = req.file.originalname;
+			const resObj = (
+				await db
+					.insert({
+						...(ActionID && { ActionID }),
+						...(InspectID && { InspectID }),
+						...(SiteID && { SiteID }),
+						...(AssetID && { AssetID }),
+						DocDesc,
+						UploadedBy,
+						FileType,
+						UploadDate,
+						Document,
+					})
+					.into('InterpretiveSite.Documents')
+					.returning('*')
+			)[0];
 
-		delete resObj.Documment;
-		res.status(200).send(resObj);
+			delete resObj.Documment;
+			res.status(200).send(resObj);
+		} catch (error) {
+			console.log(error);
+			res.status(500).send({ message: 'Error uploading file' });
+		}
 	}
 );
 
@@ -234,12 +274,17 @@ intSitesRouter.post(
 	[param('docID').notEmpty()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
-		const { docID } = req.params;
-		const doc: any = await intSiteService.getDocumentsByID(parseInt(docID));
+		try {
+			const { docID } = req.params;
+			const doc: any = await intSiteService.getDocumentsByID(parseInt(docID));
 
-		res.setHeader('Content-disposition', `attachment; filename="${doc.DocDesc}.${doc.FileType}"`);
-		res.setHeader('Content-type', 'application/json');
-		res.send(doc);
+			res.setHeader('Content-disposition', `attachment; filename="${doc.DocDesc}.${doc.FileType}"`);
+			res.setHeader('Content-type', 'application/json');
+			res.send(doc);
+		} catch (error) {
+			console.log(error);
+			res.status(500).send({ message: 'Error fetching document' });
+		}
 	}
 );
 

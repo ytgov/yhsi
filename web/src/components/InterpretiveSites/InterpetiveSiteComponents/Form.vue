@@ -309,7 +309,7 @@
 								</v-row>
 							</v-expansion-panel-content>
 						</v-expansion-panel>
-						<v-expansion-panel>
+						<v-expansion-panel v-if="!isNew">
 							<v-expansion-panel-header>
 								<h2>Inspections</h2>
 							</v-expansion-panel-header>
@@ -597,8 +597,15 @@ export default {
 				//lists
 				maintainers,
 			} = this.fields;
-			let { LocationDesc, RouteName, KMNum, MapSheet, lat, long } =
-				this.modifiedMapFields;
+			let { LocationDesc, RouteName, KMNum, MapSheet, lat, long } = {
+				LocationDesc: this.fields.LocationDesc,
+				RouteName: this.fields.RouteName,
+				KMNum: this.fields.KMNum,
+				MapSheet: this.fields.MapSheet,
+				lat: this.fields.Latitude,
+				long: this.fields.Longitude,
+				...this.modifiedMapFields,
+			};
 			const item = {
 				SiteName,
 				EstablishedYear,
@@ -619,13 +626,15 @@ export default {
 			//console.log(JSON.stringify(data));
 
 			if (this.isNew) {
-				await interpretiveSites.post(data);
+				const result = await interpretiveSites.post(data);
+				this.overlay = false;
+				this.$router.push({ name: 'InterpretiveSitesView', params: { id: result.SiteID } });
 			} else {
 				await interpretiveSites.put(localStorage.currentIntSiteID, data);
+				this.overlay = false;
+				this.$router.push({ name: 'InterpretiveSitesGrid' });
+				this.$router.go();
 			}
-			this.overlay = false;
-			this.$router.push({ name: 'InterpretiveSitesGrid' });
-			this.$router.go();
 		},
 		newAction(val) {
 			val.ToBeCompleteDate = val.ToBeCompleteDate

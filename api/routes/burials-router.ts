@@ -19,6 +19,46 @@ export const burialsRouter = express.Router();
 
 const burialService = new BurialService();
 
+const BURIAL_FIELDS = [
+	'LastName',
+	'FirstName',
+	'Gender',
+	'GenderOther',
+	'BirthYear',
+	'BirthMonth',
+	'BirthDay',
+	'BirthDateNotes',
+	'DeathYear',
+	'DeathMonth',
+	'DeathDay',
+	'DeathDateNotes',
+	'Age',
+	'Manner',
+	'CauseID',
+	'CemetaryID',
+	'OtherCemetaryDesc',
+	'PlotDescription',
+	'ShippedIndicator',
+	'DestinationShipped',
+	'FuneralPaidBy',
+	'OriginCity',
+	'OriginState',
+	'OriginCountry',
+	'OtherCountry',
+	'PersonNotes',
+	'ReligionID',
+];
+
+function pickBurialFields(obj: Record<string, any>): Record<string, any> {
+	const result: Record<string, any> = {};
+	for (const key of BURIAL_FIELDS) {
+		if (key in obj) {
+			result[key] = obj[key];
+		}
+	}
+	return result;
+}
+
 burialsRouter.get(
 	'/',
 	authorize([UserRoles.ADMINISTRATOR, UserRoles.BURIALS_EDITOR, UserRoles.BURIALS_VIEWER]),
@@ -97,7 +137,7 @@ burialsRouter.post('/', async (req: Request, res: Response) => {
 
 	try {
 		const result = await db.transaction(async (trx) => {
-			const rows = await trx.insert(burial).into('Burial.Burial').returning('*');
+			const rows = await trx.insert(pickBurialFields(burial)).into('Burial.Burial').returning('*');
 			const newBurial = rows[0];
 
 			if (!isEmpty(Occupations)) {
@@ -195,23 +235,19 @@ burialsRouter.put(
 		const { burial = {}, Memberships, SiteVisits, Kinships, Occupations, Sources } = req.body;
 		const { burialId } = req.params;
 
-		const resp = await db('Burial.Burial').update(burial).where('Burial.Burial.BurialID', burialId);
+		const resp = await db('Burial.Burial').update(pickBurialFields(burial)).where('Burial.Burial.BurialID', burialId);
 		if (!resp) {
 			res.status(404).send({ message: 'Burial not found' });
 		}
 
 		//OCCUPATIONS
-		await db
-			.insert(
-				Occupations.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({
-					BurialID: burialId,
-					OccupationID: x.OccupationLupID,
-				}))
-			)
-			.into('Burial.Occupation')
-			.then((rows: any) => {
-				return rows;
-			});
+		const newOccupations = Occupations.filter((x: any) => x.new == true && !x.deleted).map((x: any) => ({
+			BurialID: burialId,
+			OccupationID: x.OccupationLupID,
+		}));
+		if (!isEmpty(newOccupations)) {
+			await db.insert(newOccupations).into('Burial.Occupation');
+		}
 
 		const deletedOccupations = Occupations.filter((x: any) => x.deleted == true).map((x: any) => ({
 			BurialID: burialId,
@@ -236,19 +272,15 @@ burialsRouter.put(
 		}
 
 		//MEMBERSHIPS
-		await db
-			.insert(
-				Memberships.filter((x: any) => x.new == true).map((x: any) => ({
-					BurialID: burialId,
-					MembershipID: x.MembershipLUpID,
-					Chapter: x.Chapter,
-					Notes: x.Notes,
-				}))
-			)
-			.into('Burial.Membership')
-			.then((rows: any) => {
-				return rows;
-			});
+		const newMemberships = Memberships.filter((x: any) => x.new == true).map((x: any) => ({
+			BurialID: burialId,
+			MembershipID: x.MembershipLUpID,
+			Chapter: x.Chapter,
+			Notes: x.Notes,
+		}));
+		if (!isEmpty(newMemberships)) {
+			await db.insert(newMemberships).into('Burial.Membership');
+		}
 
 		const deletedMemberships = Memberships.filter((x: any) => x.deleted == true).map((x: any) => ({
 			BurialID: burialId,
@@ -279,20 +311,16 @@ burialsRouter.put(
 		}
 
 		//KINSHIPS
-		await db
-			.insert(
-				Kinships.filter((x: any) => x.new == true).map((x: any) => ({
-					BurialID: burialId,
-					RelationshipID: x.RelationshipID,
-					Quantity: x.Quantity,
-					Name: x.Name,
-					Location: x.Location,
-				}))
-			)
-			.into('Burial.NOKin')
-			.then((rows: any) => {
-				return rows;
-			});
+		const newKinships = Kinships.filter((x: any) => x.new == true).map((x: any) => ({
+			BurialID: burialId,
+			RelationshipID: x.RelationshipID,
+			Quantity: x.Quantity,
+			Name: x.Name,
+			Location: x.Location,
+		}));
+		if (!isEmpty(newKinships)) {
+			await db.insert(newKinships).into('Burial.NOKin');
+		}
 
 		const deletedKinships = Kinships.filter((x: any) => x.deleted == true).map((x: any) => ({
 			BurialID: burialId,
@@ -325,21 +353,17 @@ burialsRouter.put(
 		}
 
 		//SITE VISITS
-		await db
-			.insert(
-				SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({
-					BurialID: burialId,
-					VisitYear: x.VisitYear,
-					Condition: x.Condition,
-					MarkerDescription: x.MarkerDescription,
-					Inscription: x.Inscription,
-					RecordedBy: x.RecordedBy,
-				}))
-			)
-			.into('Burial.SiteVisit')
-			.then((rows: any) => {
-				return rows;
-			});
+		const newSiteVisits = SiteVisits.filter((x: any) => x.new == true).map((x: any) => ({
+			BurialID: burialId,
+			VisitYear: x.VisitYear,
+			Condition: x.Condition,
+			MarkerDescription: x.MarkerDescription,
+			Inscription: x.Inscription,
+			RecordedBy: x.RecordedBy,
+		}));
+		if (!isEmpty(newSiteVisits)) {
+			await db.insert(newSiteVisits).into('Burial.SiteVisit');
+		}
 
 		const deletedSiteVisits = SiteVisits.filter((x: any) => x.deleted == true).map((x: any) => ({
 			BurialID: burialId,
@@ -374,17 +398,13 @@ burialsRouter.put(
 		}
 
 		//SOURCES
-		await db
-			.insert(
-				Sources.filter((x: any) => x.new == true).map((x: any) => ({
-					BurialID: burialId,
-					Source: x.Source,
-				}))
-			)
-			.into('Burial.Source')
-			.then((rows: any) => {
-				return rows;
-			});
+		const newSources = Sources.filter((x: any) => x.new == true).map((x: any) => ({
+			BurialID: burialId,
+			Source: x.Source,
+		}));
+		if (!isEmpty(newSources)) {
+			await db.insert(newSources).into('Burial.Source');
+		}
 
 		const deletedSources = Sources.filter((x: any) => x.deleted == true).map((x: any) => ({
 			BurialID: burialId,
