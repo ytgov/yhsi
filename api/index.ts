@@ -131,10 +131,10 @@ app.use('/api/photo', RequiresAuthentication, photoRouter);
 app.use('/api/photobatch', RequiresAuthentication, photoBatchRouter);
 app.use('/api/register', registerRouter);
 
-app.use('/api/interpretive-sites', intSitesRouter);
-app.use('/api/actions', actionRouter);
-app.use('/api/assets', assetRouter);
-app.use('/api/inspections', inspectionRouter);
+app.use('/api/interpretive-sites', RequiresAuthentication, intSitesRouter);
+app.use('/api/actions', RequiresAuthentication, actionRouter);
+app.use('/api/assets', RequiresAuthentication, assetRouter);
+app.use('/api/inspections', RequiresAuthentication, inspectionRouter);
 app.use('/api/association-types', RequiresAuthentication, associationTypesRouter);
 app.use('/api/boats', RequiresAuthentication, boatsRouter);
 app.use('/api/category-types', RequiresAuthentication, categoryTypesRouter);
@@ -174,7 +174,7 @@ app.use('/api/aircrash', RequiresAuthentication, aircrashRouter);
 app.use('/api/histories', RequiresAuthentication, historiesRouter);
 app.use('/api/catalogs', RequiresAuthentication, catalogsRouter);
 app.use('/api/photo-owners', RequiresAuthentication, photoOwnersRouter);
-app.use('/api/photos', photosExtraRouter); //removed auth check for testing
+app.use('/api/photos', RequiresAuthentication, photosExtraRouter);
 app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
 app.use('/api/place-edits', RequiresAuthentication, placeEditsRouter);
 app.use('/api/place-themes', RequiresAuthentication, placeThemesRouter);
@@ -185,7 +185,7 @@ app.use('/api/statutes', RequiresAuthentication, statutesRouter);
 app.use('/api/users', RequiresAuthentication, usersExtraRouter);
 app.use('/api/burials', RequiresAuthentication, burialsRouter);
 app.use('/api/maps', mapsRouter);
-app.use('/api/web-link-types', webLinkTypesRouter);
+app.use('/api/web-link-types', RequiresAuthentication, webLinkTypesRouter);
 
 app.use('/api', RequiresAuthentication, staticRouter);
 

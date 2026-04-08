@@ -18,6 +18,7 @@ export const API_PORT = parseInt(process.env.API_PORT || '3000');
 export const FRONTEND_URL = process.env.FRONTEND_URL || 'localhost:8080';
 export const AUTH_REDIRECT = process.env.AUTH_REDIRECT || process.env.FRONTEND_URL || '';
 export const NODE_ENV = process.env.NODE_ENV;
+export const SESSION_SECRET = process.env.SESSION_SECRET || 'supersecret';
 
 export const DB_NAME = process.env.DB_NAME || '';
 export const DB_USER = process.env.DB_USER || '';

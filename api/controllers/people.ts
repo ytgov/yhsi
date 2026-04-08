@@ -7,6 +7,12 @@ var _ = require('lodash'); //added for testing
 router.use(express.json()); // for parsing application/json
 router.use(express.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
 
+const ALLOWED_SORT_COLUMNS = [
+	'personid', 'surname', 'givenname', 'birthyear', 'birthaccuracy',
+	'deathyear', 'deathaccuracy',
+];
+const ALLOWED_SORT_DIRECTIONS = ['asc', 'desc'];
+
 router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 
@@ -17,6 +23,11 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 		sortBy = 'PersonId',
 		sort = 'asc',
 	} = req.query;
+
+	const safeSortBy = ALLOWED_SORT_COLUMNS.includes(String(sortBy).toLowerCase())
+		? String(sortBy) : 'PersonId';
+	const safeSort = ALLOWED_SORT_DIRECTIONS.includes(String(sort).toLowerCase())
+		? String(sort) : 'asc';
 	const offset = Number(page) * Number(limit) || 0;
 	let counter = 0;
 	let people = [];
@@ -40,7 +51,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.orWhere('BirthAccuracy', 'like', `%${textToMatch}%`)
 			.orWhere('DeathYear', 'like', `%${textToMatch}%`)
 			.orWhere('DeathAccuracy', 'like', `%${textToMatch}%`)
-			.orderBy(`${sortBy}`, `${sort}`)
+			.orderBy(safeSortBy, safeSort)
 			.limit(limit)
 			.offset(offset);
 	} else {
@@ -51,7 +62,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 
 		people = await db
 			.from('Person.Person')
-			.orderBy(`${sortBy}`, `${sort}`)
+			.orderBy(safeSortBy, safeSort)
 			.limit(limit)
 			.offset(offset);
 	}

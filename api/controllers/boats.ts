@@ -10,6 +10,9 @@ var _ = require('lodash'); //added for testing
 router.use(express.json()); // for parsing application/json
 router.use(express.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
 
+const ALLOWED_SORT_COLUMNS = ['id', 'name', 'registrationnumber'];
+const ALLOWED_SORT_DIRECTIONS = ['asc', 'desc'];
+
 router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 
@@ -20,6 +23,11 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 		sortBy = 'Id',
 		sort = 'asc',
 	} = req.query;
+
+	const safeSortBy = ALLOWED_SORT_COLUMNS.includes(String(sortBy).toLowerCase())
+		? String(sortBy) : 'Id';
+	const safeSort = ALLOWED_SORT_DIRECTIONS.includes(String(sort).toLowerCase())
+		? String(sort) : 'asc';
 
 	const offset = Number(page) * Number(limit) || 0;
 
@@ -37,7 +45,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.from('boat.boat')
 			.where('name', 'like', `%${textToMatch}%`)
 			//.orderBy('boat.boat.id', 'asc')
-			.orderBy(`${sortBy}`, `${sort}`)
+			.orderBy(safeSortBy, safeSort)
 			.limit(limit)
 			.offset(offset);
 	} else {
@@ -47,7 +55,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.select('*')
 			.from('boat.boat')
 			//.orderBy('boat.boat.id', 'asc')
-			.orderBy(`${sortBy}`, `${sort}`)
+			.orderBy(safeSortBy, safeSort)
 			.limit(limit)
 			.offset(offset);
 	}

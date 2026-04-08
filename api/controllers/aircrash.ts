@@ -7,6 +7,13 @@ var _ = require('lodash'); //added for testing
 router.use(express.json()); // for parsing application/json
 router.use(express.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
 
+const ALLOWED_SORT_COLUMNS = [
+	'yacsinumber', 'crashdate', 'aircrafttype', 'aircraftregistration',
+	'nation', 'militarycivilian', 'crashlocation', 'pilot',
+	'soulsonboard', 'injuries', 'fatalities',
+];
+const ALLOWED_SORT_DIRECTIONS = ['asc', 'desc'];
+
 router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 
@@ -17,6 +24,11 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 		sortBy = 'yacsinumber',
 		sort = 'asc',
 	} = req.query;
+
+	const safeSortBy = ALLOWED_SORT_COLUMNS.includes(String(sortBy).toLowerCase())
+		? String(sortBy) : 'yacsinumber';
+	const safeSort = ALLOWED_SORT_DIRECTIONS.includes(String(sort).toLowerCase())
+		? String(sort) : 'asc';
 	const offset = Number(page) * Number(limit) || 0;
 	let counter = 0;
 	let aircrashes = [];
@@ -52,7 +64,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.orWhere('injuries', 'like', `%${textToMatch}%`)
 			.orWhere('fatalities', 'like', `%${textToMatch}%`)
 			//.orderBy('yacsinumber', 'asc')
-			.orderBy(`${sortBy}`, `${sort}`)
+			.orderBy(safeSortBy, safeSort)
 			.limit(limit)
 			.offset(offset);
 	} else {
@@ -64,7 +76,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.select('*')
 			.from('dbo.vAircrash')
 			//.orderBy('dbo.vAircrash.yacsinumber', 'asc')
-			.orderBy(`${sortBy}`, `${sort}`)
+			.orderBy(safeSortBy, safeSort)
 			.limit(limit)
 			.offset(offset);
 	}

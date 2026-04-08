@@ -5,6 +5,9 @@ import { RequiresAuthentication } from '../middleware';
 // const cors = require('cors')//
 // router.use(cors());
 // router.all('*', cors());
+const ALLOWED_SORT_COLUMNS = ['ownerid', 'ownername', 'currentowner'];
+const ALLOWED_SORT_DIRECTIONS = ['asc', 'desc'];
+
 router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 	const db = req.app.get('db');
 	const {
@@ -14,6 +17,11 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 		sortBy = 'ownerid',
 		sort = 'asc',
 	} = req.query;
+
+	const safeSortBy = ALLOWED_SORT_COLUMNS.includes(String(sortBy).toLowerCase())
+		? String(sortBy) : 'ownerid';
+	const safeSort = ALLOWED_SORT_DIRECTIONS.includes(String(sort).toLowerCase())
+		? String(sort) : 'asc';
 	const offset = Number(page) * Number(limit) || 0;
 	let counter = 0;
 	let owners = [];
@@ -35,7 +43,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.from('boat.boatowner')
 			.join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
 			//.orderBy('boat.boatowner.ownerid', 'asc')
-			.orderBy(`${sortBy}`, `${sort}`)
+			.orderBy(safeSortBy, safeSort)
 			.where('boat.Owner.OwnerName', 'like', `%${textToMatch}%`)
 			.limit(limit)
 			.offset(offset);
@@ -56,7 +64,7 @@ router.get('/', RequiresAuthentication, async (req: Request, res: Response) => {
 			.from('boat.boatowner')
 			.join('boat.Owner', 'boat.BoatOwner.ownerid', '=', 'boat.owner.id')
 			//.orderBy('boat.boatowner.ownerid', 'asc')
-			.orderBy(`${sortBy}`, `${sort}`)
+			.orderBy(safeSortBy, safeSort)
 			.limit(limit)
 			.offset(offset);
 	}
