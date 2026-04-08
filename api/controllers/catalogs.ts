@@ -140,7 +140,7 @@ router.get(
 		} else {
 			sites = await db
 				.select('*')
-				.from('Boat.Place')
+				.from('Place.Place')
 				.orderBy(`${sortBy}`, `${sort}`)
 				.limit(limit)
 				.offset(offset);
