@@ -369,6 +369,8 @@ placeRouter.patch(
 		body('previousAddress').isString().optional({ nullable: true }),
 		body('previousOwnerships').isArray().optional({ nullable: true }),
 		body('primaryName').isString().optional(),
+		body('fR_PrimaryName').isString().optional({ nullable: true }),
+		body('fR_Designations').isString().optional({ nullable: true }),
 		body('recognitionDate').isDate().optional({ nullable: true }),
 		body('records').isArray().optional({ nullable: true }),
 		body('resourceType').isString().optional({ nullable: true }),

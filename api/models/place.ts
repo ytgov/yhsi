@@ -32,6 +32,8 @@ export class Place {
 	designations?: string | string[] | null;
 	doorCondition?: number;
 	fHBRONumber?: string;
+	fR_PrimaryName?: string;
+	fR_Designations?: string;
 	floorCondition?: number;
 	geocode?: string;
 	groupYHSI?: string;
@@ -117,6 +119,8 @@ export class Place {
 		'designations',
 		'doorCondition',
 		'fHBRONumber',
+		'fR_PrimaryName',
+		'fR_Designations',
 		'floorCondition',
 		'geocode',
 		'groupYHSI',

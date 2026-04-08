@@ -83,6 +83,7 @@ export default {
     totalLength: 10,
     headers: [
       { text: "Name", value: "Name" },
+      { text: "Name (French)", value: "FR_Name" },
     ],
     page: 1,
     pageCount: 0,

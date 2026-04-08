@@ -41,6 +41,13 @@
 											background-color="white"
 											:rules="requiredRules"
 										/>
+										<v-text-field
+											v-model="place.fR_PrimaryName"
+											dense
+											outlined
+											label="Primary name (French)"
+											background-color="white"
+										/>
 									</v-col>
 									<v-col
 										cols="6"

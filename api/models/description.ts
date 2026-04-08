@@ -3,4 +3,5 @@ export class Description {
 	placeId!: number;
 	descriptionText!: string;
 	type!: number;
+	fR_DescriptionText?: string;
 }

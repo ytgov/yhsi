@@ -33,11 +33,27 @@
 						:readonly="!isEditing"
 					/>
 
+					<v-text-field
+						v-model="place.fR_PrimaryName"
+						dense
+						outlined
+						label="Primary name (French)"
+						:readonly="!isEditing"
+					/>
+
 					<DesignationTypesSelect
 						v-model="place.designations"
 						dense
 						outlined
 						clearable
+					/>
+
+					<v-text-field
+						v-model="place.fR_Designations"
+						dense
+						outlined
+						label="Designations (French)"
+						:readonly="!isEditing"
 					/>
 
 					<CategoryTypesSelect
@@ -272,7 +288,9 @@ export default {
 			const data = pick(this.place, [
 				'yHSIId',
 				'primaryName',
+				'fR_PrimaryName',
 				'designations',
+				'fR_Designations',
 				'category',
 				'siteCategories',
 				'records',

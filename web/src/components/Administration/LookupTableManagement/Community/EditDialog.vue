@@ -20,6 +20,10 @@
                     v-model="input"
                     :rules="generalRules"
                   ></v-text-field>
+                  <v-text-field
+                    label="Community Name (French)"
+                    v-model="inputFR"
+                  ></v-text-field>
                 </v-form>
               </v-col>
             </v-row>
@@ -43,6 +47,7 @@ export default {
   props: ["dialog", "data"],
   data: () => ({
     input: null,
+    inputFR: null,
     valid: false,
     generalRules: [(v) => !!v || "This field is required"],
   }),
@@ -52,7 +57,7 @@ export default {
     },
     async save() {
       let data = {
-        community: { Name: this.input },
+        community: { Name: this.input, FR_Name: this.inputFR },
       };
       await catalogs.putCommunity(this.data.Id, data);
       this.$router.go();
@@ -73,6 +78,7 @@ export default {
     data: {
       handler() {
         this.input = this.data.Name;
+        this.inputFR = this.data.FR_Name;
       },
       deep: true,
     },
