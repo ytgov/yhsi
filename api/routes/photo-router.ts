@@ -290,6 +290,9 @@ photoRouter.put(
 		body('isComplete').notEmpty().bail().isBoolean(),
 		body('isSiteDefault').notEmpty().bail().isBoolean(),
 		body('isPrivate').notEmpty().bail().isBoolean(),
+		body('yRHPOrder').optional({ nullable: true }).isInt(),
+		body('showInRegister').optional({ nullable: true }).isBoolean(),
+		body('isYRHPCoverImage').optional({ nullable: true }).isBoolean(),
 	],
 	async (req: Request, res: Response) => {
 		const updater = req.body;

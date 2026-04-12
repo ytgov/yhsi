@@ -99,6 +99,34 @@
 								background-color="white"
 								:readonly="mode == 'view'"
 							></v-checkbox>
+
+							<v-checkbox
+								v-model="fields.showInRegister"
+								:label="'Show in Register?'"
+								dense
+								outlined
+								background-color="white"
+								:readonly="mode == 'view'"
+							></v-checkbox>
+
+							<v-checkbox
+								v-model="fields.isYRHPCoverImage"
+								:label="'Is YRHP Cover Image?'"
+								dense
+								outlined
+								background-color="white"
+								:readonly="mode == 'view'"
+							></v-checkbox>
+
+							<v-text-field
+								v-model.number="fields.yRHPOrder"
+								label="YRHP Order"
+								type="number"
+								dense
+								outlined
+								background-color="white"
+								:readonly="mode == 'view'"
+							></v-text-field>
 						</v-col>
 
 						<v-col cols="6">

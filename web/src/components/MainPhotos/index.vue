@@ -540,6 +540,9 @@ export default {
 				usageRights: this.fields.usageRights,
 				rating: this.fields.rating,
 				legacyBatchInfo: this.fields.legacyBatchInfo,
+				yRHPOrder: this.fields.yRHPOrder,
+				showInRegister: this.fields.showInRegister,
+				isYRHPCoverImage: this.fields.isYRHPCoverImage,
 			};
 		},
 		saveChanges() {

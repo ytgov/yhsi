@@ -37,6 +37,9 @@ export const PHOTO_FIELDS = [
 	'isSiteDefault',
 	'isPrivate',
 	'ThumbFile',
+	'yRHPOrder',
+	'showInRegister',
+	'isYRHPCoverImage',
 ];
 
 export const PHOTO_BATCH_FIELDS = [
@@ -110,6 +113,9 @@ export class Photo {
 	isSiteDefault!: boolean;
 	thumbFile!: Buffer;
 	isPrivate!: boolean;
+	yRHPOrder?: number;
+	showInRegister?: boolean;
+	isYRHPCoverImage?: boolean;
 }
 
 export class PhotoBatch {
