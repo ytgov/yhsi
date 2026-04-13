@@ -86,14 +86,6 @@
 													v-model="fields.EstablishedYear"
 													:readonly="isView"
 												></v-text-field>
-												<v-text-field
-													name="MaintainedBy"
-													label="Maintained"
-													outlined
-													dense
-													v-model="fields.SiteName"
-													:readonly="isView"
-												></v-text-field>
 												<MaintainerList
 													:list="fields.maintainers"
 													:mode="mode"
