@@ -57,6 +57,7 @@ import Category from '@/components/Administration/LookupTableManagement/Category
 import Cause from '@/components/Administration/LookupTableManagement/Cause/Cause';
 import Cemetary from '@/components/Administration/LookupTableManagement/Cemetary/Cemetary';
 import CommunityGrid from '@/components/Administration/LookupTableManagement/Community/CommunityGrid';
+import FirstNationGrid from '@/components/Administration/LookupTableManagement/FirstNation/FirstNationGrid';
 import IntSiteOwner from '@/components/Administration/LookupTableManagement/IntSiteOwner/IntSiteOwner';
 import Membership from '@/components/Administration/LookupTableManagement/Membership/Membership';
 import Occupation from '@/components/Administration/LookupTableManagement/Occupation/Occupation';
@@ -626,6 +627,12 @@ const routes = [
 		path: '/admin/community',
 		name: 'CommunityGrid',
 		component: CommunityGrid,
+		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
+	},
+	{
+		path: '/admin/first-nations',
+		name: 'FirstNationGrid',
+		component: FirstNationGrid,
 		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
 	},
 	{

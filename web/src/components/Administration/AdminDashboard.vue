@@ -131,6 +131,11 @@ export default {
 				url: '/admin/community',
 			},
 			{
+				icon: 'mdi-account-group',
+				text: 'First Nations',
+				url: '/admin/first-nations',
+			},
+			{
 				icon: 'mdi-run',
 				text: 'Contributing Resources',
 				url: '',
