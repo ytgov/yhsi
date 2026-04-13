@@ -1,86 +1,73 @@
 <template>
-  <v-row justify="center">
-    <v-dialog v-model="dialog" persistent max-width="600px" @click:outside="reset()">
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">Edit Community</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-form
-                  ref="editCommunityForm"
-                  :lazy-validation="false"
-                  v-model="valid"
-                >
-                  <v-text-field
-                    ref="editInput"
-                    label="Community Name"
-                    v-model="input"
-                    :rules="generalRules"
-                  ></v-text-field>
-                  <v-text-field
-                    label="Community Name (French)"
-                    v-model="inputFR"
-                  ></v-text-field>
-                </v-form>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn text @click="closeDialog"> Close </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn color="success" text :disabled="!valid" @click="save">
-            Save
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
+  <v-dialog v-model="dialog" persistent max-width="500px" @click:outside="close">
+    <v-card>
+      <v-card-title>Edit Community</v-card-title>
+      <v-card-text>
+        <v-form ref="form" v-model="valid" :lazy-validation="false">
+          <v-text-field
+            label="Community Name"
+            v-model="input"
+            :rules="[(v) => !!v || 'Name is required']"
+            outlined
+            dense
+          ></v-text-field>
+          <v-text-field
+            label="Community Name (French)"
+            v-model="inputFR"
+            outlined
+            dense
+          ></v-text-field>
+        </v-form>
+      </v-card-text>
+      <v-card-actions class="px-6">
+        <v-btn outlined color="warning" @click="close">Cancel</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn color="success" :disabled="!valid" :loading="saving" @click="save">
+          Save
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
-import catalogs from "../../../../controllers/catalogs";
+import catalogs from '../../../../controllers/catalogs';
+
 export default {
-  props: ["dialog", "data"],
+  props: ['dialog', 'data'],
   data: () => ({
+    valid: false,
     input: null,
     inputFR: null,
-    valid: false,
-    generalRules: [(v) => !!v || "This field is required"],
+    saving: false,
   }),
-  methods: {
-    closeDialog() {
-      this.$emit("closeEditDialog");
-    },
-    async save() {
-      let data = {
-        community: { Name: this.input, FR_Name: this.inputFR },
-      };
-      await catalogs.putCommunity(this.data.Id, data);
-      this.$router.go();
-    },
-    //not needed
-    validate() {
-      this.$refs.editCommunityForm.validate();
-    },
-    reset() {
-      this.$refs.editCommunityForm.reset();
-      this.$emit("closeEditDialog");
-    },
-    resetValidation() {
-      this.$refs.editCommunityForm.resetValidation();
-    },
-  },
   watch: {
     data: {
-      handler() {
-        this.input = this.data.Name;
-        this.inputFR = this.data.FR_Name;
+      handler(val) {
+        if (val) {
+          this.input = val.Name;
+          this.inputFR = val.FR_Name;
+        }
       },
-      deep: true,
+      immediate: true,
+    },
+  },
+  methods: {
+    async save() {
+      if (!this.$refs.form.validate()) return;
+      this.saving = true;
+      try {
+        await catalogs.putCommunity(this.data.Id, { community: { Name: this.input, FR_Name: this.inputFR } });
+        this.$emit('saved');
+        this.close();
+      } catch (e) {
+        console.error(e);
+      } finally {
+        this.saving = false;
+      }
+    },
+    close() {
+      this.$emit('closeEditDialog');
     },
   },
 };

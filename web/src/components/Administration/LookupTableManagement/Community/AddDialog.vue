@@ -1,85 +1,71 @@
 <template>
-  <v-row justify="center">
-    <v-dialog v-model="dialog" persistent max-width="600px" @click:outside="reset()">
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn v-bind="attrs" v-on="on" class="black--text mx-1">
-          <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-          Add Community
+  <v-dialog v-model="dialog" persistent max-width="500px" @click:outside="reset">
+    <template v-slot:activator="{ on, attrs }">
+      <v-btn v-bind="attrs" v-on="on" color="primary" class="my-0" style="height: 40px">
+        Add Community
+      </v-btn>
+    </template>
+    <v-card>
+      <v-card-title>New Community</v-card-title>
+      <v-card-text>
+        <v-form ref="form" v-model="valid" :lazy-validation="false">
+          <v-text-field
+            label="Community Name"
+            v-model="input"
+            :rules="[(v) => !!v || 'Name is required']"
+            outlined
+            dense
+            autofocus
+          ></v-text-field>
+          <v-text-field
+            label="Community Name (French)"
+            v-model="inputFR"
+            outlined
+            dense
+          ></v-text-field>
+        </v-form>
+      </v-card-text>
+      <v-card-actions class="px-6">
+        <v-btn outlined color="warning" @click="reset">Cancel</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn color="success" :disabled="!valid" :loading="saving" @click="save">
+          Save
         </v-btn>
-      </template>
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">New Community</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-form
-                  ref="addCommunityForm"
-                  :lazy-validation="false"
-                  v-model="valid"
-                >
-                  <v-text-field
-                    label="Community Name"
-                    v-model="input"
-                    :rules="generalRules"
-                  ></v-text-field>
-                  <v-text-field
-                    label="Community Name (French)"
-                    v-model="inputFR"
-                  ></v-text-field>
-                </v-form>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn text @click="closeDialog"> Close </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn color="success" text :disabled="!valid" @click="save">
-            Save
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
-import catalogs from "../../../../controllers/catalogs";
+import catalogs from '../../../../controllers/catalogs';
+
 export default {
-  props: [],
   data: () => ({
     dialog: false,
+    valid: false,
     input: null,
     inputFR: null,
-    valid: false,
-    generalRules: [(v) => !!v || "This field is required"],
+    saving: false,
   }),
   methods: {
-    closeDialog() {
-      this.dialog = false;
-      this.reset();
-      this.resetValidation();
-    },
     async save() {
-      let data = {
-        community: { Name: this.input, FR_Name: this.inputFR },
-      };
-      await catalogs.postCommunity(data);
-      this.$router.go();
-    },
-    //not needed
-    validate() {
-      this.$refs.addCommunityForm.validate();
+      if (!this.$refs.form.validate()) return;
+      this.saving = true;
+      try {
+        await catalogs.postCommunity({ community: { Name: this.input, FR_Name: this.inputFR } });
+        this.$emit('saved');
+        this.reset();
+      } catch (e) {
+        console.error(e);
+      } finally {
+        this.saving = false;
+      }
     },
     reset() {
       this.dialog = false;
-      this.$refs.addCommunityForm.reset();
-    },
-    resetValidation() {
-      this.$refs.addCommunityForm.resetValidation();
+      this.input = null;
+      this.inputFR = null;
+      this.$refs.form && this.$refs.form.reset();
     },
   },
 };

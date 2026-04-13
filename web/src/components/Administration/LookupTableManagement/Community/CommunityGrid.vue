@@ -1,162 +1,90 @@
 <template>
-  <div class="">
-    <v-container fluid>
-      <h1>Community</h1>
-      <Breadcrumbs/>
-      <v-row class="mb-2">
-        <v-col cols="6" class="d-flex">
-          <v-text-field
-            flat
-            prepend-icon="mdi-magnify"
-            class="mx-4"
-            hide-details
-            label="Search"
-            v-model="search"
-            @keyup.enter="searchChange()"
-            v-on:input="searchChange()"
-            ></v-text-field>
-        </v-col>
-        <v-spacer></v-spacer>
-        <v-col cols="auto">
-            <AddDialog/>
-        </v-col>
-        
-      </v-row>
-      <div class="mt-2">
-        <v-card class="px-3 py-3">
-            <v-row>
-              <v-col cols="12">
-                <h2>{{filteredData.length}} Results</h2><!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
-              </v-col>
-            </v-row>
-            <v-divider inset class="mb-4"></v-divider>
-            <v-row>
-              <v-col>
-                  <v-data-table
-                    :items="filteredData"
-                    :headers="headers"
-                    :loading="loading"    
-                    :search="search"
-                    :options.sync="options"
-                    :server-items-length="totalLength"
-                    @click:row="handleClick"
-                    :footer-props="{'items-per-page-options': [1000]}"
-                  >
-                    <template v-slot:item.Status="{ item }">
-                        <div v-if="item.Status == 1">
-                            Active
-                        </div>  
-                        <div v-else>
-                            Expired
-                        </div> 
-                    </template>
-                    <template v-slot:item.actions="{ item }">
-                        <v-btn color="success" outlined @click="removeItem(item)">
-                          <v-icon class="mr-1">mdi-delete</v-icon>
-                          Remove
-                        </v-btn>
-                    </template>
-                  </v-data-table>
-              </v-col>
-            </v-row>
-        </v-card>
-    </div>  
-      <EditDialog :dialog="editDialog" :data="displayCommunity" @closeEditDialog="closeDialog"/>
-    </v-container>
+  <div>
+    <v-breadcrumbs
+      :items="[
+        { text: 'Administration', to: '/admin', exact: true },
+        { text: 'Community' },
+      ]"
+    ></v-breadcrumbs>
+
+    <h1>Community</h1>
+
+    <div class="mt-2">
+      <v-card class="default px-3 py-3">
+        <v-card-text>
+          <div class="d-flex mb-6">
+            <v-text-field
+              prepend-inner-icon="mdi-magnify"
+              background-color="white"
+              outlined
+              dense
+              label="Search"
+              v-model="search"
+              hide-details
+            />
+            <AddDialog @saved="load" />
+          </div>
+
+          <v-data-table
+            :items="communities"
+            :headers="headers"
+            :loading="loading"
+            :search="search"
+            @click:row="handleClick"
+            :footer-props="{ 'items-per-page-options': [10, 30, 100] }"
+            class="clickable-row"
+          ></v-data-table>
+        </v-card-text>
+      </v-card>
+    </div>
+
+    <EditDialog
+      :dialog="editDialog"
+      :data="displayCommunity"
+      @closeEditDialog="editDialog = false"
+      @saved="load"
+    />
   </div>
 </template>
 
 <script>
-import catalogs from "../../../../controllers/catalogs";
-import Breadcrumbs from "../../../Breadcrumbs";
-import EditDialog from "./EditDialog";
-import AddDialog from "./AddDialog";
-import _ from 'lodash';
+import catalogs from '../../../../controllers/catalogs';
+import EditDialog from './EditDialog';
+import AddDialog from './AddDialog';
+
 export default {
-  name: "communitygrid",
-  components: { Breadcrumbs, EditDialog, AddDialog },
+  name: 'communitygrid',
+  components: { EditDialog, AddDialog },
   data: () => ({
     loading: false,
     communities: [],
-    search: "",
-    options: {},
-    totalLength: 10,
+    search: '',
     headers: [
-      { text: "Name", value: "Name" },
-      { text: "Name (French)", value: "FR_Name" },
+      { text: 'Name', value: 'Name' },
+      { text: 'Name (French)', value: 'FR_Name' },
     ],
-    page: 1,
-    pageCount: 0,
-    iteamsPerPage: 10,
     displayCommunity: {},
     editDialog: false,
   }),
   mounted() {
-    this.getDataFromApi();
+    this.load();
   },
   methods: {
-    searchChange: _.debounce(function () {
-      this.getDataFromApi();
-    }, 400),
-    handleClick(value){   //Redirects the user to the edit user form
-        this.displayCommunity = value;
-        this.editDialog = true;
-    },
-    removeItem(item){ //removes one element from the users array
-      const index = this.communities.findIndex(a=> a.id == item.id);
-      //console.log(index);
-      if (index > -1) {
-        this.communities.splice(index, 1);
+    async load() {
+      this.loading = true;
+      try {
+        const data = await catalogs.getCommunities(0, 1000, '', 'Name', 'asc');
+        this.communities = data.body || [];
+      } catch (e) {
+        console.error(e);
+      } finally {
+        this.loading = false;
       }
     },
-    async getDataFromApi() {
-        this.loading = true;
-        let { page, itemsPerPage, sortBy, sortDesc } = this.options;
-        if (!sortBy[0]) sortBy[0] = 'Name'; 
-        page = page > 0 ? page-1 : 0;
-        //console.log(itemsPerPage);
-        itemsPerPage = itemsPerPage === undefined ? 1000 : itemsPerPage;
-        let textToMatch = this.search;
-        let data = await catalogs.getCommunities(page,itemsPerPage,textToMatch, sortBy[0], sortDesc[0] ? 'desc':'asc');
-        this.communities = _.get(data, 'body', []);
-        this.totalLength = _.get(data, 'count', 0);
-        this.loading = false;
-    },
-    formatDate (date) {
-        if (!date) return null
-        date = date.substr(0, 10);
-        const [year, month, day] = date.split('-')
-        return `${month}/${day}/${year}`
-    },
-    closeDialog(){
-      this.editDialog = false;
-    }
-
-  },
-  computed: {
-    filteredData(){// returns a filtered users array depending on the selected filters
-      let data = JSON.parse(JSON.stringify(this.communities));
-      return data;
+    handleClick(value) {
+      this.displayCommunity = value;
+      this.editDialog = true;
     },
   },
-    watch: {
-      options: {
-            handler () {
-                this.getDataFromApi()
-            },
-            deep: true,
-        },
-        search () {
-            this.getDataFromApi();
-        }
-    }
 };
 </script>
-
-<style scoped>
-.hoverclicklink:hover{
-  color:  #0097a9;
-  text-decoration: underline;
-  cursor: pointer;
-}
-</style>
