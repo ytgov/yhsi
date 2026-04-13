@@ -340,7 +340,20 @@ export class PlaceService {
 		return new Promise(async (resolve, reject) => {
 			const selectStatement = scope
 				.distinct()
-				.select(...PLACE_FIELDS, { status: 'StatusTable.Status' })
+				.select(
+					...PLACE_FIELDS,
+					{ status: 'StatusTable.Status' },
+					{
+						recordStatusText: db.raw(
+							`CASE WHEN Place.RecordStatus = 2 THEN 'Archived' ELSE 'Active' END`
+						),
+					},
+					{
+						secondaryNames: db.raw(
+							`(SELECT STRING_AGG(Description, ', ') FROM dbo.Name WHERE PlaceId = Place.Id)`
+						),
+					}
+				)
 				.leftOuterJoin('FirstNationAssociation', 'Place.Id', 'FirstNationAssociation.PlaceId')
 				.leftOuterJoin('ConstructionPeriod', 'Place.Id', 'ConstructionPeriod.PlaceId')
 				.leftOuterJoin('RevisionLog', 'Place.id', 'RevisionLog.PlaceId')
@@ -400,6 +413,12 @@ export class PlaceService {
 				},
 				excludingConstructionPeriodValues(base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('[ConstructionPeriod].[Type]', value);
+				},
+				includingRecordStatusIds(base: Knex.QueryInterface, value: any) {
+					return base.whereIn('RecordStatus', value);
+				},
+				excludingRecordStatusIds(base: Knex.QueryInterface, value: any) {
+					return base.whereNotIn('RecordStatus', value);
 				},
 				includingSiteStatusIds(base: Knex.QueryInterface, value: any) {
 					return base.whereIn('SiteStatus', value);

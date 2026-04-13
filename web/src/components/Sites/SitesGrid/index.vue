@@ -63,6 +63,7 @@ export default {
 		headers: [
 			{ text: 'YHSI ID', value: 'yHSIId' },
 			{ text: 'Primary name', value: 'primaryName' },
+			{ text: 'Secondary Names', value: 'secondaryNames' },
 			{ text: 'Community', value: 'community.name' },
 			{ text: 'Category', value: 'category.text' },
 			{ text: 'Record Status', value: 'recordStatusText' },
@@ -150,6 +151,7 @@ export default {
 				const headers = [
 					'YHSI ID',
 					'Name',
+					'Secondary Names',
 					'NTS Map Sheet',
 					'Community',
 					'Category',
@@ -162,6 +164,7 @@ export default {
 				const csvRows = rows.map((r) => [
 					r.yHSIId ?? '',
 					r.primaryName ?? '',
+					r.secondaryNames ?? '',
 					r.nTSMapSheet ?? '',
 					r.community?.name ?? '',
 					r.category?.text ?? '',

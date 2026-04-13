@@ -123,12 +123,12 @@ export default {
 			{
 				icon: 'mdi-camera',
 				text: 'Photos - Owner',
-				url: '',
+				url: '/admin/photo-owner',
 			},
 			{
 				icon: 'mdi-map-marker-multiple',
 				text: 'Community',
-				url: '',
+				url: '/admin/community',
 			},
 			{
 				icon: 'mdi-run',
