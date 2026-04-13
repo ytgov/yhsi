@@ -5,19 +5,14 @@
         <v-card-title>Edit First Nation</v-card-title>
         <v-card-text>
           <v-form ref="form" v-model="valid" :lazy-validation="false">
-            <v-text-field
-              label="Name"
-              v-model="description"
-              :rules="[(v) => !!v || 'Name is required']"
-              outlined
-              dense
-            ></v-text-field>
+            <v-text-field label="Name" v-model="description" :rules="[(v) => !!v || 'Name is required']" outlined
+              dense></v-text-field>
           </v-form>
         </v-card-text>
-        <v-card-actions>
-          <v-btn text @click="close">Cancel</v-btn>
+        <v-card-actions class="px-6">
+          <v-btn @click="close" outlined color="warning">Cancel</v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="success" text :disabled="!valid" :loading="saving" @click="save">
+          <v-btn color="success" :disabled="!valid" :loading="saving" @click="save">
             Save
           </v-btn>
         </v-card-actions>
