@@ -1,34 +1,18 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialog" persistent max-width="600px" @click:outside="reset()">
+    <v-dialog v-model="dialog" persistent max-width="500px" @click:outside="close">
       <v-card>
-        <v-card-title>
-          <span class="text-h5">Edit Place Type</span>
-        </v-card-title>
+        <v-card-title>Edit Place Type</v-card-title>
         <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-form
-                  ref="editPlaceTypeForm"
-                  :lazy-validation="false"
-                  v-model="valid"
-                >
-                  <v-text-field
-                    ref="editInput"
-                    label="Place Name"
-                    v-model="input"
-                    :rules="generalRules"
-                  ></v-text-field>
-                </v-form>
-              </v-col>
-            </v-row>
-          </v-container>
+          <v-form ref="form" v-model="valid" :lazy-validation="false">
+            <v-text-field label="Place Type" v-model="input" :rules="[(v) => !!v || 'Place Type is required']" outlined
+              dense></v-text-field>
+          </v-form>
         </v-card-text>
-        <v-card-actions>
-          <v-btn text @click="closeDialog"> Close </v-btn>
+        <v-card-actions class="px-6">
+          <v-btn @click="close" outlined color="warning">Cancel</v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="success" text :disabled="!valid" @click="save">
+          <v-btn color="success" :disabled="!valid" :loading="saving" @click="save">
             Save
           </v-btn>
         </v-card-actions>
@@ -38,43 +22,39 @@
 </template>
 
 <script>
-import catalogs from "../../../../controllers/catalogs";
+import catalogs from '../../../../controllers/catalogs';
+
 export default {
-  props: ["dialog", "data"],
+  props: ['dialog', 'item'],
   data: () => ({
-    input: null,
     valid: false,
-    generalRules: [(v) => !!v || "This field is required"],
+    input: '',
+    saving: false,
   }),
-  methods: {
-    closeDialog() {
-      this.$emit("closeEditDialog");
-    },
-    async save() {
-      let data = {
-        placeType: { PlaceType: this.input },
-      };
-      await catalogs.putPlaceType(this.data.Id, data);
-      this.$router.go();
-    },
-    //not needed
-    validate() {
-      this.$refs.editPlaceTypeForm.validate();
-    },
-    reset() {
-      this.dialog = false;
-      this.$refs.editPlaceTypeForm.reset();
-    },
-    resetValidation() {
-      this.$refs.editPlaceTypeForm.resetValidation();
+  watch: {
+    item: {
+      handler(val) {
+        if (val) this.input = val.PlaceType;
+      },
+      immediate: true,
     },
   },
-  watch: {
-    data: {
-      handler() {
-        this.input = this.data.PlaceType;
-      },
-      deep: true,
+  methods: {
+    async save() {
+      if (!this.$refs.form.validate()) return;
+      this.saving = true;
+      try {
+        await catalogs.putPlaceType(this.item.Id, this.input);
+        this.$emit('saved');
+        this.close();
+      } catch (e) {
+        console.error(e);
+      } finally {
+        this.saving = false;
+      }
+    },
+    close() {
+      this.$emit('close');
     },
   },
 };

@@ -1,4 +1,4 @@
-import { param } from 'express-validator';
+import { body, param } from 'express-validator';
 
 import db from '@/db/db-client';
 
@@ -14,6 +14,24 @@ catalogsRouter.get('/community', async (_req: Request, res: Response) => {
 
 	res.send(community);
 });
+
+catalogsRouter.post('/community', async (req: Request, res: Response) => {
+	const { community = {} } = req.body;
+	const response = await db.insert(community).into('Community').returning('*');
+	res.status(200).send(response);
+});
+
+catalogsRouter.put(
+	'/community/:id',
+	[param('id').notEmpty()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+		const { community = {} } = req.body;
+		await db('Community').update(community).where('Community.Id', id);
+		res.status(200).send({ message: 'success' });
+	}
+);
 
 catalogsRouter.get('/originalmedia', async (_req: Request, res: Response) => {
 	const media = await db('OriginalMedia').orderBy('OriginalMedia.id', 'asc');
@@ -84,60 +102,33 @@ catalogsRouter.post('/vesseltype', async (req: Request, res: Response) => {
 	res.status(200).send(response);
 });
 
-catalogsRouter.get('/placetype', async (req: Request, res: Response) => {
-	const { textToMatch = '', sortBy = 'Id', sort = 'asc' } = req.query;
-	const page = parseInt(req.query.page as string);
-	const limit = parseInt(req.query.limit as string);
-	const offset = page * limit || 0;
-	let counter = [{ count: 0 }];
+catalogsRouter.get('/placetype', async (_req: Request, res: Response) => {
+	const types = await db.select('*').from('Place.PlaceTypeLookup').orderBy('PlaceType', 'asc');
+	res.status(200).send({ body: types });
+});
 
-	let types = [];
-
-	if (textToMatch) {
-		counter = await db
-			.from('Place.PlaceTypeLookup')
-			.where('PlaceTypeLookup.PlaceType', 'like', `%${textToMatch}%`)
-			.count('Id', { as: 'count' });
-
-		types = await db
-			.from('Place.PlaceTypeLookup')
-			.where('Place.PlaceTypeLookup.PlaceType', 'like', `%${textToMatch}%`)
-			.orderBy(`${sortBy}`, `${sort}`)
-			.limit(limit)
-			.offset(offset);
-	} else {
-		counter = await db.from('Place.PlaceTypeLookup').count('Id', { as: 'count' });
-
-		types = await db
-			.select('*')
-			.from('Place.PlaceTypeLookup')
-			.orderBy(`${sortBy}`, `${sort}`)
-			.limit(limit)
-			.offset(offset);
+catalogsRouter.post(
+	'/placetype',
+	[body('placeType').isString().bail().notEmpty().trim()],
+	ReturnValidationErrors,
+	async (req: Request, res: Response) => {
+		const { placeType } = req.body;
+		const response = await db.insert({ PlaceType: placeType }).into('Place.PlaceTypeLookup').returning('*');
+		res.status(200).send(response);
 	}
-
-	res.status(200).send({ count: counter[0].count, body: types });
-});
-
-catalogsRouter.post('/placetype', async (req: Request, res: Response) => {
-	const { placeType = {} } = req.body;
-
-	const response = await db.insert(placeType).into('Place.PlaceTypeLookup').returning('*');
-
-	res.status(200).send(response);
-});
+);
 
 catalogsRouter.put(
 	'/placetype/:placeTypeId',
-	[param('placeTypeId').notEmpty()],
+	[param('placeTypeId').notEmpty(), body('placeType').isString().bail().notEmpty().trim()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { placeTypeId } = req.params;
-		const { placeType = {} } = req.body;
+		const { placeType } = req.body;
 
-		await db('place.PlaceTypeLookup')
-			.update(placeType)
-			.where('place.PlaceTypeLookup.id', placeTypeId);
+		await db('Place.PlaceTypeLookup')
+			.update({ PlaceType: placeType })
+			.where('Place.PlaceTypeLookup.Id', placeTypeId);
 
 		res.status(200).send({ message: 'success' });
 	}

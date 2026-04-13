@@ -75,7 +75,7 @@ export default {
       this.loading = true;
       try {
         const data = await catalogs.getCommunities(0, 1000, '', 'Name', 'asc');
-        this.communities = data.body || [];
+        this.communities = data || [];
       } catch (e) {
         console.error(e);
       } finally {
