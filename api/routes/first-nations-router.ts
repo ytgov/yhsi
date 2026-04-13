@@ -53,18 +53,3 @@ firstNationsRouter.put(
 	}
 );
 
-firstNationsRouter.delete(
-	'/:id',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.SITE_ADMIN]),
-	[param('id').isInt({ gt: 0 })],
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
-
-		const id = parseInt(req.params.id);
-		await db('FirstNation').where({ Id: id }).delete();
-		return res.status(204).send();
-	}
-);

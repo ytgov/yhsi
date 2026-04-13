@@ -32,13 +32,4 @@ export default {
 				return Promise.reject(error);
 			});
 	},
-
-	remove(id) {
-		return http
-			.delete(`${firstNationsUrl}/${id}`)
-			.catch((error) => {
-				console.error(error);
-				return Promise.reject(error);
-			});
-	},
 };

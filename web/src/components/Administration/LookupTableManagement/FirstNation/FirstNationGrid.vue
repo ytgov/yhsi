@@ -34,14 +34,7 @@
                 :headers="headers"
                 :loading="loading"
                 @click:row="handleClick"
-              >
-                <template v-slot:item.actions="{ item }">
-                  <v-btn color="error" outlined small @click.stop="confirmDelete(item)">
-                    <v-icon small class="mr-1">mdi-delete</v-icon>
-                    Remove
-                  </v-btn>
-                </template>
-              </v-data-table>
+              ></v-data-table>
             </v-col>
           </v-row>
         </v-card>
@@ -53,21 +46,6 @@
         @close="editDialog = false"
         @saved="load"
       />
-
-      <v-dialog v-model="deleteDialog" max-width="400px">
-        <v-card>
-          <v-card-title>Remove First Nation</v-card-title>
-          <v-card-text>
-            Remove <strong>{{ itemToDelete && itemToDelete.description }}</strong>?
-            This cannot be undone and will fail if any site associations reference this record.
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn text @click="deleteDialog = false">Cancel</v-btn>
-            <v-btn color="error" :loading="deleting" @click="deleteItem">Remove</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
     </v-container>
   </div>
 </template>
@@ -87,13 +65,9 @@ export default {
     search: '',
     headers: [
       { text: 'Name', value: 'description' },
-      { text: '', value: 'actions', sortable: false, align: 'end' },
     ],
     editDialog: false,
     selectedItem: null,
-    deleteDialog: false,
-    itemToDelete: null,
-    deleting: false,
   }),
   mounted() {
     this.load();
@@ -120,23 +94,6 @@ export default {
     handleClick(item) {
       this.selectedItem = { ...item };
       this.editDialog = true;
-    },
-    confirmDelete(item) {
-      this.itemToDelete = item;
-      this.deleteDialog = true;
-    },
-    async deleteItem() {
-      this.deleting = true;
-      try {
-        await api.remove(this.itemToDelete.id);
-        this.deleteDialog = false;
-        this.itemToDelete = null;
-        await this.load();
-      } catch (e) {
-        console.error(e);
-      } finally {
-        this.deleting = false;
-      }
     },
   },
 };
