@@ -203,7 +203,7 @@ placeRouter.post(
 			.addPlace(req.body as Place, currentUser)
 			.then((item) => item)
 			.catch((err) => {
-				console.log('addPlace ERROR', err);
+				console.error('addPlace ERROR', err);
 				return res.json({ errors: err });
 			});
 

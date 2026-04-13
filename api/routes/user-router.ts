@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import axios from 'axios';
-import moment from 'moment';
+import { format, isAfter } from 'date-fns';
 import { body, param } from 'express-validator';
 
 import { DB_CONFIG, ISSUER_BASE_URL, CLIENT_ID, AUTH_DB_CONNECTION } from '../config';
@@ -17,12 +17,10 @@ userRouter.get('/', authorize([UserRoles.ADMINISTRATOR]), async (req: Request, r
 
 	for (const user of users) {
 		if (user.last_login_date)
-			user.last_login_date_display = moment(user.last_login_date)
-				.utc(true)
-				.format('YYYY-MM-DD @ h:mmA');
+			user.last_login_date_display = format(new Date(user.last_login_date), "yyyy-MM-dd '@' h:mmaa");
 
 		if (user.expire_date) {
-			const isExpired = moment().isAfter(moment(user.expire_date));
+			const isExpired = isAfter(new Date(), new Date(user.expire_date));
 			if (user.status == 'Active' && isExpired) user.status = 'Expired';
 		}
 	}
@@ -55,10 +53,10 @@ userRouter.get(
 		const user = await db.getById(parseInt(id));
 
 		if (user?.expire_date) {
-			const isExpired = moment().isAfter(moment(user.expire_date));
+			const isExpired = isAfter(new Date(), new Date(user.expire_date));
 			if (isExpired) user.status = 'Expired';
 
-			user.expire_date_display = moment(user.expire_date).utc(false).format('YYYY-MM-DD');
+			user.expire_date_display = format(new Date(user.expire_date), 'yyyy-MM-dd');
 		}
 
 		res.json({ data: user });
@@ -190,7 +188,7 @@ async function makeDTO(userRaw: any) {
 	dto.display_name = `${userRaw.first_name} ${userRaw.last_name}`;
 
 	if (userRaw.expire_date)
-		dto.expire_date_display = moment(userRaw.expire_date).utc(false).format('YYYY-MM-DD');
+		dto.expire_date_display = format(new Date(userRaw.expire_date), 'yyyy-MM-dd');
 
 	//dto.roles = _.split(userRaw.roles, ",").filter(r => r.length > 0);
 	//dto.access = await db.getAccessFor(userRaw.email);

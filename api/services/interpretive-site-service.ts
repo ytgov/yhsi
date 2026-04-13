@@ -75,7 +75,6 @@ export class InterpretiveSiteService {
 	}
 
 	async addSite(item: any, assets: any, actions: any, inspections: any) {
-		console.log(item, assets, actions, inspections);
 		const res = await db
 			.insert(item)
 			.into('InterpretiveSite.Sites')
@@ -469,7 +468,6 @@ export class InterpretiveSiteService {
 				})
 				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.orderBy(`${sortBy}`, `${sort}`);
-			console.log(actions);
 		} else {
 			counter = await db
 				.from('InterpretiveSite.Actions as AC')
@@ -537,7 +535,6 @@ export class InterpretiveSiteService {
 
 	async addAsset(item: any, maintainer: any) {
 		const res: any = await db.insert(item).into('InterpretiveSite.Assets').returning('*');
-		console.log(res);
 		if (res) {
 			maintainer.SiteID = res[0].SiteID;
 			maintainer.AssetID = res[0].AssetID;

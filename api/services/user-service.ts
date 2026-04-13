@@ -120,7 +120,6 @@ export class UserService {
 		last_name: string
 	): Promise<User[]> {
 		email = email.toLocaleLowerCase();
-		console.log('-- Creating User account for ' + email);
 		return this.knex('Security.User')
 			.insert({
 				email,

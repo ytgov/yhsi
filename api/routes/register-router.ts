@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { query } from 'express-validator';
 import { DescriptionService, PhotoService, PlaceService } from '../services';
-import moment from 'moment';
+import { format, addHours } from 'date-fns';
 import { createThumbnail } from '../utils/image';
 
 const descriptionService = new DescriptionService();
@@ -21,7 +21,7 @@ registerRouter.get(
 
 		const data = await placeService.getRegisterAll(skip, take);
 		data.map(
-			(d) => (d.recognitionDate = moment(d.recognitionDate).add(7, 'hours').format('YYYY-MM-DD'))
+			(d) => (d.recognitionDate = d.recognitionDate ? format(addHours(new Date(d.recognitionDate), 7), 'yyyy-MM-dd') : null)
 		);
 
 		const item_count = await placeService

@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { body, query, param } from 'express-validator';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 import { ReturnValidationErrors } from '../middleware';
 import { PlaceEditService } from '../services';
@@ -134,7 +134,7 @@ placeEditsRouter.post(
 			.create({
 				...data,
 				editorUserId: currentUser.id,
-				editDate: moment().format('YYYY-MM-DD'),
+				editDate: format(new Date(), 'yyyy-MM-dd'),
 			})
 			.then((result) => {
 				return res.json({

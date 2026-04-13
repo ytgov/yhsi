@@ -17,6 +17,7 @@
 		"@sentry/node": "^7.53.1",
 		"@types/axios": "^0.14.0",
 		"cors": "^2.8.5",
+		"date-fns": "^4.1.0",
 		"dotenv": "^8.6.0",
 		"express": "^4.17.1",
 		"express-handlebars": "^7.1.2",
