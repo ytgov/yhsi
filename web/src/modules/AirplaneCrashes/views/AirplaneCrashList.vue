@@ -212,16 +212,13 @@ export default {
 		async getDataFromApi() {
 			this.loading = true;
 			let { page, itemsPerPage, sortBy, sortDesc } = this.options;
-			page = page > 0 ? page - 1 : 0;
+			page = page > 0 ? page : 1;
 			itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
 			let textToMatch = this.search;
 			const prefilters = {};
 			this.filterOptions.map((x) => {
 				prefilters[x.dataAccess] = x.value;
 			});
-
-			//Looks like it's checking against an array with an offset error of 1
-			//ex: when searching injuries=3, actually get souldsonboard=3
 
 			let data = await aircrash.get(
 				page,

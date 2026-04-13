@@ -492,7 +492,7 @@ const routes = [
 		},
 	},
 	{
-		path: '/burials/view/:name',
+		path: '/burials/view/:id',
 		name: 'BurialsViewForm',
 		component: BurialsForm,
 		props: true,
