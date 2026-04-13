@@ -1,64 +1,64 @@
 <template>
   <div>
-    <v-container fluid>
-      <h1>First Nations</h1>
-      <Breadcrumbs />
-      <v-row class="mb-2">
-        <v-col cols="6" class="d-flex">
-          <v-text-field
-            flat
-            prepend-icon="mdi-magnify"
-            class="mx-4"
-            hide-details
-            label="Search"
-            v-model="search"
-          ></v-text-field>
-        </v-col>
-        <v-spacer></v-spacer>
-        <v-col cols="auto">
-          <AddDialog @saved="load" />
-        </v-col>
-      </v-row>
-      <div class="mt-2">
-        <v-card class="px-3 py-3">
-          <v-row>
-            <v-col cols="12">
-              <h2>{{ filteredItems.length }} Results</h2>
-            </v-col>
-          </v-row>
-          <v-divider inset class="mb-4"></v-divider>
-          <v-row>
-            <v-col>
-              <v-data-table
-                :items="filteredItems"
-                :headers="headers"
-                :loading="loading"
-                @click:row="handleClick"
-              ></v-data-table>
-            </v-col>
-          </v-row>
-        </v-card>
-      </div>
+    <v-breadcrumbs
+      :items="[
+        { text: 'Administration', to: '/admin', exact: true },
+        { text: 'First Nations' },
+      ]"
+    ></v-breadcrumbs>
 
-      <EditDialog
-        :dialog="editDialog"
-        :item="selectedItem"
-        @close="editDialog = false"
-        @saved="load"
-      />
-    </v-container>
+    <h1>First Nations</h1>
+
+    <div class="mt-2">
+      <v-card class="default px-3 py-3">
+        <v-card-text>
+          <v-row>
+            <v-col cols="8">
+              <v-text-field
+                prepend-inner-icon="mdi-magnify"
+                background-color="white"
+                outlined
+                dense
+                label="Search"
+                v-model="search"
+                hide-details
+              ></v-text-field>
+            </v-col>
+            <v-col cols="4" class="d-flex justify-end">
+              <AddDialog @saved="load" />
+            </v-col>
+          </v-row>
+
+          <v-data-table
+            :items="filteredItems"
+            :headers="headers"
+            :loading="loading"
+            :search="search"
+            @click:row="handleClick"
+            :footer-props="{ 'items-per-page-options': [10, 30, 100] }"
+            class="clickable-row mt-2"
+          ></v-data-table>
+        </v-card-text>
+      </v-card>
+    </div>
+
+    <EditDialog
+      :dialog="editDialog"
+      :item="selectedItem"
+      @close="editDialog = false"
+      @saved="load"
+    />
   </div>
 </template>
 
 <script>
 import api from '@/apis/first-nations-api';
-import Breadcrumbs from '../../../Breadcrumbs';
 import EditDialog from './EditDialog';
 import AddDialog from './AddDialog';
 
 export default {
   name: 'FirstNationGrid',
-  components: { Breadcrumbs, EditDialog, AddDialog },
+  components: { EditDialog, AddDialog },
   data: () => ({
     loading: false,
     items: [],
