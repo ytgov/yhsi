@@ -226,6 +226,7 @@
 								v-model="fields.ConstructionDate"
 								no-title
 								scrollable
+								min="1800-01-01"
 							>
 								<v-spacer></v-spacer>
 								<v-btn
@@ -270,6 +271,7 @@
 								v-model="fields.ServiceStart"
 								no-title
 								scrollable
+								min="1800-01-01"
 							>
 								<v-spacer></v-spacer>
 								<v-btn
@@ -314,6 +316,7 @@
 								v-model="fields.ServiceEnd"
 								no-title
 								scrollable
+								min="1800-01-01"
 							>
 								<v-spacer></v-spacer>
 								<v-btn

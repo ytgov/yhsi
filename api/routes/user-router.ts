@@ -34,6 +34,11 @@ userRouter.get('/roles', authorize(), async (req: Request, res: Response) => {
 	return res.json({ data: UserRoleOptions });
 });
 
+userRouter.get('/pending-count', authorize([UserRoles.ADMINISTRATOR]), async (req: Request, res: Response) => {
+	const count = await db.getPendingCount();
+	return res.json({ data: { count } });
+});
+
 userRouter.get('/me', authorize([], true), async (req: Request, res: Response) => {
 	const person = req.user;
 
