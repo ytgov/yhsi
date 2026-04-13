@@ -21,6 +21,7 @@
               label="Search"
               v-model="search"
               hide-details
+              class="mr-5"
             />
             <AddDialog @saved="load" />
           </div>
