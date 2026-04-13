@@ -28,6 +28,15 @@
 					<v-icon left>mdi-file-delimited</v-icon>
 					Export to CSV
 				</v-btn>
+				<v-btn
+					class="ml-2"
+					color="primary"
+					:disabled="selectedItems.length === 0"
+					@click="exportSelectedToCsv"
+				>
+					<v-icon left>mdi-file-delimited</v-icon>
+					Export Selected ({{ selectedItems.length }})
+				</v-btn>
 			</v-col>
 		</v-row>
 
@@ -40,6 +49,8 @@
 			:server-items-length="totalLength"
 			@click:row="handleClick"
 			:footer-props="{ 'items-per-page-options': items_per_page }"
+			show-select
+			v-model="selectedItems"
 		></v-data-table>
 	</div>
 </template>
@@ -57,6 +68,7 @@ export default {
 		loading: false,
 		exportLoading: false,
 		items: [],
+		selectedItems: [],
 		search: '',
 		options: {},
 		totalLength: 0,
@@ -200,6 +212,56 @@ export default {
 			} finally {
 				this.exportLoading = false;
 			}
+		},
+
+		exportSelectedToCsv() {
+			const headers = [
+				'YHSI ID',
+				'Name',
+				'Secondary Names',
+				'NTS Map Sheet',
+				'Community',
+				'Category',
+				'Record Status',
+				'Site Status',
+				'Latitude',
+				'Longitude',
+			];
+
+			const csvRows = this.selectedItems.map((r) => [
+				r.yHSIId ?? '',
+				r.primaryName ?? '',
+				r.secondaryNames ?? '',
+				r.nTSMapSheet ?? '',
+				r.community?.name ?? '',
+				r.category?.text ?? '',
+				r.recordStatusText ?? '',
+				r.status?.text ?? '',
+				r.latitude ?? '',
+				r.longitude ?? '',
+			]);
+
+			const escape = (val) => {
+				const str = String(val);
+				return str.includes(',') || str.includes('"') || str.includes('\n')
+					? `"${str.replace(/"/g, '""')}"`
+					: str;
+			};
+
+			const csvContent =
+				headers.map(escape).join(',') +
+				'\n' +
+				csvRows.map((row) => row.map(escape).join(',')).join('\n');
+
+			const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = `yhsi-sites-selected-${new Date().toISOString().slice(0, 10)}.csv`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
 		},
 	},
 };

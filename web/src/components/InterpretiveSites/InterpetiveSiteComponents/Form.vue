@@ -143,7 +143,6 @@
 								<v-row>
 									<v-col cols="12">
 										<MapLoader
-											v-if="true"
 											:mode="mode"
 											:mapType="'intSite'"
 											@modifiedDataCoordinates="modifiedDataCoordinates"
@@ -625,7 +624,6 @@ export default {
 				await interpretiveSites.put(localStorage.currentIntSiteID, data);
 				this.overlay = false;
 				this.$router.push({ name: 'InterpretiveSitesGrid' });
-				this.$router.go();
 			}
 		},
 		newAction(val) {
