@@ -28,6 +28,7 @@ export * from './ownership-types';
 export * from './place';
 export * from './place-edit';
 export * from './previous-ownership';
+export * from './record-status-types';
 export * from './record-types';
 export * from './revision-log';
 export * from './revision-log-types';

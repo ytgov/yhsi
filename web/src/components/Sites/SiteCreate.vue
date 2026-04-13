@@ -75,7 +75,6 @@
 											dense
 											outlined
 											background-color="white"
-											:rules="requiredNumRules"
 										/>
 									</v-col>
 
@@ -88,7 +87,6 @@
 											dense
 											outlined
 											background-color="white"
-											:rules="requiredNumRules"
 										/>
 									</v-col>
 									<v-col
@@ -108,12 +106,24 @@
 										cols="6"
 										class="pb-0"
 									>
+										<RecordStatusTypesSelect
+											v-model="place.recordStatus"
+											dense
+											outlined
+											background-color="white"
+											:rules="requiredNumRules"
+										/>
+									</v-col>
+
+									<v-col
+										cols="6"
+										class="pb-0"
+									>
 										<OwnerConsentTypeSelect
 											v-model="place.ownerConsent"
 											dense
 											outlined
 											background-color="white"
-											:rules="requiredNumRules"
 										/>
 									</v-col>
 									<v-col
@@ -126,7 +136,6 @@
 											dense
 											outlined
 											background-color="white"
-											:rules="requiredNumRules"
 										/>
 									</v-col>
 									<v-col
@@ -139,7 +148,6 @@
 											dense
 											outlined
 											background-color="white"
-											:rules="requiredNumRules"
 										/>
 									</v-col>
 									<v-col
@@ -152,7 +160,6 @@
 											dense
 											outlined
 											background-color="white"
-											:rules="requiredNumRules"
 										/>
 									</v-col>
 									<v-col
@@ -165,7 +172,6 @@
 											dense
 											outlined
 											background-color="white"
-											:rules="requiredNumRules"
 										/>
 									</v-col>
 									<v-col
@@ -177,7 +183,6 @@
 											dense
 											outlined
 											background-color="white"
-											:rules="requiredNumRules"
 										/>
 									</v-col>
 									<v-col
@@ -190,7 +195,33 @@
 											outlined
 											hide-details
 											background-color="white"
-											:rules="requiredNumRules"
+										/>
+									</v-col>
+
+									<v-col
+										cols="6"
+										class="pb-0"
+									>
+										<v-text-field
+											v-model="place.latitude"
+											dense
+											outlined
+											label="Latitude"
+											background-color="white"
+											:rules="requiredRules"
+										/>
+									</v-col>
+									<v-col
+										cols="6"
+										class="pb-0"
+									>
+										<v-text-field
+											v-model="place.longitude"
+											dense
+											outlined
+											label="Longitude"
+											background-color="white"
+											:rules="requiredRules"
 										/>
 									</v-col>
 
@@ -201,7 +232,6 @@
 											dense
 											outlined
 											background-color="white"
-											:rules="requiredNumRules"
 										/>
 										<StatuteSelect
 											v-model="place.statute2Id"
@@ -209,7 +239,6 @@
 											dense
 											outlined
 											background-color="white"
-											:rules="requiredNumRules"
 										/>
 									</v-col>
 								</v-row>
@@ -239,6 +268,7 @@ import OwnerConsentTypeSelect from './site-forms/management/OwnerConsentTypeSele
 import StatuteSelect from './site-forms/management/StatuteSelect.vue';
 import CategoryTypesSelect from './site-forms/CategoryTypesSelect.vue';
 import CommunitySelect from './site-forms/CommunitySelect.vue';
+import RecordStatusTypesSelect from './site-forms/RecordStatusTypesSelect.vue';
 import SiteStatusTypesSelect from './site-forms/SiteStatusTypesSelect.vue';
 import CoordinateDeterminationTypesSelect from './site-forms/CoordinateDeterminationTypesSelect.vue';
 
@@ -251,6 +281,7 @@ export default {
 		StatuteSelect,
 		CategoryTypesSelect,
 		CommunitySelect,
+		RecordStatusTypesSelect,
 		SiteStatusTypesSelect,
 		CoordinateDeterminationTypesSelect,
 	},
@@ -264,12 +295,15 @@ export default {
 			ownerConsent: null,
 			category: null,
 			communityId: null,
+			recordStatus: 1,
 			siteStatus: null,
 			floorCondition: null,
 			wallCondition: null,
 			doorCondition: null,
 			roofCondition: null,
 			yHSIId: 'GENERATE',
+			latitude: null,
+			longitude: null,
 			coordinateDetermination: null,
 			showInRegister: false,
 			isPubliclyAccessible: false,

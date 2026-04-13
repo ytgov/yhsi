@@ -319,7 +319,7 @@ placeRouter.get(
 
 placeRouter.patch(
 	'/:id',
-	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
 	[
 		param('id').isInt({ gt: 0 }),
 		body('yHSIId').isString().optional({ nullable: true }),
@@ -372,6 +372,7 @@ placeRouter.patch(
 		body('fR_PrimaryName').isString().optional({ nullable: true }),
 		body('fR_Designations').isString().optional({ nullable: true }),
 		body('recognitionDate').isDate().optional({ nullable: true }),
+		body('recordStatus').isInt().optional(),
 		body('records').isArray().optional({ nullable: true }),
 		body('resourceType').isString().optional({ nullable: true }),
 		body('revisionLogs').isArray().optional({ nullable: true }),

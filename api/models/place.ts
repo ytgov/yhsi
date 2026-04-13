@@ -64,6 +64,7 @@ export class Place {
 	primaryName?: string;
 	recognitionDate?: Date;
 	recognitionDateDisplay?: string;
+	recordStatus?: number;
 	records?: string | string[] | null;
 	resourceType?: string;
 	rollNumber?: string;
@@ -149,6 +150,7 @@ export class Place {
 		'previousAddress',
 		'primaryName',
 		'recognitionDate',
+		'recordStatus',
 		'records',
 		'resourceType',
 		'rollNumber',

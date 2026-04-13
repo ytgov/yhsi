@@ -24,6 +24,12 @@
 						:readonly="!isSystemAdmin || !isEditing"
 					/>
 
+					<RecordStatusTypesSelect
+						v-model="place.recordStatus"
+						dense
+						outlined
+					/>
+
 					<v-text-field
 						v-model="place.primaryName"
 						dense
@@ -232,6 +238,7 @@ import CategoryTypesSelect from '@/components/Sites/site-forms/CategoryTypesSele
 import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
 import DesignationTypesSelect from '@/components/Sites/site-forms/DesignationTypesSelect';
 import HistoricalPatternTypesSelect from '@/components/Sites/site-forms/HistoricalPatternTypesSelect';
+import RecordStatusTypesSelect from '@/components/Sites/site-forms/RecordStatusTypesSelect';
 import RecordTypesSelect from '@/components/Sites/site-forms/RecordTypesSelect';
 import SiteCategoryTypesSelect from '@/components/Sites/site-forms/SiteCategoryTypesSelect';
 import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard.vue';
@@ -243,6 +250,7 @@ export default {
 		ContributingResourceTypesSelect,
 		DesignationTypesSelect,
 		HistoricalPatternTypesSelect,
+		RecordStatusTypesSelect,
 		RecordTypesSelect,
 		SiteCategoryTypesSelect,
 		GenericRecordPhotosCard,
@@ -292,6 +300,7 @@ export default {
 				'designations',
 				'fR_Designations',
 				'category',
+				'recordStatus',
 				'siteCategories',
 				'records',
 				'showInRegister',

@@ -39,6 +39,7 @@ import {
 	placeEditsRouter,
 	placeRouter,
 	placeThemesRouter,
+	recordStatusTypesRouter,
 	recordTypesRouter,
 	registerRouter,
 	revisionLogTypesRouter,
@@ -178,6 +179,7 @@ app.use('/api/photos', RequiresAuthentication, photosExtraRouter);
 app.use('/api/revision-log-types', RequiresAuthentication, revisionLogTypesRouter);
 app.use('/api/place-edits', RequiresAuthentication, placeEditsRouter);
 app.use('/api/place-themes', RequiresAuthentication, placeThemesRouter);
+app.use('/api/record-status-types', RequiresAuthentication, recordStatusTypesRouter);
 app.use('/api/record-types', RequiresAuthentication, recordTypesRouter);
 app.use('/api/site-category-types', RequiresAuthentication, siteCategoryTypesRouter);
 app.use('/api/site-status-types', RequiresAuthentication, siteStatusTypesRouter);
