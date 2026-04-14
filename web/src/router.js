@@ -32,8 +32,10 @@ import InterpretiveSitesIndex from '@/components/InterpretiveSites/Grid';
 import OwnerForm from '@/components/PhotoOwners/OwnersComponents/Form';
 import OwnerGrid from '@/components/Boats/Grid/Owner';
 import OwnersGrid from '@/components/PhotoOwners/OwnersGrid';
-import PlacesForm from '@/components/Places/PlacesComponents/PlacesForm';
 import PlacesGrid from '@/components/Places/PlacesGrid';
+import ViewPlace from '@/components/Places/PlacesComponents/ViewPlace';
+import EditPlace from '@/components/Places/PlacesComponents/EditPlace';
+import AddPlace from '@/components/Places/PlacesComponents/AddPlace';
 import SiteCreate from '@/components/Sites/SiteCreate';
 import SiteForms from '@/components/Sites/SiteForms';
 import SitesTable from '@/components/Sites/SitesTable';
@@ -598,23 +600,21 @@ const routes = [
 		meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] },
 	},
 	{
-		path: '/places/view/:name',
+		path: '/places/:id/view',
 		name: 'placeView',
-		component: PlacesForm,
-		props: true,
+		component: ViewPlace,
 		meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] },
 	},
 	{
-		path: '/places/edit/:name',
+		path: '/places/:id/edit',
 		name: 'placeEditView',
-		component: PlacesForm,
-		props: true,
+		component: EditPlace,
 		meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] },
 	},
 	{
 		path: '/places/new',
 		name: 'placeAddView',
-		component: PlacesForm,
+		component: AddPlace,
 		meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] },
 	},
 	{
