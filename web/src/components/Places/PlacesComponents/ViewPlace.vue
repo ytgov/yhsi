@@ -146,7 +146,6 @@ import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard
 import HistoricRecord from './HistoricRecord';
 import PrintButton from './PrintButton';
 import MapLoader from '../../MapLoader';
-import catalogs from '../../../controllers/catalogs';
 import { YTPLACE_URL, STATIC_URL } from '../../../urls';
 import axios from 'axios';
 
