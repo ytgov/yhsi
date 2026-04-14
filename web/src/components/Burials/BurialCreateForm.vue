@@ -401,7 +401,7 @@ export default {
                 const result = await burials.post(data)
 
                 if (result && result.BurialID) {
-                    this.$router.push(`/burials/view/${result.BurialID}`)
+                    this.$router.push({ name: 'BurialsViewForm', params: { id: result.BurialID } })
                 } else {
                     this.$router.push('/burials')
                 }

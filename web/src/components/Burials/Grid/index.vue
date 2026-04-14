@@ -1,7 +1,10 @@
 <template>
 	<div class="">
+		<v-breadcrumbs :items="[
+			{ text: 'Home', to: '/', exact: true },
+			{ text: 'Burials', disabled: true }
+		]" divider=">" class="px-0"></v-breadcrumbs>
 		<h1>Burials</h1>
-		<Breadcrumbs />
 		<v-row>
 			<v-col
 				cols="6"
@@ -57,16 +60,17 @@
 				class="d-flex"
 			>
 				<v-btn
-					class="black--text mx-1"
+					color="primary"
+					class="mx-1"
 					@click="addNew"
 					v-if="userIsEditor"
 				>
-					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
 					Add Burial
 				</v-btn>
 
 				<v-btn
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					v-if="loading"
 					:loading="loading"
 				>
@@ -74,7 +78,8 @@
 					Export
 				</v-btn>
 				<v-btn
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					@click="getBurialExport()"
 				>
 					<v-icon class="mr-1"> mdi-export </v-icon>
@@ -82,7 +87,8 @@
 				</v-btn>
 
 				<v-btn
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					@click="downloadPdf"
 					:loading="loadingPdf"
 				>
@@ -130,7 +136,6 @@
 </template>
 
 <script>
-import Breadcrumbs from '../../Breadcrumbs';
 import _ from 'lodash';
 import downloadCsv from '../../../utils/dataToCsv';
 import burials from '../../../controllers/burials';
@@ -138,7 +143,7 @@ import { UserRoles } from '../../../authorization';
 
 export default {
 	name: 'boatsgrid-index',
-	components: { Breadcrumbs },
+	components: {},
 	data: () => ({
 		route: '',
 		loading: false,
@@ -192,17 +197,15 @@ export default {
 	},
 	methods: {
 		addNew() {
-			this.removeCurrentBurial();
 			this.$router.push(`/burials/new`);
 		},
 		searchChange: _.debounce(function () {
 			this.getDataFromApi();
 		}, 400),
 		handleClick(value) {
-			//Redirects the user to the airplane form component
 			this.$router.push({
 				name: 'BurialsViewForm',
-				params: { name: value.BurialID, id: value.BurialID },
+				params: { id: value.BurialID },
 			});
 		},
 		async getDataFromApi() {
@@ -241,9 +244,6 @@ export default {
 				x.crashdate = this.formatDate(x.crashdate);
 			});
 			this.loading = false;
-		},
-		removeCurrentBurial() {
-			localStorage.currentBurialID = null;
 		},
 		async getBurialExport() {
 			this.loadingExport = true;

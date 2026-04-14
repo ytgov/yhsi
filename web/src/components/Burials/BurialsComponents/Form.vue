@@ -1,7 +1,6 @@
 <template>
-	<v-container fluid>
-		<h3>Burial</h3>
-		<Breadcrumbs />
+	<v-sheet>
+		<v-breadcrumbs :items="breadcrumbItems" divider=">" class="px-0"></v-breadcrumbs>
 		<v-row>
 			<v-col
 				cols="12"
@@ -15,7 +14,8 @@
 				<v-spacer></v-spacer>
 				<!-- buttons for the view state -->
 				<v-btn
-					class="black--text mx-1"
+					color="primary"
+					class="mx-1"
 					@click="editMode"
 					v-if="isView && userIsEditor"
 				>
@@ -23,7 +23,8 @@
 					Edit
 				</v-btn>
 				<v-btn
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					@click="downloadPdf"
 					:loading="loadingPdf"
 				>
@@ -32,7 +33,9 @@
 				</v-btn>
 				<!-- buttons for the edit state -->
 				<v-btn
-					class="black--text mx-1"
+					outlined
+					color="warning"
+					class="mx-1"
 					@click="cancelEdit"
 					v-if="isEdit"
 				>
@@ -741,14 +744,13 @@
 				size="64"
 			></v-progress-circular>
 		</v-overlay>
-	</v-container>
+	</v-sheet>
 </template>
 
 <script>
 import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard.vue';
 import EmptyPhotosCard from "@/components/photos/EmptyPhotosCard.vue"
 
-import Breadcrumbs from '../../Breadcrumbs';
 import burials from '../../../controllers/burials';
 import catalogs from '../../../controllers/catalogs';
 import MembershipDialog from './Dialogs/MembershipDialog.vue';
@@ -762,7 +764,6 @@ import { UserRoles } from '../../../authorization';
 export default {
 	name: 'BurialComponent',
 	components: {
-		Breadcrumbs,
 		MembershipDialog,
 		OccupationDialog,
 		SiteVisitDialog,
@@ -842,7 +843,7 @@ export default {
 		checkPath(word) {
 			let path = this.$route.path.split('/');
 			// //console.log(path);
-			if (path[2] == word) {
+			if (path[3] == word) {
 				return true;
 			}
 			return false;
@@ -885,16 +886,10 @@ export default {
 			}),
 				(this.infoLoaded = true);
 		},
-		saveCurrentBurial() {
-			localStorage.currentBurialID = this.$route.params.id;
-		},
 		async getDataFromApi() {
 			this.overlay = true;
-			if (this.$route.params.id) {
-				this.saveCurrentBurial();
-			}
 			const [fields, cemetaries, causes, religions, occupations, memberships, relationships] = await Promise.all([
-				burials.getById(localStorage.currentBurialID),
+				burials.getById(this.$route.params.id),
 				catalogs.getCemetaries(),
 				catalogs.getCauses(),
 				catalogs.getReligions(),
@@ -915,12 +910,12 @@ export default {
 		},
 		viewMode() {
 			this.mode = 'view';
-			this.$router.push(`/burials/view/${localStorage.currentBurialID}`);
+			this.$router.push({ name: 'BurialsViewForm', params: { id: this.$route.params.id } });
 		},
 		editMode() {
 			this.fieldsHistory = { ...this.fields };
 			this.mode = 'edit';
-			this.$router.push(`/burials/edit/${localStorage.currentBurialID}`);
+			this.$router.push({ name: 'BurialsEditForm', params: { id: this.$route.params.id } });
 			this.showSave = 0;
 		},
 		cancelEdit() {
@@ -929,7 +924,7 @@ export default {
 			}
 			this.mode = 'view';
 			//this.resetListVariables();
-			this.$router.push(`/burials/view/${localStorage.currentBurialID}`);
+			this.$router.push({ name: 'BurialsViewForm', params: { id: this.$route.params.id } });
 		},
 		selectedImageChanged(val) {
 			this.selectedImage = val;
@@ -1019,7 +1014,7 @@ export default {
 			if (this.isNew) {
 				await burials.post(data);
 			} else {
-				await burials.put(localStorage.currentBurialID, data);
+				await burials.put(this.$route.params.id, data);
 			}
 			this.overlay = false;
 			this.$router.push({ name: 'BurialsGrid' });
@@ -1128,7 +1123,7 @@ export default {
 		},
 		async downloadPdf() {
 			this.loadingPdf = true;
-			let res = await burials.getPdf(parseInt(localStorage.currentBurialID));
+			let res = await burials.getPdf(parseInt(this.$route.params.id));
 			let blob = new Blob([res], { type: 'application/octetstream' });
 			let url = window.URL || window.webkitURL;
 			let link = url.createObjectURL(blob);
@@ -1181,10 +1176,30 @@ export default {
 		isNew() {
 			return this.mode == 'new';
 		},
+		breadcrumbItems() {
+			const items = [
+				{ text: 'Home', to: '/', exact: true },
+				{ text: 'Burials', to: '/burials', exact: true },
+			];
+			if (this.isEdit) {
+				items.push({
+					text: `${this.fields.FirstName || ''} ${this.fields.LastName || ''}`.trim() || 'Burial',
+					to: { name: 'BurialsViewForm', params: { id: this.$route.params.id } },
+					exact: true,
+				});
+				items.push({ text: 'Edit', disabled: true });
+			} else {
+				items.push({
+					text: `${this.fields.FirstName || ''} ${this.fields.LastName || ''}`.trim() || 'Burial',
+					disabled: true,
+				});
+			}
+			return items;
+		},
 		currentBurialID() {
 			if (this.mode == 'new') return false;
 
-			return localStorage.currentBurialID;
+			return this.$route.params.id;
 		},
 		getCountries() {
 			return countries;

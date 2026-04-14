@@ -1,7 +1,7 @@
 <template>
 	<div class="">
+		<v-breadcrumbs :items="[{ text: 'Home', to: '/', exact: true }, { text: 'Boats', disabled: true }]" class="pa-0 mb-2" />
 		<h1>Boats</h1>
-		<Breadcrumbs />
 		<v-row>
 			<v-col
 				cols="6"
@@ -87,7 +87,8 @@
 			>
 				<v-btn
 					v-if="userIsEditor"
-					class="black--text mx-1"
+					color="primary"
+					class="mx-1"
 					@click="addNewOwner"
 				>
 					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
@@ -95,7 +96,8 @@
 				</v-btn>
 
 				<v-btn
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					@click="getOwnerExport()"
 					:loading="loadingExport"
 				>
@@ -105,7 +107,8 @@
 
 				<v-btn
 					@click="downloadPdfOwners()"
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					:loading="loadingPdf"
 				>
 					<v-icon class="mr-1"> mdi-printer </v-icon>
@@ -119,7 +122,8 @@
 			>
 				<v-btn
 					v-if="userIsEditor"
-					class="black--text mx-1"
+					color="primary"
+					class="mx-1"
 					@click="addNewBoat"
 				>
 					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
@@ -127,7 +131,8 @@
 				</v-btn>
 
 				<v-btn
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					@click="getBoatExport()"
 					:loading="loadingExport"
 				>
@@ -137,7 +142,8 @@
 
 				<v-btn
 					@click="downloadPdf()"
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					:loading="loadingPdf"
 				>
 					<v-icon class="mr-1"> mdi-printer </v-icon>
@@ -172,7 +178,6 @@
 </template>
 
 <script>
-import Breadcrumbs from '../../Breadcrumbs';
 import downloadCsv from '../../../utils/dataToCsv';
 import downloadPdf from '../../../utils/dataToPdf';
 import _ from 'lodash';
@@ -183,7 +188,7 @@ import { UserRoles } from '../../../authorization';
 //import jsPDF from "jspdf";
 export default {
 	name: 'boatsgrid-index',
-	components: { Breadcrumbs },
+	components: {},
 	data: () => ({
 		route: '',
 		active_tab: '',

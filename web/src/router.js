@@ -315,20 +315,18 @@ const routes = [
 		],
 	},
 	{
-		path: '/boats/view/:name',
+		path: '/boats/:id/view',
 		name: 'boatView',
 		component: BoatsForm,
-		props: true,
 		meta: {
 			requiresAuth: true,
 			authorize: [UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER],
 		},
 	},
 	{
-		path: '/boats/edit/:name',
+		path: '/boats/:id/edit',
 		name: 'boatEditView',
 		component: BoatsForm,
-		props: true,
 		meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] },
 	},
 	{
@@ -338,20 +336,18 @@ const routes = [
 		meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] },
 	},
 	{
-		path: '/boats/owner/view/:name',
+		path: '/boats/owner/:id/view',
 		name: 'ownerView',
 		component: BoatsOwnerForm,
-		props: true,
 		meta: {
 			requiresAuth: true,
 			authorize: [UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER],
 		},
 	},
 	{
-		path: '/boats/owner/edit/:name',
+		path: '/boats/owner/:id/edit',
 		name: 'ownerEditView',
 		component: BoatsOwnerForm,
-		props: true,
 		meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] },
 	},
 	{
@@ -495,7 +491,7 @@ const routes = [
 		},
 	},
 	{
-		path: '/burials/view/:id',
+		path: '/burials/:id/view',
 		name: 'BurialsViewForm',
 		component: BurialsForm,
 		props: true,
@@ -505,7 +501,7 @@ const routes = [
 		},
 	},
 	{
-		path: '/burials/edit/:id',
+		path: '/burials/:id/edit',
 		name: 'BurialsEditForm',
 		component: BurialsForm,
 		props: true,
@@ -558,7 +554,7 @@ const routes = [
 		],
 	},
 	{
-		path: '/interpretive-sites/view/:id',
+		path: '/interpretive-sites/:id/view',
 		name: 'InterpretiveSitesView',
 		component: InterpretiveSitesForm,
 		props: true,
@@ -569,10 +565,9 @@ const routes = [
 				UserRoles.INTERPRETIVE_SITES_VIEWER,
 			],
 		},
-		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
 	},
 	{
-		path: '/interpretive-sites/edit/:id',
+		path: '/interpretive-sites/:id/edit',
 		name: 'InterpretiveSitesEdit',
 		component: InterpretiveSitesForm,
 		props: true,
@@ -580,7 +575,6 @@ const routes = [
 			requiresAuth: true,
 			authorize: [UserRoles.INTERPRETIVE_SITES_EDITOR],
 		},
-		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
 	},
 	{
 		path: '/interpretive-sites/new',

@@ -1,7 +1,9 @@
 <template>
-	<v-container fluid>
-		<h3>Interpretive Site Information</h3>
-		<Breadcrumbs />
+	<v-sheet>
+		<v-breadcrumbs
+			:items="breadcrumbs"
+			class="pl-0"
+		/>
 		<v-row>
 			<v-col
 				cols="12"
@@ -13,7 +15,8 @@
 				<v-spacer></v-spacer>
 				<!-- buttons for the view state -->
 				<v-btn
-					class="black--text mx-1"
+					color="primary"
+					class="mx-1"
 					@click="editMode"
 					v-if="isView"
 				>
@@ -22,7 +25,8 @@
 				</v-btn>
 				<v-btn
 					v-if="isView"
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					@click="downloadPdf"
 					:loading="loadingPdf"
 				>
@@ -31,7 +35,9 @@
 				</v-btn>
 				<!-- buttons for the edit state -->
 				<v-btn
-					class="black--text mx-1"
+					outlined
+					color="warning"
+					class="mx-1"
 					@click="cancelEdit"
 					v-if="isEdit"
 				>
@@ -40,7 +46,7 @@
 				</v-btn>
 
 				<v-btn
-					color="primary"
+					color="success"
 					:disabled="showSave < 1 || !valid"
 					v-if="!isView"
 					@click="saveChanges"
@@ -366,7 +372,7 @@
 				size="64"
 			></v-progress-circular>
 		</v-overlay>
-	</v-container>
+	</v-sheet>
 </template>
 
 <script>
@@ -374,7 +380,6 @@ import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard
 import EmptyPhotosCard from "@/components/photos/EmptyPhotosCard.vue"
 
 import MaintainerList from './MaintainerList';
-import Breadcrumbs from '../../Breadcrumbs';
 import interpretiveSites from '../../../controllers/interpretive-sites';
 import catalogs from '../../../controllers/catalogs';
 import InspectionDialog from '../Dialogs/InspectionDialog.vue';
@@ -385,7 +390,6 @@ import MapLoader from '../../MapLoader.vue';
 export default {
 	name: 'IntSiteComponent',
 	components: {
-		Breadcrumbs,
 		MapLoader,
 		InspectionDialog,
 		ActionDialog,
@@ -472,8 +476,7 @@ export default {
     this problem is solved by using this funtion.*/
 		checkPath(word) {
 			let path = this.$route.path.split('/');
-			// //console.log(path);
-			if (path[2] == word) {
+			if (path[3] == word) {
 				return true;
 			}
 			return false;
@@ -506,16 +509,10 @@ export default {
 				assets: [],
 			};
 		},
-		saveCurrentIntSiteID() {
-			localStorage.currentIntSiteID = this.$route.params.id;
-		},
 		async getDataFromApi() {
 			this.overlay = true;
-			if (this.$route.params.id) {
-				this.saveCurrentIntSiteID();
-			}
 			this.fields = await interpretiveSites.getById(
-				localStorage.currentIntSiteID
+				this.$route.params.id
 			);
 
 			this.fields.assets = this.fields.assets.map((x) => {
@@ -545,16 +542,12 @@ export default {
 		},
 		viewMode() {
 			this.mode = 'view';
-			this.$router.push(
-				`/interpretive-sites/view/${localStorage.currentIntSiteID}`
-			);
+			this.$router.push({ name: 'InterpretiveSitesView', params: { id: this.$route.params.id } });
 		},
 		editMode() {
 			this.fieldsHistory = { ...this.fields };
 			this.mode = 'edit';
-			this.$router.push(
-				`/interpretive-sites/edit/${localStorage.currentIntSiteID}`
-			);
+			this.$router.push({ name: 'InterpretiveSitesEdit', params: { id: this.$route.params.id } });
 			this.showSave = 0;
 		},
 		cancelEdit() {
@@ -562,10 +555,7 @@ export default {
 				this.fields = { ...this.fieldsHistory };
 			}
 			this.mode = 'view';
-			//this.resetListVariables();
-			this.$router.push(
-				`/interpretive-sites/view/${localStorage.currentIntSiteID}`
-			);
+			this.$router.push({ name: 'InterpretiveSitesView', params: { id: this.$route.params.id } });
 		},
 		modifiedDataCoordinates(val) {
 			this.modifiedMapFields = val;
@@ -621,7 +611,7 @@ export default {
 				this.overlay = false;
 				this.$router.push({ name: 'InterpretiveSitesView', params: { id: result.SiteID } });
 			} else {
-				await interpretiveSites.put(localStorage.currentIntSiteID, data);
+				await interpretiveSites.put(this.$route.params.id, data);
 				this.overlay = false;
 				this.$router.push({ name: 'InterpretiveSitesGrid' });
 			}
@@ -708,7 +698,7 @@ export default {
 		async downloadPdf() {
 			this.loadingPdf = true;
 			let res = await interpretiveSites.getPdf(
-				parseInt(localStorage.currentIntSiteID)
+				parseInt(this.$route.params.id)
 			);
 			let blob = new Blob([res], { type: 'application/octetstream' });
 			let url = window.URL || window.webkitURL;
@@ -746,7 +736,26 @@ export default {
 		currentIntSiteID() {
 			if (this.mode == 'new') return false;
 
-			return localStorage.currentIntSiteID;
+			return this.$route.params.id;
+		},
+		breadcrumbs() {
+			const crumbs = [
+				{ text: 'Home', to: '/', exact: true },
+				{ text: 'Interpretive Sites', to: '/interpretive-sites', exact: true },
+			];
+			if (this.isNew) {
+				crumbs.push({ text: 'New Site', disabled: true });
+			} else if (this.isEdit) {
+				crumbs.push({
+					text: this.fields.SiteName || 'Site',
+					to: `/interpretive-sites/${this.$route.params.id}/view`,
+					exact: true,
+				});
+				crumbs.push({ text: 'Edit', disabled: true });
+			} else {
+				crumbs.push({ text: this.fields.SiteName || 'Site', disabled: true });
+			}
+			return crumbs;
 		},
 	},
 	watch: {

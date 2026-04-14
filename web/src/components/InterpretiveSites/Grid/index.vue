@@ -1,7 +1,13 @@
 <template>
 	<div class="">
+		<v-breadcrumbs
+			:items="[
+				{ text: 'Home', to: '/', exact: true },
+				{ text: 'Interpretive Sites', disabled: true },
+			]"
+			class="pl-0"
+		/>
 		<h1>Interpretive Sites</h1>
-		<Breadcrumbs />
 		<v-row>
 			<v-col
 				cols="6"
@@ -145,7 +151,8 @@
 				/>
 
 				<v-btn
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					@click="getActionsExport()"
 					:loading="loadingExport"
 				>
@@ -155,7 +162,8 @@
 
 				<v-btn
 					@click="downloadActionsPdf()"
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					:loading="loadingPdf"
 				>
 					<v-icon class="mr-1"> mdi-printer </v-icon>
@@ -174,7 +182,8 @@
 				/>
 
 				<v-btn
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					@click="getAssetsExport()"
 					:loading="loadingExport"
 				>
@@ -184,7 +193,8 @@
 
 				<v-btn
 					@click="downloadAssetsPdf()"
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					:loading="loadingPdf"
 				>
 					<v-icon class="mr-1"> mdi-printer </v-icon>
@@ -197,7 +207,8 @@
 				class="d-flex"
 			>
 				<v-btn
-					class="black--text mx-1"
+					color="primary"
+					class="mx-1"
 					@click="addNewSite"
 				>
 					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
@@ -205,7 +216,8 @@
 				</v-btn>
 
 				<v-btn
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					@click="getSitesExport()"
 					:loading="loadingExport"
 				>
@@ -215,7 +227,8 @@
 
 				<v-btn
 					@click="downloadSitesPdf()"
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					:loading="loadingPdf"
 				>
 					<v-icon class="mr-1"> mdi-printer </v-icon>
@@ -258,7 +271,6 @@
 
 <script>
 import catalogs from '../../../controllers/catalogs';
-import Breadcrumbs from '../../Breadcrumbs';
 import ActionDialog from '../Dialogs/ActionDialog.vue';
 import AssetDialog from '../Dialogs/AssetDialog.vue';
 import downloadCsv from '../../../utils/dataToCsv';
@@ -268,7 +280,7 @@ import interpretiveSites from '../../../controllers/interpretive-sites';
 //import jsPDF from "jspdf";
 export default {
 	name: 'int-sites-grid-index',
-	components: { Breadcrumbs, ActionDialog, AssetDialog },
+	components: { ActionDialog, AssetDialog },
 	data: () => ({
 		route: '',
 		active_tab: '',

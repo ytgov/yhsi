@@ -56,7 +56,7 @@ export default {
       //Redirects the user to the edit user form
       this.$router.push({
         name: "ownerView",
-        params: { name: value.OwnerName, id: value.id },
+        params: { id: value.id },
       });
     },
     async getDataFromApi() {

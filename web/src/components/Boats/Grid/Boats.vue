@@ -75,7 +75,7 @@ export default {
 
 			this.$router.push({
 				name: 'boatView',
-				params: { name: value.Name, id: value.Id },
+				params: { id: value.Id },
 			});
 		},
 		async getDataFromApi() {

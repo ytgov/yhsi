@@ -583,7 +583,7 @@ export default {
 			this.$router.push(`/burials/view/${name}`);
 		},
 		clickIntSite(siteId) {
-			this.$router.push(`/interpretive-sites/view/${siteId}`);
+			this.$router.push(`/interpretive-sites/${siteId}/view`);
 		},
 		deleteAssociation(itemType, itemId) {
 			axios
