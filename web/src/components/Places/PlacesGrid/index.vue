@@ -1,5 +1,5 @@
 <template>
-  <v-sheet>
+  <div>
     <v-breadcrumbs
       :items="[
         { text: 'Home', to: '/', exact: true },
@@ -7,56 +7,55 @@
       ]"
     ></v-breadcrumbs>
 
-    <div class="d-flex align-center mb-4">
-      <h1>Places</h1>
-      <v-spacer></v-spacer>
-      <JsonCSV :data="placesCsv">
-        <v-btn color="info" class="mr-2" :disabled="places.length === 0">
-          <v-icon class="mr-1">mdi-export</v-icon>
-          Export
-        </v-btn>
-      </JsonCSV>
-      <PrintButton
-        key="prt-2"
-        :data="{ places: placesCsv }"
-        :disabled="places.length === 0"
-        class="mr-2"
-      />
-      <v-btn color="primary" @click="$router.push('/places/new')">
-        <v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-        Add Place
-      </v-btn>
-    </div>
+    <h1>Places</h1>
 
-    <v-card class="default px-3 py-3">
-      <v-card-text>
-        <div class="d-flex mb-4">
-          <v-text-field
-            prepend-inner-icon="mdi-magnify"
-            background-color="white"
-            outlined
-            dense
-            label="Search"
-            v-model="search"
-            hide-details
-            class="mr-5"
-            v-on:input="placeSearchChange()"
-          />
-          <v-menu transition="slide-y-transition" bottom :close-on-content-click="false">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn color="transparent" class="black--text" v-bind="attrs" v-on="on" style="height: 40px">
-                <v-icon class="black--text mr-1">mdi-filter</v-icon>
-                Filter
-                <v-icon class="black--text">mdi-chevron-right</v-icon>
+    <div class="mt-2">
+      <v-card class="default px-3 py-3">
+        <v-card-text>
+          <div class="d-flex mb-6">
+            <v-text-field
+              prepend-inner-icon="mdi-magnify"
+              background-color="white"
+              outlined
+              dense
+              label="Search"
+              v-model="search"
+              hide-details
+              class="mr-5"
+              v-on:input="placeSearchChange()"
+            />
+            <v-menu transition="slide-y-transition" bottom :close-on-content-click="false">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn color="transparent" class="black--text my-0 mr-2" v-bind="attrs" v-on="on" style="height: 40px">
+                  <v-icon class="black--text mr-1">mdi-filter</v-icon>
+                  Filter
+                  <v-icon class="black--text">mdi-chevron-right</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item v-for="(item, i) in filterOptions" :key="i" link>
+                  <v-text-field clearable v-model="item.value" :label="item.name"></v-text-field>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+            <v-btn color="primary" class="my-0 mr-2" style="height: 40px" @click="$router.push('/places/new')">
+              Add Place
+            </v-btn>
+            <PrintButton
+              key="prt-2"
+              :data="{ places: placesCsv }"
+              :disabled="places.length === 0"
+              class="my-0 mr-2"
+            />
+            <JsonCSV :data="placesCsv" v-if="!loading">
+              <v-btn color="info" class="my-0" style="height: 40px" :disabled="places.length === 0" title="Export CSV">
+                <v-icon>mdi-export</v-icon>
               </v-btn>
-            </template>
-            <v-list>
-              <v-list-item v-for="(item, i) in filterOptions" :key="i" link>
-                <v-text-field clearable v-model="item.value" :label="item.name"></v-text-field>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </div>
+            </JsonCSV>
+            <v-btn color="info" class="my-0" style="height: 40px" disabled v-else title="Export CSV">
+              <v-icon>mdi-export</v-icon>
+            </v-btn>
+          </div>
 
         <v-data-table
           :items="filteredData"
@@ -79,9 +78,10 @@
             <span v-if="item.placeTypes.length > 0">{{ getPlaceTypeNames(item.placeTypes) }}</span>
           </template>
         </v-data-table>
-      </v-card-text>
-    </v-card>
-  </v-sheet>
+        </v-card-text>
+      </v-card>
+    </div>
+  </div>
 </template>
 
 <script>
