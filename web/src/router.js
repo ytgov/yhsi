@@ -37,7 +37,9 @@ import PlacesGrid from '@/components/Places/PlacesGrid';
 import SiteCreate from '@/components/Sites/SiteCreate';
 import SiteForms from '@/components/Sites/SiteForms';
 import SitesTable from '@/components/Sites/SitesTable';
-import UserForm from '@/components/People/UsersComponents/Form';
+import ViewPerson from '@/components/People/UsersComponents/ViewPerson';
+import EditPerson from '@/components/People/UsersComponents/EditPerson';
+import AddPerson from '@/components/People/UsersComponents/AddPerson';
 
 import Feature from '@/components/MainPhotos/PhotosComponents/Feature';
 import HistoricSites from '@/components/MainPhotos/PhotosComponents/HistoricSites';
@@ -173,23 +175,21 @@ const routes = [
 		meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] },
 	},
 	{
-		path: '/people/edit/:name',
+		path: '/people/:id/edit',
 		name: 'personEditView',
-		component: UserForm,
-		props: true,
+		component: EditPerson,
 		meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] },
 	},
 	{
-		path: '/people/view/:name',
-		component: UserForm,
+		path: '/people/:id/view',
 		name: 'personView',
-		props: true,
+		component: ViewPerson,
 		meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] },
 	},
 	{
 		path: '/people/new',
-		component: UserForm,
 		name: 'personAddView',
+		component: AddPerson,
 		meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] },
 	},
 	{

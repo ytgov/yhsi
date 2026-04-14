@@ -9,7 +9,8 @@ table.title-row
       td
         div People information
       td
-        img(style='width:200px; height:100px;' src="https://firebasestorage.googleapis.com/v0/b/yg-historic-sites.appspot.com/o/yukon.svg?alt=media&token=41e6cd68-0efd-438f-aef0-44bec1e15b55", alt="")
+        div(style='width:200px;')
+          include ../yukon.svg
 
 div.grid
   table.grid-table
@@ -28,5 +29,5 @@ div.grid
         tr 
           td #{val.GivenName} 
           td #{val.Surname} 
-          td #{val.BirthYeaar} 
+          td #{val.BirthYear}
           td #{val.DeathYear} 

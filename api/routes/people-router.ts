@@ -65,6 +65,7 @@ peopleRouter.get(
 peopleRouter.put(
 	'/:personId',
 	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
+	[param('personId').isInt()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { personId } = req.params;
@@ -103,6 +104,7 @@ peopleRouter.post(
 peopleRouter.get(
 	'/:personId/histories',
 	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
+	[param('personId').isInt()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { personId } = req.params;
@@ -112,13 +114,6 @@ peopleRouter.get(
 			.where('History.PersonID', personId)
 			.orderBy('SeqID', 'desc');
 
-		if (histories.length == 0) {
-			res.status(200).send({
-				message: 'The person doesnt exist or doesn´t have any historc records',
-			});
-			return;
-		}
-
 		res.status(200).send({ histories });
 	}
 );
@@ -126,6 +121,7 @@ peopleRouter.get(
 peopleRouter.put(
 	'/history/:historyId',
 	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
+	[param('historyId').isInt()],
 	ReturnValidationErrors,
 	async (req: Request, res: Response) => {
 		const { historyId } = req.params;

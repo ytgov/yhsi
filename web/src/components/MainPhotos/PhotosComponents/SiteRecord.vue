@@ -373,7 +373,7 @@
 									></v-text-field>
 								</v-row>
 								<div class="mx-3 mb-3">
-									<a @click="clickPerson(item.name)">
+									<a @click="clickPerson(item.personId)">
 										<span underline>View Person Details</span>
 									</a>
 								</div>
@@ -576,8 +576,8 @@ export default {
 		clickAircrash(yacsinumber) {
 			this.$router.push(`/airplane/view/${yacsinumber}`);
 		},
-		clickPerson(name) {
-			this.$router.push(`/people/view/${name}`);
+		clickPerson(personId) {
+			this.$router.push({ name: 'personView', params: { id: personId } });
 		},
 		clickBurial(name) {
 			this.$router.push(`/burials/view/${name}`);
