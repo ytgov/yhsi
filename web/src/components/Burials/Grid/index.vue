@@ -1,135 +1,110 @@
 <template>
-	<div class="">
-		<v-breadcrumbs :items="[
-			{ text: 'Home', to: '/', exact: true },
-			{ text: 'Burials', disabled: true }
-		]" divider=">" class="px-0"></v-breadcrumbs>
+	<div>
+		<v-breadcrumbs
+			:items="[
+				{ text: 'Home', to: '/', exact: true },
+				{ text: 'Burials' },
+			]"
+		></v-breadcrumbs>
+
 		<h1>Burials</h1>
-		<v-row>
-			<v-col
-				cols="6"
-				class="d-flex"
-			>
-				<v-text-field
-					flat
-					prepend-icon="mdi-magnify"
-					class="mx-4"
-					hide-details
-					label="Search by name"
-					v-model="search"
-					v-on:input="searchChange()"
-				></v-text-field>
 
-				<v-menu
-					transition="slide-y-transition"
-					bottom
-					:close-on-content-click="false"
-				>
-					<template v-slot:activator="{ on, attrs }">
-						<v-btn
-							color="transparent"
-							class="black--text"
-							v-bind="attrs"
-							v-on="on"
-						>
-							<v-icon class="black--text mr-1">mdi-filter</v-icon>
-							Filter
-
-							<v-icon class="black--text">mdi-chevron-right</v-icon>
-						</v-btn>
-					</template>
-					<v-list>
-						<v-list-item
-							v-for="(item, i) in filterOptions"
-							:key="i"
-							link
-						>
-							<v-text-field
-								clearable
-								v-model="item.value"
-								:label="item.text"
-								@change="searchChange()"
-							></v-text-field>
-						</v-list-item>
-					</v-list>
-				</v-menu>
-			</v-col>
-			<v-spacer></v-spacer>
-			<v-col
-				cols="auto"
-				class="d-flex"
-			>
-				<v-btn
-					color="primary"
-					class="mx-1"
-					@click="addNew"
-					v-if="userIsEditor"
-				>
-					Add Burial
-				</v-btn>
-
-				<v-btn
-					color="info"
-					class="mx-1"
-					v-if="loading"
-					:loading="loading"
-				>
-					<v-icon class="mr-1"> mdi-export </v-icon>
-					Export
-				</v-btn>
-				<v-btn
-					color="info"
-					class="mx-1"
-					@click="getBurialExport()"
-				>
-					<v-icon class="mr-1"> mdi-export </v-icon>
-					Export
-				</v-btn>
-
-				<v-btn
-					color="info"
-					class="mx-1"
-					@click="downloadPdf"
-					:loading="loadingPdf"
-				>
-					<v-icon class="mr-1"> mdi-printer </v-icon>
-					Print
-				</v-btn>
-			</v-col>
-		</v-row>
 		<div class="mt-2">
-			<v-card>
-				<v-container fluid>
-					<v-row>
-						<v-col cols="12">
-							<h2
-								v-if="burials"
-								class="ma-2"
-							>
-								{{ filteredData.length }} results out of {{ totalLength }}
-							</h2>
-						</v-col>
-					</v-row>
-					<v-divider
-						inset
-						class="mb-4"
-					></v-divider>
-					<v-row>
-						<v-col>
-							<v-data-table
-								:items="filteredData"
-								:headers="headers"
-								:loading="loading"
-								:search="search"
-								:options.sync="options"
-								:server-items-length="totalLength"
-								@click:row="handleClick"
-								:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
-							>
-							</v-data-table>
-						</v-col>
-					</v-row>
-				</v-container>
+			<v-card class="default px-3 py-3">
+				<v-card-text>
+					<div class="d-flex mb-6">
+						<v-text-field
+							prepend-inner-icon="mdi-magnify"
+							background-color="white"
+							outlined
+							dense
+							label="Search"
+							v-model="search"
+							hide-details
+							class="mr-5"
+							@keyup.enter="searchChange()"
+							v-on:input="searchChange()"
+						/>
+
+						<v-menu
+							transition="slide-y-transition"
+							bottom
+							:close-on-content-click="false"
+						>
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn
+									color="transparent"
+									class="black--text my-0 mr-2"
+									style="height: 40px"
+									v-bind="attrs"
+									v-on="on"
+								>
+									<v-icon class="black--text mr-1">mdi-filter</v-icon>
+									Filter
+									<v-icon class="black--text">mdi-chevron-right</v-icon>
+								</v-btn>
+							</template>
+							<v-list>
+								<v-list-item
+									v-for="(item, i) in filterOptions"
+									:key="i"
+									link
+								>
+									<v-text-field
+										clearable
+										v-model="item.value"
+										:label="item.text"
+										@change="searchChange()"
+									></v-text-field>
+								</v-list-item>
+							</v-list>
+						</v-menu>
+
+						<v-btn
+							color="primary"
+							class="my-0 mr-2"
+							style="height: 40px"
+							@click="addNew"
+							v-if="userIsEditor"
+						>
+							Add Burial
+						</v-btn>
+
+						<v-btn
+							color="info"
+							class="my-0 mr-2"
+							style="height: 40px"
+							@click="downloadPdf"
+							:loading="loadingPdf"
+							title="Print"
+						>
+							<v-icon>mdi-printer</v-icon>
+						</v-btn>
+
+						<v-btn
+							color="info"
+							class="my-0"
+							style="height: 40px"
+							@click="getBurialExport()"
+							title="Export CSV"
+						>
+							<v-icon>mdi-export</v-icon>
+						</v-btn>
+					</div>
+
+					<v-data-table
+						:items="filteredData"
+						:headers="headers"
+						:loading="loading"
+						:search="search"
+						:options.sync="options"
+						:server-items-length="totalLength"
+						@click:row="handleClick"
+						:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
+						class="clickable-row"
+					>
+					</v-data-table>
+				</v-card-text>
 			</v-card>
 		</div>
 	</div>
@@ -336,12 +311,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-#horizontal-list {
-	display: flex;
-}
-.notActive {
-	color: rgba(0, 0, 0, 0.54) !important;
-}
-</style>

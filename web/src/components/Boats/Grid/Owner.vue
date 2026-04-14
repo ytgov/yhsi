@@ -18,6 +18,7 @@
           :server-items-length="totalLength"
           @click:row="handleClick"
           :footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
+          class="clickable-row"
         >
         </v-data-table>
       </v-col>
