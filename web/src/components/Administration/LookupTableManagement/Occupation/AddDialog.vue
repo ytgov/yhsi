@@ -6,7 +6,7 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title>New Occupation</v-card-title>
+      <v-card-title>Add Occupation</v-card-title>
       <v-card-text>
         <v-form ref="form" v-model="valid" :lazy-validation="false">
           <v-text-field label="Occupation" v-model="input" :rules="[(v) => !!v || 'Occupation is required']" outlined dense
