@@ -53,7 +53,7 @@ export class AircrashService {
 		} else {
 			limit = Math.max(1, Math.min(perPage, MAX_PER_PAGE));
 		}
-		const offset = (page - 1) * limit;
+		const offset = Math.max(0, (page - 1) * limit);
 
 		const applyFilters = function (builder: any) {
 			if (textToMatch !== '') builder.where('yacsinumber', 'like', `%${textToMatch}%`);
