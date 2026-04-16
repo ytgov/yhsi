@@ -1,7 +1,6 @@
 <template>
-	<div>
-		<h3>Boat Owner</h3>
-		<Breadcrumbs />
+	<v-sheet>
+		<v-breadcrumbs :items="breadcrumbItems" class="pa-0 mb-2" />
 		<v-row>
 			<v-col
 				cols="12"
@@ -13,7 +12,8 @@
 				<v-spacer></v-spacer>
 				<!-- buttons for the view state -->
 				<v-btn
-					class="black--text mx-1"
+					color="primary"
+					class="mx-1"
 					@click="editMode"
 					v-if="mode == 'view'"
 				>
@@ -22,7 +22,8 @@
 				</v-btn>
 
 				<v-btn
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					@click="downloadPdf"
 					v-if="mode == 'view'"
 					:loading="loadingPdf"
@@ -32,7 +33,9 @@
 				</v-btn>
 				<!-- buttons for the edit state -->
 				<v-btn
-					class="black--text mx-1"
+					outlined
+					color="warning"
+					class="mx-1"
 					@click="cancelEdit"
 					v-if="mode == 'edit'"
 				>
@@ -50,7 +53,9 @@
 				</v-btn>
 				<!-- buttons for the new state -->
 				<v-btn
-					class="black--text mx-1"
+					outlined
+					color="warning"
+					class="mx-1"
 					@click="cancelNew"
 					v-if="mode == 'new'"
 				>
@@ -306,7 +311,7 @@
 		</v-row>
 		<!--
         <v-divider class="my-5"></v-divider>
-        
+
         <HistoricRecord :historicRecords="fields.histories" :mode="'view'"/>
         -->
 		<HistoricRecord
@@ -321,17 +326,16 @@
 				size="64"
 			></v-progress-circular>
 		</v-overlay>
-	</div>
+	</v-sheet>
 </template>
 
 <script>
-import Breadcrumbs from '../../../Breadcrumbs';
 import HistoricRecord from '../HistoricRecord';
 import owners from '../../../../controllers/owners';
 import boats from '../../../../controllers/boats';
 export default {
 	name: 'ownerForm',
-	components: { Breadcrumbs, HistoricRecord },
+	components: { HistoricRecord },
 	data: () => ({
 		overlay: false,
 		//helper vars, they are used to determine if the component is in an edit, view or add new state
@@ -379,15 +383,17 @@ export default {
 		}
 	},
 	methods: {
-		/*this function checks if the current path contains a specific word, this can be done with a simple includes but 
+		/*this function checks if the current path contains a specific word, this can be done with a simple includes but
         //it causes confusion when a boat or owner has 'new' in its name, leading the component to think it should use the 'new' mode,
         this problem is solved by using this funtion.*/
 		checkPath(word) {
 			let path = this.$route.path.split('/');
-			if (path[3] == word) {
-				return true;
+			// Route is /boats/owner/:id/view or /boats/owner/:id/edit or /boats/owner/new
+			// path = ['', 'boats', 'owner', ':id', 'view'] or ['', 'boats', 'owner', 'new']
+			if (word === 'new') {
+				return path[3] === 'new';
 			}
-			return false;
+			return path[4] === word;
 		},
 		noData() {
 			this.fields = {
@@ -397,15 +403,9 @@ export default {
 				histories: [],
 			};
 		},
-		saveCurrentOwner() {
-			localStorage.currentOwnerID = this.$route.params.id;
-		},
 		async getDataFromAPI() {
 			this.overlay = true;
-			if (this.$route.params.id) {
-				this.saveCurrentOwner();
-			}
-			this.fields = await owners.getById(localStorage.currentOwnerID);
+			this.fields = await owners.getById(this.$route.params.id);
 			this.fields.alias = this.fields.alias.map((x) => ({
 				...x,
 				isEdited: false,
@@ -421,16 +421,16 @@ export default {
 				this.edit == true ? { ...this.fieldsHistory } : { ...this.fields };
 			this.showSave = 0;
 			if (this.edit == true) {
-				this.$router.push(`/boats/owner/view/${this.fields.OwnerName}`);
+				this.$router.push({ name: 'ownerView', params: { id: this.$route.params.id } });
 			} else {
-				this.$router.push(`/boats/owner/edit/${this.fields.OwnerName}`);
+				this.$router.push({ name: 'ownerEditView', params: { id: this.$route.params.id } });
 			}
 			this.edit = !this.edit;
 		},
 		goToBoat(value) {
 			this.$router.push({
 				name: 'boatView',
-				params: { name: value.Name, id: value.Id },
+				params: { id: value.Id },
 			});
 		},
 		//Functions dedicated to handle the edit, add, view modes
@@ -440,19 +440,19 @@ export default {
 			}
 			this.mode = 'view';
 			this.resetListVariables();
-			this.$router.push(`/boats/owner/view/${this.fields.OwnerName}`);
+			this.$router.push({ name: 'ownerView', params: { id: this.$route.params.id } });
 		},
 		cancelNew() {
-			this.$router.push(`/boats/owner/`);
+			this.$router.push(`/boats/owner`);
 		},
 		viewMode() {
 			this.mode = 'view';
-			this.$router.push(`/boats/owner/view/${this.fields.OwnerName}`);
+			this.$router.push({ name: 'ownerView', params: { id: this.$route.params.id } });
 		},
 		editMode() {
 			this.fieldsHistory = { ...this.fields };
 			this.mode = 'edit';
-			this.$router.push(`/boats/owner/edit/${this.fields.OwnerName}`);
+			this.$router.push({ name: 'ownerEditView', params: { id: this.$route.params.id } });
 			this.showSave = 0;
 			this.resetListVariables();
 		},
@@ -481,19 +481,16 @@ export default {
 				newBoatsOwned,
 			};
 			////console.log(data);
-			let currentOwner = {};
 
 			if (this.mode == 'new') {
 				await owners.post(data);
 				this.$router.push(`/boats/owner`);
 			} else {
-				await owners.put(localStorage.currentOwnerID, data);
-				currentOwner.id = localStorage.currentOwnerID;
-				currentOwner.name = this.fields.OwnerName;
+				await owners.put(this.$route.params.id, data);
 				this.mode = 'view';
 				this.$router.push({
 					name: 'ownerView',
-					params: { name: currentOwner.name, id: currentOwner.id },
+					params: { id: this.$route.params.id },
 				});
 				this.$router.go();
 			}
@@ -578,7 +575,7 @@ export default {
 		},
 		async downloadPdf() {
 			this.loadingPdf = true;
-			let res = await owners.getPdf(parseInt(localStorage.currentOwnerID));
+			let res = await owners.getPdf(parseInt(this.$route.params.id));
 			let blob = new Blob([res], { type: 'application/octetstream' });
 			let url = window.URL || window.webkitURL;
 			let link = url.createObjectURL(blob);
@@ -593,9 +590,23 @@ export default {
 	},
 	computed: {
 		getOwnerID() {
-			if (this.$route.params.id) {
-				return this.$route.params.id;
-			} else return localStorage.currentOwnerID;
+			return this.$route.params.id;
+		},
+		breadcrumbItems() {
+			const items = [
+				{ text: 'Home', to: '/', exact: true },
+				{ text: 'Boats', to: '/boats', exact: true },
+				{ text: 'Owners', to: '/boats/owner', exact: true },
+			];
+			if (this.mode === 'new') {
+				items.push({ text: 'New Owner', disabled: true });
+			} else if (this.mode === 'edit') {
+				items.push({ text: this.fields.OwnerName || '', to: { name: 'ownerView', params: { id: this.$route.params.id } }, exact: true });
+				items.push({ text: 'Edit', disabled: true });
+			} else {
+				items.push({ text: this.fields.OwnerName || '', disabled: true });
+			}
+			return items;
 		},
 	},
 	watch: {

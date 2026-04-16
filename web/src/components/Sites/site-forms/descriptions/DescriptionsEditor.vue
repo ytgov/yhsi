@@ -36,7 +36,20 @@
 						<v-textarea
 							:readonly="!isEditing"
 							v-model="description.descriptionText"
-							label
+							label="Description"
+							dense
+							outlined
+							background-color="white"
+							hide-details
+						/>
+					</v-col>
+				</v-row>
+				<v-row>
+					<v-col cols="10">
+						<v-textarea
+							:readonly="!isEditing"
+							v-model="description.fR_DescriptionText"
+							label="Description (French)"
 							dense
 							outlined
 							background-color="white"

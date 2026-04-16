@@ -217,15 +217,16 @@
 					</v-col>
 					<v-col>
 						<h4>Direction</h4>
-						<v-text-field
+						<v-select
 							@change="changedLocation"
 							v-model="dms.lat.dir"
 							:readonly="mode == 'view'"
+							:items="['N', 'S']"
 							dense
 							outlined
 							background-color="white"
 							hide-details
-						></v-text-field>
+						></v-select>
 					</v-col>
 				</v-row>
 				<v-row v-if="selectedSystem.id == 3 && selectedProjection.id == 1">
@@ -269,15 +270,17 @@
 						></v-text-field>
 					</v-col>
 					<v-col>
-						<v-text-field
+						<h4>Direction</h4>
+						<v-select
 							@change="changedLocation"
 							v-model="dms.lng.dir"
 							:readonly="mode == 'view'"
+							:items="['E', 'W']"
 							dense
 							outlined
 							background-color="white"
 							hide-details
-						></v-text-field>
+						></v-select>
 					</v-col>
 				</v-row>
 				<!-- SELECTED PROJECITON IS NOT WSG -->
@@ -570,7 +573,7 @@ export default {
 		},
 		//Selection vars
 		selectedSystem: { id: 1, text: 'Decimal Degrees' },
-		selectedProjection: { id: 1, name: 'WSG 84' },
+		selectedProjection: { id: 1, name: 'WGS 84' },
 		locationAccuracyOptions: ['Approximate', 'Actual'],
 		mapSheetOptions: [],
 		isLoadingMapsheetOptions: false,
@@ -578,7 +581,7 @@ export default {
 			//datums
 			{
 				id: 1,
-				name: 'WSG 84',
+				name: 'WGS 84',
 			},
 			{
 				id: 2,
@@ -613,7 +616,7 @@ export default {
 		],
 		coordinateSystemOptions: [
 			{ id: 1, text: 'Decimal Degrees' },
-			{ id: 2, text: 'UTM Zone 8' },
+			{ id: 2, text: 'UTM' },
 			{ id: 3, text: 'Degrees, Minutes, Seconds' },
 		],
 		// Site marker

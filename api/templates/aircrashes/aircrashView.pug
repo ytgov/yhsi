@@ -10,7 +10,8 @@ table.title-row
         div Aircrash information
         div.item-name #{data.yacsinumber} #{data.aircrafttype}  (#{data.aircraftregistration})
       td
-        img(style='width:200px; height:100px;' src="https://firebasestorage.googleapis.com/v0/b/yg-historic-sites.appspot.com/o/yukon.svg?alt=media&token=41e6cd68-0efd-438f-aef0-44bec1e15b55", alt="")
+        div(style='width:200px;')
+          include ../yukon.svg
 
 div.section-title General information
 
@@ -33,7 +34,7 @@ table.divided-row
     tr 
       td
         div Latitude: #{data.lat}
-        div Longitude Maker/Model: #{data.long}
+        div Longitude: #{data.long}
         div Accuracy: #{data.accuracy}
         div Crash site within Yukon?: #{data.inyukon}
       td
@@ -44,9 +45,9 @@ table.divided-row
   tbody 
     tr 
       td
-        div Remains on site: #{data.yacsinumber}
-        div Extent of remains on site: #{data.aircrafttype}
-        div Other location of remains: #{data.crashdate}
+        div Remains on site: #{data.remainsonsite}
+        div Extent of remains on site: #{data.extentofremainsonsite}
+        div Other location of remains: #{data.otherlocationsofremains}
         div Description of crash event: #{data.descriptionofcrashevent}
       td
         div Souls on board: #{data.soulsonboard}
@@ -54,12 +55,12 @@ table.divided-row
         div Fatalities: #{data.fatalities}
         div Additional Info: #{data.comments}
         
-div.section-title Crash Sources 
+div.section-title Crash Sources
 table.divided-row
-  tbody 
-    tr 
+  tbody
+    tr
       td
-        div Remains on site: #{data.significanceofaircraft}
+        div Significance of aircraft: #{data.significanceofaircraft}
       td
         table.table-full-width
           thead 

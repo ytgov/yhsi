@@ -145,8 +145,7 @@ photosExtraRouter.post(
 			);
 
 			for (const rowId of filteredLinkPhotos) {
-				console.log('LINKING', { rowId });
-				await db('dbo.Photo').where('RowId', rowId).update({ PlaceId: PlaceId });
+					await db('dbo.Photo').where('RowId', rowId).update({ PlaceId: PlaceId });
 			}
 			res.status(200).send({ message: 'Successfully linked the photos' });
 		} catch (error) {

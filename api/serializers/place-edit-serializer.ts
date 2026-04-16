@@ -1,5 +1,5 @@
 import { camelCase } from 'lodash';
-import moment from 'moment';
+import { format, addHours } from 'date-fns';
 
 import { mapKeysDeep } from '../utils/lodash-extensions';
 import { PlainObject, Place, PlaceEdit } from '../models';
@@ -101,9 +101,9 @@ export default class PlaceEditSerializer extends BaseSerializer<PlaceEdit> {
 				if (placeEdit.recognitionDate === undefined) return undefined;
 				if (placeEdit.recognitionDate === null) return null;
 
-				return moment(placeEdit.recognitionDate)
-					.add(7, 'hours')
-					.format('YYYY-MM-DD');
+				return placeEdit.recognitionDate
+					? format(addHours(new Date(placeEdit.recognitionDate), 7), 'yyyy-MM-dd')
+					: null;
 			}),
 			...this.field('contributingResources', (placeEdit) =>
 				this.decodeCommaDelimitedArray(placeEdit.contributingResources)

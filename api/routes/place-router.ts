@@ -199,15 +199,13 @@ placeRouter.post(
 
 		req.body.yHSIId = await placeService.generateIdFor(req.body.nTSMapSheet);
 
-		const result = await placeService
-			.addPlace(req.body as Place, currentUser)
-			.then((item) => item)
-			.catch((err) => {
-				console.log('addPlace ERROR', err);
-				return res.json({ errors: err });
-			});
-
-		return res.json({ data: result });
+		try {
+			const result = await placeService.addPlace(req.body as Place, currentUser);
+			return res.json({ data: result });
+		} catch (err) {
+			console.error('addPlace ERROR', err);
+			return res.status(500).json({ errors: [{ message: (err as Error).message || 'Failed to create site' }] });
+		}
 	}
 );
 
@@ -319,7 +317,7 @@ placeRouter.get(
 
 placeRouter.patch(
 	'/:id',
-	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
+	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
 	[
 		param('id').isInt({ gt: 0 }),
 		body('yHSIId').isString().optional({ nullable: true }),
@@ -369,7 +367,10 @@ placeRouter.patch(
 		body('previousAddress').isString().optional({ nullable: true }),
 		body('previousOwnerships').isArray().optional({ nullable: true }),
 		body('primaryName').isString().optional(),
+		body('fR_PrimaryName').isString().optional({ nullable: true }),
+		body('fR_Designations').isString().optional({ nullable: true }),
 		body('recognitionDate').isDate().optional({ nullable: true }),
+		body('recordStatus').isInt().optional(),
 		body('records').isArray().optional({ nullable: true }),
 		body('resourceType').isString().optional({ nullable: true }),
 		body('revisionLogs').isArray().optional({ nullable: true }),

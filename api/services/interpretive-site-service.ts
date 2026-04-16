@@ -65,9 +65,8 @@ export class InterpretiveSiteService {
 			.where('InterpretiveSite.Inspections.SiteID', siteId);
 
 		item.maintainers = await db
-			.select('InterpretiveSite.Maintainer.*', 'InterpretiveSite.MaintOwnLookup.MaintOwnName as Maintainer')
+			.select('*')
 			.from('InterpretiveSite.Maintainer')
-			.leftJoin('InterpretiveSite.MaintOwnLookup', 'InterpretiveSite.Maintainer.MaintOwnLUpID', 'InterpretiveSite.MaintOwnLookup.MaintOwnLUpID')
 			.where('InterpretiveSite.Maintainer.SiteID', siteId)
 			.andWhere('InterpretiveSite.Maintainer.AssetID', null);
 
@@ -75,7 +74,6 @@ export class InterpretiveSiteService {
 	}
 
 	async addSite(item: any, assets: any, actions: any, inspections: any) {
-		console.log(item, assets, actions, inspections);
 		const res = await db
 			.insert(item)
 			.into('InterpretiveSite.Sites')
@@ -183,7 +181,7 @@ export class InterpretiveSiteService {
 		//maintainers
 		const newMaintainers = maintainers
 			.filter((x: any) => x.new == true && !x.deleted)
-			.map((x: any) => ({ MaintOwnLUpID: x.MaintOwnLUpID, SiteID: x.SiteID }));
+			.map((x: any) => ({ SiteID: x.SiteID }));
 		if (newMaintainers.length > 0) {
 			await db
 				.insert(newMaintainers)
@@ -397,6 +395,9 @@ export class InterpretiveSiteService {
 			.del();
 	}
 	async addAction(item: any) {
+		if (!item.InspectID) {
+			item.InspectID = 0;
+		}
 		const res = await db
 			.insert(item)
 			.into('InterpretiveSite.Actions')
@@ -469,7 +470,6 @@ export class InterpretiveSiteService {
 				})
 				.join('InterpretiveSite.Sites as ST', 'AC.SiteID', '=', 'ST.SiteID')
 				.orderBy(`${sortBy}`, `${sort}`);
-			console.log(actions);
 		} else {
 			counter = await db
 				.from('InterpretiveSite.Actions as AC')
@@ -537,12 +537,9 @@ export class InterpretiveSiteService {
 
 	async addAsset(item: any, maintainer: any) {
 		const res: any = await db.insert(item).into('InterpretiveSite.Assets').returning('*');
-		console.log(res);
 		if (res) {
-			maintainer.SiteID = res[0].SiteID;
-			maintainer.AssetID = res[0].AssetID;
 			res.maintainer = await db
-				.insert(maintainer)
+				.insert({ SiteID: res[0].SiteID, AssetID: res[0].AssetID })
 				.into('InterpretiveSite.Maintainer')
 				.returning('*');
 		}
@@ -554,7 +551,7 @@ export class InterpretiveSiteService {
 		//maintainers
 		const newMaintainers = maintainers
 			.filter((x: any) => x.new == true && !x.deleted)
-			.map((x: any) => ({ Maintainer: x.Maintainer, AssetID: x.AssetID }));
+			.map((x: any) => ({ AssetID: x.AssetID }));
 		if (newMaintainers.length > 0) {
 			await db
 				.insert(newMaintainers)

@@ -60,6 +60,8 @@ export const PLACE_FIELDS = [
 	'designations',
 	'contributingResources',
 	'records',
+	'fR_PrimaryName',
+	'fR_Designations',
 ];
 
 export const REGISTER_FIELDS = [

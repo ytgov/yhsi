@@ -1,7 +1,6 @@
 <template>
-  <v-btn class="black--text mx-1" @click="exportPDF" :disabled="disabled">
-    <v-icon class="mr-1">mdi-printer</v-icon>
-    Print
+  <v-btn color="info" style="height: 40px" @click="exportPDF" :disabled="disabled">
+    <v-icon>mdi-printer</v-icon>
   </v-btn>
 </template>
 
@@ -53,10 +52,10 @@ export default {
       this.mapData(this.data);
 
       this.doc = new jsPDF("p", "pt");
-        this.doc.text(`Places`, 40, 40);
-        this.textpos = 70;
-        this.printPlaces();
-        this.doc.save("Places.pdf");
+      this.doc.text(`Places`, 40, 40);
+      this.textpos = 70;
+      this.printPlaces();
+      this.doc.save("Places.pdf");
     },
     addText(text) {
       this.doc.setFontSize(9);

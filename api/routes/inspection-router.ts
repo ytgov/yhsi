@@ -95,12 +95,12 @@ inspectionRouter.delete(
 			'inspections'
 		);
 		if (!exists) {
-			res.sendStatus(404).send('The inspection doesnt exist');
+			res.status(404).send({ message: 'The inspection does not exist' });
 			return;
 		}
 
 		const resObj = await intSiteService.removeInspection(parseInt(inspectID));
-		res.sendStatus(200).send(resObj);
+		res.status(200).json({ data: resObj });
 	}
 );
 
@@ -113,10 +113,10 @@ inspectionRouter.delete(
 
 		const resObj = await intSiteService.removeDocumentByID(parseInt(id));
 		if (!resObj) {
-			res.sendStatus(404).send('The Action doesnt exist');
+			res.status(404).send({ message: 'The document does not exist' });
 			return;
 		}
-		res.sendStatus(200).send(resObj);
+		res.status(200).json({ data: resObj });
 	}
 );
 

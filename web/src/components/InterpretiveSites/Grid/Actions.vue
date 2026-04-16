@@ -1,50 +1,16 @@
 <template>
-	<v-container fluid>
-		<v-row>
-			<v-col cols="12">
-				<h2>{{ filteredData.length }} results out of {{ totalLength }}</h2>
-				<!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
-			</v-col>
-		</v-row>
-		<v-divider
-			inset
-			class="mb-4"
-		></v-divider>
-		<v-row>
-			<v-col>
-				<v-data-table
-					:items="filteredData"
-					:headers="headers"
-					:loading="loading"
-					:search="search"
-					:options.sync="options"
-					:server-items-length="totalLength"
-					@click:row="handleClick"
-					:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
-				>
-					<template v-slot:item="{ item, index }">
-						<tr>
-							<td class="parent-row">
-								{{ item.ActionDesc }}
-							</td>
-							<td class="child-row">{{ item.CompletedBy }}</td>
-							<td class="child-row">{{ item.Priority }}</td>
-							<td class="child-row">{{ item.ActionCompleteDate }}</td>
-							<td class="child-row">{{ item.CompletionDesc }}</td>
-							<td class="child-row">
-								<ActionDialog
-									:mode="'edit'"
-									:type="'grid'"
-									:dataToEdit="{ item, index }"
-									@gridActionEdited="editAction"
-								/>
-							</td>
-						</tr>
-					</template>
-				</v-data-table>
-			</v-col>
-		</v-row>
-	</v-container>
+	<v-data-table :items="filteredData" :headers="headers" :loading="loading" :search="search" :options.sync="options"
+		:server-items-length="totalLength" @click:row="handleClick"
+		:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }">
+
+		<template #item.actions="{ item }">
+			<ActionDialog :mode="'edit'" :type="'grid'" :dataToEdit="{ item }" @gridActionEdited="editAction" />
+		</template>
+		<template #item.ActionCompleteDate="{ item }">
+			{{ formatDate(item.ActionCompleteDate) }}
+		</template>
+
+	</v-data-table>
 </template>
 
 <script>
@@ -62,6 +28,7 @@ export default {
 			{ text: 'Priority', value: 'Priority' },
 			{ text: 'Completed date', value: 'ActionCompleteDate' },
 			{ text: 'Completion Notes', value: 'CompletionDesc' },
+			{ text: '', value: 'actions' },
 		],
 		filterOptions: [
 			{ text: 'Action Required', value: '', dataAccess: 'ActionDesc' },
@@ -83,7 +50,7 @@ export default {
 		editAction() {
 			this.$router.go();
 		},
-		newAction() {},
+		newAction() { },
 		handleClick() {
 			//Redirects the user to the edit user form
 			// this.$router.push({
@@ -118,13 +85,9 @@ export default {
 			);
 
 			this.list = data.body.map((x) => {
-				x.ToBeCompleteDate = x.ToBeCompleteDate
-					? this.formatDate(x.ToBeCompleteDate)
-					: null;
-				x.CreatedDate = x.CreatedDate ? this.formatDate(x.CreatedDate) : null;
-				x.ActionCompleteDate = x.ActionCompleteDate
-					? this.formatDate(x.ActionCompleteDate)
-					: null;
+				if (x.ToBeCompleteDate) x.ToBeCompleteDate = x.ToBeCompleteDate.split('T')[0];
+				if (x.CreatedDate) x.CreatedDate = x.CreatedDate.split('T')[0];
+				if (x.ActionCompleteDate) x.ActionCompleteDate = x.ActionCompleteDate.split('T')[0];
 				return x;
 			});
 			this.totalLength = data.count;
@@ -135,7 +98,8 @@ export default {
 			this.loading = false;
 		},
 		formatDate(date) {
-			return date.split('T')[0].split('-').reverse().join('-');
+			if (!date) return '';
+			return date.split('T')[0];
 		},
 	},
 	computed: {

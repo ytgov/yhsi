@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import axios from 'axios';
 import { stringify } from 'querystring';
-import moment from 'moment';
+import { addSeconds, subMinutes, isBefore } from 'date-fns';
 import {
 	GIS_FEATURE_PASSWORD,
 	GIS_FEATURE_USERNAME,
@@ -17,12 +17,12 @@ export const mapsRouter = express.Router();
 let PORTAL_TOKEN = {
 	access_token: '',
 	expires_in: 0,
-	renew_after: moment().utc(true),
+	renew_after: new Date(),
 };
 let FEATURE_TOKEN = {
 	access_token: '',
 	expires_in: 0,
-	renew_after: moment().utc(true),
+	renew_after: new Date(),
 };
 const placeService = new PlaceService();
 
@@ -67,11 +67,9 @@ mapsRouter.get('/sites*', authorize(), async (req: Request, res: Response) => {
 });
 
 async function loadPortalToken() {
-	const now = moment().utc(true);
+	const now = new Date();
 
-	if (now.isBefore(PORTAL_TOKEN.renew_after)) return;
-
-	console.log('GIS: NEW PORTAL TOKEN');
+	if (isBefore(now, PORTAL_TOKEN.renew_after)) return;
 
 	await axios
 		.post(
@@ -79,21 +77,17 @@ async function loadPortalToken() {
 		)
 		.then((resp: any) => {
 			PORTAL_TOKEN = resp.data;
-			PORTAL_TOKEN.renew_after = moment()
-				.utc(true)
-				.add(PORTAL_TOKEN.expires_in - 60 * 15, 'seconds');
+			PORTAL_TOKEN.renew_after = addSeconds(new Date(), PORTAL_TOKEN.expires_in - 60 * 15);
 		})
 		.catch((err: any) => {
-			console.log('ERROR', err);
+			console.error('GIS portal token error:', err);
 		});
 }
 
 async function loadFeatureToken() {
-	const now = moment().utc(true);
+	const now = new Date();
 
-	if (now.isBefore(FEATURE_TOKEN.renew_after)) return;
-
-	console.log('GIS: NEW FEATURE TOKEN');
+	if (isBefore(now, FEATURE_TOKEN.renew_after)) return;
 
 	const body = {
 		username: GIS_FEATURE_USERNAME,
@@ -107,11 +101,11 @@ async function loadFeatureToken() {
 		})
 		.then((resp: any) => {
 			const { token, expires } = resp.data;
-			const renew_after = moment(expires).utc(true).subtract(30, 'minutes');
+			const renew_after = subMinutes(new Date(expires), 30);
 			FEATURE_TOKEN = { access_token: token, expires_in: 3600, renew_after };
 		})
 		.catch((err: any) => {
-			console.log('ERROR', err);
+			console.error('GIS feature token error:', err);
 		});
 }
 

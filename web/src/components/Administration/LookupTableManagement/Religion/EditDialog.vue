@@ -1,37 +1,18 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialog" persistent max-width="600px">
+    <v-dialog v-model="dialog" persistent max-width="500px" @click:outside="close">
       <v-card>
-        <v-card-title>
-          <span class="text-h5">Edit Religion</span>
-        </v-card-title>
+        <v-card-title>Edit Religion</v-card-title>
         <v-card-text>
-            <v-row>
-              <v-col cols="12">
-                <v-form
-                  ref="editReligionForm"
-                  :lazy-validation="false"
-                  v-model="valid"
-                >
-                  <v-row class="mt-2">
-                    <v-col cols="12">
-                      <v-text-field
-                        ref="editInput"
-                        label="Religion"
-                        v-model="data.Religion"
-                        :rules="generalRules"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  
-                </v-form>
-              </v-col>
-            </v-row>
+          <v-form ref="form" v-model="valid" :lazy-validation="false">
+            <v-text-field label="Religion" v-model="input" :rules="[(v) => !!v || 'Religion is required']" outlined
+              dense></v-text-field>
+          </v-form>
         </v-card-text>
-        <v-card-actions>
-          <v-btn text @click="closeDialog" class="black--text"> Close </v-btn>
+        <v-card-actions class="px-6">
+          <v-btn @click="close" outlined color="warning">Cancel</v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="success" text :disabled="!valid" @click="save">
+          <v-btn color="success" :disabled="!valid" :loading="saving" @click="save">
             Save
           </v-btn>
         </v-card-actions>
@@ -41,42 +22,39 @@
 </template>
 
 <script>
-import catalogs from "../../../../controllers/catalogs";
+import catalogs from '../../../../controllers/catalogs';
+
 export default {
-  props: ["dialog", "data"],
+  props: ['dialog', 'item'],
   data: () => ({
-    input: null,
     valid: false,
-    generalRules: [(v) => !!v || "This field is required"],
+    input: '',
+    saving: false,
   }),
-  methods: {
-    closeDialog() {
-      this.$emit("closeEditDialog");
-    },
-    async save() {
-      let data = {
-        data: { Religion: this.data.Religion },
-      };
-      await catalogs.putReligion(this.data.ReligionLUpID, data);
-      this.$router.go();
-    },
-    //not needed
-    validate() {
-      this.$refs.editReligionForm.validate();
-    },
-    reset() {
-      this.$refs.editReligionForm.reset();
-    },
-    resetValidation() {
-      this.$refs.editReligionForm.resetValidation();
+  watch: {
+    item: {
+      handler(val) {
+        if (val) this.input = val.Religion;
+      },
+      immediate: true,
     },
   },
-  watch: {
-    data: {
-      handler() {
-        this.input = this.data.Type;
-      },
-      deep: true,
+  methods: {
+    async save() {
+      if (!this.$refs.form.validate()) return;
+      this.saving = true;
+      try {
+        await catalogs.putReligion(this.item.ReligionLUpID, { data: { Religion: this.input } });
+        this.$emit('saved');
+        this.close();
+      } catch (e) {
+        console.error(e);
+      } finally {
+        this.saving = false;
+      }
+    },
+    close() {
+      this.$emit('close');
     },
   },
 };

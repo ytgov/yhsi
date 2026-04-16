@@ -52,6 +52,11 @@ export class UserService {
 		return list;
 	}
 
+	async getPendingCount(): Promise<number> {
+		const result = await this.knex('Security.User').where({ status: 'Pending' }).count('id as count').first();
+		return result ? Number(result.count) : 0;
+	}
+
 	async loadDetails(user: User): Promise<User> {
 		user.role_list = user.roles?.split(',').map((role) => role.trim()) || [];
 		user.site_access = await this.knex('Security.UserSiteAccess')
@@ -115,7 +120,6 @@ export class UserService {
 		last_name: string
 	): Promise<User[]> {
 		email = email.toLocaleLowerCase();
-		console.log('-- Creating User account for ' + email);
 		return this.knex('Security.User')
 			.insert({
 				email,

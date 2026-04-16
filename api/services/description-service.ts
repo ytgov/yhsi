@@ -6,7 +6,7 @@ export class DescriptionService {
 	async getForPlace(placeId: number) {
 		return db('Description')
 			.where({ placeId })
-			.select<Description[]>(['id', 'placeId', 'type', 'descriptionText']);
+			.select<Description[]>(['id', 'placeId', 'type', 'descriptionText', 'fR_DescriptionText']);
 	}
 
 	async upsertForPlace(placeId: number, descriptions: Description[]) {
@@ -16,6 +16,7 @@ export class DescriptionService {
 					placeId,
 					type: description.type,
 					descriptionText: description.descriptionText?.trim(),
+					fR_DescriptionText: description.fR_DescriptionText?.trim(),
 				}))
 			);
 		}).then((cleanDescriptions) => {

@@ -1,7 +1,6 @@
 <template>
-	<div>
-		<h3>Boats</h3>
-		<Breadcrumbs />
+	<v-sheet>
+		<v-breadcrumbs :items="breadcrumbItems" class="pa-0 mb-2" />
 		<v-row>
 			<v-col
 				cols="12"
@@ -19,7 +18,8 @@
 				<v-spacer></v-spacer>
 				<!-- buttons for the view state -->
 				<v-btn
-					class="black--text mx-1"
+					color="primary"
+					class="mx-1"
 					@click="editMode"
 					v-if="mode == 'view' && userIsEditor"
 				>
@@ -27,7 +27,8 @@
 					Edit
 				</v-btn>
 				<v-btn
-					class="black--text mx-1"
+					color="info"
+					class="mx-1"
 					v-if="mode == 'view'"
 					@click="downloadPdf"
 					:loading="loadingPdf"
@@ -37,7 +38,9 @@
 				</v-btn>
 				<!-- buttons for the edit state -->
 				<v-btn
-					class="black--text mx-1"
+					outlined
+					color="warning"
+					class="mx-1"
 					@click="cancelEdit"
 					v-if="mode == 'edit'"
 				>
@@ -55,7 +58,9 @@
 				</v-btn>
 				<!-- buttons for the new state -->
 				<v-btn
-					class="black--text mx-1"
+					outlined
+					color="warning"
+					class="mx-1"
 					@click="cancelNew"
 					v-if="mode == 'new'"
 				>
@@ -226,6 +231,7 @@
 								v-model="fields.ConstructionDate"
 								no-title
 								scrollable
+								min="1800-01-01"
 							>
 								<v-spacer></v-spacer>
 								<v-btn
@@ -270,6 +276,7 @@
 								v-model="fields.ServiceStart"
 								no-title
 								scrollable
+								min="1800-01-01"
 							>
 								<v-spacer></v-spacer>
 								<v-btn
@@ -314,6 +321,7 @@
 								v-model="fields.ServiceEnd"
 								no-title
 								scrollable
+								min="1800-01-01"
 							>
 								<v-spacer></v-spacer>
 								<v-btn
@@ -502,8 +510,8 @@
 							:recordId="getBoatID"
 							:showAddPhotoButton="mode == 'edit'"
 						/>
-						<EmptyPhotosCard 
-							v-else 
+						<EmptyPhotosCard
+							v-else
 						/>
 					</v-col>
 				</v-row>
@@ -524,7 +532,7 @@
 				size="64"
 			></v-progress-circular>
 		</v-overlay>
-	</div>
+	</v-sheet>
 </template>
 
 <script>
@@ -533,7 +541,6 @@ import _ from 'lodash';
 import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard.vue';
 import EmptyPhotosCard from "@/components/photos/EmptyPhotosCard.vue"
 
-import Breadcrumbs from '../../../Breadcrumbs.vue';
 import HistoricRecord from '../HistoricRecord';
 import boats from '../../../../controllers/boats';
 import owners from '../../../../controllers/owners';
@@ -542,7 +549,7 @@ import { UserRoles } from '../../../../authorization';
 
 export default {
 	name: 'boatsForm',
-	components: { Breadcrumbs, HistoricRecord, GenericRecordPhotosCard, EmptyPhotosCard },
+	components: { HistoricRecord, GenericRecordPhotosCard, EmptyPhotosCard },
 	data: () => ({
 		overlay: false,
 		infoLoaded: false,
@@ -600,15 +607,17 @@ export default {
 		}
 	},
 	methods: {
-		/*this function checks if the current path contains a specific word, this can be done with a simple includes but 
+		/*this function checks if the current path contains a specific word, this can be done with a simple includes but
         //it causes confusion when a boat or owner has 'new' in its name, leading the component to think it should use the 'new' mode,
         this problem is solved by using this funtion.*/
 		checkPath(word) {
 			let path = this.$route.path.split('/');
-			if (path[2] == word) {
-				return true;
+			// Route is /boats/:id/view or /boats/:id/edit or /boats/new
+			// path[3] is view/edit, path[2] is the id or 'new'
+			if (word === 'new') {
+				return path[2] === 'new';
 			}
-			return false;
+			return path[3] === word;
 		},
 		noData() {
 			this.fields = {
@@ -648,15 +657,9 @@ export default {
 				this.regNumberWarning = ['The Registration Number must be unique.'];
 			}
 		},
-		saveCurrentBoat() {
-			localStorage.currentBoatID = this.$route.params.id;
-		},
 		async getDataFromApi() {
 			this.overlay = true;
-			if (this.$route.params.id) {
-				this.saveCurrentBoat();
-			}
-			this.fields = await boats.getById(localStorage.currentBoatID);
+			this.fields = await boats.getById(this.$route.params.id);
 
 			this.fields.owners = this.fields.owners.map((x) => ({
 				...x,
@@ -685,7 +688,7 @@ export default {
 		goToOwner(value) {
 			this.$router.push({
 				name: 'ownerView',
-				params: { name: value.OwnerName, id: value.id },
+				params: { id: value.id },
 			});
 		},
 		//Functions dedicated to handle the edit, add, view modes
@@ -695,19 +698,19 @@ export default {
 			}
 			this.mode = 'view';
 			this.resetListVariables();
-			this.$router.push(`/boats/view/${this.fields.Name}`);
+			this.$router.push({ name: 'boatView', params: { id: this.$route.params.id } });
 		},
 		cancelNew() {
 			this.$router.push(`/boats/`);
 		},
 		viewMode() {
 			this.mode = 'view';
-			this.$router.push(`/boats/view/${this.fields.Name}`);
+			this.$router.push({ name: 'boatView', params: { id: this.$route.params.id } });
 		},
 		editMode() {
 			this.fieldsHistory = { ...this.fields };
 			this.mode = 'edit';
-			this.$router.push(`/boats/edit/${this.fields.Name}`);
+			this.$router.push({ name: 'boatEditView', params: { id: this.$route.params.id } });
 			this.showSave = 0;
 			this.resetListVariables();
 		},
@@ -746,7 +749,6 @@ export default {
 			};
 			////console.log(data);
 
-			let currentBoat = {};
 			//console.log(data);
 
 			if (this.mode == 'new') {
@@ -766,13 +768,11 @@ export default {
 					this.$router.push(`/boats/`);
 				}
 			} else {
-				await boats.put(localStorage.currentBoatID, data);
-				currentBoat.id = localStorage.currentBoatID;
-				currentBoat.name = this.fields.Name;
+				await boats.put(this.$route.params.id, data);
 				this.mode = 'view';
 				this.$router.push({
 					name: 'boatView',
-					params: { name: currentBoat.name, id: currentBoat.id },
+					params: { id: this.$route.params.id },
 				});
 				this.$router.go();
 			}
@@ -895,7 +895,7 @@ export default {
 		},
 		async downloadPdf() {
 			this.loadingPdf = true;
-			let res = await boats.getPdf(parseInt(localStorage.currentBoatID));
+			let res = await boats.getPdf(parseInt(this.$route.params.id));
 			let blob = new Blob([res], { type: 'application/octetstream' });
 			let url = window.URL || window.webkitURL;
 			let link = url.createObjectURL(blob);
@@ -913,9 +913,19 @@ export default {
 			return this.$store.getters.userInRole([UserRoles.BOATS_EDITOR]);
 		},
 		getBoatID() {
-			if (this.$route.params.id) {
-				return this.$route.params.id;
-			} else return localStorage.currentBoatID;
+			return this.$route.params.id;
+		},
+		breadcrumbItems() {
+			const items = [{ text: 'Home', to: '/', exact: true }, { text: 'Boats', to: '/boats', exact: true }];
+			if (this.mode === 'new') {
+				items.push({ text: 'New Boat', disabled: true });
+			} else if (this.mode === 'edit') {
+				items.push({ text: this.fields.Name || '', to: { name: 'boatView', params: { id: this.$route.params.id } }, exact: true });
+				items.push({ text: 'Edit', disabled: true });
+			} else {
+				items.push({ text: this.fields.Name || '', disabled: true });
+			}
+			return items;
 		},
 		constructionDate() {
 			return this.formatDate(this.fields.ConstructionDate);

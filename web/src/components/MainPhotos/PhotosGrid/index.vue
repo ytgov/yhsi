@@ -1,98 +1,56 @@
 <template>
 	<div>
-		<v-app-bar
-			color="white"
-			flat
-			dark
-		>
-			<v-toolbar-title class="black--text mr-2">
-				Photos {{ this.filterText }} {{ this.photoCountText }}</v-toolbar-title
-			>
-			<v-menu
-				transition="slide-y-transition"
-				bottom
-			>
+		<v-breadcrumbs :items="[
+			{ text: 'Home', to: '/', exact: true },
+			{ text: 'Photos' },
+		]"></v-breadcrumbs>
+
+		<h1>Photos {{ this.filterText }} {{ this.photoCountText }}</h1>
+
+		<div class="d-flex mb-4 mt-2">
+			<v-menu transition="slide-y-transition" bottom>
 				<template v-slot:activator="{ on, attrs }">
-					<v-btn
-						class="black--text"
-						light
-						v-bind="attrs"
-						v-on="on"
-					>
-						<v-icon>mdi-swap-vertical</v-icon>
+					<v-btn color="transparent" class="black--text my-0 mr-2" style="height: 40px" v-bind="attrs"
+						v-on="on">
+						<v-icon class="mr-1">mdi-swap-vertical</v-icon>
 						Sort
 					</v-btn>
 				</template>
 				<v-list>
-					<v-list-item-group
-						v-model="selectedSorter"
-						color="primary"
-					>
-						<v-list-item
-							v-for="(item, i) in sortOptions"
-							:key="i"
-							link
-						>
+					<v-list-item-group v-model="selectedSorter" color="primary">
+						<v-list-item v-for="(item, i) in sortOptions" :key="i" link>
 							<v-list-item-title>{{ item.name }}</v-list-item-title>
 						</v-list-item>
 					</v-list-item-group>
 				</v-list>
 			</v-menu>
 			<v-spacer />
-			<!--<Search :data="photos" />-->
-			<v-btn
-				class="black--text"
-				light
-				@click="handleClick('add')"
-			>
-				<v-icon>mdi-plus</v-icon>
-				<div>Add Photo</div>
+			<v-btn color="primary" class="my-0" style="height: 40px" @click="handleClick('add')">
+				Add Photo
 			</v-btn>
-		</v-app-bar>
+		</div>
 
-		<v-card
-			class="mt-5"
-			color="#fff2d5"
-		>
+		<v-card class="my-5" color="#fff2d5">
 			<v-card-text style="font-size: 15px">
-				<a @click="showHideFilters()"
-					><span>{{ showFiltersText }} </span></a
-				>
+				<a @click="showHideFilters()"><span>{{ showFiltersText }} </span></a>
 				<span>to refine results or choose from </span>
-				<v-menu
-					transition="slide-y-transition"
-					offset-y
-					class="ml-0"
-				>
+				<v-menu transition="slide-y-transition" offset-y class="ml-0">
 					<template v-slot:activator="{ on, attrs }">
-						<a
-							v-bind="attrs"
-							v-on="on"
-						>
+						<a v-bind="attrs" v-on="on">
 							My Saved Filters <v-icon>mdi-menu-down</v-icon>
 						</a>
 					</template>
 					<v-list>
 						<v-list-item-group color="primary">
 							<div class="ml-3">My Saved Filters</div>
-							<v-list-item
-								link
-								v-for="(item, i) in savedFilters"
-								:title="item.name"
-								:key="i"
-								@click="handleFilterClick('load', item.id)"
-							>
+							<v-list-item link v-for="(item, i) in savedFilters" :title="item.name" :key="i"
+								@click="handleFilterClick('load', item.id)">
 								<v-list-item-title>{{ item.name }}</v-list-item-title>
 							</v-list-item>
 							<v-divider />
 							<div class="mt-2 ml-3">Remove a Filter</div>
-							<v-list-item
-								link
-								v-for="(item, i) in savedFilters"
-								:title="item.name"
-								:key="`delete-${i}`"
-								@click="handleFilterClick('delete', item.id)"
-							>
+							<v-list-item link v-for="(item, i) in savedFilters" :title="item.name" :key="`delete-${i}`"
+								@click="handleFilterClick('delete', item.id)">
 								<v-list-item-title>{{ item.name }} </v-list-item-title>
 								<v-icon class="ml-1">mdi-close</v-icon>
 							</v-list-item>
@@ -101,104 +59,50 @@
 				</v-menu>
 			</v-card-text>
 			<div v-if="showFilterSection">
-				<VueQueryBuilder
-					:rules="queryRules"
-					:maxDepth="1"
-					:labels="queryLabels"
-					v-model="queryBuilder"
-				/>
+				<VueQueryBuilder :rules="queryRules" :maxDepth="1" :labels="queryLabels" v-model="queryBuilder" />
 				<v-row class="ml-4 mb-3">
-					<v-btn
-						color="primary"
-						class="mr-2"
-						@click="runQuery()"
-					>
-						<v-icon>mdi-magnify</v-icon>
-						<div class="ml-2">View Results</div>
+					<v-btn color="primary" class="mr-2" @click="runQuery()">
+						<v-icon class="mr-1">mdi-magnify</v-icon>
+						View Results
 					</v-btn>
-					<v-btn
-						color="secondary"
-						class="mr-2"
-						@click="clearFilters()"
-					>
-						<v-icon>mdi-refresh</v-icon>
-						<div class="ml-2">Clear Filters</div>
+					<v-btn color="warning" outlined class="mr-2" @click="clearFilters()">
+						<v-icon class="mr-1">mdi-refresh</v-icon>
+						Clear Filters
 					</v-btn>
-					<SaveDialog
-						@saveDialog="saveDialog"
-						:isDisabled="queryBuilderEmpty"
-						:itemType="`filter`"
-					/>
+					<SaveDialog @saveDialog="saveDialog" :isDisabled="queryBuilderEmpty" :itemType="`filter`" />
 				</v-row>
 			</div>
 		</v-card>
 
 		<v-row>
-			<v-col class="d-flex mt-3">
-				<v-text-field
-					v-model="search"
-					@keyup.enter="getDataFromApi"
-					outlined
-					dense
-					c
-					label="Search"
-				/>
-				<v-btn
-					@click="getDataFromApi"
-					class="my-0 ml-3"
-					color="primary"
-					fab
-					small
-				>
-					<v-icon>mdi-magnify</v-icon>
+			<v-col class="d-flex">
+				<v-text-field v-model="search" @keyup.enter="getDataFromApi" prepend-inner-icon="mdi-magnify"
+					background-color="white" outlined dense hide-details label="Search" class="mr-2" />
+				<v-btn @click="getDataFromApi" color="primary" class="my-0" style="height: 40px">
+					Search
 				</v-btn>
 			</v-col>
 		</v-row>
 		<v-row v-if="!loading">
-			<v-col
-				v-for="(item, i) in sortedData"
-				:key="`photo-${i}`"
-				class="d-flex child-flex"
-				cols="2"
-			>
+			<v-col v-for="(item, i) in sortedData" :key="`photo-${i}`" class="d-flex child-flex" cols="2">
 				<v-hover>
 					<template v-slot:default="{ hover }">
-						<v-card
-							class="mx-auto"
-							@click="sortData()"
-						>
-							<v-img
-								:src="item.thumbFile.base64"
-								:lazy-src="item.thumbFile.base64"
-								class="white--text align-end"
-								aspect-ratio="1"
-							/>
+						<v-card class="mx-auto" @click="sortData()">
+							<v-img :src="item.thumbFile.base64" :lazy-src="item.thumbFile.base64"
+								class="white--text align-end" aspect-ratio="1" />
 
 							<v-card-actions>
-								<v-card-subtitle
-									v-if="selectedSorter == 0"
-									v-text="item.featureName"
-								/>
-								<v-card-subtitle
-									v-else-if="selectedSorter == 1"
-									v-text="`Rating: ${item.rating}`"
-								/>
+								<v-card-subtitle v-if="selectedSorter == 0" v-text="item.featureName" />
+								<v-card-subtitle v-else-if="selectedSorter == 1" v-text="`Rating: ${item.rating}`" />
 								<v-card-subtitle v-else>
 									v-text="`Photo taken, ${new
 									Date(item.datePhotoTaken).toLocaleDateString()}`"
-									></v-card-subtitle
-								>
+									></v-card-subtitle>
 							</v-card-actions>
 
 							<v-fade-transition>
-								<v-overlay
-									v-if="hover"
-									absolute
-									color="#036358"
-								>
-									<v-btn @click="handleClick('view', item.rowId)"
-										>View Photo</v-btn
-									>
+								<v-overlay v-if="hover" absolute color="#036358">
+									<v-btn @click="handleClick('view', item.rowId)">View Photo</v-btn>
 								</v-overlay>
 							</v-fade-transition>
 						</v-card>
@@ -209,17 +113,10 @@
 		<v-row v-if="loading">
 			<div class="loading">Loading...</div>
 		</v-row>
-		<v-row
-			class="mb-2"
-			v-if="!loading"
-		>
+		<v-row class="mb-2" v-if="!loading">
 			<v-col>
 				<div class="text-center">
-					<v-pagination
-						v-model="page"
-						:length="numberOfPages"
-						:total-visible="5"
-					/>
+					<v-pagination v-model="page" :length="numberOfPages" :total-visible="5" />
 				</div>
 			</v-col>
 		</v-row>
@@ -397,8 +294,8 @@ export default {
 											a.name.toLowerCase() > b.name.toLowerCase()
 												? 1
 												: b.name.toLowerCase() > a.name.toLowerCase()
-												? -1
-												: 0
+													? -1
+													: 0
 										);
 									return options.map((x) => {
 										return { label: x.name, value: x.id };
@@ -426,8 +323,8 @@ export default {
 											a.name.toLowerCase() > b.name.toLowerCase()
 												? 1
 												: b.name.toLowerCase() > a.name.toLowerCase()
-												? -1
-												: 0
+													? -1
+													: 0
 										);
 									return options.map((x) => {
 										return { label: x.name, value: x.name };
@@ -475,8 +372,8 @@ export default {
 											a.name.toLowerCase() > b.name.toLowerCase()
 												? 1
 												: b.name.toLowerCase() > a.name.toLowerCase()
-												? -1
-												: 0
+													? -1
+													: 0
 										);
 									return options.map((x) => {
 										return { label: x.name, value: x.id };
@@ -544,8 +441,8 @@ export default {
 											a.name.toLowerCase() > b.name.toLowerCase()
 												? 1
 												: b.name.toLowerCase() > a.name.toLowerCase()
-												? -1
-												: 0
+													? -1
+													: 0
 										);
 									return options.map((x) => {
 										return { label: x.name, value: x.id };
@@ -653,8 +550,8 @@ export default {
 						a.name.toLowerCase() > b.name.toLowerCase()
 							? 1
 							: b.name.toLowerCase() > a.name.toLowerCase()
-							? -1
-							: 0
+								? -1
+								: 0
 					);
 			});
 		},
@@ -690,10 +587,10 @@ export default {
 						!a.featureName || !b.featureName
 							? 0
 							: a.featureName.toLowerCase() > b.featureName.toLowerCase()
-							? 1
-							: b.featureName.toLowerCase() > a.featureName.toLowerCase()
-							? -1
-							: 0
+								? 1
+								: b.featureName.toLowerCase() > a.featureName.toLowerCase()
+									? -1
+									: 0
 					)
 			);
 		},
@@ -706,10 +603,10 @@ export default {
 						!a.rating || !b.rating
 							? 0
 							: a.rating > b.rating
-							? 1
-							: b.rating > a.rating
-							? -1
-							: 0
+								? 1
+								: b.rating > a.rating
+									? -1
+									: 0
 					)
 			);
 		},
@@ -723,10 +620,10 @@ export default {
 						!a.dateCreated || !b.dateCreated
 							? 0
 							: a.dateCreated > b.dateCreated
-							? 1
-							: b.dateCreated > a.dateCreated
-							? -1
-							: 0
+								? 1
+								: b.dateCreated > a.dateCreated
+									? -1
+									: 0
 					)
 			);
 		},
@@ -762,15 +659,18 @@ export default {
 .vqb-group-heading {
 	display: none;
 }
+
 .vqb-custom-component-wrap {
 	display: inline-block;
 }
+
 .vue-query-builder .vqb-group-body.card-body {
 	padding-top: 0;
 	padding-right: 1.25rem;
 	padding-left: 1.25rem;
 	padding-bottom: 1.25rem;
 }
+
 .vue-query-builder select.form-control {
 	padding: 9px 8px;
 	border: 1px solid grey;
@@ -780,9 +680,11 @@ export default {
 	cursor: pointer;
 	appearance: button;
 }
+
 .vue-query-builder select.form-control:hover {
 	border: 1px solid black;
 }
+
 .vue-query-builder input.form-control {
 	padding: 9px 8px;
 	border: 1px solid grey;
@@ -791,6 +693,7 @@ export default {
 	border-radius: 4px;
 	line-height: 19px;
 }
+
 .vue-query-builder button.btn {
 	height: 36px;
 	min-width: 64px;
@@ -802,10 +705,12 @@ export default {
 	letter-spacing: 1.42857px;
 	margin-right: 5px;
 }
+
 .vue-query-builder button.btn:hover {
 	background-color: #42a5f3;
 	border: 1px #42a5f3 solid;
 }
+
 .vqb-rule {
 	margin-top: 15px;
 	margin-bottom: 15px;
@@ -815,12 +720,14 @@ export default {
 	border: 1px solid #ddd;
 	border-radius: 4px;
 }
+
 .vue-query-builder .close {
 	color: #969696;
 	font-size: 1.5rem;
 	font-weight: 700;
 	padding: 0 13px;
 }
+
 .vue-query-builder .close:hover {
 	color: #6a6a6a;
 }

@@ -32,6 +32,8 @@ export class Place {
 	designations?: string | string[] | null;
 	doorCondition?: number;
 	fHBRONumber?: string;
+	fR_PrimaryName?: string;
+	fR_Designations?: string;
 	floorCondition?: number;
 	geocode?: string;
 	groupYHSI?: string;
@@ -62,6 +64,7 @@ export class Place {
 	primaryName?: string;
 	recognitionDate?: Date;
 	recognitionDateDisplay?: string;
+	recordStatus?: number;
 	records?: string | string[] | null;
 	resourceType?: string;
 	rollNumber?: string;
@@ -117,6 +120,8 @@ export class Place {
 		'designations',
 		'doorCondition',
 		'fHBRONumber',
+		'fR_PrimaryName',
+		'fR_Designations',
 		'floorCondition',
 		'geocode',
 		'groupYHSI',
@@ -145,6 +150,7 @@ export class Place {
 		'previousAddress',
 		'primaryName',
 		'recognitionDate',
+		'recordStatus',
 		'records',
 		'resourceType',
 		'rollNumber',

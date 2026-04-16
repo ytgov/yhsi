@@ -1,5 +1,12 @@
 <template lang="pug">
-v-card(:loading="loading")
+div
+	v-breadcrumbs(:items="[\
+		{ text: 'Home', to: '/', exact: true },\
+		{ text: 'Sites', to: '/sites', exact: true },\
+		{ text: 'Change Requests', to: '/sites-change-requests', exact: true },\
+		{ text: placeEdit.primaryName || 'Review' },\
+	]")
+	v-card(:loading="loading")
 	v-card-title(tag="h2")
 		| Site Change Request from
 		v-progress-circular.ml-1(
@@ -121,6 +128,7 @@ import PreviousOwnershipsViewer from '@/components/Sites/site-change-request/Pre
 import RecordTypesSelect from '@/components/Sites/site-forms/RecordTypesSelect';
 import RevisionLogsViewer from '@/components/Sites/site-change-request/RevisionLogsViewer';
 import SiteCategoryTypesSelect from '@/components/Sites/site-forms/SiteCategoryTypesSelect';
+import RecordStatusTypesSelect from '@/components/Sites/site-forms/RecordStatusTypesSelect';
 import SiteStatusTypesSelect from '@/components/Sites/site-forms/SiteStatusTypesSelect';
 import StatuteSelect from '@/components/Sites/site-forms/management/StatuteSelect';
 import ThemesViewer from '@/components/Sites/site-change-request/ThemesViewer';
@@ -243,6 +251,14 @@ const FIELD_TYPES = Object.freeze([
 		type: 'v-text-field',
 		fieldAttrs: {
 			label: 'Latitude',
+			rules: [
+				(v) =>
+					!v ||
+					(/^-?\d+(\.\d+)?$/.test(String(v).trim()) &&
+						Number(v) >= -90 &&
+						Number(v) <= 90) ||
+					'Latitude must be a number between -90 and 90',
+			],
 		},
 	},
 	{
@@ -250,6 +266,14 @@ const FIELD_TYPES = Object.freeze([
 		type: 'v-text-field',
 		fieldAttrs: {
 			label: 'Longitude',
+			rules: [
+				(v) =>
+					!v ||
+					(/^-?\d+(\.\d+)?$/.test(String(v).trim()) &&
+						Number(v) >= -180 &&
+						Number(v) <= 180) ||
+					'Longitude must be a number between -180 and 180',
+			],
 		},
 	},
 	{
@@ -305,6 +329,10 @@ const FIELD_TYPES = Object.freeze([
 	{
 		key: 'siteStatus',
 		type: SiteStatusTypesSelect,
+	},
+	{
+		key: 'recordStatus',
+		type: RecordStatusTypesSelect,
 	},
 	{
 		key: 'buildingSize',

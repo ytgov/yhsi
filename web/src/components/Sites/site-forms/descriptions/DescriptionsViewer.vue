@@ -25,7 +25,18 @@ v-card.default
 						v-textarea(
 							:value="description.descriptionText"
 							readonly
-							label
+							label="Description"
+							dense
+							outlined
+							background-color="white"
+							hide-details
+						)
+				v-row
+					v-col(cols="12")
+						v-textarea(
+							:value="description.fR_DescriptionText"
+							readonly
+							label="Description (French)"
 							dense
 							outlined
 							background-color="white"

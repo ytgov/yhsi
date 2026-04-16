@@ -5,7 +5,6 @@
           <span class="text-h7">Process Batch</span>
         </v-card-title>
         <v-card-text>
-          <v-container>
             <v-row>
               <v-col cols="12">
                 <v-select
@@ -192,20 +191,17 @@
                 </div>
               </v-card>
             </v-row>
-          </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-btn text @click="closeDialog" class="black--text"> Close </v-btn>
+          <v-btn color="warning" outlined @click="closeDialog">
+            Cancel
+          </v-btn>
           <v-spacer></v-spacer>
-          <v-btn
-					class="mx-1 form-header"
-					color="secondary"
-					@click="processBatch()"
-          >
-					<v-icon class="mr-1">mdi-check</v-icon>
-					Process Batch
-				</v-btn>
-      </v-card-actions>
+          <v-btn color="primary" @click="processBatch()">
+            <v-icon class="mr-1">mdi-check</v-icon>
+            Process Batch
+          </v-btn>
+        </v-card-actions>
     </v-card>
   </v-dialog>
 </template>

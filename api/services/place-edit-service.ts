@@ -147,7 +147,7 @@ export class PlaceEditService {
 
 	create(data: PlainObject) {
 		return Promise.resolve(new PlaceEdit(data)).then((placeEdit) => {
-			return db('PlaceEdit').insert(placeEdit.toDbObject());
+			return db('PlaceEdit').insert(placeEdit.toDbObject()).returning('*').then((rows: any[]) => rows[0]);
 		});
 	}
 

@@ -17,8 +17,9 @@ const api = axios.create({
 //axios.defaults.withCredentials = true;
 
 const apiP = axios.create({
-  baseURL: BASE_URL, 
+  baseURL: BASE_URL,
   timeout: 24000,
+  withCredentials: true,
   headers: {
     'Content-Type': 'multipart/form-data',
   }

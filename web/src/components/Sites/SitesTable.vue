@@ -1,91 +1,44 @@
 <template>
-	<v-container fluid>
-		<v-row>
-			<v-col cols="12">
-				<h2>YHSI Sites</h2>
-			</v-col>
-		</v-row>
-		<v-divider class="mb-5" />
-		<v-row>
-			<v-col cols="12" class="d-flex">
-				<v-text-field
-					v-model="searchTerm"
-					label="Search"
-					dense
-					outlined
-					clearable
-					append-icon="mdi-magnify"
-					hint="Enter criteria and press enter"
-					@click:append="doSearch"
-					@keyup="keyUp"
-				/>
-				<v-btn
-					class="my-0 mx-3"
-					color="secondary"
-					:aria-controls="advancedSearchId"
-					@click="toggleAdvancedSearch"
-				>
-					Advanced search
-					<v-icon
-						v-if="isShowingAdvancedSearch"
-						class="chevron"
-					>
-						mdi-chevron-up
-					</v-icon>
-					<v-icon
-						v-else
-						class="chevron"
-					>
-						mdi-chevron-down
-					</v-icon>
-				</v-btn>
-				<v-btn
-					v-if="isEditor"
-					color="primary"
-					class="my-0"
-					to="/sites/create"
-				>
-					<v-icon>mdi-plus</v-icon>
-					Add new site
-				</v-btn>
-			</v-col>
-		</v-row>
-		<AdvancedSearchForm
-			v-show="isShowingAdvancedSearch"
-			:id="advancedSearchId"
-			class="mb-4"
-			@search="doAdvancedSearch"
-		/>
-		<v-row>
-			<v-col
-				cols="12"
-				class="d-flex justify-end"
-			>
-				{{ totalLength }} Results
-			</v-col>
-		</v-row>
-		<v-divider
-			class="mb-2"
-		/>
-		<v-row>
-			<v-col>
-				<v-data-table
-					dense
-					:items="items"
-					:headers="headers"
-					:options.sync="options"
-					:loading="loading"
-					:server-items-length="totalLength"
-					:footer-props="{ 'items-per-page-options': [20, 50, 100] }"
-					@click:row="goToSiteDetails"
-				>
-					<template #item.communityId="{ value }">
-						<CommunityCell :community-id="value" />
-					</template>
-				</v-data-table>
-			</v-col>
-		</v-row>
-	</v-container>
+	<div>
+		<v-breadcrumbs :items="[
+			{ text: 'Home', to: '/', exact: true },
+			{ text: 'Sites' },
+		]"></v-breadcrumbs>
+
+		<h1>YHSI Sites</h1>
+
+		<div class="mt-2">
+			<v-card class="default">
+				<v-card-text>
+					<div class="d-flex mb-6">
+						<v-text-field v-model="searchTerm" label="Search" prepend-inner-icon="mdi-magnify"
+							background-color="white" dense outlined clearable hide-details class="mr-5"
+							@keyup="keyUp" />
+						<v-btn class="my-0 mr-2" color="secondary" style="height: 40px"
+							:aria-controls="advancedSearchId" @click="toggleAdvancedSearch">
+							Advanced search
+							<v-icon v-if="isShowingAdvancedSearch">mdi-chevron-up</v-icon>
+							<v-icon v-else>mdi-chevron-down</v-icon>
+						</v-btn>
+						<v-btn v-if="isEditor" color="primary" class="my-0" style="height: 40px" to="/sites/create">
+							Add New Site
+						</v-btn>
+					</div>
+
+					<AdvancedSearchForm v-show="isShowingAdvancedSearch" :id="advancedSearchId" class="mb-4"
+						@search="doAdvancedSearch" />
+
+					<v-data-table dense :items="items" :headers="headers" :options.sync="options" :loading="loading"
+						:server-items-length="totalLength" :footer-props="{ 'items-per-page-options': [20, 50, 100] }"
+						@click:row="goToSiteDetails" class="clickable-row">
+						<template #item.communityId="{ value }">
+							<CommunityCell :community-id="value" />
+						</template>
+					</v-data-table>
+				</v-card-text>
+			</v-card>
+		</div>
+	</div>
 </template>
 
 <script>

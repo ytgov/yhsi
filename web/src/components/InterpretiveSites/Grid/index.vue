@@ -1,256 +1,131 @@
 <template>
-	<div class="">
+	<div>
+		<v-breadcrumbs :items="[
+			{ text: 'Home', to: '/', exact: true },
+			{ text: 'Interpretive Sites' },
+		]"></v-breadcrumbs>
+
 		<h1>Interpretive Sites</h1>
-		<Breadcrumbs />
-		<v-row>
-			<v-col
-				cols="6"
-				class="d-flex"
-			>
-				<v-text-field
-					v-if="actionRoute"
-					flat
-					prepend-icon="mdi-magnify"
-					class="mx-4"
-					hide-details
-					label="Search"
-					v-model="searchAction"
-					@keyup.enter="actionSearchChange()"
-					v-on:input="actionSearchChange()"
-				></v-text-field>
 
-				<v-text-field
-					v-else-if="assetRoute"
-					flat
-					prepend-icon="mdi-magnify"
-					class="mx-4"
-					hide-details
-					label="Search by description"
-					v-model="searchAsset"
-					@keyup.enter="assetSearchChange()"
-					v-on:input="assetSearchChange()"
-				></v-text-field>
-
-				<v-text-field
-					v-else
-					flat
-					prepend-icon="mdi-magnify"
-					class="mx-4"
-					hide-details
-					label="Search by site name"
-					v-model="searchSite"
-					@keyup.enter="siteSearchChange()"
-					v-on:input="siteSearchChange()"
-				></v-text-field>
-
-				<v-menu
-					transition="slide-y-transition"
-					bottom
-					:close-on-content-click="false"
-				>
-					<template v-slot:activator="{ on, attrs }">
-						<v-btn
-							color="transparent"
-							class="black--text"
-							v-bind="attrs"
-							v-on="on"
-						>
-							<v-icon class="black--text mr-1">mdi-filter</v-icon>
-							Filter
-
-							<v-icon class="black--text">mdi-chevron-right</v-icon>
-						</v-btn>
-					</template>
-					<v-list v-if="siteRoute">
-						<v-list-item
-							v-for="(item, i) in siteFilterOptions"
-							:key="`site-filter-list-opt-${i}`"
-							link
-						>
-							<v-text-field
-								clearable
-								@blur="siteFilterChange"
-								v-model="item.value"
-								:label="item.text"
-							></v-text-field>
-						</v-list-item>
-					</v-list>
-					<v-list v-else-if="actionRoute">
-						<v-list-item
-							v-for="(item, i) in actionFilterOptions"
-							:key="`action-filter-list-opt-${i}`"
-							link
-						>
-							<v-text-field
-								clearable
-								@blur="actionFilterChange"
-								v-model="item.value"
-								:label="item.text"
-							></v-text-field>
-						</v-list-item>
-					</v-list>
-					<v-list v-else>
-						<v-list-item
-							v-for="(item, i) in displayAssetOptions"
-							:key="`asset-filter-list-opt-${i}`"
-							link
-						>
-							<v-text-field
-								clearable
-								@blur="assetFilterChange"
-								v-model="item.value"
-								:label="item.text"
-							></v-text-field>
-						</v-list-item>
-						<v-list-item>
-							<v-select
-								@blur="assetFilterChange"
-								:items="[
-									{ text: 'Active', value: 'Yes' },
-									{ text: 'Inactive', value: 'No' },
-								]"
-								label="Status"
-								name="Status"
-								item-text="text"
-								item-value="value"
-								v-model="assetFilterOptions[8].value"
-							>
-							</v-select>
-						</v-list-item>
-						<v-list-item>
-							<v-select
-								@blur="assetFilterChange"
-								:items="assetTypes"
-								label="Type"
-								name="Type"
-								item-text="Type"
-								item-value="Type"
-								v-model="assetFilterOptions[1].value"
-							>
-							</v-select>
-						</v-list-item>
-					</v-list>
-				</v-menu>
-			</v-col>
-			<v-spacer></v-spacer>
-			<v-col
-				cols="auto"
-				v-if="actionRoute"
-				class="d-flex"
-			>
-				<ActionDialog
-					:type="'grid'"
-					:mode="'new'"
-					@newAction="newAction"
-				/>
-
-				<v-btn
-					class="black--text mx-1"
-					@click="getActionsExport()"
-					:loading="loadingExport"
-				>
-					<v-icon class="mr-1"> mdi-export </v-icon>
-					Export
-				</v-btn>
-
-				<v-btn
-					@click="downloadActionsPdf()"
-					class="black--text mx-1"
-					:loading="loadingPdf"
-				>
-					<v-icon class="mr-1"> mdi-printer </v-icon>
-					Print
-				</v-btn>
-			</v-col>
-			<v-col
-				cols="auto"
-				v-else-if="assetRoute"
-				class="d-flex"
-			>
-				<AssetDialog
-					:type="'grid'"
-					:mode="'new'"
-					@gridAssetAdded="gridAssetAdded"
-				/>
-
-				<v-btn
-					class="black--text mx-1"
-					@click="getAssetsExport()"
-					:loading="loadingExport"
-				>
-					<v-icon class="mr-1"> mdi-export </v-icon>
-					Export
-				</v-btn>
-
-				<v-btn
-					@click="downloadAssetsPdf()"
-					class="black--text mx-1"
-					:loading="loadingPdf"
-				>
-					<v-icon class="mr-1"> mdi-printer </v-icon>
-					Print
-				</v-btn>
-			</v-col>
-			<v-col
-				cols="auto"
-				v-else
-				class="d-flex"
-			>
-				<v-btn
-					class="black--text mx-1"
-					@click="addNewSite"
-				>
-					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-					Add Site
-				</v-btn>
-
-				<v-btn
-					class="black--text mx-1"
-					@click="getSitesExport()"
-					:loading="loadingExport"
-				>
-					<v-icon class="mr-1"> mdi-export </v-icon>
-					Export
-				</v-btn>
-
-				<v-btn
-					@click="downloadSitesPdf()"
-					class="black--text mx-1"
-					:loading="loadingPdf"
-				>
-					<v-icon class="mr-1"> mdi-printer </v-icon>
-					Print
-				</v-btn>
-			</v-col>
-		</v-row>
 		<div class="mt-2">
-			<v-card>
+			<v-card class="default">
 				<v-tabs v-model="active_tab">
-					<v-tab
-						key="1"
-						:to="{ path: '/interpretive-sites/' }"
-						:class="siteRoute ? '' : 'notActive'"
-					>
+					<v-tab key="1" :to="{ path: '/interpretive-sites/' }" :class="siteRoute ? '' : 'notActive'">
 						<v-icon class="mr-1">mdi-clipboard-check</v-icon>
 						Sites
 					</v-tab>
-					<v-tab
-						key="2"
-						:to="{ path: '/interpretive-sites/actions' }"
-					>
+					<v-tab key="2" :to="{ path: '/interpretive-sites/actions' }">
 						<v-icon class="mr-1">mdi-gesture-tap</v-icon>
 						Actions
 					</v-tab>
-					<v-tab
-						key="3"
-						:to="{ path: '/interpretive-sites/assets' }"
-					>
+					<v-tab key="3" :to="{ path: '/interpretive-sites/assets' }">
 						<v-icon class="mr-1">mdi-database</v-icon>
 						Assets
 					</v-tab>
 				</v-tabs>
-				<v-divider class="mb-4"></v-divider>
-				<router-view id="rv-int-sites" />
+				<v-divider></v-divider>
+				<v-card-text>
+					<div class="d-flex mb-6">
+						<v-text-field v-if="actionRoute" prepend-inner-icon="mdi-magnify" background-color="white"
+							outlined dense hide-details label="Search" v-model="searchAction" class="mr-5"
+							@keyup.enter="actionSearchChange()" v-on:input="actionSearchChange()" />
+
+						<v-text-field v-else-if="assetRoute" prepend-inner-icon="mdi-magnify" background-color="white"
+							outlined dense hide-details label="Search by description" v-model="searchAsset" class="mr-5"
+							@keyup.enter="assetSearchChange()" v-on:input="assetSearchChange()" />
+
+						<v-text-field v-else prepend-inner-icon="mdi-magnify" background-color="white" outlined dense
+							hide-details label="Search by site name" v-model="searchSite" class="mr-5"
+							@keyup.enter="siteSearchChange()" v-on:input="siteSearchChange()" />
+
+						<v-menu transition="slide-y-transition" bottom :close-on-content-click="false">
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn color="transparent" class="black--text my-0 mr-2" style="height: 40px"
+									v-bind="attrs" v-on="on">
+									<v-icon class="black--text mr-1">mdi-filter</v-icon>
+									Filter
+									<v-icon class="black--text">mdi-chevron-right</v-icon>
+								</v-btn>
+							</template>
+							<v-list v-if="siteRoute">
+								<v-list-item v-for="(item, i) in siteFilterOptions" :key="`site-filter-list-opt-${i}`"
+									link>
+									<v-text-field clearable @blur="siteFilterChange" v-model="item.value"
+										:label="item.text"></v-text-field>
+								</v-list-item>
+							</v-list>
+							<v-list v-else-if="actionRoute">
+								<v-list-item v-for="(item, i) in actionFilterOptions"
+									:key="`action-filter-list-opt-${i}`" link>
+									<v-text-field clearable @blur="actionFilterChange" v-model="item.value"
+										:label="item.text"></v-text-field>
+								</v-list-item>
+							</v-list>
+							<v-list v-else>
+								<v-list-item v-for="(item, i) in displayAssetOptions"
+									:key="`asset-filter-list-opt-${i}`" link>
+									<v-text-field clearable @blur="assetFilterChange" v-model="item.value"
+										:label="item.text"></v-text-field>
+								</v-list-item>
+								<v-list-item>
+									<v-select @blur="assetFilterChange" :items="[
+										{ text: 'Active', value: 'Yes' },
+										{ text: 'Inactive', value: 'No' },
+									]" label="Status" name="Status" item-text="text" item-value="value" v-model="assetFilterOptions[8].value">
+									</v-select>
+								</v-list-item>
+								<v-list-item>
+									<v-select @blur="assetFilterChange" :items="assetTypes" label="Type" name="Type"
+										item-text="Type" item-value="Type" v-model="assetFilterOptions[1].value">
+									</v-select>
+								</v-list-item>
+							</v-list>
+						</v-menu>
+
+						<!-- Sites buttons -->
+						<template v-if="siteRoute">
+							<v-btn color="primary" class="my-0 mr-2" style="height: 40px" @click="addNewSite">
+								Add Site
+							</v-btn>
+							<v-btn color="info" class="my-0 mr-2" style="height: 40px" @click="downloadSitesPdf()"
+								:loading="loadingPdf" title="Print">
+								<v-icon>mdi-printer</v-icon>
+							</v-btn>
+							<v-btn color="info" class="my-0 mr-2" style="height: 40px" @click="getSitesExport()"
+								:loading="loadingExport" title="Export">
+								<v-icon>mdi-export</v-icon>
+							</v-btn>
+						</template>
+
+						<!-- Actions buttons -->
+						<template v-else-if="actionRoute">
+							<ActionDialog :type="'grid'" :mode="'new'" @gridActionAdded="newAction" />
+							<v-btn color="info" class="my-0 mr-2" style="height: 40px" @click="downloadActionsPdf()"
+								:loading="loadingPdf" title="Print">
+								<v-icon>mdi-printer</v-icon>
+							</v-btn>
+							<v-btn color="info" class="my-0 mr-2" style="height: 40px" @click="getActionsExport()"
+								:loading="loadingExport" title="Export">
+								<v-icon>mdi-export</v-icon>
+							</v-btn>
+						</template>
+
+						<!-- Assets buttons -->
+						<template v-else-if="assetRoute">
+							<AssetDialog :type="'grid'" :mode="'new'" @gridAssetAdded="gridAssetAdded" />
+							<v-btn color="info" class="my-0 mr-2" style="height: 40px" @click="downloadAssetsPdf()"
+								:loading="loadingPdf" title="Print">
+								<v-icon>mdi-printer</v-icon>
+							</v-btn>
+							<v-btn color="info" class="my-0 mr-2" style="height: 40px" @click="getAssetsExport()"
+								:loading="loadingExport" title="Export">
+								<v-icon>mdi-export</v-icon>
+							</v-btn>
+						</template>
+					</div>
+
+					<router-view id="rv-int-sites" />
+				</v-card-text>
 			</v-card>
 		</div>
 	</div>
@@ -258,7 +133,6 @@
 
 <script>
 import catalogs from '../../../controllers/catalogs';
-import Breadcrumbs from '../../Breadcrumbs';
 import ActionDialog from '../Dialogs/ActionDialog.vue';
 import AssetDialog from '../Dialogs/AssetDialog.vue';
 import downloadCsv from '../../../utils/dataToCsv';
@@ -268,7 +142,7 @@ import interpretiveSites from '../../../controllers/interpretive-sites';
 //import jsPDF from "jspdf";
 export default {
 	name: 'int-sites-grid-index',
-	components: { Breadcrumbs, ActionDialog, AssetDialog },
+	components: { ActionDialog, AssetDialog },
 	data: () => ({
 		route: '',
 		active_tab: '',
@@ -589,12 +463,3 @@ export default {
 	watch: {},
 };
 </script>
-
-<style scoped>
-#horizontal-list {
-	display: flex;
-}
-.notActive {
-	color: rgba(0, 0, 0, 0.54) !important;
-}
-</style>

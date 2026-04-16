@@ -1,6 +1,6 @@
 import { Express, NextFunction, Request, Response } from 'express';
 import * as ExpressSession from 'express-session';
-import { AUTH_REDIRECT, DB_CONFIG, FRONTEND_URL } from '../config';
+import { AUTH_REDIRECT, DB_CONFIG, FRONTEND_URL, NODE_ENV, SESSION_SECRET } from '../config';
 
 import { auth } from 'express-openid-connect';
 import { AuthUser } from '../models';
@@ -11,9 +11,14 @@ const db = new UserService(DB_CONFIG);
 export function configureAuthentication(app: Express) {
 	app.use(
 		ExpressSession.default({
-			secret: 'supersecret',
-			resave: true,
-			saveUninitialized: true,
+			secret: SESSION_SECRET,
+			resave: false,
+			saveUninitialized: false,
+			cookie: {
+				httpOnly: true,
+				secure: NODE_ENV === 'production',
+				sameSite: 'lax',
+			},
 		})
 	);
 

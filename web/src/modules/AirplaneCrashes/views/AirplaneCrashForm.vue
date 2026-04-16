@@ -1,7 +1,10 @@
 <template>
 	<div>
-		<h3>Airplane Crash Sites</h3>
-		<Breadcrumbs />
+		<v-breadcrumbs :items="[
+			{ text: 'Home', to: '/', exact: true },
+			{ text: 'Airplane Crash Sites', to: '/airplane', exact: true },
+			{ text: isNewCrash ? 'New' : fields.yacsinumber || '' },
+		]"></v-breadcrumbs>
 
 		<v-row>
 			<v-col
@@ -40,15 +43,16 @@
 				</v-btn>
 				<!-- buttons for the edit state -->
 				<v-btn
-					class="black--text mx-1"
+					color="warning"
+					outlined
+					class="mx-1"
 					@click="cancelEdit()"
 					v-if="isEditingCrash"
 				>
-					<v-icon>mdi-close</v-icon>
 					Cancel
 				</v-btn>
 				<v-btn
-					color="success"
+					color="primary"
 					:disabled="showSave < 1 || yacsiWarning.length == 1 || !formValid"
 					v-if="isEditingCrash"
 					@click="saveChanges"
@@ -58,15 +62,16 @@
 				</v-btn>
 				<!-- buttons for the new state -->
 				<v-btn
-					class="black--text mx-1"
+					color="warning"
+					outlined
+					class="mx-1"
 					@click="cancelNew"
 					v-if="action == 'new'"
 				>
-					<v-icon>mdi-close</v-icon>
 					Cancel
 				</v-btn>
 				<v-btn
-					color="success"
+					color="primary"
 					:disabled="showSave < 1 || yacsiWarning.length == 1"
 					v-if="action == 'new'"
 					@click="saveChanges"
@@ -123,7 +128,6 @@
 										ref="menu"
 										v-model="menu"
 										:close-on-content-click="false"
-										:return-value.sync="fields.crashdate"
 										transition="scale-transition"
 										offset-y
 										min-width="auto"
@@ -133,7 +137,7 @@
 											<v-text-field
 												outlined
 												dense
-												v-model="crashdate"
+												v-model="fields.crashdate"
 												label="Crash Date"
 												append-icon="mdi-calendar"
 												readonly
@@ -145,23 +149,8 @@
 											v-model="fields.crashdate"
 											no-title
 											scrollable
-										>
-											<v-spacer></v-spacer>
-											<v-btn
-												text
-												color="primary"
-												@click="menu = false"
-											>
-												Cancel
-											</v-btn>
-											<v-btn
-												text
-												color="primary"
-												@click="$refs.menu.save(fields.crashdate)"
-											>
-												OK
-											</v-btn>
-										</v-date-picker>
+											@input="menu = false"
+										></v-date-picker>
 									</v-menu>
 								</v-col>
 								<v-col cols="6">
@@ -461,14 +450,13 @@ import { AirCrashLocation } from '../models/AircrashModels';
 import MapLoader from '../components/MapLoader';
 import InfoSources from '../components/InfoSources';
 
-import Breadcrumbs from '@/components/Breadcrumbs.vue';
 import aircrash from '@/controllers/aircrash';
 import GenericRecordPhotosCard from '@/components/photos/GenericRecordPhotosCard.vue';
 import EmptyPhotosCard from "@/components/photos/EmptyPhotosCard.vue"
 
 export default {
 	name: 'crashForm',
-	components: { Breadcrumbs, MapLoader, InfoSources, GenericRecordPhotosCard, EmptyPhotosCard },
+	components: { MapLoader, InfoSources, GenericRecordPhotosCard, EmptyPhotosCard },
 	props: {
 		action: {
 			type: String,
@@ -527,12 +515,16 @@ export default {
 			this.fields = await this.setEmptyAircrash();
 		} else if (['edit', 'view'].includes(this.action)) {
 			this.fields = await this.getAircrashByID(this.crashID);
+			this.fieldsHistory = { ...this.fields };
 		}
 
 		this.overlay = false;
 	},
 	methods: {
 		...mapActions('aircrash', ['getAircrashByID', 'setEmptyAircrash']),
+		updateSelectedImage(val) {
+			this.selectedImage = val;
+		},
 		changeNation() {
 			this.fields.nation = '';
 		},

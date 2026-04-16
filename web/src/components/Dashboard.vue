@@ -20,17 +20,52 @@
 					<span class="mt-2">{{ tile.title }}</span>
 				</v-card>
 			</v-col>
+
+			<v-col
+				v-if="isAdministrator"
+				cols="12"
+				sm="6"
+				md="4"
+				lg="3"
+			>
+				<v-card
+					class="d-flex flex-column align-center justify-center"
+					:color="pendingCount > 0 ? '#ffe0e0' : '#fff2d5'"
+					elevation="2"
+					@click="navigateTo('/admin/users')"
+				>
+					<v-badge
+						:content="String(pendingCount)"
+						:value="pendingCount > 0"
+						color="error"
+						overlap
+					>
+						<v-icon large>mdi-account-clock</v-icon>
+					</v-badge>
+					<span class="mt-2">Pending User Requests</span>
+					<span
+						v-if="pendingCount > 0"
+						class="caption red--text"
+					>{{ pendingCount }} pending</span>
+					<span
+						v-else
+						class="caption grey--text"
+					>None pending</span>
+				</v-card>
+			</v-col>
 		</v-row>
 	</div>
 </template>
 
 <script>
+import { api } from '../controllers/config';
 import { mapGetters } from 'vuex';
 import { UserRoles } from '../authorization';
 
 export default {
 	name: 'Home',
 	data: () => ({
+		pendingCount: 0,
 		tiles: [
 			{
 				title: 'Sites',
@@ -113,6 +148,19 @@ export default {
 		relevantTiles() {
 			return this.tiles.filter((t) => this.canShow(t));
 		},
+		isAdministrator() {
+			return this.userInRole([UserRoles.ADMINISTRATOR]);
+		},
+	},
+	async mounted() {
+		if (this.isAdministrator) {
+			try {
+				const resp = await api.get('/user/pending-count');
+				this.pendingCount = resp.data.data.count;
+			} catch (e) {
+				// non-fatal
+			}
+		}
 	},
 	methods: {
 		navigateTo(route) {

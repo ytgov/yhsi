@@ -45,7 +45,7 @@ export default {
 	},
 	async getPhotoOwners(page, limit, textToMatch, sortBy, sort) {
 		return await api
-			.get(`catalogs/photo-owner`, {
+			.get(`photo-owners`, {
 				crossdomain: true,
 				params: {
 					page,
@@ -62,6 +62,54 @@ export default {
 				// handle error
 				console.error(error);
 			});
+	},
+	async postPhotoOwner(data) {
+		return await api
+			.post(`photo-owner`, data)
+			.then((res) => res.data)
+			.catch((error) => console.error(error));
+	},
+	async putPhotoOwner(id, data) {
+		return await api
+			.put(`photo-owner/${id}`, data)
+			.then((res) => res.data)
+			.catch((error) => console.error(error));
+	},
+	async getPhotoProjects() {
+		return await api
+			.get(`photo-project`)
+			.then((res) => res.data)
+			.catch((error) => console.error(error));
+	},
+	async postPhotoProject(data) {
+		return await api
+			.post(`photo-project`, data)
+			.then((res) => res.data)
+			.catch((error) => console.error(error));
+	},
+	async putPhotoProject(id, data) {
+		return await api
+			.put(`photo-project/${id}`, data)
+			.then((res) => res.data)
+			.catch((error) => console.error(error));
+	},
+	async getPhotoSubjects() {
+		return await api
+			.get(`photo-subject`)
+			.then((res) => res.data)
+			.catch((error) => console.error(error));
+	},
+	async postPhotoSubject(data) {
+		return await api
+			.post(`photo-subject`, data)
+			.then((res) => res.data)
+			.catch((error) => console.error(error));
+	},
+	async putPhotoSubject(id, data) {
+		return await api
+			.put(`photo-subject/${id}`, data)
+			.then((res) => res.data)
+			.catch((error) => console.error(error));
 	},
 	async getOriginalMedia() {
 		return await api
@@ -105,16 +153,11 @@ export default {
 				console.error(error);
 			});
 	},
-	async postPlaceType(data) {
+	async postPlaceType(placeType) {
 		return await api
-			.post(`catalogs/placetype`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
+			.post(`catalogs/placetype`, { placeType })
+			.then((res) => res.data)
+			.catch((error) => console.error(error));
 	},
 	async putVesselType(id, data) {
 		return await api
@@ -127,37 +170,18 @@ export default {
 				console.error(error);
 			});
 	},
-	async getPlaceTypes(page, limit, textToMatch, sortBy, sort) {
+	async getPlaceTypes() {
 		return await api
-			.get(`catalogs/placetype`, {
-				crossdomain: true,
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
+			.get(`catalogs/placetype`)
+			.then((res) => res.data)
+			.catch((error) => console.error(error));
 	},
 
-	async putPlaceType(id, data) {
+	async putPlaceType(id, placeType) {
 		return await api
-			.put(`catalogs/placetype/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
+			.put(`catalogs/placetype/${id}`, { placeType })
+			.then((res) => res.data)
+			.catch((error) => console.error(error));
 	},
 	//CAUSES
 	async getCauses() {

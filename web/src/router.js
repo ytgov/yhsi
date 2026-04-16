@@ -32,12 +32,16 @@ import InterpretiveSitesIndex from '@/components/InterpretiveSites/Grid';
 import OwnerForm from '@/components/PhotoOwners/OwnersComponents/Form';
 import OwnerGrid from '@/components/Boats/Grid/Owner';
 import OwnersGrid from '@/components/PhotoOwners/OwnersGrid';
-import PlacesForm from '@/components/Places/PlacesComponents/PlacesForm';
 import PlacesGrid from '@/components/Places/PlacesGrid';
+import ViewPlace from '@/components/Places/PlacesComponents/ViewPlace';
+import EditPlace from '@/components/Places/PlacesComponents/EditPlace';
+import AddPlace from '@/components/Places/PlacesComponents/AddPlace';
 import SiteCreate from '@/components/Sites/SiteCreate';
 import SiteForms from '@/components/Sites/SiteForms';
 import SitesTable from '@/components/Sites/SitesTable';
-import UserForm from '@/components/People/UsersComponents/Form';
+import ViewPerson from '@/components/People/UsersComponents/ViewPerson';
+import EditPerson from '@/components/People/UsersComponents/EditPerson';
+import AddPerson from '@/components/People/UsersComponents/AddPerson';
 
 import Feature from '@/components/MainPhotos/PhotosComponents/Feature';
 import HistoricSites from '@/components/MainPhotos/PhotosComponents/HistoricSites';
@@ -57,6 +61,7 @@ import Category from '@/components/Administration/LookupTableManagement/Category
 import Cause from '@/components/Administration/LookupTableManagement/Cause/Cause';
 import Cemetary from '@/components/Administration/LookupTableManagement/Cemetary/Cemetary';
 import CommunityGrid from '@/components/Administration/LookupTableManagement/Community/CommunityGrid';
+import FirstNationGrid from '@/components/Administration/LookupTableManagement/FirstNation/FirstNationGrid';
 import IntSiteOwner from '@/components/Administration/LookupTableManagement/IntSiteOwner/IntSiteOwner';
 import Membership from '@/components/Administration/LookupTableManagement/Membership/Membership';
 import Occupation from '@/components/Administration/LookupTableManagement/Occupation/Occupation';
@@ -172,23 +177,21 @@ const routes = [
 		meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] },
 	},
 	{
-		path: '/people/edit/:name',
+		path: '/people/:id/edit',
 		name: 'personEditView',
-		component: UserForm,
-		props: true,
+		component: EditPerson,
 		meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] },
 	},
 	{
-		path: '/people/view/:name',
-		component: UserForm,
+		path: '/people/:id/view',
 		name: 'personView',
-		props: true,
+		component: ViewPerson,
 		meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] },
 	},
 	{
 		path: '/people/new',
-		component: UserForm,
 		name: 'personAddView',
+		component: AddPerson,
 		meta: { requiresAuth: true, authorize: [UserRoles.PEOPLE_EDITOR] },
 	},
 	{
@@ -312,20 +315,18 @@ const routes = [
 		],
 	},
 	{
-		path: '/boats/view/:name',
+		path: '/boats/:id/view',
 		name: 'boatView',
 		component: BoatsForm,
-		props: true,
 		meta: {
 			requiresAuth: true,
 			authorize: [UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER],
 		},
 	},
 	{
-		path: '/boats/edit/:name',
+		path: '/boats/:id/edit',
 		name: 'boatEditView',
 		component: BoatsForm,
-		props: true,
 		meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] },
 	},
 	{
@@ -335,20 +336,18 @@ const routes = [
 		meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] },
 	},
 	{
-		path: '/boats/owner/view/:name',
+		path: '/boats/owner/:id/view',
 		name: 'ownerView',
 		component: BoatsOwnerForm,
-		props: true,
 		meta: {
 			requiresAuth: true,
 			authorize: [UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER],
 		},
 	},
 	{
-		path: '/boats/owner/edit/:name',
+		path: '/boats/owner/:id/edit',
 		name: 'ownerEditView',
 		component: BoatsOwnerForm,
-		props: true,
 		meta: { requiresAuth: true, authorize: [UserRoles.BOATS_EDITOR] },
 	},
 	{
@@ -492,7 +491,7 @@ const routes = [
 		},
 	},
 	{
-		path: '/burials/view/:name',
+		path: '/burials/:id/view',
 		name: 'BurialsViewForm',
 		component: BurialsForm,
 		props: true,
@@ -502,7 +501,7 @@ const routes = [
 		},
 	},
 	{
-		path: '/burials/edit/:id',
+		path: '/burials/:id/edit',
 		name: 'BurialsEditForm',
 		component: BurialsForm,
 		props: true,
@@ -555,7 +554,7 @@ const routes = [
 		],
 	},
 	{
-		path: '/interpretive-sites/view/:id',
+		path: '/interpretive-sites/:id/view',
 		name: 'InterpretiveSitesView',
 		component: InterpretiveSitesForm,
 		props: true,
@@ -566,10 +565,9 @@ const routes = [
 				UserRoles.INTERPRETIVE_SITES_VIEWER,
 			],
 		},
-		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
 	},
 	{
-		path: '/interpretive-sites/edit/:id',
+		path: '/interpretive-sites/:id/edit',
 		name: 'InterpretiveSitesEdit',
 		component: InterpretiveSitesForm,
 		props: true,
@@ -577,7 +575,6 @@ const routes = [
 			requiresAuth: true,
 			authorize: [UserRoles.INTERPRETIVE_SITES_EDITOR],
 		},
-		//Disabled for the time being || meta: { requiresAuth: true, authorize: [UserRoles.BURIALS_EDITOR] }
 	},
 	{
 		path: '/interpretive-sites/new',
@@ -597,23 +594,21 @@ const routes = [
 		meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] },
 	},
 	{
-		path: '/places/view/:name',
+		path: '/places/:id/view',
 		name: 'placeView',
-		component: PlacesForm,
-		props: true,
+		component: ViewPlace,
 		meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] },
 	},
 	{
-		path: '/places/edit/:name',
+		path: '/places/:id/edit',
 		name: 'placeEditView',
-		component: PlacesForm,
-		props: true,
+		component: EditPlace,
 		meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] },
 	},
 	{
 		path: '/places/new',
 		name: 'placeAddView',
-		component: PlacesForm,
+		component: AddPlace,
 		meta: { requiresAuth: true, authorize: [UserRoles.PLACE_EDITOR] },
 	},
 	{
@@ -626,6 +621,12 @@ const routes = [
 		path: '/admin/community',
 		name: 'CommunityGrid',
 		component: CommunityGrid,
+		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
+	},
+	{
+		path: '/admin/first-nations',
+		name: 'FirstNationGrid',
+		component: FirstNationGrid,
 		meta: { requiresAuth: true, authorize: [UserRoles.ADMINISTRATOR] },
 	},
 	{

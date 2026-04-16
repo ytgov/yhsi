@@ -1,149 +1,91 @@
 <template>
-	<div class="">
+	<div>
+		<v-breadcrumbs :items="[
+			{ text: 'Home', to: '/', exact: true },
+			{ text: 'Airplane Crash Sites' },
+		]"></v-breadcrumbs>
+
 		<h1>Airplane Crash Sites</h1>
-		<Breadcrumbs />
-		<v-row>
-			<v-col
-				cols="6"
-				class="d-flex"
-			>
-				<v-text-field
-					flat
-					prepend-icon="mdi-magnify"
-					class="mx-4"
-					hide-details
-					label="Search YASCI"
-					v-model="search"
-					v-on:input="crashsiteSearchChange()"
-				></v-text-field>
-				<v-btn
-					color="transparent"
-					class="black--text"
-					v-model="showFilters"
-					@click="showFilters = !showFilters"
-				>
-					<v-icon class="black--text mr-1">mdi-filter</v-icon>
 
-					Filter
-
-					<v-icon
-						v-if="!showFilters"
-						class="black--text"
-						>mdi-chevron-right</v-icon
-					>
-					<v-icon
-						v-else
-						class="black--text pl-3"
-						small
-						>mdi-close</v-icon
-					>
-				</v-btn>
-			</v-col>
-			<v-spacer></v-spacer>
-			<v-col
-				cols="auto"
-				class="d-flex"
-			>
-				<v-btn
-					class="black--text mx-1"
-					@click="addNewBoat"
-				>
-					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-					Add Crash Site
-				</v-btn>
-
-				<v-btn
-					@click="exportData()"
-					class="black--text mx-1"
-					:loading="loadingExport"
-				>
-					<v-icon class="mr-1"> mdi-export </v-icon>
-					Export
-				</v-btn>
-
-				<v-btn
-					@click="downloadPdf()"
-					class="black--text mx-1"
-					:loading="loadingPdf"
-				>
-					<v-icon class="mr-1"> mdi-printer </v-icon>
-					Print
-				</v-btn>
-			</v-col>
-		</v-row>
-		<v-row>
-			<v-col>
-				<filter-menu
-					v-show="showFilters"
-					v-bind:filterOptions.sync="filterOptions"
-					@update:filterOptions="getDataFromApi"
-				/>
-			</v-col>
-		</v-row>
 		<div class="mt-2">
-			<v-card>
-				<v-container fluid>
-					<v-row>
-						<v-col cols="10">
-							<h2
-								v-if="crashsites"
-								class="ma-2"
-							>
-								{{ filteredData.length }} results out of {{ totalLength }}
-							</h2>
-						</v-col>
-						<v-col>
-							<v-btn
-								v-if="filterOptions.filter((x) => x.value).length > 0"
-								disabled
-								class="ml-5"
-								color="primary"
-							>
-								Filters Applied
-							</v-btn>
-						</v-col>
-					</v-row>
-					<v-divider
-						inset
-						class="mb-4"
-					></v-divider>
-					<v-row>
-						<v-col>
-							<v-data-table
-								:items="filteredData"
-								:headers="headers"
-								:loading="loading"
-								:search="search"
-								:options.sync="options"
-								:server-items-length="totalLength"
-								@click:row="handleClick"
-								:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
-							>
-								<template v-slot:item.crashlocation="{ item }">
-									<div style="width: 200px">
-										{{ item.crashlocation }}
-									</div>
-								</template>
-							</v-data-table>
-						</v-col>
-					</v-row>
-				</v-container>
+			<v-card class="default">
+				<v-card-text>
+					<div class="d-flex mb-6">
+						<v-text-field
+							prepend-inner-icon="mdi-magnify"
+							background-color="white"
+							outlined
+							dense
+							hide-details
+							label="Search YASCI"
+							v-model="search"
+							class="mr-5"
+							v-on:input="crashsiteSearchChange()"
+						></v-text-field>
+
+						<v-menu transition="slide-y-transition" bottom :close-on-content-click="false">
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn color="transparent" class="black--text my-0 mr-2" style="height: 40px"
+									v-bind="attrs" v-on="on">
+									<v-icon class="black--text mr-1">mdi-filter</v-icon>
+									Filter
+									<v-icon class="black--text">mdi-chevron-right</v-icon>
+								</v-btn>
+							</template>
+							<v-list>
+								<v-list-item v-for="(item, i) in filterOptions" :key="`filter-list-opt-${i}`" link>
+									<v-text-field clearable @blur="getDataFromApi" v-model="item.value"
+										:label="item.name"></v-text-field>
+								</v-list-item>
+							</v-list>
+						</v-menu>
+
+						<v-btn color="primary" class="my-0 mr-2" style="height: 40px" @click="addNewBoat">
+							Add Crash Site
+						</v-btn>
+
+						<v-btn color="info" class="my-0 mr-2" style="height: 40px" @click="downloadPdf()"
+							:loading="loadingPdf" title="Print">
+							<v-icon>mdi-printer</v-icon>
+						</v-btn>
+
+						<v-btn color="info" class="my-0" style="height: 40px" @click="exportData()"
+							:loading="loadingExport" title="Export">
+							<v-icon>mdi-export</v-icon>
+						</v-btn>
+					</div>
+
+					<v-data-table
+						:items="filteredData"
+						:headers="headers"
+						:loading="loading"
+						:search="search"
+						:options.sync="options"
+						:server-items-length="totalLength"
+						@click:row="handleClick"
+						:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
+						class="clickable-row"
+					>
+						<template v-slot:item.crashlocation="{ item }">
+							<div style="width: 200px">
+								{{ item.crashlocation }}
+							</div>
+						</template>
+					</v-data-table>
+				</v-card-text>
 			</v-card>
 		</div>
 	</div>
 </template>
 
 <script>
-import Breadcrumbs from '@/components/Breadcrumbs';
 import downloadCsv from '@/utils/dataToCsv';
 import _ from 'lodash';
 import aircrash from '@/controllers/aircrash';
-import FilterMenu from '../components/AirCrashFilterMenu';
 export default {
-	name: 'boatsgrid-index',
-	components: { Breadcrumbs, FilterMenu },
+	name: 'aircrash-list',
+	components: {},
 	data: () => ({
-		showFilters: false,
 		route: '',
 		loading: false,
 		crashsites: [],
@@ -212,7 +154,7 @@ export default {
 		async getDataFromApi() {
 			this.loading = true;
 			let { page, itemsPerPage, sortBy, sortDesc } = this.options;
-			page = page > 0 ? page - 1 : 0;
+			page = page > 0 ? page : 1;
 			itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
 			let textToMatch = this.search;
 			const prefilters = {};
@@ -220,15 +162,12 @@ export default {
 				prefilters[x.dataAccess] = x.value;
 			});
 
-			//Looks like it's checking against an array with an offset error of 1
-			//ex: when searching injuries=3, actually get souldsonboard=3
-
 			let data = await aircrash.get(
 				page,
 				itemsPerPage,
 				textToMatch,
-				sortBy[0],
-				sortDesc[0] ? 'desc' : 'asc',
+				sortBy ? sortBy[0] : undefined,
+				sortDesc && sortDesc[0] ? 'desc' : 'asc',
 				prefilters.crashdate,
 				prefilters.aircrafttype,
 				prefilters.aircraftregistration,
@@ -262,7 +201,7 @@ export default {
 		},
 		async exportData() {
 			this.loadingExport = true;
-			let { sortBy, sortDesc } = this.options;
+			let { sortBy = [], sortDesc = [] } = this.options;
 			let textToMatch = this.search;
 			const prefilters = {};
 			this.filterOptions.map((x) => {
@@ -289,7 +228,7 @@ export default {
 		},
 		async downloadPdf() {
 			this.loadingPdf = true;
-			let { sortBy, sortDesc } = this.options;
+			let { sortBy = [], sortDesc = [] } = this.options;
 			let textToMatch = this.search;
 			const prefilters = {};
 			this.filterOptions.map((x) => {

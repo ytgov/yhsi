@@ -24,6 +24,13 @@ v-card.mb-0(
 					dense
 					outlined
 				)
+				v-text-field(
+					v-model="place.fR_Designations"
+					label="Designations (French)"
+					readonly
+					dense
+					outlined
+				)
 				CategoryTypesSelect(
 					v-model="place.category"
 					readonly
@@ -64,6 +71,13 @@ v-card.mb-0(
 					dense
 					outlined
 					required
+				)
+				v-text-field(
+					v-model="place.fR_PrimaryName"
+					label="Primary name (French)"
+					readonly
+					dense
+					outlined
 				)
 				v-card.default.mb-5
 					v-card-title.mb-0.text-h6(tag="h3")

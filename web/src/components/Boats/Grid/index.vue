@@ -1,178 +1,89 @@
 <template>
-	<div class="">
+	<div>
+		<v-breadcrumbs :items="[
+			{ text: 'Home', to: '/', exact: true },
+			{ text: 'Boats' },
+		]"></v-breadcrumbs>
+
 		<h1>Boats</h1>
-		<Breadcrumbs />
-		<v-row>
-			<v-col
-				cols="6"
-				class="d-flex"
-			>
-				<v-text-field
-					v-if="$route.path.includes('owner')"
-					flat
-					prepend-icon="mdi-magnify"
-					class="mx-4"
-					hide-details
-					label="Search"
-					v-model="searchOwner"
-					@keyup.enter="ownerSearchChange()"
-					v-on:input="ownerSearchChange()"
-				></v-text-field>
 
-				<v-text-field
-					v-else
-					flat
-					prepend-icon="mdi-magnify"
-					class="mx-4"
-					hide-details
-					label="Search"
-					v-model="searchBoat"
-					@keyup.enter="boatSearchChange()"
-					v-on:input="boatSearchChange()"
-				></v-text-field>
-
-				<v-menu
-					transition="slide-y-transition"
-					bottom
-					:close-on-content-click="false"
-				>
-					<template v-slot:activator="{ on, attrs }">
-						<v-btn
-							v-if="$route.path.includes('owner')"
-							color="transparent"
-							class="black--text"
-							v-bind="attrs"
-							v-on="on"
-							disabled
-						>
-							<v-icon class="black--text mr-1">mdi-filter</v-icon>
-							Filter
-
-							<v-icon class="black--text">mdi-chevron-right</v-icon>
-						</v-btn>
-						<v-btn
-							v-else
-							color="transparent"
-							class="black--text"
-							v-bind="attrs"
-							v-on="on"
-						>
-							<v-icon class="black--text mr-1">mdi-filter</v-icon>
-							Filter
-
-							<v-icon class="black--text">mdi-chevron-right</v-icon>
-						</v-btn>
-					</template>
-					<v-list>
-						<v-list-item
-							v-for="(item, i) in filterOptions"
-							:key="`filter-list-opt-${i}`"
-							link
-						>
-							<v-text-field
-								clearable
-								@blur="filterChange"
-								v-model="item.value"
-								:label="item.name"
-							></v-text-field>
-						</v-list-item>
-					</v-list>
-				</v-menu>
-			</v-col>
-			<v-spacer></v-spacer>
-			<v-col
-				cols="auto"
-				v-if="$route.path.includes('owner')"
-				class="d-flex"
-			>
-				<v-btn
-					v-if="userIsEditor"
-					class="black--text mx-1"
-					@click="addNewOwner"
-				>
-					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-					Add Owner
-				</v-btn>
-
-				<v-btn
-					class="black--text mx-1"
-					@click="getOwnerExport()"
-					:loading="loadingExport"
-				>
-					<v-icon class="mr-1"> mdi-export </v-icon>
-					Export
-				</v-btn>
-
-				<v-btn
-					@click="downloadPdfOwners()"
-					class="black--text mx-1"
-					:loading="loadingPdf"
-				>
-					<v-icon class="mr-1"> mdi-printer </v-icon>
-					Print
-				</v-btn>
-			</v-col>
-			<v-col
-				cols="auto"
-				v-else
-				class="d-flex"
-			>
-				<v-btn
-					v-if="userIsEditor"
-					class="black--text mx-1"
-					@click="addNewBoat"
-				>
-					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
-					Add Boat
-				</v-btn>
-
-				<v-btn
-					class="black--text mx-1"
-					@click="getBoatExport()"
-					:loading="loadingExport"
-				>
-					<v-icon class="mr-1"> mdi-export </v-icon>
-					Export
-				</v-btn>
-
-				<v-btn
-					@click="downloadPdf()"
-					class="black--text mx-1"
-					:loading="loadingPdf"
-				>
-					<v-icon class="mr-1"> mdi-printer </v-icon>
-					Print
-				</v-btn>
-			</v-col>
-		</v-row>
 		<div class="mt-2">
-			<v-card>
+			<v-card class="default">
 				<v-tabs v-model="active_tab">
-					<v-tab
-						key="1"
-						:to="{ path: '/boats/' }"
-						:class="`${isActive($route.path)}`"
-					>
+					<v-tab key="1" :to="{ path: '/boats/' }" :class="`${isActive($route.path)}`">
 						<v-icon class="mr-1">mdi-ferry</v-icon>
 						Boats
 					</v-tab>
-					<v-tab
-						key="2"
-						:to="{ path: '/boats/owner' }"
-					>
+					<v-tab key="2" :to="{ path: '/boats/owner' }">
 						<v-icon class="mr-1">mdi-account-tie</v-icon>
 						Owner
 					</v-tab>
 				</v-tabs>
-				<v-divider class="mb-4"></v-divider>
-				<router-view id="rv-boats" />
+				<v-divider></v-divider>
+				<v-card-text>
+					<div class="d-flex mb-6">
+						<v-text-field v-if="$route.path.includes('owner')" prepend-inner-icon="mdi-magnify"
+							background-color="white" outlined dense label="Search" v-model="searchOwner" hide-details
+							class="mr-5" @keyup.enter="ownerSearchChange()" v-on:input="ownerSearchChange()" />
+
+						<v-text-field v-else prepend-inner-icon="mdi-magnify" background-color="white" outlined dense
+							label="Search" v-model="searchBoat" hide-details class="mr-5"
+							@keyup.enter="boatSearchChange()" v-on:input="boatSearchChange()" />
+
+						<v-menu v-if="!$route.path.includes('owner')" transition="slide-y-transition" bottom
+							:close-on-content-click="false">
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn color="transparent" class="black--text my-0 mr-2" style="height: 40px"
+									v-bind="attrs" v-on="on">
+									<v-icon class="black--text mr-1">mdi-filter</v-icon>
+									Filter
+									<v-icon class="black--text">mdi-chevron-right</v-icon>
+								</v-btn>
+							</template>
+							<v-list>
+								<v-list-item v-for="(item, i) in filterOptions" :key="`filter-list-opt-${i}`" link>
+									<v-text-field clearable @blur="filterChange" v-model="item.value"
+										:label="item.name"></v-text-field>
+								</v-list-item>
+							</v-list>
+						</v-menu>
+
+						<v-btn v-if="userIsEditor && $route.path.includes('owner')" color="primary" class="my-0 mr-2"
+							style="height: 40px" @click="addNewOwner">
+							Add Owner
+						</v-btn>
+						<v-btn v-if="userIsEditor && !$route.path.includes('owner')" color="primary" class="my-0 mr-2"
+							style="height: 40px" @click="addNewBoat">
+							Add Boat
+						</v-btn>
+
+						<v-btn v-if="$route.path.includes('owner')" color="info" class="my-0 mr-2" style="height: 40px"
+							@click="downloadPdfOwners()" :loading="loadingPdf" title="Print">
+							<v-icon>mdi-printer</v-icon>
+						</v-btn>
+						<v-btn v-else color="info" class="my-0 mr-2" style="height: 40px" @click="downloadPdf()"
+							:loading="loadingPdf" title="Print">
+							<v-icon>mdi-printer</v-icon>
+						</v-btn>
+
+						<v-btn v-if="$route.path.includes('owner')" color="info" class="my-0" style="height: 40px"
+							@click="getOwnerExport()" :loading="loadingExport" title="Export CSV">
+							<v-icon>mdi-export</v-icon>
+						</v-btn>
+						<v-btn v-else color="info" class="my-0" style="height: 40px" @click="getBoatExport()"
+							:loading="loadingExport" title="Export CSV">
+							<v-icon>mdi-export</v-icon>
+						</v-btn>
+					</div>
+
+					<router-view id="rv-boats" />
+				</v-card-text>
 			</v-card>
 		</div>
 	</div>
 </template>
 
 <script>
-import Breadcrumbs from '../../Breadcrumbs';
 import downloadCsv from '../../../utils/dataToCsv';
 import downloadPdf from '../../../utils/dataToPdf';
 import _ from 'lodash';
@@ -183,7 +94,7 @@ import { UserRoles } from '../../../authorization';
 //import jsPDF from "jspdf";
 export default {
 	name: 'boatsgrid-index',
-	components: { Breadcrumbs },
+	components: {},
 	data: () => ({
 		route: '',
 		active_tab: '',
@@ -322,12 +233,3 @@ export default {
 	watch: {},
 };
 </script>
-
-<style scoped>
-#horizontal-list {
-	display: flex;
-}
-.notActive {
-	color: rgba(0, 0, 0, 0.54) !important;
-}
-</style>

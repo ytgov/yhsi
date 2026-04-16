@@ -79,7 +79,7 @@ export default {
 		save({ dispatch, rootGetters }, data) {
 			if (
 				rootGetters['profile/role_list'].some((role) =>
-					[UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR].includes(role)
+					[UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR].includes(role)
 				)
 			) {
 				return dispatch('saveDirectly', data);

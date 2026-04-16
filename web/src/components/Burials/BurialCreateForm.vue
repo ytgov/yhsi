@@ -398,9 +398,13 @@ export default {
                     ReligionLUpID: (Religion && Religion.ReligionLUpID) ? Religion.ReligionLUpID : null
                 }
 
-                await burials.post(data)
+                const result = await burials.post(data)
 
-                this.$router.push('/burials')
+                if (result && result.BurialID) {
+                    this.$router.push({ name: 'BurialsViewForm', params: { id: result.BurialID } })
+                } else {
+                    this.$router.push('/burials')
+                }
             } catch (error) {
                 console.error(error)
             }

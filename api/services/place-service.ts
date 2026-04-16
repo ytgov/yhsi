@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import moment from 'moment';
+import { format, addHours } from 'date-fns';
 import { get, isEmpty, isNull, isUndefined, uniq } from 'lodash';
 
 import db from '@/db/db-client';
@@ -182,7 +182,7 @@ export class PlaceService {
 				place.ownerships = await this.ownershipService.getFor(id);
 				place.recognitionDate = isNull(place.recognitionDate)
 					? null
-					: moment(place.recognitionDate).add(7, 'hours').format('YYYY-MM-DD');
+					: format(addHours(new Date(place.recognitionDate), 7), 'yyyy-MM-dd');
 				place.revisionLogs = await this.revisionLogService.getFor(id);
 				place.themes = await this.themeService.getFor(id);
 				place.previousOwnerships = await this.previousOwnershipService.getFor(id);
@@ -233,7 +233,7 @@ export class PlaceService {
 			...item,
 			PlaceId: result[0].id,
 			editorUserId: currentUser.id,
-			editDate: moment().format('YYYY-MM-DD'),
+			editDate: format(new Date(), 'yyyy-MM-dd'),
 		});
 
 		if (result) return result[0];
@@ -340,7 +340,15 @@ export class PlaceService {
 		return new Promise(async (resolve, reject) => {
 			const selectStatement = scope
 				.distinct()
-				.select(...PLACE_FIELDS, { status: 'StatusTable.Status' })
+				.select(
+					...PLACE_FIELDS,
+					{ status: 'StatusTable.Status' },
+					{
+						secondaryNames: db.raw(
+							`(SELECT STRING_AGG(Description, ', ') FROM dbo.Name WHERE PlaceId = Place.Id)`
+						),
+					}
+				)
 				.leftOuterJoin('FirstNationAssociation', 'Place.Id', 'FirstNationAssociation.PlaceId')
 				.leftOuterJoin('ConstructionPeriod', 'Place.Id', 'ConstructionPeriod.PlaceId')
 				.leftOuterJoin('RevisionLog', 'Place.id', 'RevisionLog.PlaceId')
@@ -400,6 +408,12 @@ export class PlaceService {
 				},
 				excludingConstructionPeriodValues(base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('[ConstructionPeriod].[Type]', value);
+				},
+				includingRecordStatusIds(_base: Knex.QueryInterface, _value: any) {
+					return _base;
+				},
+				excludingRecordStatusIds(_base: Knex.QueryInterface, _value: any) {
+					return _base;
 				},
 				includingSiteStatusIds(base: Knex.QueryInterface, value: any) {
 					return base.whereIn('SiteStatus', value);

@@ -124,11 +124,11 @@ assetRouter.delete(
 		const { assetID } = req.params;
 		const exists = await intSiteService.objExists({ AssetID: parseInt(assetID) }, 'assets');
 		if (!exists) {
-			res.sendStatus(404).send('The Asset doesnt exist');
+			res.status(404).send({ message: 'The asset does not exist' });
 			return;
 		}
 		const resObj = await intSiteService.removeAsset(parseInt(assetID));
-		res.sendStatus(200).send(resObj);
+		res.status(200).json({ data: resObj });
 	}
 );
 
@@ -141,10 +141,10 @@ assetRouter.delete(
 
 		const resObj = await intSiteService.removeDocumentByID(parseInt(id));
 		if (!resObj) {
-			res.sendStatus(404).send('The Action doesnt exist');
+			res.status(404).send({ message: 'The document does not exist' });
 			return;
 		}
-		res.sendStatus(200).send(resObj);
+		res.status(200).json({ data: resObj });
 	}
 );
 

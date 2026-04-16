@@ -5,28 +5,26 @@
           <span class="text-h7">What would you like to name this photo batch?</span>
         </v-card-title>
         <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-form
-                  ref="itemForm"
-                  :lazy-validation="false"
-                  v-model="valid"
-                >
-                  <v-text-field
-                    placeholder="Enter a name"
-                    v-model="photoBatchAttributes.name"
-                    :rules="generalRules"
-                  ></v-text-field>
-                </v-form>
-              </v-col>
-            </v-row>
-          </v-container>
+          <v-form
+            ref="itemForm"
+            :lazy-validation="false"
+            v-model="valid"
+          >
+            <v-text-field
+              outlined
+              dense
+              placeholder="Enter a name"
+              v-model="photoBatchAttributes.name"
+              :rules="generalRules"
+            ></v-text-field>
+          </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn text @click="closeDialog" class="black--text"> Close </v-btn>
+          <v-btn color="warning" outlined @click="closeDialog">
+            Cancel
+          </v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="success" text @click="onSave">
+          <v-btn color="primary" :disabled="!valid" @click="onSave">
             Save
           </v-btn>
         </v-card-actions>

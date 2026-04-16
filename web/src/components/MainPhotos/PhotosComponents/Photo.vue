@@ -99,22 +99,90 @@
 								background-color="white"
 								:readonly="mode == 'view'"
 							></v-checkbox>
-						</v-col>
 
-						<v-col cols="6">
-							<v-select
-								v-model="fields.ownerId"
-								:items="ownerOptions"
-								:rules="generalRules"
-								item-text="name"
-								item-value="id"
-								label="Owner"
+							<v-checkbox
+								v-model="fields.showInRegister"
+								:label="'Show in Register?'"
 								dense
 								outlined
 								background-color="white"
 								:readonly="mode == 'view'"
-								:class="{ 'read-only-form-item': mode == 'view' }"
-							></v-select>
+							></v-checkbox>
+
+							<v-checkbox
+								v-model="fields.isYRHPCoverImage"
+								:label="'Is YRHP Cover Image?'"
+								dense
+								outlined
+								background-color="white"
+								:readonly="mode == 'view'"
+							></v-checkbox>
+
+							<v-text-field
+								v-model.number="fields.yRHPOrder"
+								label="YRHP Order"
+								type="number"
+								dense
+								outlined
+								background-color="white"
+								:readonly="mode == 'view'"
+							></v-text-field>
+						</v-col>
+
+						<v-col cols="6">
+							<div class="d-flex align-start">
+								<v-select
+									v-model="fields.ownerId"
+									:items="ownerOptions"
+									:rules="generalRules"
+									item-text="name"
+									item-value="id"
+									label="Owner"
+									dense
+									outlined
+									background-color="white"
+									:readonly="mode == 'view'"
+									:class="{ 'read-only-form-item': mode == 'view' }"
+									class="flex-grow-1"
+								></v-select>
+								<v-btn
+									v-if="mode != 'view'"
+									icon
+									small
+									class="ml-1 mt-1"
+									title="Create new owner"
+									@click="createOwnerDialog = true"
+								>
+									<v-icon>mdi-plus-circle</v-icon>
+								</v-btn>
+							</div>
+
+							<v-dialog v-model="createOwnerDialog" max-width="400px" persistent>
+								<v-card>
+									<v-card-title>New Photo Owner</v-card-title>
+									<v-card-text>
+										<v-text-field
+											v-model="newOwnerName"
+											label="Owner Name"
+											outlined
+											dense
+											autofocus
+											:rules="[(v) => !!v || 'Name is required']"
+											@keyup.enter="createOwner"
+										></v-text-field>
+									</v-card-text>
+									<v-card-actions>
+										<v-spacer></v-spacer>
+										<v-btn text @click="createOwnerDialog = false; newOwnerName = ''">Cancel</v-btn>
+										<v-btn
+											color="primary"
+											:disabled="!newOwnerName.trim()"
+											:loading="creatingOwner"
+											@click="createOwner"
+										>Create</v-btn>
+									</v-card-actions>
+								</v-card>
+							</v-dialog>
 
 							<v-select
 								v-model="fields.copyright"
@@ -223,6 +291,9 @@ export default {
 		copyrightOptions: [],
 		usageRightOptions: [],
 		infoLoaded: false,
+		createOwnerDialog: false,
+		newOwnerName: '',
+		creatingOwner: false,
 	}),
 	created() {
 		axios.get(`${STATIC_URL}/photo-owner`).then((resp) => {
@@ -294,6 +365,24 @@ export default {
 			document.body.appendChild(a);
 			a.click();
 			document.body.removeChild(a);
+		},
+		async createOwner() {
+			if (!this.newOwnerName.trim()) return;
+			this.creatingOwner = true;
+			try {
+				const resp = await axios.post(`${STATIC_URL}/photo-owner`, { name: this.newOwnerName.trim() });
+				const newOwner = resp.data.data;
+				this.ownerOptions = [...this.ownerOptions, newOwner].sort((a, b) =>
+					a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
+				);
+				this.fields.ownerId = newOwner.id;
+				this.createOwnerDialog = false;
+				this.newOwnerName = '';
+			} catch (err) {
+				console.error('Failed to create owner', err);
+			} finally {
+				this.creatingOwner = false;
+			}
 		},
 		rotateImage() {
 			let img = document.getElementById('imgFile');

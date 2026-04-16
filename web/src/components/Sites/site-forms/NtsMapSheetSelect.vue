@@ -1,0 +1,60 @@
+<template lang="pug">
+v-autocomplete(
+	label="NTS map sheet",
+	:items="ntsMapSheetOptions",
+	item-text="name",
+	item-value="name",
+	:loading="loading"
+	v-bind="$attrs"
+	v-on="$listeners",
+	:readonly="!isEditing"
+	clearable
+)
+	template(
+		v-for="(_, slot) of $scopedSlots"
+		v-slot:[slot]="scope"
+	)
+		slot(
+			:name="slot"
+			v-bind="scope"
+		)
+</template>
+
+<script>
+import api from '@/apis/nts-map-sheets-api';
+
+export default {
+	name: 'NtsMapSheetSelect',
+	data: () => ({
+		ntsMapSheetOptions: [],
+		loading: false,
+	}),
+	computed: {
+		isEditing() {
+			return (
+				this.$route.path.includes('/edit') ||
+				this.$route.path.includes('/create')
+			);
+		},
+	},
+	mounted() {
+		this.getNtsMapSheets();
+	},
+	methods: {
+		getNtsMapSheets() {
+			this.loading = true;
+			return api
+				.getAll()
+				.then(({ data }) => {
+					this.ntsMapSheetOptions = data;
+					return data;
+				})
+				.finally(() => {
+					this.loading = false;
+				});
+		},
+	},
+};
+</script>
+
+<style scoped></style>

@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import axios from 'axios';
-import moment from 'moment';
+import { format, isAfter } from 'date-fns';
 import { body, param } from 'express-validator';
 
 import { DB_CONFIG, ISSUER_BASE_URL, CLIENT_ID, AUTH_DB_CONNECTION } from '../config';
@@ -17,12 +17,10 @@ userRouter.get('/', authorize([UserRoles.ADMINISTRATOR]), async (req: Request, r
 
 	for (const user of users) {
 		if (user.last_login_date)
-			user.last_login_date_display = moment(user.last_login_date)
-				.utc(true)
-				.format('YYYY-MM-DD @ h:mmA');
+			user.last_login_date_display = format(new Date(user.last_login_date), "yyyy-MM-dd '@' h:mmaa");
 
 		if (user.expire_date) {
-			const isExpired = moment().isAfter(moment(user.expire_date));
+			const isExpired = isAfter(new Date(), new Date(user.expire_date));
 			if (user.status == 'Active' && isExpired) user.status = 'Expired';
 		}
 	}
@@ -32,6 +30,11 @@ userRouter.get('/', authorize([UserRoles.ADMINISTRATOR]), async (req: Request, r
 
 userRouter.get('/roles', authorize(), async (req: Request, res: Response) => {
 	return res.json({ data: UserRoleOptions });
+});
+
+userRouter.get('/pending-count', authorize([UserRoles.ADMINISTRATOR]), async (req: Request, res: Response) => {
+	const count = await db.getPendingCount();
+	return res.json({ data: { count } });
 });
 
 userRouter.get('/me', authorize([], true), async (req: Request, res: Response) => {
@@ -50,10 +53,10 @@ userRouter.get(
 		const user = await db.getById(parseInt(id));
 
 		if (user?.expire_date) {
-			const isExpired = moment().isAfter(moment(user.expire_date));
+			const isExpired = isAfter(new Date(), new Date(user.expire_date));
 			if (isExpired) user.status = 'Expired';
 
-			user.expire_date_display = moment(user.expire_date).utc(false).format('YYYY-MM-DD');
+			user.expire_date_display = format(new Date(user.expire_date), 'yyyy-MM-dd');
 		}
 
 		res.json({ data: user });
@@ -122,14 +125,16 @@ userRouter.post(
 		};
 
 		await axios
-			.post(`${ISSUER_BASE_URL}dbconnections/signup`, body)
+			.post(`${ISSUER_BASE_URL.replace(/\/+$/, '')}/dbconnections/signup`, body)
 			.then((resp: any) => {
 				return res.json({
 					messages: [{ variant: 'success', text: 'User account created' }],
 				});
 			})
 			.catch((err: any) => {
-				return res.status(400).json({ errors: [{ msg: err.response.data.description }] });
+				console.error('Sign up error:', err.response?.status, err.response?.data);
+				const msg = err.response?.data?.description || err.response?.data?.message || err.message || 'Sign up failed';
+				return res.status(400).json({ errors: [{ msg }] });
 			});
 	}
 );
@@ -185,7 +190,7 @@ async function makeDTO(userRaw: any) {
 	dto.display_name = `${userRaw.first_name} ${userRaw.last_name}`;
 
 	if (userRaw.expire_date)
-		dto.expire_date_display = moment(userRaw.expire_date).utc(false).format('YYYY-MM-DD');
+		dto.expire_date_display = format(new Date(userRaw.expire_date), 'yyyy-MM-dd');
 
 	//dto.roles = _.split(userRaw.roles, ",").filter(r => r.length > 0);
 	//dto.access = await db.getAccessFor(userRaw.email);
