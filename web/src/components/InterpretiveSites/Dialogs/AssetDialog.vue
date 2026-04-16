@@ -1,29 +1,11 @@
 <template>
 	<div>
-		<v-dialog
-			v-if="mode == 'new'"
-			v-model="dialog"
-			persistent
-			max-width="800px"
-		>
+		<v-dialog v-if="mode == 'new'" v-model="dialog" persistent max-width="800px">
 			<template v-slot:activator="{ on, attrs }">
-				<v-btn
-					v-if="!typeGrid"
-					color="primary"
-					outlined
-					class="ml-auto mr-1"
-					v-bind="attrs"
-					v-on="on"
-				>
+				<v-btn v-if="!typeGrid" color="primary" outlined class="ml-auto mr-1" v-bind="attrs" v-on="on">
 					ADD ASSET
 				</v-btn>
-				<v-btn
-					v-else
-					class="black--text mx-1"
-					v-bind="attrs"
-					v-on="on"
-				>
-					<v-icon class="mr-1">mdi-plus-circle-outline</v-icon>
+				<v-btn v-else color="primary" class="mx-2 my-0" style="height: 40px;" v-bind="attrs" v-on="on">
 					Add Asset
 				</v-btn>
 			</template>
@@ -32,187 +14,96 @@
 					<span class="text-h5">New Asset</span>
 				</v-card-title>
 				<v-card-text>
-					<v-container>
-						<v-form
-							v-model="valid"
-							ref="assetDialog"
-						>
-							<v-row>
-								<v-col cols="6">
-									<v-autocomplete
-										v-if="typeGrid"
-										outlined
-										dense
-										clearable
-										@click="searchSites"
-										:items="siteList"
-										:search-input.sync="siteSearch"
-										:loading="loadingSites"
-										name="Site"
-										item-text="SiteName"
-										item-value="SiteID"
-										label="Site"
-										v-model="fields.SiteID"
-										:rules="rules"
-									></v-autocomplete>
-									<label v-else>
-										<h3>{{ Site.SiteName }}</h3>
-									</label>
+					<v-form v-model="valid" ref="assetDialog">
+						<v-row>
+							<v-col cols="6">
+								<v-autocomplete v-if="typeGrid" outlined dense clearable @click="searchSites"
+									:items="siteList" :search-input.sync="siteSearch" :loading="loadingSites"
+									name="Site" item-text="SiteName" item-value="SiteID" label="Site"
+									v-model="fields.SiteID" :rules="rules"></v-autocomplete>
+								<v-text-field v-else outlined dense readonly name="Site Name" label="Site Name"
+									v-model="Site.SiteName"></v-text-field>
 
-									<v-select
-										:items="availableCategories"
-										outlined
-										dense
-										item-text="Category"
-										item-value="Category"
-										name="Category"
-										label="Category"
-										:loading="loadingCatalogs"
-										v-model="fields.Category"
-										:rules="rules"
-									></v-select>
+								<v-select :items="availableCategories" outlined dense item-text="Category"
+									item-value="Category" name="Category" label="Category" :loading="loadingCatalogs"
+									v-model="fields.Category" :rules="rules"></v-select>
 
-									<!-- <v-text-field
-										outlined
-										dense
-										name="Owned By"
-										label="Owned By"
-										v-model="fields.OwnedBy"
-										:rules="rules"
-									></v-text-field> -->
-								</v-col>
-								<v-col cols="6">
-									<v-select
-										outlined
-										dense
-										name="Type"
-										label="Type"
-										item-text="Type"
-										item-value="Type"
-										:loading="loadingCatalogs"
-										:items="availableTypes"
-										v-model="fields.Type"
-										:rules="rules"
-									></v-select>
+								<v-select outlined dense name="Maintained By" label="Maintained By"
+									:items="maintainerOptions" item-text="MaintOwnName" item-value="MaintOwnName"
+									:loading="loadingCatalogs" v-model="fields.Maintainer"></v-select>
+							</v-col>
+							<v-col cols="6">
+								<v-select outlined dense name="Type" label="Type" item-text="Type" item-value="Type"
+									:loading="loadingCatalogs" :items="availableTypes" v-model="fields.Type"
+									:rules="rules"></v-select>
 
-									<v-text-field
-										outlined
-										dense
-										name="Installation Date"
-										label="Installation Date"
-										v-model="fields.InstallDate"
-										:rules="dateRules"
-									></v-text-field>
+								<v-menu ref="newInstallDateMenu" v-model="newInstallDateMenu"
+									:close-on-content-click="false" transition="scale-transition" offset-y
+									min-width="auto">
+									<template v-slot:activator="{ on, attrs }">
+										<v-text-field outlined dense v-model="fields.InstallDate"
+											label="Installation Date" append-icon="mdi-calendar" readonly v-bind="attrs"
+											v-on="on"></v-text-field>
+									</template>
+									<v-date-picker v-model="fields.InstallDate" no-title scrollable
+										@input="newInstallDateMenu = false"></v-date-picker>
+								</v-menu>
 
-									<v-select
-										outlined
-										dense
-										name="Maintained By"
-										label="Maintained By"
-										:items="maintainers"
-										item-text="MaintOwnName"
-										item-value="MaintOwnName"
-										:loading="loadingCatalogs"
-										v-model="fields.Maintainer"
-										:rules="rules"
-									></v-select>
-								</v-col>
-							</v-row>
-							<v-row>
-								<v-col cols="12">
-									<v-textarea
-										outlined
-										dense
-										name="Sign Text"
-										label="Sign Text"
-										v-model="fields.SignText"
-										:rules="rules"
-									></v-textarea>
-
-									<v-textarea
-										outlined
-										dense
-										name="Description"
-										label="Description"
-										v-model="fields.Description"
-										:rules="rules"
-									></v-textarea>
-								</v-col>
-							</v-row>
-							<v-row>
-								<v-col cols="12">
-									<h3>Active</h3>
-									<v-radio-group
-										v-model="fields.Status"
-										row
-									>
-										<v-radio
-											label="Yes"
-											value="Yes"
-										></v-radio>
-										<v-radio
-											label="No"
-											value="No"
-										></v-radio>
-									</v-radio-group>
-									<v-text-field
-										outlined
-										dense
-										name="DecommissionDate"
-										label="Decommission Date"
-										:rules="dateRules"
-										v-model="fields.DecommissionDate"
-									></v-text-field>
-									<v-textarea
-										outlined
-										dense
-										name="DecommissionNotes"
-										label="Decommission Notes"
-										v-model="fields.DecommissionNotes"
-										:rules="rules"
-									></v-textarea>
-								</v-col>
-							</v-row>
-							<DocumentHandler :default="true" />
-						</v-form>
-					</v-container>
+								<v-radio-group v-model="fields.Status" row label="Active" class="mt-0">
+									<v-radio label="Yes" value="Yes"></v-radio>
+									<v-radio label="No" value="No"></v-radio>
+								</v-radio-group>
+							</v-col>
+						</v-row>
+						<v-row>
+							<v-col cols="6">
+								<v-textarea outlined dense name="Description" label="Description"
+									v-model="fields.Description" :rules="rules"></v-textarea>
+							</v-col>
+							<v-col cols="6">
+								<v-textarea outlined dense name="Sign Text" label="Sign Text"
+									v-model="fields.SignText"></v-textarea>
+							</v-col>
+						</v-row>
+						<v-row>
+							<v-col cols="6">
+								<v-menu ref="newDecommissionDateMenu" v-model="newDecommissionDateMenu"
+									:close-on-content-click="false" transition="scale-transition" offset-y
+									min-width="auto">
+									<template v-slot:activator="{ on, attrs }">
+										<v-text-field outlined dense v-model="fields.DecommissionDate"
+											label="Decommission Date" append-icon="mdi-calendar" readonly v-bind="attrs"
+											v-on="on"></v-text-field>
+									</template>
+									<v-date-picker v-model="fields.DecommissionDate" no-title scrollable
+										@input="newDecommissionDateMenu = false"></v-date-picker>
+								</v-menu>
+							</v-col>
+							<v-col cols="6">
+								<v-textarea outlined dense name="DecommissionNotes" label="Decommission Notes"
+									v-model="fields.DecommissionNotes"></v-textarea>
+							</v-col>
+						</v-row>
+					</v-form>
 				</v-card-text>
 				<v-card-actions>
-					<v-btn
-						color="blue darken-1"
-						text
-						@click="dialog = false"
-					>
-						Close
+					<v-btn color="warning" outlined @click="dialog = false">
+						Cancel
 					</v-btn>
 					<v-spacer></v-spacer>
-					<v-btn
-						color="blue darken-1"
-						text
-						:disabled="!valid"
-						@click="saveNew"
-					>
+					<v-btn color="primary" :disabled="!valid" @click="saveNew">
 						Save
 					</v-btn>
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
 		<!-- edit dialog  -->
-		<v-dialog
-			v-if="mode == 'edit'"
-			v-model="editDialog"
-			persistent
-			max-width="800px"
-		>
+		<v-dialog v-if="mode == 'edit'" v-model="editDialog" persistent max-width="800px">
 			<template #activator="{ on: dialog }">
 				<v-tooltip bottom>
 					<template #activator="{ on: tooltip }">
-						<v-btn
-							v-on="{ ...tooltip, ...dialog }"
-							icon
-							class="grey--text text--darken-2"
-							@click="openEditDialog()"
-						>
+						<v-btn v-on="{ ...tooltip, ...dialog }" icon class="grey--text text--darken-2"
+							@click="openEditDialog()">
 							<v-icon small>mdi-eye</v-icon>
 						</v-btn>
 					</template>
@@ -222,230 +113,94 @@
 
 			<v-card>
 				<v-card-title>
-					<v-col
-						class="d-flex flex-row"
-						cols="12"
-					>
+					<v-col class="d-flex flex-row" cols="12">
 						<span class="text-h5 mt-3">{{ textMode }} Asset</span>
 						<v-spacer></v-spacer>
-						<DeleteDialog
-							:type="'Asset'"
-							:id="editFields.AssetID"
-							@deleteItem="deleteItem"
-						/>
-						<v-btn
-							color="success"
-							v-if="!internalEditMode"
-							text
-							@click="editMode"
-							>Edit</v-btn
-						>
+						<DeleteDialog :type="'Asset'" :id="editFields.AssetID" @deleteItem="deleteItem" />
+						<v-btn color="success" v-if="!internalEditMode" text @click="editMode">Edit</v-btn>
 					</v-col>
 				</v-card-title>
 				<v-card-text>
-					<v-container>
-						<v-form
-							v-model="form2"
-							ref="assetEditDialog"
-						>
-							<v-row>
-								<v-col cols="6">
-									<!-- <v-autocomplete
-										v-if="typeGrid"
-										outlined
-										dense
-										clearable
-										@click="searchSites"
-										:items="siteList"
-										:search-input.sync="siteSearch"
-										:loading="loadingSites"
-										name="Site"
-										item-text="SiteName"
-										item-value="SiteID"
-										label="Site"
-										v-model="editFields.SiteID"
-										:rules="rules"
-									></v-autocomplete>
-									<label v-else>
-										<h3>{{ Site.SiteName }}</h3>
-									</label> -->
-									<v-text-field
-										outlined
-										dense
-										name="Site"
-										label="Site"
-										readonly
-										v-model="editFields.SiteName"
-									></v-text-field>
+					<v-form v-model="form2" ref="assetEditDialog">
+						<v-row>
+							<v-col cols="6">
+								<v-text-field outlined dense name="Site" label="Site" disabled
+									v-model="editFields.SiteName"></v-text-field>
 
-									<v-select
-										:readonly="!internalEditMode"
-										:items="availableCategories"
-										outlined
-										dense
-										item-text="Category"
-										item-value="Category"
-										name="Category"
-										label="Category"
-										:loading="loadingCatalogs"
-										v-model="editFields.Category"
-										:rules="rules"
-									></v-select>
+								<v-select :disabled="!internalEditMode" :items="availableCategories" outlined dense
+									item-text="Category" item-value="Category" name="Category" label="Category"
+									:loading="loadingCatalogs" v-model="editFields.Category" :rules="rules"></v-select>
 
-									<!-- <v-text-field
-										outlined
-										dense
-										name="Owned By"
-										label="Owned By"
-										v-model="editFields.OwnedBy"
-										:rules="rules"
-									></v-text-field> -->
-								</v-col>
-								<v-col cols="6">
-									<v-select
-										:readonly="!internalEditMode"
-										outlined
-										dense
-										name="Type"
-										label="Type"
-										item-text="Type"
-										item-value="Type"
-										:loading="loadingCatalogs"
-										:items="availableTypes"
-										v-model="editFields.Type"
-										:rules="rules"
-									></v-select>
+								<MaintainerList :list="maintainers" :mode="internalEditMode ? 'edit' : 'view'"
+									@newMaintainer="newMaintainer" @deleteMaintainer="deleteMaintainer" />
+							</v-col>
+							<v-col cols="6">
+								<v-select :disabled="!internalEditMode" outlined dense name="Type" label="Type"
+									item-text="Type" item-value="Type" :loading="loadingCatalogs"
+									:items="availableTypes" v-model="editFields.Type" :rules="rules"></v-select>
 
-									<v-text-field
-										:readonly="!internalEditMode"
-										outlined
-										dense
-										name="Installation Date"
-										label="Installation Date"
-										v-model="editFields.InstallDate"
-										:rules="dateRules"
-									></v-text-field>
+								<v-menu ref="editInstallDateMenu" v-model="editInstallDateMenu"
+									:close-on-content-click="false" transition="scale-transition" offset-y
+									min-width="auto" :disabled="!internalEditMode">
+									<template v-slot:activator="{ on, attrs }">
+										<v-text-field :disabled="!internalEditMode" outlined dense
+											v-model="editFields.InstallDate" label="Installation Date"
+											append-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+									</template>
+									<v-date-picker v-model="editFields.InstallDate" no-title scrollable
+										@input="editInstallDateMenu = false"></v-date-picker>
+								</v-menu>
 
-									<!-- <v-select
-										:readonly="!internalEditMode"
-										outlined
-										dense
-										name="Maintained By"
-										label="Maintained By"
-										:items="maintainers"
-										item-text="MaintOwnName"
-										item-value="MaintOwnName"
-										:loading="loadingCatalogs"
-										v-model="editFields.Maintainer"
-										:rules="rules"
-									></v-select> -->
-									<MaintainerList
-										:list="maintainers"
-										:mode="internalEditMode ? 'edit' : 'view'"
-										@newMaintainer="newMaintainer"
-										@deleteMaintainer="deleteMaintainer"
-									/>
-								</v-col>
-							</v-row>
-							<v-row>
-								<v-col cols="12">
-									<v-textarea
-										:readonly="!internalEditMode"
-										outlined
-										dense
-										name="Sign Text"
-										label="Sign Text"
-										v-model="editFields.SignText"
-										:rules="rules"
-									></v-textarea>
-
-									<v-textarea
-										:readonly="!internalEditMode"
-										outlined
-										dense
-										name="Description"
-										label="Description"
-										v-model="editFields.Description"
-										:rules="rules"
-									></v-textarea>
-								</v-col>
-							</v-row>
-							<v-row>
-								<v-col cols="12">
-									<h3>Active</h3>
-									<v-radio-group
-										:readonly="!internalEditMode"
-										v-model="editFields.Status"
-										row
-									>
-										<v-radio
-											label="Yes"
-											value="Yes"
-										></v-radio>
-										<v-radio
-											label="No"
-											value="No"
-										></v-radio>
-									</v-radio-group>
-									<v-text-field
-										outlined
-										:readonly="!internalEditMode"
-										dense
-										name="DecommissionDate"
-										label="Decommission Date"
-										:rules="dateRules"
-										v-model="editFields.DecommissionDate"
-									></v-text-field>
-									<v-textarea
-										outlined
-										:readonly="!internalEditMode"
-										dense
-										name="DecommissionNotes"
-										label="Decommission Notes"
-										v-model="editFields.DecommissionNotes"
-										:rules="rules"
-									></v-textarea>
-								</v-col>
-							</v-row>
-						</v-form>
-						<DocumentHandler
-							:doclist="docs"
-							@newDocumment="newDocumment"
-							:displayDelete="internalEditMode"
-							:objID="{
-								key: 'AssetID',
-								doctype: 'assets',
-								value: dataToEdit.item.AssetID,
-							}"
-							@deletedItem="deletedDoc"
-						/>
-						<!-- <DocumentHandler
-								:doclist="docs"
-								@newDocumment="newDocumment"
-								:objID="{
-									key: 'InspectID',
-									doctype: 'inspections',
-									value: dataToEdit.item.InspectID,
-								}"
-							/> -->
-					</v-container>
+								<v-radio-group :disabled="!internalEditMode" v-model="editFields.Status" row
+									class="mt-0">
+									<v-radio label="Active" value="Yes"></v-radio>
+									<v-radio label="Inactive" value="No"></v-radio>
+								</v-radio-group>
+							</v-col>
+						</v-row>
+						<v-row>
+							<v-col cols="6">
+								<v-textarea :disabled="!internalEditMode" outlined dense name="Description"
+									label="Description" v-model="editFields.Description" :rules="rules"></v-textarea>
+							</v-col>
+							<v-col cols="6">
+								<v-textarea :disabled="!internalEditMode" outlined dense name="Sign Text"
+									label="Sign Text" v-model="editFields.SignText"></v-textarea>
+							</v-col>
+						</v-row>
+						<v-row>
+							<v-col cols="6">
+								<v-menu ref="editDecommissionDateMenu" v-model="editDecommissionDateMenu"
+									:close-on-content-click="false" transition="scale-transition" offset-y
+									min-width="auto" :disabled="!internalEditMode">
+									<template v-slot:activator="{ on, attrs }">
+										<v-text-field :disabled="!internalEditMode" outlined dense
+											v-model="editFields.DecommissionDate" label="Decommission Date"
+											append-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+									</template>
+									<v-date-picker v-model="editFields.DecommissionDate" no-title scrollable
+										@input="editDecommissionDateMenu = false"></v-date-picker>
+								</v-menu>
+							</v-col>
+							<v-col cols="6">
+								<v-textarea :disabled="!internalEditMode" outlined dense name="DecommissionNotes"
+									label="Decommission Notes" v-model="editFields.DecommissionNotes"></v-textarea>
+							</v-col>
+						</v-row>
+					</v-form>
+					<DocumentHandler :doclist="docs" @newDocumment="newDocumment" :displayDelete="internalEditMode"
+						:objID="{
+							key: 'AssetID',
+							doctype: 'assets',
+							value: dataToEdit.item.AssetID,
+						}" @deletedItem="deletedDoc" />
 				</v-card-text>
 				<v-card-actions>
-					<v-btn
-						color="grey darken-1"
-						text
-						@click="closeDialog()"
-					>
-						Close{{ cancelActive }}
+					<v-btn color="warning" outlined @click="closeDialog()">
+						{{ internalEditMode ? 'Cancel' : 'Close' }}
 					</v-btn>
 					<v-spacer></v-spacer>
-					<v-btn
-						color="blue darken-1"
-						text
-						@click="saveEdit()"
-						:disabled="!form2"
-						v-if="internalEditMode"
-					>
+					<v-btn color="primary" @click="saveEdit()" :disabled="!form2" v-if="internalEditMode">
 						Save
 					</v-btn>
 				</v-card-actions>
@@ -472,20 +227,18 @@ export default {
 		siteSearch: '',
 		rules: [(value) => !!value || 'Required.'],
 		loadingSites: false,
+		newInstallDateMenu: false,
+		newDecommissionDateMenu: false,
+		editInstallDateMenu: false,
+		editDecommissionDateMenu: false,
 		//edit dialog
 		form2: false,
 		editDialog: false,
 		editFields: {},
-		dateRules: [
-			(v) => !!v || 'This field is required',
-			(v) =>
-				/^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/.test(
-					v
-				) || 'Correct date format required.',
-		],
 		assetTypes: [],
 		categoryTypes: [],
 		maintainers: [],
+		maintainerOptions: [],
 		documments: [],
 		loadingCatalogs: false,
 		internalEditMode: false,
@@ -494,6 +247,7 @@ export default {
 	mounted() {
 		this.getTypes();
 		this.getCategories();
+		this.getMaintainerOptions();
 	},
 	methods: {
 		closeDialog() {
@@ -508,11 +262,11 @@ export default {
 			this.$emit('deletedAsset', this.dataToEdit.index);
 			this.editDialog = false;
 		},
-		newDocumment(val) {
-			this.documments.push(val.data);
+		async newDocumment() {
+			await this.getDocs();
 		},
-		deletedDoc(id) {
-			this.documments = this.documments.filter((x) => x.DocID !== id);
+		async deletedDoc() {
+			await this.getDocs();
 		},
 		newMaintainer(val) {
 			val.AssetID = this.dataToEdit.item.AssetID;
@@ -539,6 +293,9 @@ export default {
 			this.loadingCatalogs = true;
 			this.categoryTypes = await catalogs.getCategories();
 			this.loadingCatalogs = false;
+		},
+		async getMaintainerOptions() {
+			this.maintainerOptions = await catalogs.getMaintainers();
 		},
 		async getMaintainers() {
 			this.loadingCatalogs = true;
@@ -588,9 +345,15 @@ export default {
 			this.$refs.assetEditDialog.reset();
 			this.editDialog = false;
 		},
+		normalizeDate(date) {
+			if (!date) return null;
+			return date.split('T')[0];
+		},
 		async openEditDialog() {
 			const { item } = this.dataToEdit;
 			this.editFields = { ...item };
+			this.editFields.InstallDate = this.normalizeDate(this.editFields.InstallDate);
+			this.editFields.DecommissionDate = this.normalizeDate(this.editFields.DecommissionDate);
 			await this.getDocs();
 			await this.getMaintainers();
 			this.editDialog = true;
@@ -650,9 +413,6 @@ export default {
 		},
 		textMode() {
 			return this.internalEditMode ? 'Edit' : 'View';
-		},
-		cancelActive() {
-			return this.internalEditMode ? '/Cancel' : '';
 		},
 	},
 };

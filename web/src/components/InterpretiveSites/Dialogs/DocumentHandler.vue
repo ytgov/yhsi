@@ -2,77 +2,32 @@
 	<v-row>
 		<v-col cols="12">
 			<v-row>
-				<v-col
-					cols="12"
-					class="d-flex flex-row"
-				>
+				<v-col cols="12" class="d-flex flex-row">
 					<v-spacer></v-spacer>
-					<v-dialog
-						v-model="dialog"
-						persistent
-						max-width="490"
-					>
+					<v-dialog v-model="dialog" persistent max-width="490">
 						<template v-slot:activator="{ on, attrs }">
-							<v-btn
-								color="primary"
-								outlined
-								v-if="!isDefault"
-								v-bind="attrs"
-								v-on="on"
-							>
+							<v-btn color="primary" outlined v-if="!isDefault" v-bind="attrs" v-on="on">
 								ADD DOCUMENT
 							</v-btn>
 						</template>
 						<v-card>
 							<v-card-title class="text-h5"> New Documment </v-card-title>
 							<v-card-text>
-								<v-container>
-									<v-form
-										v-model="form"
-										ref="docummentDialog"
-									>
-										<v-row>
-											<v-col cols="12">
-												<v-text-field
-													:readonly="loading"
-													outlined
-													dense
-													name="Description"
-													label="Description"
-													v-model="fields.DocDesc"
-													:rules="rules"
-												></v-text-field>
+								<v-form v-model="form" ref="docummentDialog">
+									<v-text-field :readonly="loading" outlined dense name="Description"
+										label="Description" v-model="fields.DocDesc" :rules="rules"></v-text-field>
 
-												<v-file-input
-													:disabled="loading"
-													outlined
-													dense
-													accept="/*"
-													label="Choose documment for upload"
-													prepend-icon="mdi-file"
-													@change="onFileSelected"
-													:rules="rules"
-												></v-file-input>
-											</v-col>
-										</v-row>
-									</v-form>
-								</v-container>
+									<v-file-input :disabled="loading" outlined dense accept="/*"
+										label="Choose document for upload" prepend-icon="mdi-file"
+										@change="onFileSelected" :rules="rules"></v-file-input>
+								</v-form>
 							</v-card-text>
 							<v-card-actions>
-								<v-btn
-									color="grey darken-1"
-									text
-									@click="dialog = false"
-								>
-									Close
+								<v-btn color="warning" outlined @click="dialog = false">
+									Cancel
 								</v-btn>
 								<v-spacer></v-spacer>
-								<v-btn
-									color="green darken-1"
-									text
-									@click="newDocument"
-									:loading="loading"
-								>
+								<v-btn color="primary" @click="newDocument" :loading="loading" :disabled="!form">
 									Save
 								</v-btn>
 							</v-card-actions>
@@ -82,44 +37,26 @@
 			</v-row>
 			<v-row>
 				<v-col cols="12">
-					<v-data-table
-						:headers="headers"
-						:items="doclist"
-						:items-per-page="5"
-						:no-data-text="
-							isDefault
-								? 'You will be able to add documments once the general object is created'
-								: 'No documments added'
-						"
-						class="elevation-0"
-					>
+					<v-data-table :headers="headers" :items="doclist" :items-per-page="5" :no-data-text="isDefault
+							? 'You will be able to add documments once the general object is created'
+							: 'No documments added'
+						" class="elevation-0">
 						<template v-slot:item="{ item }">
 							<tr>
 								<td class="parent-row">
 									{{ item.DocDesc }}
 								</td>
-								<td class="child-row">{{ item.UploadDate }}</td>
+								<td class="child-row">{{ formatDate(item.UploadDate) }}</td>
 								<td class="child-row">{{ item.UploadedBy }}</td>
 								<td class="child-row">
-									<DeleteDialog
-										v-if="displayDelete"
-										:type="'Documment'"
-										:id="item.DocID"
-										@deleteItem="deleteItem"
-										:mode="'table'"
-									/>
-									<v-btn
-										v-else
-										icon
-										@click="downloadDoc(item.DocID)"
-										:loading="downloading"
-									>
+									<DeleteDialog v-if="displayDelete" :type="'Documment'" :id="item.DocID"
+										@deleteItem="deleteItem" :mode="'table'" />
+									<v-btn v-else icon @click="downloadDoc(item.DocID)" :loading="downloading">
 										<v-icon>mdi-download</v-icon>
 									</v-btn>
 								</td>
 							</tr>
-						</template></v-data-table
-					>
+						</template></v-data-table>
 				</v-col>
 			</v-row>
 		</v-col>
@@ -173,7 +110,7 @@ export default {
 			this.loading = false;
 			this.dialog = false;
 		},
-		async removeDocumment() {},
+		async removeDocumment() { },
 		async deleteItem(id) {
 			await interpretiveSites.removeDocummentGeneral(
 				this.objID.doctype,
@@ -189,6 +126,10 @@ export default {
 				'file',
 				res.data[0].FileType
 			);
+		},
+		formatDate(date) {
+			if (!date) return '';
+			return date.split('T')[0];
 		},
 		textData() {
 			return this.default

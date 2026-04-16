@@ -1,13 +1,6 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col cols="12">
-        <h2>{{ filteredData.length }} results out of {{ totalLength }}</h2>
-        <!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
-      </v-col>
-    </v-row>
-    <v-divider inset class="mb-4"></v-divider>
-    <v-row>
       <v-col>
         <v-data-table
           :items="filteredData"

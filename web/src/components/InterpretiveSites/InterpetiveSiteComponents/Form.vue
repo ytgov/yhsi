@@ -516,29 +516,30 @@ export default {
 			);
 
 			this.fields.assets = this.fields.assets.map((x) => {
-				x.DecommissionDate = this.formatDate(x.DecommissionDate);
-				x.InstallDate = this.formatDate(x.InstallDate);
+				x.DecommissionDate = this.normalizeDate(x.DecommissionDate);
+				x.InstallDate = this.normalizeDate(x.InstallDate);
 				return x;
 			});
 			this.fields.actions = this.fields.actions.map((x) => {
-				x.ToBeCompleteDate = x.ToBeCompleteDate
-					? this.formatDate(x.ToBeCompleteDate)
-					: null;
-				x.CreatedDate = x.CreatedDate ? this.formatDate(x.CreatedDate) : null;
-				x.ActionCompleteDate = x.ActionCompleteDate
-					? this.formatDate(x.ActionCompleteDate)
-					: null;
+				x.ToBeCompleteDate = this.normalizeDate(x.ToBeCompleteDate);
+				x.CreatedDate = this.normalizeDate(x.CreatedDate);
+				x.ActionCompleteDate = this.normalizeDate(x.ActionCompleteDate);
 				return x;
 			});
 			this.fields.inspections = this.fields.inspections.map((x) => {
-				x.InspectionDate = this.formatDate(x.InspectionDate);
+				x.InspectionDate = this.normalizeDate(x.InspectionDate);
 				return x;
 			});
 			this.routes = await catalogs.getRoutes();
 			this.overlay = false;
 		},
+		normalizeDate(date) {
+			if (!date) return null;
+			return date.split('T')[0];
+		},
 		formatDate(date) {
-			return date.split('T')[0].split('-').reverse().join('-');
+			if (!date) return '';
+			return date.split('T')[0];
 		},
 		viewMode() {
 			this.mode = 'view';
@@ -650,26 +651,28 @@ export default {
 			});
 		},
 		editAction({ data, index }) {
-			data.ToBeCompleteDate = this.formatDate(data.ToBeCompleteDate);
-			data.CreatedDate = this.formatDate(data.CreatedDate);
-			data.ActionCompleteDate = this.formatDate(data.ActionCompleteDate);
+			data.ToBeCompleteDate = this.normalizeDate(data.ToBeCompleteDate);
+			data.CreatedDate = this.normalizeDate(data.CreatedDate);
+			data.ActionCompleteDate = this.normalizeDate(data.ActionCompleteDate);
 			this.fields.actions[index] = data;
 		},
 		newAsset(val) {
-			val.DecommissionDate = this.formatDate(val.DecommissionDate);
-			val.InstallDate = this.formatDate(val.InstallDate);
+			val.DecommissionDate = this.normalizeDate(val.DecommissionDate);
+			val.InstallDate = this.normalizeDate(val.InstallDate);
 			this.fields.assets.push(val);
 		},
 		editAsset({ data, index }) {
+			data.DecommissionDate = this.normalizeDate(data.DecommissionDate);
+			data.InstallDate = this.normalizeDate(data.InstallDate);
 			this.fields.assets[index] = data;
-			//console.log(data, index);
 		},
 		newInspection(val) {
+			val.InspectionDate = this.normalizeDate(val.InspectionDate);
 			this.fields.inspections.push(val);
 		},
 		editInspection({ data, index }) {
+			data.InspectionDate = this.normalizeDate(data.InspectionDate);
 			this.fields.inspections[index] = data;
-			//console.log(data, index);
 		},
 		deleteOccupation(index) {
 			if (index > -1) {

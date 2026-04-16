@@ -155,7 +155,7 @@ export default {
 	async mounted() {
 		if (this.isAdministrator) {
 			try {
-				const resp = await axios.get('/api/users/pending-count');
+				const resp = await axios.get('/api/user/pending-count');
 				this.pendingCount = resp.data.data.count;
 			} catch (e) {
 				// non-fatal

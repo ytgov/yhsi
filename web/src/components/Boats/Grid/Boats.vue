@@ -1,39 +1,17 @@
 <template>
-	<v-container fluid>
-		<v-row>
-			<v-col cols="12">
-				<h2 v-if="boats">
-					{{ boats.length }} results out of {{ totalLength }}
-				</h2>
-				<!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
-			</v-col>
-		</v-row>
-		<v-divider
-			inset
-			class="mb-4"
-		></v-divider>
-		<v-row>
-			<v-col cols="12">
-				<v-data-table
-					:items="boats"
-					:headers="headers"
-					:loading="loading"
-					:search="search"
-					:options.sync="options"
-					:server-items-length="totalLength"
-					@click:row="handleClick"
-					:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
-					class="clickable-row"
-				>
-					<template v-slot:item.owners="{ item }">
-						<div v-if="item.owners.length > 0">
-							{{ getCurrentOwner(item.owners) }}
-						</div>
-					</template>
-				</v-data-table>
-			</v-col>
-		</v-row>
-	</v-container>
+	<v-row>
+		<v-col cols="12">
+			<v-data-table :items="boats" :headers="headers" :loading="loading" :search="search" :options.sync="options"
+				:server-items-length="totalLength" @click:row="handleClick"
+				:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }" class="clickable-row">
+				<template v-slot:item.owners="{ item }">
+					<div v-if="item.owners.length > 0">
+						{{ getCurrentOwner(item.owners) }}
+					</div>
+				</template>
+			</v-data-table>
+		</v-col>
+	</v-row>
 </template>
 
 <script>

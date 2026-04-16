@@ -1,56 +1,29 @@
 <template>
-	<v-container fluid>
-		<v-row>
-			<v-col cols="12">
-				<h2>{{ filteredData.length }} results out of {{ totalLength }}</h2>
-				<!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
-			</v-col>
-		</v-row>
-		<v-divider
-			inset
-			class="mb-4"
-		></v-divider>
-		<v-row>
-			<v-col>
-				<v-data-table
-					:items="filteredData"
-					:headers="headers"
-					:loading="loading"
-					:search="search"
-					:options.sync="options"
-					:server-items-length="totalLength"
-					@click:row="handleClick"
-					:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
-				>
-					<template v-slot:item="{ item, index }">
-						<tr>
-							<td class="parent-row">
-								{{ item.Category }}
-							</td>
-							<td class="child-row">{{ item.Type }}</td>
-							<td class="child-row">{{ item.Size }}</td>
-							<td class="child-row">{{ item.Description }}</td>
-							<td class="child-row">{{ item.SignText }}</td>
-							<td class="child-row">{{ item.InstallDate }}</td>
-							<td class="child-row">{{ item.DecommissionDate }}</td>
-							<td class="child-row">{{ item.DecommissionNotes }}</td>
-							<td class="child-row">
-								{{ item.Status === 'Yes' ? 'Active' : 'Inactive' }}
-							</td>
-							<td class="child-row">
-								<AssetDialog
-									:mode="'edit'"
-									:type="'grid'"
-									:dataToEdit="{ item, index }"
-									@gridAssetEdited="editAsset"
-								/>
-							</td>
-						</tr>
-					</template>
-				</v-data-table>
-			</v-col>
-		</v-row>
-	</v-container>
+	<v-data-table :items="filteredData" :headers="headers" :loading="loading" :search="search" :options.sync="options"
+		:server-items-length="totalLength" @click:row="handleClick"
+		:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }">
+		<template v-slot:item="{ item, index }">
+			<tr>
+				<td class="parent-row">
+					{{ item.Category }}
+				</td>
+				<td class="child-row">{{ item.Type }}</td>
+				<td class="child-row">{{ item.Size }}</td>
+				<td class="child-row">{{ item.Description }}</td>
+				<td class="child-row">{{ item.SignText }}</td>
+				<td class="child-row">{{ item.InstallDate }}</td>
+				<td class="child-row">{{ item.DecommissionDate }}</td>
+				<td class="child-row">{{ item.DecommissionNotes }}</td>
+				<td class="child-row">
+					{{ item.Status === 'Yes' ? 'Active' : 'Inactive' }}
+				</td>
+				<td class="child-row">
+					<AssetDialog :mode="'edit'" :type="'grid'" :dataToEdit="{ item, index }"
+						@gridAssetEdited="editAsset" />
+				</td>
+			</tr>
+		</template>
+	</v-data-table>
 </template>
 
 <script>
@@ -96,6 +69,7 @@ export default {
 	},
 	methods: {
 		formatDate(date) {
+			if (!date) return '';
 			return date.split('T')[0].split('-').reverse().join('-');
 		},
 		editAsset() {
