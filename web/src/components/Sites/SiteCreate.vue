@@ -1,259 +1,99 @@
 <template>
-	<div class="d-flex">
+	<div>
 		<div class="flex-grow-1">
-			<v-app-bar
-				color="primary"
-				dark
-				flat
-			>
-				<v-btn
-					color="primary"
-					to="/sites"
-					exact
-				>
-					<v-icon>mdi-arrow-left-drop-circle</v-icon>
-					<div class="ml-2">Back to Sites</div>
-				</v-btn>
-				<v-spacer />
-				<span> Add New Site </span>
-			</v-app-bar>
+			<v-breadcrumbs :items="[
+				{ text: 'Home', to: '/', exact: true },
+				{ text: 'Sites', to: '/sites', exact: true },
+				{ text: 'Add New Site' },
+			]"></v-breadcrumbs>
 
-			<v-row>
-				<v-col
-					md="10"
-					offset="1"
-				>
-					<v-card class="default mt-5">
-						<v-card-title>Add New Site</v-card-title>
-						<v-card-text>
-							<v-form ref="formRef">
-								<v-row>
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<v-text-field
-											v-model="place.primaryName"
-											dense
-											outlined
-											label="Primary name"
-											required
-											background-color="white"
-											:rules="requiredRules"
-										/>
-										<v-text-field
-											v-model="place.fR_PrimaryName"
-											dense
-											outlined
-											label="Primary name (French)"
-											background-color="white"
-										/>
-									</v-col>
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<v-autocomplete
-											v-model="place.nTSMapSheet"
-											:items="ntsMapSheets"
-											label="NTS Map Sheet"
-											item-text="name"
-											item-value="name"
-											dense
-											outlined
-											background-color="white"
-											:rules="requiredRules"
-										/>
-									</v-col>
+			<h1>Add New Site</h1>
 
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<CategoryTypesSelect
-											v-model="place.category"
-											dense
-											outlined
-											background-color="white"
-										/>
-									</v-col>
+			<v-card class="default mt-5">
+				<v-card-title>Add New Site</v-card-title>
+				<v-card-text>
+					<v-form ref="formRef">
+						<v-row>
+							<v-col cols="6" class="pb-0">
+								<v-text-field v-model="place.primaryName" dense outlined label="Primary name" required
+									background-color="white" :rules="requiredRules" />
+								<v-text-field v-model="place.fR_PrimaryName" dense outlined
+									label="Primary name (French)" background-color="white" />
+							</v-col>
+							<v-col cols="6" class="pb-0">
+								<v-autocomplete v-model="place.nTSMapSheet" :items="ntsMapSheets" label="NTS Map Sheet"
+									item-text="name" item-value="name" dense outlined background-color="white"
+									:rules="requiredRules" />
+							</v-col>
 
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<CommunitySelect
-											v-model="place.communityId"
-											dense
-											outlined
-											background-color="white"
-										/>
-									</v-col>
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<SiteStatusTypesSelect
-											v-model="place.siteStatus"
-											dense
-											outlined
-											background-color="white"
-											:rules="requiredNumRules"
-										/>
-									</v-col>
+							<v-col cols="6" class="pb-0">
+								<CategoryTypesSelect v-model="place.category" dense outlined background-color="white" :rules="requiredNumRules" />
+							</v-col>
 
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<RecordStatusTypesSelect
-											v-model="place.recordStatus"
-											dense
-											outlined
-											background-color="white"
-											:rules="requiredNumRules"
-										/>
-									</v-col>
+							<v-col cols="6" class="pb-0">
+								<CommunitySelect v-model="place.communityId" dense outlined background-color="white" :rules="requiredNumRules" />
+							</v-col>
+							<v-col cols="6" class="pb-0">
+								<SiteStatusTypesSelect v-model="place.siteStatus" dense outlined
+									background-color="white" :rules="requiredNumRules" />
+							</v-col>
 
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<OwnerConsentTypeSelect
-											v-model="place.ownerConsent"
-											dense
-											outlined
-											background-color="white"
-										/>
-									</v-col>
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<ConditionTypesSelect
-											v-model="place.floorCondition"
-											label="Floor condition"
-											dense
-											outlined
-											background-color="white"
-										/>
-									</v-col>
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<ConditionTypesSelect
-											v-model="place.wallCondition"
-											label="Wall condition"
-											dense
-											outlined
-											background-color="white"
-										/>
-									</v-col>
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<ConditionTypesSelect
-											v-model="place.doorCondition"
-											label="Door condition"
-											dense
-											outlined
-											background-color="white"
-										/>
-									</v-col>
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<ConditionTypesSelect
-											v-model="place.roofCondition"
-											label="Roof condition"
-											dense
-											outlined
-											background-color="white"
-										/>
-									</v-col>
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<JurisdictionTypeSelect
-											v-model="place.jurisdiction"
-											dense
-											outlined
-											background-color="white"
-										/>
-									</v-col>
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<CoordinateDeterminationTypesSelect
-											v-model="place.coordinateDetermination"
-											dense
-											outlined
-											hide-details
-											background-color="white"
-										/>
-									</v-col>
+							<v-col cols="6" class="pb-0">
+								<OwnerConsentTypeSelect v-model="place.ownerConsent" dense outlined
+									background-color="white" :rules="requiredNumRules" />
+							</v-col>
+							<v-col cols="6" class="pb-0">
+								<ConditionTypesSelect v-model="place.floorCondition" label="Floor condition" dense
+									outlined background-color="white" :rules="requiredNumRules" />
+							</v-col>
+							<v-col cols="6" class="pb-0">
+								<ConditionTypesSelect v-model="place.wallCondition" label="Wall condition" dense
+									outlined background-color="white" :rules="requiredNumRules" />
+							</v-col>
+							<v-col cols="6" class="pb-0">
+								<ConditionTypesSelect v-model="place.doorCondition" label="Door condition" dense
+									outlined background-color="white" :rules="requiredNumRules" />
+							</v-col>
+							<v-col cols="6" class="pb-0">
+								<ConditionTypesSelect v-model="place.roofCondition" label="Roof condition" dense
+									outlined background-color="white" :rules="requiredNumRules" />
+							</v-col>
+							<v-col cols="6" class="pb-0">
+								<JurisdictionTypeSelect v-model="place.jurisdiction" dense outlined
+									background-color="white" :rules="requiredNumRules" />
+							</v-col>
+							<v-col cols="6" class="pb-0">
+								<CoordinateDeterminationTypesSelect v-model="place.coordinateDetermination" dense
+									outlined background-color="white" :rules="requiredNumRules" />
+							</v-col>
 
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<v-text-field
-											v-model="place.latitude"
-											dense
-											outlined
-											label="Latitude"
-											background-color="white"
-											:rules="requiredRules"
-										/>
-									</v-col>
-									<v-col
-										cols="6"
-										class="pb-0"
-									>
-										<v-text-field
-											v-model="place.longitude"
-											dense
-											outlined
-											label="Longitude"
-											background-color="white"
-											:rules="requiredRules"
-										/>
-									</v-col>
+							<v-col cols="6" class="pb-0">
+								<v-text-field v-model="place.latitude" dense outlined label="Latitude"
+									background-color="white" :rules="requiredRules" />
+							</v-col>
+							<v-col cols="6" class="pb-0">
+								<v-text-field v-model="place.longitude" dense outlined label="Longitude"
+									background-color="white" :rules="requiredRules" />
+							</v-col>
 
-									<v-col>
-										<StatuteSelect
-											v-model="place.statuteId"
-											label="Statute - Recognition Authority / Recognition Type / Statute"
-											dense
-											outlined
-											background-color="white"
-										/>
-										<StatuteSelect
-											v-model="place.statute2Id"
-											label="Secondary Statute - Recognition Authority / Recognition Type / Statute"
-											dense
-											outlined
-											background-color="white"
-										/>
-									</v-col>
-								</v-row>
+							<v-col>
+								<StatuteSelect v-model="place.statuteId"
+									label="Statute - Recognition Authority / Recognition Type / Statute" dense outlined
+									background-color="white" :rules="requiredNumRules" />
+								<StatuteSelect v-model="place.statute2Id"
+									label="Secondary Statute - Recognition Authority / Recognition Type / Statute" dense
+									outlined background-color="white" :rules="requiredNumRules" />
+							</v-col>
+						</v-row>
 
-								<v-btn
-									class="mb-0"
-									@click="saveClick"
-									color="primary"
-									>Save</v-btn
-								>
-							</v-form>
-						</v-card-text>
-					</v-card>
-				</v-col>
-			</v-row>
+						<div class="d-flex">
+							<v-btn color="warning" outlined to="/sites">Cancel</v-btn>
+							<v-spacer></v-spacer>
+							<v-btn color="primary" @click="saveClick">Save</v-btn>
+						</div>
+					</v-form>
+				</v-card-text>
+			</v-card>
 		</div>
 	</div>
 </template>
@@ -268,7 +108,6 @@ import OwnerConsentTypeSelect from './site-forms/management/OwnerConsentTypeSele
 import StatuteSelect from './site-forms/management/StatuteSelect.vue';
 import CategoryTypesSelect from './site-forms/CategoryTypesSelect.vue';
 import CommunitySelect from './site-forms/CommunitySelect.vue';
-import RecordStatusTypesSelect from './site-forms/RecordStatusTypesSelect.vue';
 import SiteStatusTypesSelect from './site-forms/SiteStatusTypesSelect.vue';
 import CoordinateDeterminationTypesSelect from './site-forms/CoordinateDeterminationTypesSelect.vue';
 
@@ -281,7 +120,6 @@ export default {
 		StatuteSelect,
 		CategoryTypesSelect,
 		CommunitySelect,
-		RecordStatusTypesSelect,
 		SiteStatusTypesSelect,
 		CoordinateDeterminationTypesSelect,
 	},
@@ -295,7 +133,6 @@ export default {
 			ownerConsent: null,
 			category: null,
 			communityId: null,
-			recordStatus: 1,
 			siteStatus: null,
 			floorCondition: null,
 			wallCondition: null,
@@ -323,7 +160,7 @@ export default {
 		}),
 		async saveClick() {
 			const isValid = this.$refs.formRef.validate();
-			
+
 			if (!isValid) {
 				return;
 			}

@@ -1,57 +1,38 @@
 <template>
-	<div class="books">
+	<div>
+		<v-breadcrumbs :items="[
+			{ text: 'Home', to: '/', exact: true },
+			{ text: 'Sites' },
+		]"></v-breadcrumbs>
+
 		<h1>YHSI Sites</h1>
 
-		<v-row
-			align="center"
-			class="mb-2"
-		>
-			<v-col>
-				<v-text-field
-					v-model="search"
-					label="Search"
-					dense
-					outlined
-					hide-details
-					append-icon="mdi-magnify"
-					@click:append="doSearch"
-					hint="Enter criteria and press enter"
-					@keyup="keyUp"
-				></v-text-field>
-			</v-col>
-			<v-col cols="auto">
-				<v-btn
-					color="success"
-					:loading="exportLoading"
-					@click="exportToCsv"
-				>
-					<v-icon left>mdi-file-delimited</v-icon>
-					Export to CSV
-				</v-btn>
-				<v-btn
-					class="ml-2"
-					color="primary"
-					:disabled="selectedItems.length === 0"
-					@click="exportSelectedToCsv"
-				>
-					<v-icon left>mdi-file-delimited</v-icon>
-					Export Selected ({{ selectedItems.length }})
-				</v-btn>
-			</v-col>
-		</v-row>
+		<div class="mt-2">
+			<v-card class="default">
+				<v-card-text>
+					<div class="d-flex mb-6">
+						<v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify"
+							background-color="white" dense outlined hide-details class="mr-5"
+							@keyup="keyUp"></v-text-field>
 
-		<v-data-table
-			dense
-			:items="items"
-			:headers="headers"
-			:options.sync="options"
-			:loading="loading"
-			:server-items-length="totalLength"
-			@click:row="handleClick"
-			:footer-props="{ 'items-per-page-options': items_per_page }"
-			show-select
-			v-model="selectedItems"
-		></v-data-table>
+						<v-btn color="info" class="my-0 mr-2" style="height: 40px" :loading="exportLoading"
+							@click="exportToCsv" title="Export CSV">
+							<v-icon>mdi-export</v-icon>
+						</v-btn>
+						<v-btn color="info" class="my-0" style="height: 40px" :disabled="selectedItems.length === 0"
+							@click="exportSelectedToCsv" :title="`Export Selected (${selectedItems.length})`">
+							<v-icon class="mr-1">mdi-file-delimited</v-icon>
+							{{ selectedItems.length }}
+						</v-btn>
+					</div>
+
+					<v-data-table dense :items="items" :headers="headers" :options.sync="options" :loading="loading"
+						:server-items-length="totalLength" @click:row="handleClick"
+						:footer-props="{ 'items-per-page-options': items_per_page }" show-select v-model="selectedItems"
+						class="clickable-row"></v-data-table>
+				</v-card-text>
+			</v-card>
+		</div>
 	</div>
 </template>
 
@@ -99,11 +80,11 @@ export default {
 			store.dispatch('setSearch', val);
 		},
 		/*  search: {
-      handler() {
-        this.getDataFromApi();
-      },
-      deep: true,
-    }, */
+	  handler() {
+		this.getDataFromApi();
+	  },
+	  deep: true,
+	}, */
 	},
 	methods: {
 		handleClick(value) {

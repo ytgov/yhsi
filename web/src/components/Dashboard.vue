@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { api } from '../controllers/config';
 import { mapGetters } from 'vuex';
 import { UserRoles } from '../authorization';
 
@@ -155,7 +155,7 @@ export default {
 	async mounted() {
 		if (this.isAdministrator) {
 			try {
-				const resp = await axios.get('/api/user/pending-count');
+				const resp = await api.get('/user/pending-count');
 				this.pendingCount = resp.data.data.count;
 			} catch (e) {
 				// non-fatal

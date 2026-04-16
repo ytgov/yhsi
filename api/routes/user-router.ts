@@ -125,14 +125,16 @@ userRouter.post(
 		};
 
 		await axios
-			.post(`${ISSUER_BASE_URL}dbconnections/signup`, body)
+			.post(`${ISSUER_BASE_URL.replace(/\/+$/, '')}/dbconnections/signup`, body)
 			.then((resp: any) => {
 				return res.json({
 					messages: [{ variant: 'success', text: 'User account created' }],
 				});
 			})
 			.catch((err: any) => {
-				return res.status(400).json({ errors: [{ msg: err.response.data.description }] });
+				console.error('Sign up error:', err.response?.status, err.response?.data);
+				const msg = err.response?.data?.description || err.response?.data?.message || err.message || 'Sign up failed';
+				return res.status(400).json({ errors: [{ msg }] });
 			});
 	}
 );

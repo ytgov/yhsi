@@ -1,5 +1,12 @@
 <template lang="pug">
-v-card(:loading="loading")
+div
+	v-breadcrumbs(:items="[\
+		{ text: 'Home', to: '/', exact: true },\
+		{ text: 'Sites', to: '/sites', exact: true },\
+		{ text: 'Change Requests', to: '/sites-change-requests', exact: true },\
+		{ text: placeEdit.primaryName || 'Review' },\
+	]")
+	v-card(:loading="loading")
 	v-card-title(tag="h2")
 		| Site Change Request from
 		v-progress-circular.ml-1(

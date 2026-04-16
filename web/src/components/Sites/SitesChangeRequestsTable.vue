@@ -1,20 +1,31 @@
 <template lang="pug">
-v-data-table(
-	:headers="headers",
-	:items="items",
-	:options="options",
-	:loading="loading",
-	:server-items-length="totalCount",
-	:footer-props="{ 'items-per-page-options': [10, 20, 100] }"
-	disable-sort
-	dense
-	@update:options="updateOptions"
-	@click:row="goToSiteChangeRequestDetails"
-)
-	template(#item.editorEmail="{ value }")
-		| {{ value || 'Unknown' }}
-	template(#item.editDate="{ value }")
-		| {{ prettyDate(value) }}
+div
+	v-breadcrumbs(:items="[\
+		{ text: 'Home', to: '/', exact: true },\
+		{ text: 'Sites', to: '/sites', exact: true },\
+		{ text: 'Change Requests' },\
+	]")
+	h1 Site Change Requests
+	.mt-2
+		v-card.default
+			v-card-text
+				v-data-table(
+					:headers="headers",
+					:items="items",
+					:options="options",
+					:loading="loading",
+					:server-items-length="totalCount",
+					:footer-props="{ 'items-per-page-options': [10, 20, 100] }"
+					disable-sort
+					dense
+					@update:options="updateOptions"
+					@click:row="goToSiteChangeRequestDetails"
+					class="clickable-row"
+				)
+					template(#item.editorEmail="{ value }")
+						| {{ value || 'Unknown' }}
+					template(#item.editDate="{ value }")
+						| {{ prettyDate(value) }}
 </template>
 
 <script>

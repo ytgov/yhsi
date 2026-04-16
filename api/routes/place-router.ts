@@ -199,15 +199,13 @@ placeRouter.post(
 
 		req.body.yHSIId = await placeService.generateIdFor(req.body.nTSMapSheet);
 
-		const result = await placeService
-			.addPlace(req.body as Place, currentUser)
-			.then((item) => item)
-			.catch((err) => {
-				console.error('addPlace ERROR', err);
-				return res.json({ errors: err });
-			});
-
-		return res.json({ data: result });
+		try {
+			const result = await placeService.addPlace(req.body as Place, currentUser);
+			return res.json({ data: result });
+		} catch (err) {
+			console.error('addPlace ERROR', err);
+			return res.status(500).json({ errors: [{ message: (err as Error).message || 'Failed to create site' }] });
+		}
 	}
 );
 

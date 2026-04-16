@@ -55,7 +55,6 @@ export const PLACE_FIELDS = [
 	'mailingProvince',
 	'mailingCountry',
 	'mailingPostalCode',
-	'recordStatus',
 	'showInRegister',
 	'siteCategories',
 	'designations',

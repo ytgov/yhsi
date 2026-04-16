@@ -344,11 +344,6 @@ export class PlaceService {
 					...PLACE_FIELDS,
 					{ status: 'StatusTable.Status' },
 					{
-						recordStatusText: db.raw(
-							`CASE WHEN Place.RecordStatus = 2 THEN 'Archived' ELSE 'Active' END`
-						),
-					},
-					{
 						secondaryNames: db.raw(
 							`(SELECT STRING_AGG(Description, ', ') FROM dbo.Name WHERE PlaceId = Place.Id)`
 						),
@@ -414,11 +409,11 @@ export class PlaceService {
 				excludingConstructionPeriodValues(base: Knex.QueryInterface, value: any) {
 					return base.whereNotIn('[ConstructionPeriod].[Type]', value);
 				},
-				includingRecordStatusIds(base: Knex.QueryInterface, value: any) {
-					return base.whereIn('RecordStatus', value);
+				includingRecordStatusIds(_base: Knex.QueryInterface, _value: any) {
+					return _base;
 				},
-				excludingRecordStatusIds(base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('RecordStatus', value);
+				excludingRecordStatusIds(_base: Knex.QueryInterface, _value: any) {
+					return _base;
 				},
 				includingSiteStatusIds(base: Knex.QueryInterface, value: any) {
 					return base.whereIn('SiteStatus', value);
