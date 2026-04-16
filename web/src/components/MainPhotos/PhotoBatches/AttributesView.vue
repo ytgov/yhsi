@@ -1,7 +1,11 @@
 <template>
 	<div>
+		<v-breadcrumbs :items="[
+			{ text: 'Home', to: '/', exact: true },
+			{ text: 'Photo Batches', to: '/photobatches', exact: true },
+			{ text: displayName || 'Attributes' },
+		]"></v-breadcrumbs>
 		<h1>Batch Attributes</h1>
-		<Breadcrumbs />
 		<v-row>
       <v-col cols="12" class="d-flex">
         <h1>{{displayName}}</h1>
@@ -116,8 +120,6 @@ import { mapGetters } from 'vuex';
 
 import { PHOTO_BATCH_URL } from '../../../urls';
 
-import Breadcrumbs from '../../Breadcrumbs';
-
 import PhotoBatchProcessBatchDialog from "./PhotoBatchProcessBatchDialog";
 import Feature from '../PhotosComponents/Feature';
 import SiteRecord from '../PhotosComponents/SiteRecord';
@@ -126,7 +128,7 @@ import Photo from '../PhotosComponents/Photo';
 
 export default {
 	name: 'PhotoBatchAttributes',
-	components: { Feature, SiteRecord, HistoricSites, Photo, Breadcrumbs, PhotoBatchProcessBatchDialog },
+	components: { Feature, SiteRecord, HistoricSites, Photo, PhotoBatchProcessBatchDialog },
 	data: () => ({
 		photos: [],
 		displayName: null,
