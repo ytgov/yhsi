@@ -36,7 +36,10 @@ db.on('query', (query) => {
 	} else if (NODE_ENV === 'test') {
 		// don't log anything
 	} else {
-		console.log(`Executing (default): ${query.sql} ${JSON.stringify(query.bindings)}`);
+		const safeBindings = (query.bindings || []).map((b: unknown) =>
+			Buffer.isBuffer(b) ? `<Buffer ${b.length} bytes>` : b
+		);
+		console.log(`Executing (default): ${query.sql} ${JSON.stringify(safeBindings)}`);
 	}
 });
 

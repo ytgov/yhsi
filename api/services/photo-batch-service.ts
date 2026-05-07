@@ -133,7 +133,7 @@ export class PhotoBatchService {
 	}
 
 	async findBatchByName(name: string): Promise<PhotoBatch | undefined> {
-		return db('PhotoBatch').where({ name }).first();
+		return db('PhotoBatch').select('Id as id', 'Name as name').where({ name }).first();
 	}
 
 	async addBatch(item: PhotoBatch): Promise<PhotoBatch | undefined> {
