@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { User, UserRoles } from '../models';
+import { isNil } from 'lodash';
+
+import { User, UserRoles } from '@/models';
 
 const USER_ACTIVE_STATUS = 'Active';
 
@@ -26,21 +28,33 @@ export const UserRoleOptions = [
 	UserRoles.INTERPRETIVE_SITES_VIEWER,
 ];
 
+/**
+ * REQUIRES injectServiceAccountMiddleware to run first
+ */
 export function authorize(roles: string[] = [], allowPending = false) {
 	return (req: Request, res: Response, next: NextFunction) => {
-		const currentUser = req.user as User;
+		const currentUser = req.user as User | undefined | null;
+		if (isNil(currentUser)) {
+			return res.status(403).json({ message: 'Unauthorized - User is nil' });
+		}
 
-		if (!req.oidc.isAuthenticated() || !currentUser)
+		if (!req.oidc.isAuthenticated() && !req.isServiceAccount) {
 			return res.status(401).send('Not authenticated');
+		}
 
-		if (currentUser.status != USER_ACTIVE_STATUS && !allowPending)
+		if (currentUser.status != USER_ACTIVE_STATUS && !allowPending) {
 			return res.status(403).json({ message: 'Unauthorized - User inactive' });
+		}
 
 		// if route only requires an active user
-		if (roles.length == 0) return next();
+		if (roles.length == 0) {
+			return next();
+		}
 
 		for (const role of roles) {
-			if (currentUser.roles && currentUser.roles.indexOf(role) >= 0) return next();
+			if (currentUser.roles && currentUser.roles.indexOf(role) >= 0) {
+				return next();
+			}
 		}
 
 		//TODO for RYAN add an override for ADMINISTRATOR role, maybe? If it doesn't break anything?

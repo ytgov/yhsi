@@ -1,8 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { validationResult } from 'express-validator';
+
 import { DB_HOST } from '../config';
 
 export function RequiresAuthentication(req: Request, res: Response, next: NextFunction) {
+	if (req.isServiceAccount) {
+		return next();
+	}
+
 	if (req.oidc.isAuthenticated()) {
 		return next();
 	}
@@ -28,3 +33,5 @@ export async function doHealthCheck(_req: Request, res: Response) {
 
 	res.send(`Connection to database on '<strong>${DB_HOST}</strong>' is connected and functioning.`);
 }
+
+export { injectServiceAccountMiddleware } from './inject-service-account-middleware';

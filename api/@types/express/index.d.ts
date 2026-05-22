@@ -7,8 +7,8 @@ namespace Express {
 		session: any;
 		oidc: any;
 		textToMatch: string;
+		isServiceAccount?: boolean;
 
 		isAuthenticated(): boolean;
 	}
 }
-;

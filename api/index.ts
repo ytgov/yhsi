@@ -61,7 +61,7 @@ import {
 import * as config from './config';
 import { doHealthCheck } from './utils/healthCheck';
 import { configureAuthentication } from './routes/auth';
-import { RequiresAuthentication } from './middleware';
+import { RequiresAuthentication, injectServiceAccountMiddleware } from '@/middleware';
 import { CreateMigrationRoutes } from './data/migrator';
 
 import * as Sentry from '@sentry/node';
@@ -118,6 +118,7 @@ app.use(
 
 CreateMigrationRoutes(app);
 
+app.use('/api', injectServiceAccountMiddleware);
 configureAuthentication(app);
 
 app.get('/api/healthCheck', (_req: Request, res: Response) => {

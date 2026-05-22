@@ -58,3 +58,5 @@ export const GIS_FEATURE_PASSWORD = process.env.GIS_FEATURE_PASSWORD || '';
 
 // Configure Sentry (GlitchTip) for Monitorings)
 export const SENTRY_DSN = process.env.SENTRY_DSN || '';
+
+export const SERVICE_ACCOUNT_API_KEY = process.env.SERVICE_ACCOUNT_API_KEY || '';
