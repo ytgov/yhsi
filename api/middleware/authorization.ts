@@ -40,14 +40,11 @@ export function authorize(roles: string[] = [], allowPending = false) {
 		if (roles.length == 0) return next();
 
 		for (const role of roles) {
-			if (currentUser.roles && currentUser.roles.indexOf(role) >= 0)
-				return next();
+			if (currentUser.roles && currentUser.roles.indexOf(role) >= 0) return next();
 		}
 
 		//TODO for RYAN add an override for ADMINISTRATOR role, maybe? If it doesn't break anything?
 
-		return res
-			.status(403)
-			.json({ message: 'Unauthorized - Missing role(s): ' + roles });
+		return res.status(403).json({ message: 'Unauthorized - Missing role(s): ' + roles });
 	};
 }
