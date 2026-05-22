@@ -39,13 +39,13 @@ export function configureAuthentication(app: Express) {
 		})
 	);
 
-	app.use('/', async (req: Request, res: Response, next: NextFunction) => {
+	app.use('/', async (req: Request, _res: Response, next: NextFunction) => {
 		if (req.oidc.isAuthenticated()) {
-			let user = AuthUser.fromOpenId(req.oidc.user);
-			(req.session as any).user = user;
+			const user = AuthUser.fromOpenId(req.oidc.user);
+			req.session.user = user;
 			req.user = user;
 
-			let dbUser = await db.getByEmail(user.email);
+			const dbUser = await db.getByEmail(user.email);
 			req.user = dbUser; // Object.assign(user, dbUser);
 		}
 
@@ -54,10 +54,10 @@ export function configureAuthentication(app: Express) {
 
 	app.get('/', async (req: Request, res: Response) => {
 		if (req.oidc.isAuthenticated()) {
-			let user = AuthUser.fromOpenId(req.oidc.user);
+			const user = AuthUser.fromOpenId(req.oidc.user);
 			req.user = user;
 
-			let dbUser = await db.getByEmail(user.email);
+			const dbUser = await db.getByEmail(user.email);
 
 			if (!dbUser) {
 				if (user.first_name == null || user.last_name == null) {
@@ -79,7 +79,7 @@ export function configureAuthentication(app: Express) {
 
 	app.get('/api/auth/isAuthenticated', async (req: Request, res: Response) => {
 		if (req.oidc.isAuthenticated()) {
-			let person = req.user;
+			const person = req.user;
 			//let me = await db.getByEmail(person.email);
 			return res.json({ data: person });
 		}
@@ -87,21 +87,9 @@ export function configureAuthentication(app: Express) {
 		return res.status(401).send();
 	});
 
-	app.get('/api/auth/logout', async (req: any, res) => {
+	app.get('/api/auth/logout', async (req: Request, res: Response) => {
 		req.session.destroy();
 		res.status(401);
-		await (res as any).oidc.logout();
+		await res.oidc.logout();
 	});
-}
-
-export function EnsureAuthenticated(
-	req: Request,
-	res: Response,
-	next: NextFunction
-) {
-	if (req.oidc.isAuthenticated()) {
-		return next();
-	}
-
-	res.status(401).send('Not authenticated'); //;.redirect('/api/auth/login');
 }
