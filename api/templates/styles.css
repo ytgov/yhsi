@@ -1,119 +1,212 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 
-html,body{
-    font-family: 'Montserrat', sans-serif;
+/* ------------------------------------------------------------------ *
+ * Shared print styles for all YHSI PDF templates (Pug + Handlebars).
+ * NOTE: placePrint.handlebars inlines a copy of this file because
+ * Handlebars has no `include`. Keep the two in sync when editing.
+ * ------------------------------------------------------------------ */
 
+html,
+body {
+	font-family: 'Montserrat', sans-serif;
+	color: #1a1a1a;
+	font-size: 13px;
+	line-height: 1.45;
 }
 
-table, th, td {
-    border: 1px solid;
+/* ---- Bordered data tables (grids & list tables) ---- */
+table {
+	border-collapse: collapse;
 }
-td{
-    padding: 10px
+table,
+th,
+td {
+	border: 1px solid #999;
 }
-table{
-    border-collapse: collapse;
+td,
+th {
+	padding: 6px 10px;
+	vertical-align: top;
+	text-align: left;
 }
 
-div.general{
-    margin: 10px;
+div.general {
+	margin: 10px;
 }
 
-.table-display{
-    width: 100%;
+/* ---- Header / title block ---- */
+.title-row,
+.title-row tr,
+.title-row td {
+	border: none;
+}
+.title-row {
+	width: 100%;
+	margin-bottom: 10px;
+}
+.title-row > tbody > tr > td:first-of-type {
+	width: 80%;
+}
+.title-row > tbody > tr > td:nth-of-type(2) {
+	width: 20%;
+	text-align: right;
+}
+.item-name {
+	font-size: 24px;
+	font-weight: 700;
+	margin-top: 2px;
+}
+
+/* ---- Section header bar ---- */
+.section-title {
+	margin: 22px 0 10px;
+	padding: 8px 16px;
+	color: #000;
+	font-size: 16px;
+	font-weight: 700;
+	background-color: #f2a900;
+}
+.section {
+	page-break-inside: avoid;
+}
+.subhead {
+	font-weight: 700;
+	font-size: 13px;
+	margin: 10px 16px 4px;
+}
+
+/* ---- Two-column borderless field layout ---- */
+.divided-row,
+.divided-row tr,
+.divided-row td,
+.row-container {
+	border: none;
+}
+.divided-row {
+	width: 100%;
+}
+.divided-row > tbody > tr > td {
+	width: 50%;
+	vertical-align: top;
+	padding: 0 16px;
+}
+/* plain "Label: value" rows used by the Pug view templates */
+.divided-row > tbody > tr > td > div {
+	margin-bottom: 8px;
+}
+.row-container {
+	margin: 6px 16px;
+}
+
+/* ---- Label / value field (detail templates) ---- */
+.field {
+	margin: 0 0 10px;
+}
+.field .label {
+	display: block;
+	font-weight: 600;
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+	color: #6b6b6b;
+	margin-bottom: 1px;
+}
+.field .value {
+	display: block;
+	min-height: 14px;
+	word-wrap: break-word;
+	white-space: pre-wrap;
+}
+.subfield {
+	margin: 0 16px 6px;
+	padding-left: 10px;
+	border-left: 3px solid #f2a900;
+}
+.empty {
+	color: #aaa;
+	font-style: italic;
+}
+.divider {
+	border: 0;
+	border-top: 1px solid #ddd;
+	margin: 12px 0;
+}
+
+/* ---- Full-width list tables ---- */
+.table-full-width {
+	width: 100%;
+}
+.full-width {
+	width: 100%;
+}
+.table-display {
+	width: 100%;
 }
 .table-display > tbody > tr > td,
 .table-display > tbody > tr,
 .table-display {
-    border: none;
+	border: none;
 }
-.table-display > tbody > tr > td:first-of-type{
-    width: 24%;
+.table-display > tbody > tr > td:first-of-type {
+	width: 24%;
 }
-.table-display > tbody > tr > td:nth-of-type(2){
-    width: 24%;
+.table-display > tbody > tr > td:nth-of-type(2) {
+	width: 24%;
 }
-.table-display > tbody > tr > td:last-of-type{
-    width: 47%;
-}
-
-.divided-row{
-    display: flex;
-    flex-direction: row;
-    margin: 10px
+.table-display > tbody > tr > td:last-of-type {
+	width: 47%;
 }
 
-.title-row{
-    width: 100%;
+.underline {
+	text-decoration: underline;
 }
-.title-row > tbody > tr > td:first-of-type{
-    width: 85%;
-}
-.title-row > tbody > tr > td:nth-of-type(2){
-    width: 15%;
-}
-.item-name{
-    font-size: 25px;
-    font-weight: bold;
+.center {
+	margin: 15px auto;
 }
 
-.section-title{
-    padding: 10px 20px;
-    color: black;
-    font-size: 20px;
-    font-weight: bold;
-    background-color: #F2A900;
+.membership-table thead td {
+	border-left: none;
+	border-right: none;
 }
-.underline{
-    text-decoration: underline;
+.membership-table tbody td {
+	border: none;
 }
-.membership-table thead td{
-    border-left: none;
-    border-right: none;
-}
-.membership-table tbody td{
-    border: none;
-}
-.religion-table td{
-    border: none;
-}
-.table-full-width{
-    width: 98%;
-}
-.grid-table > thead{
-    padding: 5px 10px;
-    color: black;
-    font-weight: bold;
-    background-color: #F2A900;
+.religion-table td {
+	border: none;
 }
 
-img.right{
-    margin-left: auto;
-    margin-right: 0px;
+/* ---- Grid (landscape list) tables ---- */
+.grid {
+	width: 100%;
 }
-/* DIVIDED ROW */
-.title-row tr,
-.title-row td,
-.title-row,
-table.divided-row tr,
-table.divided-row td,
-table.divided-row{
-    border: none;
+.grid-table {
+	width: 100%;
 }
-table.divided-row{
-    width: 100%;
+.grid-table > thead {
+	color: #000;
+	font-weight: bold;
+	background-color: #f2a900;
 }
-.row-container,
-table.divided-row div{
-    margin: 10px 10px;
-}
-.divided-row td{
-    width: 50%;
+.grid-table > thead td {
+	padding: 6px 10px;
 }
 
-.center{
-    margin-top: 15px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 15px;
+img.right {
+	margin-left: auto;
+	margin-right: 0;
+}
+
+/* ---- Photos ---- */
+.photo-grid,
+.photo-grid tr,
+.photo-grid td {
+	border: none;
+}
+.photo-grid td {
+	padding: 8px 0;
+}
+.photo-grid img {
+	max-width: 100%;
+	max-height: 360px;
+	border: 1px solid #999;
 }

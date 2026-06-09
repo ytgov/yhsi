@@ -276,7 +276,7 @@ photosExtraRouter.get(
 			.limit(limit)
 			.offset(offset);
 
-		res.status(200).send(photos);
+		res.status(200).send(photos.map(({ File, ...rest }: any) => rest));
 	}
 );
 
@@ -300,7 +300,7 @@ photosExtraRouter.get(
 			.limit(limit)
 			.offset(offset);
 
-		res.status(200).send(photos);
+		res.status(200).send(photos.map(({ File, ...rest }: any) => rest));
 	}
 );
 
@@ -327,7 +327,7 @@ photosExtraRouter.get(
 			.limit(limit)
 			.offset(offset);
 
-		res.status(200).send(photos);
+		res.status(200).send(photos.map(({ File, ...rest }: any) => rest));
 	}
 );
 
@@ -351,7 +351,7 @@ photosExtraRouter.get(
 			.limit(limit)
 			.offset(offset);
 
-		res.status(200).send(photos);
+		res.status(200).send(photos.map(({ File, ...rest }: any) => rest));
 	}
 );
 
@@ -373,7 +373,7 @@ photosExtraRouter.get(
 			.where('PP.PersonID', personID)
 			.limit(limit)
 			.offset(offset);
-		res.status(200).send(photos);
+		res.status(200).send(photos.map(({ File, ...rest }: any) => rest));
 	}
 );
 
@@ -395,7 +395,7 @@ photosExtraRouter.get(
 			.where('IP.SiteID', siteID)
 			.limit(limit)
 			.offset(offset);
-		res.status(200).send(photos);
+		res.status(200).send(photos.map(({ File, ...rest }: any) => rest));
 	}
 );
 
