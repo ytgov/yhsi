@@ -102,6 +102,14 @@ div.general {
 .field {
 	margin: 0 0 10px;
 }
+/* Standalone fields/empties placed directly in a section need the same
+   16px indent that .subhead, .subfield and .divided-row cells carry. */
+.section > .field,
+.section > .empty,
+.section > .divider {
+	margin-left: 16px;
+	margin-right: 16px;
+}
 .field .label {
 	display: block;
 	font-weight: 600;

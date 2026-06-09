@@ -95,6 +95,12 @@
 			.field {
 				margin: 0 0 10px;
 			}
+			.section > .field,
+			.section > .empty,
+			.section > .divider {
+				margin-left: 16px;
+				margin-right: 16px;
+			}
 			.field .label {
 				display: block;
 				font-weight: 600;
@@ -417,7 +423,7 @@
 							</tr>
 						{{else}}
 							<tr>
-								<td><div class='empty'>No photos</div></td>
+								<td><div class='subfield empty'>No photos</div></td>
 							</tr>
 						{{/each}}
 					</tbody>
