@@ -233,7 +233,7 @@ aircrashRouter.post(
 				data: aircrash,
 			});
 
-			const pdf = await generatePDF(data);
+			const pdf = await generatePDF(data, 'letter', false);
 			res.setHeader('Content-disposition', `attachment; filename="aircrash-${aircrashId}.pdf"`);
 			res.setHeader('Content-type', 'application/pdf');
 			res.send(pdf);

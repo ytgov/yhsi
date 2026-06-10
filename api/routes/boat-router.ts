@@ -236,7 +236,7 @@ boatsRouter.post(
 			data: boat,
 		});
 
-		let pdf = await generatePDF(data);
+		let pdf = await generatePDF(data, 'letter', false);
 		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 		res.setHeader('Content-type', 'application/pdf');
 		res.send(pdf);

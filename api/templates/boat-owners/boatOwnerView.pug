@@ -1,51 +1,37 @@
 //- template.pug
 
 style
-     include ../styles.css
+  include ../styles.css
+  | @page { margin: 24px; }
 
 table.title-row
-  tbody 
-    tr 
-      td
-        div Owner information
-        div.item-name #{data.Name} 
-      td
-        div(style='width:200px;')
-          include ../yukon.svg
-
-div.section-title General information
-
-table.table-full-width.center
-  thead 
-    tr 
-      td 
-        strong.underline Alias 
-  tbody 
-    each val in data.alias
-      tr 
-        td #{val.Alias}
-
-table.table-full-width.center
-  thead 
-    tr 
-      td 
-        strong.underline Boats Owned 
-  tbody 
-    each val in data.boats
-      tr 
-        td #{val.Name}
-
-div.section-title History
-
-table.table-full-width.center
-  thead 
-    tr 
-      td
-        strong.underline Historic Record 
-      td
-        strong.underline Reference 
   tbody
-    each val in data.histories
-      tr 
-        td #{val.HistoryText}
-        td #{val.Reference}
+    tr
+      td
+        div(style="margin-top: 15px") Yukon Heritage Information System
+        div.item-name #{data.Name}
+      td.brand-logo
+        include ../yukon.svg
+
+div.section
+  div.section-title General information
+  div.subhead Alias
+  each val in data.alias
+    div.subfield #{val.Alias}
+  else
+    div.subfield.empty None recorded
+  div.subhead Boats Owned
+  each val in data.boats
+    div.subfield #{val.Name}
+  else
+    div.subfield.empty None recorded
+
+div.section
+  div.section-title History
+  each val in data.histories
+    div.subfield
+      | #{val.HistoryText}
+      br
+      em Reference: #{val.Reference}
+  else
+    div.subfield.empty None recorded

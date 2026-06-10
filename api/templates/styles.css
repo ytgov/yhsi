@@ -56,6 +56,10 @@ div.general {
 	font-weight: 700;
 	margin-top: 2px;
 }
+.brand-logo svg {
+	width: 180px;
+	height: auto;
+}
 
 /* ---- Section header bar ---- */
 .section-title {
