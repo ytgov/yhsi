@@ -1,121 +1,113 @@
 //- template.pug
 
 style
-     include ../styles.css
-    
+  include ../styles.css
+  | @page { margin: 24px; }
+
 table.title-row
-  tbody 
-    tr 
-      td
-        div Interpretive Site Information
-        div.item-name #{data.SiteName}
-      td
-        div(style='width:200px;')
-          include ../yukon.svg
-
-
-div.section-title Site information
- 
-table.divided-row
-  tbody 
-    tr 
-      td
-        div Site Name: #{data.FirstName}
-        div Established Year: #{data.EstablishedYear}
-        div Maintained By: #{data.MaintainedBy}
-      td
-        div Advanced Notification Signs: #{data.AdvancedNotification}
-        div Advanced Notification Description: #{data.NotificationDesc}
-
-div.section-title Location
-table.full-width.table-display.general
   tbody
-      tr 
-        td
-          div Location Description: #{data.LocationDesc}
-          div Route Name: #{data.RouteName}
-          div MapSheet: #{data.MapSheet}
-        td
-          div KMNumber: #{data.KMNumber}
-          div Latitude: #{data.Latitude}
-          div Longitude: #{data.Longitude}  
-
-div.section-title Assets
-
-table.table-full-width.center
-  thead 
-    tr 
-      td 
-        strong.underline Category 
-      td 
-        strong.underline Type
-      td 
-        strong.underline Size
-      td 
-        strong.underline Description
-      td 
-        strong.underline Sign Text
-      td 
-        strong.underline Install Date
-      td 
-        strong.underline Active
-  tbody 
-    each val in data.assets
-      tr 
-          td #{val.Category} 
-          td #{val.Type} 
-          td #{val.Size} 
-          td #{val.Description} 
-          td #{val.SignText} 
-          td #{val.InstallDate} 
-          td #{val.Status} 
-
-div.section-title Actions
-
-table.table-full-width.center
-  thead 
-    tr 
-      td 
-        strong.underline Action Description 
-      td 
-        strong.underline To Be Complete Date
-      td 
-        strong.underline Action Complete Date
-      td 
-        strong.underline Route
-      td 
-        strong.underline Completion Description
-      td 
-        strong.underline Priority
-  tbody 
-    each val in data.actions
-        tr 
-          td #{val.ActionDesc} 
-          td #{val.ToBeCompleteDate} 
-          td #{val.ActionCompleteDate} 
-          td #{val.Route} 
-          td #{val.CompletionDesc} 
-          td #{val.Priority} 
-
-div.section-title Inspections
-
-table.table-full-width.center
-  thead 
-    tr 
+    tr
       td
-        strong.underline Inspection Date
-      td
-        strong.underline Description
-      td
-        strong.underline Inspected By
-      td
-        strong.underline Actions
-  tbody 
-    each val in data.inspections
+        div(style="margin-top: 15px") Yukon Heritage Information System
+        div.item-name #{data.SiteName}
+      td.brand-logo
+        include ../yukon.svg
+
+div.section
+  div.section-title Site information
+  table.divided-row
+    tbody
       tr
-        td #{val.InspectionDate} 
-        td #{val.Description} 
-        td #{val.InspectedBy} 
-        td #{val.Actions} 
-        
+        td
+          div.field
+            span.label Site Name
+            span.value #{data.SiteName}
+          div.field
+            span.label Established Year
+            span.value #{data.EstablishedYear}
+          div.field
+            span.label Maintained By
+            span.value #{data.MaintainedBy}
+        td
+          div.field
+            span.label Advanced Notification Signs
+            span.value #{data.AdvancedNotification}
+          div.field
+            span.label Advanced Notification Description
+            span.value #{data.NotificationDesc}
 
+div.section
+  div.section-title Location
+  table.divided-row
+    tbody
+      tr
+        td
+          div.field
+            span.label Location Description
+            span.value #{data.LocationDesc}
+          div.field
+            span.label Route Name
+            span.value #{data.RouteName}
+          div.field
+            span.label Map Sheet
+            span.value #{data.MapSheet}
+        td
+          div.field
+            span.label KM Number
+            span.value #{data.KMNumber}
+          div.field
+            span.label Latitude
+            span.value #{data.Latitude}
+          div.field
+            span.label Longitude
+            span.value #{data.Longitude}
+
+div.section
+  div.section-title Assets
+  each val in data.assets
+    div.subfield
+      strong #{val.Category} - #{val.Type}
+      br
+      | Size: #{val.Size}
+      br
+      | Description: #{val.Description}
+      br
+      | Sign Text: #{val.SignText}
+      br
+      | Install Date: #{val.InstallDate}
+      br
+      | Active: #{val.Status}
+  else
+    div.subfield.empty None recorded
+
+div.section
+  div.section-title Actions
+  each val in data.actions
+    div.subfield
+      strong #{val.ActionDesc}
+      br
+      | To Be Complete: #{val.ToBeCompleteDate}
+      br
+      | Completed: #{val.ActionCompleteDate}
+      br
+      | Route: #{val.Route}
+      br
+      | Completion Description: #{val.CompletionDesc}
+      br
+      | Priority: #{val.Priority}
+  else
+    div.subfield.empty None recorded
+
+div.section
+  div.section-title Inspections
+  each val in data.inspections
+    div.subfield
+      strong #{val.InspectionDate}
+      br
+      | Description: #{val.Description}
+      br
+      | Inspected By: #{val.InspectedBy}
+      br
+      | Actions: #{val.Actions}
+  else
+    div.subfield.empty None recorded

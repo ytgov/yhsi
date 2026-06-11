@@ -157,7 +157,7 @@ ownerRouter.post(
 			data: owner,
 		});
 
-		const pdf = await generatePDF(data);
+		const pdf = await generatePDF(data, 'letter', false);
 		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
 		res.setHeader('Content-type', 'application/pdf');
 		res.send(pdf);

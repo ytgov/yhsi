@@ -1,44 +1,47 @@
 //- template.pug
 
 style
-     include ../styles.css
+  include ../styles.css
+  | @page { margin: 24px; }
 
 table.title-row
-  tbody 
-    tr 
-      td
-        div Person information
-        div.item-name #{data.Surname}, #{data.GivenName}
-      td
-        div(style='width:200px;')
-          include ../yukon.svg
-
-div.section-title Personal information
- 
-table.divided-row
-  tbody 
-    tr 
-      td
-        div Sur Name: #{data.Surname}
-        div Given Name: #{data.GivenName}
-        div Notes: #{data.Notes}
-      td
-        div Birth Year: #{data.BirthYear}
-        div Death Year: #{data.DeathYear}
-
-div.section-title History
-
-table.table-full-width.center
-  thead 
-    tr 
-      td
-        strong.underline Historic Record 
-      td
-        strong.underline Reference 
   tbody
-    each val in data.histories
-      tr 
-        td #{val.HistoryText}
-        td #{val.Reference}
-        
+    tr
+      td
+        div(style="margin-top: 15px") Yukon Heritage Information System
+        div.item-name #{data.Surname}, #{data.GivenName}
+      td.brand-logo
+        include ../yukon.svg
 
+div.section
+  div.section-title Personal information
+  table.divided-row
+    tbody
+      tr
+        td
+          div.field
+            span.label Surname
+            span.value #{data.Surname}
+          div.field
+            span.label Given Name
+            span.value #{data.GivenName}
+          div.field
+            span.label Notes
+            span.value #{data.Notes}
+        td
+          div.field
+            span.label Birth Year
+            span.value #{data.BirthYear}
+          div.field
+            span.label Death Year
+            span.value #{data.DeathYear}
+
+div.section
+  div.section-title History
+  each val in data.histories
+    div.subfield
+      | #{val.HistoryText}
+      br
+      em Reference: #{val.Reference}
+  else
+    div.subfield.empty None recorded
