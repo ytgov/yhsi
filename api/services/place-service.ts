@@ -119,7 +119,7 @@ export class PlaceService {
 						db.raw('(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)')
 					);
 			})
-			.where({ showInRegister: true })
+			.where({ "place.showInRegister": true })
 			.whereNull('Place.deleted_at')
 			.orderBy('Place.Id')
 			.offset(skip)
@@ -132,7 +132,7 @@ export class PlaceService {
 				.count('*', {
 					as: 'count',
 				})
-				.where({ showInRegister: true })
+				.where({ "place.showInRegister": true })
 				.whereNull('deleted_at');
 
 			if (results) {
