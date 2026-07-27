@@ -4,6 +4,7 @@ import db from '@/db/db-client';
 
 import { QueryStatement, SortStatement } from './';
 import { Photo, PHOTO_FIELDS, SavedFilter } from '../data';
+import { normalizeSubjects } from '../utils/subjects';
 
 export class PhotoService {
 	async getAll(skip: number, take: number): Promise<Array<Photo>> {
@@ -115,11 +116,14 @@ export class PhotoService {
 	}
 
 	async addPhoto(item: Photo): Promise<Photo | undefined> {
-		return db('photo').insert(item).returning<Photo>(PHOTO_FIELDS);
+		return db('photo').insert(normalizeSubjects(item)).returning<Photo>(PHOTO_FIELDS);
 	}
 
 	async updatePhoto(id: string, item: Photo): Promise<Photo | undefined> {
-		return db('photo').where({ rowId: id }).update(item).returning<Photo>(PHOTO_FIELDS);
+		return db('photo')
+			.where({ rowId: id })
+			.update(normalizeSubjects(item))
+			.returning<Photo>(PHOTO_FIELDS);
 	}
 
 	async doSearch(

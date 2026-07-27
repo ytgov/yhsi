@@ -4,6 +4,7 @@ import db from '@/db/db-client';
 
 import { QueryStatement, SortStatement } from './';
 import { PhotoBatch, PhotoBatchPhoto, PHOTO_BATCH_FIELDS } from '../data';
+import { normalizeSubjects } from '../utils/subjects';
 
 export class PhotoBatchService {
 	async getAll(skip: number, take: number): Promise<Array<any>> {
@@ -184,7 +185,7 @@ export class PhotoBatchService {
 	async updateBatch(id: string, item: PhotoBatch): Promise<PhotoBatch | undefined> {
 		return db('PhotoBatch')
 			.where({ id: id })
-			.update(item)
+			.update(normalizeSubjects(item))
 			.returning<PhotoBatch>(PHOTO_BATCH_FIELDS);
 	}
 
