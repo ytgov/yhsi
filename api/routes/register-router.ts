@@ -96,7 +96,7 @@ registerRouter.get('/:id/photos', async (req: Request, res: Response) => {
 		return res.status(404).send();
 	}
 
-	const photos = await photoService.getAllForPlace(parseInt(id));
+	const photos = await photoService.getAllForRegisterPlace(parseInt(id));
 
 	res.json({ data: photos });
 });
@@ -110,7 +110,7 @@ registerRouter.get('/:id/photos/:photoId', async (req: Request, res: Response) =
 	}
 
 	await photoService
-		.getFileById(photoId)
+		.getRegisterFileById(photoId)
 		.then(async (photo) => {
 			if (photo && photo.file) {
 				const t = await createThumbnail(photo.file);

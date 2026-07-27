@@ -61,6 +61,7 @@ export class PhotoService {
 				this.on('PH.placeId', '=', 'place.id');
 			})
 			.where({ showInRegister: true })
+			.orderBy('PH.YRHPOrder', 'asc')
 			.catch((err) => {
 				console.error(err);
 				return new Array<Photo>();
@@ -71,6 +72,18 @@ export class PhotoService {
 		return db('photo')
 			.select<Photo>('file')
 			.where({ rowId: id })
+			.first()
+			.catch((err) => {
+				console.error(err);
+				return undefined;
+			});
+	}
+
+	async getRegisterFileById(id: string): Promise<Photo | undefined> {
+		return db('photo')
+			.select<Photo>('file')
+			.where({ rowId: id })
+			.where({ showInRegister: true })
 			.first()
 			.catch((err) => {
 				console.error(err);

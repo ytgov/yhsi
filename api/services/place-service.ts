@@ -110,18 +110,19 @@ export class PlaceService {
 		return db('place')
 			.select([...REGISTER_FIELDS, 'PH.ThumbFile', 'PH.caption'])
 			.join('community', 'community.id', 'place.communityid')
-			.leftJoin('dbo.photo as PH', function () {
-				this.on('PH.PlaceId', '=', 'Place.Id')
-					/* The new line here */
-					.andOn(
-						'PH.DateCreated',
-						'=',
-						db.raw('(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)')
-					);
-			})
-			.where({ "place.showInRegister": true })
-			.whereNull('Place.deleted_at')
-			.orderBy('Place.Id')
+			.joinRaw(
+				`outer apply (
+					select top 1 photo.ThumbFile, photo.caption
+					from dbo.photo as photo
+					where photo.PlaceId = place.Id
+					AND photo.showInRegister = 1
+					AND photo.IsYRHPCoverImage = 1
+					ORDER by photo.YRHPOrder asc, photo.DateCreated asc, photo.Id asc
+				) as PH`
+			)
+			.where({ 'place.showInRegister': true })
+			.whereNull('place.deleted_at')
+			.orderBy('place.Id')
 			.offset(skip)
 			.limit(take);
 	}
