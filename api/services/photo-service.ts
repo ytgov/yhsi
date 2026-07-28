@@ -55,14 +55,11 @@ export class PhotoService {
 			});
 	}
 
-	async getAllForRegisterPlace(_id: number): Promise<Photo[]> {
-		return db('place')
+	async getAllForRegisterPlace(id: number): Promise<Photo[]> {
+		return db('photo')
 			.select<Photo[]>(PHOTO_FIELDS)
-			.leftJoin('dbo.photo as PH', function () {
-				this.on('PH.placeId', '=', 'place.id');
-			})
-			.where({ showInRegister: true })
-			.orderBy('PH.YRHPOrder', 'asc')
+			.where({ placeId: id, showInRegister: true })
+			.orderBy('yRHPOrder', 'asc')
 			.catch((err) => {
 				console.error(err);
 				return new Array<Photo>();
