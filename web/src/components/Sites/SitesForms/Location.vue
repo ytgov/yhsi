@@ -105,19 +105,23 @@
 					></v-textarea>
 				</div>
 				<div class="col-md-6">
-					<v-text-field
+					<CoordinateField
 						dense
 						outlined
+						axis="latitude"
 						v-model="fields.latitude"
-						label="Latitude"
-					></v-text-field>
+						warn-outside-yukon
+						:paired-longitude="fields.longitude"
+					/>
 
-					<v-text-field
+					<CoordinateField
 						dense
 						outlined
+						axis="longitude"
 						v-model="fields.longitude"
-						label="Longitude"
-					></v-text-field>
+						warn-outside-yukon
+						:paired-latitude="fields.latitude"
+					/>
 					<v-select
 						dense
 						outlined
@@ -196,9 +200,11 @@
 import axios from 'axios';
 import store from '../../../store';
 import { COMMUNITY_URL, PLACE_URL, STATIC_URL } from '../../../urls';
+import CoordinateField from '@/components/CoordinateField.vue';
 /* Important, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created */
 export default {
 	name: 'formLocation',
+	components: { CoordinateField },
 	data: () => ({
 		valid: false,
 		loadedId: -1,
