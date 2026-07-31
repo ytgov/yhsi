@@ -6,6 +6,7 @@ import { ReturnValidationErrors } from '../middleware';
 import { PlaceEditService } from '../services';
 import { UserRoles } from '../models';
 import { authorize } from '../middleware/authorization';
+import { coordinateBody } from '../utils/coordinates';
 
 export const placeEditsRouter = express.Router();
 const placeEditService = new PlaceEditService();
@@ -85,10 +86,10 @@ placeEditsRouter.post(
 		body('isPubliclyAccessible').isBoolean(),
 		body('jurisdiction').isInt(),
 		body('lAGroup').isString().optional({ nullable: true }),
-		body('latitude').isString().optional({ nullable: true }),
+		coordinateBody('latitude', 'latitude'),
 		body('locationComment').isString().optional({ nullable: true }),
 		body('locationContext').isString().optional({ nullable: true }),
-		body('longitude').isString().optional({ nullable: true }),
+		coordinateBody('longitude', 'longitude'),
 		body('lot').isString().optional({ nullable: true }),
 		body('names').isArray().optional({ nullable: true }),
 		body('nTSMapSheet').isString().optional({ nullable: true }),

@@ -10,8 +10,10 @@
             <v-text-field label="Community" v-model="community" outlined dense></v-text-field>
             <v-text-field label="Address" v-model="address" outlined dense></v-text-field>
             <v-text-field label="Notes" v-model="notes" outlined dense></v-text-field>
-            <v-text-field label="Latitude" v-model="latitude" outlined dense></v-text-field>
-            <v-text-field label="Longitude" v-model="longitude" outlined dense></v-text-field>
+            <CoordinateField axis="latitude" v-model="latitude" numeric warn-outside-yukon
+              :paired-longitude="longitude" outlined dense />
+            <CoordinateField axis="longitude" v-model="longitude" numeric warn-outside-yukon
+              :paired-latitude="latitude" outlined dense />
           </v-form>
         </v-card-text>
         <v-card-actions class="px-6">
@@ -27,9 +29,12 @@
 </template>
 
 <script>
+import { isNil } from 'lodash';
 import catalogs from '../../../../controllers/catalogs';
+import CoordinateField from '@/components/CoordinateField.vue';
 
 export default {
+  components: { CoordinateField },
   props: ['dialog', 'item'],
   data: () => ({
     valid: false,
@@ -37,8 +42,8 @@ export default {
     community: '',
     address: '',
     notes: '',
-    latitude: '',
-    longitude: '',
+    latitude: null,
+    longitude: null,
     saving: false,
   }),
   watch: {
@@ -49,8 +54,9 @@ export default {
           this.community = val.Community || '';
           this.address = val.Address || '';
           this.notes = val.Notes || '';
-          this.latitude = val.Latitude || '';
-          this.longitude = val.Longitude || '';
+          // Not `|| null` — a real 0 must survive.
+          this.latitude = isNil(val.Latitude) ? null : val.Latitude;
+          this.longitude = isNil(val.Longitude) ? null : val.Longitude;
         }
       },
       immediate: true,

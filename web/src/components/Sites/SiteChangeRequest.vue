@@ -113,6 +113,7 @@ import ConstructionPeriodsViewer from '@/components/Sites/site-change-request/Co
 import ContactsViewer from '@/components/Sites/site-change-request/ContactsViewer';
 import ContributingResourceTypesSelect from '@/components/Sites/site-forms/ContributingResourceTypesSelect';
 import CoordinateDeterminationTypesSelect from '@/components/Sites/site-forms/CoordinateDeterminationTypesSelect';
+import CoordinateField from '@/components/CoordinateField';
 import DatesViewer from '@/components/Sites/site-change-request/DatesViewer';
 import DescriptionsViewer from '@/components/Sites/site-change-request/DescriptionsViewer';
 import DesignationTypesSelect from '@/components/Sites/site-forms/DesignationTypesSelect';
@@ -248,32 +249,16 @@ const FIELD_TYPES = Object.freeze([
 	},
 	{
 		key: 'latitude',
-		type: 'v-text-field',
+		type: CoordinateField,
 		fieldAttrs: {
-			label: 'Latitude',
-			rules: [
-				(v) =>
-					!v ||
-					(/^-?\d+(\.\d+)?$/.test(String(v).trim()) &&
-						Number(v) >= -90 &&
-						Number(v) <= 90) ||
-					'Latitude must be a number between -90 and 90',
-			],
+			axis: 'latitude',
 		},
 	},
 	{
 		key: 'longitude',
-		type: 'v-text-field',
+		type: CoordinateField,
 		fieldAttrs: {
-			label: 'Longitude',
-			rules: [
-				(v) =>
-					!v ||
-					(/^-?\d+(\.\d+)?$/.test(String(v).trim()) &&
-						Number(v) >= -180 &&
-						Number(v) <= 180) ||
-					'Longitude must be a number between -180 and 180',
-			],
+			axis: 'longitude',
 		},
 	},
 	{
