@@ -14,8 +14,10 @@
           <v-text-field label="Community" v-model="community" outlined dense></v-text-field>
           <v-text-field label="Address" v-model="address" outlined dense></v-text-field>
           <v-text-field label="Notes" v-model="notes" outlined dense></v-text-field>
-          <v-text-field label="Latitude" v-model="latitude" outlined dense></v-text-field>
-          <v-text-field label="Longitude" v-model="longitude" outlined dense></v-text-field>
+          <CoordinateField axis="latitude" v-model="latitude" numeric warn-outside-yukon
+            :paired-longitude="longitude" outlined dense />
+          <CoordinateField axis="longitude" v-model="longitude" numeric warn-outside-yukon
+            :paired-latitude="latitude" outlined dense />
         </v-form>
       </v-card-text>
       <v-card-actions class="px-6">
@@ -31,8 +33,10 @@
 
 <script>
 import catalogs from '../../../../controllers/catalogs';
+import CoordinateField from '@/components/CoordinateField.vue';
 
 export default {
+  components: { CoordinateField },
   data: () => ({
     dialog: false,
     valid: false,
@@ -40,8 +44,8 @@ export default {
     community: '',
     address: '',
     notes: '',
-    latitude: '',
-    longitude: '',
+    latitude: null,
+    longitude: null,
     saving: false,
   }),
   methods: {
@@ -73,8 +77,8 @@ export default {
       this.community = '';
       this.address = '';
       this.notes = '';
-      this.latitude = '';
-      this.longitude = '';
+      this.latitude = null;
+      this.longitude = null;
       this.$refs.form && this.$refs.form.reset();
     },
   },

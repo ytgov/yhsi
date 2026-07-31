@@ -68,12 +68,14 @@
 							</v-col>
 
 							<v-col cols="6" class="pb-0">
-								<v-text-field v-model="place.latitude" dense outlined label="Latitude"
-									background-color="white" :rules="requiredRules" />
+								<CoordinateField v-model="place.latitude" axis="latitude" dense outlined
+									background-color="white" required warn-outside-yukon
+									:paired-longitude="place.longitude" />
 							</v-col>
 							<v-col cols="6" class="pb-0">
-								<v-text-field v-model="place.longitude" dense outlined label="Longitude"
-									background-color="white" :rules="requiredRules" />
+								<CoordinateField v-model="place.longitude" axis="longitude" dense outlined
+									background-color="white" required warn-outside-yukon
+									:paired-latitude="place.latitude" />
 							</v-col>
 
 							<v-col>
@@ -110,10 +112,12 @@ import CategoryTypesSelect from './site-forms/CategoryTypesSelect.vue';
 import CommunitySelect from './site-forms/CommunitySelect.vue';
 import SiteStatusTypesSelect from './site-forms/SiteStatusTypesSelect.vue';
 import CoordinateDeterminationTypesSelect from './site-forms/CoordinateDeterminationTypesSelect.vue';
+import CoordinateField from '@/components/CoordinateField.vue';
 
 export default {
 	name: 'SiteCreate',
 	components: {
+		CoordinateField,
 		ConditionTypesSelect,
 		JurisdictionTypeSelect,
 		OwnerConsentTypeSelect,

@@ -15,6 +15,7 @@ import PlacesController from '@/controllers/places-controller';
 import { PlacePolicy } from '@/policies';
 import { generatePDF } from '@/utils/pdf-generator';
 import { createThumbnail } from '@/utils/image';
+import { coordinateBody } from '@/utils/coordinates';
 import { Photo } from '@/data/photo-entities';
 
 const placeService = new PlaceService();
@@ -186,6 +187,8 @@ placeRouter.post(
 		body('doorCondition').isInt().bail().notEmpty(),
 		body('roofCondition').isInt().bail().notEmpty(),
 		body('coordinateDetermination').isInt().bail().notEmpty(),
+		coordinateBody('latitude', 'latitude'),
+		coordinateBody('longitude', 'longitude'),
 		body('isPubliclyAccessible').isBoolean().bail().notEmpty(),
 		body('showInRegister').isBoolean().bail().notEmpty(),
 	],
@@ -348,10 +351,10 @@ placeRouter.patch(
 		body('isPubliclyAccessible').isBoolean().optional(),
 		body('jurisdiction').isInt().optional(),
 		body('lAGroup').isString().optional({ nullable: true }),
-		body('latitude').isString().optional({ nullable: true }),
+		coordinateBody('latitude', 'latitude'),
 		body('locationComment').isString().optional({ nullable: true }),
 		body('locationContext').isString().optional({ nullable: true }),
-		body('longitude').isString().optional({ nullable: true }),
+		coordinateBody('longitude', 'longitude'),
 		body('lot').isString().optional({ nullable: true }),
 		body('names').isArray().optional({ nullable: true }),
 		body('nTSMapSheet').isString().optional({ nullable: true }),

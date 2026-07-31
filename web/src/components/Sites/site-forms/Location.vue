@@ -109,22 +109,24 @@
 					/>
 				</v-col>
 				<v-col cols="6">
-					<v-text-field
+					<CoordinateField
 						v-model="place.latitude"
+						axis="latitude"
 						dense
 						outlined
-						label="Latitude"
 						:readonly="!isEditing"
-						:rules="latitudeRules"
+						warn-outside-yukon
+						:paired-longitude="place.longitude"
 					/>
 
-					<v-text-field
+					<CoordinateField
 						v-model="place.longitude"
+						axis="longitude"
 						dense
 						outlined
-						label="Longitude"
 						:readonly="!isEditing"
-						:rules="longitudeRules"
+						warn-outside-yukon
+						:paired-latitude="place.latitude"
 					/>
 					<CoordinateDeterminationTypesSelect
 						v-model="place.coordinateDetermination"
@@ -201,35 +203,24 @@ import { pick } from 'lodash';
 
 import CommunitySelect from '@/components/Sites/site-forms/CommunitySelect';
 import CoordinateDeterminationTypesSelect from '@/components/Sites/site-forms/CoordinateDeterminationTypesSelect';
+import CoordinateField from '@/components/CoordinateField';
 import NtsMapSheetSelect from '@/components/Sites/site-forms/NtsMapSheetSelect';
 
 export default {
 	name: 'Location',
-	components: { CommunitySelect, CoordinateDeterminationTypesSelect, NtsMapSheetSelect },
+	components: {
+		CommunitySelect,
+		CoordinateDeterminationTypesSelect,
+		CoordinateField,
+		NtsMapSheetSelect,
+	},
 	props: {
 		placeId: {
 			type: [Number, String],
 			required: true,
 		},
 	},
-	data: () => ({
-		latitudeRules: [
-			(v) =>
-				!v ||
-				(/^-?\d+(\.\d+)?$/.test(String(v).trim()) &&
-					Number(v) >= -90 &&
-					Number(v) <= 90) ||
-				'Latitude must be a number between -90 and 90',
-		],
-		longitudeRules: [
-			(v) =>
-				!v ||
-				(/^-?\d+(\.\d+)?$/.test(String(v).trim()) &&
-					Number(v) >= -180 &&
-					Number(v) <= 180) ||
-				'Longitude must be a number between -180 and 180',
-		],
-	}),
+	data: () => ({}),
 	computed: {
 		...mapGetters({
 			place: 'places/place',
