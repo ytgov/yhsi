@@ -69,19 +69,19 @@ registerRouter.get('/:id', async (req: Request, res: Response) => {
 	for (const desc of descs) {
 		if (desc.type == 5) {
 			data.placeDescriptionEn = desc.descriptionText;
-			data.placeDescriptionFr = 'FRENCH: ' + desc.descriptionText;
+			data.placeDescriptionFr = desc.fR_DescriptionText;
 		} else if (desc.type == 4) {
 			data.heritageValueEn = desc.descriptionText;
-			data.heritageValueFr = 'FRENCH: ' + desc.descriptionText;
+			data.heritageValueFr = desc.fR_DescriptionText;
 		} else if (desc.type == 2) {
 			data.characterDefEn = desc.descriptionText;
-			data.characterDefFr = 'FRENCH: ' + desc.descriptionText;
+			data.characterDefFr = desc.fR_DescriptionText;
 		} else if (desc.type == 6) {
 			data.descBoundEn = desc.descriptionText;
-			data.descBoundFr = 'FRENCH: ' + desc.descriptionText;
+			data.descBoundFr = desc.fR_DescriptionText;
 		} else if (desc.type == 30) {
 			data.additionalInfoEn = desc.descriptionText;
-			data.additionalInfoFr = 'FRENCH: ' + desc.descriptionText;
+			data.additionalInfoFr = desc.fR_DescriptionText;
 		}
 	}
 

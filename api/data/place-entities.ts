@@ -67,10 +67,13 @@ export const PLACE_FIELDS = [
 export const REGISTER_FIELDS = [
 	'place.id',
 	'primaryName',
+	'fr_primaryName',
 	'yHSIId',
 	'latitude',
 	'longitude',
 	'recognitionDate',
 	'community.name as communityName',
+	'community.fr_name as fr_communityName',
 	'designations',
+	'fr_designations',
 ];
