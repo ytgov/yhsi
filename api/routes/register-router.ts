@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { query } from 'express-validator';
+import { body, query, validationResult } from 'express-validator';
 import { DescriptionService, PhotoService, PlaceService } from '../services';
 import { format, addHours } from 'date-fns';
 import { createThumbnail } from '../utils/image';
@@ -45,6 +45,53 @@ registerRouter.get(
 	}
 );
 
+
+registerRouter.post(
+	'/search',
+	[query('page').default(1).isInt({ gt: 0 }), body('query').default('').isString().trim()],
+	async (req: Request, res: Response) => {
+		const errors = validationResult(req);
+
+		if (!errors.isEmpty()) {
+			return res.status(422).json({ errors: errors.array() });
+		}
+
+		const page = parseInt(req.query.page as string);
+		const skip = (page - 1) * PAGE_SIZE;
+		const take = PAGE_SIZE;
+		const searchTerm = (req.body.query as string) ?? '';
+
+		const data = searchTerm
+			? await placeService.searchRegister(searchTerm, skip, take)
+			: await placeService.getRegisterAll(skip, take);
+		data.map(
+			(d) => (d.recognitionDate = d.recognitionDate ? format(addHours(new Date(d.recognitionDate), 7), 'yyyy-MM-dd') : null)
+		);
+
+		const item_count = await (searchTerm
+			? placeService.getRegisterSearchCount(searchTerm)
+			: placeService.getPlaceInRegisterCount()
+		)
+			.then((data) => data)
+			.catch((err) => {
+				console.error('Database Error', err);
+				return 0;
+			});
+
+		const page_count = Math.ceil(item_count / PAGE_SIZE);
+
+		if (data) {
+			return res.json({
+				data,
+				meta: { page, page_size: PAGE_SIZE, item_count, page_count },
+			});
+		}
+
+		res.json({ data });
+	}
+);
+
+
 registerRouter.get('/:id', async (req: Request, res: Response) => {
 	const { id } = req.params;
 	const data = await placeService.getRegisterById(parseInt(id));
@@ -63,6 +110,8 @@ registerRouter.get('/:id', async (req: Request, res: Response) => {
 	data.descBoundFr = '';
 	data.additionalInfoEn = '';
 	data.additionalInfoFr = '';
+	data.culturalHistoryEn = '';
+	data.culturalHistoryFr = '';
 
 	const descs = await descriptionService.getForPlace(parseInt(id));
 
@@ -82,6 +131,9 @@ registerRouter.get('/:id', async (req: Request, res: Response) => {
 		} else if (desc.type == 30) {
 			data.additionalInfoEn = desc.descriptionText;
 			data.additionalInfoFr = desc.fR_DescriptionText;
+		}else if (desc.type == 12) {
+			data.culturalHistoryEn = desc.descriptionText;
+			data.culturalHistoryFr = desc.fR_DescriptionText;
 		}
 	}
 

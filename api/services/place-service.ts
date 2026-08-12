@@ -127,6 +127,75 @@ export class PlaceService {
 			.limit(take);
 	}
 
+	// Matches the register search term against the place's primary names,
+	// its secondary names, and its place description (both languages).
+	private scopeRegisterToSearchTerm(queryBuilder: Knex.QueryBuilder, searchTerm: string) {
+		const term = `%${searchTerm.trim().replace(/[[\]%_]/g, '\\$&')}%`;
+
+		queryBuilder.where((builder) => {
+			builder
+				.whereRaw("place.primaryName like ? escape '\\'", [term])
+				.orWhereRaw("place.fr_primaryName like ? escape '\\'", [term])
+				.orWhereExists((sub) =>
+					sub
+						.select(db.raw('1'))
+						.from('name')
+						.whereRaw('name.placeId = place.id')
+						.whereRaw("name.description like ? escape '\\'", [term])
+				)
+				.orWhereExists((sub) =>
+					sub
+						.select(db.raw('1'))
+						.from('description')
+						.whereRaw('description.placeId = place.id')
+						.where('description.type', DescriptionTypeEnums.PlaceDescription)
+						.where((descBuilder) =>
+							descBuilder
+								.whereRaw("description.descriptionText like ? escape '\\'", [term])
+								.orWhereRaw("description.fR_DescriptionText like ? escape '\\'", [term])
+						)
+				);
+		});
+	}
+
+	async searchRegister(searchTerm: string, skip: number, take: number): Promise<Array<any>> {
+		const query = db('place')
+			.select([...REGISTER_FIELDS, 'PH.ThumbFile', 'PH.caption'])
+			.join('community', 'community.id', 'place.communityid')
+			.joinRaw(
+				`outer apply (
+					select top 1 photo.ThumbFile, photo.caption
+					from dbo.photo as photo
+					where photo.PlaceId = place.Id
+					AND photo.showInRegister = 1
+					AND photo.IsYRHPCoverImage = 1
+					ORDER by photo.YRHPOrder asc, photo.DateCreated asc, photo.Id asc
+				) as PH`
+			)
+			.where({ 'place.showInRegister': true })
+			.whereNull('place.deleted_at')
+			.orderBy('place.Id')
+			.offset(skip)
+			.limit(take);
+
+		this.scopeRegisterToSearchTerm(query, searchTerm);
+
+		return query;
+	}
+
+	async getRegisterSearchCount(searchTerm: string): Promise<number> {
+		const query = db('place')
+			.count('*', { as: 'count' })
+			.where({ 'place.showInRegister': true })
+			.whereNull('place.deleted_at');
+
+		this.scopeRegisterToSearchTerm(query, searchTerm);
+
+		const results = await query;
+
+		return results && results.length ? (results[0].count as number) : 0;
+	}
+
 	async getPlaceInRegisterCount(): Promise<number> {
 		return new Promise(async (resolve, reject) => {
 			const results = await db('place')
