@@ -5,21 +5,58 @@
 				<h3>Advanced Search</h3>
 			</v-card-title>
 			<v-card-text>
-				<CommunitiesFilter @input="updateCommunitiesFilter" />
-				<NtsMapSheetsFilter @input="updateNtsMapSheetsFilter" />
-				<ConstructionPeriodsFilter @input="updateConstructionPeriodsFilter" />
-				<SiteStatusesFilter @input="updateSiteStatusesFilter" />
-				<FirstNationsFilter @input="updateFirstNationsFilter" />
+				<CommunitiesFilter
+					:value="value"
+					@input="updateCommunitiesFilter"
+				/>
+				<NtsMapSheetsFilter
+					:value="value"
+					@input="updateNtsMapSheetsFilter"
+				/>
+				<ConstructionPeriodsFilter
+					:value="value"
+					@input="updateConstructionPeriodsFilter"
+				/>
+				<SiteStatusesFilter
+					:value="value"
+					@input="updateSiteStatusesFilter"
+				/>
+				<FirstNationsFilter
+					:value="value"
+					@input="updateFirstNationsFilter"
+				/>
 				<FirstNationAssociationTypesFilter
+					:value="value"
 					@input="updateFirstNationAssociationTypesFilter"
 				/>
-				<RevisionTypesFilter @input="updateRevisionTypesFilter" />
-				<RevisedByContainsFilter @input="updateRevisedByContainsFilter" />
-				<RevisedDateContainsFilter @input="updateRevisedDateContainsFilter" />
-				<AddressContainsFilter @input="updateAddressContainsFilter" />
-				<ConstructionStyleContainsFilter @input="updateConstructionStyleContainsFilter" />
-				<CulturalHistoryContainsFilter @input="updateCulturalHistoryContainsFilter" />
-				<OwnershipTypesFilter @input="updateOwnershipTypesFilter" />
+				<RevisionTypesFilter
+					:value="value"
+					@input="updateRevisionTypesFilter"
+				/>
+				<RevisedByContainsFilter
+					:value="value"
+					@input="updateRevisedByContainsFilter"
+				/>
+				<RevisedDateContainsFilter
+					:value="value"
+					@input="updateRevisedDateContainsFilter"
+				/>
+				<AddressContainsFilter
+					:value="value"
+					@input="updateAddressContainsFilter"
+				/>
+				<ConstructionStyleContainsFilter
+					:value="value"
+					@input="updateConstructionStyleContainsFilter"
+				/>
+				<CulturalHistoryContainsFilter
+					:value="value"
+					@input="updateCulturalHistoryContainsFilter"
+				/>
+				<OwnershipTypesFilter
+					:value="value"
+					@input="updateOwnershipTypesFilter"
+				/>
 				<div class="d-flex justify-end">
 					<v-btn
 						class="my-0"
@@ -51,6 +88,13 @@ import SiteStatusesFilter from '@/components/Sites/sites-table/SiteStatusesFilte
 
 export default {
 	name: 'AdvancedSearchForm',
+	props: {
+		// Previously applied filters, used to restore the form's state.
+		value: {
+			type: Object,
+			default: () => ({}),
+		},
+	},
 	components: {
 		AddressContainsFilter,
 		CommunitiesFilter,

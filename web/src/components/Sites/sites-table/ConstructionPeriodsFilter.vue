@@ -22,8 +22,12 @@ import { isEmpty } from 'lodash';
 
 import api from '@/apis/construction-period-types-api';
 
+import restorableFilterMixin from '@/components/Sites/sites-table/restorable-filter-mixin';
+
 export default {
 	name: 'ConstructionPeriodsFilter',
+	restoreFilter: { model: 'constructionPeriodValues', include: 'includingConstructionPeriodValues', exclude: 'excludingConstructionPeriodValues' },
+	mixins: [restorableFilterMixin],
 	data: () => ({
 		constructionPeriods: [],
 		constructionPeriodValues: [],

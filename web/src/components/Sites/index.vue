@@ -7,7 +7,7 @@
 		>
 			<v-btn
 				color="primary"
-				to="/sites"
+				:to="sitesTableRoute"
 				exact
 			>
 				<v-icon>mdi-arrow-left-drop-circle</v-icon>
@@ -46,10 +46,15 @@
 <script>
 import PrintDialog from './SitesGrid/PrintDialog';
 
+import { sitesTableRoute } from '@/utils/sites-search-context';
+
 export default {
 	name: 'sitesForm',
 	components: {
 		PrintDialog,
+	},
+	computed: {
+		sitesTableRoute,
 	},
 	data: () => ({
 		site: 'site name',

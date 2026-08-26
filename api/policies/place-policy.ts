@@ -49,6 +49,13 @@ export class PlacePolicy extends BasePolicy<Place> {
 		return false;
 	}
 
+	// Which roles may write at all is settled by authorize() on the route; this
+	// governs which records that role may reach, and the scope rules are the
+	// same ones that decide visibility.
+	update() {
+		return this.show();
+	}
+
 	// helpers
 	get firstNationsIds(): number[] {
 		return (

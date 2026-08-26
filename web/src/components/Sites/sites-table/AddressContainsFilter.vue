@@ -14,8 +14,12 @@
 <script>
 import { isEmpty } from 'lodash'
 
+import restorableFilterMixin from '@/components/Sites/sites-table/restorable-filter-mixin';
+
 export default {
 	name: 'AddressContainsFilter',
+	restoreFilter: { model: 'addressTerm', key: 'addressContains' },
+	mixins: [restorableFilterMixin],
 	data: () => ({
 		addressTerm: '',
 	}),

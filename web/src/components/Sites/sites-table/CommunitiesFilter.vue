@@ -15,7 +15,7 @@
 		multiple
 		background-color="white"
 		@click:prepend="toggleFilterType"
-		@change="$emit('input', communitiesFilter)"
+		@change="$emit('input', filter)"
 	/>
 </template>
 
@@ -23,15 +23,19 @@
 import { isEmpty } from 'lodash';
 import { mapGetters } from 'vuex';
 
+import restorableFilterMixin from '@/components/Sites/sites-table/restorable-filter-mixin';
+
 export default {
 	name: 'CommunitiesFilter',
+	restoreFilter: { model: 'communityIds', include: 'includingCommunityIds', exclude: 'excludingCommunityIds' },
+	mixins: [restorableFilterMixin],
 	data: () => ({
 		communityIds: [],
 		includeFilter: true,
 	}),
 	computed: {
 		...mapGetters('communities', ['communities', 'loading']),
-		communitiesFilter() {
+		filter() {
 			if (isEmpty(this.communityIds)) return {};
 
 			return {
@@ -52,7 +56,7 @@ export default {
 	methods: {
 		toggleFilterType() {
 			this.includeFilter = !this.includeFilter;
-			this.$emit('input', this.communitiesFilter);
+			this.$emit('input', this.filter);
 		},
 	},
 };

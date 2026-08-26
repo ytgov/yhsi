@@ -26,7 +26,7 @@
 					</div>
 
 					<AdvancedSearchForm v-show="isShowingAdvancedSearch" :id="advancedSearchId" class="mb-4"
-						@search="doAdvancedSearch" />
+						:value="advancedSearchQuery" @search="doAdvancedSearch" />
 
 					<v-data-table dense :items="items" :headers="headers" :options.sync="options" :loading="loading"
 						:server-items-length="totalLength" :footer-props="{ 'items-per-page-options': [20, 50, 100] }"
@@ -42,10 +42,15 @@
 </template>
 
 <script>
-import { cloneDeep, uniqueId } from 'lodash';
+import { cloneDeep, isEqual, uniqueId } from 'lodash';
 import { mapActions, mapGetters } from 'vuex';
 
 import api from '@/apis/places-api';
+import {
+	parseSitesSearchQuery,
+	rememberSitesSearchQuery,
+	serializeSitesSearchQuery,
+} from '@/utils/sites-search-context';
 
 import AdvancedSearchForm from '@/components/Sites/sites-table/AdvancedSearchForm';
 import CommunityCell from '@/components/Sites/sites-table/CommunityCell';
@@ -94,6 +99,17 @@ export default {
 			deep: true,
 		},
 	},
+	created() {
+		// Restores search term, filters, sorting and page from the URL so
+		// that returning to the table keeps the previous context.
+		const { searchTerm, filters, options, showAdvanced } = parseSitesSearchQuery(
+			this.$route.query
+		);
+		this.searchTerm = searchTerm;
+		this.advancedSearchQuery = filters;
+		this.isShowingAdvancedSearch = showAdvanced;
+		this.options = { ...this.options, ...options };
+	},
 	mounted() {
 		this.initializeCommunities();
 	},
@@ -110,6 +126,8 @@ export default {
 			this.doSearch();
 		},
 		doSearch() {
+			this.persistSearchContext();
+
 			const data = cloneDeep(this.options);
 			data.query = { ...this.searchQuery, ...this.advancedSearchQuery };
 
@@ -124,15 +142,28 @@ export default {
 					this.loading = false;
 				});
 		},
+		persistSearchContext() {
+			const query = serializeSitesSearchQuery({
+				searchTerm: this.searchTerm,
+				options: this.options,
+				filters: this.advancedSearchQuery,
+				showAdvanced: this.isShowingAdvancedSearch,
+			});
+
+			rememberSitesSearchQuery(query);
+
+			if (isEqual(query, this.$route.query)) return;
+
+			// NavigationDuplicated errors are safe to ignore here.
+			this.$router.replace({ query }).catch(() => {});
+		},
 		toggleAdvancedSearch() {
 			if (this.isShowingAdvancedSearch) {
 				this.doSearch();
 			}
 			this.isShowingAdvancedSearch = !this.isShowingAdvancedSearch;
+			this.persistSearchContext();
 		},
-		addSiteClick() {
-			console.log("ADDING")
-		}
 	},
 };
 </script>

@@ -22,8 +22,13 @@ interface ParsedParams {
 	[key: string]: any;
 }
 
+// Reviewing change requests is a Site Admin responsibility - an editor may
+// submit them but must not be able to read or discard the review queue.
+const REVIEWER_ROLES = [UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR];
+
 placeEditsRouter.get(
 	'/',
+	authorize(REVIEWER_ROLES),
 	query('page').default(1).toInt().isInt({ gt: 0 }),
 	query('itemsPerPage').default(20).toInt().isInt({ gt: 0 }),
 	ReturnValidationErrors,
@@ -152,6 +157,7 @@ placeEditsRouter.post(
 
 placeEditsRouter.get(
 	'/:id',
+	authorize(REVIEWER_ROLES),
 	param('id').notEmpty().toInt().isInt({ gt: 0 }),
 	ReturnValidationErrors,
 	(req: Request, res: Response) => {
@@ -185,6 +191,7 @@ placeEditsRouter.get(
 
 placeEditsRouter.delete(
 	'/:id',
+	authorize(REVIEWER_ROLES),
 	param('id').notEmpty().toInt().isInt({ gt: 0 }),
 	ReturnValidationErrors,
 	(req: Request, res: Response) => {
