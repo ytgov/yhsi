@@ -9,7 +9,7 @@
 			>
 				<v-btn
 					color="primary"
-					to="/sites"
+					:to="sitesTableRoute"
 					exact
 				>
 					<v-icon>mdi-arrow-left-drop-circle</v-icon>
@@ -121,6 +121,8 @@
 import { mapActions, mapGetters } from 'vuex';
 import goTo from 'vuetify/lib/services/goto';
 
+import { sitesTableRoute } from '@/utils/sites-search-context';
+
 import AssociationsSiteFormEditor from '@/components/Sites/site-forms/AssociationsSiteFormEditor';
 //import AssociationsSiteFormViewer from '@/components/Sites/site-forms/AssociationsSiteFormViewer';
 import DatesAndConditions from '@/components/Sites/site-forms/DatesAndConditions';
@@ -172,6 +174,7 @@ export default {
 		isDeleting: false,
 	}),
 	computed: {
+		sitesTableRoute,
 		...mapGetters('places', {
 			hasPendingChanges: 'hasPendingChanges',
 			loading: 'loading',
@@ -251,7 +254,7 @@ export default {
 				})
 				.catch((error) => {
 					console.log('ERROR LOADING PLACE', error.message);
-					this.$router.push('/sites');
+					this.$router.push(this.sitesTableRoute);
 				});
 		},
 		showDialog() {
@@ -276,7 +279,7 @@ export default {
 			this.isDeleting = true;
 			try {	
 				this.deletePlace(this.id);
-				this.$router.push('/sites');
+				this.$router.push(this.sitesTableRoute);
 			} catch (error) {
 				console.log(`Failed to delete place: ${error}`, {error});
 			} finally {

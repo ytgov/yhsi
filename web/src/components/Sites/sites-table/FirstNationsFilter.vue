@@ -24,8 +24,12 @@ import { isEmpty } from 'lodash'
 
 import api from '@/apis/first-nations-api';
 
+import restorableFilterMixin from '@/components/Sites/sites-table/restorable-filter-mixin';
+
 export default {
 	name: 'FirstNationsFilter',
+	restoreFilter: { model: 'firstNationIds', include: 'includingFirstNationIds', exclude: 'excludingFirstNationIds' },
+	mixins: [restorableFilterMixin],
 	data: () => ({
 		firstNations: [],
 		firstNationIds: [],

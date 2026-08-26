@@ -14,8 +14,12 @@
 <script>
 import { isEmpty } from 'lodash'
 
+import restorableFilterMixin from '@/components/Sites/sites-table/restorable-filter-mixin';
+
 export default {
 	name: 'CulturalHistoryContainsFilter',
+	restoreFilter: { model: 'culturalHistoryTerm', key: 'culturalHistoryContains' },
+	mixins: [restorableFilterMixin],
 	data: () => ({
 		culturalHistoryTerm: '',
 	}),

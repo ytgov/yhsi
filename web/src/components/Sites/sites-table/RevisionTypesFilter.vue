@@ -22,8 +22,12 @@ import { isEmpty } from 'lodash'
 
 import api from '@/apis/revision-log-types-api';
 
+import restorableFilterMixin from '@/components/Sites/sites-table/restorable-filter-mixin';
+
 export default {
 	name: 'RevisionTypesFilter',
+	restoreFilter: { model: 'revisionTypeValues', include: 'includingRevisionTypes', exclude: 'excludingRevisionTypes' },
+	mixins: [restorableFilterMixin],
 	data: () => ({
 		revisionTypes: [],
 		revisionTypeValues: [],

@@ -15,7 +15,7 @@
 		multiple
 		background-color="white"
 		@click:prepend="toggleFilterType"
-		@change="$emit('input', ntsMapSheetsFilter)"
+		@change="$emit('input', filter)"
 	/>
 </template>
 
@@ -24,8 +24,12 @@ import { isEmpty } from 'lodash';
 
 import api from '@/apis/nts-map-sheets-api';
 
+import restorableFilterMixin from '@/components/Sites/sites-table/restorable-filter-mixin';
+
 export default {
 	name: 'NtsMapSheetsFilter',
+	restoreFilter: { model: 'ntsMapSheetValues', include: 'includingNtsMapSheets', exclude: 'excludingNtsMapSheets' },
+	mixins: [restorableFilterMixin],
 	data: () => ({
 		ntsMapSheets: [],
 		ntsMapSheetValues: [],
@@ -33,7 +37,7 @@ export default {
 		loading: false,
 	}),
 	computed: {
-		ntsMapSheetsFilter() {
+		filter() {
 			if (isEmpty(this.ntsMapSheetValues)) return {}
 
 			return {
@@ -63,7 +67,7 @@ export default {
 	methods: {
 		toggleFilterType() {
 			this.includeFilter = !this.includeFilter;
-			this.$emit('input', this.ntsMapSheetsFilter)
+			this.$emit('input', this.filter)
 		},
 	},
 };

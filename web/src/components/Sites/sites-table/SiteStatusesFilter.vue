@@ -22,8 +22,12 @@ import { isEmpty } from 'lodash';
 
 import api from '@/apis/site-status-types-api';
 
+import restorableFilterMixin from '@/components/Sites/sites-table/restorable-filter-mixin';
+
 export default {
 	name: 'SiteStatusesFilter',
+	restoreFilter: { model: 'siteStatusIds', include: 'includingSiteStatusIds', exclude: 'excludingSiteStatusIds' },
+	mixins: [restorableFilterMixin],
 	data: () => ({
 		siteStatuses: [],
 		siteStatusIds: [],

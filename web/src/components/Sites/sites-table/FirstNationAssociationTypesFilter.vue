@@ -22,8 +22,12 @@ import { isEmpty } from 'lodash'
 
 import api from '@/apis/first-nation-association-types-api';
 
+import restorableFilterMixin from '@/components/Sites/sites-table/restorable-filter-mixin';
+
 export default {
 	name: 'FirstNationAssociationTypesFilter',
+	restoreFilter: { model: 'firstNationAssociationTypeValues', include: 'includingFirstNationAssociationTypes', exclude: 'excludingFirstNationAssociationTypes' },
+	mixins: [restorableFilterMixin],
 	data: () => ({
 		firstNationAssociationTypes: [],
 		firstNationAssociationTypeValues: [],

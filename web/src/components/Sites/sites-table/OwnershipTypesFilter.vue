@@ -22,8 +22,12 @@ import { isEmpty } from 'lodash'
 
 import api from '@/apis/ownership-types-api';
 
+import restorableFilterMixin from '@/components/Sites/sites-table/restorable-filter-mixin';
+
 export default {
 	name: 'OwnershipTypesFilter',
+	restoreFilter: { model: 'ownershipTypeValues', include: 'includingOwnershipTypes', exclude: 'excludingOwnershipTypes' },
+	mixins: [restorableFilterMixin],
 	data: () => ({
 		ownershipTypes: [],
 		ownershipTypeValues: [],
