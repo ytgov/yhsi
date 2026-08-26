@@ -26,6 +26,14 @@ export const UserRoleOptions = [
 	UserRoles.INTERPRETIVE_SITES_VIEWER,
 ];
 
+// req.user is normally a User instance, but fall back to splitting the raw
+// column so a plain object can't silently bypass the role check.
+function roleListFor(user: User): string[] {
+	if (user.role_list) return user.role_list;
+
+	return user.roles?.split(',').map((role) => role.trim()) || [];
+}
+
 export function authorize(roles: string[] = [], allowPending = false) {
 	return (req: Request, res: Response, next: NextFunction) => {
 		const currentUser = req.user as User;
@@ -39,9 +47,13 @@ export function authorize(roles: string[] = [], allowPending = false) {
 		// if route only requires an active user
 		if (roles.length == 0) return next();
 
+		// Match whole roles only. `roles` is a comma-delimited string, so testing
+		// it with indexOf lets a substring match through - "Site Viewer Limited"
+		// would satisfy a check for "Site Viewer".
+		const currentUserRoles = roleListFor(currentUser);
+
 		for (const role of roles) {
-			if (currentUser.roles && currentUser.roles.indexOf(role) >= 0)
-				return next();
+			if (currentUserRoles.includes(role)) return next();
 		}
 
 		//TODO for RYAN add an override for ADMINISTRATOR role, maybe? If it doesn't break anything?

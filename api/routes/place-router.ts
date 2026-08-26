@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { body, check, param, query, validationResult, matchedData } from 'express-validator';
 import multer from 'multer';
 import { isNil, isString, difference } from 'lodash';
@@ -16,11 +16,53 @@ import { PlacePolicy } from '@/policies';
 import { generatePDF } from '@/utils/pdf-generator';
 import { createThumbnail } from '@/utils/image';
 import { coordinateBody } from '@/utils/coordinates';
+import { NotFoundError } from '@/utils/validation';
 import { Photo } from '@/data/photo-entities';
 
 const placeService = new PlaceService();
 const photoService = new PhotoService();
 const PAGE_SIZE = 10;
+
+// authorize() settles which roles may write; this settles which sites they may
+// write to. getById does not scope its query, so a user restricted to a
+// community or map sheet can otherwise reach any site by id.
+async function authorizePlaceAccess(req: Request, res: Response, next: NextFunction) {
+	const currentUser = req.user as User;
+	const id = parseInt(req.params.id ?? req.params.placeId);
+
+	if (isNaN(id)) {
+		return res.status(400).json({
+			messages: [{ variant: 'error', text: 'A valid site id is required.' }],
+		});
+	}
+
+	try {
+		const { place } = await placeService.getById(id, currentUser);
+		const policy = new PlacePolicy(currentUser, place);
+
+		if (policy.update()) return next();
+
+		return res.status(403).json({
+			messages: [
+				{ variant: 'error', text: 'You are not authorized to modify this site.' },
+			],
+		});
+	} catch (error) {
+		if (error instanceof NotFoundError) {
+			return res.status(404).json({
+				messages: [
+					{ variant: 'error', text: `Could not find Place for id=${id}` },
+				],
+			});
+		}
+
+		console.error('Place access check failed', error);
+
+		return res.status(422).json({
+			messages: [{ variant: 'error', text: (error as Error).message }],
+		});
+	}
+}
 
 export const placeRouter = express.Router();
 
@@ -215,6 +257,7 @@ placeRouter.post(
 placeRouter.post(
 	'/:id/photo',
 	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+	authorizePlaceAccess,
 	multer().single('file'),
 	async (req: Request, res: Response) => {
 		try {
@@ -246,6 +289,7 @@ placeRouter.post(
 placeRouter.post(
 	'/:placeId/photos/link',
 	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+	authorizePlaceAccess,
 	async (request: Request, response: Response) => {
 		try {
 			const { placeId } = request.params;
@@ -320,7 +364,8 @@ placeRouter.get(
 
 placeRouter.patch(
 	'/:id',
-	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
+	authorizePlaceAccess,
 	[
 		param('id').isInt({ gt: 0 }),
 		body('yHSIId').isString().optional({ nullable: true }),
@@ -431,6 +476,7 @@ placeRouter.patch(
 placeRouter.delete(
 	'/:id',
 	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
+	authorizePlaceAccess,
 	async (req: Request, res: Response) => {
 		try {
 			const id = parseInt(req.params.id);
