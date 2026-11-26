@@ -1,7 +1,7 @@
 <template lang="pug">
 div
   v-breadcrumbs(
-    :items=\"[\ { text: 'Home', to: '/', exact: true },\ { text: 'Sites', to: '/sites', exact: true },\ { text: 'Change Requests', to: '/sites-change-requests', exact: true },\ { text: placeEdit.primaryName || 'Review' },\ ]\"
+    :items="[{ text: 'Home', to: '/', exact: true }, { text: 'Sites', to: '/sites', exact: true }, { text: 'Change Requests', to: '/sites-change-requests', exact: true }, { text: placeEdit.primaryName || 'Review' }]"
   )
   v-card(:loading="loading")
   v-card-title(tag="h2")

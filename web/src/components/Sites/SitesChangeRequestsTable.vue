@@ -1,7 +1,7 @@
 <template lang="pug">
 div
   v-breadcrumbs(
-    :items=\"[\ { text: 'Home', to: '/', exact: true },\ { text: 'Sites', to: '/sites', exact: true },\ { text: 'Change Requests' },\ ]\"
+    :items="[{ text: 'Home', to: '/', exact: true }, { text: 'Sites', to: '/sites', exact: true }, { text: 'Change Requests' }]"
   )
   h1 Site Change Requests
   .mt-2
