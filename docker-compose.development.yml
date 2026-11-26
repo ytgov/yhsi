@@ -1,18 +1,4 @@
 services:
-  web:
-    build:
-      context: ./web
-      dockerfile: development.Dockerfile
-    environment:
-      NODE_ENV: development
-    tty: true
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./web:/usr/src/web
-    depends_on:
-      - api
-      - db
   api:
     build:
       context: ./api
@@ -34,13 +20,29 @@ services:
       - ./api:/usr/src/api
     depends_on:
       - db
+
+  web:
+    build:
+      context: ./web
+      dockerfile: development.Dockerfile
+    environment:
+      NODE_ENV: development
+    tty: true
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./web:/usr/src/web
+    depends_on:
+      - api
+      - db
+
   db:
     image: mcr.microsoft.com/mssql/server:2019-latest
     restart: unless-stopped
     environment:
-      - "ACCEPT_EULA=Y"
-      - "SA_PASSWORD=1m5ecure!"
-      - "MSSQL_PID=Express"
+      MSSQL_SA_PASSWORD: "1m5ecure!"
+      MSSQL_PID: "Express"
+      ACCEPT_EULA: "Y"
     tty: true
     ports:
       - "1433:1433"
