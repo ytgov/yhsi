@@ -1,11 +1,18 @@
 <template>
-  <v-dialog v-model="dialog" max-width="600" scrollable>
+  <v-dialog
+    v-model="dialog"
+    max-width="600"
+    scrollable
+  >
     <v-card>
       <v-card-title>Print {{ sitename }}</v-card-title>
       <v-card-text>
         <v-divider class="mb-4"></v-divider>
         <v-row>
-          <v-col class="py-0" cols="6">
+          <v-col
+            class="py-0"
+            cols="6"
+          >
             <v-checkbox
               v-model="selectAll"
               dense
@@ -31,11 +38,20 @@
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
-        <v-btn color="primary" @click="doPrint" :disabled="hasChecks">
+        <v-btn
+          color="primary"
+          @click="doPrint"
+          :disabled="hasChecks"
+        >
           Print
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn color="secondary" @click="closeDialog"> Close </v-btn>
+        <v-btn
+          color="secondary"
+          @click="closeDialog"
+        >
+          Close
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -60,23 +76,23 @@ export default {
   }),
   computed: {
     hasChecks: function () {
-      let test = this.sections.filter((s) => s.print);
-      return test.length == 0;
+      let test = this.sections.filter((s) => s.print)
+      return test.length == 0
     },
   },
   methods: {
     toggleAll() {
-      let newVal = this.selectAll;
+      let newVal = this.selectAll
 
-      this.sections.forEach((s) => (s.print = newVal));
+      this.sections.forEach((s) => (s.print = newVal))
     },
     doPrint() {
-      this.$emit("closeDialog");
-      this.$emit("showSuccess", "PRINTING COMPLETE");
+      this.$emit("closeDialog")
+      this.$emit("showSuccess", "PRINTING COMPLETE")
     },
     closeDialog() {
-      this.$emit("closeDialog");
+      this.$emit("closeDialog")
     },
   },
-};
+}
 </script>

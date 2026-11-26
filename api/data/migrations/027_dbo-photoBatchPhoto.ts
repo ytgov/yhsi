@@ -16,17 +16,17 @@
 // ALTER TABLE dbo.PhotoBatchPhoto ADD CONSTRAINT PK__YHS_Phot__3214EC076E3FF4E7 PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.PhotoBatchPhoto', (table) => {
-		table.increments('Id').primary();
-		table.integer('PhotoBatchId').notNullable();
-		table.binary('PhotoFile').nullable();
-		table.string('PhotoFileName', 200).notNullable();
-		table.string('PhotoContentType', 100).notNullable();
-		table.binary('ThumbFile').nullable();
-	});
-};
+  await knex.schema.createTable("dbo.PhotoBatchPhoto", (table) => {
+    table.increments("Id").primary()
+    table.integer("PhotoBatchId").notNullable()
+    table.binary("PhotoFile").nullable()
+    table.string("PhotoFileName", 200).notNullable()
+    table.string("PhotoContentType", 100).notNullable()
+    table.binary("ThumbFile").nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.PhotoBatchPhoto');
-};
+  await knex.schema.dropTable("dbo.PhotoBatchPhoto")
+}

@@ -38,39 +38,39 @@
 // ALTER TABLE Burial.Burial ADD CONSTRAINT PK_BurialID PRIMARY KEY (BurialID);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Burial.Burial', (table) => {
-		table.increments('BurialID').primary();
-		table.string('LastName', 200).nullable();
-		table.string('FirstName', 255).nullable();
-		table.string('Gender', 8).nullable();
-		table.string('GenderOther', 100).nullable();
-		table.integer('BirthYear').nullable();
-		table.tinyint('BirthMonth').nullable();
-		table.tinyint('BirthDay').nullable();
-		table.string('BirthDateNotes', 200).nullable();
-		table.integer('DeathYear').nullable();
-		table.tinyint('DeathMonth').nullable();
-		table.tinyint('DeathDay').nullable();
-		table.string('DeathDateNotes', 200).nullable();
-		table.string('Age', 10).nullable();
-		table.string('Manner', 15).nullable();
-		table.integer('CauseID').nullable();
-		table.integer('CemetaryID').nullable();
-		table.string('OtherCemetaryDesc', 200).nullable();
-		table.string('PlotDescription', 200).nullable();
-		table.string('ShippedIndicator', 1).nullable();
-		table.string('DestinationShipped', 200).nullable();
-		table.string('FuneralPaidBy', 200).nullable();
-		table.string('OriginCity', 150).nullable();
-		table.string('OriginState', 150).nullable();
-		table.string('OriginCountry', 150).nullable();
-		table.string('OtherCountry', 150).nullable();
-		table.string('PersonNotes', 2000).nullable();
-		table.integer('ReligionID').nullable();
-	});
-};
+  await knex.schema.createTable("Burial.Burial", (table) => {
+    table.increments("BurialID").primary()
+    table.string("LastName", 200).nullable()
+    table.string("FirstName", 255).nullable()
+    table.string("Gender", 8).nullable()
+    table.string("GenderOther", 100).nullable()
+    table.integer("BirthYear").nullable()
+    table.tinyint("BirthMonth").nullable()
+    table.tinyint("BirthDay").nullable()
+    table.string("BirthDateNotes", 200).nullable()
+    table.integer("DeathYear").nullable()
+    table.tinyint("DeathMonth").nullable()
+    table.tinyint("DeathDay").nullable()
+    table.string("DeathDateNotes", 200).nullable()
+    table.string("Age", 10).nullable()
+    table.string("Manner", 15).nullable()
+    table.integer("CauseID").nullable()
+    table.integer("CemetaryID").nullable()
+    table.string("OtherCemetaryDesc", 200).nullable()
+    table.string("PlotDescription", 200).nullable()
+    table.string("ShippedIndicator", 1).nullable()
+    table.string("DestinationShipped", 200).nullable()
+    table.string("FuneralPaidBy", 200).nullable()
+    table.string("OriginCity", 150).nullable()
+    table.string("OriginState", 150).nullable()
+    table.string("OriginCountry", 150).nullable()
+    table.string("OtherCountry", 150).nullable()
+    table.string("PersonNotes", 2000).nullable()
+    table.integer("ReligionID").nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Burial.Burial');
-};
+  await knex.schema.dropTable("Burial.Burial")
+}

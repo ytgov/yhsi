@@ -1,51 +1,51 @@
 //- template.pug
 
 style
-     include ../styles.css
-    
+  include ../styles.css
+
 table.title-row
-  tbody 
-    tr 
+  tbody
+    tr
       td
         div Interpretive Sites information
       td
-        div(style='width:200px;')
+        div(style="width: 200px")
           include ../yukon.svg
 
-div.grid
+.grid
   table.grid-table
     thead
-      tr 
-        td 
-          strong.underline Site Name 
-        td 
+      tr
+        td
+          strong.underline Site Name
+        td
           strong.underline Location Description
-        td 
+        td
           strong.underline Route Name
-        td 
+        td
           strong.underline KMNumber
-        td 
+        td
           strong.underline MapSheet
-        td 
+        td
           strong.underline Latitude
-        td 
+        td
           strong.underline Longitude
-        td 
+        td
           strong.underline Established Year
-        td 
+        td
           strong.underline Advanced Notification
-        td 
+        td
           strong.underline Notification Description
-    tbody 
+    tbody
       each val in data
-        tr 
-          td #{val.SiteName} 
-          td #{val.LocationDesc} 
-          td #{val.RouteName} 
-          td #{val.KMNum} 
-          td #{val.MapSheet} 
-          td #{val.Latitude} 
-          td #{val.Longitude} 
-          td #{val.EstablishedYear} 
-          td #{val.AdvancedNotification} 
-          td #{val.NotificationDesc} 
+        tr
+          td #{ val.SiteName } 
+          td #{ val.LocationDesc } 
+          td #{ val.RouteName } 
+          td #{ val.KMNum } 
+          td #{ val.MapSheet } 
+          td #{ val.Latitude } 
+          td #{ val.Longitude } 
+          td #{ val.EstablishedYear } 
+          td #{ val.AdvancedNotification } 
+          td #{ val.NotificationDesc } 

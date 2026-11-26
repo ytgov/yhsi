@@ -24,56 +24,56 @@
 // (8, 'Map', 'buffer'),
 // (9, 'Administration', 'cube');
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.AccessSection', (table) => {
-		table.increments('SectionID').primary();
-		table.string('SectionName', 60).notNullable();
-		table.string('SectionIcon', 120).nullable();
-	});
+  await knex.schema.createTable("dbo.AccessSection", (table) => {
+    table.increments("SectionID").primary()
+    table.string("SectionName", 60).notNullable()
+    table.string("SectionIcon", 120).nullable()
+  })
 
-	await knex('dbo.AccessSection').delete().whereRaw('1=1');
-	await knex('dbo.AccessSection').insert([
-		{
-			SectionName: 'Photos',
-			SectionIcon: 'camera',
-		},
-		{
-			SectionName: 'Airplane Crash',
-			SectionIcon: 'airplane-landing',
-		},
-		{
-			SectionName: 'Places',
-			SectionIcon: 'routes',
-		},
-		{
-			SectionName: 'Boats',
-			SectionIcon: 'ferry',
-		},
-		{
-			SectionName: 'People',
-			SectionIcon: 'human-male-female',
-		},
-		{
-			SectionName: 'Interpretive Signs',
-			SectionIcon: 'image',
-		},
-		{
-			SectionName: 'Burials',
-			SectionIcon: 'grave-stone',
-		},
-		{
-			SectionName: 'Map',
-			SectionIcon: 'buffer',
-		},
-		{
-			SectionName: 'Administration',
-			SectionIcon: 'cube',
-		},
-	]);
-};
+  await knex("dbo.AccessSection").delete().whereRaw("1=1")
+  await knex("dbo.AccessSection").insert([
+    {
+      SectionName: "Photos",
+      SectionIcon: "camera",
+    },
+    {
+      SectionName: "Airplane Crash",
+      SectionIcon: "airplane-landing",
+    },
+    {
+      SectionName: "Places",
+      SectionIcon: "routes",
+    },
+    {
+      SectionName: "Boats",
+      SectionIcon: "ferry",
+    },
+    {
+      SectionName: "People",
+      SectionIcon: "human-male-female",
+    },
+    {
+      SectionName: "Interpretive Signs",
+      SectionIcon: "image",
+    },
+    {
+      SectionName: "Burials",
+      SectionIcon: "grave-stone",
+    },
+    {
+      SectionName: "Map",
+      SectionIcon: "buffer",
+    },
+    {
+      SectionName: "Administration",
+      SectionIcon: "cube",
+    },
+  ])
+}
 
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.AccessSection');
-};
+  await knex.schema.dropTable("dbo.AccessSection")
+}

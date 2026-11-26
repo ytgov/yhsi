@@ -18,19 +18,19 @@
 // ALTER TABLE Person.Person ADD CONSTRAINT PK__PersonTe__AA2FFB85B6E5CB31 PRIMARY KEY (PersonID);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Person.Person', (table) => {
-		table.increments('PersonID').primary();
-		table.string('Surname', 256).nullable();
-		table.string('GivenName', 256).nullable();
-		table.integer('BirthYear').nullable();
-		table.string('BirthAccuracy', 8).nullable();
-		table.integer('DeathYear').nullable();
-		table.string('DeathAccuracy', 8).nullable();
-		table.text('Notes').nullable();
-	});
-};
+  await knex.schema.createTable("Person.Person", (table) => {
+    table.increments("PersonID").primary()
+    table.string("Surname", 256).nullable()
+    table.string("GivenName", 256).nullable()
+    table.integer("BirthYear").nullable()
+    table.string("BirthAccuracy", 8).nullable()
+    table.integer("DeathYear").nullable()
+    table.string("DeathAccuracy", 8).nullable()
+    table.text("Notes").nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Person.Person');
-};
+  await knex.schema.dropTable("Person.Person")
+}

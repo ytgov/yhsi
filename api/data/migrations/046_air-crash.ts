@@ -40,46 +40,46 @@
 // ALTER TABLE AirCrash.AirCrash ADD CONSTRAINT PK__AirCrash__BE355E4365A9F75C PRIMARY KEY (YACSINumber);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex) {
-	await knex.raw(
-		/* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'AirCrash') BEGIN EXEC('CREATE SCHEMA [AirCrash]') END"
-	);
+  await knex.raw(
+    /* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'AirCrash') BEGIN EXEC('CREATE SCHEMA [AirCrash]') END"
+  )
 
-	await knex.schema.createTable('AirCrash.AirCrash', (table) => {
-		table.string('YACSINumber', 256).notNullable();
-		table.dateTime('CrashDate').nullable();
-		table.string('AircraftType', 255).nullable();
-		table.string('AircraftRegistration', 255).nullable();
-		table.string('Nation', 25).nullable();
-		table.string('MilitaryCivilian', 25).nullable();
-		table.string('CrashLocation', 255).nullable();
-		table.integer('RemainsonSite').nullable();
-		table.string('ExtentofRemainsonSite', 255).nullable();
-		table.string('OtherLocationsofRemains', 255).nullable();
-		table.string('Pilot', 255).nullable();
-		table.integer('Fatalities').nullable();
-		table.string('DescriptionofCrashEvent', 255).nullable();
-		table.text('Comments').nullable();
-		table.text('SignificanceofAircraft').nullable();
-		table.string('Sources', 255).nullable();
-		table.string('Photographs', 255).nullable();
-		table.string('InYukon', 255).nullable();
-		table.integer('SoulsonBoard').nullable();
-		table.integer('Injuries').nullable();
-		table.string('Accuracy', 255).nullable();
-		table.string('AircraftCaption', 255).nullable();
-		table.string('AircraftafterCrashCaption', 255).nullable();
-		table.specificType('Location', 'geography').nullable();
-		table.specificType('LocationText', 'varchar(255)').nullable();
-		table.string('DateDescriptor', 10).nullable();
-		table.string('DateNote', 140).nullable();
-		table.string('PilotLastName', 50).nullable();
-		table.string('PilotFirstName', 50).nullable();
-		table.string('PilotRank', 50).nullable();
-	});
-};
+  await knex.schema.createTable("AirCrash.AirCrash", (table) => {
+    table.string("YACSINumber", 256).notNullable()
+    table.dateTime("CrashDate").nullable()
+    table.string("AircraftType", 255).nullable()
+    table.string("AircraftRegistration", 255).nullable()
+    table.string("Nation", 25).nullable()
+    table.string("MilitaryCivilian", 25).nullable()
+    table.string("CrashLocation", 255).nullable()
+    table.integer("RemainsonSite").nullable()
+    table.string("ExtentofRemainsonSite", 255).nullable()
+    table.string("OtherLocationsofRemains", 255).nullable()
+    table.string("Pilot", 255).nullable()
+    table.integer("Fatalities").nullable()
+    table.string("DescriptionofCrashEvent", 255).nullable()
+    table.text("Comments").nullable()
+    table.text("SignificanceofAircraft").nullable()
+    table.string("Sources", 255).nullable()
+    table.string("Photographs", 255).nullable()
+    table.string("InYukon", 255).nullable()
+    table.integer("SoulsonBoard").nullable()
+    table.integer("Injuries").nullable()
+    table.string("Accuracy", 255).nullable()
+    table.string("AircraftCaption", 255).nullable()
+    table.string("AircraftafterCrashCaption", 255).nullable()
+    table.specificType("Location", "geography").nullable()
+    table.specificType("LocationText", "varchar(255)").nullable()
+    table.string("DateDescriptor", 10).nullable()
+    table.string("DateNote", 140).nullable()
+    table.string("PilotLastName", 50).nullable()
+    table.string("PilotFirstName", 50).nullable()
+    table.string("PilotRank", 50).nullable()
+  })
+}
 
 exports.down = async function (knex: Knex) {
-	await knex.schema.dropTable('AirCrash.AirCrash');
-};
+  await knex.schema.dropTable("AirCrash.AirCrash")
+}

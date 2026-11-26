@@ -28,10 +28,10 @@
 </template>
 
 <script>
-import OwnershipTypesSelect from '@/components/Sites/site-forms/legal-and-zoning/OwnershipTypesSelect';
+import OwnershipTypesSelect from "@/components/Sites/site-forms/legal-and-zoning/OwnershipTypesSelect"
 
 export default {
-  name: 'OwnershipsEditor',
+  name: "OwnershipsEditor",
   components: {
     OwnershipTypesSelect,
   },
@@ -43,10 +43,10 @@ export default {
   },
   computed: {
     ownerships() {
-      return this.value;
+      return this.value
     },
   },
-};
+}
 </script>
 
 <style scoped></style>

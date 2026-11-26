@@ -18,25 +18,25 @@
 // ALTER TABLE Place.Place ADD CONSTRAINT PK__Place__3214EC0728EFBE21 PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 
 exports.up = async function (knex: Knex) {
-	await knex.raw(
-		/* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Place') BEGIN EXEC('CREATE SCHEMA [Place]') END"
-	);
+  await knex.raw(
+    /* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Place') BEGIN EXEC('CREATE SCHEMA [Place]') END"
+  )
 
-	await knex.schema.createTable('Place.Place', (table) => {
-		table.string('Name', 255).notNullable();
-		table.string('LocationDesc', 512).nullable();
-		table.float('Latitude', 8).nullable();
-		table.float('Longitude', 8).nullable();
-		table.string('MapSheet', 25).nullable();
-		table.string('Notes', 512).nullable();
-		table.string('Accuracy', 30).nullable();
-		table.increments('Id').primary();
-	});
-};
+  await knex.schema.createTable("Place.Place", (table) => {
+    table.string("Name", 255).notNullable()
+    table.string("LocationDesc", 512).nullable()
+    table.float("Latitude", 8).nullable()
+    table.float("Longitude", 8).nullable()
+    table.string("MapSheet", 25).nullable()
+    table.string("Notes", 512).nullable()
+    table.string("Accuracy", 30).nullable()
+    table.increments("Id").primary()
+  })
+}
 
 exports.down = async function (knex: Knex) {
-	await knex.schema.dropTable('Place.Place');
-};
+  await knex.schema.dropTable("Place.Place")
+}

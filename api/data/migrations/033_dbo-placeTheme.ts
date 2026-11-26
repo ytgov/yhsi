@@ -13,14 +13,14 @@
 // ALTER TABLE dbo.PlaceTheme ADD CONSTRAINT PK_PlaceTheme PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.PlaceTheme', (table) => {
-		table.increments('Id').primary();
-		table.string('Category', 100).notNullable();
-		table.string('Type', 100).notNullable();
-	});
-};
+  await knex.schema.createTable("dbo.PlaceTheme", (table) => {
+    table.increments("Id").primary()
+    table.string("Category", 100).notNullable()
+    table.string("Type", 100).notNullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.PlaceTheme');
-};
+  await knex.schema.dropTable("dbo.PlaceTheme")
+}

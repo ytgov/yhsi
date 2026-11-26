@@ -1,117 +1,117 @@
-import { Knex } from 'knex';
-import { format, addHours } from 'date-fns';
-import { get, isEmpty, isNull, isUndefined, uniq } from 'lodash';
+import { Knex } from "knex"
+import { format, addHours } from "date-fns"
+import { get, isEmpty, isNull, isUndefined, uniq } from "lodash"
 
-import db from '@/db/db-client';
+import db from "@/db/db-client"
 
-import { COORDINATE_DETERMINATION_TYPES } from '../models';
+import { COORDINATE_DETERMINATION_TYPES } from "../models"
 
 import {
-	AssociationService,
-	ConstructionPeriodService,
-	ContactService,
-	DateService,
-	DescriptionService,
-	FirstNationAssociationService,
-	FunctionalUseService,
-	HistoricalPatternService,
-	NameService,
-	OwnershipService,
-	PhotoService,
-	PlaceEditService,
-	PreviousOwnershipService,
-	RevisionLogService,
-	SortStatement,
-	ThemeService,
-	WebLinkService,
-} from './';
-import { PLACE_FIELDS, REGISTER_FIELDS } from '../data';
-import { DescriptionTypeEnums, Place, PlainObject, User, UserRoles } from '../models';
-import { NotFoundError } from '../utils/validation';
+  AssociationService,
+  ConstructionPeriodService,
+  ContactService,
+  DateService,
+  DescriptionService,
+  FirstNationAssociationService,
+  FunctionalUseService,
+  HistoricalPatternService,
+  NameService,
+  OwnershipService,
+  PhotoService,
+  PlaceEditService,
+  PreviousOwnershipService,
+  RevisionLogService,
+  SortStatement,
+  ThemeService,
+  WebLinkService,
+} from "./"
+import { PLACE_FIELDS, REGISTER_FIELDS } from "../data"
+import { DescriptionTypeEnums, Place, PlainObject, User, UserRoles } from "../models"
+import { NotFoundError } from "../utils/validation"
 
 // This function can go away when the back-end serves the
 // relationship data as part of the data directly.
 // e.g. { data: { names: [{ id: 1, placeId: 1, description: "SomeName" }] } }
 // instead of { data: {}, relationships: { names: { data: [{ id: 1, placeId: 1, description: "SomeName" }] } } }
 function injectRelationshipData(attributes: PlainObject, relationships: PlainObject) {
-	Object.keys(relationships).forEach((key) => {
-		if (attributes.hasOwnProperty(key)) {
-			console.error('Relationship data conflicts with source data.');
-			return;
-		}
+  Object.keys(relationships).forEach((key) => {
+    if (attributes.hasOwnProperty(key)) {
+      console.error("Relationship data conflicts with source data.")
+      return
+    }
 
-		attributes[key] = get(relationships, `${key}.data`, []);
-	});
+    attributes[key] = get(relationships, `${key}.data`, [])
+  })
 }
 
 export class PlaceService {
-	private assocationService: AssociationService;
-	private constructionPeriodService: ConstructionPeriodService;
-	private contactService: ContactService;
-	private dateService: DateService;
-	private descriptionService: DescriptionService;
-	private firstNationAssociationService: FirstNationAssociationService;
-	private functionalUseService: FunctionalUseService;
-	private historicalPatternService: HistoricalPatternService;
-	private nameService: NameService;
-	private ownershipService: OwnershipService;
-	private photoService: PhotoService;
-	private placeEditService: PlaceEditService;
-	private previousOwnershipService: PreviousOwnershipService;
-	private revisionLogService: RevisionLogService;
-	private themeService: ThemeService;
-	private webLinkService: WebLinkService;
+  private assocationService: AssociationService
+  private constructionPeriodService: ConstructionPeriodService
+  private contactService: ContactService
+  private dateService: DateService
+  private descriptionService: DescriptionService
+  private firstNationAssociationService: FirstNationAssociationService
+  private functionalUseService: FunctionalUseService
+  private historicalPatternService: HistoricalPatternService
+  private nameService: NameService
+  private ownershipService: OwnershipService
+  private photoService: PhotoService
+  private placeEditService: PlaceEditService
+  private previousOwnershipService: PreviousOwnershipService
+  private revisionLogService: RevisionLogService
+  private themeService: ThemeService
+  private webLinkService: WebLinkService
 
-	constructor() {
-		this.assocationService = new AssociationService();
-		this.constructionPeriodService = new ConstructionPeriodService();
-		this.contactService = new ContactService();
-		this.dateService = new DateService();
-		this.descriptionService = new DescriptionService();
-		this.firstNationAssociationService = new FirstNationAssociationService();
-		this.functionalUseService = new FunctionalUseService();
-		this.historicalPatternService = new HistoricalPatternService();
-		this.nameService = new NameService();
-		this.ownershipService = new OwnershipService();
-		this.photoService = new PhotoService();
-		this.placeEditService = new PlaceEditService();
-		this.previousOwnershipService = new PreviousOwnershipService();
-		this.revisionLogService = new RevisionLogService();
-		this.themeService = new ThemeService();
-		this.webLinkService = new WebLinkService();
-	}
+  constructor() {
+    this.assocationService = new AssociationService()
+    this.constructionPeriodService = new ConstructionPeriodService()
+    this.contactService = new ContactService()
+    this.dateService = new DateService()
+    this.descriptionService = new DescriptionService()
+    this.firstNationAssociationService = new FirstNationAssociationService()
+    this.functionalUseService = new FunctionalUseService()
+    this.historicalPatternService = new HistoricalPatternService()
+    this.nameService = new NameService()
+    this.ownershipService = new OwnershipService()
+    this.photoService = new PhotoService()
+    this.placeEditService = new PlaceEditService()
+    this.previousOwnershipService = new PreviousOwnershipService()
+    this.revisionLogService = new RevisionLogService()
+    this.themeService = new ThemeService()
+    this.webLinkService = new WebLinkService()
+  }
 
-	async getAll(skip: number, take: number): Promise<Array<Place>> {
-		return db('place')
-			.select<Place[]>(PLACE_FIELDS)
-			.whereNull('deleted_at')
-			.orderBy('id')
-			.offset(skip)
-			.limit(take);
-	}
+  async getAll(skip: number, take: number): Promise<Array<Place>> {
+    return db("place")
+      .select<Place[]>(PLACE_FIELDS)
+      .whereNull("deleted_at")
+      .orderBy("id")
+      .offset(skip)
+      .limit(take)
+  }
 
-	async getAllWithPhoto(skip: number, take: number): Promise<Array<Place>> {
-		return db('place')
-			.distinct('Place.Id')
-			.select<Place[]>([...PLACE_FIELDS, 'PH.ThumbFile', 'PH.caption'])
-			.whereNull('deleted_at')
-			.leftJoin('dbo.photo as PH', function () {
-				this.on('PH.PlaceId', '=', 'Place.Id')
-					/* The new line here */
-					.andOn(
-						'PH.DateCreated',
-						'=',
-						db.raw('(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)')
-					);
-			});
-	}
+  async getAllWithPhoto(skip: number, take: number): Promise<Array<Place>> {
+    return db("place")
+      .distinct("Place.Id")
+      .select<Place[]>([...PLACE_FIELDS, "PH.ThumbFile", "PH.caption"])
+      .whereNull("deleted_at")
+      .leftJoin("dbo.photo as PH", function () {
+        this.on("PH.PlaceId", "=", "Place.Id")
+          /* The new line here */
+          .andOn(
+            "PH.DateCreated",
+            "=",
+            db.raw("(select min(PH.DateCreated) from dbo.photo as PH where PH.PlaceId = Place.Id)")
+          )
+      })
+  }
 
-	async getRegisterAll(skip: number, take: number): Promise<Array<any>> {
-		return db('place')
-			.select([...REGISTER_FIELDS, 'PH.ThumbFile', 'PH.caption'])
-			.join('community', 'community.id', 'place.communityid')
-			.joinRaw(
-				`outer apply (
+  async getRegisterAll(skip: number, take: number): Promise<Array<any>> {
+    return db("place")
+      .select([...REGISTER_FIELDS, "PH.ThumbFile", "PH.caption"])
+      .join("community", "community.id", "place.communityid")
+      .joinRaw(
+        `outer apply (
 					select top 1 photo.ThumbFile, photo.caption
 					from dbo.photo as photo
 					where photo.PlaceId = place.Id
@@ -119,51 +119,51 @@ export class PlaceService {
 					AND photo.IsYRHPCoverImage = 1
 					ORDER by photo.YRHPOrder asc, photo.DateCreated asc, photo.Id asc
 				) as PH`
-			)
-			.where({ 'place.showInRegister': true })
-			.whereNull('place.deleted_at')
-			.orderBy('place.Id')
-			.offset(skip)
-			.limit(take);
-	}
+      )
+      .where({ "place.showInRegister": true })
+      .whereNull("place.deleted_at")
+      .orderBy("place.Id")
+      .offset(skip)
+      .limit(take)
+  }
 
-	// Matches the register search term against the place's primary names,
-	// its secondary names, and its place description (both languages).
-	private scopeRegisterToSearchTerm(queryBuilder: Knex.QueryBuilder, searchTerm: string) {
-		const term = `%${searchTerm.trim().replace(/[[\]%_]/g, '\\$&')}%`;
+  // Matches the register search term against the place's primary names,
+  // its secondary names, and its place description (both languages).
+  private scopeRegisterToSearchTerm(queryBuilder: Knex.QueryBuilder, searchTerm: string) {
+    const term = `%${searchTerm.trim().replace(/[[\]%_]/g, "\\$&")}%`
 
-		queryBuilder.where((builder) => {
-			builder
-				.whereRaw("place.primaryName like ? escape '\\'", [term])
-				.orWhereRaw("place.fr_primaryName like ? escape '\\'", [term])
-				.orWhereExists((sub) =>
-					sub
-						.select(db.raw('1'))
-						.from('name')
-						.whereRaw('name.placeId = place.id')
-						.whereRaw("name.description like ? escape '\\'", [term])
-				)
-				.orWhereExists((sub) =>
-					sub
-						.select(db.raw('1'))
-						.from('description')
-						.whereRaw('description.placeId = place.id')
-						.where('description.type', DescriptionTypeEnums.PlaceDescription)
-						.where((descBuilder) =>
-							descBuilder
-								.whereRaw("description.descriptionText like ? escape '\\'", [term])
-								.orWhereRaw("description.fR_DescriptionText like ? escape '\\'", [term])
-						)
-				);
-		});
-	}
+    queryBuilder.where((builder) => {
+      builder
+        .whereRaw("place.primaryName like ? escape '\\'", [term])
+        .orWhereRaw("place.fr_primaryName like ? escape '\\'", [term])
+        .orWhereExists((sub) =>
+          sub
+            .select(db.raw("1"))
+            .from("name")
+            .whereRaw("name.placeId = place.id")
+            .whereRaw("name.description like ? escape '\\'", [term])
+        )
+        .orWhereExists((sub) =>
+          sub
+            .select(db.raw("1"))
+            .from("description")
+            .whereRaw("description.placeId = place.id")
+            .where("description.type", DescriptionTypeEnums.PlaceDescription)
+            .where((descBuilder) =>
+              descBuilder
+                .whereRaw("description.descriptionText like ? escape '\\'", [term])
+                .orWhereRaw("description.fR_DescriptionText like ? escape '\\'", [term])
+            )
+        )
+    })
+  }
 
-	async searchRegister(searchTerm: string, skip: number, take: number): Promise<Array<any>> {
-		const query = db('place')
-			.select([...REGISTER_FIELDS, 'PH.ThumbFile', 'PH.caption'])
-			.join('community', 'community.id', 'place.communityid')
-			.joinRaw(
-				`outer apply (
+  async searchRegister(searchTerm: string, skip: number, take: number): Promise<Array<any>> {
+    const query = db("place")
+      .select([...REGISTER_FIELDS, "PH.ThumbFile", "PH.caption"])
+      .join("community", "community.id", "place.communityid")
+      .joinRaw(
+        `outer apply (
 					select top 1 photo.ThumbFile, photo.caption
 					from dbo.photo as photo
 					where photo.PlaceId = place.Id
@@ -171,455 +171,455 @@ export class PlaceService {
 					AND photo.IsYRHPCoverImage = 1
 					ORDER by photo.YRHPOrder asc, photo.DateCreated asc, photo.Id asc
 				) as PH`
-			)
-			.where({ 'place.showInRegister': true })
-			.whereNull('place.deleted_at')
-			.orderBy('place.Id')
-			.offset(skip)
-			.limit(take);
+      )
+      .where({ "place.showInRegister": true })
+      .whereNull("place.deleted_at")
+      .orderBy("place.Id")
+      .offset(skip)
+      .limit(take)
 
-		this.scopeRegisterToSearchTerm(query, searchTerm);
+    this.scopeRegisterToSearchTerm(query, searchTerm)
 
-		return query;
-	}
+    return query
+  }
 
-	async getRegisterSearchCount(searchTerm: string): Promise<number> {
-		const query = db('place')
-			.count('*', { as: 'count' })
-			.where({ 'place.showInRegister': true })
-			.whereNull('place.deleted_at');
+  async getRegisterSearchCount(searchTerm: string): Promise<number> {
+    const query = db("place")
+      .count("*", { as: "count" })
+      .where({ "place.showInRegister": true })
+      .whereNull("place.deleted_at")
 
-		this.scopeRegisterToSearchTerm(query, searchTerm);
+    this.scopeRegisterToSearchTerm(query, searchTerm)
 
-		const results = await query;
+    const results = await query
 
-		return results && results.length ? (results[0].count as number) : 0;
-	}
+    return results && results.length ? (results[0].count as number) : 0
+  }
 
-	async getPlaceInRegisterCount(): Promise<number> {
-		return new Promise(async (resolve, reject) => {
-			const results = await db('place')
-				.count('*', {
-					as: 'count',
-				})
-				.where({ "place.showInRegister": true })
-				.whereNull('deleted_at');
+  async getPlaceInRegisterCount(): Promise<number> {
+    return new Promise(async (resolve, reject) => {
+      const results = await db("place")
+        .count("*", {
+          as: "count",
+        })
+        .where({ "place.showInRegister": true })
+        .whereNull("deleted_at")
 
-			if (results) {
-				const val = results[0].count as number;
-				resolve(val);
-			}
+      if (results) {
+        const val = results[0].count as number
+        resolve(val)
+      }
 
-			resolve(0);
-		});
-	}
+      resolve(0)
+    })
+  }
 
-	async getIdsForUser(user?: User) {
-		const selectStatement = db('place').select('yHSIId');
+  async getIdsForUser(user?: User) {
+    const selectStatement = db("place").select("yHSIId")
 
-		this.scopeSitesToUser(selectStatement, user);
+    this.scopeSitesToUser(selectStatement, user)
 
-		return selectStatement.then((list) => list);
-	}
+    return selectStatement.then((list) => list)
+  }
 
-	async getById(id: number, user?: User): Promise<{ place: Place; relationships: any }> {
-		return db('place')
-			.first(PLACE_FIELDS)
-			.where({ 'place.id': id })
-			.leftJoin('community', 'community.id', 'place.communityId')
-			.select('community.name as communityName')
-			.then(Place.decodeCommaDelimitedArrayColumns)
-			.then(async (place) => {
-				if (!place) {
-					return Promise.reject(new NotFoundError(`Could not find Place for id=${id}`));
-				}
+  async getById(id: number, user?: User): Promise<{ place: Place; relationships: any }> {
+    return db("place")
+      .first(PLACE_FIELDS)
+      .where({ "place.id": id })
+      .leftJoin("community", "community.id", "place.communityId")
+      .select("community.name as communityName")
+      .then(Place.decodeCommaDelimitedArrayColumns)
+      .then(async (place) => {
+        if (!place) {
+          return Promise.reject(new NotFoundError(`Could not find Place for id=${id}`))
+        }
 
-				place.coordinateDeterminationName =
-					Object.values(COORDINATE_DETERMINATION_TYPES).find(
-						(i) => i.value == place.coordinateDetermination
-					)?.text ?? '';
+        place.coordinateDeterminationName =
+          Object.values(COORDINATE_DETERMINATION_TYPES).find(
+            (i) => i.value == place.coordinateDetermination
+          )?.text ?? ""
 
-				place.hasPendingChanges = await this.placeEditService.existsForPlace(id);
-				place.associations = await this.assocationService.getFor(id);
-				place.constructionPeriods = await this.constructionPeriodService.getFor(id);
-				place.contacts = await this.contactService.getFor(id);
-				place.dates = await this.dateService.getFor(id);
-				place.descriptions = await this.descriptionService.getForPlace(id);
-				place.firstNationAssociations = await this.firstNationAssociationService.getFor(id);
-				place.functionalUses = await this.functionalUseService.getFor(id);
-				place.historicalPatterns = await this.historicalPatternService.getFor(id);
-				place.names = await this.nameService.getFor(id);
-				place.ownerships = await this.ownershipService.getFor(id);
-				place.recognitionDate = isNull(place.recognitionDate)
-					? null
-					: format(addHours(new Date(place.recognitionDate), 7), 'yyyy-MM-dd');
-				place.revisionLogs = await this.revisionLogService.getFor(id);
-				place.themes = await this.themeService.getFor(id);
-				place.previousOwnerships = await this.previousOwnershipService.getFor(id);
-				place.webLinks = await this.webLinkService.getForPlace(id);
+        place.hasPendingChanges = await this.placeEditService.existsForPlace(id)
+        place.associations = await this.assocationService.getFor(id)
+        place.constructionPeriods = await this.constructionPeriodService.getFor(id)
+        place.contacts = await this.contactService.getFor(id)
+        place.dates = await this.dateService.getFor(id)
+        place.descriptions = await this.descriptionService.getForPlace(id)
+        place.firstNationAssociations = await this.firstNationAssociationService.getFor(id)
+        place.functionalUses = await this.functionalUseService.getFor(id)
+        place.historicalPatterns = await this.historicalPatternService.getFor(id)
+        place.names = await this.nameService.getFor(id)
+        place.ownerships = await this.ownershipService.getFor(id)
+        place.recognitionDate = isNull(place.recognitionDate)
+          ? null
+          : format(addHours(new Date(place.recognitionDate), 7), "yyyy-MM-dd")
+        place.revisionLogs = await this.revisionLogService.getFor(id)
+        place.themes = await this.themeService.getFor(id)
+        place.previousOwnerships = await this.previousOwnershipService.getFor(id)
+        place.webLinks = await this.webLinkService.getForPlace(id)
 
-				const photos = await this.photoService.getAllForPlace(id);
+        const photos = await this.photoService.getAllForPlace(id)
 
-				const relationships = {
-					photos: { data: photos },
-				};
+        const relationships = {
+          photos: { data: photos },
+        }
 
-				return { place, relationships };
-			});
-	}
+        return { place, relationships }
+      })
+  }
 
-	async getRegisterById(id: number): Promise<any | undefined> {
-		return db('place')
-			.join('community', 'community.id', 'place.communityid')
-			.select(REGISTER_FIELDS)
-			.where({ 'place.id': id })
-			.where({ showInRegister: true })
-			.first()
-			.catch((err: any) => {
-				//console.log('BOMBED', err);
-				return undefined;
-			});
-	}
+  async getRegisterById(id: number): Promise<any | undefined> {
+    return db("place")
+      .join("community", "community.id", "place.communityid")
+      .select(REGISTER_FIELDS)
+      .where({ "place.id": id })
+      .where({ showInRegister: true })
+      .first()
+      .catch((err: any) => {
+        //console.log('BOMBED', err);
+        return undefined
+      })
+  }
 
-	async getPlaceCount(): Promise<number> {
-		return new Promise(async (resolve, reject) => {
-			const results = await db<number>('place').whereNull('deleted_at').count('*', {
-				as: 'count',
-			});
+  async getPlaceCount(): Promise<number> {
+    return new Promise(async (resolve, reject) => {
+      const results = await db<number>("place").whereNull("deleted_at").count("*", {
+        as: "count",
+      })
 
-			if (results) {
-				const val = results[0].count as number;
-				resolve(val);
-			}
+      if (results) {
+        const val = results[0].count as number
+        resolve(val)
+      }
 
-			resolve(0);
-		});
-	}
+      resolve(0)
+    })
+  }
 
-	async addPlace(item: Place, currentUser: User): Promise<Place | undefined> {
-		const result = await db('place').insert(item).returning<Place[]>('*');
+  async addPlace(item: Place, currentUser: User): Promise<Place | undefined> {
+    const result = await db("place").insert(item).returning<Place[]>("*")
 
-		this.placeEditService.create({
-			...item,
-			PlaceId: result[0].id,
-			editorUserId: currentUser.id,
-			editDate: format(new Date(), 'yyyy-MM-dd'),
-		});
+    this.placeEditService.create({
+      ...item,
+      PlaceId: result[0].id,
+      editorUserId: currentUser.id,
+      editDate: format(new Date(), "yyyy-MM-dd"),
+    })
 
-		if (result) return result[0];
-	}
+    if (result) return result[0]
+  }
 
-	updateRelations(id: number, attributes: PlainObject) {
-		return Promise.resolve(attributes).then(async (attrs) => {
-			if (Object.prototype.hasOwnProperty.call(attrs, 'associations')) {
-				await this.assocationService.upsertFor(id, attrs['associations']);
-			}
-			if (Object.prototype.hasOwnProperty.call(attrs, 'constructionPeriods')) {
-				await this.constructionPeriodService.upsertFor(id, attrs['constructionPeriods']);
-			}
-			if (Object.prototype.hasOwnProperty.call(attrs, 'contacts')) {
-				await this.contactService.upsertFor(id, attrs['contacts']);
-			}
-			if (Object.prototype.hasOwnProperty.call(attrs, 'dates')) {
-				await this.dateService.upsertFor(id, attrs['dates']);
-			}
-			if (Object.prototype.hasOwnProperty.call(attrs, 'descriptions')) {
-				await this.descriptionService.upsertForPlace(id, attrs['descriptions']);
-			}
-			if (Object.prototype.hasOwnProperty.call(attrs, 'firstNationAssociations')) {
-				await this.firstNationAssociationService.upsertFor(id, attrs['firstNationAssociations']);
-			}
-			if (Object.prototype.hasOwnProperty.call(attrs, 'functionalUses')) {
-				await this.functionalUseService.upsertFor(id, attrs['functionalUses']);
-			}
-			if (Object.prototype.hasOwnProperty.call(attrs, 'historicalPatterns')) {
-				await this.historicalPatternService.upsertFor(id, attrs['historicalPatterns']);
-			}
-			if (Object.prototype.hasOwnProperty.call(attrs, 'names')) {
-				await this.nameService.upsertFor(id, attrs['names']);
-			}
-			if (Object.prototype.hasOwnProperty.call(attrs, 'ownerships')) {
-				await this.ownershipService.upsertFor(id, attrs['ownerships']);
-			}
-			if (Object.prototype.hasOwnProperty.call(attrs, 'previousOwnerships')) {
-				await this.previousOwnershipService.upsertFor(id, attrs['previousOwnerships']);
-			}
-			if (Object.prototype.hasOwnProperty.call(attrs, 'revisionLogs')) {
-				await this.revisionLogService.upsertFor(id, attrs['revisionLogs']);
-			}
-			if (Object.prototype.hasOwnProperty.call(attrs, 'themes')) {
-				await this.themeService.upsertFor(id, attrs['themes']);
-			}
-			if (Object.prototype.hasOwnProperty.call(attrs, 'webLinks')) {
-				await this.webLinkService.upsertForPlace(id, attrs['webLinks']);
-			}
-			return attrs;
-		});
-	}
+  updateRelations(id: number, attributes: PlainObject) {
+    return Promise.resolve(attributes).then(async (attrs) => {
+      if (Object.prototype.hasOwnProperty.call(attrs, "associations")) {
+        await this.assocationService.upsertFor(id, attrs["associations"])
+      }
+      if (Object.prototype.hasOwnProperty.call(attrs, "constructionPeriods")) {
+        await this.constructionPeriodService.upsertFor(id, attrs["constructionPeriods"])
+      }
+      if (Object.prototype.hasOwnProperty.call(attrs, "contacts")) {
+        await this.contactService.upsertFor(id, attrs["contacts"])
+      }
+      if (Object.prototype.hasOwnProperty.call(attrs, "dates")) {
+        await this.dateService.upsertFor(id, attrs["dates"])
+      }
+      if (Object.prototype.hasOwnProperty.call(attrs, "descriptions")) {
+        await this.descriptionService.upsertForPlace(id, attrs["descriptions"])
+      }
+      if (Object.prototype.hasOwnProperty.call(attrs, "firstNationAssociations")) {
+        await this.firstNationAssociationService.upsertFor(id, attrs["firstNationAssociations"])
+      }
+      if (Object.prototype.hasOwnProperty.call(attrs, "functionalUses")) {
+        await this.functionalUseService.upsertFor(id, attrs["functionalUses"])
+      }
+      if (Object.prototype.hasOwnProperty.call(attrs, "historicalPatterns")) {
+        await this.historicalPatternService.upsertFor(id, attrs["historicalPatterns"])
+      }
+      if (Object.prototype.hasOwnProperty.call(attrs, "names")) {
+        await this.nameService.upsertFor(id, attrs["names"])
+      }
+      if (Object.prototype.hasOwnProperty.call(attrs, "ownerships")) {
+        await this.ownershipService.upsertFor(id, attrs["ownerships"])
+      }
+      if (Object.prototype.hasOwnProperty.call(attrs, "previousOwnerships")) {
+        await this.previousOwnershipService.upsertFor(id, attrs["previousOwnerships"])
+      }
+      if (Object.prototype.hasOwnProperty.call(attrs, "revisionLogs")) {
+        await this.revisionLogService.upsertFor(id, attrs["revisionLogs"])
+      }
+      if (Object.prototype.hasOwnProperty.call(attrs, "themes")) {
+        await this.themeService.upsertFor(id, attrs["themes"])
+      }
+      if (Object.prototype.hasOwnProperty.call(attrs, "webLinks")) {
+        await this.webLinkService.upsertForPlace(id, attrs["webLinks"])
+      }
+      return attrs
+    })
+  }
 
-	update(id: number, attributes: PlainObject): Promise<Place | undefined> {
-		return Promise.resolve(attributes)
-			.then((attrs) => this.updateRelations(id, attrs))
-			.then(Place.stripOutNonColumnAttributes)
-			.then(Place.encodeCommaDelimitedArrayColumns)
-			.then((encodedAttributes) => {
-				if (isEmpty(encodedAttributes)) return;
+  update(id: number, attributes: PlainObject): Promise<Place | undefined> {
+    return Promise.resolve(attributes)
+      .then((attrs) => this.updateRelations(id, attrs))
+      .then(Place.stripOutNonColumnAttributes)
+      .then(Place.encodeCommaDelimitedArrayColumns)
+      .then((encodedAttributes) => {
+        if (isEmpty(encodedAttributes)) return
 
-				return db('place').where({ id }).update(encodedAttributes);
-			})
-			.then(() => {
-				return this.getById(id).then(({ place, relationships }) => {
-					injectRelationshipData(place, relationships);
-					return place;
-				});
-			});
-	}
+        return db("place").where({ id }).update(encodedAttributes)
+      })
+      .then(() => {
+        return this.getById(id).then(({ place, relationships }) => {
+          injectRelationshipData(place, relationships)
+          return place
+        })
+      })
+  }
 
-	async generateIdFor(nTSMapSheet: string): Promise<string> {
-		const places = await db('place')
-			.whereILike('YHSIId', `${nTSMapSheet}/%`)
-			.select('YHSIId')
-			.orderBy('yHSIId');
+  async generateIdFor(nTSMapSheet: string): Promise<string> {
+    const places = await db("place")
+      .whereILike("YHSIId", `${nTSMapSheet}/%`)
+      .select("YHSIId")
+      .orderBy("yHSIId")
 
-		// Note: The following loop runs in O(999 * n) (or O(n) where n is the number of places)
-		// If performance becomes an issue as number of places grows, consider using a Set
-		let placeIndex = 1;
-		for (; placeIndex <= 999; placeIndex++) {
-			const candidateYHSIId = `${nTSMapSheet}/${placeIndex.toString().padStart(3, '0')}`;
-			const isMatch = places.find((place) => place.YHSIId == candidateYHSIId);
+    // Note: The following loop runs in O(999 * n) (or O(n) where n is the number of places)
+    // If performance becomes an issue as number of places grows, consider using a Set
+    let placeIndex = 1
+    for (; placeIndex <= 999; placeIndex++) {
+      const candidateYHSIId = `${nTSMapSheet}/${placeIndex.toString().padStart(3, "0")}`
+      const isMatch = places.find((place) => place.YHSIId == candidateYHSIId)
 
-			if (isUndefined(isMatch)) {
-				return `${nTSMapSheet}/${placeIndex.toString().padStart(3, '0')}`;
-			}
-		}
+      if (isUndefined(isMatch)) {
+        return `${nTSMapSheet}/${placeIndex.toString().padStart(3, "0")}`
+      }
+    }
 
-		throw new Error(
-			`Unable to generate YHSIId: ${nTSMapSheet}/001 to ${nTSMapSheet}/999 are currently in use`
-		);
-	}
+    throw new Error(
+      `Unable to generate YHSIId: ${nTSMapSheet}/001 to ${nTSMapSheet}/999 are currently in use`
+    )
+  }
 
-	async doSearch(
-		scope: Knex.QueryBuilder,
-		query: { [key: string]: any },
-		sort: Array<SortStatement>,
-		page: number,
-		itemsPerPage: number,
-		skip: number,
-		take: number
-	): Promise<any> {
-		return new Promise(async (resolve, reject) => {
-			const selectStatement = scope
-				.distinct()
-				.select(
-					...PLACE_FIELDS,
-					{ status: 'StatusTable.Status' },
-					{
-						secondaryNames: db.raw(
-							`STUFF((SELECT ', ' + Description FROM dbo.Name WHERE PlaceId = Place.Id FOR XML PATH('')), 1, 2, '')`
-						),
-					}
-				)
-				.leftOuterJoin('FirstNationAssociation', 'Place.Id', 'FirstNationAssociation.PlaceId')
-				.leftOuterJoin('ConstructionPeriod', 'Place.Id', 'ConstructionPeriod.PlaceId')
-				.leftOuterJoin('RevisionLog', 'Place.id', 'RevisionLog.PlaceId')
-				.leftOuterJoin('Description', 'Place.id', 'Description.PlaceId')
-				.leftOuterJoin('Ownership', 'Place.id', 'Ownership.PlaceId')
-				.leftOuterJoin('Name', 'Place.id', 'Name.PlaceId')
-				.leftOuterJoin(
-					db('Place')
-						.select({
-							PlaceId: 'Place.Id',
-							Status: db.raw(
-								`CASE WHEN PlaceEdit.PlaceId IS NULL THEN 'Editable' ELSE 'Editing' END`
-							),
-						})
-						.whereNull('Place.deleted_at')
-						.as('StatusTable')
-						.leftJoin('PlaceEdit', 'PlaceEdit.PlaceId', 'Place.Id'),
-					'Place.Id',
-					'StatusTable.PlaceId'
-				)
-				.whereNull('deleted_at');
+  async doSearch(
+    scope: Knex.QueryBuilder,
+    query: { [key: string]: any },
+    sort: Array<SortStatement>,
+    page: number,
+    itemsPerPage: number,
+    skip: number,
+    take: number
+  ): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      const selectStatement = scope
+        .distinct()
+        .select(
+          ...PLACE_FIELDS,
+          { status: "StatusTable.Status" },
+          {
+            secondaryNames: db.raw(
+              `STUFF((SELECT ', ' + Description FROM dbo.Name WHERE PlaceId = Place.Id FOR XML PATH('')), 1, 2, '')`
+            ),
+          }
+        )
+        .leftOuterJoin("FirstNationAssociation", "Place.Id", "FirstNationAssociation.PlaceId")
+        .leftOuterJoin("ConstructionPeriod", "Place.Id", "ConstructionPeriod.PlaceId")
+        .leftOuterJoin("RevisionLog", "Place.id", "RevisionLog.PlaceId")
+        .leftOuterJoin("Description", "Place.id", "Description.PlaceId")
+        .leftOuterJoin("Ownership", "Place.id", "Ownership.PlaceId")
+        .leftOuterJoin("Name", "Place.id", "Name.PlaceId")
+        .leftOuterJoin(
+          db("Place")
+            .select({
+              PlaceId: "Place.Id",
+              Status: db.raw(
+                `CASE WHEN PlaceEdit.PlaceId IS NULL THEN 'Editable' ELSE 'Editing' END`
+              ),
+            })
+            .whereNull("Place.deleted_at")
+            .as("StatusTable")
+            .leftJoin("PlaceEdit", "PlaceEdit.PlaceId", "Place.Id"),
+          "Place.Id",
+          "StatusTable.PlaceId"
+        )
+        .whereNull("deleted_at")
 
-			type QueryBuilder = {
-				(base: Knex.QueryInterface, value: any): Knex.QueryInterface;
-			};
+      type QueryBuilder = {
+        (base: Knex.QueryInterface, value: any): Knex.QueryInterface
+      }
 
-			const SUPPORTED_QUERIES: { [key: string]: QueryBuilder } = Object.freeze({
-				search(base: Knex.QueryInterface, value: any) {
-					return base.where((builder: Knex.QueryBuilder) =>
-						builder
-							.whereILike('PrimaryName', `%${value}%`)
-							.orWhereILike('YHSIId', `%${value}%`)
-							.orWhereILike('[Name].[Description]', `%${value}%`)
-							.orWhereExists((subquery) => {
-								subquery
-									.select('*')
-									.from('dbo.Name as names')
-									.whereRaw('names.PlaceId = Place.Id')
-									.whereILike('names.Description', `%${value}%`);
-							})
-					);
-				},
-				includingCommunityIds(base: Knex.QueryInterface, value: any) {
-					return base.whereIn('CommunityId', value);
-				},
-				excludingCommunityIds(base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('CommunityId', value);
-				},
-				includingNtsMapSheets(base: Knex.QueryInterface, value: any) {
-					return base.whereIn('NTSMapSheet', value);
-				},
-				excludingNtsMapSheets(base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('NTSMapSheet', value);
-				},
-				includingConstructionPeriodValues(base: Knex.QueryInterface, value: any) {
-					return base.whereIn('[ConstructionPeriod].[Type]', value);
-				},
-				excludingConstructionPeriodValues(base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('[ConstructionPeriod].[Type]', value);
-				},
-				includingRecordStatusIds(_base: Knex.QueryInterface, _value: any) {
-					return _base;
-				},
-				excludingRecordStatusIds(_base: Knex.QueryInterface, _value: any) {
-					return _base;
-				},
-				includingSiteStatusIds(base: Knex.QueryInterface, value: any) {
-					return base.whereIn('SiteStatus', value);
-				},
-				excludingSiteStatusIds(base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('SiteStatus', value);
-				},
-				includingFirstNationIds(base: Knex.QueryInterface, value: any) {
-					return base.whereIn('[FirstNationAssociation].[FirstNationId]', value);
-				},
-				excludingFirstNationIds(base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('[FirstNationAssociation].[FirstNationId]', value);
-				},
-				includingFirstNationAssociationTypes(base: Knex.QueryInterface, value: any) {
-					return base.whereIn('[FirstNationAssociation].[FirstNationAssociationType]', value);
-				},
-				excludingFirstNationAssociationTypes(base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('[FirstNationAssociation].[FirstNationAssociationType]', value);
-				},
-				includingRevisionTypes(base: Knex.QueryInterface, value: any) {
-					return base.whereIn('[RevisionLog].[RevisionLogType]', value);
-				},
-				excludingRevisionTypes(base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('[RevisionLog].[RevisionLogType]', value);
-				},
-				revisedByContains(base: Knex.QueryInterface, value: any) {
-					return base.whereILike('[RevisionLog].[RevisedBy]', `%${value}%`);
-				},
-				revisedDateContains(base: Knex.QueryInterface, value: any) {
-					return base.whereILike('[RevisionLog].[RevisionDate]', `%${value}%`);
-				},
-				addressContains(base: Knex.QueryInterface, value: any) {
-					return base.whereILike('[Place].[PhysicalAddress]', `%${value}%`);
-				},
-				constructionStyleContains(base: Knex.QueryInterface, value: any) {
-					return base
-						.whereILike('[Description].[DescriptionText]', `%${value}%`)
-						.where('[Description].[Type]', DescriptionTypeEnums.ConstructionStyle);
-				},
-				culturalHistoryContains(base: Knex.QueryInterface, value: any) {
-					return base
-						.whereILike('[Description].[DescriptionText]', `%${value}%`)
-						.where('[Description].[Type]', DescriptionTypeEnums.CulturalHistory);
-				},
-				includingOwnershipTypes(base: Knex.QueryInterface, value: any) {
-					return base.whereIn('[Ownership].[OwnershipType]', value);
-				},
-				excludingOwnershipTypes(base: Knex.QueryInterface, value: any) {
-					return base.whereNotIn('[Ownership].[OwnershipType]', value);
-				},
-			});
+      const SUPPORTED_QUERIES: { [key: string]: QueryBuilder } = Object.freeze({
+        search(base: Knex.QueryInterface, value: any) {
+          return base.where((builder: Knex.QueryBuilder) =>
+            builder
+              .whereILike("PrimaryName", `%${value}%`)
+              .orWhereILike("YHSIId", `%${value}%`)
+              .orWhereILike("[Name].[Description]", `%${value}%`)
+              .orWhereExists((subquery) => {
+                subquery
+                  .select("*")
+                  .from("dbo.Name as names")
+                  .whereRaw("names.PlaceId = Place.Id")
+                  .whereILike("names.Description", `%${value}%`)
+              })
+          )
+        },
+        includingCommunityIds(base: Knex.QueryInterface, value: any) {
+          return base.whereIn("CommunityId", value)
+        },
+        excludingCommunityIds(base: Knex.QueryInterface, value: any) {
+          return base.whereNotIn("CommunityId", value)
+        },
+        includingNtsMapSheets(base: Knex.QueryInterface, value: any) {
+          return base.whereIn("NTSMapSheet", value)
+        },
+        excludingNtsMapSheets(base: Knex.QueryInterface, value: any) {
+          return base.whereNotIn("NTSMapSheet", value)
+        },
+        includingConstructionPeriodValues(base: Knex.QueryInterface, value: any) {
+          return base.whereIn("[ConstructionPeriod].[Type]", value)
+        },
+        excludingConstructionPeriodValues(base: Knex.QueryInterface, value: any) {
+          return base.whereNotIn("[ConstructionPeriod].[Type]", value)
+        },
+        includingRecordStatusIds(_base: Knex.QueryInterface, _value: any) {
+          return _base
+        },
+        excludingRecordStatusIds(_base: Knex.QueryInterface, _value: any) {
+          return _base
+        },
+        includingSiteStatusIds(base: Knex.QueryInterface, value: any) {
+          return base.whereIn("SiteStatus", value)
+        },
+        excludingSiteStatusIds(base: Knex.QueryInterface, value: any) {
+          return base.whereNotIn("SiteStatus", value)
+        },
+        includingFirstNationIds(base: Knex.QueryInterface, value: any) {
+          return base.whereIn("[FirstNationAssociation].[FirstNationId]", value)
+        },
+        excludingFirstNationIds(base: Knex.QueryInterface, value: any) {
+          return base.whereNotIn("[FirstNationAssociation].[FirstNationId]", value)
+        },
+        includingFirstNationAssociationTypes(base: Knex.QueryInterface, value: any) {
+          return base.whereIn("[FirstNationAssociation].[FirstNationAssociationType]", value)
+        },
+        excludingFirstNationAssociationTypes(base: Knex.QueryInterface, value: any) {
+          return base.whereNotIn("[FirstNationAssociation].[FirstNationAssociationType]", value)
+        },
+        includingRevisionTypes(base: Knex.QueryInterface, value: any) {
+          return base.whereIn("[RevisionLog].[RevisionLogType]", value)
+        },
+        excludingRevisionTypes(base: Knex.QueryInterface, value: any) {
+          return base.whereNotIn("[RevisionLog].[RevisionLogType]", value)
+        },
+        revisedByContains(base: Knex.QueryInterface, value: any) {
+          return base.whereILike("[RevisionLog].[RevisedBy]", `%${value}%`)
+        },
+        revisedDateContains(base: Knex.QueryInterface, value: any) {
+          return base.whereILike("[RevisionLog].[RevisionDate]", `%${value}%`)
+        },
+        addressContains(base: Knex.QueryInterface, value: any) {
+          return base.whereILike("[Place].[PhysicalAddress]", `%${value}%`)
+        },
+        constructionStyleContains(base: Knex.QueryInterface, value: any) {
+          return base
+            .whereILike("[Description].[DescriptionText]", `%${value}%`)
+            .where("[Description].[Type]", DescriptionTypeEnums.ConstructionStyle)
+        },
+        culturalHistoryContains(base: Knex.QueryInterface, value: any) {
+          return base
+            .whereILike("[Description].[DescriptionText]", `%${value}%`)
+            .where("[Description].[Type]", DescriptionTypeEnums.CulturalHistory)
+        },
+        includingOwnershipTypes(base: Knex.QueryInterface, value: any) {
+          return base.whereIn("[Ownership].[OwnershipType]", value)
+        },
+        excludingOwnershipTypes(base: Knex.QueryInterface, value: any) {
+          return base.whereNotIn("[Ownership].[OwnershipType]", value)
+        },
+      })
 
-			Object.entries(query).forEach(([name, value]) => {
-				const queryBuilder = SUPPORTED_QUERIES[name];
-				if (queryBuilder) {
-					queryBuilder(selectStatement, value);
-				} else {
-					const avaiableQueries = Object.keys(SUPPORTED_QUERIES).join(', ');
-					reject(
-						new Error(
-							`Query "${name}" with "${value}" is not supported; use any of: ${avaiableQueries}`
-						)
-					);
-				}
-			});
+      Object.entries(query).forEach(([name, value]) => {
+        const queryBuilder = SUPPORTED_QUERIES[name]
+        if (queryBuilder) {
+          queryBuilder(selectStatement, value)
+        } else {
+          const avaiableQueries = Object.keys(SUPPORTED_QUERIES).join(", ")
+          reject(
+            new Error(
+              `Query "${name}" with "${value}" is not supported; use any of: ${avaiableQueries}`
+            )
+          )
+        }
+      })
 
-			if (sort && sort.length > 0) {
-				sort.forEach((statement) => {
-					selectStatement.orderBy(statement.field, statement.direction);
-				});
-			} else {
-				selectStatement.orderBy('place.primaryName');
-			}
+      if (sort && sort.length > 0) {
+        sort.forEach((statement) => {
+          selectStatement.orderBy(statement.field, statement.direction)
+        })
+      } else {
+        selectStatement.orderBy("place.primaryName")
+      }
 
-			const fullData = await selectStatement.catch((error: any) => {
-				reject(error);
-				return [];
-			});
+      const fullData = await selectStatement.catch((error: any) => {
+        reject(error)
+        return []
+      })
 
-			const uniqIds = uniq(fullData.map((i: any) => i.id));
-			const count = uniqIds.length;
-			const pageCount = Math.ceil(count / itemsPerPage);
+      const uniqIds = uniq(fullData.map((i: any) => i.id))
+      const count = uniqIds.length
+      const pageCount = Math.ceil(count / itemsPerPage)
 
-			const data = await selectStatement.offset(skip).limit(take).catch(reject);
+      const data = await selectStatement.offset(skip).limit(take).catch(reject)
 
-			const results = {
-				data,
-				meta: { page, itemsPerPage, itemCount: count, pageCount },
-			};
+      const results = {
+        data,
+        meta: { page, itemsPerPage, itemCount: count, pageCount },
+      }
 
-			resolve(results);
-		});
-	}
+      resolve(results)
+    })
+  }
 
-	async scopeSitesToUser(query: Knex.QueryInterface, user?: User) {
-		// without a user passed in, you see nothing
-		if (!user) {
-			query.whereRaw('(1=0)');
-			return;
-		}
+  async scopeSitesToUser(query: Knex.QueryInterface, user?: User) {
+    // without a user passed in, you see nothing
+    if (!user) {
+      query.whereRaw("(1=0)")
+      return
+    }
 
-		// Administrators see everything
-		if (user.role_list && user.role_list.indexOf(UserRoles.ADMINISTRATOR) >= 0) return;
+    // Administrators see everything
+    if (user.role_list && user.role_list.indexOf(UserRoles.ADMINISTRATOR) >= 0) return
 
-		// If you don't have one of the site roles, you see nothing
-		if (user.roles && user.roles.indexOf('Site') == -1) {
-			query.whereRaw('(1=0)');
-			return;
-		}
+    // If you don't have one of the site roles, you see nothing
+    if (user.roles && user.roles.indexOf("Site") == -1) {
+      query.whereRaw("(1=0)")
+      return
+    }
 
-		if (user.site_access) {
-			const mapSheets = user.site_access
-				.filter((a) => a.access_type_id == 1)
-				.map((a) => a.access_text);
-			const communities = user.site_access
-				.filter((a) => a.access_type_id == 2)
-				.map((a) => a.access_text);
-			const firstNations = user.site_access
-				.filter((a) => a.access_type_id == 3)
-				.map((a) => a.access_text);
-			const allAccess = user.site_access.find((a) => a.access_type_id == 4);
+    if (user.site_access) {
+      const mapSheets = user.site_access
+        .filter((a) => a.access_type_id == 1)
+        .map((a) => a.access_text)
+      const communities = user.site_access
+        .filter((a) => a.access_type_id == 2)
+        .map((a) => a.access_text)
+      const firstNations = user.site_access
+        .filter((a) => a.access_type_id == 3)
+        .map((a) => a.access_text)
+      const allAccess = user.site_access.find((a) => a.access_type_id == 4)
 
-			let scope = '(1=0';
+      let scope = "(1=0"
 
-			if (allAccess) {
-				scope += ' OR 1=1';
-			} else {
-				if (mapSheets.length > 0) scope += ` OR NTSMapSheet IN ('${mapSheets.join("','")}')`;
-				if (communities.length > 0) scope += ` OR CommunityId IN (${communities.join(',')})`;
-				if (firstNations.length > 0)
-					scope += ` OR [FirstNationAssociation].[FirstNationId] IN (${firstNations.join(',')})`;
-			}
+      if (allAccess) {
+        scope += " OR 1=1"
+      } else {
+        if (mapSheets.length > 0) scope += ` OR NTSMapSheet IN ('${mapSheets.join("','")}')`
+        if (communities.length > 0) scope += ` OR CommunityId IN (${communities.join(",")})`
+        if (firstNations.length > 0)
+          scope += ` OR [FirstNationAssociation].[FirstNationId] IN (${firstNations.join(",")})`
+      }
 
-			scope += ')';
+      scope += ")"
 
-			query.whereRaw(scope);
-		}
-	}
+      query.whereRaw(scope)
+    }
+  }
 }

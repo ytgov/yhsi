@@ -16,17 +16,17 @@
 // ALTER TABLE dbo.RevisionLog ADD CONSTRAINT PK_RevisionLog PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.RevisionLog', (table) => {
-		table.increments('Id').primary();
-		table.integer('PlaceId').notNullable();
-		table.integer('RevisionLogType').notNullable();
-		table.string('RevisionDate', 50).nullable();
-		table.string('RevisedBy', 256).nullable();
-		table.string('Details', 256).nullable();
-	});
-};
+  await knex.schema.createTable("dbo.RevisionLog", (table) => {
+    table.increments("Id").primary()
+    table.integer("PlaceId").notNullable()
+    table.integer("RevisionLogType").notNullable()
+    table.string("RevisionDate", 50).nullable()
+    table.string("RevisedBy", 256).nullable()
+    table.string("Details", 256).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.RevisionLog');
-};
+  await knex.schema.dropTable("dbo.RevisionLog")
+}

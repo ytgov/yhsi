@@ -15,16 +15,16 @@
 // ALTER TABLE dbo.PreviousOwnership ADD CONSTRAINT PK_PreviousOwnership PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.PreviousOwnership', (table) => {
-		table.increments('Id').primary();
-		table.integer('PlaceId').notNullable();
-		table.string('OwnershipNumber', 256).nullable();
-		table.string('OwnershipName', 256).nullable();
-		table.string('OwnershipDate', 200).nullable();
-	});
-};
+  await knex.schema.createTable("dbo.PreviousOwnership", (table) => {
+    table.increments("Id").primary()
+    table.integer("PlaceId").notNullable()
+    table.string("OwnershipNumber", 256).nullable()
+    table.string("OwnershipName", 256).nullable()
+    table.string("OwnershipDate", 200).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.PreviousOwnership');
-};
+  await knex.schema.dropTable("dbo.PreviousOwnership")
+}

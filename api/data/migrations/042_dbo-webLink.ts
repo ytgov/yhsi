@@ -11,15 +11,15 @@
 // );
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.WebLink', (table) => {
-		table.increments('Id').primary();
-		table.integer('PlaceId').notNullable();
-		table.integer('Type').notNullable();
-		table.string('Address', 256).nullable();
-	});
-};
+  await knex.schema.createTable("dbo.WebLink", (table) => {
+    table.increments("Id").primary()
+    table.integer("PlaceId").notNullable()
+    table.integer("Type").notNullable()
+    table.string("Address", 256).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.WebLink');
-};
+  await knex.schema.dropTable("dbo.WebLink")
+}

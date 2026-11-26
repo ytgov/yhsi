@@ -18,22 +18,22 @@
 // );
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.SiteImage', (table) => {
-		table.increments('Id').primary();
-		table.integer('PlaceId').nullable();
-		table.integer('ImageTypeId').nullable();
-		table.string('Caption', 256).nullable();
-		table.string('ImageDescription', 256).nullable();
-		table.string('FileName', 256).nullable();
-		table.string('Copyright', 256).nullable();
-		table.string('FileLocation', 256).nullable();
-		table.string('ImagePath', 256).nullable();
-		table.string('ThumbnailPath', 256).nullable();
-		table.boolean('IsPrimary').nullable();
-	});
-};
+  await knex.schema.createTable("dbo.SiteImage", (table) => {
+    table.increments("Id").primary()
+    table.integer("PlaceId").nullable()
+    table.integer("ImageTypeId").nullable()
+    table.string("Caption", 256).nullable()
+    table.string("ImageDescription", 256).nullable()
+    table.string("FileName", 256).nullable()
+    table.string("Copyright", 256).nullable()
+    table.string("FileLocation", 256).nullable()
+    table.string("ImagePath", 256).nullable()
+    table.string("ThumbnailPath", 256).nullable()
+    table.boolean("IsPrimary").nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.SiteImage');
-};
+  await knex.schema.dropTable("dbo.SiteImage")
+}

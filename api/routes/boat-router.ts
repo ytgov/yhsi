@@ -1,353 +1,353 @@
-import { difference } from 'lodash';
-import express, { Request, Response } from 'express';
-import { param, query } from 'express-validator';
-import { renderFile } from 'pug';
+import { difference } from "lodash"
+import express, { Request, Response } from "express"
+import { param, query } from "express-validator"
+import { renderFile } from "pug"
 const {
-	Parser,
-	transforms: { unwind },
-} = require('json2csv');
+  Parser,
+  transforms: { unwind },
+} = require("json2csv")
 
-import db from '@/db/db-client';
+import db from "@/db/db-client"
 
-import { ReturnValidationErrors } from '../middleware';
-import { BoatService } from '../services';
-import { generatePDF } from '../utils/pdf-generator';
-import { authorize } from '../middleware/authorization';
-import { UserRoles } from '../models';
+import { ReturnValidationErrors } from "../middleware"
+import { BoatService } from "../services"
+import { generatePDF } from "../utils/pdf-generator"
+import { authorize } from "../middleware/authorization"
+import { UserRoles } from "../models"
 
-export const boatsRouter = express.Router();
+export const boatsRouter = express.Router()
 
-const boatService = new BoatService();
-
-boatsRouter.get(
-	'/',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
-	[
-		query('textToMatch').default('').isString(),
-		query('sortBy').default('Name').isString(),
-		query('sort').default('asc').isString(),
-		query('page').default(0).isInt(),
-		query('limit').default(10).isInt({ gt: 0 }),
-	],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const {
-			textToMatch = '',
-			Owner = '',
-			ConstructionDate = '',
-			ServiceStart = '',
-			ServiceEnd = '',
-			sortBy = 'Name',
-			sort = 'asc',
-		} = req.query;
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
-
-		const data = await boatService.doSearch(page, limit, offset, {
-			textToMatch,
-			Owner,
-			ConstructionDate,
-			ServiceStart,
-			ServiceEnd,
-			sortBy,
-			sort,
-		});
-
-		res.status(200).send(data);
-	}
-);
+const boatService = new BoatService()
 
 boatsRouter.get(
-	'/available_number/:RegistrationNumber',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR]),
-	[param('RegistrationNumber').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { RegistrationNumber } = req.params;
+  "/",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
+  [
+    query("textToMatch").default("").isString(),
+    query("sortBy").default("Name").isString(),
+    query("sort").default("asc").isString(),
+    query("page").default(0).isInt(),
+    query("limit").default(10).isInt({ gt: 0 }),
+  ],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const {
+      textToMatch = "",
+      Owner = "",
+      ConstructionDate = "",
+      ServiceStart = "",
+      ServiceEnd = "",
+      sortBy = "Name",
+      sort = "asc",
+    } = req.query
+    const page = parseInt(req.query.page as string)
+    const limit = parseInt(req.query.limit as string)
+    const offset = page * limit || 0
 
-		const exists = await db
-			.select('*')
-			.from('boat.boat')
-			.where('boat.boat.RegistrationNumber', RegistrationNumber)
-			.first();
+    const data = await boatService.doSearch(page, limit, offset, {
+      textToMatch,
+      Owner,
+      ConstructionDate,
+      ServiceStart,
+      ServiceEnd,
+      sortBy,
+      sort,
+    })
 
-		res.status(200).send({ available: !exists });
-	}
-);
+    res.status(200).send(data)
+  }
+)
 
 boatsRouter.get(
-	'/:boatId',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
-	[param('boatId').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { boatId } = req.params;
-		const boat = await boatService.getById(parseInt(boatId));
+  "/available_number/:RegistrationNumber",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR]),
+  [param("RegistrationNumber").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { RegistrationNumber } = req.params
 
-		if (!boat) {
-			res.status(404).send({ message: 'Data not found' });
-			return;
-		}
+    const exists = await db
+      .select("*")
+      .from("boat.boat")
+      .where("boat.boat.RegistrationNumber", RegistrationNumber)
+      .first()
 
-		res.status(200).send(boat);
-	}
-);
+    res.status(200).send({ available: !exists })
+  }
+)
+
+boatsRouter.get(
+  "/:boatId",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
+  [param("boatId").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { boatId } = req.params
+    const boat = await boatService.getById(parseInt(boatId))
+
+    if (!boat) {
+      res.status(404).send({ message: "Data not found" })
+      return
+    }
+
+    res.status(200).send(boat)
+  }
+)
 
 boatsRouter.post(
-	'/new',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR]),
-	async (req: Request, res: Response) => {
-		/*   const db = req.app.get('db');
+  "/new",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR]),
+  async (req: Request, res: Response) => {
+    /*   const db = req.app.get('db');
   
     const permissions = req.decodedToken['yg-claims'].permissions;
     if (!permissions.includes('create')) res.sendStatus(403);
    */
-		const { boat = {}, ownerNewArray = [], histories = [], pastNamesNewArray = [] } = req.body;
+    const { boat = {}, ownerNewArray = [], histories = [], pastNamesNewArray = [] } = req.body
 
-		const response = await db
-			.insert(boat)
-			.into('boat.boat')
-			.returning('*')
-			.then(async (rows: any) => {
-				const newBoat = rows[0];
+    const response = await db
+      .insert(boat)
+      .into("boat.boat")
+      .returning("*")
+      .then(async (rows: any) => {
+        const newBoat = rows[0]
 
-				if (ownerNewArray.length) {
-					const newOwners = ownerNewArray.map((owner: any) => ({
-						CurrentOwner: 0,
-						...owner,
-						BoatId: newBoat.Id,
-					}));
+        if (ownerNewArray.length) {
+          const newOwners = ownerNewArray.map((owner: any) => ({
+            CurrentOwner: 0,
+            ...owner,
+            BoatId: newBoat.Id,
+          }))
 
-					await db
-						.insert(newOwners)
-						.into('boat.boatowner')
-						.returning('*')
-						.then((rows: any) => {
-							return rows;
-						});
-				}
+          await db
+            .insert(newOwners)
+            .into("boat.boatowner")
+            .returning("*")
+            .then((rows: any) => {
+              return rows
+            })
+        }
 
-				//Add the new past names (done)
-				if (pastNamesNewArray.length) {
-					await db
-						.insert(
-							pastNamesNewArray.map((name: any) => ({
-								BoatId: newBoat.Id,
-								...name,
-							}))
-						)
-						.into('boat.pastnames')
-						.then((rows: any) => {
-							return rows;
-						});
-				}
+        //Add the new past names (done)
+        if (pastNamesNewArray.length) {
+          await db
+            .insert(
+              pastNamesNewArray.map((name: any) => ({
+                BoatId: newBoat.Id,
+                ...name,
+              }))
+            )
+            .into("boat.pastnames")
+            .then((rows: any) => {
+              return rows
+            })
+        }
 
-				if (histories.length) {
-					const newHistories = histories.map((history: any) => ({
-						...history,
-						UID: newBoat.Id,
-					}));
-					await db
-						.insert(newHistories)
-						.into('boat.history')
-						.returning('*')
-						.then((rows: any) => {
-							return rows;
-						});
-				}
+        if (histories.length) {
+          const newHistories = histories.map((history: any) => ({
+            ...history,
+            UID: newBoat.Id,
+          }))
+          await db
+            .insert(newHistories)
+            .into("boat.history")
+            .returning("*")
+            .then((rows: any) => {
+              return rows
+            })
+        }
 
-				return newBoat;
-			});
+        return newBoat
+      })
 
-		res.send(response);
-	}
-);
+    res.send(response)
+  }
+)
 
 boatsRouter.put(
-	'/:boatId',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR]),
-	async (req: Request, res: Response) => {
-		/*  const db = req.app.get('db');
+  "/:boatId",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR]),
+  async (req: Request, res: Response) => {
+    /*  const db = req.app.get('db');
    const permissions = req.decodedToken['yg-claims'].permissions;
    if (!permissions.includes('edit')) res.sendStatus(403);
   */
-		const {
-			boat = {},
-			ownerNewArray = [],
-			ownerRemovedArray = [],
-			pastNamesNewArray = [],
-			pastNamesEditArray = [],
-		} = req.body;
-		const { boatId } = req.params;
-		//make the update
+    const {
+      boat = {},
+      ownerNewArray = [],
+      ownerRemovedArray = [],
+      pastNamesNewArray = [],
+      pastNamesEditArray = [],
+    } = req.body
+    const { boatId } = req.params
+    //make the update
 
-		await db('boat.boat').update(boat).where('boat.boat.id', boatId);
+    await db("boat.boat").update(boat).where("boat.boat.id", boatId)
 
-		//Add the new owners (done)
-		if (ownerNewArray.length) {
-			await db
-				.insert(ownerNewArray.map((owner: any) => ({ CurrentOwner: 0, ...owner, BoatId: boatId })))
-				.into('boat.boatowner')
-				.then((rows: any) => {
-					return rows;
-				});
-		}
+    //Add the new owners (done)
+    if (ownerNewArray.length) {
+      await db
+        .insert(ownerNewArray.map((owner: any) => ({ CurrentOwner: 0, ...owner, BoatId: boatId })))
+        .into("boat.boatowner")
+        .then((rows: any) => {
+          return rows
+        })
+    }
 
-		//remove the previous owners (done)
-		for (const obj of ownerRemovedArray) {
-			await db('boat.boatowner').where('boat.boatowner.ownerid', obj.id).del();
-		}
+    //remove the previous owners (done)
+    for (const obj of ownerRemovedArray) {
+      await db("boat.boatowner").where("boat.boatowner.ownerid", obj.id).del()
+    }
 
-		//update the past names (seems to work!)
-		for (const obj of pastNamesEditArray) {
-			await db('boat.pastnames')
-				.update({ BoatName: obj.BoatName })
-				.where('boat.pastnames.Id', obj.Id)
-				.andWhere('boat.pastnames.BoatId', boatId);
-		}
+    //update the past names (seems to work!)
+    for (const obj of pastNamesEditArray) {
+      await db("boat.pastnames")
+        .update({ BoatName: obj.BoatName })
+        .where("boat.pastnames.Id", obj.Id)
+        .andWhere("boat.pastnames.BoatId", boatId)
+    }
 
-		//Add the new past names (done)
-		if (pastNamesNewArray.length) {
-			await db
-				.insert(pastNamesNewArray.map((name: any) => ({ BoatId: boatId, ...name })))
-				.into('boat.pastnames')
-				.then((rows: any) => {
-					return rows;
-				});
-		}
+    //Add the new past names (done)
+    if (pastNamesNewArray.length) {
+      await db
+        .insert(pastNamesNewArray.map((name: any) => ({ BoatId: boatId, ...name })))
+        .into("boat.pastnames")
+        .then((rows: any) => {
+          return rows
+        })
+    }
 
-		res.status(200).send({ message: 'success' });
-	}
-);
+    res.status(200).send({ message: "success" })
+  }
+)
 
 //PDF AND EXPORTS
 boatsRouter.post(
-	'/pdf/:boatId',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
-	[param('boatId').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { boatId } = req.params;
+  "/pdf/:boatId",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
+  [param("boatId").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { boatId } = req.params
 
-		const boat = await boatService.getById(parseInt(boatId));
+    const boat = await boatService.getById(parseInt(boatId))
 
-		let data = renderFile('./templates/boats/boatView.pug', {
-			data: boat,
-		});
+    let data = renderFile("./templates/boats/boatView.pug", {
+      data: boat,
+    })
 
-		let pdf = await generatePDF(data, 'letter', false);
-		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		res.send(pdf);
-	}
-);
-
-boatsRouter.post(
-	'/pdf',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
-	async (req: Request, res: Response) => {
-		const {
-			textToMatch = '',
-			Owner = '',
-			ConstructionDate = '',
-			ServiceStart = '',
-			ServiceEnd = '',
-			sortBy = 'Name',
-			sort = 'asc',
-			page = 0,
-			limit = 0,
-		} = req.body;
-
-		const boats = await boatService.doSearch(page, limit, 0, {
-			textToMatch,
-			Owner,
-			ConstructionDate,
-			ServiceStart,
-			ServiceEnd,
-			sortBy,
-			sort,
-		});
-		let data = renderFile('./templates/boats/boatGrid.pug', {
-			data: boats.body,
-		});
-
-		let pdf = await generatePDF(data);
-		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		res.send(pdf);
-	}
-);
+    let pdf = await generatePDF(data, "letter", false)
+    res.setHeader("Content-disposition", 'attachment; filename="burials.html"')
+    res.setHeader("Content-type", "application/pdf")
+    res.send(pdf)
+  }
+)
 
 boatsRouter.post(
-	'/export',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
-	async (req: Request, res: Response) => {
-		const {
-			textToMatch = '',
-			Owner = '',
-			ConstructionDate = '',
-			ServiceStart = '',
-			ServiceEnd = '',
-			sortBy = 'Name',
-			sort = 'asc',
-			page = 0,
-			limit = 0,
-		} = req.body;
+  "/pdf",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
+  async (req: Request, res: Response) => {
+    const {
+      textToMatch = "",
+      Owner = "",
+      ConstructionDate = "",
+      ServiceStart = "",
+      ServiceEnd = "",
+      sortBy = "Name",
+      sort = "asc",
+      page = 0,
+      limit = 0,
+    } = req.body
 
-		const boats = await boatService.doSearch(page, limit, 0, {
-			textToMatch,
-			Owner,
-			ConstructionDate,
-			ServiceStart,
-			ServiceEnd,
-			sortBy,
-			sort,
-		});
+    const boats = await boatService.doSearch(page, limit, 0, {
+      textToMatch,
+      Owner,
+      ConstructionDate,
+      ServiceStart,
+      ServiceEnd,
+      sortBy,
+      sort,
+    })
+    let data = renderFile("./templates/boats/boatGrid.pug", {
+      data: boats.body,
+    })
 
-		const json2csvParser = new Parser();
-
-		const csv = json2csvParser.parse(boats.body);
-
-		res.setHeader('Content-Type', 'text/csv');
-		res.attachment('boats.csv').send(csv);
-	}
-);
+    let pdf = await generatePDF(data)
+    res.setHeader("Content-disposition", 'attachment; filename="burials.html"')
+    res.setHeader("Content-type", "application/pdf")
+    res.send(pdf)
+  }
+)
 
 boatsRouter.post(
-	'/:boatId/photos/link',
-	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
-	async (request: Request, response: Response) => {
-		try {
-			const { boatId } = request.params;
-			const { linkPhotos } = request.body;
+  "/export",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.BOATS_EDITOR, UserRoles.BOATS_VIEWER]),
+  async (req: Request, res: Response) => {
+    const {
+      textToMatch = "",
+      Owner = "",
+      ConstructionDate = "",
+      ServiceStart = "",
+      ServiceEnd = "",
+      sortBy = "Name",
+      sort = "asc",
+      page = 0,
+      limit = 0,
+    } = req.body
 
-			const currentPhotos = await db
-				.select('Photo_RowID')
-				.from('Boat.Photo')
-				.where('BoatId', boatId);
+    const boats = await boatService.doSearch(page, limit, 0, {
+      textToMatch,
+      Owner,
+      ConstructionDate,
+      ServiceStart,
+      ServiceEnd,
+      sortBy,
+      sort,
+    })
 
-			const filteredLinkPhotos = difference(
-				linkPhotos,
-				currentPhotos.map((x: any) => {
-					return x.Photo_RowID;
-				})
-			);
+    const json2csvParser = new Parser()
 
-			for (const photo of filteredLinkPhotos) {
-				await db
-					.insert({ BoatId: boatId, Photo_RowID: photo.rowId })
-					.into('Boat.Photo')
-					.returning('*')
-					.then((rows: any) => {
-						return rows;
-					});
-			}
+    const csv = json2csvParser.parse(boats.body)
 
-			return response.json({ message: 'Successfully linked the photos' });
-		} catch (error) {
-			console.log(error);
-			return response.status(500).json({ data: 'failed to link' });
-		}
-	}
-);
+    res.setHeader("Content-Type", "text/csv")
+    res.attachment("boats.csv").send(csv)
+  }
+)
+
+boatsRouter.post(
+  "/:boatId/photos/link",
+  authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+  async (request: Request, response: Response) => {
+    try {
+      const { boatId } = request.params
+      const { linkPhotos } = request.body
+
+      const currentPhotos = await db
+        .select("Photo_RowID")
+        .from("Boat.Photo")
+        .where("BoatId", boatId)
+
+      const filteredLinkPhotos = difference(
+        linkPhotos,
+        currentPhotos.map((x: any) => {
+          return x.Photo_RowID
+        })
+      )
+
+      for (const photo of filteredLinkPhotos) {
+        await db
+          .insert({ BoatId: boatId, Photo_RowID: photo.rowId })
+          .into("Boat.Photo")
+          .returning("*")
+          .then((rows: any) => {
+            return rows
+          })
+      }
+
+      return response.json({ message: "Successfully linked the photos" })
+    } catch (error) {
+      console.log(error)
+      return response.status(500).json({ data: "failed to link" })
+    }
+  }
+)

@@ -1,9 +1,9 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response } from "express"
 
-import { REVISION_LOG_TYPES } from '../models';
+import { REVISION_LOG_TYPES } from "../models"
 
-export const revisionLogTypesRouter = express.Router();
+export const revisionLogTypesRouter = express.Router()
 
-revisionLogTypesRouter.get('/', (req: Request, res: Response) => {
-	return res.json({ data: REVISION_LOG_TYPES });
-});
+revisionLogTypesRouter.get("/", (req: Request, res: Response) => {
+  return res.json({ data: REVISION_LOG_TYPES })
+})

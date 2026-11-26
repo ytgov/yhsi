@@ -13,14 +13,14 @@
 // ALTER TABLE dbo.HSUser ADD CONSTRAINT PK_HSUser PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.HSUser', (table) => {
-		table.increments('Id').primary();
-		table.integer('UserId').notNullable();
-		table.dateTime('ExpirationDate').nullable();
-	});
-};
+  await knex.schema.createTable("dbo.HSUser", (table) => {
+    table.increments("Id").primary()
+    table.integer("UserId").notNullable()
+    table.dateTime("ExpirationDate").nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.HSUser');
-};
+  await knex.schema.dropTable("dbo.HSUser")
+}

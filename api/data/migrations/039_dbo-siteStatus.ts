@@ -10,14 +10,14 @@
 // );
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.Site_Status_CD', (table) => {
-		table.integer('Site_Status_ID').nullable();
-		table.integer('Code').nullable();
-		table.string('Description', 100).nullable();
-	});
-};
+  await knex.schema.createTable("dbo.Site_Status_CD", (table) => {
+    table.integer("Site_Status_ID").nullable()
+    table.integer("Code").nullable()
+    table.string("Description", 100).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.Site_Status_CD');
-};
+  await knex.schema.dropTable("dbo.Site_Status_CD")
+}

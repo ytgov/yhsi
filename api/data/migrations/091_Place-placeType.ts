@@ -12,13 +12,13 @@
 // ALTER TABLE Place.PlaceTypeLookup ADD CONSTRAINT PK__PlaceTyp__3214EC0728DB345B PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Place.PlaceType', (table) => {
-		table.string('PlaceId').notNullable();
-		table.string('PlaceTypeLookupId').notNullable();
-	});
-};
+  await knex.schema.createTable("Place.PlaceType", (table) => {
+    table.string("PlaceId").notNullable()
+    table.string("PlaceTypeLookupId").notNullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Place.PlaceType');
-};
+  await knex.schema.dropTable("Place.PlaceType")
+}

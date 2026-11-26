@@ -1,45 +1,45 @@
 //- template.pug
 
 style
-     include ../styles.css
-    
+  include ../styles.css
+
 table.title-row
-  tbody 
-    tr 
+  tbody
+    tr
       td
         div Boats information
       td
-        div(style='width:200px;')
+        div(style="width: 200px")
           include ../yukon.svg
 
-div.grid
+.grid
   table.grid-table
     thead
-      tr 
-        td 
-          strong.underline Name 
-        td 
+      tr
+        td
+          strong.underline Name
+        td
           strong.underline Owner
-        td 
+        td
           strong.underline VesselType
-        td 
+        td
           strong.underline ConstructionDate
-        td 
+        td
           strong.underline ServiceStart
-        td 
+        td
           strong.underline ServiceEnd
-        td 
+        td
           strong.underline CurrentLocation
-        td 
+        td
           strong.underline RegistrationNumber
-    tbody 
+    tbody
       each val in data
-        tr 
-          td #{val.Name} 
-          td #{val.Owner} 
-          td #{val.VesselType} 
-          td #{val.ConstructionDate} 
-          td #{val.ServiceStart} 
-          td #{val.ServiceEnd} 
-          td #{val.CurrentLocation} 
-          td #{val.RegistrationNumber} 
+        tr
+          td #{ val.Name } 
+          td #{ val.Owner } 
+          td #{ val.VesselType } 
+          td #{ val.ConstructionDate } 
+          td #{ val.ServiceStart } 
+          td #{ val.ServiceEnd } 
+          td #{ val.CurrentLocation } 
+          td #{ val.RegistrationNumber } 

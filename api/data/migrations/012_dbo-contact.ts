@@ -19,20 +19,20 @@
 // ALTER TABLE dbo.Contact ADD CONSTRAINT PK_Contact PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.Contact', (table) => {
-		table.increments('Id').primary();
-		table.integer('PlaceId').notNullable();
-		table.string('FirstName', 256).nullable();
-		table.string('LastName', 256).nullable();
-		table.string('PhoneNumber', 256).nullable();
-		table.string('Email', 256).nullable();
-		table.string('MailingAddress', 256).nullable();
-		table.string('Description', 256).nullable();
-		table.integer('ContactType').notNullable();
-	});
-};
+  await knex.schema.createTable("dbo.Contact", (table) => {
+    table.increments("Id").primary()
+    table.integer("PlaceId").notNullable()
+    table.string("FirstName", 256).nullable()
+    table.string("LastName", 256).nullable()
+    table.string("PhoneNumber", 256).nullable()
+    table.string("Email", 256).nullable()
+    table.string("MailingAddress", 256).nullable()
+    table.string("Description", 256).nullable()
+    table.integer("ContactType").notNullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.Contact');
-};
+  await knex.schema.dropTable("dbo.Contact")
+}

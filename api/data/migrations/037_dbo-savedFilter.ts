@@ -15,16 +15,16 @@
 // ALTER TABLE dbo.SavedFilter ADD CONSTRAINT PK_SavedFilter PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.SavedFilter', (table) => {
-		table.increments('Id').primary();
-		table.integer('UserId').notNullable();
-		table.string('Name', 100).notNullable();
-		table.string('ResultType', 50).notNullable();
-		table.string('Value', 2000).nullable();
-	});
-};
+  await knex.schema.createTable("dbo.SavedFilter", (table) => {
+    table.increments("Id").primary()
+    table.integer("UserId").notNullable()
+    table.string("Name", 100).notNullable()
+    table.string("ResultType", 50).notNullable()
+    table.string("Value", 2000).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.SavedFilter');
-};
+  await knex.schema.dropTable("dbo.SavedFilter")
+}

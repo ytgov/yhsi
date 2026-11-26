@@ -108,13 +108,13 @@ v-card.mb-0(
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex"
 
-import OwnershipsViewer from '@/components/Sites/site-forms/legal-and-zoning/OwnershipsViewer';
-import PreviousOwnershipsViewer from '@/components/Sites/site-forms/legal-and-zoning/PreviousOwnershipsViewer';
+import OwnershipsViewer from "@/components/Sites/site-forms/legal-and-zoning/OwnershipsViewer"
+import PreviousOwnershipsViewer from "@/components/Sites/site-forms/legal-and-zoning/PreviousOwnershipsViewer"
 
 export default {
-  name: 'LegalAndZoningViewer',
+  name: "LegalAndZoningViewer",
   components: {
     OwnershipsViewer,
     PreviousOwnershipsViewer,
@@ -127,8 +127,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      place: 'places/place',
+      place: "places/place",
     }),
   },
-};
+}
 </script>

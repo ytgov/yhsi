@@ -11,10 +11,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex"
 
 export default {
-  name: 'CommunityCell',
+  name: "CommunityCell",
   components: {},
   props: {
     communityId: {
@@ -24,15 +24,15 @@ export default {
   },
   data: () => ({}),
   computed: {
-    ...mapGetters('communities', ['getById', 'loading']),
+    ...mapGetters("communities", ["getById", "loading"]),
     community() {
-      return this.getById(this.communityId) || {};
+      return this.getById(this.communityId) || {}
     },
     communityName() {
-      return this.community.name;
+      return this.community.name
     },
   },
-};
+}
 </script>
 
 <style scoped></style>

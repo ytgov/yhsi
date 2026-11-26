@@ -45,7 +45,7 @@ paths:
 
             ***
 
-           `return res.json({data: list, meta: { page, page_size: PAGE_SIZE, item_count, page_count },});`  "
+            `return res.json({data: list, meta: { page, page_size: PAGE_SIZE, item_count, page_count },});`  "
           content:
             application/json:
               schema:
@@ -73,7 +73,7 @@ paths:
 
             ***
 
-           `return res.json({data: list, meta: { page, page_size: PAGE_SIZE, item_count, page_count },});`  "
+            `return res.json({data: list, meta: { page, page_size: PAGE_SIZE, item_count, page_count },});`  "
           content:
             application/json:
               schema:
@@ -135,7 +135,7 @@ paths:
 
             ***
 
-           `return res.json({data: list, meta: { page, page_size: PAGE_SIZE, item_count, page_count },});`  "
+            `return res.json({data: list, meta: { page, page_size: PAGE_SIZE, item_count, page_count },});`  "
           content:
             application/json:
               schema:
@@ -237,7 +237,7 @@ paths:
         "400":
           description: Invalid Request Body
 
-###### MAPS ######
+  ###### MAPS ######
   /maps:
     get:
       tags:
@@ -265,7 +265,7 @@ paths:
       operationId: getSites
 
       responses:
-        "200":   # status code
+        "200": # status code
           description: successful operation
           # content:
           #   application/json:
@@ -282,8 +282,8 @@ components:
       type: oauth2
       description: This API uses OAuth 2 for users authenticated using MyYukon
       flows:
-        clientCredentials:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
-          tokenUrl:  https://api.example.com/oauth2/authorize
+        clientCredentials: # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+          tokenUrl: https://api.example.com/oauth2/authorize
           scopes:
             authenticated_user: An authenticated user
   requestBodies:

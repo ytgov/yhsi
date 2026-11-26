@@ -15,16 +15,16 @@
 // ALTER TABLE Place.PlaceHistory ADD CONSTRAINT PK__PlaceHis__3214EC07C4DEAE17 PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Place.PlaceHistory', (table) => {
-		table.integer('PlaceId').notNullable();
-		table.string('HistoryText', 4000).notNullable();
-		table.string('Reference', 2048).nullable();
-		table.integer('Restricted').nullable();
-		table.increments('Id').primary();
-	});
-};
+  await knex.schema.createTable("Place.PlaceHistory", (table) => {
+    table.integer("PlaceId").notNullable()
+    table.string("HistoryText", 4000).notNullable()
+    table.string("Reference", 2048).nullable()
+    table.integer("Restricted").nullable()
+    table.increments("Id").primary()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Place.PlaceHistory');
-};
+  await knex.schema.dropTable("Place.PlaceHistory")
+}

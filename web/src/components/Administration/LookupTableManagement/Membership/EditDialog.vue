@@ -1,18 +1,42 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialog" persistent max-width="500px" @click:outside="close">
+    <v-dialog
+      v-model="dialog"
+      persistent
+      max-width="500px"
+      @click:outside="close"
+    >
       <v-card>
         <v-card-title>Edit Membership</v-card-title>
         <v-card-text>
-          <v-form ref="form" v-model="valid" :lazy-validation="false">
-            <v-text-field label="Membership" v-model="input" :rules="[(v) => !!v || 'Membership is required']" outlined
-              dense></v-text-field>
+          <v-form
+            ref="form"
+            v-model="valid"
+            :lazy-validation="false"
+          >
+            <v-text-field
+              label="Membership"
+              v-model="input"
+              :rules="[(v) => !!v || 'Membership is required']"
+              outlined
+              dense
+            ></v-text-field>
           </v-form>
         </v-card-text>
         <v-card-actions class="px-6">
-          <v-btn @click="close" outlined color="warning">Cancel</v-btn>
+          <v-btn
+            @click="close"
+            outlined
+            color="warning"
+            >Cancel</v-btn
+          >
           <v-spacer></v-spacer>
-          <v-btn color="success" :disabled="!valid" :loading="saving" @click="save">
+          <v-btn
+            color="success"
+            :disabled="!valid"
+            :loading="saving"
+            @click="save"
+          >
             Save
           </v-btn>
         </v-card-actions>
@@ -22,40 +46,42 @@
 </template>
 
 <script>
-import catalogs from '../../../../controllers/catalogs';
+import catalogs from "../../../../controllers/catalogs"
 
 export default {
-  props: ['dialog', 'item'],
+  props: ["dialog", "item"],
   data: () => ({
     valid: false,
-    input: '',
+    input: "",
     saving: false,
   }),
   watch: {
     item: {
       handler(val) {
-        if (val) this.input = val.Membership;
+        if (val) this.input = val.Membership
       },
       immediate: true,
     },
   },
   methods: {
     async save() {
-      if (!this.$refs.form.validate()) return;
-      this.saving = true;
+      if (!this.$refs.form.validate()) return
+      this.saving = true
       try {
-        await catalogs.putMembership(this.item.MembershipLUpID, { data: { Membership: this.input } });
-        this.$emit('saved');
-        this.close();
+        await catalogs.putMembership(this.item.MembershipLUpID, {
+          data: { Membership: this.input },
+        })
+        this.$emit("saved")
+        this.close()
       } catch (e) {
-        console.error(e);
+        console.error(e)
       } finally {
-        this.saving = false;
+        this.saving = false
       }
     },
     close() {
-      this.$emit('close');
+      this.$emit("close")
     },
   },
-};
+}
 </script>

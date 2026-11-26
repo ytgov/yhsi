@@ -13,14 +13,14 @@
 // ALTER TABLE dbo.Name ADD CONSTRAINT PK_Name PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.Name', (table) => {
-		table.increments('Id').primary();
-		table.integer('PlaceId').notNullable();
-		table.string('Description', 256).nullable();
-	});
-};
+  await knex.schema.createTable("dbo.Name", (table) => {
+    table.increments("Id").primary()
+    table.integer("PlaceId").notNullable()
+    table.string("Description", 256).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.Name');
-};
+  await knex.schema.dropTable("dbo.Name")
+}

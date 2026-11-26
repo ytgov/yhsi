@@ -1,54 +1,54 @@
 //- template.pug
 
 style
-     include ../styles.css
-    
+  include ../styles.css
+
 table.title-row
-  tbody 
-    tr 
+  tbody
+    tr
       td
         div Burials information
       td
-        div(style='width:200px;')
+        div(style="width: 200px")
           include ../yukon.svg
 
-div.grid
+.grid
   table.grid-table
     thead
-      tr 
-        td 
-          strong.underline Last Name 
-        td 
+      tr
+        td
+          strong.underline Last Name
+        td
           strong.underline First Name
-        td 
+        td
           strong.underline Gender
-        td 
+        td
           strong.underline BirthYear
-        td 
+        td
           strong.underline DeathYear
-        td 
+        td
           strong.underline Manner
-        td 
+        td
           strong.underline Cause
-        td 
+        td
           strong.underline Cemetary
-        td 
+        td
           strong.underline OriginCity
-        td 
+        td
           strong.underline OriginState
-        td 
+        td
           strong.underline OriginCountry
-    tbody 
+    tbody
       each val in data
-        tr 
-          td #{val.FirstName} 
-          td #{val.LastName} 
-          td #{val.Gender} 
-          td #{val.BirthYear} 
-          td #{val.DeathYear} 
-          td #{val.Manner} 
-          td #{val.Cause} 
-          td #{val.Cemetary} 
-          td #{val.OriginCity} 
-          td #{val.OriginState} 
-          td #{val.OriginCountry}
+        tr
+          td #{ val.FirstName } 
+          td #{ val.LastName } 
+          td #{ val.Gender } 
+          td #{ val.BirthYear } 
+          td #{ val.DeathYear } 
+          td #{ val.Manner } 
+          td #{ val.Cause } 
+          td #{ val.Cemetary } 
+          td #{ val.OriginCity } 
+          td #{ val.OriginState } 
+          td #{ val.OriginCountry }

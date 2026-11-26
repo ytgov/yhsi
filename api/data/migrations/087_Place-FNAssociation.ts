@@ -10,14 +10,14 @@
 // );
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Place.FNAssociation', (table) => {
-		table.integer('PlaceId').notNullable();
-		table.integer('FirstNationId').notNullable();
-		table.integer('FNAssociationType').nullable();
-	});
-};
+  await knex.schema.createTable("Place.FNAssociation", (table) => {
+    table.integer("PlaceId").notNullable()
+    table.integer("FirstNationId").notNullable()
+    table.integer("FNAssociationType").nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Place.FNAssociation');
-};
+  await knex.schema.dropTable("Place.FNAssociation")
+}
