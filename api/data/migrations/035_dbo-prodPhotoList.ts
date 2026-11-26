@@ -18,22 +18,22 @@
 // );
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.Prod_Photo_List', (table) => {
-		table.integer('Id').nullable();
-		table.string('OriginalFileName', 256).nullable();
-		table.string('FeatureName', 600).nullable();
-		table.string('YHSIRecord', 20).nullable();
-		table.boolean('IsComplete').notNullable();
-		table.integer('PhotoProjectId').notNullable();
-		table.integer('OriginalMediaId').notNullable();
-		table.integer('CommunityId').notNullable();
-		table.integer('PlaceId').nullable();
-		table.integer('OwnerId').notNullable();
-		table.string('Subjects', 500).nullable();
-	});
-};
+  await knex.schema.createTable("dbo.Prod_Photo_List", (table) => {
+    table.integer("Id").nullable()
+    table.string("OriginalFileName", 256).nullable()
+    table.string("FeatureName", 600).nullable()
+    table.string("YHSIRecord", 20).nullable()
+    table.boolean("IsComplete").notNullable()
+    table.integer("PhotoProjectId").notNullable()
+    table.integer("OriginalMediaId").notNullable()
+    table.integer("CommunityId").notNullable()
+    table.integer("PlaceId").nullable()
+    table.integer("OwnerId").notNullable()
+    table.string("Subjects", 500).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.Prod_Photo_List');
-};
+  await knex.schema.dropTable("dbo.Prod_Photo_List")
+}

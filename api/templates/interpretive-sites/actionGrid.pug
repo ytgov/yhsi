@@ -1,41 +1,41 @@
 //- template.pug
 
 style
-     include ../styles.css
-    
+  include ../styles.css
+
 table.title-row
-  tbody 
-    tr 
+  tbody
+    tr
       td
         div Action information
       td
-        div(style='width:200px;')
+        div(style="width: 200px")
           include ../yukon.svg
-div.grid
+.grid
   table.grid-table
     thead
-      tr 
-        td 
+      tr
+        td
           strong.underline Site Name
-        td 
-          strong.underline Action Description 
-        td 
+        td
+          strong.underline Action Description
+        td
           strong.underline To Be Complete Date
-        td 
+        td
           strong.underline Action Complete Date
-        td 
+        td
           strong.underline Route
-        td 
+        td
           strong.underline Completion Description
-        td 
+        td
           strong.underline Priority
-    tbody 
+    tbody
       each val in data
-        tr 
-          td #{val.SiteName} 
-          td #{val.ActionDesc} 
-          td #{val.ToBeCompleteDate} 
-          td #{val.ActionCompleteDate} 
-          td #{val.Route} 
-          td #{val.CompletionDesc} 
-          td #{val.Priority} 
+        tr
+          td #{ val.SiteName } 
+          td #{ val.ActionDesc } 
+          td #{ val.ToBeCompleteDate } 
+          td #{ val.ActionCompleteDate } 
+          td #{ val.Route } 
+          td #{ val.CompletionDesc } 
+          td #{ val.Priority } 

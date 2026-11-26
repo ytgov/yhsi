@@ -1,508 +1,630 @@
 <html>
-	<head>
-		<style>
-			/* ------------------------------------------------------------ *
+  <head>
+    <style>
+      /* ------------------------------------------------------------ *
 			 * Inlined copy of /api/templates/styles.css. Handlebars has no
 			 * `include`, so keep this in sync with the shared stylesheet.
 			 * ------------------------------------------------------------ */
-			@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap");
 
-			@page {
-				size: letter portrait;
-				margin: 24px;
-			}
+      @page {
+        size: letter portrait;
+        margin: 24px;
+      }
 
-			html,
-			body {
-				font-family: 'Montserrat', sans-serif;
-				color: #1a1a1a;
-				font-size: 13px;
-				line-height: 1.45;
-			}
+      html,
+      body {
+        font-family: "Montserrat", sans-serif;
+        color: #1a1a1a;
+        font-size: 13px;
+        line-height: 1.45;
+      }
 
-			table {
-				border-collapse: collapse;
-			}
-			table,
-			th,
-			td {
-				border: 1px solid #999;
-			}
-			td,
-			th {
-				padding: 6px 10px;
-				vertical-align: top;
-				text-align: left;
-			}
+      table {
+        border-collapse: collapse;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #999;
+      }
+      td,
+      th {
+        padding: 6px 10px;
+        vertical-align: top;
+        text-align: left;
+      }
 
-			.title-row,
-			.title-row tr,
-			.title-row td {
-				border: none;
-			}
-			.title-row {
-				width: 100%;
-				margin-bottom: 10px;
-			}
-			.title-row > tbody > tr > td:first-of-type {
-				width: 80%;
-			}
-			.title-row > tbody > tr > td:nth-of-type(2) {
-				width: 20%;
-				text-align: right;
-			}
-			.item-name {
-				font-size: 24px;
-				font-weight: 700;
-				margin-top: 2px;
-			}
+      .title-row,
+      .title-row tr,
+      .title-row td {
+        border: none;
+      }
+      .title-row {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      .title-row > tbody > tr > td:first-of-type {
+        width: 80%;
+      }
+      .title-row > tbody > tr > td:nth-of-type(2) {
+        width: 20%;
+        text-align: right;
+      }
+      .item-name {
+        font-size: 24px;
+        font-weight: 700;
+        margin-top: 2px;
+      }
 
-			.section-title {
-				margin: 22px 0 10px;
-				padding: 8px 16px;
-				color: #000;
-				font-size: 16px;
-				font-weight: 700;
-				background-color: #f2a900;
-			}
-			.section {
-				page-break-inside: avoid;
-			}
-			.subhead {
-				font-weight: 700;
-				font-size: 13px;
-				margin: 10px 16px 4px;
-			}
+      .section-title {
+        margin: 22px 0 10px;
+        padding: 8px 16px;
+        color: #000;
+        font-size: 16px;
+        font-weight: 700;
+        background-color: #f2a900;
+      }
+      .section {
+        page-break-inside: avoid;
+      }
+      .subhead {
+        font-weight: 700;
+        font-size: 13px;
+        margin: 10px 16px 4px;
+      }
 
-			.divided-row,
-			.divided-row tr,
-			.divided-row td,
-			.row-container {
-				border: none;
-			}
-			.divided-row {
-				width: 100%;
-			}
-			.divided-row > tbody > tr > td {
-				width: 50%;
-				vertical-align: top;
-				padding: 0 16px;
-			}
-			.divided-row > tbody > tr > td > div {
-				margin-bottom: 8px;
-			}
+      .divided-row,
+      .divided-row tr,
+      .divided-row td,
+      .row-container {
+        border: none;
+      }
+      .divided-row {
+        width: 100%;
+      }
+      .divided-row > tbody > tr > td {
+        width: 50%;
+        vertical-align: top;
+        padding: 0 16px;
+      }
+      .divided-row > tbody > tr > td > div {
+        margin-bottom: 8px;
+      }
 
-			.field {
-				margin: 0 0 10px;
-			}
-			.section > .field,
-			.section > .empty,
-			.section > .divider {
-				margin-left: 16px;
-				margin-right: 16px;
-			}
-			.field .label {
-				display: block;
-				font-weight: 600;
-				font-size: 10px;
-				text-transform: uppercase;
-				letter-spacing: 0.4px;
-				color: #6b6b6b;
-				margin-bottom: 1px;
-			}
-			.field .value {
-				display: block;
-				min-height: 14px;
-				word-wrap: break-word;
-				white-space: pre-wrap;
-			}
-			.subfield {
-				margin: 0 16px 6px;
-				padding-left: 10px;
-				border-left: 3px solid #f2a900;
-			}
-			.empty {
-				color: #aaa;
-				font-style: italic;
-			}
-			.divider {
-				border: 0;
-				border-top: 1px solid #ddd;
-				margin: 12px 0;
-			}
+      .field {
+        margin: 0 0 10px;
+      }
+      .section > .field,
+      .section > .empty,
+      .section > .divider {
+        margin-left: 16px;
+        margin-right: 16px;
+      }
+      .field .label {
+        display: block;
+        font-weight: 600;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: #6b6b6b;
+        margin-bottom: 1px;
+      }
+      .field .value {
+        display: block;
+        min-height: 14px;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+      }
+      .subfield {
+        margin: 0 16px 6px;
+        padding-left: 10px;
+        border-left: 3px solid #f2a900;
+      }
+      .empty {
+        color: #aaa;
+        font-style: italic;
+      }
+      .divider {
+        border: 0;
+        border-top: 1px solid #ddd;
+        margin: 12px 0;
+      }
 
-			.table-full-width {
-				width: 100%;
-			}
+      .table-full-width {
+        width: 100%;
+      }
 
-			.photo-grid,
-			.photo-grid tr,
-			.photo-grid td {
-				border: none;
-			}
-			.photo-grid td {
-				padding: 8px 0;
-			}
-			.photo-grid img {
-				max-width: 100%;
-				max-height: 360px;
-				border: 1px solid #999;
-			}
-		</style>
-	</head>
+      .photo-grid,
+      .photo-grid tr,
+      .photo-grid td {
+        border: none;
+      }
+      .photo-grid td {
+        padding: 8px 0;
+      }
+      .photo-grid img {
+        max-width: 100%;
+        max-height: 360px;
+        border: 1px solid #999;
+      }
+    </style>
+  </head>
 
-	<body>
-		<table class='title-row'>
-			<tbody>
-				<tr>
-					<td>
-						<div style="margin-top: 15px">Yukon Heritage Information System</div>
-						<div class='item-name'>{{primaryName}}</div>
-					</td>
-					<td>
-						<svg
-							style='width: 180px; height: auto;'
-							viewBox='0 0 109 44'
-							fill='none'
-							xmlns='http://www.w3.org/2000/svg'
-						>
-							<path
-								d='M99 26.9C101.3 26.9 102.6 28.4 102.6 31.2V42.7H108.4V29.3C108.4 24.5 105.8 21.6 101.4 21.6C98.3 21.6 96.6 23.3 95.4 24.9L95.3 25V22H89.5V42.7H95.3V31.1C95.2 28.4 96.6 26.9 99 26.9Z'
-								fill='black'
-							/>
-							<path
-								d='M81.6 32.5C81.6 34 81.1 35.5 80.2 36.5C79.2 37.6 77.8 38.2 76.2 38.2C74.6 38.2 73.2 37.6 72.2 36.5C71.2 35.4 70.7 34 70.7 32.4V32.3C70.7 30.8 71.2 29.3 72.1 28.3C73.1 27.2 74.5 26.6 76.1 26.6C77.7 26.6 79.1 27.2 80.1 28.3C81 29.4 81.6 30.9 81.6 32.5ZM76.1 21.6C73 21.6 70.2 22.7 68.1 24.8C66 26.8 64.9 29.5 64.9 32.4V32.5C64.9 35.4 66 38.1 68.1 40.1C70.2 42.1 73 43.2 76.1 43.2C79.2 43.2 82 42.1 84.1 40C86.2 38 87.3 35.3 87.3 32.4V32.3C87.3 29.4 86.2 26.7 84.1 24.7C82.1 22.7 79.2 21.6 76.1 21.6Z'
-								fill='black'
-							/>
-							<path
-								d='M59.8 42.7H66.4L58.3 30.1L66.1 22H59.2L52.3 29.7V15.1H46.5V42.7H52.3V36.4L54.4 34.2L59.8 42.7Z'
-								fill='black'
-							/>
-							<path
-								d='M31.6 43.1C34.7 43.1 36.4 41.4 37.6 39.8L37.7 39.7V42.7H43.5V22H37.7V33.5C37.7 36.2 36.3 37.8 34 37.8C31.7 37.8 30.4 36.3 30.4 33.5V22H24.6V35.4C24.6 40.2 27.2 43.1 31.6 43.1Z'
-								fill='black'
-							/>
-							<path
-								d='M20.7 15.7L14 26.3V26.2L7.5 15.7H0.699997L11.1 31.7V42.7H16.9V31.6L27.3 15.7H20.7Z'
-								fill='black'
-							/>
-							<path
-								d='M76.1 0.800003L74 7.4L69.5 2.1L70.2 9L64 5.9L67.2 12L60.3 11.4L65.6 15.9L59 18L64.7 19.8L69.6 14.5L71.6 16.7L76.2 11.8L80.7 16.7L82.7 14.5L87.6 19.7L93.3 17.9L86.7 15.8L92 11.3L85.1 12L88.2 5.8L82.1 9L82.7 2.1L78.2 7.4L76.1 0.800003Z'
-								fill='#F2A900'
-							/>
-						</svg>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+  <body>
+    <table class="title-row">
+      <tbody>
+        <tr>
+          <td>
+            <div style="margin-top: 15px">Yukon Heritage Information System</div>
+            <div class="item-name">{{primaryName}}</div>
+          </td>
+          <td>
+            <svg
+              style="width: 180px; height: auto;"
+              viewBox="0 0 109 44"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M99 26.9C101.3 26.9 102.6 28.4 102.6 31.2V42.7H108.4V29.3C108.4 24.5 105.8 21.6 101.4 21.6C98.3 21.6 96.6 23.3 95.4 24.9L95.3 25V22H89.5V42.7H95.3V31.1C95.2 28.4 96.6 26.9 99 26.9Z"
+                fill="black"
+              />
+              <path
+                d="M81.6 32.5C81.6 34 81.1 35.5 80.2 36.5C79.2 37.6 77.8 38.2 76.2 38.2C74.6 38.2 73.2 37.6 72.2 36.5C71.2 35.4 70.7 34 70.7 32.4V32.3C70.7 30.8 71.2 29.3 72.1 28.3C73.1 27.2 74.5 26.6 76.1 26.6C77.7 26.6 79.1 27.2 80.1 28.3C81 29.4 81.6 30.9 81.6 32.5ZM76.1 21.6C73 21.6 70.2 22.7 68.1 24.8C66 26.8 64.9 29.5 64.9 32.4V32.5C64.9 35.4 66 38.1 68.1 40.1C70.2 42.1 73 43.2 76.1 43.2C79.2 43.2 82 42.1 84.1 40C86.2 38 87.3 35.3 87.3 32.4V32.3C87.3 29.4 86.2 26.7 84.1 24.7C82.1 22.7 79.2 21.6 76.1 21.6Z"
+                fill="black"
+              />
+              <path
+                d="M59.8 42.7H66.4L58.3 30.1L66.1 22H59.2L52.3 29.7V15.1H46.5V42.7H52.3V36.4L54.4 34.2L59.8 42.7Z"
+                fill="black"
+              />
+              <path
+                d="M31.6 43.1C34.7 43.1 36.4 41.4 37.6 39.8L37.7 39.7V42.7H43.5V22H37.7V33.5C37.7 36.2 36.3 37.8 34 37.8C31.7 37.8 30.4 36.3 30.4 33.5V22H24.6V35.4C24.6 40.2 27.2 43.1 31.6 43.1Z"
+                fill="black"
+              />
+              <path
+                d="M20.7 15.7L14 26.3V26.2L7.5 15.7H0.699997L11.1 31.7V42.7H16.9V31.6L27.3 15.7H20.7Z"
+                fill="black"
+              />
+              <path
+                d="M76.1 0.800003L74 7.4L69.5 2.1L70.2 9L64 5.9L67.2 12L60.3 11.4L65.6 15.9L59 18L64.7 19.8L69.6 14.5L71.6 16.7L76.2 11.8L80.7 16.7L82.7 14.5L87.6 19.7L93.3 17.9L86.7 15.8L92 11.3L85.1 12L88.2 5.8L82.1 9L82.7 2.1L78.2 7.4L76.1 0.800003Z"
+                fill="#F2A900"
+              />
+            </svg>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-		{{#if includeSummarySection}}
-			<div class='section'>
-				<div class='section-title'>Summary</div>
-				<table class='divided-row'>
-					<tbody>
-						<tr>
-							<td>
-								<div class='field'><span class='label'>YHSI ID</span><span class='value'>{{yHSIId}}</span></div>
-								<div class='field'><span class='label'>Primary Name</span><span class='value'>{{primaryName}}</span></div>
-								<div class='field'><span class='label'>Designations</span><span class='value'>{{designations}}</span></div>
-								<div class='field'><span class='label'>CRHP Category</span><span class='value'>{{category}}</span></div>
-								<div class='field'><span class='label'>Site Categories</span><span class='value'>{{joinArray siteCategories}}</span></div>
-								<div class='field'><span class='label'>Records</span><span class='value'>{{joinArray records}}</span></div>
-								<div class='field'><span class='label'>Contributing Resources</span><span class='value'>{{joinArray contributingResources}}</span></div>
-								<div class='field'><span class='label'>Show In Register?</span><span class='value'>{{showInRegister}}</span></div>
-							</td>
-							<td>
-								<div class='field'><span class='label'>Secondary Names</span><span class='value'>{{joinArrayPick names 'description'}}</span></div>
-								<div class='field'><span class='label'>Historical Patterns</span></div>
-								{{#each historicalPatterns}}
-									<div class='subfield'>
-										<strong>{{historicalPatternTypeName}}</strong><br />{{comments}}
-									</div>
-								{{else}}
-									<div class='subfield empty'>None recorded</div>
-								{{/each}}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		{{/if}}
+    {{#if includeSummarySection}}
+      <div class="section">
+        <div class="section-title">Summary</div>
+        <table class="divided-row">
+          <tbody>
+            <tr>
+              <td>
+                <div class="field"><span class="label">YHSI ID</span><span
+                    class="value"
+                  >{{yHSIId}}</span></div>
+                <div class="field"><span class="label">Primary Name</span><span
+                    class="value"
+                  >{{primaryName}}</span></div>
+                <div class="field"><span class="label">Designations</span><span
+                    class="value"
+                  >{{designations}}</span></div>
+                <div class="field"><span class="label">CRHP Category</span><span
+                    class="value"
+                  >{{category}}</span></div>
+                <div class="field"><span class="label">Site Categories</span><span
+                    class="value"
+                  >{{joinArray siteCategories}}</span></div>
+                <div class="field"><span class="label">Records</span><span class="value">{{joinArray
+                      records
+                    }}</span></div>
+                <div class="field"><span class="label">Contributing Resources</span><span
+                    class="value"
+                  >{{joinArray contributingResources}}</span></div>
+                <div class="field"><span class="label">Show In Register?</span><span
+                    class="value"
+                  >{{showInRegister}}</span></div>
+              </td>
+              <td>
+                <div class="field"><span class="label">Secondary Names</span><span
+                    class="value"
+                  >{{joinArrayPick names "description"}}</span></div>
+                <div class="field"><span class="label">Historical Patterns</span></div>
+                {{#each historicalPatterns}}
+                  <div class="subfield">
+                    <strong>{{historicalPatternTypeName}}</strong><br />{{comments}}
+                  </div>
+                {{else}}
+                  <div class="subfield empty">None recorded</div>
+                {{/each}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    {{/if}}
 
-		{{#if includeLocationSection}}
-			<div class='section'>
-				<div class='section-title'>Location</div>
-				<table class='divided-row'>
-					<tbody>
-						<tr>
-							<td>
-								<div class='field'><span class='label'>Community</span><span class='value'>{{communityName}}</span></div>
-								<div class='field'><span class='label'>Other Community</span><span class='value'>{{otherCommunity}}</span></div>
-								<div class='field'>
-									<span class='label'>Physical Address</span>
-									<span class='value'>{{physicalAddress}}</span>
-									<span class='value'>Province: {{physicalProvince}}</span>
-									<span class='value'>Country: {{physicalCountry}}</span>
-									<span class='value'>Postal Code: {{physicalPostalCode}}</span>
-								</div>
-								<div class='field'><span class='label'>Latitude</span><span class='value'>{{latitude}}</span></div>
-								<div class='field'><span class='label'>Longitude</span><span class='value'>{{longitude}}</span></div>
-								<div class='field'><span class='label'>Coordinate Determination</span><span class='value'>{{coordinateDeterminationName}}</span></div>
-							</td>
-							<td>
-								<div class='field'><span class='label'>Other Locality</span><span class='value'>{{otherLocality}}</span></div>
-								<div class='field'><span class='label'>Previous Address</span><span class='value'>{{previousAddress}}</span></div>
-								<div class='field'><span class='label'>Context</span><span class='value'>{{locationContext}}</span></div>
-								<div class='field'><span class='label'>NTS Map Sheet</span><span class='value'>{{nTSMapSheet}}</span></div>
-								<div class='field'><span class='label'>Area (m2)</span><span class='value'>{{hectareArea}}</span></div>
-								<div class='field'><span class='label'>Borden Number</span><span class='value'>{{bordenNumber}}</span></div>
-								<div class='field'><span class='label'>Misc. Info</span><span class='value'>{{locationComment}}</span></div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		{{/if}}
+    {{#if includeLocationSection}}
+      <div class="section">
+        <div class="section-title">Location</div>
+        <table class="divided-row">
+          <tbody>
+            <tr>
+              <td>
+                <div class="field"><span class="label">Community</span><span
+                    class="value"
+                  >{{communityName}}</span></div>
+                <div class="field"><span class="label">Other Community</span><span
+                    class="value"
+                  >{{otherCommunity}}</span></div>
+                <div class="field">
+                  <span class="label">Physical Address</span>
+                  <span class="value">{{physicalAddress}}</span>
+                  <span class="value">Province: {{physicalProvince}}</span>
+                  <span class="value">Country: {{physicalCountry}}</span>
+                  <span class="value">Postal Code: {{physicalPostalCode}}</span>
+                </div>
+                <div class="field"><span class="label">Latitude</span><span
+                    class="value"
+                  >{{latitude}}</span></div>
+                <div class="field"><span class="label">Longitude</span><span
+                    class="value"
+                  >{{longitude}}</span></div>
+                <div class="field"><span class="label">Coordinate Determination</span><span
+                    class="value"
+                  >{{coordinateDeterminationName}}</span></div>
+              </td>
+              <td>
+                <div class="field"><span class="label">Other Locality</span><span
+                    class="value"
+                  >{{otherLocality}}</span></div>
+                <div class="field"><span class="label">Previous Address</span><span
+                    class="value"
+                  >{{previousAddress}}</span></div>
+                <div class="field"><span class="label">Context</span><span
+                    class="value"
+                  >{{locationContext}}</span></div>
+                <div class="field"><span class="label">NTS Map Sheet</span><span
+                    class="value"
+                  >{{nTSMapSheet}}</span></div>
+                <div class="field"><span class="label">Area (m2)</span><span
+                    class="value"
+                  >{{hectareArea}}</span></div>
+                <div class="field"><span class="label">Borden Number</span><span
+                    class="value"
+                  >{{bordenNumber}}</span></div>
+                <div class="field"><span class="label">Misc. Info</span><span
+                    class="value"
+                  >{{locationComment}}</span></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    {{/if}}
 
-		{{#if includeDatesAndConditionSection}}
-			<div class='section'>
-				<div class='section-title'>Dates &amp; Condition</div>
+    {{#if includeDatesAndConditionSection}}
+      <div class="section">
+        <div class="section-title">Dates &amp; Condition</div>
 
-				<div class='subhead'>Dates</div>
-				{{#each dates}}
-					<div class='subfield'>
-						<strong>{{typeName}}</strong> {{fromDate}} - {{toDate}}<br />{{details}}
-					</div>
-				{{else}}
-					<div class='subfield empty'>None recorded</div>
-				{{/each}}
+        <div class="subhead">Dates</div>
+        {{#each dates}}
+          <div class="subfield">
+            <strong>{{typeName}}</strong>
+            {{fromDate}}
+            -
+            {{toDate}}<br />{{details}}
+          </div>
+        {{else}}
+          <div class="subfield empty">None recorded</div>
+        {{/each}}
 
-				<div class='subhead'>Construction Period</div>
-				{{#each constructionPeriods}}
-					<div class='subfield'>{{type}}</div>
-				{{else}}
-					<div class='subfield empty'>None recorded</div>
-				{{/each}}
+        <div class="subhead">Construction Period</div>
+        {{#each constructionPeriods}}
+          <div class="subfield">{{type}}</div>
+        {{else}}
+          <div class="subfield empty">None recorded</div>
+        {{/each}}
 
-				<div class='subhead'>Conditions</div>
-				<table class='divided-row'>
-					<tbody>
-						<tr>
-							<td>
-								<div class='field'><span class='label'>Floor condition</span><span class='value'>{{floorCondition}}</span></div>
-								<div class='field'><span class='label'>Roof condition</span><span class='value'>{{roofCondition}}</span></div>
-								<div class='field'><span class='label'>Wall condition</span><span class='value'>{{wallCondition}}</span></div>
-								<div class='field'><span class='label'>Door condition</span><span class='value'>{{doorCondition}}</span></div>
-							</td>
-							<td>
-								<div class='field'><span class='label'>Site status</span><span class='value'>{{siteStatus}}</span></div>
-								<div class='field'><span class='label'>Building size</span><span class='value'>{{buildingSize}}</span></div>
-								<div class='field'><span class='label'>All other resource types</span><span class='value'>{{resourceType}}</span></div>
-								<div class='field'><span class='label'>Condition notes</span><span class='value'>{{conditionComment}}</span></div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		{{/if}}
+        <div class="subhead">Conditions</div>
+        <table class="divided-row">
+          <tbody>
+            <tr>
+              <td>
+                <div class="field"><span class="label">Floor condition</span><span
+                    class="value"
+                  >{{floorCondition}}</span></div>
+                <div class="field"><span class="label">Roof condition</span><span
+                    class="value"
+                  >{{roofCondition}}</span></div>
+                <div class="field"><span class="label">Wall condition</span><span
+                    class="value"
+                  >{{wallCondition}}</span></div>
+                <div class="field"><span class="label">Door condition</span><span
+                    class="value"
+                  >{{doorCondition}}</span></div>
+              </td>
+              <td>
+                <div class="field"><span class="label">Site status</span><span
+                    class="value"
+                  >{{siteStatus}}</span></div>
+                <div class="field"><span class="label">Building size</span><span
+                    class="value"
+                  >{{buildingSize}}</span></div>
+                <div class="field"><span class="label">All other resource types</span><span
+                    class="value"
+                  >{{resourceType}}</span></div>
+                <div class="field"><span class="label">Condition notes</span><span
+                    class="value"
+                  >{{conditionComment}}</span></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    {{/if}}
 
-		{{#if includeThemesAndFunctionSection}}
-			<div class='section'>
-				<div class='section-title'>Themes &amp; Function</div>
+    {{#if includeThemesAndFunctionSection}}
+      <div class="section">
+        <div class="section-title">Themes &amp; Function</div>
 
-				<div class='subhead'>YHS Themes</div>
-				<div class='subfield'>{{yHSThemes}}</div>
+        <div class="subhead">YHS Themes</div>
+        <div class="subfield">{{yHSThemes}}</div>
 
-				<div class='subhead'>Themes</div>
-				{{#each themes}}
-					<div class='subfield'>{{category}} - {{type}}</div>
-				{{else}}
-					<div class='subfield empty'>None recorded</div>
-				{{/each}}
+        <div class="subhead">Themes</div>
+        {{#each themes}}
+          <div class="subfield">{{category}} - {{type}}</div>
+        {{else}}
+          <div class="subfield empty">None recorded</div>
+        {{/each}}
 
-				<div class='subhead'>Functional Uses</div>
-				{{#each functionalUses}}
-					<div class='subfield'>{{functionalUseType}} - {{functionalType}}</div>
-				{{else}}
-					<div class='subfield empty'>None recorded</div>
-				{{/each}}
+        <div class="subhead">Functional Uses</div>
+        {{#each functionalUses}}
+          <div class="subfield">{{functionalUseType}} - {{functionalType}}</div>
+        {{else}}
+          <div class="subfield empty">None recorded</div>
+        {{/each}}
 
-				<table class='divided-row'>
-					<tbody>
-						<tr>
-							<td>
-								<div class='field'><span class='label'>YHS Current Use</span><span class='value'>{{currentUseComment}}</span></div>
-							</td>
-							<td>
-								<div class='field'><span class='label'>YHS Past Use</span><span class='value'>{{yHSPastUse}}</span></div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		{{/if}}
+        <table class="divided-row">
+          <tbody>
+            <tr>
+              <td>
+                <div class="field"><span class="label">YHS Current Use</span><span
+                    class="value"
+                  >{{currentUseComment}}</span></div>
+              </td>
+              <td>
+                <div class="field"><span class="label">YHS Past Use</span><span
+                    class="value"
+                  >{{yHSPastUse}}</span></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    {{/if}}
 
-		{{#if includeAssociationsSection}}
-			<div class='section'>
-				<div class='section-title'>Associations</div>
+    {{#if includeAssociationsSection}}
+      <div class="section">
+        <div class="section-title">Associations</div>
 
-				<div class='subhead'>Associations</div>
-				{{#each associations}}
-					<div class='subfield'>{{type}} - {{description}}</div>
-				{{else}}
-					<div class='subfield empty'>None recorded</div>
-				{{/each}}
+        <div class="subhead">Associations</div>
+        {{#each associations}}
+          <div class="subfield">{{type}} - {{description}}</div>
+        {{else}}
+          <div class="subfield empty">None recorded</div>
+        {{/each}}
 
-				<div class='subhead'>First Nation Associations</div>
-				{{#each firstNationAssociations}}
-					<div class='subfield'>{{firstNationAssociationType}} - {{firstNation}} - {{comments}}</div>
-				{{else}}
-					<div class='subfield empty'>None recorded</div>
-				{{/each}}
-			</div>
-		{{/if}}
+        <div class="subhead">First Nation Associations</div>
+        {{#each firstNationAssociations}}
+          <div class="subfield">{{firstNationAssociationType}}
+            -
+            {{firstNation}}
+            -
+            {{comments}}</div>
+        {{else}}
+          <div class="subfield empty">None recorded</div>
+        {{/each}}
+      </div>
+    {{/if}}
 
-		{{#if includeLegalAndZoningSection}}
-			<div class='section'>
-				<div class='section-title'>Legal &amp; Zoning</div>
+    {{#if includeLegalAndZoningSection}}
+      <div class="section">
+        <div class="section-title">Legal &amp; Zoning</div>
 
-				<div class='subhead'>Ownerships</div>
-				{{#each ownerships}}
-					<div class='subfield'>{{ownershipType}} - {{comments}}</div>
-				{{else}}
-					<div class='subfield empty'>None recorded</div>
-				{{/each}}
+        <div class="subhead">Ownerships</div>
+        {{#each ownerships}}
+          <div class="subfield">{{ownershipType}} - {{comments}}</div>
+        {{else}}
+          <div class="subfield empty">None recorded</div>
+        {{/each}}
 
-				<table class='divided-row'>
-					<tbody>
-						<tr>
-							<td>
-								<div class='field'><span class='label'>Zoning</span><span class='value'>{{zoning}}</span></div>
-								<div class='field'><span class='label'>Site district</span><span class='value'>{{siteDistrictNumber}}</span></div>
-								<div class='field'><span class='label'>Group</span><span class='value'>{{lAGroup}}</span></div>
-								<div class='field'><span class='label'>Block</span><span class='value'>{{block}}</span></div>
-							</td>
-							<td>
-								<div class='field'><span class='label'>Town site map number</span><span class='value'>{{townSiteMapNumber}}</span></div>
-								<div class='field'><span class='label'>Group YHSI</span><span class='value'>{{groupYHSI}}</span></div>
-								<div class='field'><span class='label'>Lot</span><span class='value'>{{lot}}</span></div>
-								<div class='field'><span class='label'>Plan number</span><span class='value'>{{planNumber}}</span></div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+        <table class="divided-row">
+          <tbody>
+            <tr>
+              <td>
+                <div class="field"><span class="label">Zoning</span><span
+                    class="value"
+                  >{{zoning}}</span></div>
+                <div class="field"><span class="label">Site district</span><span
+                    class="value"
+                  >{{siteDistrictNumber}}</span></div>
+                <div class="field"><span class="label">Group</span><span
+                    class="value"
+                  >{{lAGroup}}</span></div>
+                <div class="field"><span class="label">Block</span><span
+                    class="value"
+                  >{{block}}</span></div>
+              </td>
+              <td>
+                <div class="field"><span class="label">Town site map number</span><span
+                    class="value"
+                  >{{townSiteMapNumber}}</span></div>
+                <div class="field"><span class="label">Group YHSI</span><span
+                    class="value"
+                  >{{groupYHSI}}</span></div>
+                <div class="field"><span class="label">Lot</span><span
+                    class="value"
+                  >{{lot}}</span></div>
+                <div class="field"><span class="label">Plan number</span><span
+                    class="value"
+                  >{{planNumber}}</span></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-				<div class='subhead'>Previous Ownerships</div>
-				{{#each previousOwnerships}}
-					<div class='subfield'>
-						<strong>{{ownershipName}}</strong><br />
-						Date: {{ownershipDate}} &nbsp; Number: {{ownershipNumber}}
-					</div>
-				{{else}}
-					<div class='subfield empty'>None recorded</div>
-				{{/each}}
-			</div>
-		{{/if}}
+        <div class="subhead">Previous Ownerships</div>
+        {{#each previousOwnerships}}
+          <div class="subfield">
+            <strong>{{ownershipName}}</strong><br />
+            Date:
+            {{ownershipDate}}
+            &nbsp; Number:
+            {{ownershipNumber}}
+          </div>
+        {{else}}
+          <div class="subfield empty">None recorded</div>
+        {{/each}}
+      </div>
+    {{/if}}
 
-		{{#if includePhotosSection}}
-			<div class='section'>
-				<div class='section-title'>Photos</div>
-				<table class='photo-grid'>
-					<tbody>
-						{{#each photos}}
-							<tr>
-								<td><img src='{{dataUri}}' /></td>
-							</tr>
-							<tr>
-								<td>
-									<div class='field'><span class='label'>File Name</span><span class='value'>{{originalFileName}}</span></div>
-									<div class='field'><span class='label'>Feature Name</span><span class='value'>{{featureName}}</span></div>
-									<div class='field'><span class='label'>Date Created</span><span class='value'>{{dateCreated}}</span></div>
-									<div class='field'><span class='label'>Date Photo Taken</span><span class='value'>{{datePhotoTaken}}</span></div>
-								</td>
-							</tr>
-						{{else}}
-							<tr>
-								<td><div class='subfield empty'>No photos</div></td>
-							</tr>
-						{{/each}}
-					</tbody>
-				</table>
-			</div>
-		{{/if}}
+    {{#if includePhotosSection}}
+      <div class="section">
+        <div class="section-title">Photos</div>
+        <table class="photo-grid">
+          <tbody>
+            {{#each photos}}
+              <tr>
+                <td><img src="{{dataUri}}" /></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="field"><span class="label">File Name</span><span
+                      class="value"
+                    >{{originalFileName}}</span></div>
+                  <div class="field"><span class="label">Feature Name</span><span
+                      class="value"
+                    >{{featureName}}</span></div>
+                  <div class="field"><span class="label">Date Created</span><span
+                      class="value"
+                    >{{dateCreated}}</span></div>
+                  <div class="field"><span class="label">Date Photo Taken</span><span
+                      class="value"
+                    >{{datePhotoTaken}}</span></div>
+                </td>
+              </tr>
+            {{else}}
+              <tr>
+                <td><div class="subfield empty">No photos</div></td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{/if}}
 
-		{{#if includeManagementSection}}
-			<div class='section'>
-				<div class='section-title'>Management</div>
+    {{#if includeManagementSection}}
+      <div class="section">
+        <div class="section-title">Management</div>
 
-				<div class='subhead'>Revision Logs</div>
-				{{#each revisionLogs}}
-					<div class='subfield'>
-						<strong>{{revisionLogType}}</strong> &mdash; {{revisionDate}}<br />
-						Revised by: {{revisedBy}}<br />
-						{{details}}
-					</div>
-				{{else}}
-					<div class='subfield empty'>None recorded</div>
-				{{/each}}
+        <div class="subhead">Revision Logs</div>
+        {{#each revisionLogs}}
+          <div class="subfield">
+            <strong>{{revisionLogType}}</strong>
+            &mdash;
+            {{revisionDate}}<br />
+            Revised by:
+            {{revisedBy}}<br />
+            {{details}}
+          </div>
+        {{else}}
+          <div class="subfield empty">None recorded</div>
+        {{/each}}
 
-				<div class='subhead'>Contacts</div>
-				{{#each contacts}}
-					<div class='subfield'>
-						<strong>{{contactType}}</strong><br />
-						{{firstName}} {{lastName}}<br />
-						Phone: {{phoneNumber}} &nbsp; Email: {{email}}<br />
-						Mailing Address: {{mailingAddress}}<br />
-						{{description}}
-					</div>
-				{{else}}
-					<div class='subfield empty'>None recorded</div>
-				{{/each}}
+        <div class="subhead">Contacts</div>
+        {{#each contacts}}
+          <div class="subfield">
+            <strong>{{contactType}}</strong><br />
+            {{firstName}}
+            {{lastName}}<br />
+            Phone:
+            {{phoneNumber}}
+            &nbsp; Email:
+            {{email}}<br />
+            Mailing Address:
+            {{mailingAddress}}<br />
+            {{description}}
+          </div>
+        {{else}}
+          <div class="subfield empty">None recorded</div>
+        {{/each}}
 
-				<div class='subhead'>Web Links</div>
-				{{#each webLinks}}
-					<div class='subfield'><strong>{{type}}</strong> &mdash; {{address}}</div>
-				{{else}}
-					<div class='subfield empty'>None recorded</div>
-				{{/each}}
+        <div class="subhead">Web Links</div>
+        {{#each webLinks}}
+          <div class="subfield"><strong>{{type}}</strong> &mdash; {{address}}</div>
+        {{else}}
+          <div class="subfield empty">None recorded</div>
+        {{/each}}
 
-				<div class='subhead'>Designation Information</div>
-				<table class='divided-row'>
-					<tbody>
-						<tr>
-							<td>
-								<div class='field'><span class='label'>Jurisdiction</span><span class='value'>{{jurisdiction}}</span></div>
-								<div class='field'><span class='label'>Recognition Date</span><span class='value'>{{recognitionDate}}</span></div>
-								<div class='field'><span class='label'>Owner Consent</span><span class='value'>{{ownerConsent}}</span></div>
-								<div class='field'><span class='label'>Publicly Accessible</span><span class='value'>{{isPubliclyAccessible}}</span></div>
-							</td>
-							<td>
-								<div class='field'><span class='label'>YG Building Number</span><span class='value'>{{yGBuildingNumber}}</span></div>
-								<div class='field'><span class='label'>YG Reserve Number</span><span class='value'>{{yGReserveNumber}}</span></div>
-								<div class='field'><span class='label'>CIHB Number</span><span class='value'>{{cIHBNumber}}</span></div>
-								<div class='field'><span class='label'>FHBRO Number</span><span class='value'>{{fHBRONumber}}</span></div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+        <div class="subhead">Designation Information</div>
+        <table class="divided-row">
+          <tbody>
+            <tr>
+              <td>
+                <div class="field"><span class="label">Jurisdiction</span><span
+                    class="value"
+                  >{{jurisdiction}}</span></div>
+                <div class="field"><span class="label">Recognition Date</span><span
+                    class="value"
+                  >{{recognitionDate}}</span></div>
+                <div class="field"><span class="label">Owner Consent</span><span
+                    class="value"
+                  >{{ownerConsent}}</span></div>
+                <div class="field"><span class="label">Publicly Accessible</span><span
+                    class="value"
+                  >{{isPubliclyAccessible}}</span></div>
+              </td>
+              <td>
+                <div class="field"><span class="label">YG Building Number</span><span
+                    class="value"
+                  >{{yGBuildingNumber}}</span></div>
+                <div class="field"><span class="label">YG Reserve Number</span><span
+                    class="value"
+                  >{{yGReserveNumber}}</span></div>
+                <div class="field"><span class="label">CIHB Number</span><span
+                    class="value"
+                  >{{cIHBNumber}}</span></div>
+                <div class="field"><span class="label">FHBRO Number</span><span
+                    class="value"
+                  >{{fHBRONumber}}</span></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-				<div class='field'><span class='label'>Statute (Recognition Authority / Recognition Type / Statute)</span><span class='value'>{{statute}}</span></div>
-				<div class='field'><span class='label'>Secondary Statute (Recognition Authority / Recognition Type / Statute)</span><span class='value'>{{secondaryStatute}}</span></div>
-			</div>
-		{{/if}}
+        <div class="field"><span class="label">Statute (Recognition Authority / Recognition Type /
+            Statute)</span><span class="value">{{statute}}</span></div>
+        <div class="field"><span class="label">Secondary Statute (Recognition Authority /
+            Recognition Type / Statute)</span><span class="value">{{secondaryStatute}}</span></div>
+      </div>
+    {{/if}}
 
-		{{#if includeDescriptionSection}}
-			<div class='section'>
-				<div class='section-title'>Description</div>
-				{{#each descriptions}}
-					<div class='field'>
-						<span class='label'>{{value}}</span>
-						<span class='value'>{{text}}</span>
-					</div>
-				{{else}}
-					<div class='subfield empty'>None recorded</div>
-				{{/each}}
-			</div>
-		{{/if}}
-	</body>
+    {{#if includeDescriptionSection}}
+      <div class="section">
+        <div class="section-title">Description</div>
+        {{#each descriptions}}
+          <div class="field">
+            <span class="label">{{value}}</span>
+            <span class="value">{{text}}</span>
+          </div>
+        {{else}}
+          <div class="subfield empty">None recorded</div>
+        {{/each}}
+      </div>
+    {{/if}}
+  </body>
 </html>

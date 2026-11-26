@@ -59,10 +59,10 @@ v-card.default.mb-4(tag="section")
 </template>
 
 <script>
-import DateTypesSelect from '@/components/Sites/site-forms/DateTypesSelect';
+import DateTypesSelect from "@/components/Sites/site-forms/DateTypesSelect"
 
 export default {
-  name: 'DatesViewer',
+  name: "DatesViewer",
   components: { DateTypesSelect },
   props: {
     value: {
@@ -72,10 +72,10 @@ export default {
   },
   computed: {
     dates() {
-      return this.value;
+      return this.value
     },
   },
-};
+}
 </script>
 
 <style scoped></style>

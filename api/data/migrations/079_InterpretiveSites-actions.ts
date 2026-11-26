@@ -18,23 +18,23 @@
 // );
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('InterpretiveSite.Actions', (table) => {
-		//ActionID is not unique either. It's unique per site
-		table.increments('ActionID').notNullable();
-		table.integer('InspectID').nullable();
-		table.integer('SiteID').nullable();
-		table.string('ActionDesc', 1024).notNullable();
-		table.date('ToBeCompleteDate').nullable();
-		table.date('ActionCompleteDate').nullable();
-		table.string('CompletionDesc', 1024).nullable();
-		table.string('Priority', 8).nullable();
-		table.string('CreatedBy', 100).nullable();
-		table.date('CreatedDate').nullable();
-		table.string('CompletedBy', 100).nullable();
-	});
-};
+  await knex.schema.createTable("InterpretiveSite.Actions", (table) => {
+    //ActionID is not unique either. It's unique per site
+    table.increments("ActionID").notNullable()
+    table.integer("InspectID").nullable()
+    table.integer("SiteID").nullable()
+    table.string("ActionDesc", 1024).notNullable()
+    table.date("ToBeCompleteDate").nullable()
+    table.date("ActionCompleteDate").nullable()
+    table.string("CompletionDesc", 1024).nullable()
+    table.string("Priority", 8).nullable()
+    table.string("CreatedBy", 100).nullable()
+    table.date("CreatedDate").nullable()
+    table.string("CompletedBy", 100).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('InterpretiveSite.Actions');
-};
+  await knex.schema.dropTable("InterpretiveSite.Actions")
+}

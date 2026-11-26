@@ -43,43 +43,43 @@
 // ALTER TABLE dbo.Photo_Missing ADD CONSTRAINT [PK_Image-old] PRIMARY KEY (RowId);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.Photo_Missing', (table) => {
-		table.integer('Id').nullable();
-		table.integer('PlaceId').nullable();
-		table.string('OriginalFileName', 256).nullable();
-		table.string('FeatureName', 600).nullable();
-		table.integer('CommunityId').notNullable();
-		table.string('NTSMapNumber', 20).nullable();
-		table.string('Address', 600).nullable();
-		table.date('DateCreated').nullable();
-		table.string('YHSIRecord', 20).nullable();
-		table.string('BordenRecord', 20).nullable();
-		table.string('PaleoRecord', 20).nullable();
-		table.string('ArchivalRecord', 20).nullable();
-		table.boolean('IsOtherRecord').notNullable();
-		table.integer('OriginalMediaId').notNullable();
-		table.string('OriginalRecord', 256).nullable();
-		table.integer('MediaStorage').notNullable();
-		table.text('Comments').nullable();
-		table.string('Caption', 256).nullable();
-		table.integer('Copyright').notNullable();
-		table.string('CreditLine', 256).nullable();
-		table.integer('OwnerId').notNullable();
-		table.integer('PhotoProjectId').notNullable();
-		table.integer('Program').notNullable();
-		table.string('Creator', 256).nullable();
-		table.string('CommunityName', 256).nullable();
-		table.string('Location', 256).nullable();
-		table.integer('UsageRights').nullable();
-		table.boolean('IsComplete').notNullable();
-		table.integer('ImageHeight').nullable();
-		table.integer('ImageWidth').nullable();
-		table.string('Subjects', 500).nullable();
-		table.integer('Rating').nullable();
-	});
-};
+  await knex.schema.createTable("dbo.Photo_Missing", (table) => {
+    table.integer("Id").nullable()
+    table.integer("PlaceId").nullable()
+    table.string("OriginalFileName", 256).nullable()
+    table.string("FeatureName", 600).nullable()
+    table.integer("CommunityId").notNullable()
+    table.string("NTSMapNumber", 20).nullable()
+    table.string("Address", 600).nullable()
+    table.date("DateCreated").nullable()
+    table.string("YHSIRecord", 20).nullable()
+    table.string("BordenRecord", 20).nullable()
+    table.string("PaleoRecord", 20).nullable()
+    table.string("ArchivalRecord", 20).nullable()
+    table.boolean("IsOtherRecord").notNullable()
+    table.integer("OriginalMediaId").notNullable()
+    table.string("OriginalRecord", 256).nullable()
+    table.integer("MediaStorage").notNullable()
+    table.text("Comments").nullable()
+    table.string("Caption", 256).nullable()
+    table.integer("Copyright").notNullable()
+    table.string("CreditLine", 256).nullable()
+    table.integer("OwnerId").notNullable()
+    table.integer("PhotoProjectId").notNullable()
+    table.integer("Program").notNullable()
+    table.string("Creator", 256).nullable()
+    table.string("CommunityName", 256).nullable()
+    table.string("Location", 256).nullable()
+    table.integer("UsageRights").nullable()
+    table.boolean("IsComplete").notNullable()
+    table.integer("ImageHeight").nullable()
+    table.integer("ImageWidth").nullable()
+    table.string("Subjects", 500).nullable()
+    table.integer("Rating").nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.Photo_Missing');
-};
+  await knex.schema.dropTable("dbo.Photo_Missing")
+}

@@ -16,10 +16,10 @@ v-select(
 </template>
 
 <script>
-import api from '@/apis/association-types-api';
+import api from "@/apis/association-types-api"
 
 export default {
-  name: 'AssociationTypesSelect',
+  name: "AssociationTypesSelect",
   components: {},
   props: {},
   data: () => ({
@@ -29,23 +29,23 @@ export default {
   computed: {},
   watch: {},
   mounted() {
-    this.getAssociationTypeOptions();
+    this.getAssociationTypeOptions()
   },
   methods: {
     getAssociationTypeOptions() {
-      this.loading = true;
+      this.loading = true
       return api
         .getAll()
         .then(({ data }) => {
-          this.associationTypeOptions = data;
-          return data;
+          this.associationTypeOptions = data
+          return data
         })
         .finally(() => {
-          this.loading = false;
-        });
+          this.loading = false
+        })
     },
   },
-};
+}
 </script>
 
 <style scoped></style>

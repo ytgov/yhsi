@@ -1,9 +1,9 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response } from "express"
 
-import { CATEGORY_TYPES } from '../models';
+import { CATEGORY_TYPES } from "../models"
 
-export const categoryTypesRouter = express.Router();
+export const categoryTypesRouter = express.Router()
 
-categoryTypesRouter.get('/', (req: Request, res: Response) => {
-	return res.json({ data: CATEGORY_TYPES });
-});
+categoryTypesRouter.get("/", (req: Request, res: Response) => {
+  return res.json({ data: CATEGORY_TYPES })
+})

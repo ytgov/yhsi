@@ -1,5 +1,5 @@
 export class Theme {
-	id!: number;
-	placeId!: number;
-	placeThemeId!: number;
+  id!: number
+  placeId!: number
+  placeThemeId!: number
 }

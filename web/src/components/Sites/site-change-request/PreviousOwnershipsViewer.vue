@@ -44,7 +44,7 @@
 
 <script>
 export default {
-  name: 'PreviousOwnershipsEditor',
+  name: "PreviousOwnershipsEditor",
   props: {
     value: {
       type: Array,
@@ -53,10 +53,10 @@ export default {
   },
   computed: {
     previousOwnerships() {
-      return this.value;
+      return this.value
     },
   },
-};
+}
 </script>
 
 <style scoped></style>

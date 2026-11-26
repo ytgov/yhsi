@@ -1,9 +1,9 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response } from "express"
 
-import { CONTACT_TYPES } from '../models';
+import { CONTACT_TYPES } from "../models"
 
-export const contactTypesRouter = express.Router();
+export const contactTypesRouter = express.Router()
 
-contactTypesRouter.get('/', (req: Request, res: Response) => {
-	return res.json({ data: CONTACT_TYPES });
-});
+contactTypesRouter.get("/", (req: Request, res: Response) => {
+  return res.json({ data: CONTACT_TYPES })
+})

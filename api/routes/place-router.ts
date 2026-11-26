@@ -1,490 +1,488 @@
-import express, { NextFunction, Request, Response } from 'express';
-import { body, check, param, query, validationResult, matchedData } from 'express-validator';
-import multer from 'multer';
-import { isNil, isString, difference } from 'lodash';
+import express, { NextFunction, Request, Response } from "express"
+import { body, check, param, query, validationResult, matchedData } from "express-validator"
+import multer from "multer"
+import { isNil, isString, difference } from "lodash"
 
-import db from '@/db/db-client';
-import { API_PORT } from '@/config';
-import { PhotoService, PlaceService } from '@/services';
-import PrintSiteService from '@/services/place/print-site-service';
-import { DestroyService } from '@/services/place';
-import { ReturnValidationErrors } from '@/middleware';
-import { authorize } from '@/middleware/authorization';
-import { Place, User, UserRoles } from '@/models';
-import PlacesController from '@/controllers/places-controller';
-import { PlacePolicy } from '@/policies';
-import { generatePDF } from '@/utils/pdf-generator';
-import { createThumbnail } from '@/utils/image';
-import { coordinateBody } from '@/utils/coordinates';
-import { NotFoundError } from '@/utils/validation';
-import { Photo } from '@/data/photo-entities';
+import db from "@/db/db-client"
+import { API_PORT } from "@/config"
+import { PhotoService, PlaceService } from "@/services"
+import PrintSiteService from "@/services/place/print-site-service"
+import { DestroyService } from "@/services/place"
+import { ReturnValidationErrors } from "@/middleware"
+import { authorize } from "@/middleware/authorization"
+import { Place, User, UserRoles } from "@/models"
+import PlacesController from "@/controllers/places-controller"
+import { PlacePolicy } from "@/policies"
+import { generatePDF } from "@/utils/pdf-generator"
+import { createThumbnail } from "@/utils/image"
+import { coordinateBody } from "@/utils/coordinates"
+import { NotFoundError } from "@/utils/validation"
+import { Photo } from "@/data/photo-entities"
 
-const placeService = new PlaceService();
-const photoService = new PhotoService();
-const PAGE_SIZE = 10;
+const placeService = new PlaceService()
+const photoService = new PhotoService()
+const PAGE_SIZE = 10
 
 // authorize() settles which roles may write; this settles which sites they may
 // write to. getById does not scope its query, so a user restricted to a
 // community or map sheet can otherwise reach any site by id.
 async function authorizePlaceAccess(req: Request, res: Response, next: NextFunction) {
-	const currentUser = req.user as User;
-	const id = parseInt(req.params.id ?? req.params.placeId);
+  const currentUser = req.user as User
+  const id = parseInt(req.params.id ?? req.params.placeId)
 
-	if (isNaN(id)) {
-		return res.status(400).json({
-			messages: [{ variant: 'error', text: 'A valid site id is required.' }],
-		});
-	}
+  if (isNaN(id)) {
+    return res.status(400).json({
+      messages: [{ variant: "error", text: "A valid site id is required." }],
+    })
+  }
 
-	try {
-		const { place } = await placeService.getById(id, currentUser);
-		const policy = new PlacePolicy(currentUser, place);
+  try {
+    const { place } = await placeService.getById(id, currentUser)
+    const policy = new PlacePolicy(currentUser, place)
 
-		if (policy.update()) return next();
+    if (policy.update()) return next()
 
-		return res.status(403).json({
-			messages: [
-				{ variant: 'error', text: 'You are not authorized to modify this site.' },
-			],
-		});
-	} catch (error) {
-		if (error instanceof NotFoundError) {
-			return res.status(404).json({
-				messages: [
-					{ variant: 'error', text: `Could not find Place for id=${id}` },
-				],
-			});
-		}
+    return res.status(403).json({
+      messages: [{ variant: "error", text: "You are not authorized to modify this site." }],
+    })
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return res.status(404).json({
+        messages: [{ variant: "error", text: `Could not find Place for id=${id}` }],
+      })
+    }
 
-		console.error('Place access check failed', error);
+    console.error("Place access check failed", error)
 
-		return res.status(422).json({
-			messages: [{ variant: 'error', text: (error as Error).message }],
-		});
-	}
+    return res.status(422).json({
+      messages: [{ variant: "error", text: (error as Error).message }],
+    })
+  }
 }
 
-export const placeRouter = express.Router();
+export const placeRouter = express.Router()
 
 placeRouter.get(
-	'/',
-	authorize([
-		UserRoles.SITE_ADMIN,
-		UserRoles.SITE_EDITOR,
-		UserRoles.SITE_VIEWER,
-		UserRoles.SITE_VIEWER_LIMITED,
-		UserRoles.ADMINISTRATOR,
-	]),
-	[query('page').default(1).isInt({ gt: 0 })],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const page = parseInt(req.query.page as string);
-		const skip = (page - 1) * PAGE_SIZE;
-		const take = PAGE_SIZE;
+  "/",
+  authorize([
+    UserRoles.SITE_ADMIN,
+    UserRoles.SITE_EDITOR,
+    UserRoles.SITE_VIEWER,
+    UserRoles.SITE_VIEWER_LIMITED,
+    UserRoles.ADMINISTRATOR,
+  ]),
+  [query("page").default(1).isInt({ gt: 0 })],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string)
+    const skip = (page - 1) * PAGE_SIZE
+    const take = PAGE_SIZE
 
-		const list = await placeService
-			.getAll(skip, take)
-			.then((data) => data)
-			.catch((err) => {
-				console.error('Database Error', err);
-				return undefined;
-			});
+    const list = await placeService
+      .getAll(skip, take)
+      .then((data) => data)
+      .catch((err) => {
+        console.error("Database Error", err)
+        return undefined
+      })
 
-		const item_count = await placeService
-			.getPlaceCount()
-			.then((data) => data)
-			.catch((err) => {
-				console.error('Database Error', err);
-				return 0;
-			});
+    const item_count = await placeService
+      .getPlaceCount()
+      .then((data) => data)
+      .catch((err) => {
+        console.error("Database Error", err)
+        return 0
+      })
 
-		const page_count = Math.ceil(item_count / PAGE_SIZE);
+    const page_count = Math.ceil(item_count / PAGE_SIZE)
 
-		if (list) {
-			return res.json({
-				data: list,
-				meta: { page, page_size: PAGE_SIZE, item_count, page_count },
-			});
-		}
+    if (list) {
+      return res.json({
+        data: list,
+        meta: { page, page_size: PAGE_SIZE, item_count, page_count },
+      })
+    }
 
-		return res.status(500).send('Error');
-	}
-);
-
-placeRouter.post(
-	'/search',
-	authorize([
-		UserRoles.SITE_ADMIN,
-		UserRoles.SITE_EDITOR,
-		UserRoles.SITE_VIEWER,
-		UserRoles.SITE_VIEWER_LIMITED,
-		UserRoles.ADMINISTRATOR,
-	]),
-	[body('page').isInt().default(1)],
-	PlacesController.searchPlaces
-);
+    return res.status(500).send("Error")
+  }
+)
 
 placeRouter.post(
-	'/generate-id',
-	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
-	[body('nTSMapSheet').isString().bail().notEmpty().trim()],
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
+  "/search",
+  authorize([
+    UserRoles.SITE_ADMIN,
+    UserRoles.SITE_EDITOR,
+    UserRoles.SITE_VIEWER,
+    UserRoles.SITE_VIEWER_LIMITED,
+    UserRoles.ADMINISTRATOR,
+  ]),
+  [body("page").isInt().default(1)],
+  PlacesController.searchPlaces
+)
 
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
+placeRouter.post(
+  "/generate-id",
+  authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+  [body("nTSMapSheet").isString().bail().notEmpty().trim()],
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req)
 
-		const { nTSMapSheet } = req.body;
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
 
-		const newId = await placeService.generateIdFor(nTSMapSheet);
+    const { nTSMapSheet } = req.body
 
-		res.json({ data: { yHSIId: newId, nTSMapSheet } });
-	}
-);
+    const newId = await placeService.generateIdFor(nTSMapSheet)
+
+    res.json({ data: { yHSIId: newId, nTSMapSheet } })
+  }
+)
 
 placeRouter.get(
-	'/:id',
-	authorize([
-		UserRoles.SITE_ADMIN,
-		UserRoles.SITE_EDITOR,
-		UserRoles.SITE_VIEWER,
-		UserRoles.SITE_VIEWER_LIMITED,
-		UserRoles.ADMINISTRATOR,
-	]),
-	[check('id').notEmpty()],
-	ReturnValidationErrors,
-	PlacesController.getPlace
-);
+  "/:id",
+  authorize([
+    UserRoles.SITE_ADMIN,
+    UserRoles.SITE_EDITOR,
+    UserRoles.SITE_VIEWER,
+    UserRoles.SITE_VIEWER_LIMITED,
+    UserRoles.ADMINISTRATOR,
+  ]),
+  [check("id").notEmpty()],
+  ReturnValidationErrors,
+  PlacesController.getPlace
+)
 
 placeRouter.get(
-	'/:id/print/:format',
-	authorize([
-		UserRoles.SITE_ADMIN,
-		UserRoles.SITE_EDITOR,
-		UserRoles.SITE_VIEWER,
-		UserRoles.SITE_VIEWER_LIMITED,
-		UserRoles.ADMINISTRATOR,
-	]),
-	[check('id').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const id = parseInt(req.params.id);
-		const { format } = req.params;
-		const currentUser = req.user as User;
+  "/:id/print/:format",
+  authorize([
+    UserRoles.SITE_ADMIN,
+    UserRoles.SITE_EDITOR,
+    UserRoles.SITE_VIEWER,
+    UserRoles.SITE_VIEWER_LIMITED,
+    UserRoles.ADMINISTRATOR,
+  ]),
+  [check("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id)
+    const { format } = req.params
+    const currentUser = req.user as User
 
-		const placeData = await placeService
-			.getById(id, currentUser)
-			.then(({ place, relationships }) => {
-				const policy = new PlacePolicy(currentUser, place);
-				if (policy.show()) {
-					return {
-						place,
-						relationships,
-						API_PORT,
-					};
-				}
-			});
+    const placeData = await placeService
+      .getById(id, currentUser)
+      .then(({ place, relationships }) => {
+        const policy = new PlacePolicy(currentUser, place)
+        if (policy.show()) {
+          return {
+            place,
+            relationships,
+            API_PORT,
+          }
+        }
+      })
 
-		if (isNil(placeData)) {
-			res.status(500).send('Failed to load place');
-			return;
-		}
+    if (isNil(placeData)) {
+      res.status(500).send("Failed to load place")
+      return
+    }
 
-		const { place } = placeData;
+    const { place } = placeData
 
-		const { sections } = req.query;
+    const { sections } = req.query
 
-		const selectedSections = isString(sections) ? sections.split(',') : [];
+    const selectedSections = isString(sections) ? sections.split(",") : []
 
-		const data = await PrintSiteService.perform(place, selectedSections);
+    const data = await PrintSiteService.perform(place, selectedSections)
 
-		if (format == 'html') {
-			res.send(data);
-		} else {
-			const pdf = await generatePDF(data, 'letter', false);
-			const primaryName = place.primaryName;
-			res.setHeader('Content-disposition', `filename="SitePrint-${primaryName}.pdf"`);
-			res.setHeader('Content-type', 'application/pdf');
-			res.send(pdf);
-		}
-	}
-);
-
-placeRouter.post(
-	'/',
-	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
-	[
-		body('primaryName').isString().bail().notEmpty().trim(),
-		//body('yHSIId').isString().bail().notEmpty().trim(),
-		body('jurisdiction').isInt().bail().notEmpty(),
-		body('statuteId').isInt().bail().notEmpty(),
-		body('statute2Id').isInt().bail().notEmpty(),
-		body('ownerConsent').isInt().bail().notEmpty(),
-		body('category').isInt().bail().notEmpty(),
-		body('communityId').isInt().bail().notEmpty(),
-		body('siteStatus').isInt().bail().notEmpty(),
-		body('floorCondition').isInt().bail().notEmpty(),
-		body('wallCondition').isInt().bail().notEmpty(),
-		body('doorCondition').isInt().bail().notEmpty(),
-		body('roofCondition').isInt().bail().notEmpty(),
-		body('coordinateDetermination').isInt().bail().notEmpty(),
-		coordinateBody('latitude', 'latitude'),
-		coordinateBody('longitude', 'longitude'),
-		body('isPubliclyAccessible').isBoolean().bail().notEmpty(),
-		body('showInRegister').isBoolean().bail().notEmpty(),
-	],
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
-		const currentUser = req.user as User;
-
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
-
-		req.body.yHSIId = await placeService.generateIdFor(req.body.nTSMapSheet);
-
-		try {
-			const result = await placeService.addPlace(req.body as Place, currentUser);
-			return res.json({ data: result });
-		} catch (err) {
-			console.error('addPlace ERROR', err);
-			return res.status(500).json({ errors: [{ message: (err as Error).message || 'Failed to create site' }] });
-		}
-	}
-);
+    if (format == "html") {
+      res.send(data)
+    } else {
+      const pdf = await generatePDF(data, "letter", false)
+      const primaryName = place.primaryName
+      res.setHeader("Content-disposition", `filename="SitePrint-${primaryName}.pdf"`)
+      res.setHeader("Content-type", "application/pdf")
+      res.send(pdf)
+    }
+  }
+)
 
 placeRouter.post(
-	'/:id/photo',
-	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
-	authorizePlaceAccess,
-	multer().single('file'),
-	async (req: Request, res: Response) => {
-		try {
-			const { id } = req.params;
+  "/",
+  authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+  [
+    body("primaryName").isString().bail().notEmpty().trim(),
+    //body('yHSIId').isString().bail().notEmpty().trim(),
+    body("jurisdiction").isInt().bail().notEmpty(),
+    body("statuteId").isInt().bail().notEmpty(),
+    body("statute2Id").isInt().bail().notEmpty(),
+    body("ownerConsent").isInt().bail().notEmpty(),
+    body("category").isInt().bail().notEmpty(),
+    body("communityId").isInt().bail().notEmpty(),
+    body("siteStatus").isInt().bail().notEmpty(),
+    body("floorCondition").isInt().bail().notEmpty(),
+    body("wallCondition").isInt().bail().notEmpty(),
+    body("doorCondition").isInt().bail().notEmpty(),
+    body("roofCondition").isInt().bail().notEmpty(),
+    body("coordinateDetermination").isInt().bail().notEmpty(),
+    coordinateBody("latitude", "latitude"),
+    coordinateBody("longitude", "longitude"),
+    body("isPubliclyAccessible").isBoolean().bail().notEmpty(),
+    body("showInRegister").isBoolean().bail().notEmpty(),
+  ],
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req)
+    const currentUser = req.user as User
 
-			const ThumbFile = await createThumbnail(req.file.buffer);
-			const body: Photo = {
-				File: req.file.buffer,
-				ThumbFile,
-				...req.body,
-				communityId: parseInt(req.body.communityId),
-				originalMediaId: parseInt(req.body.originalMediaId),
-				ownerId: parseInt(req.body.ownerId),
-				photoProjectId: parseInt(req.body.photoProjectId),
-				placeId: parseInt(id),
-				dateCreated: new Date(),
-			};
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
 
-			await photoService.addPhoto(body);
+    req.body.yHSIId = await placeService.generateIdFor(req.body.nTSMapSheet)
 
-			return res.status(200).json({ data: 'success' });
-		} catch (err) {
-			console.log(err);
-			return res.status(500).json({ data: 'failuer', error: err });
-		}
-	}
-);
+    try {
+      const result = await placeService.addPlace(req.body as Place, currentUser)
+      return res.json({ data: result })
+    } catch (err) {
+      console.error("addPlace ERROR", err)
+      return res
+        .status(500)
+        .json({ errors: [{ message: (err as Error).message || "Failed to create site" }] })
+    }
+  }
+)
 
 placeRouter.post(
-	'/:placeId/photos/link',
-	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
-	authorizePlaceAccess,
-	async (request: Request, response: Response) => {
-		try {
-			const { placeId } = request.params;
+  "/:id/photo",
+  authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+  authorizePlaceAccess,
+  multer().single("file"),
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params
 
-			const { linkPhotos } = request.body;
-			const currentPhotosForPlace = await db
-				.select('RowId')
-				.from('dbo.Photo')
-				.where('PlaceId', placeId);
+      const ThumbFile = await createThumbnail(req.file.buffer)
+      const body: Photo = {
+        File: req.file.buffer,
+        ThumbFile,
+        ...req.body,
+        communityId: parseInt(req.body.communityId),
+        originalMediaId: parseInt(req.body.originalMediaId),
+        ownerId: parseInt(req.body.ownerId),
+        photoProjectId: parseInt(req.body.photoProjectId),
+        placeId: parseInt(id),
+        dateCreated: new Date(),
+      }
 
-			const filteredLinkPhotos = difference(
-				linkPhotos,
-				currentPhotosForPlace.map((x: any) => {
-					return x.PhotoId;
-				})
-			);
+      await photoService.addPhoto(body)
 
-			for (const photo of filteredLinkPhotos) {
-				if (isNil(photo)) {
-					throw new Error('photo in filteredLinkPhotos is null');
-				}
+      return res.status(200).json({ data: "success" })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({ data: "failuer", error: err })
+    }
+  }
+)
 
-				const { rowId } = photo;
-				const rowIdString = String(rowId);
+placeRouter.post(
+  "/:placeId/photos/link",
+  authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+  authorizePlaceAccess,
+  async (request: Request, response: Response) => {
+    try {
+      const { placeId } = request.params
 
-				if (isNil(rowIdString)) {
-					throw new Error('rowId in photo from filteredLinkPhotos is null');
-				}
+      const { linkPhotos } = request.body
+      const currentPhotosForPlace = await db
+        .select("RowId")
+        .from("dbo.Photo")
+        .where("PlaceId", placeId)
 
-				try {
-					await photoService.associatePhotoToPlace(rowIdString, placeId);
-				} catch (error) {
-					console.log(error);
-				}
-			}
+      const filteredLinkPhotos = difference(
+        linkPhotos,
+        currentPhotosForPlace.map((x: any) => {
+          return x.PhotoId
+        })
+      )
 
-			return response.json({ message: 'Successfully linked the photos' });
-		} catch (error) {
-			console.log(error);
-			return response.status(500).json({ data: 'failed to link' });
-		}
-	}
-);
+      for (const photo of filteredLinkPhotos) {
+        if (isNil(photo)) {
+          throw new Error("photo in filteredLinkPhotos is null")
+        }
+
+        const { rowId } = photo
+        const rowIdString = String(rowId)
+
+        if (isNil(rowIdString)) {
+          throw new Error("rowId in photo from filteredLinkPhotos is null")
+        }
+
+        try {
+          await photoService.associatePhotoToPlace(rowIdString, placeId)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
+      return response.json({ message: "Successfully linked the photos" })
+    } catch (error) {
+      console.log(error)
+      return response.status(500).json({ data: "failed to link" })
+    }
+  }
+)
 
 placeRouter.get(
-	'/:id/primary-photo',
-	authorize([
-		UserRoles.SITE_ADMIN,
-		UserRoles.SITE_EDITOR,
-		UserRoles.SITE_VIEWER,
-		UserRoles.SITE_VIEWER_LIMITED,
-		UserRoles.ADMINISTRATOR,
-	]),
-	multer().single('file'),
-	async (req: Request, res: Response) => {
-		try {
-			const { id } = req.params;
-			const placePhotos = await photoService.getForPlace(parseInt(id));
+  "/:id/primary-photo",
+  authorize([
+    UserRoles.SITE_ADMIN,
+    UserRoles.SITE_EDITOR,
+    UserRoles.SITE_VIEWER,
+    UserRoles.SITE_VIEWER_LIMITED,
+    UserRoles.ADMINISTRATOR,
+  ]),
+  multer().single("file"),
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params
+      const placePhotos = await photoService.getForPlace(parseInt(id))
 
-			const defaultPhoto = placePhotos.find((photo) => photo.isSiteDefault);
-			if (defaultPhoto) return res.json({ data: defaultPhoto });
+      const defaultPhoto = placePhotos.find((photo) => photo.isSiteDefault)
+      if (defaultPhoto) return res.json({ data: defaultPhoto })
 
-			const otherPhotos = placePhotos.filter((photo) => !photo.isPrivate);
-			if (otherPhotos) return res.json({ data: otherPhotos[0] });
+      const otherPhotos = placePhotos.filter((photo) => !photo.isPrivate)
+      if (otherPhotos) return res.json({ data: otherPhotos[0] })
 
-			return res.json({ data: null });
-		} catch (err) {
-			return res.json({ data: 'failuer', error: err });
-		}
-	}
-);
+      return res.json({ data: null })
+    } catch (err) {
+      return res.json({ data: "failuer", error: err })
+    }
+  }
+)
 
 placeRouter.patch(
-	'/:id',
-	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
-	authorizePlaceAccess,
-	[
-		param('id').isInt({ gt: 0 }),
-		body('yHSIId').isString().optional({ nullable: true }),
-		body('associations').isArray().optional({ nullable: true }),
-		body('block').isString().optional({ nullable: true }),
-		body('bordenNumber').isString().optional({ nullable: true }),
-		body('buildingSize').isString().optional({ nullable: true }),
-		body('category').isInt().optional(),
-		body('cIHBNumber').isString().optional({ nullable: true }),
-		body('communityId').isInt().optional(),
-		body('conditionComment').isString().optional({ nullable: true }),
-		body('constructionPeriods').isArray().optional({ nullable: true }),
-		body('contacts').isArray().optional({ nullable: true }),
-		body('contributingResources').isArray().optional({ nullable: true }),
-		body('coordinateDetermination').isInt().optional(),
-		body('currentUseComment').isString().optional({ nullable: true }),
-		body('dates').isArray().optional({ nullable: true }),
-		body('descriptions').isArray().optional({ nullable: true }),
-		body('designations').isArray().optional({ nullable: true }),
-		body('doorCondition').isInt().optional(),
-		body('fHBRONumber').isString().optional({ nullable: true }),
-		body('firstNationAssociations').isArray().optional({ nullable: true }),
-		body('floorCondition').isInt().optional(),
-		body('functionalUses').isArray().optional({ nullable: true }),
-		body('groupYHSI').isString().optional({ nullable: true }),
-		body('hectareArea').isString().optional({ nullable: true }),
-		body('historicalPatterns').isArray().optional({ nullable: true }),
-		body('isPubliclyAccessible').isBoolean().optional(),
-		body('jurisdiction').isInt().optional(),
-		body('lAGroup').isString().optional({ nullable: true }),
-		coordinateBody('latitude', 'latitude'),
-		body('locationComment').isString().optional({ nullable: true }),
-		body('locationContext').isString().optional({ nullable: true }),
-		coordinateBody('longitude', 'longitude'),
-		body('lot').isString().optional({ nullable: true }),
-		body('names').isArray().optional({ nullable: true }),
-		body('nTSMapSheet').isString().optional({ nullable: true }),
-		body('otherCommunity').isString().optional({ nullable: true }),
-		body('otherLocality').isString().optional({ nullable: true }),
-		body('ownerConsent').isInt().optional(),
-		body('ownerships').isArray().optional({ nullable: true }),
-		body('physicalAddress').isString().optional({ nullable: true }),
-		body('physicalCountry').isString().optional({ nullable: true }),
-		body('physicalPostalCode').isString().optional({ nullable: true }),
-		body('physicalProvince').isString().optional({ nullable: true }),
-		body('planNumber').isString().optional({ nullable: true }),
-		body('previousAddress').isString().optional({ nullable: true }),
-		body('previousOwnerships').isArray().optional({ nullable: true }),
-		body('primaryName').isString().optional(),
-		body('fR_PrimaryName').isString().optional({ nullable: true }),
-		body('fR_Designations').isString().optional({ nullable: true }),
-		body('recognitionDate').isDate().optional({ nullable: true }),
-		body('recordStatus').isInt().optional(),
-		body('records').isArray().optional({ nullable: true }),
-		body('resourceType').isString().optional({ nullable: true }),
-		body('revisionLogs').isArray().optional({ nullable: true }),
-		body('roofCondition').isInt().optional(),
-		body('showInRegister').isBoolean().optional(),
-		body('siteCategories').isArray().optional({ nullable: true }),
-		body('siteDistrictNumber').isString().optional({ nullable: true }),
-		body('siteStatus').isInt().optional(),
-		body('statute2Id').isInt().optional(),
-		body('statuteId').isInt().optional(),
-		body('themes').isArray().optional({ nullable: true }),
-		body('townSiteMapNumber').isString().optional({ nullable: true }),
-		body('wallCondition').isInt().optional(),
-		body('webLinks').isArray().optional({ nullable: true }),
-		body('yGBuildingNumber').isString().optional({ nullable: true }),
-		body('yGReserveNumber').isString().optional({ nullable: true }),
-		body('yHSPastUse').isString().optional({ nullable: true }),
-		body('yHSThemes').isString().optional({ nullable: true }),
-		body('zoning').isString().optional({ nullable: true }),
-	],
-	ReturnValidationErrors,
-	(req: Request, res: Response) => {
-		const id = parseInt(req.params.id);
+  "/:id",
+  authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
+  authorizePlaceAccess,
+  [
+    param("id").isInt({ gt: 0 }),
+    body("yHSIId").isString().optional({ nullable: true }),
+    body("associations").isArray().optional({ nullable: true }),
+    body("block").isString().optional({ nullable: true }),
+    body("bordenNumber").isString().optional({ nullable: true }),
+    body("buildingSize").isString().optional({ nullable: true }),
+    body("category").isInt().optional(),
+    body("cIHBNumber").isString().optional({ nullable: true }),
+    body("communityId").isInt().optional(),
+    body("conditionComment").isString().optional({ nullable: true }),
+    body("constructionPeriods").isArray().optional({ nullable: true }),
+    body("contacts").isArray().optional({ nullable: true }),
+    body("contributingResources").isArray().optional({ nullable: true }),
+    body("coordinateDetermination").isInt().optional(),
+    body("currentUseComment").isString().optional({ nullable: true }),
+    body("dates").isArray().optional({ nullable: true }),
+    body("descriptions").isArray().optional({ nullable: true }),
+    body("designations").isArray().optional({ nullable: true }),
+    body("doorCondition").isInt().optional(),
+    body("fHBRONumber").isString().optional({ nullable: true }),
+    body("firstNationAssociations").isArray().optional({ nullable: true }),
+    body("floorCondition").isInt().optional(),
+    body("functionalUses").isArray().optional({ nullable: true }),
+    body("groupYHSI").isString().optional({ nullable: true }),
+    body("hectareArea").isString().optional({ nullable: true }),
+    body("historicalPatterns").isArray().optional({ nullable: true }),
+    body("isPubliclyAccessible").isBoolean().optional(),
+    body("jurisdiction").isInt().optional(),
+    body("lAGroup").isString().optional({ nullable: true }),
+    coordinateBody("latitude", "latitude"),
+    body("locationComment").isString().optional({ nullable: true }),
+    body("locationContext").isString().optional({ nullable: true }),
+    coordinateBody("longitude", "longitude"),
+    body("lot").isString().optional({ nullable: true }),
+    body("names").isArray().optional({ nullable: true }),
+    body("nTSMapSheet").isString().optional({ nullable: true }),
+    body("otherCommunity").isString().optional({ nullable: true }),
+    body("otherLocality").isString().optional({ nullable: true }),
+    body("ownerConsent").isInt().optional(),
+    body("ownerships").isArray().optional({ nullable: true }),
+    body("physicalAddress").isString().optional({ nullable: true }),
+    body("physicalCountry").isString().optional({ nullable: true }),
+    body("physicalPostalCode").isString().optional({ nullable: true }),
+    body("physicalProvince").isString().optional({ nullable: true }),
+    body("planNumber").isString().optional({ nullable: true }),
+    body("previousAddress").isString().optional({ nullable: true }),
+    body("previousOwnerships").isArray().optional({ nullable: true }),
+    body("primaryName").isString().optional(),
+    body("fR_PrimaryName").isString().optional({ nullable: true }),
+    body("fR_Designations").isString().optional({ nullable: true }),
+    body("recognitionDate").isDate().optional({ nullable: true }),
+    body("recordStatus").isInt().optional(),
+    body("records").isArray().optional({ nullable: true }),
+    body("resourceType").isString().optional({ nullable: true }),
+    body("revisionLogs").isArray().optional({ nullable: true }),
+    body("roofCondition").isInt().optional(),
+    body("showInRegister").isBoolean().optional(),
+    body("siteCategories").isArray().optional({ nullable: true }),
+    body("siteDistrictNumber").isString().optional({ nullable: true }),
+    body("siteStatus").isInt().optional(),
+    body("statute2Id").isInt().optional(),
+    body("statuteId").isInt().optional(),
+    body("themes").isArray().optional({ nullable: true }),
+    body("townSiteMapNumber").isString().optional({ nullable: true }),
+    body("wallCondition").isInt().optional(),
+    body("webLinks").isArray().optional({ nullable: true }),
+    body("yGBuildingNumber").isString().optional({ nullable: true }),
+    body("yGReserveNumber").isString().optional({ nullable: true }),
+    body("yHSPastUse").isString().optional({ nullable: true }),
+    body("yHSThemes").isString().optional({ nullable: true }),
+    body("zoning").isString().optional({ nullable: true }),
+  ],
+  ReturnValidationErrors,
+  (req: Request, res: Response) => {
+    const id = parseInt(req.params.id)
 
-		const attributes = matchedData(req, {
-			locations: ['body'],
-		});
+    const attributes = matchedData(req, {
+      locations: ["body"],
+    })
 
-		// Should be using BaseController and loading currentUser into req here
-		const user = req.user as User;
-		if (isNil(user) || isNil(user.roles)) {
-			return res.status(401).json({ message: 'Unauthorized' });
-		}
+    // Should be using BaseController and loading currentUser into req here
+    const user = req.user as User
+    if (isNil(user) || isNil(user.roles)) {
+      return res.status(401).json({ message: "Unauthorized" })
+    }
 
-		if (!user.roles.includes(UserRoles.ADMINISTRATOR)) {
-			attributes.yHSIId = undefined;
-		}
+    if (!user.roles.includes(UserRoles.ADMINISTRATOR)) {
+      attributes.yHSIId = undefined
+    }
 
-		return placeService
-			.update(id, attributes)
-			.then((data) => {
-				return res.json({
-					data,
-					messages: [{ variant: 'success', text: 'Site updated' }],
-				});
-			})
-			.catch((error) => {
-				return res.status(422).json({
-					messages: [{ variant: 'error', text: error.message }],
-				});
-			});
-	}
-);
+    return placeService
+      .update(id, attributes)
+      .then((data) => {
+        return res.json({
+          data,
+          messages: [{ variant: "success", text: "Site updated" }],
+        })
+      })
+      .catch((error) => {
+        return res.status(422).json({
+          messages: [{ variant: "error", text: error.message }],
+        })
+      })
+  }
+)
 
 placeRouter.delete(
-	'/:id',
-	authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
-	authorizePlaceAccess,
-	async (req: Request, res: Response) => {
-		try {
-			const id = parseInt(req.params.id);
-			await DestroyService.perform(id);
-			return res.status(204).json({ messages: 'Place was deleted' });
-		} catch (error) {
-			console.error(`Place deletion failed: ${error}`, { error });
-			return res.status(422).json({ messages: `Place deletion failed: ${error}` });
-		}
-	}
-);
+  "/:id",
+  authorize([UserRoles.SITE_ADMIN, UserRoles.ADMINISTRATOR]),
+  authorizePlaceAccess,
+  async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id)
+      await DestroyService.perform(id)
+      return res.status(204).json({ messages: "Place was deleted" })
+    } catch (error) {
+      console.error(`Place deletion failed: ${error}`, { error })
+      return res.status(422).json({ messages: `Place deletion failed: ${error}` })
+    }
+  }
+)

@@ -1,0 +1,8 @@
+# Preserve npm's generated lockfile layout.
+**/package-lock.json
+
+# Preserve SQL Server batch separators and script encodings.
+db/**/*.sql
+
+# Deprecated fragment, not a standalone JavaScript program.
+web/src/modules/AirplaneCrashes/AirplaneCrashes/deprecated/fromMapLoader.js

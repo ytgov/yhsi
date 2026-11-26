@@ -14,15 +14,15 @@
 // ALTER TABLE dbo.HistoricalPattern ADD CONSTRAINT PK_HistoricalPattern PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.HistoricalPattern', (table) => {
-		table.increments('Id').primary();
-		table.integer('PlaceId').notNullable();
-		table.text('Comments').nullable();
-		table.integer('HistoricalPatternType').notNullable();
-	});
-};
+  await knex.schema.createTable("dbo.HistoricalPattern", (table) => {
+    table.increments("Id").primary()
+    table.integer("PlaceId").notNullable()
+    table.text("Comments").nullable()
+    table.integer("HistoricalPatternType").notNullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.HistoricalPattern');
-};
+  await knex.schema.dropTable("dbo.HistoricalPattern")
+}

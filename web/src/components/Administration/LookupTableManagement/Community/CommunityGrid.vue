@@ -1,10 +1,7 @@
 <template>
   <div>
     <v-breadcrumbs
-      :items="[
-        { text: 'Administration', to: '/admin', exact: true },
-        { text: 'Community' },
-      ]"
+      :items="[{ text: 'Administration', to: '/admin', exact: true }, { text: 'Community' }]"
     ></v-breadcrumbs>
 
     <h1>Community</h1>
@@ -49,43 +46,43 @@
 </template>
 
 <script>
-import catalogs from '../../../../controllers/catalogs';
-import EditDialog from './EditDialog';
-import AddDialog from './AddDialog';
+import catalogs from "../../../../controllers/catalogs"
+import EditDialog from "./EditDialog"
+import AddDialog from "./AddDialog"
 
 export default {
-  name: 'communitygrid',
+  name: "communitygrid",
   components: { EditDialog, AddDialog },
   data: () => ({
     loading: false,
     communities: [],
-    search: '',
+    search: "",
     headers: [
-      { text: 'Name', value: 'Name' },
-      { text: 'Name (French)', value: 'FR_Name' },
+      { text: "Name", value: "Name" },
+      { text: "Name (French)", value: "FR_Name" },
     ],
     displayCommunity: {},
     editDialog: false,
   }),
   mounted() {
-    this.load();
+    this.load()
   },
   methods: {
     async load() {
-      this.loading = true;
+      this.loading = true
       try {
-        const data = await catalogs.getCommunities(0, 1000, '', 'Name', 'asc');
-        this.communities = data || [];
+        const data = await catalogs.getCommunities(0, 1000, "", "Name", "asc")
+        this.communities = data || []
       } catch (e) {
-        console.error(e);
+        console.error(e)
       } finally {
-        this.loading = false;
+        this.loading = false
       }
     },
     handleClick(value) {
-      this.displayCommunity = value;
-      this.editDialog = true;
+      this.displayCommunity = value
+      this.editDialog = true
     },
   },
-};
+}
 </script>

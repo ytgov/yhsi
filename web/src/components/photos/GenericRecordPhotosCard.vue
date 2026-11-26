@@ -13,7 +13,8 @@ Supported records:
 <template>
   <div>
     <v-card>
-      <div v-if="photos.length === 0"
+      <div
+        v-if="photos.length === 0"
         class="center-children"
         style="height: 450px"
       >
@@ -25,17 +26,17 @@ Supported records:
         ></v-img>
       </div>
       <div v-else>
-        <v-carousel 
-          v-model="selectedPhoto" 
+        <v-carousel
+          v-model="selectedPhoto"
           id="carousell"
-          height="450" 
+          height="450"
           hide-delimiter-background
         >
           <v-carousel-item
             v-for="(item, i) in photos"
             :key="i"
             :src="item.ThumbFile.base64"
-            :lazy-src="item.ThumbFile.base64" 
+            :lazy-src="item.ThumbFile.base64"
           >
           </v-carousel-item>
         </v-carousel>
@@ -44,7 +45,7 @@ Supported records:
       <v-divider></v-divider>
 
       <v-row>
-        <v-col 
+        <v-col
           cols="12"
           class="d-flex"
         >
@@ -55,13 +56,13 @@ Supported records:
             dark
             @click="openAddPhotoDialog"
           >
-          	<v-icon class="mr-1">mdi-plus</v-icon>
-						Add Photo
+            <v-icon class="mr-1">mdi-plus</v-icon>
+            Add Photo
           </v-btn>
-          
+
           <v-spacer></v-spacer>
 
-          <v-btn 
+          <v-btn
             color="success"
             dark
             class="mr-3"
@@ -73,7 +74,7 @@ Supported records:
         </v-col>
       </v-row>
     </v-card>
-    
+
     <GenericRecordAddOrLinkPhotoDialog
       ref="genericRecordAddOrLinkPhotoDialog"
       :record="record"
@@ -88,15 +89,15 @@ Supported records:
 </template>
 
 <script>
-import { isNil } from 'lodash';
+import { isNil } from "lodash"
 
-import photos from '@/controllers/photos';
+import photos from "@/controllers/photos"
 
-import GenericRecordAddOrLinkPhotoDialog from '@/components/photos/GenericRecordAddOrLinkPhotoDialog.vue';
-import PhotosFilterableDialog from '@/components/photos/PhotosFilterableDialog.vue';
+import GenericRecordAddOrLinkPhotoDialog from "@/components/photos/GenericRecordAddOrLinkPhotoDialog.vue"
+import PhotosFilterableDialog from "@/components/photos/PhotosFilterableDialog.vue"
 
 export default {
-  name: 'GenericRecordPhotosCard',
+  name: "GenericRecordPhotosCard",
   components: {
     GenericRecordAddOrLinkPhotoDialog,
     PhotosFilterableDialog,
@@ -120,68 +121,64 @@ export default {
     loading: false,
   }),
   mounted() {
-    this.getPhotos();
+    this.getPhotos()
   },
   methods: {
     openAddPhotoDialog() {
-      this.$refs.genericRecordAddOrLinkPhotoDialog.show();
+      this.$refs.genericRecordAddOrLinkPhotoDialog.show()
     },
     openPhotosDialog() {
-      this.$refs.photosFilterableDialog.show();
+      this.$refs.photosFilterableDialog.show()
     },
-    async getPhotos(){
-      this.loading = true;
+    async getPhotos() {
+      this.loading = true
 
-      switch(this.record) {
-        case 'place':
-        case 'boat':
-        case 'aircrash':
-        case 'ytplace':
-        case 'burial':
-        case 'interpretive-sites':
-        case 'people':
-          break;
+      switch (this.record) {
+        case "place":
+        case "boat":
+        case "aircrash":
+        case "ytplace":
+        case "burial":
+        case "interpretive-sites":
+        case "people":
+          break
         default:
-          throw new Error('Invalid or Unsupported record type');
+          throw new Error("Invalid or Unsupported record type")
       }
 
-      if(isNil(this.recordId)) {
-        throw new Error('Record ID is required');
+      if (isNil(this.recordId)) {
+        throw new Error("Record ID is required")
       }
 
       const { data } = await photos.getGeneral(this.record, this.recordId)
       this.photos = data.map((photo) => {
-        		photo.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(
-						photo.ThumbFile.data
-					)}`;
-					//photo.File.base64 = `data:image/png;base64,${this.toBase64(photo.File.data)}`;
-					photo.selected = false;
-          return photo;
+        photo.ThumbFile.base64 = `data:image/png;base64,${this.toBase64(photo.ThumbFile.data)}`
+        //photo.File.base64 = `data:image/png;base64,${this.toBase64(photo.File.data)}`;
+        photo.selected = false
+        return photo
       })
-      
-      this.loading = false;
+
+      this.loading = false
     },
     toBase64(arr) {
-			return btoa(
-				arr.reduce((data, byte) => data + String.fromCharCode(byte), '')
-			);
-		},
+      return btoa(arr.reduce((data, byte) => data + String.fromCharCode(byte), ""))
+    },
   },
   watch: {
     selectedPhoto(val) {
-      this.$emit('newSelectedImage', this.photos[val]);
-    }
-  }
-};
+      this.$emit("newSelectedImage", this.photos[val])
+    },
+  },
+}
 </script>
 
 <style scoped>
 .scroll {
-	height: 720px;
-	overflow: auto;
+  height: 720px;
+  overflow: auto;
 }
 .center-children {
-	display: grid;
-	place-items: center;
+  display: grid;
+  place-items: center;
 }
 </style>

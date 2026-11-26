@@ -12,31 +12,29 @@
 // ALTER TABLE dbo.AccessType ADD CONSTRAINT PK__AccessTy__4130D0BFA7F89388 PRIMARY KEY (AccessID);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.AccessType', (table) => {
-		table.increments('AccessID').primary();
-		table.string('AccessName', 60).notNullable();
-	});
+  await knex.schema.createTable("dbo.AccessType", (table) => {
+    table.increments("AccessID").primary()
+    table.string("AccessName", 60).notNullable()
+  })
 
-	await knex
-		.raw('SET IDENTITY_INSERT dbo.AccessType ON')
-		.then(async function () {
-			await knex('dbo.AccessType').delete().whereRaw('1=1');
-			await knex('dbo.AccessType').insert([
-				{
-					AccessName: 'No Access',
-				},
-				{
-					AccessName: 'View',
-				},
-				{
-					AccessName: 'Edit',
-				},
-			]);
-		});
-};
+  await knex.raw("SET IDENTITY_INSERT dbo.AccessType ON").then(async function () {
+    await knex("dbo.AccessType").delete().whereRaw("1=1")
+    await knex("dbo.AccessType").insert([
+      {
+        AccessName: "No Access",
+      },
+      {
+        AccessName: "View",
+      },
+      {
+        AccessName: "Edit",
+      },
+    ])
+  })
+}
 
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.AccessType');
-};
+  await knex.schema.dropTable("dbo.AccessType")
+}

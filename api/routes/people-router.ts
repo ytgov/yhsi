@@ -1,277 +1,277 @@
-import { difference } from 'lodash';
-import { param, query } from 'express-validator';
-import { renderFile } from 'pug';
-import express, { Request, Response } from 'express';
+import { difference } from "lodash"
+import { param, query } from "express-validator"
+import { renderFile } from "pug"
+import express, { Request, Response } from "express"
 
-import db from '@/db/db-client';
+import db from "@/db/db-client"
 
-import { ReturnValidationErrors } from '@/middleware';
-import { PeopleService } from '@/services';
-import { generatePDF } from '@/utils/pdf-generator';
-import { authorize } from '@/middleware/authorization';
-import { UserRoles } from '@/models';
+import { ReturnValidationErrors } from "@/middleware"
+import { PeopleService } from "@/services"
+import { generatePDF } from "@/utils/pdf-generator"
+import { authorize } from "@/middleware/authorization"
+import { UserRoles } from "@/models"
 
-const peopleService = new PeopleService();
-export const peopleRouter = express.Router();
-
-peopleRouter.get(
-	'/',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
-	[
-		query('page').default(0).isInt(),
-		query('limit').default(10).isInt({ gt: 0 }),
-		query('textToMatch').default('').isString(),
-		query('sortBy').default('PersonId').isString(),
-		query('sort').default('asc').isString(),
-	],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const textToMatch = req.query.textToMatch as string;
-		const sortBy = req.query.sortBy as string;
-		const sort = req.query.sort as string;
-
-		const offset = page * limit || 0;
-
-		const data = await peopleService.doSearch(page, limit, offset, {
-			sortBy,
-			sort,
-			textToMatch,
-		});
-
-		res.status(200).send(data);
-	}
-);
+const peopleService = new PeopleService()
+export const peopleRouter = express.Router()
 
 peopleRouter.get(
-	'/:personId',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { personId } = req.params;
-		const person = await db.from('Person.Person').where('Person.PersonID', personId).first();
+  "/",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
+  [
+    query("page").default(0).isInt(),
+    query("limit").default(10).isInt({ gt: 0 }),
+    query("textToMatch").default("").isString(),
+    query("sortBy").default("PersonId").isString(),
+    query("sort").default("asc").isString(),
+  ],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string)
+    const limit = parseInt(req.query.limit as string)
+    const textToMatch = req.query.textToMatch as string
+    const sortBy = req.query.sortBy as string
+    const sort = req.query.sort as string
 
-		if (!person) {
-			res.status(403).send('Person id not found');
-			return;
-		}
+    const offset = page * limit || 0
 
-		res.status(200).send(person);
-	}
-);
+    const data = await peopleService.doSearch(page, limit, offset, {
+      sortBy,
+      sort,
+      textToMatch,
+    })
+
+    res.status(200).send(data)
+  }
+)
+
+peopleRouter.get(
+  "/:personId",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { personId } = req.params
+    const person = await db.from("Person.Person").where("Person.PersonID", personId).first()
+
+    if (!person) {
+      res.status(403).send("Person id not found")
+      return
+    }
+
+    res.status(200).send(person)
+  }
+)
 
 //Modify Person
 peopleRouter.put(
-	'/:personId',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
-	[param('personId').isInt()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { personId } = req.params;
-		const { person = {} } = req.body;
-		const updatePerson = await db('Person.Person')
-			.update(person)
-			.where('Person.Person.PersonID', personId)
-			.returning('*');
+  "/:personId",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
+  [param("personId").isInt()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { personId } = req.params
+    const { person = {} } = req.body
+    const updatePerson = await db("Person.Person")
+      .update(person)
+      .where("Person.Person.PersonID", personId)
+      .returning("*")
 
-		if (updatePerson.length == 0) {
-			res.status(404).send({ message: `Couldn´t find the person` });
-		}
+    if (updatePerson.length == 0) {
+      res.status(404).send({ message: `Couldn´t find the person` })
+    }
 
-		res.status(200).send({ message: 'success' });
-	}
-);
+    res.status(200).send({ message: "success" })
+  }
+)
 
 peopleRouter.post(
-	'/',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { person } = req.body;
+  "/",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { person } = req.body
 
-		const newPerson = await db.insert(person).into('Person.Person').returning('*');
+    const newPerson = await db.insert(person).into("Person.Person").returning("*")
 
-		if (!newPerson) {
-			res.status(400).send({ message: `The data sent is wrong or incomplete` });
-			return;
-		}
+    if (!newPerson) {
+      res.status(400).send({ message: `The data sent is wrong or incomplete` })
+      return
+    }
 
-		res.status(200).send({ message: 'success' });
-	}
-);
+    res.status(200).send({ message: "success" })
+  }
+)
 
 peopleRouter.get(
-	'/:personId/histories',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
-	[param('personId').isInt()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { personId } = req.params;
+  "/:personId/histories",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
+  [param("personId").isInt()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { personId } = req.params
 
-		const histories = await db
-			.from('Person.History')
-			.where('History.PersonID', personId)
-			.orderBy('SeqID', 'desc');
+    const histories = await db
+      .from("Person.History")
+      .where("History.PersonID", personId)
+      .orderBy("SeqID", "desc")
 
-		res.status(200).send({ histories });
-	}
-);
+    res.status(200).send({ histories })
+  }
+)
 
 peopleRouter.put(
-	'/history/:historyId',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
-	[param('historyId').isInt()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { historyId } = req.params;
+  "/history/:historyId",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
+  [param("historyId").isInt()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { historyId } = req.params
 
-		const { history } = req.body;
+    const { history } = req.body
 
-		const updateHistory = await db('Person.History')
-			.update(history)
-			.where('Person.History.PersonHistID', historyId)
-			.returning('*');
+    const updateHistory = await db("Person.History")
+      .update(history)
+      .where("Person.History.PersonHistID", historyId)
+      .returning("*")
 
-		if (updateHistory.length == 0) {
-			res.status(404).send({ message: `Couldn't find the desired history record` });
-			return;
-		}
+    if (updateHistory.length == 0) {
+      res.status(404).send({ message: `Couldn't find the desired history record` })
+      return
+    }
 
-		res.status(200).send({ message: 'success' });
-	}
-);
-
-peopleRouter.post(
-	'/:personId/history',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { personId } = req.params;
-
-		const { history } = req.body;
-
-		history.PersonID = personId;
-
-		const exists = await db
-			.from('Person.History')
-			.where('History.PersonID', personId)
-			.returning('*');
-
-		if (!exists) {
-			res.status(404).send({ message: 'The person doesnt exist' });
-			return;
-		}
-
-		const newHistory = await db.insert(history).into('Person.History').returning('*');
-
-		if (!newHistory) {
-			res.status(400).send({ message: `The data sent is wrong or incomplete` });
-			return;
-		}
-
-		res.status(200).send({ message: 'success' });
-	}
-);
+    res.status(200).send({ message: "success" })
+  }
+)
 
 peopleRouter.post(
-	'/pdf',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
-		const offset = 0;
-		const people = await peopleService.doSearch(page, limit, offset, {
-			sortBy,
-			sort,
-			textToMatch,
-		});
-		// not working right now
-		// Compile template.pug, and render a set of data
-		const data = renderFile('./templates/people/peopleGrid.pug', {
-			data: people.body,
-		});
+  "/:personId/history",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { personId } = req.params
 
-		const pdf = await generatePDF(data);
-		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		res.send(pdf);
-	}
-);
+    const { history } = req.body
 
-peopleRouter.post(
-	'/pdf/:personId',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
-	[param('personId').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { personId } = req.params;
+    history.PersonID = personId
 
-		const person = await peopleService.getById(personId);
+    const exists = await db
+      .from("Person.History")
+      .where("History.PersonID", personId)
+      .returning("*")
 
-		const data = renderFile('./templates/people/peopleView.pug', {
-			data: person,
-		});
+    if (!exists) {
+      res.status(404).send({ message: "The person doesnt exist" })
+      return
+    }
 
-		const pdf = await generatePDF(data, 'letter', false);
-		res.setHeader('Content-disposition', 'attachment; filename="burials.html"');
-		res.setHeader('Content-type', 'application/pdf');
-		res.send(pdf);
-	}
-);
+    const newHistory = await db.insert(history).into("Person.History").returning("*")
+
+    if (!newHistory) {
+      res.status(400).send({ message: `The data sent is wrong or incomplete` })
+      return
+    }
+
+    res.status(200).send({ message: "success" })
+  }
+)
 
 peopleRouter.post(
-	'/export',
-	authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { page = 0, limit = 0, textToMatch = '', sortBy = '', sort } = req.body;
+  "/pdf",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { page = 0, limit = 0, textToMatch = "", sortBy = "", sort } = req.body
+    const offset = 0
+    const people = await peopleService.doSearch(page, limit, offset, {
+      sortBy,
+      sort,
+      textToMatch,
+    })
+    // not working right now
+    // Compile template.pug, and render a set of data
+    const data = renderFile("./templates/people/peopleGrid.pug", {
+      data: people.body,
+    })
 
-		const data = await peopleService.doSearch(page, limit, 0, {
-			sortBy,
-			sort,
-			textToMatch,
-		});
-
-		res.status(200).send(data.body);
-	}
-);
+    const pdf = await generatePDF(data)
+    res.setHeader("Content-disposition", 'attachment; filename="burials.html"')
+    res.setHeader("Content-type", "application/pdf")
+    res.send(pdf)
+  }
+)
 
 peopleRouter.post(
-	'/:personId/photos/link',
-	authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
-	[param('personId').notEmpty()],
-	async (request: Request, response: Response) => {
-		try {
-			const { personId } = request.params;
-			const { linkPhotos } = request.body;
+  "/pdf/:personId",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
+  [param("personId").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { personId } = req.params
 
-			const currentPhotos = await db
-				.select('PhotoID')
-				.from('Person.Photo')
-				.where('PersonID', personId);
+    const person = await peopleService.getById(personId)
 
-			const filteredLinkPhotos = difference(
-				linkPhotos,
-				currentPhotos.map((x: any) => {
-					return x.PhotoID;
-				})
-			);
+    const data = renderFile("./templates/people/peopleView.pug", {
+      data: person,
+    })
 
-			for (const photo of filteredLinkPhotos) {
-				await db
-					.insert({ PersonID: personId, PhotoID: photo.rowId })
-					.into('Person.Photo')
-					.returning('*')
-					.then((rows: any) => {
-						return rows;
-					});
-			}
+    const pdf = await generatePDF(data, "letter", false)
+    res.setHeader("Content-disposition", 'attachment; filename="burials.html"')
+    res.setHeader("Content-type", "application/pdf")
+    res.send(pdf)
+  }
+)
 
-			return response.json({ message: 'Successfully linked the photos' });
-		} catch (error) {
-			console.log(error);
-			return response.status(500).json({ data: 'failed to link' });
-		}
-	}
-);
+peopleRouter.post(
+  "/export",
+  authorize([UserRoles.ADMINISTRATOR, UserRoles.PEOPLE_EDITOR]),
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { page = 0, limit = 0, textToMatch = "", sortBy = "", sort } = req.body
+
+    const data = await peopleService.doSearch(page, limit, 0, {
+      sortBy,
+      sort,
+      textToMatch,
+    })
+
+    res.status(200).send(data.body)
+  }
+)
+
+peopleRouter.post(
+  "/:personId/photos/link",
+  authorize([UserRoles.SITE_ADMIN, UserRoles.SITE_EDITOR, UserRoles.ADMINISTRATOR]),
+  [param("personId").notEmpty()],
+  async (request: Request, response: Response) => {
+    try {
+      const { personId } = request.params
+      const { linkPhotos } = request.body
+
+      const currentPhotos = await db
+        .select("PhotoID")
+        .from("Person.Photo")
+        .where("PersonID", personId)
+
+      const filteredLinkPhotos = difference(
+        linkPhotos,
+        currentPhotos.map((x: any) => {
+          return x.PhotoID
+        })
+      )
+
+      for (const photo of filteredLinkPhotos) {
+        await db
+          .insert({ PersonID: personId, PhotoID: photo.rowId })
+          .into("Person.Photo")
+          .returning("*")
+          .then((rows: any) => {
+            return rows
+          })
+      }
+
+      return response.json({ message: "Successfully linked the photos" })
+    } catch (error) {
+      console.log(error)
+      return response.status(500).json({ data: "failed to link" })
+    }
+  }
+)

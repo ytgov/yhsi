@@ -2,16 +2,16 @@
 
 ## Status Overview
 
-| # | Item | Status | Notes |
-|---|------|--------|-------|
-| 6.1 | Photo batch updates | **Partial** | Multi-upload ✓ (already done), delete ✓ (already done), record association ✓ (process-batch already done), **inline owner creation** ✓ **Done** |
-| 6.2 | Location widget: reusable component | **Partial** | MapLoader used in Sites (via map-dialog), InterpretiveSites ✓, AirCrash ✓. Boats/Burials have no lat/long columns — not applicable without schema changes |
-| 6.3 | Location widget: map centering | **Not started** | Needs decision on Leaflet vs ESRI JS API — blocked on stakeholder input |
-| 6.4 | Print record: all modules | **Done** (pre-existing) | Backend print routes exist for all modules (boats, burials, people, aircrash, interpretive-sites, places). Frontend print buttons exist for all modules. |
-| 6.5 | Print grid: all modules | **Done** (pre-existing) | Grid PDF endpoints exist for all modules |
-| 6.6 | Select from grid and export | **Done** | Sites grid: checkboxes added, "Export Selected" button exports only checked rows to CSV |
-| 6.7 | Save search/filters | **Not started** | Needs stakeholder decision on persistence scope and sharing |
-| 6.8 | Interpretive Sites form issues | **Partial** | Fixed double-navigation after save; removed meaningless `v-if="true"` on MapLoader. The 7 sub-issues from #88 not fully enumerated — further review needed |
+| #   | Item                                | Status                  | Notes                                                                                                                                                      |
+| --- | ----------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 6.1 | Photo batch updates                 | **Partial**             | Multi-upload ✓ (already done), delete ✓ (already done), record association ✓ (process-batch already done), **inline owner creation** ✓ **Done**            |
+| 6.2 | Location widget: reusable component | **Partial**             | MapLoader used in Sites (via map-dialog), InterpretiveSites ✓, AirCrash ✓. Boats/Burials have no lat/long columns — not applicable without schema changes  |
+| 6.3 | Location widget: map centering      | **Not started**         | Needs decision on Leaflet vs ESRI JS API — blocked on stakeholder input                                                                                    |
+| 6.4 | Print record: all modules           | **Done** (pre-existing) | Backend print routes exist for all modules (boats, burials, people, aircrash, interpretive-sites, places). Frontend print buttons exist for all modules.   |
+| 6.5 | Print grid: all modules             | **Done** (pre-existing) | Grid PDF endpoints exist for all modules                                                                                                                   |
+| 6.6 | Select from grid and export         | **Done**                | Sites grid: checkboxes added, "Export Selected" button exports only checked rows to CSV                                                                    |
+| 6.7 | Save search/filters                 | **Not started**         | Needs stakeholder decision on persistence scope and sharing                                                                                                |
+| 6.8 | Interpretive Sites form issues      | **Partial**             | Fixed double-navigation after save; removed meaningless `v-if="true"` on MapLoader. The 7 sub-issues from #88 not fully enumerated — further review needed |
 
 ---
 
@@ -98,9 +98,9 @@
 
 ## Not Implemented / Deferred
 
-| Item | Reason |
-|------|--------|
+| Item                                | Reason                                                             |
+| ----------------------------------- | ------------------------------------------------------------------ |
 | 6.2 Location widget (Boats/Burials) | No lat/long columns in those tables — would require schema changes |
-| 6.3 Location map centering | Needs stakeholder decision on map library approach |
-| 6.7 Save search/filters | Needs stakeholder decision on persistence scope |
-| 6.8 Remaining #88 sub-issues | Need GitHub access to enumerate remaining sub-issues |
+| 6.3 Location map centering          | Needs stakeholder decision on map library approach                 |
+| 6.7 Save search/filters             | Needs stakeholder decision on persistence scope                    |
+| 6.8 Remaining #88 sub-issues        | Need GitHub access to enumerate remaining sub-issues               |

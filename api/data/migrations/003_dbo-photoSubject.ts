@@ -12,13 +12,13 @@
 // ALTER TABLE dbo.PhotoSubject ADD CONSTRAINT PK_PhotoSubject PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.PhotoSubject', (table) => {
-		table.increments('Id').primary();
-		table.string('Name', 256).notNullable();
-	});
-};
+  await knex.schema.createTable("dbo.PhotoSubject", (table) => {
+    table.increments("Id").primary()
+    table.string("Name", 256).notNullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.PhotoSubject');
-};
+  await knex.schema.dropTable("dbo.PhotoSubject")
+}

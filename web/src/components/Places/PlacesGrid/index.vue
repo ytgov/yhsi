@@ -1,10 +1,7 @@
 <template>
   <div>
     <v-breadcrumbs
-      :items="[
-        { text: 'Home', to: '/', exact: true },
-        { text: 'Places' },
-      ]"
+      :items="[{ text: 'Home', to: '/', exact: true }, { text: 'Places' }]"
     ></v-breadcrumbs>
 
     <h1>Places</h1>
@@ -24,21 +21,44 @@
               class="mr-5"
               v-on:input="placeSearchChange()"
             />
-            <v-menu transition="slide-y-transition" bottom :close-on-content-click="false">
+            <v-menu
+              transition="slide-y-transition"
+              bottom
+              :close-on-content-click="false"
+            >
               <template v-slot:activator="{ on, attrs }">
-                <v-btn color="transparent" class="black--text my-0 mr-2" v-bind="attrs" v-on="on" style="height: 40px">
+                <v-btn
+                  color="transparent"
+                  class="black--text my-0 mr-2"
+                  v-bind="attrs"
+                  v-on="on"
+                  style="height: 40px"
+                >
                   <v-icon class="black--text mr-1">mdi-filter</v-icon>
                   Filter
                   <v-icon class="black--text">mdi-chevron-right</v-icon>
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item v-for="(item, i) in filterOptions" :key="i" link>
-                  <v-text-field clearable v-model="item.value" :label="item.name"></v-text-field>
+                <v-list-item
+                  v-for="(item, i) in filterOptions"
+                  :key="i"
+                  link
+                >
+                  <v-text-field
+                    clearable
+                    v-model="item.value"
+                    :label="item.name"
+                  ></v-text-field>
                 </v-list-item>
               </v-list>
             </v-menu>
-            <v-btn color="primary" class="my-0 mr-2" style="height: 40px" @click="$router.push('/places/new')">
+            <v-btn
+              color="primary"
+              class="my-0 mr-2"
+              style="height: 40px"
+              @click="$router.push('/places/new')"
+            >
               Add Place
             </v-btn>
             <PrintButton
@@ -47,37 +67,59 @@
               :disabled="places.length === 0"
               class="my-0 mr-2"
             />
-            <JsonCSV :data="placesCsv" v-if="!loading">
-              <v-btn color="info" class="my-0" style="height: 40px" :disabled="places.length === 0" title="Export CSV">
+            <JsonCSV
+              :data="placesCsv"
+              v-if="!loading"
+            >
+              <v-btn
+                color="info"
+                class="my-0"
+                style="height: 40px"
+                :disabled="places.length === 0"
+                title="Export CSV"
+              >
                 <v-icon>mdi-export</v-icon>
               </v-btn>
             </JsonCSV>
-            <v-btn color="info" class="my-0" style="height: 40px" disabled v-else title="Export CSV">
+            <v-btn
+              color="info"
+              class="my-0"
+              style="height: 40px"
+              disabled
+              v-else
+              title="Export CSV"
+            >
               <v-icon>mdi-export</v-icon>
             </v-btn>
           </div>
 
-        <v-data-table
-          :items="filteredData"
-          :headers="headers"
-          :loading="loading"
-          :search="search"
-          :options.sync="options"
-          :server-items-length="totalLength"
-          @click:row="handleClick"
-          :footer-props="{ 'items-per-page-options': [10, 30, 100] }"
-          class="clickable-row"
-        >
-          <template v-slot:item.alternateNames="{ item }">
-            <span v-if="item.alternateNames.length > 0">{{ getAlternateNames(item.alternateNames) }}</span>
-          </template>
-          <template v-slot:item.firstNationNames="{ item }">
-            <span v-if="item.firstNationNames.length > 0">{{ getFnNames(item.firstNationNames) }}</span>
-          </template>
-          <template v-slot:item.placeTypes="{ item }">
-            <span v-if="item.placeTypes.length > 0">{{ getPlaceTypeNames(item.placeTypes) }}</span>
-          </template>
-        </v-data-table>
+          <v-data-table
+            :items="filteredData"
+            :headers="headers"
+            :loading="loading"
+            :search="search"
+            :options.sync="options"
+            :server-items-length="totalLength"
+            @click:row="handleClick"
+            :footer-props="{ 'items-per-page-options': [10, 30, 100] }"
+            class="clickable-row"
+          >
+            <template v-slot:item.alternateNames="{ item }">
+              <span v-if="item.alternateNames.length > 0">{{
+                getAlternateNames(item.alternateNames)
+              }}</span>
+            </template>
+            <template v-slot:item.firstNationNames="{ item }">
+              <span v-if="item.firstNationNames.length > 0">{{
+                getFnNames(item.firstNationNames)
+              }}</span>
+            </template>
+            <template v-slot:item.placeTypes="{ item }">
+              <span v-if="item.placeTypes.length > 0">{{
+                getPlaceTypeNames(item.placeTypes)
+              }}</span>
+            </template>
+          </v-data-table>
         </v-card-text>
       </v-card>
     </div>
@@ -85,124 +127,128 @@
 </template>
 
 <script>
-import JsonCSV from 'vue-json-csv';
-import PrintButton from './PrintButton';
-import _ from 'lodash';
-import axios from 'axios';
-import { YTPLACE_URL } from '../../../urls';
+import JsonCSV from "vue-json-csv"
+import PrintButton from "./PrintButton"
+import _ from "lodash"
+import axios from "axios"
+import { YTPLACE_URL } from "../../../urls"
 
 export default {
-  name: 'PlacesGrid',
+  name: "PlacesGrid",
   components: { JsonCSV, PrintButton },
   data: () => ({
     loading: false,
     places: [],
     placesCsv: [],
-    search: '',
+    search: "",
     headers: [
-      { text: 'Name', value: 'name' },
-      { text: 'Alternate Name', value: 'alternateNames', sortable: false },
-      { text: 'First Nation Name', value: 'firstNationNames', sortable: false },
-      { text: 'Place Type', value: 'placeTypes', sortable: false },
-      { text: 'Location Description', value: 'locationDesc' },
-      { text: 'Latitude', value: 'latitude' },
-      { text: 'Longitude', value: 'longitude' },
-      { text: 'Mapsheet', value: 'mapSheet' },
+      { text: "Name", value: "name" },
+      { text: "Alternate Name", value: "alternateNames", sortable: false },
+      { text: "First Nation Name", value: "firstNationNames", sortable: false },
+      { text: "Place Type", value: "placeTypes", sortable: false },
+      { text: "Location Description", value: "locationDesc" },
+      { text: "Latitude", value: "latitude" },
+      { text: "Longitude", value: "longitude" },
+      { text: "Mapsheet", value: "mapSheet" },
     ],
     page: 0,
     totalLength: 0,
     options: {},
     filterOptions: [
-      { name: 'Name', value: '' },
-      { name: 'Place Type', value: '' },
-      { name: 'Mapsheet', value: '' },
+      { name: "Name", value: "" },
+      { name: "Place Type", value: "" },
+      { name: "Mapsheet", value: "" },
     ],
   }),
   mounted() {
-    this.getDataFromApi();
+    this.getDataFromApi()
   },
   methods: {
     placeSearchChange: _.debounce(function () {
-      this.getDataFromApi();
+      this.getDataFromApi()
     }, 400),
     handleClick(value) {
-      this.$router.push({ name: 'placeView', params: { id: value.id } });
+      this.$router.push({ name: "placeView", params: { id: value.id } })
     },
     async getDataFromApi() {
-      this.loading = true;
-      const body = _.clone(this.options);
+      this.loading = true
+      const body = _.clone(this.options)
       body.query = [
-        { field: 'name', operator: 'contains', value: this.search },
-        { field: 'locationDesc', operator: 'contains', value: this.search },
-      ];
+        { field: "name", operator: "contains", value: this.search },
+        { field: "locationDesc", operator: "contains", value: this.search },
+      ]
       try {
-        const resp = await axios.post(`${YTPLACE_URL}/search`, body);
-        this.places = resp.data.data;
-        this.totalLength = resp.data.meta.item_count;
+        const resp = await axios.post(`${YTPLACE_URL}/search`, body)
+        this.places = resp.data.data
+        this.totalLength = resp.data.meta.item_count
         this.placesCsv = this.places.map((val) => {
-          const row = Object.assign({}, val);
-          row.placeTypes = row.placeTypes.map((x) => x.placeType);
-          row.alternateNames = row.alternateNames.map((x) => x.alternateName);
-          row.firstNationNames = row.firstNationNames.map((x) => x.fnName);
-          delete row.id;
-          delete row.notes;
-          return row;
-        });
+          const row = Object.assign({}, val)
+          row.placeTypes = row.placeTypes.map((x) => x.placeType)
+          row.alternateNames = row.alternateNames.map((x) => x.alternateName)
+          row.firstNationNames = row.firstNationNames.map((x) => x.fnName)
+          delete row.id
+          delete row.notes
+          return row
+        })
       } catch (err) {
-        console.error('Error in getDataFromApi: ' + err);
+        console.error("Error in getDataFromApi: " + err)
       }
-      this.loading = false;
+      this.loading = false
     },
     getPlaceTypeNames(placeTypes) {
-      if (!placeTypes) return null;
-      return placeTypes.map((x) => x.placeType).toString();
+      if (!placeTypes) return null
+      return placeTypes.map((x) => x.placeType).toString()
     },
     getAlternateNames(alternateNames) {
-      if (!alternateNames) return null;
-      return alternateNames.map((x) => x.alternateName).toString();
+      if (!alternateNames) return null
+      return alternateNames.map((x) => x.alternateName).toString()
     },
     getFnNames(fnNames) {
-      if (!fnNames) return null;
-      return fnNames.map((x) => x.fnName).toString();
+      if (!fnNames) return null
+      return fnNames.map((x) => x.fnName).toString()
     },
     filterPlaceTypes(item) {
-      const sorters = JSON.parse(JSON.stringify(this.filterOptions));
+      const sorters = JSON.parse(JSON.stringify(this.filterOptions))
       if (item.placeTypes[0]) {
         return item.placeTypes
           .map((x) => x.placeType)
           .toString()
           .toLowerCase()
-          .includes(sorters[1].value.toLowerCase());
+          .includes(sorters[1].value.toLowerCase())
       }
-      return false;
+      return false
     },
   },
   computed: {
     filteredData() {
       if (this.filterOptions) {
-        const sorters = JSON.parse(JSON.stringify(this.filterOptions));
-        let data = JSON.parse(JSON.stringify(this.places));
+        const sorters = JSON.parse(JSON.stringify(this.filterOptions))
+        let data = JSON.parse(JSON.stringify(this.places))
         if (sorters[0].value) {
-          data = data.filter((x) => x.name && x.name.toLowerCase().includes(sorters[0].value.toLowerCase()));
+          data = data.filter(
+            (x) => x.name && x.name.toLowerCase().includes(sorters[0].value.toLowerCase())
+          )
         }
         if (sorters[1].value) {
-          data = data.filter(this.filterPlaceTypes);
+          data = data.filter(this.filterPlaceTypes)
         }
         if (sorters[2].value) {
-          data = data.filter((x) => x.mapSheet && x.mapSheet.toLowerCase().includes(sorters[2].value.toLowerCase()));
+          data = data.filter(
+            (x) => x.mapSheet && x.mapSheet.toLowerCase().includes(sorters[2].value.toLowerCase())
+          )
         }
-        return data;
+        return data
       }
-      return this.places;
+      return this.places
     },
   },
   watch: {
     options: {
       handler() {
-        this.getDataFromApi();
+        this.getDataFromApi()
       },
       deep: true,
     },
   },
-};
+}
 </script>

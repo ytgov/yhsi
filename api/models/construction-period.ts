@@ -1,5 +1,5 @@
 export class ConstructionPeriod {
-	id!: number;
-	placeId!: number;
-	type!: number;
+  id!: number
+  placeId!: number
+  type!: number
 }

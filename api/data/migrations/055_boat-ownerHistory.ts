@@ -14,15 +14,15 @@
 // ALTER TABLE Boat.OwnerHistory ADD CONSTRAINT PK__OwnerHis__3214EC07C47E9BC6 PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Boat.OwnerHistory', (table) => {
-		table.increments('Id').primary();
-		table.integer('OwnerId').notNullable();
-		table.text('HistoryText').notNullable();
-		table.string('Reference', 256).notNullable();
-	});
-};
+  await knex.schema.createTable("Boat.OwnerHistory", (table) => {
+    table.increments("Id").primary()
+    table.integer("OwnerId").notNullable()
+    table.text("HistoryText").notNullable()
+    table.string("Reference", 256).notNullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Boat.OwnerHistory');
-};
+  await knex.schema.dropTable("Boat.OwnerHistory")
+}

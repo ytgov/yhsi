@@ -27,14 +27,20 @@ Writing code and developing in this application requires running three services:
    docker compose -f docker-compose.development.yml up
    ```
 
-3. Run the database migrations by going to http://localhost:3000/migrate/latest
+3. Run the database migrations by going to <http://localhost:3000/migrate/latest>
 
-4. Create a new user account and log in to http://localhost:8080.
+4. Create a new user account and log in to <http://localhost:8080>.
 
 5. Once you are logged in, open a database console with `dev sqlcmd` and run the following command to give your user admin permissions:
 
    ```sql
-   UPDATE [Security].[User] SET [roles] = 'Administrator', [status] = 'Active' WHERE [email] = 'some-user@some-host.com';
+   UPDATE [Security].[User]
+   SET
+     [roles] = 'Administrator',
+     [status] = 'Active'
+   WHERE
+     [email] = 'some-user@some-host.com';
+   
    GO
    ```
 
@@ -76,7 +82,7 @@ You must then edit the `.env.development` file with the appropriate values for t
 npm run start
 ```
 
-The API will bind to your local machines port 3000 and be available at http://localhost:3000
+The API will bind to your local machines port 3000 and be available at <http://localhost:3000>
 
 Last to start is the the Vue.js web front-end. To run this, open a second terminal window at this directory and run the following commands:
 
@@ -86,7 +92,20 @@ npm install
 npm run start
 ```
 
-You will now have the Vue CLI server hosting the application at http://localhost:8080 and you can begin editing the API or front-end code. **All changes to the files in the `api` and `web` will automatically reload theie respective applications.**
+You will now have the Vue CLI server hosting the application at <http://localhost:8080> and you can begin editing the API or front-end code. **All changes to the files in the `api` and `web` will automatically reload theie respective applications.**
+
+## Linting and Formatting
+
+Install dependencies in the root, `api`, and `web`. Run these commands from the repository root:
+
+```bash
+npm --prefix api run lint
+npm --prefix web run lint
+npm run format:check -- web/src/App.vue
+npm run format -- web/src/App.vue
+```
+
+Linting reports issues without rewriting files. Pass the files you want to format to the root Prettier scripts; they share one configuration for the API, Vue templates (including Pug), and embedded SQL.
 
 ## Local Testing
 
@@ -143,7 +162,7 @@ fi
 exit 0
 ```
 
-2. Make the file executable vai `chmod +x .git/hooks/pre-commit`
+1. Make the file executable vai `chmod +x .git/hooks/pre-commit`
 
 ## Running the application production
 
@@ -161,7 +180,7 @@ cp /api/.env /api/.env.production
 vi /api/.env.production
 ```
 
-2. Set the global host port.
+1. Set the global host port.
 
 ```bash
 cp .env.sample .env
@@ -171,7 +190,7 @@ vi .env
 > Note that the file needs to be named `.env` and it needs to be at the same level as
 > the `docker-compose.production.yml` file.
 
-3. Start the application with:
+1. Start the application with:
 
 ```
 docker-compose -f docker-compose.production.yml up --build -d

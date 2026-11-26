@@ -9,101 +9,101 @@ table.title-row
     tr
       td
         div(style="margin-top: 15px") Yukon Heritage Information System
-        div.item-name #{data.yacsinumber} #{data.aircrafttype} (#{data.aircraftregistration})
+        .item-name #{ data.yacsinumber } #{ data.aircrafttype } (#{ data.aircraftregistration })
       td.brand-logo
         include ../yukon.svg
 
-div.section
-  div.section-title General information
+.section
+  .section-title General information
   table.divided-row
     tbody
       tr
         td
-          div.field
+          .field
             span.label YACSI Number
-            span.value #{data.yacsinumber}
-          div.field
+            span.value #{ data.yacsinumber }
+          .field
             span.label Aircraft Maker/Model
-            span.value #{data.aircrafttype}
-          div.field
+            span.value #{ data.aircrafttype }
+          .field
             span.label Crash Date
-            span.value #{data.crashdate}
-          div.field
+            span.value #{ data.crashdate }
+          .field
             span.label Pilot
-            span.value #{data.pilotrank} #{data.pilotfirstname} #{data.pilotlastname}
+            span.value #{ data.pilotrank } #{ data.pilotfirstname } #{ data.pilotlastname }
         td
-          div.field
+          .field
             span.label Aircraft Registration
-            span.value #{data.aircraftregistration}
-          div.field
+            span.value #{ data.aircraftregistration }
+          .field
             span.label Country of Registration
-            span.value #{data.nation}
-          div.field
+            span.value #{ data.nation }
+          .field
             span.label Registration Type
-            span.value #{data.militarycivilian}
+            span.value #{ data.militarycivilian }
 
-div.section
-  div.section-title Location Details
+.section
+  .section-title Location Details
   table.divided-row
     tbody
       tr
         td
-          div.field
+          .field
             span.label Latitude
-            span.value #{data.lat}
-          div.field
+            span.value #{ data.lat }
+          .field
             span.label Longitude
-            span.value #{data.long}
-          div.field
+            span.value #{ data.long }
+          .field
             span.label Accuracy
-            span.value #{data.accuracy}
-          div.field
+            span.value #{ data.accuracy }
+          .field
             span.label Crash site within Yukon?
-            span.value #{data.inyukon}
+            span.value #{ data.inyukon }
         td
-          div.field
+          .field
             span.label Location Description
-            span.value #{data.crashlocation}
+            span.value #{ data.crashlocation }
 
-div.section
-  div.section-title Crash Details
+.section
+  .section-title Crash Details
   table.divided-row
     tbody
       tr
         td
-          div.field
+          .field
             span.label Remains on site
-            span.value #{data.remainsonsite}
-          div.field
+            span.value #{ data.remainsonsite }
+          .field
             span.label Extent of remains on site
-            span.value #{data.extentofremainsonsite}
-          div.field
+            span.value #{ data.extentofremainsonsite }
+          .field
             span.label Other location of remains
-            span.value #{data.otherlocationsofremains}
-          div.field
+            span.value #{ data.otherlocationsofremains }
+          .field
             span.label Description of crash event
-            span.value #{data.descriptionofcrashevent}
+            span.value #{ data.descriptionofcrashevent }
         td
-          div.field
+          .field
             span.label Souls on board
-            span.value #{data.soulsonboard}
-          div.field
+            span.value #{ data.soulsonboard }
+          .field
             span.label Injuries
-            span.value #{data.injuries}
-          div.field
+            span.value #{ data.injuries }
+          .field
             span.label Fatalities
-            span.value #{data.fatalities}
-          div.field
+            span.value #{ data.fatalities }
+          .field
             span.label Additional Info
-            span.value #{data.comments}
+            span.value #{ data.comments }
 
-div.section
-  div.section-title Crash Sources
-  div.field
+.section
+  .section-title Crash Sources
+  .field
     span.label Significance of aircraft
-    span.value #{data.significanceofaircraft}
-  div.subhead Sources
+    span.value #{ data.significanceofaircraft }
+  .subhead Sources
   each val in data.infoSources
-    div.subfield #{val.Source}
+    .subfield #{ val.Source }
   else
-    div.subfield.empty None recorded
+    .subfield.empty None recorded

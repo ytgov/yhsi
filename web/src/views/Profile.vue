@@ -49,7 +49,10 @@
       <div class="col-md-6">
         <h2>Roles</h2>
         <ul>
-          <li v-for="item of role_list" :key="item">
+          <li
+            v-for="item of role_list"
+            :key="item"
+          >
             {{ item }}
           </li>
         </ul>
@@ -57,7 +60,10 @@
       <div class="col-md-6">
         <h2>Access</h2>
         <ul>
-          <li v-for="item of site_access" :key="item.id">
+          <li
+            v-for="item of site_access"
+            :key="item.id"
+          >
             {{ item.access_type_name }}: {{ item.access_text_name }}
           </li>
         </ul>
@@ -67,8 +73,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import store from "../store";
+import { mapState } from "vuex"
+import store from "../store"
 
 export default {
   name: "Profile",
@@ -84,7 +90,7 @@ export default {
   },
   data: () => ({}),
   async created() {
-    await store.dispatch("profile/loadProfile");
+    await store.dispatch("profile/loadProfile")
   },
-};
+}
 </script>

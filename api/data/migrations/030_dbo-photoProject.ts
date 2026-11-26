@@ -12,16 +12,16 @@
 // );
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.PhotoProject', (table) => {
-		table.increments('Id').primary();
-		table.string('Name', 256).nullable();
-		table.string('Permit', 256).nullable();
-		table.string('Year', 256).nullable();
-		table.integer('Section').notNullable();
-	});
-};
+  await knex.schema.createTable("dbo.PhotoProject", (table) => {
+    table.increments("Id").primary()
+    table.string("Name", 256).nullable()
+    table.string("Permit", 256).nullable()
+    table.string("Year", 256).nullable()
+    table.integer("Section").notNullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.PhotoProject');
-};
+  await knex.schema.dropTable("dbo.PhotoProject")
+}

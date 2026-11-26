@@ -1,9 +1,9 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response } from "express"
 
-import { WEB_LINK_TYPES } from '../models';
+import { WEB_LINK_TYPES } from "../models"
 
-export const webLinkTypesRouter = express.Router();
+export const webLinkTypesRouter = express.Router()
 
-webLinkTypesRouter.get('/', (req: Request, res: Response) => {
-	return res.json({ data: WEB_LINK_TYPES });
-});
+webLinkTypesRouter.get("/", (req: Request, res: Response) => {
+  return res.json({ data: WEB_LINK_TYPES })
+})

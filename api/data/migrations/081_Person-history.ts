@@ -16,22 +16,22 @@
 // ALTER TABLE Person.History ADD CONSTRAINT PK__HistoryN__BFE776F33EAFABEF PRIMARY KEY (PersonHistID);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 
 exports.up = async function (knex: Knex) {
-	await knex.raw(
-		/* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Person') BEGIN EXEC('CREATE SCHEMA [Person]') END"
-	);
+  await knex.raw(
+    /* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Person') BEGIN EXEC('CREATE SCHEMA [Person]') END"
+  )
 
-	await knex.schema.createTable('Person.History', (table) => {
-		table.increments('PersonHistID').primary();
-		table.integer('PersonID').nullable();
-		table.integer('SeqID').notNullable();
-		table.string('HistoryText', 4000).nullable();
-		table.string('Reference', 1024).nullable();
-		table.integer('Restricted').nullable();
-	});
-};
+  await knex.schema.createTable("Person.History", (table) => {
+    table.increments("PersonHistID").primary()
+    table.integer("PersonID").nullable()
+    table.integer("SeqID").notNullable()
+    table.string("HistoryText", 4000).nullable()
+    table.string("Reference", 1024).nullable()
+    table.integer("Restricted").nullable()
+  })
+}
 exports.down = async function (knex: Knex) {
-	await knex.schema.dropTable('Person.History');
-};
+  await knex.schema.dropTable("Person.History")
+}

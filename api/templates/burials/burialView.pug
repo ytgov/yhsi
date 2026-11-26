@@ -9,108 +9,108 @@ table.title-row
     tr
       td
         div(style="margin-top: 15px") Yukon Heritage Information System
-        div.item-name #{data.LastName}, #{data.FirstName}
+        .item-name #{ data.LastName }, #{ data.FirstName }
       td.brand-logo
         include ../yukon.svg
 
-div.section
-  div.section-title Personal information
+.section
+  .section-title Personal information
   table.divided-row
     tbody
       tr
         td
-          div.field
+          .field
             span.label First Name
-            span.value #{data.FirstName}
-          div.field
+            span.value #{ data.FirstName }
+          .field
             span.label Last Name
-            span.value #{data.LastName}
-          div.field
+            span.value #{ data.LastName }
+          .field
             span.label Alternate Name/Spelling
-            span.value #{data.Manner}
-          div.field
+            span.value #{ data.Manner }
+          .field
             span.label Gender
-            span.value #{data.Gender}
+            span.value #{ data.Gender }
         td
-          div.field
+          .field
             span.label Origin
-            span.value #{data.OriginCity}, #{data.OriginCountry}
-          div.field
+            span.value #{ data.OriginCity }, #{ data.OriginCountry }
+          .field
             span.label Birth Date
-            span.value #{data.BirthDay}/#{data.BirthMonth}/#{data.BirthYear}
-          div.field
+            span.value #{ data.BirthDay }/#{ data.BirthMonth }/#{ data.BirthYear }
+          .field
             span.label Death Date
-            span.value #{data.DeathDay}/#{data.DeathMonth}/#{data.DeathYear}
+            span.value #{ data.DeathDay }/#{ data.DeathMonth }/#{ data.DeathYear }
 
-div.section
-  div.section-title History
-  div.subhead Religion
-  div.subfield #{data.Religion.Religion}
-  div.subhead Occupations
+.section
+  .section-title History
+  .subhead Religion
+  .subfield #{ data.Religion.Religion }
+  .subhead Occupations
   each val in data.Occupations
-    div.subfield #{val.Occupation}
+    .subfield #{ val.Occupation }
   else
-    div.subfield.empty None recorded
-  div.subhead Memberships
+    .subfield.empty None recorded
+  .subhead Memberships
   each val in data.Memberships
-    div.subfield #{val.Membership} - #{val.Chapter}
+    .subfield #{ val.Membership } - #{ val.Chapter }
   else
-    div.subfield.empty None recorded
+    .subfield.empty None recorded
 
-div.section
-  div.section-title Death
+.section
+  .section-title Death
   table.divided-row
     tbody
       tr
         td
-          div.field
+          .field
             span.label Manner
-            span.value #{data.Manner}
+            span.value #{ data.Manner }
         td
-          div.field
+          .field
             span.label Cause
-            span.value #{data.Cause.Cause}
+            span.value #{ data.Cause.Cause }
 
-div.section
-  div.section-title Funeral/Obituary
-  div.field
+.section
+  .section-title Funeral/Obituary
+  .field
     span.label Funeral Paid By
-    span.value #{data.FunneralPaidBy}
-  div.subhead Sources
+    span.value #{ data.FunneralPaidBy }
+  .subhead Sources
   each val in data.Sources
-    div.subfield #{val.Source}
+    .subfield #{ val.Source }
   else
-    div.subfield.empty None recorded
-  div.subhead Next of Kin
+    .subfield.empty None recorded
+  .subhead Next of Kin
   each val in data.Kinships
-    div.subfield #{val.Name} - #{val.Relationship} - #{val.Location}
+    .subfield #{ val.Name } - #{ val.Relationship } - #{ val.Location }
   else
-    div.subfield.empty None recorded
+    .subfield.empty None recorded
 
-div.section
-  div.section-title Burial Location
+.section
+  .section-title Burial Location
   table.divided-row
     tbody
       tr
         td
-          div.field
+          .field
             span.label Burial Location
-            span.value #{data.OtherCemetaryDesc}
+            span.value #{ data.OtherCemetaryDesc }
         td
-          div.field
+          .field
             span.label Plot Description
-            span.value #{data.PlotDescription}
+            span.value #{ data.PlotDescription }
 
-div.section
-  div.section-title Marker/Site Visit
+.section
+  .section-title Marker/Site Visit
   each val in data.SiteVisits
-    div.subfield
-      strong Visited #{val.VisitYear} by #{val.RecordedBy}
+    .subfield
+      strong Visited #{ val.VisitYear } by #{ val.RecordedBy }
       br
-      | Marker: #{val.MarkerDescription}
+      | Marker: #{ val.MarkerDescription }
       br
-      | Inscription: #{val.Inscription}
+      | Inscription: #{ val.Inscription }
       br
-      | Condition: #{val.Condition}
+      | Condition: #{ val.Condition }
   else
-    div.subfield.empty None recorded
+    .subfield.empty None recorded

@@ -17,15 +17,15 @@
 // -- Table dbo.BoatEntity contains no data. No inserts have been genrated.
 // -- END TABLE dbo.BoatEntity
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.BoatEntity', (table) => {
-		table.increments('Boat').primary();
-		table.integer('UID').notNullable();
-		table.string('SysStartTime').notNullable();
-		table.string('SysEndTime').notNullable();
-	});
-};
+  await knex.schema.createTable("dbo.BoatEntity", (table) => {
+    table.increments("Boat").primary()
+    table.integer("UID").notNullable()
+    table.string("SysStartTime").notNullable()
+    table.string("SysEndTime").notNullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.BoatEntity');
-};
+  await knex.schema.dropTable("dbo.BoatEntity")
+}

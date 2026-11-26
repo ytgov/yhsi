@@ -16,17 +16,17 @@
 // ALTER TABLE dbo.Dates ADD CONSTRAINT PK_Dates PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.Dates', (table) => {
-		table.increments('Id').primary();
-		table.integer('PlaceId').notNullable();
-		table.integer('Type').notNullable();
-		table.string('FromDate', 256).nullable();
-		table.string('ToDate', 256).nullable();
-		table.string('Details', 256).nullable();
-	});
-};
+  await knex.schema.createTable("dbo.Dates", (table) => {
+    table.increments("Id").primary()
+    table.integer("PlaceId").notNullable()
+    table.integer("Type").notNullable()
+    table.string("FromDate", 256).nullable()
+    table.string("ToDate", 256).nullable()
+    table.string("Details", 256).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.Dates');
-};
+  await knex.schema.dropTable("dbo.Dates")
+}

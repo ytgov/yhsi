@@ -1,4 +1,3 @@
-
 // this is C# code taken from the old system and needs to be ported to TS
 /*
 using System;

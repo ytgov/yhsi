@@ -1,36 +1,36 @@
 <template>
-	<v-text-field
-		v-model="addressTerm"
-		label="Address"
-		prepend-icon="mdi-magnify"
-		dense
-		outlined
-		clearable
-		background-color="white"
-		@change="$emit('input', filter)"
-	/>
+  <v-text-field
+    v-model="addressTerm"
+    label="Address"
+    prepend-icon="mdi-magnify"
+    dense
+    outlined
+    clearable
+    background-color="white"
+    @change="$emit('input', filter)"
+  />
 </template>
 
 <script>
-import { isEmpty } from 'lodash'
+import { isEmpty } from "lodash"
 
-import restorableFilterMixin from '@/components/Sites/sites-table/restorable-filter-mixin';
+import restorableFilterMixin from "@/components/Sites/sites-table/restorable-filter-mixin"
 
 export default {
-	name: 'AddressContainsFilter',
-	restoreFilter: { model: 'addressTerm', key: 'addressContains' },
-	mixins: [restorableFilterMixin],
-	data: () => ({
-		addressTerm: '',
-	}),
-	computed: {
-		filter() {
-			if (isEmpty(this.addressTerm)) return {}
+  name: "AddressContainsFilter",
+  restoreFilter: { model: "addressTerm", key: "addressContains" },
+  mixins: [restorableFilterMixin],
+  data: () => ({
+    addressTerm: "",
+  }),
+  computed: {
+    filter() {
+      if (isEmpty(this.addressTerm)) return {}
 
-			return {
-				'addressContains': this.addressTerm,
-			};
-		},
-	},
-};
+      return {
+        addressContains: this.addressTerm,
+      }
+    },
+  },
+}
 </script>

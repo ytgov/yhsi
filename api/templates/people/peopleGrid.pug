@@ -1,33 +1,33 @@
 //- template.pug
 
 style
-     include ../styles.css
-    
+  include ../styles.css
+
 table.title-row
-  tbody 
-    tr 
+  tbody
+    tr
       td
         div People information
       td
-        div(style='width:200px;')
+        div(style="width: 200px")
           include ../yukon.svg
 
-div.grid
+.grid
   table.grid-table
     thead
-      tr 
-        td 
-          strong.underline Given Name 
-        td 
+      tr
+        td
+          strong.underline Given Name
+        td
           strong.underline Surname
-        td 
+        td
           strong.underline Birth Year
-        td 
+        td
           strong.underline Death Year
-    tbody 
+    tbody
       each val in data
-        tr 
-          td #{val.GivenName} 
-          td #{val.Surname} 
-          td #{val.BirthYear}
-          td #{val.DeathYear} 
+        tr
+          td #{ val.GivenName } 
+          td #{ val.Surname } 
+          td #{ val.BirthYear }
+          td #{ val.DeathYear } 

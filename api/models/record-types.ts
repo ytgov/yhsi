@@ -1,6 +1,6 @@
-import { GenericStringEnum } from './simple-types';
+import { GenericStringEnum } from "./simple-types"
 
 export const RECORD_TYPES: ReadonlyArray<GenericStringEnum> = Object.freeze([
-	{ value: 'CRHP', text: 'CRHP' },
-	{ value: 'WHBR', text: 'WHBR' },
-]);
+  { value: "CRHP", text: "CRHP" },
+  { value: "WHBR", text: "WHBR" },
+])

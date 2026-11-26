@@ -1,77 +1,77 @@
-import { Request, Response } from 'express';
+import { Request, Response } from "express"
 
-import db from '@/db/db-client';
+import db from "@/db/db-client"
 
-import { buildDatabaseSort, PlaceService } from '../services';
-import { User } from '../models';
-import { NotFoundError } from '../utils/validation';
-import { PlacePolicy, PlacePolicyScope } from '../policies';
+import { buildDatabaseSort, PlaceService } from "../services"
+import { User } from "../models"
+import { NotFoundError } from "../utils/validation"
+import { PlacePolicy, PlacePolicyScope } from "../policies"
 
-const placeService = new PlaceService();
+const placeService = new PlaceService()
 
 export function getPlace(req: Request, res: Response) {
-	const id = parseInt(req.params.id);
-	const currentUser = req.user as User;
+  const id = parseInt(req.params.id)
+  const currentUser = req.user as User
 
-	return placeService
-		.getById(id, currentUser)
-		.then(({ place, relationships }) => {
-			const policy = new PlacePolicy(currentUser, place);
-			if (policy.show()) {
-				return res.json({
-					data: place,
-					relationships,
-				});
-			}
+  return placeService
+    .getById(id, currentUser)
+    .then(({ place, relationships }) => {
+      const policy = new PlacePolicy(currentUser, place)
+      if (policy.show()) {
+        return res.json({
+          data: place,
+          relationships,
+        })
+      }
 
-			return res.status(403).json({
-				messages: [
-					{
-						variant: 'error',
-						text: 'You are not authorized to access this content.',
-					},
-				],
-			});
-		})
-		.catch((error) => {
-			if (error instanceof NotFoundError) {
-				return res.status(404).send('Not found');
-			}
+      return res.status(403).json({
+        messages: [
+          {
+            variant: "error",
+            text: "You are not authorized to access this content.",
+          },
+        ],
+      })
+    })
+    .catch((error) => {
+      if (error instanceof NotFoundError) {
+        return res.status(404).send("Not found")
+      }
 
-			console.log('error', error);
+      console.log("error", error)
 
-			return res.status(422).json({
-				messages: [{ variant: 'error', text: error.message }],
-			});
-		});
+      return res.status(422).json({
+        messages: [{ variant: "error", text: error.message }],
+      })
+    })
 }
 
 export function searchPlaces(req: Request, res: Response) {
-	const { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
-	const currentUser = req.user as User;
-	const sort = buildDatabaseSort(sortBy, sortDesc);
+  const { query, sortBy, sortDesc, page, itemsPerPage } = req.body
+  const currentUser = req.user as User
+  const sort = buildDatabaseSort(sortBy, sortDesc)
 
-	const skip = (page - 1) * itemsPerPage;
-	const take = itemsPerPage;
+  const skip = (page - 1) * itemsPerPage
+  const take = itemsPerPage
 
-	const allPlaces = db('Place');
-	const placePolicyScope = new PlacePolicyScope(allPlaces, currentUser);
+  const allPlaces = db("Place")
+  const placePolicyScope = new PlacePolicyScope(allPlaces, currentUser)
 
-	const permittedPlaces = placePolicyScope.resolve();
+  const permittedPlaces = placePolicyScope.resolve()
 
-	return placeService
-		.doSearch(permittedPlaces, query, sort, page, itemsPerPage, skip, take)
-		.then((results) => {
-			return res.json(results);
-		})
-		.catch((error) => {
-			return res.status(422).json({
-				messages: [{ variant: 'error', text: error.message }],
-			});
-		});
+  return placeService
+    .doSearch(permittedPlaces, query, sort, page, itemsPerPage, skip, take)
+    .then((results) => {
+      return res.json(results)
+    })
+    .catch((error) => {
+      return res.status(422).json({
+        messages: [{ variant: "error", text: error.message }],
+      })
+    })
 }
 
 export default {
-	getPlace,
-	searchPlaces,
-};
+  getPlace,
+  searchPlaces,
+}

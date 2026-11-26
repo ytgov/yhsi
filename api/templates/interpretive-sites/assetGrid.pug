@@ -1,48 +1,48 @@
 //- template.pug
 
 style
-     include ../styles.css
-    
+  include ../styles.css
+
 table.title-row
-  tbody 
-    tr 
+  tbody
+    tr
       td
         div Asset information
       td
-        div(style='width:200px;')
+        div(style="width: 200px")
           include ../yukon.svg
 
-div.grid
+.grid
   table.grid-table
     thead
-      tr 
-        td 
+      tr
+        td
           strong.underline Site Name
-        td 
-          strong.underline Category 
-        td 
+        td
+          strong.underline Category
+        td
           strong.underline Type
-        td 
+        td
           strong.underline Route
-        td 
+        td
           strong.underline Size
-        td 
+        td
           strong.underline Description
-        td 
+        td
           strong.underline Sign Text
-        td 
+        td
           strong.underline Install Date
-        td 
+        td
           strong.underline Maintained By
-    tbody 
+    tbody
       each val in data
-        tr 
-          td #{val.SiteName} 
-          td #{val.Category} 
-          td #{val.Type} 
-          td #{val.Route} 
-          td #{val.Size} 
-          td #{val.Description} 
-          td #{val.SignText} 
-          td #{val.InstallDate} 
-          td #{val.MaintainedBy} 
+        tr
+          td #{ val.SiteName } 
+          td #{ val.Category } 
+          td #{ val.Type } 
+          td #{ val.Route } 
+          td #{ val.Size } 
+          td #{ val.Description } 
+          td #{ val.SignText } 
+          td #{ val.InstallDate } 
+          td #{ val.MaintainedBy } 

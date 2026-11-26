@@ -1,29 +1,29 @@
-import { User } from '../models';
+import { User } from "../models"
 
 export abstract class BasePolicy<Type> {
-	record: Type;
-	user: User;
+  record: Type
+  user: User
 
-	constructor(user: User, record: Type) {
-		this.user = user;
-		this.record = record;
-	}
+  constructor(user: User, record: Type) {
+    this.user = user
+    this.record = record
+  }
 
-	show(): Boolean {
-		throw new Error('not implemented');
-	}
+  show(): Boolean {
+    throw new Error("not implemented")
+  }
 
-	create(): Boolean {
-		throw new Error('not implemented');
-	}
+  create(): Boolean {
+    throw new Error("not implemented")
+  }
 
-	update(): Boolean {
-		throw new Error('not implemented');
-	}
+  update(): Boolean {
+    throw new Error("not implemented")
+  }
 
-	delete(): Boolean {
-		throw new Error('not implemented');
-	}
+  delete(): Boolean {
+    throw new Error("not implemented")
+  }
 }
 
-export default BasePolicy;
+export default BasePolicy
