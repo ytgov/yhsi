@@ -88,6 +88,19 @@ npm run start
 
 You will now have the Vue CLI server hosting the application at http://localhost:8080 and you can begin editing the API or front-end code. **All changes to the files in the `api` and `web` will automatically reload theie respective applications.**
 
+## Linting and Formatting
+
+Install dependencies in the root, `api`, and `web`. Run these commands from the repository root:
+
+```bash
+npm --prefix api run lint
+npm --prefix web run lint
+npm run format:check -- web/src/App.vue
+npm run format -- web/src/App.vue
+```
+
+Linting reports issues without rewriting files. Pass the files you want to format to the root Prettier scripts; they share one configuration for the API, Vue templates (including Pug), and embedded SQL.
+
 ## Local Testing
 
 Currently there is very minimal support for testing.
