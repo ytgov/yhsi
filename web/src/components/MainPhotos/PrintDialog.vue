@@ -125,9 +125,7 @@ export default {
   methods: {
     mapData() {
       this.toPrint.feature = _.pickBy(this.data, (_, key) => _.includes(this.feature, key))
-      this.toPrint.sitesRecord = _.pickBy(this.data, (_, key) =>
-        _.includes(this.sitesRecord, key)
-      )
+      this.toPrint.sitesRecord = _.pickBy(this.data, (_, key) => _.includes(this.sitesRecord, key))
       this.toPrint.historicSites = _.pickBy(this.data, (_, key) =>
         _.includes(this.historicSites, key)
       )
