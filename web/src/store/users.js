@@ -33,7 +33,7 @@ const actions = {
         return { error: err.response.data }
       })
   },
-  loadUser(state, id) {
+  loadUser(_state, id) {
     return axios
       .get(`${USER_URL}/${id}`)
       .then((resp) => resp.data)
@@ -63,7 +63,7 @@ const actions = {
       })
     }
   },
-  updateUser(state, user) {
+  updateUser(_state, user) {
     let body = {
       first_name: user.first_name,
       last_name: user.last_name,
@@ -74,17 +74,17 @@ const actions = {
 
     return axios.put(`${USER_URL}/${user.id}`, body).then((resp) => resp)
   },
-  saveUserAccess(state, item) {
+  saveUserAccess(_state, item) {
     if (item.id) {
       return axios.put(`${USER_URL}/${item.user_id}/access/${item.id}`, item).then((resp) => resp)
     } else {
       return axios.post(`${USER_URL}/${item.user_id}/access`, item).then((resp) => resp)
     }
   },
-  removeUserAccess(state, item) {
+  removeUserAccess(_state, item) {
     return axios.delete(`${USER_URL}/${item.user_id}/access/${item.id}`).then((resp) => resp)
   },
-  createAccount(state, item) {
+  createAccount(_state, item) {
     return axios
       .post(`${USER_URL}/sign-up-external`, item)
       .then((resp) => resp)

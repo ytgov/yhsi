@@ -149,7 +149,7 @@ export default {
       try {
         const resp = await api.get("/user/pending-count")
         this.pendingCount = resp.data.data.count
-      } catch (e) {
+      } catch (_e) {
         // non-fatal
       }
     }

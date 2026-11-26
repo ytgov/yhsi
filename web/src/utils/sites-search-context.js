@@ -66,7 +66,7 @@ export function rememberSitesSearchQuery(query) {
 export function recallSitesSearchQuery() {
   try {
     return JSON.parse(window.sessionStorage.getItem(STORAGE_KEY)) || {}
-  } catch (error) {
+  } catch (_error) {
     return {}
   }
 }

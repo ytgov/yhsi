@@ -28,7 +28,7 @@ export default {
     names: (state) => state.place.names || [],
     place: (state) => state.place,
     primaryName: (state) => state.place.primaryName,
-    isEditor: (state, getters, rootState) => {
+    isEditor: (_state, _getters, rootState) => {
       {
         const roles = isArray(rootState.auth.user.roles)
           ? rootState.auth.user.roles

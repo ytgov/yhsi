@@ -124,14 +124,14 @@ export default {
   },
   methods: {
     mapData() {
-      this.toPrint.feature = _.pickBy(this.data, (value, key) => _.includes(this.feature, key))
-      this.toPrint.sitesRecord = _.pickBy(this.data, (value, key) =>
+      this.toPrint.feature = _.pickBy(this.data, (_, key) => _.includes(this.feature, key))
+      this.toPrint.sitesRecord = _.pickBy(this.data, (_, key) =>
         _.includes(this.sitesRecord, key)
       )
-      this.toPrint.historicSites = _.pickBy(this.data, (value, key) =>
+      this.toPrint.historicSites = _.pickBy(this.data, (_, key) =>
         _.includes(this.historicSites, key)
       )
-      this.toPrint.photo = _.pickBy(this.data, (value, key) => _.includes(this.photo, key))
+      this.toPrint.photo = _.pickBy(this.data, (_, key) => _.includes(this.photo, key))
     },
     closeDialog() {
       this.$emit("closeDialog")
