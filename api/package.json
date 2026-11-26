@@ -9,6 +9,7 @@
 		"test": "mocha --config ./.mocharc.js 'tests/**/*.test.ts'",
 		"start-yhsif": "nodemon index.ts",
 		"build": "tsc && tsc-alias",
+		"lint": "eslint . --ext .js,.ts --ignore-path ../.gitignore",
 		"knex": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex --knexfile ./config.d/knexfile.ts"
 	},
 	"author": "Michael Johnson",
@@ -65,17 +66,5 @@
 		"tsc-alias": "^1.8.16",
 		"tsconfig-paths": "^4.2.0",
 		"typescript": "^4.6.3"
-	},
-	"eslintConfig": {
-		"root": true,
-		"parser": "@typescript-eslint/parser",
-		"plugins": [
-			"@typescript-eslint"
-		],
-		"extends": [
-			"eslint:recommended",
-			"plugin:@typescript-eslint/recommended",
-			"prettier"
-		]
 	}
 }
