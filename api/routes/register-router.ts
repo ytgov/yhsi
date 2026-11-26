@@ -1,178 +1,183 @@
-import express, { Request, Response } from 'express';
-import { body, query, validationResult } from 'express-validator';
-import { DescriptionService, PhotoService, PlaceService } from '../services';
-import { format, addHours } from 'date-fns';
-import { createThumbnail } from '../utils/image';
+import express, { Request, Response } from "express"
+import { body, query, validationResult } from "express-validator"
+import { DescriptionService, PhotoService, PlaceService } from "../services"
+import { format, addHours } from "date-fns"
+import { createThumbnail } from "../utils/image"
 
-const descriptionService = new DescriptionService();
-const placeService = new PlaceService();
-const photoService = new PhotoService();
+const descriptionService = new DescriptionService()
+const placeService = new PlaceService()
+const photoService = new PhotoService()
 
-export const registerRouter = express.Router();
-const PAGE_SIZE = 12;
+export const registerRouter = express.Router()
+const PAGE_SIZE = 12
 
 registerRouter.get(
-	'/',
-	[query('page').default(1).isInt({ gt: 0 })],
-	async (req: Request, res: Response) => {
-		const page = parseInt(req.query.page as string);
-		const skip = (page - 1) * PAGE_SIZE;
-		const take = PAGE_SIZE;
+  "/",
+  [query("page").default(1).isInt({ gt: 0 })],
+  async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string)
+    const skip = (page - 1) * PAGE_SIZE
+    const take = PAGE_SIZE
 
-		const data = await placeService.getRegisterAll(skip, take);
-		data.map(
-			(d) => (d.recognitionDate = d.recognitionDate ? format(addHours(new Date(d.recognitionDate), 7), 'yyyy-MM-dd') : null)
-		);
+    const data = await placeService.getRegisterAll(skip, take)
+    data.map(
+      (d) =>
+        (d.recognitionDate = d.recognitionDate
+          ? format(addHours(new Date(d.recognitionDate), 7), "yyyy-MM-dd")
+          : null)
+    )
 
-		const item_count = await placeService
-			.getPlaceInRegisterCount()
-			.then((data) => data)
-			.catch((err) => {
-				console.error('Database Error', err);
-				return 0;
-			});
+    const item_count = await placeService
+      .getPlaceInRegisterCount()
+      .then((data) => data)
+      .catch((err) => {
+        console.error("Database Error", err)
+        return 0
+      })
 
-		const page_count = Math.ceil(item_count / PAGE_SIZE);
+    const page_count = Math.ceil(item_count / PAGE_SIZE)
 
-		if (data) {
-			return res.json({
-				data,
-				meta: { page, page_size: PAGE_SIZE, item_count, page_count },
-			});
-		}
+    if (data) {
+      return res.json({
+        data,
+        meta: { page, page_size: PAGE_SIZE, item_count, page_count },
+      })
+    }
 
-		res.json({ data });
-	}
-);
-
+    res.json({ data })
+  }
+)
 
 registerRouter.post(
-	'/search',
-	[query('page').default(1).isInt({ gt: 0 }), body('query').default('').isString().trim()],
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
+  "/search",
+  [query("page").default(1).isInt({ gt: 0 }), body("query").default("").isString().trim()],
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req)
 
-		if (!errors.isEmpty()) {
-			return res.status(422).json({ errors: errors.array() });
-		}
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() })
+    }
 
-		const page = parseInt(req.query.page as string);
-		const skip = (page - 1) * PAGE_SIZE;
-		const take = PAGE_SIZE;
-		const searchTerm = (req.body.query as string) ?? '';
+    const page = parseInt(req.query.page as string)
+    const skip = (page - 1) * PAGE_SIZE
+    const take = PAGE_SIZE
+    const searchTerm = (req.body.query as string) ?? ""
 
-		const data = searchTerm
-			? await placeService.searchRegister(searchTerm, skip, take)
-			: await placeService.getRegisterAll(skip, take);
-		data.map(
-			(d) => (d.recognitionDate = d.recognitionDate ? format(addHours(new Date(d.recognitionDate), 7), 'yyyy-MM-dd') : null)
-		);
+    const data = searchTerm
+      ? await placeService.searchRegister(searchTerm, skip, take)
+      : await placeService.getRegisterAll(skip, take)
+    data.map(
+      (d) =>
+        (d.recognitionDate = d.recognitionDate
+          ? format(addHours(new Date(d.recognitionDate), 7), "yyyy-MM-dd")
+          : null)
+    )
 
-		const item_count = await (searchTerm
-			? placeService.getRegisterSearchCount(searchTerm)
-			: placeService.getPlaceInRegisterCount()
-		)
-			.then((data) => data)
-			.catch((err) => {
-				console.error('Database Error', err);
-				return 0;
-			});
+    const item_count = await (
+      searchTerm
+        ? placeService.getRegisterSearchCount(searchTerm)
+        : placeService.getPlaceInRegisterCount()
+    )
+      .then((data) => data)
+      .catch((err) => {
+        console.error("Database Error", err)
+        return 0
+      })
 
-		const page_count = Math.ceil(item_count / PAGE_SIZE);
+    const page_count = Math.ceil(item_count / PAGE_SIZE)
 
-		if (data) {
-			return res.json({
-				data,
-				meta: { page, page_size: PAGE_SIZE, item_count, page_count },
-			});
-		}
+    if (data) {
+      return res.json({
+        data,
+        meta: { page, page_size: PAGE_SIZE, item_count, page_count },
+      })
+    }
 
-		res.json({ data });
-	}
-);
+    res.json({ data })
+  }
+)
 
+registerRouter.get("/:id", async (req: Request, res: Response) => {
+  const { id } = req.params
+  const data = await placeService.getRegisterById(parseInt(id))
 
-registerRouter.get('/:id', async (req: Request, res: Response) => {
-	const { id } = req.params;
-	const data = await placeService.getRegisterById(parseInt(id));
+  if (!data) {
+    return res.status(404).send()
+  }
 
-	if (!data) {
-		return res.status(404).send();
-	}
+  data.placeDescriptionEn = "1111"
+  data.placeDescriptionFr = ""
+  data.heritageValueEn = ""
+  data.heritageValueFr = ""
+  data.characterDefEn = ""
+  data.characterDefFr = ""
+  data.descBoundEn = ""
+  data.descBoundFr = ""
+  data.additionalInfoEn = ""
+  data.additionalInfoFr = ""
+  data.culturalHistoryEn = ""
+  data.culturalHistoryFr = ""
 
-	data.placeDescriptionEn = '1111';
-	data.placeDescriptionFr = '';
-	data.heritageValueEn = '';
-	data.heritageValueFr = '';
-	data.characterDefEn = '';
-	data.characterDefFr = '';
-	data.descBoundEn = '';
-	data.descBoundFr = '';
-	data.additionalInfoEn = '';
-	data.additionalInfoFr = '';
-	data.culturalHistoryEn = '';
-	data.culturalHistoryFr = '';
+  const descs = await descriptionService.getForPlace(parseInt(id))
 
-	const descs = await descriptionService.getForPlace(parseInt(id));
+  for (const desc of descs) {
+    if (desc.type == 5) {
+      data.placeDescriptionEn = desc.descriptionText
+      data.placeDescriptionFr = desc.fR_DescriptionText
+    } else if (desc.type == 4) {
+      data.heritageValueEn = desc.descriptionText
+      data.heritageValueFr = desc.fR_DescriptionText
+    } else if (desc.type == 2) {
+      data.characterDefEn = desc.descriptionText
+      data.characterDefFr = desc.fR_DescriptionText
+    } else if (desc.type == 6) {
+      data.descBoundEn = desc.descriptionText
+      data.descBoundFr = desc.fR_DescriptionText
+    } else if (desc.type == 30) {
+      data.additionalInfoEn = desc.descriptionText
+      data.additionalInfoFr = desc.fR_DescriptionText
+    } else if (desc.type == 12) {
+      data.culturalHistoryEn = desc.descriptionText
+      data.culturalHistoryFr = desc.fR_DescriptionText
+    }
+  }
 
-	for (const desc of descs) {
-		if (desc.type == 5) {
-			data.placeDescriptionEn = desc.descriptionText;
-			data.placeDescriptionFr = desc.fR_DescriptionText;
-		} else if (desc.type == 4) {
-			data.heritageValueEn = desc.descriptionText;
-			data.heritageValueFr = desc.fR_DescriptionText;
-		} else if (desc.type == 2) {
-			data.characterDefEn = desc.descriptionText;
-			data.characterDefFr = desc.fR_DescriptionText;
-		} else if (desc.type == 6) {
-			data.descBoundEn = desc.descriptionText;
-			data.descBoundFr = desc.fR_DescriptionText;
-		} else if (desc.type == 30) {
-			data.additionalInfoEn = desc.descriptionText;
-			data.additionalInfoFr = desc.fR_DescriptionText;
-		}else if (desc.type == 12) {
-			data.culturalHistoryEn = desc.descriptionText;
-			data.culturalHistoryFr = desc.fR_DescriptionText;
-		}
-	}
+  res.json({ data })
+})
 
-	res.json({ data });
-});
+registerRouter.get("/:id/photos", async (req: Request, res: Response) => {
+  const { id } = req.params
+  const data = await placeService.getRegisterById(parseInt(id))
 
-registerRouter.get('/:id/photos', async (req: Request, res: Response) => {
-	const { id } = req.params;
-	const data = await placeService.getRegisterById(parseInt(id));
+  if (!data) {
+    return res.status(404).send()
+  }
 
-	if (!data) {
-		return res.status(404).send();
-	}
+  const photos = await photoService.getAllForRegisterPlace(parseInt(id))
 
-	const photos = await photoService.getAllForRegisterPlace(parseInt(id));
+  res.json({ data: photos })
+})
 
-	res.json({ data: photos });
-});
+registerRouter.get("/:id/photos/:photoId", async (req: Request, res: Response) => {
+  const { id, photoId } = req.params
+  const data = await placeService.getRegisterById(parseInt(id))
 
-registerRouter.get('/:id/photos/:photoId', async (req: Request, res: Response) => {
-	const { id, photoId } = req.params;
-	const data = await placeService.getRegisterById(parseInt(id));
+  if (!data) {
+    return res.status(404).send()
+  }
 
-	if (!data) {
-		return res.status(404).send();
-	}
+  await photoService
+    .getRegisterFileById(photoId)
+    .then(async (photo) => {
+      if (photo && photo.file) {
+        const t = await createThumbnail(photo.file)
+        return res.contentType("image/jpg").send(t)
+      }
 
-	await photoService
-		.getRegisterFileById(photoId)
-		.then(async (photo) => {
-			if (photo && photo.file) {
-				const t = await createThumbnail(photo.file);
-				return res.contentType('image/jpg').send(t);
-			}
-
-			return res.status(404).send('Photo not found');
-		})
-		.catch((err) => {
-			console.error(err);
-			return res.status(404).send('Photo not found');
-		});
-});
+      return res.status(404).send("Photo not found")
+    })
+    .catch((err) => {
+      console.error(err)
+      return res.status(404).send("Photo not found")
+    })
+})

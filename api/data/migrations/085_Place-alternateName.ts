@@ -13,14 +13,14 @@
 // ALTER TABLE Place.AlternateName ADD CONSTRAINT PK__Alternat__3214EC0722C106A5 PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Place.AlternateName', (table) => {
-		table.integer('PlaceID').notNullable();
-		table.string('AlternateName', 255).notNullable();
-		table.increments('Id').primary();
-	});
-};
+  await knex.schema.createTable("Place.AlternateName", (table) => {
+    table.integer("PlaceID").notNullable()
+    table.string("AlternateName", 255).notNullable()
+    table.increments("Id").primary()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Place.AlternateName');
-};
+  await knex.schema.dropTable("Place.AlternateName")
+}

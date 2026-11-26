@@ -1,47 +1,45 @@
 <template>
   <div>
-    <v-autocomplete 
+    <v-autocomplete
       v-model="itemValue"
       :items="options"
       item-text="label"
       item-value="value"
-      class="default" 
+      class="default"
       background-color="white"
-      outlined 
+      outlined
       dense
       multiple
       hide-details
       clearable
     ></v-autocomplete>
-</div>
+  </div>
 </template>
- 
-<script>
 
+<script>
 export default {
   name: "querymultiselect",
   props: ["value"],
-  data: () =>({
+  data: () => ({
     options: [],
     itemValue: null,
   }),
   async mounted() {
-    // Get the select options, defined in the parent 
-    this.options = await this.getData();
+    // Get the select options, defined in the parent
+    this.options = await this.getData()
     // Set the select value to the props value
-    this.itemValue = this.value;
+    this.itemValue = this.value
   },
-  computed: {
-  },
+  computed: {},
   methods: {
     getData() {
-      return Promise.resolve([]);
+      return Promise.resolve([])
     },
   },
-  watch:{
-    itemValue(val){
-      this.$emit('input', val)
+  watch: {
+    itemValue(val) {
+      this.$emit("input", val)
     },
-  }
+  },
 }
-</script>                   
+</script>

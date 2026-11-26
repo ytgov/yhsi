@@ -9,13 +9,13 @@
 // );
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Person.Photo', (table) => {
-		table.integer('PersonID').notNullable();
-		table.string('PhotoID', 255).nullable();
-	});
-};
+  await knex.schema.createTable("Person.Photo", (table) => {
+    table.integer("PersonID").notNullable()
+    table.string("PhotoID", 255).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Person.Photo');
-};
+  await knex.schema.dropTable("Person.Photo")
+}

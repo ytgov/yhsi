@@ -34,28 +34,28 @@
 // 	EXEC sp_executesql N'CREATE SCHEMA [YRHP]';
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 
 exports.up = async function (knex: Knex, Promise: any) {
-	// await knex.raw('CREATE SCHEMA [AirCrash]');
-	// await knex.raw('CREATE SCHEMA [Boat]');
-	// await knex.raw('CREATE SCHEMA [Burial]');
-	// await knex.raw('CREATE SCHEMA [InterpretiveSite]');
-	// await knex.raw('CREATE SCHEMA [Person]');
-	// await knex.raw('CREATE SCHEMA [Place]');
-	// await knex.raw('CREATE SCHEMA [Security]');
-	// await knex.raw('CREATE SCHEMA [YHIS]');
-	// await knex.raw('CREATE SCHEMA [YRHP]');
-};
+  // await knex.raw('CREATE SCHEMA [AirCrash]');
+  // await knex.raw('CREATE SCHEMA [Boat]');
+  // await knex.raw('CREATE SCHEMA [Burial]');
+  // await knex.raw('CREATE SCHEMA [InterpretiveSite]');
+  // await knex.raw('CREATE SCHEMA [Person]');
+  // await knex.raw('CREATE SCHEMA [Place]');
+  // await knex.raw('CREATE SCHEMA [Security]');
+  // await knex.raw('CREATE SCHEMA [YHIS]');
+  // await knex.raw('CREATE SCHEMA [YRHP]');
+}
 
 exports.down = async function (knex: Knex, Promise: any) {
-	// await knex.raw('DROP SCHEMA [AirCrash]');
-	// await knex.raw('DROP SCHEMA [Boat]');
-	// await knex.raw('DROP SCHEMA [Burial]');
-	// await knex.raw('DROP SCHEMA [InterpretiveSite]');
-	// await knex.raw('DROP SCHEMA [Person]');
-	// await knex.raw('DROP SCHEMA [Place]');
-	// await knex.raw('DROP SCHEMA [Security]');
-	// await knex.raw('DROP SCHEMA [YHIS]');
-	// await knex.raw('DROP SCHEMA [YRHP]');
-};
+  // await knex.raw('DROP SCHEMA [AirCrash]');
+  // await knex.raw('DROP SCHEMA [Boat]');
+  // await knex.raw('DROP SCHEMA [Burial]');
+  // await knex.raw('DROP SCHEMA [InterpretiveSite]');
+  // await knex.raw('DROP SCHEMA [Person]');
+  // await knex.raw('DROP SCHEMA [Place]');
+  // await knex.raw('DROP SCHEMA [Security]');
+  // await knex.raw('DROP SCHEMA [YHIS]');
+  // await knex.raw('DROP SCHEMA [YRHP]');
+}

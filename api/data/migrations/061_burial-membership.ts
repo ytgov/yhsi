@@ -15,16 +15,16 @@
 // ALTER TABLE Burial.Membership ADD CONSTRAINT PK__Membersh__3214EC27FA61DFAB PRIMARY KEY (ID);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Burial.Membership', (table) => {
-		table.increments('ID').primary();
-		table.integer('BurialID').notNullable();
-		table.integer('MembershipID').notNullable();
-		table.string('Chapter', 100).nullable();
-		table.string('Notes', 255).nullable();
-	});
-};
+  await knex.schema.createTable("Burial.Membership", (table) => {
+    table.increments("ID").primary()
+    table.integer("BurialID").notNullable()
+    table.integer("MembershipID").notNullable()
+    table.string("Chapter", 100).nullable()
+    table.string("Notes", 255).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Burial.Membership');
-};
+  await knex.schema.dropTable("Burial.Membership")
+}

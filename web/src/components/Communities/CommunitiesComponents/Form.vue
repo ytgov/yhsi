@@ -1,7 +1,14 @@
 <template>
   <div>
-    <v-app-bar color="primary" dark flat>
-      <v-btn color="primary" @click="goBack()">
+    <v-app-bar
+      color="primary"
+      dark
+      flat
+    >
+      <v-btn
+        color="primary"
+        @click="goBack()"
+      >
         <v-icon>mdi-arrow-left-drop-circle</v-icon>
         <div class="ml-2">Back to Communities</div>
       </v-btn>
@@ -20,7 +27,10 @@
             </div>
           </v-col>
         </v-row>
-        <v-divider inset class="mb-2"></v-divider>
+        <v-divider
+          inset
+          class="mb-2"
+        ></v-divider>
         <v-row>
           <v-col cols="6">
             <v-text-field
@@ -53,21 +63,20 @@ export default {
   }),
   created() {
     if (this.$route.path.includes("edit")) {
-      this.title = "Edit";
+      this.title = "Edit"
       //after this a function should be called to fill the fields with the data
     } else {
       //doesnt fill the inputs
-      this.title = "Add";
+      this.title = "Add"
     }
   },
   methods: {
     goBack() {
-      this.$router.push("/communities");
+      this.$router.push("/communities")
     },
   },
-};
+}
 </script>
-
 
 <style scoped>
 .list-menu {

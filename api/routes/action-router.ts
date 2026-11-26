@@ -1,155 +1,155 @@
-import express, { Request, Response } from 'express';
-import { ReturnValidationErrors } from '../middleware';
-import { param, query } from 'express-validator';
-import { InterpretiveSiteService } from '../services';
-import { renderFile } from 'pug';
-import { generatePDF } from '../utils/pdf-generator';
+import express, { Request, Response } from "express"
+import { ReturnValidationErrors } from "../middleware"
+import { param, query } from "express-validator"
+import { InterpretiveSiteService } from "../services"
+import { renderFile } from "pug"
+import { generatePDF } from "../utils/pdf-generator"
 const {
-	Parser,
-	transforms: { unwind },
-} = require('json2csv');
-export const actionRouter = express.Router();
-const intSiteService = new InterpretiveSiteService();
+  Parser,
+  transforms: { unwind },
+} = require("json2csv")
+export const actionRouter = express.Router()
+const intSiteService = new InterpretiveSiteService()
 
 // ACTIONS
 
 actionRouter.get(
-	'/',
-	[
-		query('sortBy').default('ActionDesc').isString(),
-		query('sort').default('asc').isString(),
-		query('page').default(0).isInt(),
-		query('limit').default(10).isInt({ gt: 0 }),
-	],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const {
-			ActionDesc = '',
-			ToBeCompleteDate = '',
-			ActionCompleteDate = '',
-			CompletionDesc = '',
-			Priority = '',
-			CreatedBy = '',
-			CreatedDate = '',
-			CompletedBy = '',
-			sortBy = 'ActionDesc',
-			sort,
-		} = req.query;
+  "/",
+  [
+    query("sortBy").default("ActionDesc").isString(),
+    query("sort").default("asc").isString(),
+    query("page").default(0).isInt(),
+    query("limit").default(10).isInt({ gt: 0 }),
+  ],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const {
+      ActionDesc = "",
+      ToBeCompleteDate = "",
+      ActionCompleteDate = "",
+      CompletionDesc = "",
+      Priority = "",
+      CreatedBy = "",
+      CreatedDate = "",
+      CompletedBy = "",
+      sortBy = "ActionDesc",
+      sort,
+    } = req.query
 
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
+    const page = parseInt(req.query.page as string)
+    const limit = parseInt(req.query.limit as string)
+    const offset = page * limit || 0
 
-		const data = await intSiteService.doActionSearch(page, limit, offset, {
-			ActionDesc,
-			ToBeCompleteDate,
-			ActionCompleteDate,
-			CompletionDesc,
-			Priority,
-			CreatedBy,
-			CreatedDate,
-			CompletedBy,
-			sortBy,
-			sort,
-		});
+    const data = await intSiteService.doActionSearch(page, limit, offset, {
+      ActionDesc,
+      ToBeCompleteDate,
+      ActionCompleteDate,
+      CompletionDesc,
+      Priority,
+      CreatedBy,
+      CreatedDate,
+      CompletedBy,
+      sortBy,
+      sort,
+    })
 
-		res.status(200).send(data);
-	}
-);
-
-actionRouter.get(
-	'/:siteId',
-	[param('siteId').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { siteId } = req.params;
-		const list = await intSiteService.getActionsBySiteId(parseInt(siteId));
-
-		if (!list) {
-			res.status(404).send({ message: 'Data not found' });
-			return;
-		}
-
-		res.status(200).send(list);
-	}
-);
-
-actionRouter.delete(
-	'/docs/:id',
-	[param('id').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { id } = req.params;
-
-		const resObj = await intSiteService.removeDocumentByID(parseInt(id));
-		if (!resObj) {
-			res.status(404).send({ message: 'The document does not exist' });
-			return;
-		}
-		res.status(200).json({ data: resObj });
-	}
-);
-
-actionRouter.delete(
-	'/:actionID',
-	[param('actionID').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { actionID } = req.params;
-		const exists = await intSiteService.objExists({ ActionID: parseInt(actionID) }, 'actions');
-		if (!exists) {
-			res.status(404).send({ message: 'The action does not exist' });
-			return;
-		}
-
-		const resObj = await intSiteService.removeAction(parseInt(actionID));
-		res.status(200).json({ data: resObj });
-	}
-);
+    res.status(200).send(data)
+  }
+)
 
 actionRouter.get(
-	'/inspection/:inspectId',
-	[param('inspectId').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { inspectId } = req.params;
-		const list = await intSiteService.getActionsByInspectID(parseInt(inspectId));
+  "/:siteId",
+  [param("siteId").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { siteId } = req.params
+    const list = await intSiteService.getActionsBySiteId(parseInt(siteId))
 
-		if (!list) {
-			res.status(404).send({ message: 'Data not found' });
-			return;
-		}
+    if (!list) {
+      res.status(404).send({ message: "Data not found" })
+      return
+    }
 
-		res.status(200).send(list);
-	}
-);
+    res.status(200).send(list)
+  }
+)
 
-actionRouter.post('/', async (req: Request, res: Response) => {
-	const { item = {} } = req.body;
+actionRouter.delete(
+  "/docs/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params
 
-	const resObj = await intSiteService.addAction(item);
-	if (!resObj) {
-		res.status(401).send({ message: 'Conflict' });
-		return;
-	}
+    const resObj = await intSiteService.removeDocumentByID(parseInt(id))
+    if (!resObj) {
+      res.status(404).send({ message: "The document does not exist" })
+      return
+    }
+    res.status(200).json({ data: resObj })
+  }
+)
 
-	res.send(resObj);
-});
+actionRouter.delete(
+  "/:actionID",
+  [param("actionID").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { actionID } = req.params
+    const exists = await intSiteService.objExists({ ActionID: parseInt(actionID) }, "actions")
+    if (!exists) {
+      res.status(404).send({ message: "The action does not exist" })
+      return
+    }
 
-actionRouter.put('/:actionId', async (req: Request, res: Response) => {
-	const {
-		item = {},
-		// assets = [], actions = [], inspections = []
-	} = req.body;
-	const { actionId } = req.params;
-	const resObj = await intSiteService.modifyAction(item, parseInt(actionId));
-	if (!resObj) {
-		res.status(404).send({ message: 'Action not found' });
-		return;
-	}
+    const resObj = await intSiteService.removeAction(parseInt(actionID))
+    res.status(200).json({ data: resObj })
+  }
+)
 
-	res.send(resObj[0]);
-});
+actionRouter.get(
+  "/inspection/:inspectId",
+  [param("inspectId").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { inspectId } = req.params
+    const list = await intSiteService.getActionsByInspectID(parseInt(inspectId))
+
+    if (!list) {
+      res.status(404).send({ message: "Data not found" })
+      return
+    }
+
+    res.status(200).send(list)
+  }
+)
+
+actionRouter.post("/", async (req: Request, res: Response) => {
+  const { item = {} } = req.body
+
+  const resObj = await intSiteService.addAction(item)
+  if (!resObj) {
+    res.status(401).send({ message: "Conflict" })
+    return
+  }
+
+  res.send(resObj)
+})
+
+actionRouter.put("/:actionId", async (req: Request, res: Response) => {
+  const {
+    item = {},
+    // assets = [], actions = [], inspections = []
+  } = req.body
+  const { actionId } = req.params
+  const resObj = await intSiteService.modifyAction(item, parseInt(actionId))
+  if (!resObj) {
+    res.status(404).send({ message: "Action not found" })
+    return
+  }
+
+  res.send(resObj[0])
+})
 
 //PDF AND EXPORTS
 // NO REQUEST FOR A SINGLE ACTION PRINT
@@ -173,89 +173,89 @@ actionRouter.put('/:actionId', async (req: Request, res: Response) => {
 // });
 
 actionRouter.get(
-	'/docs/:actionID',
-	[param('actionID').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { actionID } = req.params;
+  "/docs/:actionID",
+  [param("actionID").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { actionID } = req.params
 
-		const photos = await intSiteService.getDocumentsByOwnerID({
-			ActionID: actionID,
-		});
+    const photos = await intSiteService.getDocumentsByOwnerID({
+      ActionID: actionID,
+    })
 
-		res.status(200).send(photos);
-	}
-);
+    res.status(200).send(photos)
+  }
+)
 
-actionRouter.post('/pdf', async (req: Request, res: Response) => {
-	const {
-		ActionDesc = '',
-		ToBeCompleteDate = '',
-		ActionCompleteDate = '',
-		CompletionDesc = '',
-		Priority = '',
-		CreatedBy = '',
-		CreatedDate = '',
-		CompletedBy = '',
-		sortBy = 'ActionDesc',
-		sort,
-		page = 0,
-		limit = 0,
-	} = req.body;
+actionRouter.post("/pdf", async (req: Request, res: Response) => {
+  const {
+    ActionDesc = "",
+    ToBeCompleteDate = "",
+    ActionCompleteDate = "",
+    CompletionDesc = "",
+    Priority = "",
+    CreatedBy = "",
+    CreatedDate = "",
+    CompletedBy = "",
+    sortBy = "ActionDesc",
+    sort,
+    page = 0,
+    limit = 0,
+  } = req.body
 
-	const data = await intSiteService.doActionSearch(page, limit, 0, {
-		ActionDesc,
-		ToBeCompleteDate,
-		ActionCompleteDate,
-		CompletionDesc,
-		Priority,
-		CreatedBy,
-		CreatedDate,
-		CompletedBy,
-		sortBy,
-		sort,
-	});
-	const pdfData = renderFile('./templates/interpretive-sites/actionGrid.pug', {
-		data: data.body,
-	});
+  const data = await intSiteService.doActionSearch(page, limit, 0, {
+    ActionDesc,
+    ToBeCompleteDate,
+    ActionCompleteDate,
+    CompletionDesc,
+    Priority,
+    CreatedBy,
+    CreatedDate,
+    CompletedBy,
+    sortBy,
+    sort,
+  })
+  const pdfData = renderFile("./templates/interpretive-sites/actionGrid.pug", {
+    data: data.body,
+  })
 
-	const pdf = await generatePDF(pdfData);
-	res.setHeader('Content-disposition', 'attachment; filename="actions.html"');
-	res.setHeader('Content-type', 'application/pdf');
-	res.send(pdf);
-});
+  const pdf = await generatePDF(pdfData)
+  res.setHeader("Content-disposition", 'attachment; filename="actions.html"')
+  res.setHeader("Content-type", "application/pdf")
+  res.send(pdf)
+})
 
-actionRouter.post('/export', async (req: Request, res: Response) => {
-	const {
-		ActionDesc = '',
-		ToBeCompleteDate = '',
-		ActionCompleteDate = '',
-		CompletionDesc = '',
-		Priority = '',
-		CreatedBy = '',
-		CreatedDate = '',
-		CompletedBy = '',
-		sortBy = 'ActionDesc',
-		sort,
-		page = 0,
-		limit = 0,
-	} = req.body;
+actionRouter.post("/export", async (req: Request, res: Response) => {
+  const {
+    ActionDesc = "",
+    ToBeCompleteDate = "",
+    ActionCompleteDate = "",
+    CompletionDesc = "",
+    Priority = "",
+    CreatedBy = "",
+    CreatedDate = "",
+    CompletedBy = "",
+    sortBy = "ActionDesc",
+    sort,
+    page = 0,
+    limit = 0,
+  } = req.body
 
-	const data = await intSiteService.doActionSearch(page, limit, 0, {
-		ActionDesc,
-		ToBeCompleteDate,
-		ActionCompleteDate,
-		CompletionDesc,
-		Priority,
-		CreatedBy,
-		CreatedDate,
-		CompletedBy,
-		sortBy,
-		sort,
-	});
-	const json2csvParser = new Parser();
+  const data = await intSiteService.doActionSearch(page, limit, 0, {
+    ActionDesc,
+    ToBeCompleteDate,
+    ActionCompleteDate,
+    CompletionDesc,
+    Priority,
+    CreatedBy,
+    CreatedDate,
+    CompletedBy,
+    sortBy,
+    sort,
+  })
+  const json2csvParser = new Parser()
 
-	const csv = json2csvParser.parse(data.body);
-	res.setHeader('Content-Type', 'text/csv');
-	res.attachment('actions.csv').send(csv);
-});
+  const csv = json2csvParser.parse(data.body)
+  res.setHeader("Content-Type", "text/csv")
+  res.attachment("actions.csv").send(csv)
+})

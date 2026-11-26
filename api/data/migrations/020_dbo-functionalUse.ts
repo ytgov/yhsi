@@ -15,16 +15,16 @@
 // ALTER TABLE dbo.FunctionalUse ADD CONSTRAINT PK_FunctionalUse PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.FunctionalUse', (table) => {
-		table.increments('Id').primary();
-		table.integer('PlaceId').notNullable();
-		table.integer('FunctionalTypeId').notNullable();
-		table.integer('FunctionalUseType').notNullable();
-		table.string('Description', 256).nullable();
-	});
-};
+  await knex.schema.createTable("dbo.FunctionalUse", (table) => {
+    table.increments("Id").primary()
+    table.integer("PlaceId").notNullable()
+    table.integer("FunctionalTypeId").notNullable()
+    table.integer("FunctionalUseType").notNullable()
+    table.string("Description", 256).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.FunctionalUse');
-};
+  await knex.schema.dropTable("dbo.FunctionalUse")
+}

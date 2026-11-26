@@ -1,11 +1,11 @@
-import { AuthUser } from "../auth";
+import { AuthUser } from "../auth"
 
 export interface AppUser extends AuthUser {
-    teams?: Array<Team>;
+  teams?: Array<Team>
 }
 
 export interface Team {
-    id: string;
-    name: string;
-    role: string;
+  id: string
+  name: string
+  role: string
 }

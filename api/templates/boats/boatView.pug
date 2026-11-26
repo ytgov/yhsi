@@ -9,61 +9,61 @@ table.title-row
     tr
       td
         div(style="margin-top: 15px") Yukon Heritage Information System
-        div.item-name #{data.Name}
+        .item-name #{ data.Name }
       td.brand-logo
         include ../yukon.svg
 
-div.section
-  div.section-title General information
+.section
+  .section-title General information
   table.divided-row
     tbody
       tr
         td
-          div.field
+          .field
             span.label Name
-            span.value #{data.Name}
-          div.field
+            span.value #{ data.Name }
+          .field
             span.label Registration Number
-            span.value #{data.RegistrationNumber}
-          div.field
+            span.value #{ data.RegistrationNumber }
+          .field
             span.label Vessel Type
-            span.value #{data.VesselType}
-          div.field
+            span.value #{ data.VesselType }
+          .field
             span.label Current Location Description
-            span.value #{data.CurrentLocation}
+            span.value #{ data.CurrentLocation }
         td
-          div.field
+          .field
             span.label Construction Date
-            span.value #{data.ConstructionDate}
-          div.field
+            span.value #{ data.ConstructionDate }
+          .field
             span.label Service Start Date
-            span.value #{data.ServiceStart}
-          div.field
+            span.value #{ data.ServiceStart }
+          .field
             span.label Service End Date
-            span.value #{data.ServiceEnd}
-          div.field
+            span.value #{ data.ServiceEnd }
+          .field
             span.label Notes
-            span.value #{data.Notes}
+            span.value #{ data.Notes }
 
-div.section
-  div.section-title Owners & Names
-  div.subhead Owners
+.section
+  .section-title Owners & Names
+  .subhead Owners
   each val in data.owners
-    div.subfield #{val.OwnerName}
+    .subfield #{ val.OwnerName }
   else
-    div.subfield.empty None recorded
-  div.subhead Names
+    .subfield.empty None recorded
+  .subhead Names
   each val in data.pastNames
-    div.subfield #{val.BoatName}
+    .subfield #{ val.BoatName }
   else
-    div.subfield.empty None recorded
+    .subfield.empty None recorded
 
-div.section
-  div.section-title History
+.section
+  .section-title History
   each val in data.histories
-    div.subfield
-      | #{val.HistoryText}
+    .subfield
+      | #{ val.HistoryText }
       br
-      em Reference: #{val.Reference}
+      em Reference: #{ val.Reference }
   else
-    div.subfield.empty None recorded
+    .subfield.empty None recorded

@@ -1,6 +1,10 @@
 <template>
   <div class="">
-    <v-app-bar color="primary" dark flat>
+    <v-app-bar
+      color="primary"
+      dark
+      flat
+    >
       <v-btn color="primary">
         <v-icon>mdi-image-album</v-icon>
         <div class="ml-2">
@@ -21,7 +25,10 @@
           v-model="search"
         ></v-text-field>
       </div>
-      <v-btn color="primary" @click="handleClickAdd({ id: owners.length + 1 })">
+      <v-btn
+        color="primary"
+        @click="handleClickAdd({ id: owners.length + 1 })"
+      >
         <v-icon class="mr-2">mdi-plus</v-icon>
         Add Photo Owner
       </v-btn>
@@ -34,7 +41,10 @@
           <!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
         </v-col>
       </v-row>
-      <v-divider inset class="mb-4"></v-divider>
+      <v-divider
+        inset
+        class="mb-4"
+      ></v-divider>
       <v-row>
         <v-col>
           <v-data-table
@@ -44,7 +54,10 @@
             :search="search"
           >
             <template v-slot:item.name="{ item }">
-              <div @click="handleClickEdit(item)" class="hoverclicklink">
+              <div
+                @click="handleClickEdit(item)"
+                class="hoverclicklink"
+              >
                 {{ item.name }}
               </div>
             </template>
@@ -74,26 +87,26 @@ export default {
     iteamsPerPage: 10,
   }),
   mounted() {
-    this.getDataFromApi();
+    this.getDataFromApi()
   },
   methods: {
     handleClickEdit(value) {
       //Redirects the user to the edit user form
-      this.$router.push(`/photo-owners/edit/${value.id}`);
+      this.$router.push(`/photo-owners/edit/${value.id}`)
     },
     handleClickAdd() {
       //Redirects the user to the edit user form
-      this.$router.push(`/photo-owners/add`);
+      this.$router.push(`/photo-owners/add`)
     },
     removeItem(item) {
       //removes one element from the users array
-      const index = this.owners.indexOf(item);
+      const index = this.owners.indexOf(item)
       if (index > -1) {
-        this.owners.splice(index, 1);
+        this.owners.splice(index, 1)
       }
     },
     getDataFromApi() {
-      this.loading = true;
+      this.loading = true
       this.owners = [
         {
           id: 1,
@@ -130,12 +143,12 @@ export default {
           email: "example@email.com",
           telephone: "1234567",
         },
-      ];
-      this.totalLength = this.owners.length;
-      this.loading = false;
+      ]
+      this.totalLength = this.owners.length
+      this.loading = false
     },
   },
-};
+}
 </script>
 
 <style scoped>

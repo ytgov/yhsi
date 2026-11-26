@@ -9,13 +9,13 @@
 // );
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.OriginalMedia', (table) => {
-		table.increments('Id').primary();
-		table.string('Type', 256).notNullable();
-	});
-};
+  await knex.schema.createTable("dbo.OriginalMedia", (table) => {
+    table.increments("Id").primary()
+    table.string("Type", 256).notNullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.OriginalMedia');
-};
+  await knex.schema.dropTable("dbo.OriginalMedia")
+}

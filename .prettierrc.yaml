@@ -1,19 +1,19 @@
 # .prettierrc or .prettierrc.yaml
-$schema: 'https://json.schemastore.org/prettierrc'
-embeddedLanguageFormatting: 'auto'
-jsxSingleQuote: true
-pugAttributeSeparator: 'as-needed'
+$schema: "https://json.schemastore.org/prettierrc"
+embeddedLanguageFormatting: "auto"
+pugAttributeSeparator: "as-needed"
 pugSingleQuote: false
 pugWrapAttributesThreshold: 1
-semi: true
+semi: false
 singleAttributePerLine: true
-singleQuote: true
+singleQuote: false
 tabWidth: 2
-trailingComma: 'es5'
-useTabs: true
+trailingComma: "es5"
+useTabs: false
 printWidth: 100
 plugins:
+  - "@prettier/plugin-pug"
   - prettier-plugin-embed
   - prettier-plugin-sql
-language: 'tsql'
+language: "tsql"
 paramTypes: "{ named: [':'] }"

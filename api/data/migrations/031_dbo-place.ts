@@ -74,75 +74,75 @@
 // ALTER TABLE dbo.Place ADD CONSTRAINT PK__Place__3214EC076A75EDA3 PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.Place', (table) => {
-		table.increments('Id').primary();
-		table.string('PrimaryName', 700).notNullable();
-		table.string('YHSIId', 20).notNullable();
-		table.integer('Jurisdiction').notNullable();
-		table.integer('StatuteId').notNullable();
-		table.integer('Statute2Id').notNullable();
-		table.date('RecognitionDate').nullable();
-		table.integer('OwnerConsent').notNullable();
-		table.integer('Category').notNullable();
-		table.boolean('IsPubliclyAccessible').notNullable();
-		table.string('NTSMapSheet', 256).nullable();
-		table.string('BordenNumber', 256).nullable();
-		table.string('Geocode', 256).nullable();
-		table.string('HectareArea', 256).nullable();
-		table.string('Latitude', 256).nullable();
-		table.string('Longitude', 256).nullable();
-		table.string('LocationComment', 256).nullable();
-		table.string('ResourceType', 256).nullable();
-		table.string('BuildingSize', 256).nullable();
-		table.string('ConditionComment', 4000).nullable();
-		table.string('CurrentUseComment', 256).nullable();
-		table.string('YHSPastUse', 256).nullable();
-		table.string('CIHBNumber', 256).nullable();
-		table.string('GroupYHSI', 256).nullable();
-		table.string('YGBuildingNumber', 256).nullable();
-		table.string('YGReserveNumber', 256).nullable();
-		table.string('FHBRONumber', 256).nullable();
-		table.string('Zoning', 256).nullable();
-		table.string('TownSiteMapNumber', 256).nullable();
-		table.string('SiteDistrictNumber', 256).nullable();
-		table.string('PlanNumber', 256).nullable();
-		table.string('Block', 256).nullable();
-		table.string('Lot', 256).nullable();
-		table.string('SlideNegativeIndex', 4000).nullable();
-		table.string('OtherCommunity', 256).nullable();
-		table.string('OtherLocality', 256).nullable();
-		table.string('PreviousAddress', 500).nullable();
-		table.string('YHSThemes', 4000).nullable();
-		table.string('RollNumber', 256).nullable();
-		table.string('LocationContext', 4000).nullable();
-		table.integer('CommunityId').notNullable();
-		table.string('LAGroup', 256).nullable();
-		table.integer('SiteStatus').notNullable();
-		table.integer('FloorCondition').notNullable();
-		table.integer('WallCondition').notNullable();
-		table.integer('DoorCondition').notNullable();
-		table.integer('RoofCondition').notNullable();
-		table.integer('CoordinateDetermination').notNullable();
-		table.string('PhysicalAddress', 500).nullable();
-		table.string('PhysicalProvince', 256).nullable();
-		table.string('PhysicalCountry', 256).nullable();
-		table.string('PhysicalPostalCode', 256).nullable();
-		table.string('MailingAddress', 500).nullable();
-		table.string('MailingProvince', 256).nullable();
-		table.string('MailingCountry', 256).nullable();
-		table.string('MailingPostalCode', 256).nullable();
-		table.boolean('ShowInRegister').notNullable();
-		table.string('SiteCategories', 500).nullable();
-		table.string('Designations', 500).nullable();
-		table.string('ContributingResources', 500).nullable();
-		table.string('Records', 500).nullable();
-		table.specificType('location', 'geography').nullable();
-		table.string('EnglishTeaser', 255).nullable();
-		table.string('FrenchTeaser', 255).nullable();
-	});
-};
+  await knex.schema.createTable("dbo.Place", (table) => {
+    table.increments("Id").primary()
+    table.string("PrimaryName", 700).notNullable()
+    table.string("YHSIId", 20).notNullable()
+    table.integer("Jurisdiction").notNullable()
+    table.integer("StatuteId").notNullable()
+    table.integer("Statute2Id").notNullable()
+    table.date("RecognitionDate").nullable()
+    table.integer("OwnerConsent").notNullable()
+    table.integer("Category").notNullable()
+    table.boolean("IsPubliclyAccessible").notNullable()
+    table.string("NTSMapSheet", 256).nullable()
+    table.string("BordenNumber", 256).nullable()
+    table.string("Geocode", 256).nullable()
+    table.string("HectareArea", 256).nullable()
+    table.string("Latitude", 256).nullable()
+    table.string("Longitude", 256).nullable()
+    table.string("LocationComment", 256).nullable()
+    table.string("ResourceType", 256).nullable()
+    table.string("BuildingSize", 256).nullable()
+    table.string("ConditionComment", 4000).nullable()
+    table.string("CurrentUseComment", 256).nullable()
+    table.string("YHSPastUse", 256).nullable()
+    table.string("CIHBNumber", 256).nullable()
+    table.string("GroupYHSI", 256).nullable()
+    table.string("YGBuildingNumber", 256).nullable()
+    table.string("YGReserveNumber", 256).nullable()
+    table.string("FHBRONumber", 256).nullable()
+    table.string("Zoning", 256).nullable()
+    table.string("TownSiteMapNumber", 256).nullable()
+    table.string("SiteDistrictNumber", 256).nullable()
+    table.string("PlanNumber", 256).nullable()
+    table.string("Block", 256).nullable()
+    table.string("Lot", 256).nullable()
+    table.string("SlideNegativeIndex", 4000).nullable()
+    table.string("OtherCommunity", 256).nullable()
+    table.string("OtherLocality", 256).nullable()
+    table.string("PreviousAddress", 500).nullable()
+    table.string("YHSThemes", 4000).nullable()
+    table.string("RollNumber", 256).nullable()
+    table.string("LocationContext", 4000).nullable()
+    table.integer("CommunityId").notNullable()
+    table.string("LAGroup", 256).nullable()
+    table.integer("SiteStatus").notNullable()
+    table.integer("FloorCondition").notNullable()
+    table.integer("WallCondition").notNullable()
+    table.integer("DoorCondition").notNullable()
+    table.integer("RoofCondition").notNullable()
+    table.integer("CoordinateDetermination").notNullable()
+    table.string("PhysicalAddress", 500).nullable()
+    table.string("PhysicalProvince", 256).nullable()
+    table.string("PhysicalCountry", 256).nullable()
+    table.string("PhysicalPostalCode", 256).nullable()
+    table.string("MailingAddress", 500).nullable()
+    table.string("MailingProvince", 256).nullable()
+    table.string("MailingCountry", 256).nullable()
+    table.string("MailingPostalCode", 256).nullable()
+    table.boolean("ShowInRegister").notNullable()
+    table.string("SiteCategories", 500).nullable()
+    table.string("Designations", 500).nullable()
+    table.string("ContributingResources", 500).nullable()
+    table.string("Records", 500).nullable()
+    table.specificType("location", "geography").nullable()
+    table.string("EnglishTeaser", 255).nullable()
+    table.string("FrenchTeaser", 255).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.Place');
-};
+  await knex.schema.dropTable("dbo.Place")
+}

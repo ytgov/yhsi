@@ -8,12 +8,12 @@
 // );
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.Existing_Photos', (table) => {
-		table.uuid('RowId').notNullable();
-	});
-};
+  await knex.schema.createTable("dbo.Existing_Photos", (table) => {
+    table.uuid("RowId").notNullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.Existing_Photos');
-};
+  await knex.schema.dropTable("dbo.Existing_Photos")
+}

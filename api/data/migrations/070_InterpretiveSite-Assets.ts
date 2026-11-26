@@ -21,27 +21,27 @@
 // ALTER TABLE InterpretiveSite.Assets ADD CONSTRAINT PK__Assets__43492372AF7A63F0 PRIMARY KEY (AssetID);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 
 exports.up = async function (knex: Knex) {
-	await knex.raw(
-		/* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'InterpretiveSite') BEGIN EXEC('CREATE SCHEMA [InterpretiveSite]') END"
-	);
+  await knex.raw(
+    /* sql */ "IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'InterpretiveSite') BEGIN EXEC('CREATE SCHEMA [InterpretiveSite]') END"
+  )
 
-	await knex.schema.createTable('InterpretiveSite.Assets', (table) => {
-		table.increments('AssetID').notNullable();
-		table.integer('SiteID').notNullable();
-		table.string('Category', 100).nullable();
-		table.string('Type', 100).nullable();
-		table.string('Size', 100).nullable();
-		table.text('Description').nullable();
-		table.text('SignText').nullable();
-		table.date('InstallDate').nullable();
-		table.date('DecommissionDate').nullable();
-		table.string('DecommissionNotes', 1024).nullable();
-		table.string('Status', 50).nullable();
-	});
-};
+  await knex.schema.createTable("InterpretiveSite.Assets", (table) => {
+    table.increments("AssetID").notNullable()
+    table.integer("SiteID").notNullable()
+    table.string("Category", 100).nullable()
+    table.string("Type", 100).nullable()
+    table.string("Size", 100).nullable()
+    table.text("Description").nullable()
+    table.text("SignText").nullable()
+    table.date("InstallDate").nullable()
+    table.date("DecommissionDate").nullable()
+    table.string("DecommissionNotes", 1024).nullable()
+    table.string("Status", 50).nullable()
+  })
+}
 exports.down = async function (knex: Knex) {
-	await knex.schema.dropTable('InterpretiveSite.Assets');
-};
+  await knex.schema.dropTable("InterpretiveSite.Assets")
+}

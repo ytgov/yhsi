@@ -1,313 +1,310 @@
 <template>
-	<div>
-		<v-breadcrumbs
-			:items="[
-				{ text: 'Home', to: '/', exact: true },
-				{ text: 'Burials' },
-			]"
-		></v-breadcrumbs>
+  <div>
+    <v-breadcrumbs
+      :items="[{ text: 'Home', to: '/', exact: true }, { text: 'Burials' }]"
+    ></v-breadcrumbs>
 
-		<h1>Burials</h1>
+    <h1>Burials</h1>
 
-		<div class="mt-2">
-			<v-card class="default px-3 py-3">
-				<v-card-text>
-					<div class="d-flex mb-6">
-						<v-text-field
-							prepend-inner-icon="mdi-magnify"
-							background-color="white"
-							outlined
-							dense
-							label="Search"
-							v-model="search"
-							hide-details
-							class="mr-5"
-							@keyup.enter="searchChange()"
-							v-on:input="searchChange()"
-						/>
+    <div class="mt-2">
+      <v-card class="default px-3 py-3">
+        <v-card-text>
+          <div class="d-flex mb-6">
+            <v-text-field
+              prepend-inner-icon="mdi-magnify"
+              background-color="white"
+              outlined
+              dense
+              label="Search"
+              v-model="search"
+              hide-details
+              class="mr-5"
+              @keyup.enter="searchChange()"
+              v-on:input="searchChange()"
+            />
 
-						<v-menu
-							transition="slide-y-transition"
-							bottom
-							:close-on-content-click="false"
-						>
-							<template v-slot:activator="{ on, attrs }">
-								<v-btn
-									color="transparent"
-									class="black--text my-0 mr-2"
-									style="height: 40px"
-									v-bind="attrs"
-									v-on="on"
-								>
-									<v-icon class="black--text mr-1">mdi-filter</v-icon>
-									Filter
-									<v-icon class="black--text">mdi-chevron-right</v-icon>
-								</v-btn>
-							</template>
-							<v-list>
-								<v-list-item
-									v-for="(item, i) in filterOptions"
-									:key="i"
-									link
-								>
-									<v-text-field
-										clearable
-										v-model="item.value"
-										:label="item.text"
-										@change="searchChange()"
-									></v-text-field>
-								</v-list-item>
-							</v-list>
-						</v-menu>
+            <v-menu
+              transition="slide-y-transition"
+              bottom
+              :close-on-content-click="false"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  color="transparent"
+                  class="black--text my-0 mr-2"
+                  style="height: 40px"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon class="black--text mr-1">mdi-filter</v-icon>
+                  Filter
+                  <v-icon class="black--text">mdi-chevron-right</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="(item, i) in filterOptions"
+                  :key="i"
+                  link
+                >
+                  <v-text-field
+                    clearable
+                    v-model="item.value"
+                    :label="item.text"
+                    @change="searchChange()"
+                  ></v-text-field>
+                </v-list-item>
+              </v-list>
+            </v-menu>
 
-						<v-btn
-							color="primary"
-							class="my-0 mr-2"
-							style="height: 40px"
-							@click="addNew"
-							v-if="userIsEditor"
-						>
-							Add Burial
-						</v-btn>
+            <v-btn
+              color="primary"
+              class="my-0 mr-2"
+              style="height: 40px"
+              @click="addNew"
+              v-if="userIsEditor"
+            >
+              Add Burial
+            </v-btn>
 
-						<v-btn
-							color="info"
-							class="my-0 mr-2"
-							style="height: 40px"
-							@click="downloadPdf"
-							:loading="loadingPdf"
-							title="Print"
-						>
-							<v-icon>mdi-printer</v-icon>
-						</v-btn>
+            <v-btn
+              color="info"
+              class="my-0 mr-2"
+              style="height: 40px"
+              @click="downloadPdf"
+              :loading="loadingPdf"
+              title="Print"
+            >
+              <v-icon>mdi-printer</v-icon>
+            </v-btn>
 
-						<v-btn
-							color="info"
-							class="my-0"
-							style="height: 40px"
-							@click="getBurialExport()"
-							title="Export CSV"
-						>
-							<v-icon>mdi-export</v-icon>
-						</v-btn>
-					</div>
+            <v-btn
+              color="info"
+              class="my-0"
+              style="height: 40px"
+              @click="getBurialExport()"
+              title="Export CSV"
+            >
+              <v-icon>mdi-export</v-icon>
+            </v-btn>
+          </div>
 
-					<v-data-table
-						:items="filteredData"
-						:headers="headers"
-						:loading="loading"
-						:search="search"
-						:options.sync="options"
-						:server-items-length="totalLength"
-						@click:row="handleClick"
-						:footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
-						class="clickable-row"
-					>
-					</v-data-table>
-				</v-card-text>
-			</v-card>
-		</div>
-	</div>
+          <v-data-table
+            :items="filteredData"
+            :headers="headers"
+            :loading="loading"
+            :search="search"
+            :options.sync="options"
+            :server-items-length="totalLength"
+            @click:row="handleClick"
+            :footer-props="{ 'items-per-page-options': [10, 30, 50, 100] }"
+            class="clickable-row"
+          >
+          </v-data-table>
+        </v-card-text>
+      </v-card>
+    </div>
+  </div>
 </template>
 
 <script>
-import _ from 'lodash';
-import downloadCsv from '../../../utils/dataToCsv';
-import burials from '../../../controllers/burials';
-import { UserRoles } from '../../../authorization';
+import _ from "lodash"
+import downloadCsv from "../../../utils/dataToCsv"
+import burials from "../../../controllers/burials"
+import { UserRoles } from "../../../authorization"
 
 export default {
-	name: 'boatsgrid-index',
-	components: {},
-	data: () => ({
-		route: '',
-		loading: false,
-		burials: [],
-		search: '',
-		headers: [
-			{ text: 'LastName', value: 'LastName' },
-			{ text: 'FirstName', value: 'FirstName' },
-			{ text: 'Gender', value: 'Gender' },
-			{ text: 'BirthYear', value: 'BirthYear' },
-			{ text: 'DeathYear', value: 'DeathYear' },
-			{ text: 'Manner', value: 'Manner' },
-			{ text: 'Cause', value: 'Cause' },
-			{ text: 'Cemetery', value: 'Cemetary' },
-			{ text: 'OtherCemetaryDesc', value: 'OtherCemetaryDesc' },
-			{ text: 'OriginCity', value: 'OriginCity' },
-			{ text: 'OriginState', value: 'OriginState' },
-			{ text: 'OriginCountry', value: 'OriginCountry' },
-			{ text: 'OtherCountry', value: 'OtherCountry' },
-		],
-		//table options
-		page: 0,
-		pageCount: 6,
-		totalLength: 0,
-		options: { itemsPerPage: 50 },
-		// filter by names, birth and death dates, gender, cause and manner of death, cemetery, other location, country of origin
-		filterOptions: [
-			{ text: 'Birth Year', value: '', dataAccess: 'BirthYear' },
-			{ text: 'Birth Month', value: '', dataAccess: 'BirthMonth' },
-			{ text: 'Birth Day', value: '', dataAccess: 'BirthDay' },
-			{ text: 'Death Year', value: '', dataAccess: 'DeathYear' },
-			{ text: 'Death Month', value: '', dataAccess: 'DeathMonth' },
-			{ text: 'Death Day', value: '', dataAccess: 'DeathDay' },
-			{ text: 'Gender', value: '', dataAccess: 'Gender' },
-			{ text: 'Cause', value: '', dataAccess: 'Cause' },
-			{ text: 'Manner', value: '', dataAccess: 'Manner' },
-			{ text: 'Cemetery', value: '', dataAccess: 'Cemetary' },
-			{ text: 'Origin Country', value: '', dataAccess: 'OriginCountry' },
-		],
-		selectedItem: 1,
-		items: [
-			{ text: 'Real-Time', icon: 'mdi-clock' },
-			{ text: 'Audience', icon: 'mdi-account' },
-			{ text: 'Conversions', icon: 'mdi-flag' },
-		],
-		burialsData: [],
-		loadingPdf: false,
-	}),
-	mounted() {
-		this.getDataFromApi();
-	},
-	methods: {
-		addNew() {
-			this.$router.push(`/burials/new`);
-		},
-		searchChange: _.debounce(function () {
-			this.getDataFromApi();
-		}, 400),
-		handleClick(value) {
-			this.$router.push({
-				name: 'BurialsViewForm',
-				params: { id: value.BurialID },
-			});
-		},
-		async getDataFromApi() {
-			this.loading = true;
-			let { page, itemsPerPage, sortBy, sortDesc } = this.options;
-			page = page > 0 ? page - 1 : 0;
-			itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
-			let textToMatch = this.search;
-			const prefilters = {};
-			this.filterOptions.map((x) => {
-				prefilters[x.dataAccess] = x.value;
-			});
-			let data = await burials.get(
-				page,
-				itemsPerPage,
-				textToMatch,
-				sortBy[0],
-				sortDesc[0] ? 'desc' : 'asc',
-				prefilters.BirthYear,
-				prefilters.BirthMonth,
-				prefilters.BirthDay,
-				prefilters.DeathYear,
-				prefilters.DeathMonth,
-				prefilters.DeathDay,
-				prefilters.Gender,
-				prefilters.Cause,
-				prefilters.Manner,
-				prefilters.Cemetary,
-				prefilters.OriginCountry
-			);
+  name: "boatsgrid-index",
+  components: {},
+  data: () => ({
+    route: "",
+    loading: false,
+    burials: [],
+    search: "",
+    headers: [
+      { text: "LastName", value: "LastName" },
+      { text: "FirstName", value: "FirstName" },
+      { text: "Gender", value: "Gender" },
+      { text: "BirthYear", value: "BirthYear" },
+      { text: "DeathYear", value: "DeathYear" },
+      { text: "Manner", value: "Manner" },
+      { text: "Cause", value: "Cause" },
+      { text: "Cemetery", value: "Cemetary" },
+      { text: "OtherCemetaryDesc", value: "OtherCemetaryDesc" },
+      { text: "OriginCity", value: "OriginCity" },
+      { text: "OriginState", value: "OriginState" },
+      { text: "OriginCountry", value: "OriginCountry" },
+      { text: "OtherCountry", value: "OtherCountry" },
+    ],
+    //table options
+    page: 0,
+    pageCount: 6,
+    totalLength: 0,
+    options: { itemsPerPage: 50 },
+    // filter by names, birth and death dates, gender, cause and manner of death, cemetery, other location, country of origin
+    filterOptions: [
+      { text: "Birth Year", value: "", dataAccess: "BirthYear" },
+      { text: "Birth Month", value: "", dataAccess: "BirthMonth" },
+      { text: "Birth Day", value: "", dataAccess: "BirthDay" },
+      { text: "Death Year", value: "", dataAccess: "DeathYear" },
+      { text: "Death Month", value: "", dataAccess: "DeathMonth" },
+      { text: "Death Day", value: "", dataAccess: "DeathDay" },
+      { text: "Gender", value: "", dataAccess: "Gender" },
+      { text: "Cause", value: "", dataAccess: "Cause" },
+      { text: "Manner", value: "", dataAccess: "Manner" },
+      { text: "Cemetery", value: "", dataAccess: "Cemetary" },
+      { text: "Origin Country", value: "", dataAccess: "OriginCountry" },
+    ],
+    selectedItem: 1,
+    items: [
+      { text: "Real-Time", icon: "mdi-clock" },
+      { text: "Audience", icon: "mdi-account" },
+      { text: "Conversions", icon: "mdi-flag" },
+    ],
+    burialsData: [],
+    loadingPdf: false,
+  }),
+  mounted() {
+    this.getDataFromApi()
+  },
+  methods: {
+    addNew() {
+      this.$router.push(`/burials/new`)
+    },
+    searchChange: _.debounce(function () {
+      this.getDataFromApi()
+    }, 400),
+    handleClick(value) {
+      this.$router.push({
+        name: "BurialsViewForm",
+        params: { id: value.BurialID },
+      })
+    },
+    async getDataFromApi() {
+      this.loading = true
+      let { page, itemsPerPage, sortBy, sortDesc } = this.options
+      page = page > 0 ? page - 1 : 0
+      itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage
+      let textToMatch = this.search
+      const prefilters = {}
+      this.filterOptions.map((x) => {
+        prefilters[x.dataAccess] = x.value
+      })
+      let data = await burials.get(
+        page,
+        itemsPerPage,
+        textToMatch,
+        sortBy[0],
+        sortDesc[0] ? "desc" : "asc",
+        prefilters.BirthYear,
+        prefilters.BirthMonth,
+        prefilters.BirthDay,
+        prefilters.DeathYear,
+        prefilters.DeathMonth,
+        prefilters.DeathDay,
+        prefilters.Gender,
+        prefilters.Cause,
+        prefilters.Manner,
+        prefilters.Cemetary,
+        prefilters.OriginCountry
+      )
 
-			// {"BirthYear":"","BirthMonth":"","BirthDay":"","DeathYear":"","DeathMonth":"","DeathDay":"","Gender":"","Cause":"","Manner":"","Cemetary":"","OriginCountry":""}
-			this.burials = data.body;
-			this.totalLength = data.count;
-			this.burials.map((x) => {
-				x.crashdate = this.formatDate(x.crashdate);
-			});
-			this.loading = false;
-		},
-		async getBurialExport() {
-			this.loadingExport = true;
+      // {"BirthYear":"","BirthMonth":"","BirthDay":"","DeathYear":"","DeathMonth":"","DeathDay":"","Gender":"","Cause":"","Manner":"","Cemetary":"","OriginCountry":""}
+      this.burials = data.body
+      this.totalLength = data.count
+      this.burials.map((x) => {
+        x.crashdate = this.formatDate(x.crashdate)
+      })
+      this.loading = false
+    },
+    async getBurialExport() {
+      this.loadingExport = true
 
-			let { sortBy, sortDesc } = this.options;
+      let { sortBy, sortDesc } = this.options
 
-			let textToMatch = this.search;
-			const prefilters = {};
-			this.filterOptions.map((x) => {
-				prefilters[x.dataAccess] = x.value;
-			});
+      let textToMatch = this.search
+      const prefilters = {}
+      this.filterOptions.map((x) => {
+        prefilters[x.dataAccess] = x.value
+      })
 
-			let data = await burials.getExport(
-				textToMatch,
-				sortBy[0],
-				sortDesc[0] ? 'desc' : 'asc',
-				prefilters.BirthYear,
-				prefilters.BirthMonth,
-				prefilters.BirthDay,
-				prefilters.DeathYear,
-				prefilters.DeathMonth,
-				prefilters.DeathDay,
-				prefilters.Gender,
-				prefilters.Cause,
-				prefilters.Manner,
-				prefilters.Cemetary,
-				prefilters.OriginCountry
-			);
+      let data = await burials.getExport(
+        textToMatch,
+        sortBy[0],
+        sortDesc[0] ? "desc" : "asc",
+        prefilters.BirthYear,
+        prefilters.BirthMonth,
+        prefilters.BirthDay,
+        prefilters.DeathYear,
+        prefilters.DeathMonth,
+        prefilters.DeathDay,
+        prefilters.Gender,
+        prefilters.Cause,
+        prefilters.Manner,
+        prefilters.Cemetary,
+        prefilters.OriginCountry
+      )
 
-			downloadCsv(data, 'burials');
-			this.loadingExport = false;
-		},
-		async downloadPdf() {
-			this.loadingPdf = true;
-			let { sortBy, sortDesc } = this.options;
-			const prefilters = {};
-			this.filterOptions.map((x) => {
-				prefilters[x.dataAccess] = x.value;
-			});
-			let res = await burials.getGridPdf(
-				this.search,
-				sortBy[0],
-				sortDesc[0] ? 'desc' : 'asc',
-				prefilters.BirthYear,
-				prefilters.BirthMonth,
-				prefilters.BirthDay,
-				prefilters.DeathYear,
-				prefilters.DeathMonth,
-				prefilters.DeathDay,
-				prefilters.Gender,
-				prefilters.Cause,
-				prefilters.Manner,
-				prefilters.Cemetary,
-				prefilters.OriginCountry
-			);
-			let blob = new Blob([res], { type: 'application/octetstream' });
-			let url = window.URL || window.webkitURL;
-			let link = url.createObjectURL(blob);
-			let a = document.createElement('a');
-			a.setAttribute('download', 'Burials.pdf');
-			a.setAttribute('href', link);
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
-			this.loadingPdf = false;
-		},
-		formatDate(date) {
-			if (!date) return null;
-			date = date.substr(0, 10);
-			const [year, month, day] = date.split('-');
-			return `${month}/${day}/${year}`;
-		},
-	},
-	computed: {
-		filteredData() {
-			return this.burials;
-		},
-		userIsEditor() {
-			return this.$store.getters.userInRole([UserRoles.BURIALS_EDITOR]);
-		},
-	},
-	watch: {
-		/* eslint-disable */
-		options: {
-			handler() {
-				this.getDataFromApi();
-			},
-			deep: true,
-		},
-	},
-};
+      downloadCsv(data, "burials")
+      this.loadingExport = false
+    },
+    async downloadPdf() {
+      this.loadingPdf = true
+      let { sortBy, sortDesc } = this.options
+      const prefilters = {}
+      this.filterOptions.map((x) => {
+        prefilters[x.dataAccess] = x.value
+      })
+      let res = await burials.getGridPdf(
+        this.search,
+        sortBy[0],
+        sortDesc[0] ? "desc" : "asc",
+        prefilters.BirthYear,
+        prefilters.BirthMonth,
+        prefilters.BirthDay,
+        prefilters.DeathYear,
+        prefilters.DeathMonth,
+        prefilters.DeathDay,
+        prefilters.Gender,
+        prefilters.Cause,
+        prefilters.Manner,
+        prefilters.Cemetary,
+        prefilters.OriginCountry
+      )
+      let blob = new Blob([res], { type: "application/octetstream" })
+      let url = window.URL || window.webkitURL
+      let link = url.createObjectURL(blob)
+      let a = document.createElement("a")
+      a.setAttribute("download", "Burials.pdf")
+      a.setAttribute("href", link)
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      this.loadingPdf = false
+    },
+    formatDate(date) {
+      if (!date) return null
+      date = date.substr(0, 10)
+      const [year, month, day] = date.split("-")
+      return `${month}/${day}/${year}`
+    },
+  },
+  computed: {
+    filteredData() {
+      return this.burials
+    },
+    userIsEditor() {
+      return this.$store.getters.userInRole([UserRoles.BURIALS_EDITOR])
+    },
+  },
+  watch: {
+    /* eslint-disable */
+    options: {
+      handler() {
+        this.getDataFromApi()
+      },
+      deep: true,
+    },
+  },
+}
 </script>

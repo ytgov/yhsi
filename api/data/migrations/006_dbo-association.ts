@@ -14,15 +14,15 @@
 // ALTER TABLE dbo.Association ADD CONSTRAINT PK_Association PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.Association', (table) => {
-		table.increments('Id').primary();
-		table.integer('PlaceId').notNullable();
-		table.integer('Type').notNullable();
-		table.string('Description', 256).nullable();
-	});
-};
+  await knex.schema.createTable("dbo.Association", (table) => {
+    table.increments("Id").primary()
+    table.integer("PlaceId").notNullable()
+    table.integer("Type").notNullable()
+    table.string("Description", 256).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.Association');
-};
+  await knex.schema.dropTable("dbo.Association")
+}

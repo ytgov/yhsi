@@ -4,9 +4,9 @@
  * Collapse it to a string before it reaches tedious, which rejects arrays.
  */
 export function normalizeSubjects<T>(item: T): T {
-	const subjects = (item as any)?.subjects;
+  const subjects = (item as any)?.subjects
 
-	if (!Array.isArray(subjects)) return item;
+  if (!Array.isArray(subjects)) return item
 
-	return { ...item, subjects: subjects.length > 0 ? subjects.join(',') : null };
+  return { ...item, subjects: subjects.length > 0 ? subjects.join(",") : null }
 }

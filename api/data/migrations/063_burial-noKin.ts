@@ -18,17 +18,17 @@
 
 //Burial Next of Kin
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Burial.NOKin', (table) => {
-		table.increments('NOKID').primary();
-		table.integer('BurialID').notNullable();
-		table.integer('RelationshipID').notNullable();
-		table.integer('Quantity').nullable();
-		table.string('Name', 200).nullable();
-		table.string('Location', 100).nullable();
-	});
-};
+  await knex.schema.createTable("Burial.NOKin", (table) => {
+    table.increments("NOKID").primary()
+    table.integer("BurialID").notNullable()
+    table.integer("RelationshipID").notNullable()
+    table.integer("Quantity").nullable()
+    table.string("Name", 200).nullable()
+    table.string("Location", 100).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Burial.NOKin');
-};
+  await knex.schema.dropTable("Burial.NOKin")
+}

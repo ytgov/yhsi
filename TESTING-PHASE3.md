@@ -2,21 +2,22 @@
 
 ## Status Overview
 
-| # | Item | Status | Notes |
-|---|------|--------|-------|
-| 3.1 | Record Status field | **Partial** | API route, select component, grid column exist — verify DB column exists |
-| 3.2 | Mandatory fields update | **Done** | Frontend + API validation in place |
-| 3.3 | Boat service date extend to 1800 | **Not started** | No min date on date pickers |
-| 3.4 | Vessel type active/inactive flag | **Done** | Status column with Active/Expired |
-| 3.5 | NTS map sheet dropdown | **Done** | Autocomplete component with API |
-| 3.6 | Export grid to CSV | **Not started** | No export functionality |
-| 3.7 | Pending user request on dashboard | **Not started** | No pending count on dashboard |
+| #   | Item                              | Status          | Notes                                                                    |
+| --- | --------------------------------- | --------------- | ------------------------------------------------------------------------ |
+| 3.1 | Record Status field               | **Partial**     | API route, select component, grid column exist — verify DB column exists |
+| 3.2 | Mandatory fields update           | **Done**        | Frontend + API validation in place                                       |
+| 3.3 | Boat service date extend to 1800  | **Not started** | No min date on date pickers                                              |
+| 3.4 | Vessel type active/inactive flag  | **Done**        | Status column with Active/Expired                                        |
+| 3.5 | NTS map sheet dropdown            | **Done**        | Autocomplete component with API                                          |
+| 3.6 | Export grid to CSV                | **Not started** | No export functionality                                                  |
+| 3.7 | Pending user request on dashboard | **Not started** | No pending count on dashboard                                            |
 
 ---
 
 ## 3.1 Record Status field — GitHub Issue #167
 
 **Files involved:**
+
 - `api/routes/record-status-types-router.ts` — API endpoint for record status lookup
 - `api/data/place-entities.ts` — `recordStatus` in PLACE_FIELDS
 - `web/src/components/Sites/site-forms/RecordStatusTypesSelect.vue` — dropdown component
@@ -25,6 +26,7 @@
 - `api/services/place-service.ts` — CASE logic for recordStatusText
 
 **Test steps:**
+
 - [ ] **Verify DB column exists:** Check that `dbo.Place` has a `RecordStatus` column (run `SELECT TOP 1 RecordStatus FROM Place` in SSMS)
 - [ ] **Verify lookup data exists:** Navigate to the app and open browser dev tools > Network tab, check that `GET /api/record-status-types` returns a list of status options
 - [ ] Navigate to Sites > click "Add New Site"
@@ -43,10 +45,12 @@
 ## 3.2 Mandatory fields update — GitHub Issue #179
 
 **Files involved:**
+
 - `web/src/components/Sites/SiteCreate.vue` — required rules on form fields
 - `api/routes/place-router.ts` — POST validation (lines 174-191)
 
 **Test steps:**
+
 - [ ] Navigate to Sites > click "Add New Site"
 - [ ] Click "Create" without filling in any fields
 - [ ] **Verify:** Validation errors appear on all mandatory fields:
@@ -75,9 +79,11 @@
 **Status: NOT YET IMPLEMENTED**
 
 **Files to change:**
+
 - `web/src/components/Boats/BoatsComponents/Boat/BoatsForm.vue` — add min date to ConstructionDate, ServiceStart, ServiceEnd date pickers
 
 **Test steps (after implementation):**
+
 - [ ] Navigate to Boats > Add New Boat
 - [ ] Open the Construction Date picker
 - [ ] **Verify:** Years back to 1800 are selectable
@@ -91,10 +97,12 @@
 ## 3.4 Vessel type active/inactive flag — GitHub Issue #149
 
 **Files involved:**
+
 - `web/src/components/Administration/LookupTableManagement/VesselType/VesselType.vue` — admin grid with Status display
 - Vessel type catalogs API
 
 **Test steps:**
+
 - [ ] Navigate to Administration > Vessel Types
 - [ ] **Verify:** Each vessel type shows a Status column (Active or Expired)
 - [ ] Edit a vessel type and change its status
@@ -109,11 +117,13 @@
 ## 3.5 NTS map sheet dropdown — GitHub Issue #105
 
 **Files involved:**
+
 - `web/src/components/Sites/site-forms/NtsMapSheetSelect.vue` — autocomplete component
 - `api/routes/nts-map-sheets-router.ts` — API endpoint returning map sheet values
 - `web/src/components/Sites/SiteCreate.vue` — uses autocomplete on create form
 
 **Test steps:**
+
 - [ ] Navigate to Sites > Add New Site
 - [ ] Click the NTS Map Sheet field
 - [ ] **Verify:** A searchable dropdown appears (not a plain text input)
@@ -135,6 +145,7 @@
 **Expected fields in export:** YHSI ID, Name, NTS, Community, Category, Latitude, Longitude, Property Category
 
 **Test steps (after implementation):**
+
 - [ ] Navigate to Sites grid
 - [ ] **Verify:** An "Export to CSV" button is visible
 - [ ] Click Export with no filters applied
@@ -152,6 +163,7 @@
 **Status: NOT YET IMPLEMENTED**
 
 **Test steps (after implementation):**
+
 - [ ] Log in as an Administrator
 - [ ] Navigate to the Dashboard
 - [ ] **Verify:** A "Pending User Requests" card/section appears

@@ -15,17 +15,17 @@
 // ALTER TABLE Place.FirstNationName ADD CONSTRAINT PK__FirstNat__3214EC076302D5B8 PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Place.FirstNationName', (table: any) => {
-		table.increments('Id').primary();
-		table.integer('PlaceId').notNullable();
-		table.string('FNName', 64).notNullable();
-		table.string('FNLanguage', 128).nullable();
-		table.string('FNDesription', 255).nullable();
-	});
-};
+  await knex.schema.createTable("Place.FirstNationName", (table: any) => {
+    table.increments("Id").primary()
+    table.integer("PlaceId").notNullable()
+    table.string("FNName", 64).notNullable()
+    table.string("FNLanguage", 128).nullable()
+    table.string("FNDesription", 255).nullable()
+  })
+}
 
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Place.FirstNationName');
-};
+  await knex.schema.dropTable("Place.FirstNationName")
+}

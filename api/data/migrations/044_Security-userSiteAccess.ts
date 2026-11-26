@@ -14,15 +14,15 @@
 // ALTER TABLE Security.UserSiteAccess ADD CONSTRAINT PK__UserSite__3213E83F01A4ED1C PRIMARY KEY (id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Security.UserSiteAccess', (table) => {
-		table.increments('id').primary();
-		table.integer('user_id').notNullable();
-		table.integer('access_type_id').notNullable();
-		table.string('access_text', 150).notNullable();
-	});
-};
+  await knex.schema.createTable("Security.UserSiteAccess", (table) => {
+    table.increments("id").primary()
+    table.integer("user_id").notNullable()
+    table.integer("access_type_id").notNullable()
+    table.string("access_text", 150).notNullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Security.UserSiteAccess');
-};
+  await knex.schema.dropTable("Security.UserSiteAccess")
+}

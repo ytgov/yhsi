@@ -14,15 +14,15 @@
 // ALTER TABLE InterpretiveSite.Maintainer ADD CONSTRAINT PK__Maintain__D79F0B8CEFBEA873 PRIMARY KEY (MaintID);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('InterpretiveSite.Maintainer', (table) => {
-		table.increments('MaintID').primary();
-		table.integer('AssetID').nullable();
-		table.integer('SiteID').nullable();
-		table.string('Maintainer', 50).nullable();
-	});
-};
+  await knex.schema.createTable("InterpretiveSite.Maintainer", (table) => {
+    table.increments("MaintID").primary()
+    table.integer("AssetID").nullable()
+    table.integer("SiteID").nullable()
+    table.string("Maintainer", 50).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('InterpretiveSite.Maintainer');
-};
+  await knex.schema.dropTable("InterpretiveSite.Maintainer")
+}

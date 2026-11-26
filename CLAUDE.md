@@ -67,17 +67,17 @@ Routes (Express routers, input validation via express-validator)
 
 ## Core Business Domains
 
-| Domain | Route Prefix | Description |
-|--------|-------------|-------------|
-| Places/Sites | `/api/place` | Primary entity — heritage locations with change request workflow |
-| Photos | `/api/photo`, `/api/photobatch` | Batch management, ownership, projects, subjects |
-| Boats | `/api/boats` | Historical watercraft with ownership history |
-| Burials | `/api/burials` | Cemetery and burial records |
-| People | `/api/people` | Historical figures |
-| Airplane Crashes | `/api/aircrash` | Aviation incidents (YACSI numbers) |
-| Interpretive Sites | `/api/interpretive-sites` | Educational sites with actions, assets, inspections |
-| Communities | `/api/communities` | Geographic/administrative communities |
-| Maps | `/api/maps` | Geospatial interface |
+| Domain             | Route Prefix                    | Description                                                      |
+| ------------------ | ------------------------------- | ---------------------------------------------------------------- |
+| Places/Sites       | `/api/place`                    | Primary entity — heritage locations with change request workflow |
+| Photos             | `/api/photo`, `/api/photobatch` | Batch management, ownership, projects, subjects                  |
+| Boats              | `/api/boats`                    | Historical watercraft with ownership history                     |
+| Burials            | `/api/burials`                  | Cemetery and burial records                                      |
+| People             | `/api/people`                   | Historical figures                                               |
+| Airplane Crashes   | `/api/aircrash`                 | Aviation incidents (YACSI numbers)                               |
+| Interpretive Sites | `/api/interpretive-sites`       | Educational sites with actions, assets, inspections              |
+| Communities        | `/api/communities`              | Geographic/administrative communities                            |
+| Maps               | `/api/maps`                     | Geospatial interface                                             |
 
 There are 40+ lookup/reference tables (association-types, category-types, condition-types, etc.) managed via admin UI and corresponding API routes.
 

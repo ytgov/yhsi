@@ -13,14 +13,14 @@
 // ALTER TABLE Boat.PastNames ADD CONSTRAINT PK__PastName__3214EC07DD0D47D4 PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Boat.PastNames', (table) => {
-		table.increments('Id').primary();
-		table.integer('BoatId').notNullable();
-		table.string('BoatName', 64).notNullable();
-	});
-};
+  await knex.schema.createTable("Boat.PastNames", (table) => {
+    table.increments("Id").primary()
+    table.integer("BoatId").notNullable()
+    table.string("BoatName", 64).notNullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Boat.PastNames');
-};
+  await knex.schema.dropTable("Boat.PastNames")
+}

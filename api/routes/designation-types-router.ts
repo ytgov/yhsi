@@ -1,9 +1,9 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response } from "express"
 
-import { DESIGNATION_TYPES } from '../models';
+import { DESIGNATION_TYPES } from "../models"
 
-export const designationTypesRouter = express.Router();
+export const designationTypesRouter = express.Router()
 
-designationTypesRouter.get('/', (req: Request, res: Response) => {
-	return res.json({ data: DESIGNATION_TYPES });
-});
+designationTypesRouter.get("/", (req: Request, res: Response) => {
+  return res.json({ data: DESIGNATION_TYPES })
+})

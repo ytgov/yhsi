@@ -7,7 +7,7 @@ services:
       NODE_ENV: development
     tty: true
     ports:
-      - '8080:8080'
+      - "8080:8080"
     volumes:
       - ./web:/usr/src/web
     depends_on:
@@ -22,14 +22,14 @@ services:
     environment:
       NODE_ENV: development
       DB_HOST: db
-      MAIL_HOST: 'host.docker.internal'
-      TS_NODE_HISTORY: '/tmp/.ts_node_repl_history'
+      MAIL_HOST: "host.docker.internal"
+      TS_NODE_HISTORY: "/tmp/.ts_node_repl_history"
     tty: true
     ports:
-      - '3000:3000'
+      - "3000:3000"
     extra_hosts:
-      - 'host.docker.internal:host-gateway'
-      - 'host.docker.internal:172.17.0.1'
+      - "host.docker.internal:host-gateway"
+      - "host.docker.internal:172.17.0.1"
     volumes:
       - ./api:/usr/src/api
     depends_on:
@@ -38,12 +38,12 @@ services:
     image: mcr.microsoft.com/mssql/server:2019-latest
     restart: unless-stopped
     environment:
-      - 'ACCEPT_EULA=Y'
-      - 'SA_PASSWORD=1m5ecure!'
-      - 'MSSQL_PID=Express'
+      - "ACCEPT_EULA=Y"
+      - "SA_PASSWORD=1m5ecure!"
+      - "MSSQL_PID=Express"
     tty: true
     ports:
-      - '1433:1433'
+      - "1433:1433"
     volumes:
       - sqlsystem:/var/opt/mssql/
       - ./db/backups/:/backups

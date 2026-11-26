@@ -1,6 +1,10 @@
 <template>
   <div class="">
-    <v-app-bar color="primary" dark flat>
+    <v-app-bar
+      color="primary"
+      dark
+      flat
+    >
       <v-btn color="primary">
         <v-icon>mdi-home-group</v-icon>
         <div class="ml-2">
@@ -21,7 +25,10 @@
           v-model="search"
         ></v-text-field>
       </div>
-      <v-btn color="primary" @click="handleClickAdd()">
+      <v-btn
+        color="primary"
+        @click="handleClickAdd()"
+      >
         <v-icon class="mr-2">mdi-plus</v-icon>
         Add Community
       </v-btn>
@@ -34,7 +41,10 @@
           <!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
         </v-col>
       </v-row>
-      <v-divider inset class="mb-4"></v-divider>
+      <v-divider
+        inset
+        class="mb-4"
+      ></v-divider>
       <v-row>
         <v-col>
           <v-data-table
@@ -65,38 +75,38 @@ export default {
     iteamsPerPage: 10,
   }),
   mounted() {
-    this.getDataFromApi();
+    this.getDataFromApi()
   },
   methods: {
     handleClickEdit(value) {
       //Redirects the user to the edit user form
-      this.$router.push(`/communities/edit/${value.id}`);
+      this.$router.push(`/communities/edit/${value.id}`)
     },
     handleClickAdd() {
       //Redirects the user to the edit user form
-      this.$router.push(`/communities/add`);
+      this.$router.push(`/communities/add`)
     },
     removeItem(item) {
       //removes one element from the users array
-      const index = this.owners.indexOf(item);
+      const index = this.owners.indexOf(item)
       if (index > -1) {
-        this.owners.splice(index, 1);
+        this.owners.splice(index, 1)
       }
     },
     getDataFromApi() {
-      this.loading = true;
+      this.loading = true
       this.owners = [
         { id: 1, name: "Name 1" },
         { id: 2, name: "Name 2" },
         { id: 3, name: "Name 3" },
         { id: 4, name: "Name 4" },
         { id: 5, name: "Name 5" },
-      ];
-      this.totalLength = this.owners.length;
-      this.loading = false;
+      ]
+      this.totalLength = this.owners.length
+      this.loading = false
     },
   },
-};
+}
 </script>
 
 <style scoped>

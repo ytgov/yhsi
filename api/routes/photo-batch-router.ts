@@ -1,338 +1,338 @@
-import express, { Request, Response } from 'express';
-import { body, check, query, validationResult } from 'express-validator';
-import multer from 'multer';
+import express, { Request, Response } from "express"
+import { body, check, query, validationResult } from "express-validator"
+import multer from "multer"
 
-import { PhotoService, PhotoBatchService, SortStatement, SortDirection } from '../services';
-import { PhotoBatch, PhotoBatchPhoto } from '../data';
-import { createThumbnail } from '../utils/image';
-import { ReturnValidationErrors } from '../middleware';
+import { PhotoService, PhotoBatchService, SortStatement, SortDirection } from "../services"
+import { PhotoBatch, PhotoBatchPhoto } from "../data"
+import { createThumbnail } from "../utils/image"
+import { ReturnValidationErrors } from "../middleware"
 
-const photoBatchService = new PhotoBatchService();
-const photoService = new PhotoService();
-const PAGE_SIZE = 36;
+const photoBatchService = new PhotoBatchService()
+const photoService = new PhotoService()
+const PAGE_SIZE = 36
 
-export const photoBatchRouter = express.Router();
-
-photoBatchRouter.get(
-	'/',
-	[query('page').default(1).isInt({ gt: 0 })],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
-
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
-
-		const page = parseInt(req.query.page as string);
-		const skip = (page - 1) * PAGE_SIZE;
-		const take = PAGE_SIZE;
-
-		const list = await photoBatchService
-			.getAll(skip, take)
-			.then((data) => data)
-			.catch((err) => {
-				console.error('Database Error', err);
-				return undefined;
-			});
-
-		const item_count = await photoBatchService
-			.getPhotoBatchCount()
-			.then((data) => data)
-			.catch((err) => {
-				console.error('Database Error', err);
-				return 0;
-			});
-
-		const page_count = Math.ceil(item_count / PAGE_SIZE);
-
-		if (list) {
-			return res.json({
-				data: list,
-				meta: { page, page_size: PAGE_SIZE, item_count, page_count },
-			});
-		}
-
-		return res.status(500).send('Error');
-	}
-);
-
-photoBatchRouter.post(
-	'/search',
-	[body('page').isInt().default(1)],
-	async (req: Request, res: Response) => {
-		const { query, sortBy, sortDesc, page, itemsPerPage } = req.body;
-		const sort = new Array<SortStatement>();
-
-		sortBy.forEach((s: string, i: number) => {
-			sort.push({
-				field: s,
-				direction: sortDesc[i] ? SortDirection.ASCENDING : SortDirection.DESCENDING,
-			});
-		});
-
-		const skip = (page - 1) * itemsPerPage;
-		const take = itemsPerPage;
-		const results = await photoBatchService.doSearch(query, sort, page, itemsPerPage, skip, take);
-
-		res.json(results);
-	}
-);
-
-photoBatchRouter.get('/:id', [check('id').notEmpty()], async (req: Request, res: Response) => {
-	const errors = validationResult(req);
-
-	if (!errors.isEmpty()) {
-		return res.status(400).json({ errors: errors.array() });
-	}
-
-	await photoBatchService
-		.getById(req.params.id)
-		.then((item) => {
-			if (item) return res.json({ data: item });
-
-			return res.status(404).send('Photo batch not found');
-		})
-		.catch((err) => {
-			console.error(err);
-			return res.status(404).send('Photo batch not found');
-		});
-});
-
-photoBatchRouter.post(
-	'/',
-	[body('name').notEmpty().bail().trim()],
-	async (req: Request, res: Response) => {
-		try {
-			const errors = validationResult(req);
-
-			if (!errors.isEmpty()) {
-				return res.status(400).json({ errors: errors.array() });
-			}
-
-			const existing = await photoBatchService.findBatchByName(req.body.name);
-			if (existing) {
-				return res.status(409).json({
-					errors: [{ msg: `A photo batch named "${req.body.name}" already exists` }],
-				});
-			}
-
-			req.body.dateCreated = new Date();
-
-			const result = await photoBatchService.addBatch(req.body as PhotoBatch);
-
-			return res.json({ data: result });
-		} catch (error) {
-			console.error(error);
-			return res.status(422).json({ message: 'Photo batch creation failed' });
-		}
-	}
-);
+export const photoBatchRouter = express.Router()
 
 photoBatchRouter.get(
-	'/:id/photos',
-	[check('id').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
+  "/",
+  [query("page").default(1).isInt({ gt: 0 })],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req)
 
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
 
-		const list = await photoBatchService
-			.getPhotos(req.params.id)
-			.then((data) => data)
-			.catch((err) => {
-				console.error('Database Error', err);
-				return undefined;
-			});
+    const page = parseInt(req.query.page as string)
+    const skip = (page - 1) * PAGE_SIZE
+    const take = PAGE_SIZE
 
-		if (list) {
-			return res.json({ data: list });
-		}
+    const list = await photoBatchService
+      .getAll(skip, take)
+      .then((data) => data)
+      .catch((err) => {
+        console.error("Database Error", err)
+        return undefined
+      })
 
-		return res.status(500).send('Error');
-	}
-);
+    const item_count = await photoBatchService
+      .getPhotoBatchCount()
+      .then((data) => data)
+      .catch((err) => {
+        console.error("Database Error", err)
+        return 0
+      })
 
-photoBatchRouter.delete(
-	'/:id',
-	[check('id').isInt().notEmpty()],
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
+    const page_count = Math.ceil(item_count / PAGE_SIZE)
 
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
+    if (list) {
+      return res.json({
+        data: list,
+        meta: { page, page_size: PAGE_SIZE, item_count, page_count },
+      })
+    }
 
-		const id = req.params.id as string;
-		const list = await photoBatchService.deleteBatch(parseInt(id));
-		return res.json({ data: list });
-	}
-);
-
-photoBatchRouter.put(
-	'/:id',
-	[
-		check('id').notEmpty().isInt(),
-		body('communityId').optional({ nullable: true }).isInt(),
-		body('isOtherRecord').optional({ nullable: true }).isBoolean(),
-		body('originalMediaId').optional({ nullable: true }).isInt(),
-		body('mediaStorage').optional({ nullable: true }).isInt(),
-		body('copyright').optional({ nullable: true }).isInt(),
-		body('ownerId').optional({ nullable: true }).isInt(),
-		body('photoProjectId').optional({ nullable: true }).isInt(),
-		body('program').optional({ nullable: true }).isInt(),
-		body('isComplete').optional({ nullable: true }).isBoolean(),
-		body('isPrivate').optional({ nullable: true }).isBoolean(),
-	],
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
-
-		if (!errors.isEmpty()) {
-			console.error('PhotoBatch PUT validation errors:', errors.array());
-			return res.status(400).json({ errors: errors.array() });
-		}
-
-		try {
-			if (req.body.name) {
-				const existing = await photoBatchService.findBatchByName(req.body.name);
-				if (existing && String(existing.id) !== String(req.params.id)) {
-					return res.status(409).json({
-						errors: [{ msg: `A photo batch named "${req.body.name}" already exists` }],
-					});
-				}
-			}
-
-			const result = await photoBatchService.updateBatch(req.params.id, req.body as PhotoBatch);
-			return res.json({ data: result });
-		} catch (err: any) {
-			console.error('PhotoBatch PUT error:', err);
-			return res.status(500).json({
-				errors: [{ message: err?.originalError?.info?.message || err?.message || 'Update failed' }],
-			});
-		}
-	}
-);
-
-photoBatchRouter.delete(
-	'/photo/:id',
-	[check('id').isInt().notEmpty()],
-	async (req: Request, res: Response) => {
-		const errors = validationResult(req);
-
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
-
-		const id = req.params.id as string;
-		const list = await photoBatchService.deletePhoto(parseInt(id));
-		return res.json({ data: list });
-	}
-);
+    return res.status(500).send("Error")
+  }
+)
 
 photoBatchRouter.post(
-	'/photo',
-	multer().single('file'),
-	[check('photoBatchId').isInt().notEmpty()],
-	async (req: Request, res: Response) => {
-		try {
-			const errors = validationResult(req);
-			const ThumbFile = await createThumbnail(req.file.buffer);
-			req.body.photoFile = req.file.buffer;
-			req.body.photoFileName = req.file.originalname;
-			req.body.ThumbFile = ThumbFile;
+  "/search",
+  [body("page").isInt().default(1)],
+  async (req: Request, res: Response) => {
+    const { query, sortBy, sortDesc, page, itemsPerPage } = req.body
+    const sort = new Array<SortStatement>()
 
-			if (!errors.isEmpty()) {
-				//console.log(errors);
-				return res.status(400).json({ errors: errors.array() });
-			}
+    sortBy.forEach((s: string, i: number) => {
+      sort.push({
+        field: s,
+        direction: sortDesc[i] ? SortDirection.ASCENDING : SortDirection.DESCENDING,
+      })
+    })
 
-			const result = await photoBatchService
-				.addPhoto(req.body as PhotoBatchPhoto)
-				.then((item) => item);
+    const skip = (page - 1) * itemsPerPage
+    const take = itemsPerPage
+    const results = await photoBatchService.doSearch(query, sort, page, itemsPerPage, skip, take)
 
-			return res.json({ data: result });
-		} catch (error) {
-			console.error(error);
-			return res.status(500).json({ message: 'Photo upload failed' });
-		}
-	}
-);
+    res.json(results)
+  }
+)
+
+photoBatchRouter.get("/:id", [check("id").notEmpty()], async (req: Request, res: Response) => {
+  const errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+  }
+
+  await photoBatchService
+    .getById(req.params.id)
+    .then((item) => {
+      if (item) return res.json({ data: item })
+
+      return res.status(404).send("Photo batch not found")
+    })
+    .catch((err) => {
+      console.error(err)
+      return res.status(404).send("Photo batch not found")
+    })
+})
+
+photoBatchRouter.post(
+  "/",
+  [body("name").notEmpty().bail().trim()],
+  async (req: Request, res: Response) => {
+    try {
+      const errors = validationResult(req)
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() })
+      }
+
+      const existing = await photoBatchService.findBatchByName(req.body.name)
+      if (existing) {
+        return res.status(409).json({
+          errors: [{ msg: `A photo batch named "${req.body.name}" already exists` }],
+        })
+      }
+
+      req.body.dateCreated = new Date()
+
+      const result = await photoBatchService.addBatch(req.body as PhotoBatch)
+
+      return res.json({ data: result })
+    } catch (error) {
+      console.error(error)
+      return res.status(422).json({ message: "Photo batch creation failed" })
+    }
+  }
+)
+
+photoBatchRouter.get(
+  "/:id/photos",
+  [check("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
+
+    const list = await photoBatchService
+      .getPhotos(req.params.id)
+      .then((data) => data)
+      .catch((err) => {
+        console.error("Database Error", err)
+        return undefined
+      })
+
+    if (list) {
+      return res.json({ data: list })
+    }
+
+    return res.status(500).send("Error")
+  }
+)
+
+photoBatchRouter.delete(
+  "/:id",
+  [check("id").isInt().notEmpty()],
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
+
+    const id = req.params.id as string
+    const list = await photoBatchService.deleteBatch(parseInt(id))
+    return res.json({ data: list })
+  }
+)
 
 photoBatchRouter.put(
-	'/:id/process-batch',
-	[check('id').isInt().notEmpty()],
-	[body('record').optional().isString()],
-	[body('id').optional().isString()],
-	async (req: Request, res: Response) => {
-		try {
-			const errors = validationResult(req);
+  "/:id",
+  [
+    check("id").notEmpty().isInt(),
+    body("communityId").optional({ nullable: true }).isInt(),
+    body("isOtherRecord").optional({ nullable: true }).isBoolean(),
+    body("originalMediaId").optional({ nullable: true }).isInt(),
+    body("mediaStorage").optional({ nullable: true }).isInt(),
+    body("copyright").optional({ nullable: true }).isInt(),
+    body("ownerId").optional({ nullable: true }).isInt(),
+    body("photoProjectId").optional({ nullable: true }).isInt(),
+    body("program").optional({ nullable: true }).isInt(),
+    body("isComplete").optional({ nullable: true }).isBoolean(),
+    body("isPrivate").optional({ nullable: true }).isBoolean(),
+  ],
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req)
 
-			if (!errors.isEmpty()) {
-				console.log(errors);
-				throw new Error('Validation failed');
-			}
+    if (!errors.isEmpty()) {
+      console.error("PhotoBatch PUT validation errors:", errors.array())
+      return res.status(400).json({ errors: errors.array() })
+    }
 
-			const { record, id } = req.body;
-			switch (record) {
-				case undefined:
-					break;
-				case 'place':
-				case 'boat':
-				case 'aircrash':
-				case 'ytplace':
-				case 'burial':
-				case 'interpretive-sites':
-				case 'people':
-					if (id === undefined) {
-						throw new Error('Invalid record id');
-					}
-					break;
-				default:
-					throw new Error('Invalid record type');
-			}
+    try {
+      if (req.body.name) {
+        const existing = await photoBatchService.findBatchByName(req.body.name)
+        if (existing && String(existing.id) !== String(req.params.id)) {
+          return res.status(409).json({
+            errors: [{ msg: `A photo batch named "${req.body.name}" already exists` }],
+          })
+        }
+      }
 
-			const result = await photoBatchService.processBatch(req.params.id).then((item) => item);
+      const result = await photoBatchService.updateBatch(req.params.id, req.body as PhotoBatch)
+      return res.json({ data: result })
+    } catch (err: any) {
+      console.error("PhotoBatch PUT error:", err)
+      return res.status(500).json({
+        errors: [{ message: err?.originalError?.info?.message || err?.message || "Update failed" }],
+      })
+    }
+  }
+)
 
-			for (let i = 0; i < result.length; i++) {
-				const photo = await photoService.getFileById(result[i].rowid);
-				if (photo && photo.file) {
-					const thumbnail = await createThumbnail(photo.file);
-					await photoService.updateThumbFile(result[i].rowid, thumbnail);
+photoBatchRouter.delete(
+  "/photo/:id",
+  [check("id").isInt().notEmpty()],
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req)
 
-					switch (record) {
-						case 'place':
-							await photoService.associatePhotoToPlace(result[i].rowid, id);
-							break;
-						case 'boat':
-							await photoService.associatePhotoToBoat(result[i].rowid, id);
-							break;
-						case 'aircrash':
-							await photoService.associatePhotoToAircrash(result[i].rowid, id);
-							break;
-						case 'ytplace':
-							await photoService.associatePhotoToYtPlace(result[i].rowid, id);
-							break;
-						case 'burial':
-							await photoService.associatePhotoToBurial(result[i].rowid, id);
-							break;
-						case 'interpretive-sites':
-							await photoService.associatePhotoToInterpretiveSite(result[i].rowid, id);
-							break;
-						case 'people':
-							await photoService.associatePhotoToPerson(result[i].rowid, id);
-							break;
-					}
-				}
-			}
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
 
-			const list = await photoBatchService.deleteBatch(parseInt(req.params.id));
-			return res.json({ data: list });
-		} catch (error) {
-			console.error(error);
-			return res.status(500).json({ message: 'Photo batch processing failed' });
-		}
-	}
-);
+    const id = req.params.id as string
+    const list = await photoBatchService.deletePhoto(parseInt(id))
+    return res.json({ data: list })
+  }
+)
+
+photoBatchRouter.post(
+  "/photo",
+  multer().single("file"),
+  [check("photoBatchId").isInt().notEmpty()],
+  async (req: Request, res: Response) => {
+    try {
+      const errors = validationResult(req)
+      const ThumbFile = await createThumbnail(req.file.buffer)
+      req.body.photoFile = req.file.buffer
+      req.body.photoFileName = req.file.originalname
+      req.body.ThumbFile = ThumbFile
+
+      if (!errors.isEmpty()) {
+        //console.log(errors);
+        return res.status(400).json({ errors: errors.array() })
+      }
+
+      const result = await photoBatchService
+        .addPhoto(req.body as PhotoBatchPhoto)
+        .then((item) => item)
+
+      return res.json({ data: result })
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json({ message: "Photo upload failed" })
+    }
+  }
+)
+
+photoBatchRouter.put(
+  "/:id/process-batch",
+  [check("id").isInt().notEmpty()],
+  [body("record").optional().isString()],
+  [body("id").optional().isString()],
+  async (req: Request, res: Response) => {
+    try {
+      const errors = validationResult(req)
+
+      if (!errors.isEmpty()) {
+        console.log(errors)
+        throw new Error("Validation failed")
+      }
+
+      const { record, id } = req.body
+      switch (record) {
+        case undefined:
+          break
+        case "place":
+        case "boat":
+        case "aircrash":
+        case "ytplace":
+        case "burial":
+        case "interpretive-sites":
+        case "people":
+          if (id === undefined) {
+            throw new Error("Invalid record id")
+          }
+          break
+        default:
+          throw new Error("Invalid record type")
+      }
+
+      const result = await photoBatchService.processBatch(req.params.id).then((item) => item)
+
+      for (let i = 0; i < result.length; i++) {
+        const photo = await photoService.getFileById(result[i].rowid)
+        if (photo && photo.file) {
+          const thumbnail = await createThumbnail(photo.file)
+          await photoService.updateThumbFile(result[i].rowid, thumbnail)
+
+          switch (record) {
+            case "place":
+              await photoService.associatePhotoToPlace(result[i].rowid, id)
+              break
+            case "boat":
+              await photoService.associatePhotoToBoat(result[i].rowid, id)
+              break
+            case "aircrash":
+              await photoService.associatePhotoToAircrash(result[i].rowid, id)
+              break
+            case "ytplace":
+              await photoService.associatePhotoToYtPlace(result[i].rowid, id)
+              break
+            case "burial":
+              await photoService.associatePhotoToBurial(result[i].rowid, id)
+              break
+            case "interpretive-sites":
+              await photoService.associatePhotoToInterpretiveSite(result[i].rowid, id)
+              break
+            case "people":
+              await photoService.associatePhotoToPerson(result[i].rowid, id)
+              break
+          }
+        }
+      }
+
+      const list = await photoBatchService.deleteBatch(parseInt(req.params.id))
+      return res.json({ data: list })
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json({ message: "Photo batch processing failed" })
+    }
+  }
+)

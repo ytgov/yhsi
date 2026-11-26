@@ -13,14 +13,14 @@
 // ALTER TABLE Boat.Photo ADD CONSTRAINT PK__Photo__3214EC076ADE23BB PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('Boat.Photo', (table) => {
-		table.integer('BoatId').notNullable();
-		table.string('Photo_RowID', 255).nullable();
-		table.increments('Id').primary();
-	});
-};
+  await knex.schema.createTable("Boat.Photo", (table) => {
+    table.integer("BoatId").notNullable()
+    table.string("Photo_RowID", 255).nullable()
+    table.increments("Id").primary()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('Boat.Photo');
-};
+  await knex.schema.dropTable("Boat.Photo")
+}

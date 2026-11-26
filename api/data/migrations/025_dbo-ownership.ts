@@ -14,15 +14,15 @@
 // ALTER TABLE dbo.Ownership ADD CONSTRAINT PK_Ownership PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.Ownership', (table) => {
-		table.increments('Id').primary();
-		table.integer('PlaceId').notNullable();
-		table.integer('OwnershipType').notNullable();
-		table.string('Comments', 256).nullable();
-	});
-};
+  await knex.schema.createTable("dbo.Ownership", (table) => {
+    table.increments("Id").primary()
+    table.integer("PlaceId").notNullable()
+    table.integer("OwnershipType").notNullable()
+    table.string("Comments", 256).nullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.Ownership');
-};
+  await knex.schema.dropTable("dbo.Ownership")
+}

@@ -44,11 +44,11 @@
 </template>
 
 <script>
-import FirstNationAssociationTypesSelect from '@/components/Sites/site-forms/associations/FirstNationAssociationTypesSelect';
-import FirstNationSelect from '@/components/Sites/site-forms/associations/FirstNationSelect';
+import FirstNationAssociationTypesSelect from "@/components/Sites/site-forms/associations/FirstNationAssociationTypesSelect"
+import FirstNationSelect from "@/components/Sites/site-forms/associations/FirstNationSelect"
 
 export default {
-  name: 'FirstNationAssociationsViewer',
+  name: "FirstNationAssociationsViewer",
   components: { FirstNationAssociationTypesSelect, FirstNationSelect },
   props: {
     value: {
@@ -58,10 +58,10 @@ export default {
   },
   computed: {
     firstNationAssociations() {
-      return this.value;
+      return this.value
     },
   },
-};
+}
 </script>
 
 <style scoped></style>

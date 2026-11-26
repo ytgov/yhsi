@@ -14,15 +14,15 @@
 // ALTER TABLE dbo.HSUserAccess ADD CONSTRAINT PK_UserAccess PRIMARY KEY (Id);
 // GO
 
-import { Knex } from 'knex';
+import { Knex } from "knex"
 exports.up = async function (knex: Knex, Promise: any) {
-	await knex.schema.createTable('dbo.HSUserAccess', (table) => {
-		table.increments('Id').primary();
-		table.integer('UserId').notNullable();
-		table.integer('AccessType').notNullable();
-		table.string('AccessText', 150).notNullable();
-	});
-};
+  await knex.schema.createTable("dbo.HSUserAccess", (table) => {
+    table.increments("Id").primary()
+    table.integer("UserId").notNullable()
+    table.integer("AccessType").notNullable()
+    table.string("AccessText", 150).notNullable()
+  })
+}
 exports.down = async function (knex: Knex, Promise: any) {
-	await knex.schema.dropTable('dbo.HSUserAccess');
-};
+  await knex.schema.dropTable("dbo.HSUserAccess")
+}

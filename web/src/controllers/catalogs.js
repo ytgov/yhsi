@@ -1,716 +1,716 @@
-import { api } from './config';
+import { api } from "./config"
 
 export default {
-	async getCommunities(page, limit, textToMatch, sortBy, sort) {
-		return await api
-			.get(`catalogs/community`, {
-				crossdomain: true,
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postCommunity(data) {
-		return await api
-			.post(`catalogs/community`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async putCommunity(id, data) {
-		return await api
-			.put(`catalogs/community/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async getPhotoOwners(page, limit, textToMatch, sortBy, sort) {
-		return await api
-			.get(`photo-owners`, {
-				crossdomain: true,
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postPhotoOwner(data) {
-		return await api
-			.post(`photo-owner`, data)
-			.then((res) => res.data)
-			.catch((error) => console.error(error));
-	},
-	async putPhotoOwner(id, data) {
-		return await api
-			.put(`photo-owner/${id}`, data)
-			.then((res) => res.data)
-			.catch((error) => console.error(error));
-	},
-	async getPhotoProjects() {
-		return await api
-			.get(`photo-project`)
-			.then((res) => res.data)
-			.catch((error) => console.error(error));
-	},
-	async postPhotoProject(data) {
-		return await api
-			.post(`photo-project`, data)
-			.then((res) => res.data)
-			.catch((error) => console.error(error));
-	},
-	async putPhotoProject(id, data) {
-		return await api
-			.put(`photo-project/${id}`, data)
-			.then((res) => res.data)
-			.catch((error) => console.error(error));
-	},
-	async getPhotoSubjects() {
-		return await api
-			.get(`photo-subject`)
-			.then((res) => res.data)
-			.catch((error) => console.error(error));
-	},
-	async postPhotoSubject(data) {
-		return await api
-			.post(`photo-subject`, data)
-			.then((res) => res.data)
-			.catch((error) => console.error(error));
-	},
-	async putPhotoSubject(id, data) {
-		return await api
-			.put(`photo-subject/${id}`, data)
-			.then((res) => res.data)
-			.catch((error) => console.error(error));
-	},
-	async getOriginalMedia() {
-		return await api
-			.get(`catalogs/originalmedia`)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async getVesselTypes(page, limit, textToMatch, sortBy, sort) {
-		return await api
-			.get(`catalogs/vesseltype`, {
-				crossdomain: true,
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postVesselType(data) {
-		return await api
-			.post(`catalogs/vesseltype`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postPlaceType(placeType) {
-		return await api
-			.post(`catalogs/placetype`, { placeType })
-			.then((res) => res.data)
-			.catch((error) => console.error(error));
-	},
-	async putVesselType(id, data) {
-		return await api
-			.put(`catalogs/vesseltype/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async getPlaceTypes() {
-		return await api
-			.get(`catalogs/placetype`)
-			.then((res) => res.data)
-			.catch((error) => console.error(error));
-	},
+  async getCommunities(page, limit, textToMatch, sortBy, sort) {
+    return await api
+      .get(`catalogs/community`, {
+        crossdomain: true,
+        params: {
+          page,
+          limit,
+          textToMatch,
+          sortBy,
+          sort,
+        },
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postCommunity(data) {
+    return await api
+      .post(`catalogs/community`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async putCommunity(id, data) {
+    return await api
+      .put(`catalogs/community/${id}`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async getPhotoOwners(page, limit, textToMatch, sortBy, sort) {
+    return await api
+      .get(`photo-owners`, {
+        crossdomain: true,
+        params: {
+          page,
+          limit,
+          textToMatch,
+          sortBy,
+          sort,
+        },
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postPhotoOwner(data) {
+    return await api
+      .post(`photo-owner`, data)
+      .then((res) => res.data)
+      .catch((error) => console.error(error))
+  },
+  async putPhotoOwner(id, data) {
+    return await api
+      .put(`photo-owner/${id}`, data)
+      .then((res) => res.data)
+      .catch((error) => console.error(error))
+  },
+  async getPhotoProjects() {
+    return await api
+      .get(`photo-project`)
+      .then((res) => res.data)
+      .catch((error) => console.error(error))
+  },
+  async postPhotoProject(data) {
+    return await api
+      .post(`photo-project`, data)
+      .then((res) => res.data)
+      .catch((error) => console.error(error))
+  },
+  async putPhotoProject(id, data) {
+    return await api
+      .put(`photo-project/${id}`, data)
+      .then((res) => res.data)
+      .catch((error) => console.error(error))
+  },
+  async getPhotoSubjects() {
+    return await api
+      .get(`photo-subject`)
+      .then((res) => res.data)
+      .catch((error) => console.error(error))
+  },
+  async postPhotoSubject(data) {
+    return await api
+      .post(`photo-subject`, data)
+      .then((res) => res.data)
+      .catch((error) => console.error(error))
+  },
+  async putPhotoSubject(id, data) {
+    return await api
+      .put(`photo-subject/${id}`, data)
+      .then((res) => res.data)
+      .catch((error) => console.error(error))
+  },
+  async getOriginalMedia() {
+    return await api
+      .get(`catalogs/originalmedia`)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async getVesselTypes(page, limit, textToMatch, sortBy, sort) {
+    return await api
+      .get(`catalogs/vesseltype`, {
+        crossdomain: true,
+        params: {
+          page,
+          limit,
+          textToMatch,
+          sortBy,
+          sort,
+        },
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postVesselType(data) {
+    return await api
+      .post(`catalogs/vesseltype`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postPlaceType(placeType) {
+    return await api
+      .post(`catalogs/placetype`, { placeType })
+      .then((res) => res.data)
+      .catch((error) => console.error(error))
+  },
+  async putVesselType(id, data) {
+    return await api
+      .put(`catalogs/vesseltype/${id}`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async getPlaceTypes() {
+    return await api
+      .get(`catalogs/placetype`)
+      .then((res) => res.data)
+      .catch((error) => console.error(error))
+  },
 
-	async putPlaceType(id, placeType) {
-		return await api
-			.put(`catalogs/placetype/${id}`, { placeType })
-			.then((res) => res.data)
-			.catch((error) => console.error(error));
-	},
-	//CAUSES
-	async getCauses() {
-		return await api
-			.get(`catalogs/cause`)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async putCauses(id, data) {
-		return await api
-			.put(`catalogs/cause/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postCauses(data) {
-		return await api
-			.post(`catalogs/cause`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async searchCauses(page, limit, textToMatch, sortBy, sort) {
-		return await api
-			.get(`catalogs/cause/search`, {
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	//RELIGIONS
-	async getReligions() {
-		return await api
-			.get(`catalogs/religion`)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async putReligion(id, data) {
-		return await api
-			.put(`catalogs/religion/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postReligion(data) {
-		return await api
-			.post(`catalogs/religion`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async searchReligions(page, limit, textToMatch, sortBy, sort) {
-		return await api
-			.get(`catalogs/religion/search`, {
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	//CEMETARIES
-	async getCemetaries() {
-		return await api
-			.get(`catalogs/cemetary`)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async putCemetary(id, data) {
-		return await api
-			.put(`catalogs/cemetary/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postCemetary(data) {
-		return await api
-			.post(`catalogs/cemetary`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async searchCemetaries(page, limit, textToMatch, sortBy, sort) {
-		return await api
-			.get(`catalogs/cemetary/search`, {
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	//OCCUPATIONS
-	async getOccupations() {
-		return await api
-			.get(`catalogs/occupation`)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async putOccupation(id, data) {
-		return await api
-			.put(`catalogs/occupation/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postOccupation(data) {
-		return await api
-			.post(`catalogs/occupation`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async searchOccupations(page, limit, textToMatch, sortBy, sort) {
-		return await api
-			.get(`catalogs/occupation/search`, {
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	//MEMBERSHIPS
-	async getMemberships() {
-		return await api
-			.get(`catalogs/membership`)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async putMembership(id, data) {
-		return await api
-			.put(`catalogs/membership/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postMembership(data) {
-		return await api
-			.post(`catalogs/membership`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async searchMemberships(page, limit, textToMatch, sortBy, sort) {
-		return await api
-			.get(`catalogs/membership/search`, {
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	//RELATIONSHIPS
-	async getRelationships() {
-		return await api
-			.get(`catalogs/relationship`)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async putRelationship(id, data) {
-		return await api
-			.put(`catalogs/relationship/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postRelationship(data) {
-		return await api
-			.post(`catalogs/relationship`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async searchRelationships(page, limit, textToMatch, sortBy, sort) {
-		return await api
-			.get(`catalogs/relationship/search`, {
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	//ASSET TYPES
-	async getAssetType() {
-		return await api
-			.get(`catalogs/asset-type`)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async putAssetType(id, data) {
-		return await api
-			.put(`catalogs/asset-type/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postAssetType(data) {
-		return await api
-			.post(`catalogs/asset-type`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async searchAssetTypes(page, limit, textToMatch, sortBy, sort) {
-		return await api
-			.get(`catalogs/asset-type/search`, {
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	//CATEGORIES
-	async getCategories() {
-		return await api
-			.get(`catalogs/category`)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async searchCategories(page, limit, textToMatch, sortBy, sort) {
-		return await api
-			.get(`catalogs/category/search`, {
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async putCategory(id, data) {
-		return await api
-			.put(`catalogs/category/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postCategory(data) {
-		return await api
-			.post(`catalogs/category`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	//MAINTAINERs
-	async getMaintainers() {
-		return await api
-			.get(`catalogs/maintainer`)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async searchMaintainers(page, limit, textToMatch, sortBy, sort) {
-		return await api
-			.get(`catalogs/maintainer/search`, {
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async putMaintainers(id, data) {
-		return await api
-			.put(`catalogs/maintainer/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postMaintainers(data) {
-		return await api
-			.post(`catalogs/maintainer`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	//ROUTES
-	async getRoutes() {
-		return await api
-			.get(`catalogs/route`)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async searchRoutes(page, limit, textToMatch, sortBy, sort) {
-		return await api
-			.get(`catalogs/route/search`, {
-				params: {
-					page,
-					limit,
-					textToMatch,
-					sortBy,
-					sort,
-				},
-			})
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async putRoute(id, data) {
-		return await api
-			.put(`catalogs/route/${id}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async postRoute(data) {
-		return await api
-			.post(`catalogs/route`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-};
+  async putPlaceType(id, placeType) {
+    return await api
+      .put(`catalogs/placetype/${id}`, { placeType })
+      .then((res) => res.data)
+      .catch((error) => console.error(error))
+  },
+  //CAUSES
+  async getCauses() {
+    return await api
+      .get(`catalogs/cause`)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async putCauses(id, data) {
+    return await api
+      .put(`catalogs/cause/${id}`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postCauses(data) {
+    return await api
+      .post(`catalogs/cause`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async searchCauses(page, limit, textToMatch, sortBy, sort) {
+    return await api
+      .get(`catalogs/cause/search`, {
+        params: {
+          page,
+          limit,
+          textToMatch,
+          sortBy,
+          sort,
+        },
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  //RELIGIONS
+  async getReligions() {
+    return await api
+      .get(`catalogs/religion`)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async putReligion(id, data) {
+    return await api
+      .put(`catalogs/religion/${id}`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postReligion(data) {
+    return await api
+      .post(`catalogs/religion`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async searchReligions(page, limit, textToMatch, sortBy, sort) {
+    return await api
+      .get(`catalogs/religion/search`, {
+        params: {
+          page,
+          limit,
+          textToMatch,
+          sortBy,
+          sort,
+        },
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  //CEMETARIES
+  async getCemetaries() {
+    return await api
+      .get(`catalogs/cemetary`)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async putCemetary(id, data) {
+    return await api
+      .put(`catalogs/cemetary/${id}`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postCemetary(data) {
+    return await api
+      .post(`catalogs/cemetary`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async searchCemetaries(page, limit, textToMatch, sortBy, sort) {
+    return await api
+      .get(`catalogs/cemetary/search`, {
+        params: {
+          page,
+          limit,
+          textToMatch,
+          sortBy,
+          sort,
+        },
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  //OCCUPATIONS
+  async getOccupations() {
+    return await api
+      .get(`catalogs/occupation`)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async putOccupation(id, data) {
+    return await api
+      .put(`catalogs/occupation/${id}`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postOccupation(data) {
+    return await api
+      .post(`catalogs/occupation`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async searchOccupations(page, limit, textToMatch, sortBy, sort) {
+    return await api
+      .get(`catalogs/occupation/search`, {
+        params: {
+          page,
+          limit,
+          textToMatch,
+          sortBy,
+          sort,
+        },
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  //MEMBERSHIPS
+  async getMemberships() {
+    return await api
+      .get(`catalogs/membership`)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async putMembership(id, data) {
+    return await api
+      .put(`catalogs/membership/${id}`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postMembership(data) {
+    return await api
+      .post(`catalogs/membership`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async searchMemberships(page, limit, textToMatch, sortBy, sort) {
+    return await api
+      .get(`catalogs/membership/search`, {
+        params: {
+          page,
+          limit,
+          textToMatch,
+          sortBy,
+          sort,
+        },
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  //RELATIONSHIPS
+  async getRelationships() {
+    return await api
+      .get(`catalogs/relationship`)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async putRelationship(id, data) {
+    return await api
+      .put(`catalogs/relationship/${id}`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postRelationship(data) {
+    return await api
+      .post(`catalogs/relationship`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async searchRelationships(page, limit, textToMatch, sortBy, sort) {
+    return await api
+      .get(`catalogs/relationship/search`, {
+        params: {
+          page,
+          limit,
+          textToMatch,
+          sortBy,
+          sort,
+        },
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  //ASSET TYPES
+  async getAssetType() {
+    return await api
+      .get(`catalogs/asset-type`)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async putAssetType(id, data) {
+    return await api
+      .put(`catalogs/asset-type/${id}`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postAssetType(data) {
+    return await api
+      .post(`catalogs/asset-type`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async searchAssetTypes(page, limit, textToMatch, sortBy, sort) {
+    return await api
+      .get(`catalogs/asset-type/search`, {
+        params: {
+          page,
+          limit,
+          textToMatch,
+          sortBy,
+          sort,
+        },
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  //CATEGORIES
+  async getCategories() {
+    return await api
+      .get(`catalogs/category`)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async searchCategories(page, limit, textToMatch, sortBy, sort) {
+    return await api
+      .get(`catalogs/category/search`, {
+        params: {
+          page,
+          limit,
+          textToMatch,
+          sortBy,
+          sort,
+        },
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async putCategory(id, data) {
+    return await api
+      .put(`catalogs/category/${id}`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postCategory(data) {
+    return await api
+      .post(`catalogs/category`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  //MAINTAINERs
+  async getMaintainers() {
+    return await api
+      .get(`catalogs/maintainer`)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async searchMaintainers(page, limit, textToMatch, sortBy, sort) {
+    return await api
+      .get(`catalogs/maintainer/search`, {
+        params: {
+          page,
+          limit,
+          textToMatch,
+          sortBy,
+          sort,
+        },
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async putMaintainers(id, data) {
+    return await api
+      .put(`catalogs/maintainer/${id}`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postMaintainers(data) {
+    return await api
+      .post(`catalogs/maintainer`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  //ROUTES
+  async getRoutes() {
+    return await api
+      .get(`catalogs/route`)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async searchRoutes(page, limit, textToMatch, sortBy, sort) {
+    return await api
+      .get(`catalogs/route/search`, {
+        params: {
+          page,
+          limit,
+          textToMatch,
+          sortBy,
+          sort,
+        },
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async putRoute(id, data) {
+    return await api
+      .put(`catalogs/route/${id}`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+  async postRoute(data) {
+    return await api
+      .post(`catalogs/route`, data)
+      .then((res) => {
+        return res.data
+      })
+      .catch((error) => {
+        // handle error
+        console.error(error)
+      })
+  },
+}
