@@ -1,4 +1,5 @@
 {
   "eslint.workingDirectories": ["./api", "./web"],
-  "eslint.validate": ["javascript", "typescript", "vue"]
+  "eslint.validate": ["javascript", "typescript", "vue"],
+  "prettier.prettierPath": "./node_modules/prettier"
 }
