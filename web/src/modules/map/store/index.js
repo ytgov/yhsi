@@ -13,7 +13,7 @@ const actions = {
         return { error: err.response.data }
       })
   },
-  searchByYHSIId(store, id) {
+  searchByYHSIId(_store, id) {
     return axios
       .post(`${PLACE_URL}/search`, {
         query: { search: id },

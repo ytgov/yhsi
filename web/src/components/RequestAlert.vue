@@ -77,7 +77,7 @@ export default {
     },
   },
   watch: {
-    alert(old, newv) {
+    alert(_old, newv) {
       if (newv == true) {
         this.$store.commit("alerts/setAlert", false)
       }

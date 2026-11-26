@@ -672,7 +672,7 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(to, _from, savedPosition) {
     if (savedPosition) {
       return goTo(savedPosition.y)
     }
@@ -685,7 +685,7 @@ const router = new VueRouter({
   },
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const requiresAuth = to.meta.requiresAuth || false
 
   if (!requiresAuth) {

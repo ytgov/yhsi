@@ -13,7 +13,7 @@ export default {
     communitiesKeyedById(state) {
       return keyBy(state.communities, "id")
     },
-    getById: (state, getters) => (id) => {
+    getById: (_state, getters) => (id) => {
       return getters.communitiesKeyedById[id]
     },
     loading: (state) => state.loading,

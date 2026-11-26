@@ -49,7 +49,7 @@ export default {
     mapData() {
       let props = Object.getOwnPropertyNames(this.data)
       props = _.filter(props, (x) => x != "photos" && x != "historicRecords")
-      this.toPrint.general = _.pickBy(this.data, (value, key) => _.includes(props, key))
+      this.toPrint.general = _.pickBy(this.data, (_, key) => _.includes(props, key))
       this.toPrint.photos = this.data.photos
 
       this.toPrint.historicRecords = []
