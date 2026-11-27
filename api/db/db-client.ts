@@ -8,8 +8,6 @@ const db = knex(DB_CONFIG)
 db.on("query", (query) => {
   if (NODE_ENV === "production") {
     console.log(`Executing: ${query.sql}`)
-  } else if (NODE_ENV === "test") {
-    // don't log anything
   } else {
     const safeBindings = (query.bindings || []).map((b: unknown) =>
       Buffer.isBuffer(b) ? `<Buffer ${b.length} bytes>` : b

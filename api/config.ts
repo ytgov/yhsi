@@ -4,9 +4,6 @@ import parseIntWithFallback from "./utils/parse-int-with-fallback"
 
 let dotEnvPath
 switch (process.env.NODE_ENV) {
-  case "test":
-    dotEnvPath = `.env.test`
-    break
   case "production":
     dotEnvPath = `.env.production`
     break

@@ -7,9 +7,6 @@ const config: { [key: string]: Knex.Config } = {
   development: {
     ...dbMigrationClient.client.config,
   },
-  test: {
-    ...dbMigrationClient.client.config,
-  },
   production: {
     ...dbMigrationClient.client.config,
   },
