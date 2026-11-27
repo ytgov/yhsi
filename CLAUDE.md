@@ -38,12 +38,16 @@ Routes (Express routers, input validation via express-validator)
   models/               # TypeScript data models
   middleware/            # Auth, validation (RequiresAuthentication, authorize())
   policies/             # Access control policies
+  initializers/         # Ordered development startup steps
+  config.d/knexfile.ts  # Knex CLI bridge to the migration client
   data/
-    migrations/         # 90+ Knex migrations
-    seeds/              # Environment-specific seed data (development/production/test)
     *-entities.ts       # Field definitions (PLACE_FIELDS, PHOTO_FIELDS, etc.)
-  db/db-client.ts       # Knex instance
-  config.d/knexfile.ts  # Knex configuration
+  db/
+    db-client.ts        # Runtime Knex instance
+    db-migration-client.ts # Knex client for migrations and seeds
+    migrations/         # Baseline and subsequent development migrations
+    schema/             # Checked-in SQL Server baseline
+    seeds/              # Seeds grouped by environment
   utils/                # Helpers (PDF, images, spatial)
   @types/               # Custom type definitions
 
@@ -107,7 +111,8 @@ dev up
 # API standalone
 cd api
 npm install
-cp .env .env.development    # Edit with local DB credentials
+cp .env.sample .env.development    # Edit with local DB credentials
+npm run initializers         # Provision and migrate the local development database
 npm run start               # ts-node-dev on port 3000
 
 # Frontend standalone
@@ -115,9 +120,7 @@ cd web
 npm install
 npm run start               # Vue CLI dev server on port 8080
 
-# Database migrations
-# Via browser: http://localhost:3000/migrate/latest
-# Via CLI:
+# Development database migrations (also run by development Compose boot)
 cd api
 npm run knex -- migrate:latest
 

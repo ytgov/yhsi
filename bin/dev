@@ -157,14 +157,14 @@ class DevHelper
 
   def knex(*args, **kwargs)
     if RUBY_PLATFORM =~ /linux/
-      run(*%w[api npm run knex], *args, execution_mode: WAIT_FOR_PROCESS, **kwargs)
+      run(*%w[api npm run knex --], *args, execution_mode: WAIT_FOR_PROCESS, **kwargs)
 
-      file_or_directory = "#{project_root}/api/data/migrations"
+      file_or_directory = "#{project_root}/api/db/migrations"
       exit(0) unless take_over_needed?(file_or_directory)
 
       ownit file_or_directory
     else
-      run(*%w[api npm run knex], *args, **kwargs)
+      run(*%w[api npm run knex --], *args, **kwargs)
     end
   end
 

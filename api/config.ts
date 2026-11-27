@@ -1,5 +1,6 @@
-import * as path from "path"
 import * as dotenv from "dotenv"
+
+import parseIntWithFallback from "./utils/parse-int-with-fallback"
 
 let dotEnvPath
 switch (process.env.NODE_ENV) {
@@ -24,7 +25,22 @@ export const DB_NAME = process.env.DB_NAME || ""
 export const DB_USER = process.env.DB_USER || ""
 export const DB_PASS = process.env.DB_PASS || ""
 export const DB_HOST = process.env.DB_HOST || ""
-export const DB_PORT = process.env.DB_PORT || "1433"
+export const DB_PORT = parseInt(process.env.DB_PORT || "1433")
+
+export const DB_TRUST_SERVER_CERTIFICATE = process.env.DB_TRUST_SERVER_CERTIFICATE === "true"
+export const DB_HEALTH_CHECK_INTERVAL_SECONDS = parseIntWithFallback(
+  process.env.DB_HEALTH_CHECK_INTERVAL_SECONDS,
+  5
+)
+export const DB_HEALTH_CHECK_TIMEOUT_SECONDS = parseIntWithFallback(
+  process.env.DB_HEALTH_CHECK_TIMEOUT_SECONDS,
+  10
+)
+export const DB_HEALTH_CHECK_RETRIES = parseIntWithFallback(process.env.DB_HEALTH_CHECK_RETRIES, 3)
+export const DB_HEALTH_CHECK_START_PERIOD_SECONDS = parseIntWithFallback(
+  process.env.DB_HEALTH_CHECK_START_PERIOD_SECONDS,
+  5
+)
 
 export const CLIENT_ID = process.env.CLIENT_ID || ""
 export const ISSUER_BASE_URL = process.env.ISSUER_BASE_URL || ""
@@ -37,17 +53,7 @@ export const DB_CONFIG = {
     user: DB_USER,
     password: DB_PASS,
     database: DB_NAME,
-    port: parseInt(DB_PORT),
-  },
-  migrations: {
-    directory: path.resolve(__dirname, "./data/migrations"),
-    extension: "ts",
-    stub: path.resolve(__dirname, "./data/templates/sample-migration.ts"),
-  },
-  seeds: {
-    directory: path.resolve(__dirname, `./data/seeds/${NODE_ENV}`),
-    extension: "ts",
-    stub: path.resolve(__dirname, "./data/templates/sample-seed.ts"),
+    port: DB_PORT,
   },
 }
 
