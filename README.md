@@ -80,15 +80,7 @@ Linting reports issues without rewriting files. Pass the files you want to forma
 
 ## Local Testing
 
-Only `api` has a test suite (Mocha). It runs in the `test_api` service with `NODE_ENV=test` and
-`DB_NAME=yhsi_test`. Mocha runs in watch mode; stop it with `ctrl-c`.
-
-```bash
-dev test
-
-# Or without the dev helper
-docker compose -f docker-compose.development.yml run --rm test_api npm run test
-```
+TODO
 
 ### Helful Git Hooks
 
@@ -124,6 +116,14 @@ exit 0
 Since the database for this system is managed externally, PRODUCTION version only needs to run the API and Web services.
 The `Dockerfile` in this directory builds the Vue.js web front-end, and serves the compiled files via the Node.js API,
 so only one container is required to serve the front-end and back-ends; thus saving resources.
+
+The production image still starts `node ./dist/index.js` directly. `boot-app.sh` exits in
+production, and both Knex commands reject production targets.
+
+Before enabling production migrations, rehearse against a current restored backup. Compare the
+schema with the baseline, reconcile any drift, and record the baseline as applied without
+replaying its `CREATE` statements. Then run compiled migrations once per release with a separate
+database account. Do not enable development database creation or seeds in that release step.
 
 On the PRODUCTION server, the application is run via docker-compose, so the code needs to be cloned to the server and
 the appropriate environment variables set using the following commands:
