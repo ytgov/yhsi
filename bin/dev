@@ -106,19 +106,29 @@ class DevHelper
     run(*%w[test_web npm run test], *args, **kwargs)
   end
 
-  def sqlcmd(*args, **kwargs)
-    db_host = ENV.fetch('DB_HOST', 'localhost')
-    db_user = ENV.fetch('DB_USER', 'sa')
-    db_pass = ENV.fetch('DB_PASS', '1m5ecure!')
-    db_name = ENV.fetch('DB_NAME', 'YHSI')
+  def sqlcmd(*args, **kwargs) # rubocop:disable Metrics/MethodLength
+    environment_hoist = ENV.slice(*%w[
+      DB_NAME
+      DB_USER
+      DB_HOST
+      DB_PORT
+    ]).map { |key, value|
+      "export #{key}=\"#{value}\""
+    }.join("\n  ")
+
     compose(
-      *%w[exec db /opt/mssql-tools/bin/sqlcmd],
-      *%W[-U #{db_user}],
-      *%W[-P #{db_pass}],
-      *%W[-H #{db_host}],
-      *%W[-d #{db_name}],
-      '-I', # enable quoted identifiers, e.g. "table"."column"
-      *args,
+      <<~BASH,
+        exec db sh -c '
+          #{environment_hoist}
+          /opt/mssql-tools/bin/sqlcmd \
+            -U "$DB_USER" \
+            -P "$DB_PASS" \
+            -S "$DB_HOST,$DB_PORT" \
+            -d "$DB_NAME" \
+            -C \
+            -I #{args.join(" ")}
+          '
+      BASH
       **kwargs
     )
   end
@@ -147,14 +157,14 @@ class DevHelper
 
   def knex(*args, **kwargs)
     if RUBY_PLATFORM =~ /linux/
-      run(*%w[api npm run knex], *args, execution_mode: WAIT_FOR_PROCESS, **kwargs)
+      run(*%w[api npm run knex --], *args, execution_mode: WAIT_FOR_PROCESS, **kwargs)
 
-      file_or_directory = "#{project_root}/api/data/migrations"
+      file_or_directory = "#{project_root}/api/db/migrations"
       exit(0) unless take_over_needed?(file_or_directory)
 
       ownit file_or_directory
     else
-      run(*%w[api npm run knex], *args, **kwargs)
+      run(*%w[api npm run knex --], *args, **kwargs)
     end
   end
 

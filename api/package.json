@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "ts-node-dev -r tsconfig-paths/register index.ts",
+    "initializers": "ts-node -r tsconfig-paths/register --files initializers/index.ts",
     "development": "pm2 start ecosystem.config.js --no-daemon",
     "test": "mocha --config ./.mocharc.js 'tests/**/*.test.ts'",
     "start-yhsif": "nodemon index.ts",

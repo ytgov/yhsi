@@ -38,12 +38,15 @@ Routes (Express routers, input validation via express-validator)
   models/               # TypeScript data models
   middleware/            # Auth, validation (RequiresAuthentication, authorize())
   policies/             # Access control policies
+  initializers/         # Ordered development startup steps
+  config.d/knexfile.ts  # Knex CLI bridge to the migration client
   data/
-    migrations/         # 90+ Knex migrations
-    seeds/              # Environment-specific seed data (development/production/test)
     *-entities.ts       # Field definitions (PLACE_FIELDS, PHOTO_FIELDS, etc.)
-  db/db-client.ts       # Knex instance
-  config.d/knexfile.ts  # Knex configuration
+  db/
+    db-client.ts        # Runtime Knex instance
+    db-migration-client.ts # Knex client for migrations and seeds
+    migrations/         # Knex migrations
+    seeds/              # Seeds grouped by environment
   utils/                # Helpers (PDF, images, spatial)
   @types/               # Custom type definitions
 
@@ -97,7 +100,6 @@ Authorization middleware: `authorize(roles[], allowPending?)` in `/api/middlewar
 
 ```bash
 # Development (Docker)
-docker volume create yhsi_sqlvolume
 docker compose -f docker-compose.development.yml build
 docker compose -f docker-compose.development.yml up
 
@@ -108,7 +110,8 @@ dev up
 # API standalone
 cd api
 npm install
-cp .env .env.development    # Edit with local DB credentials
+cp .env.sample .env.development    # Edit with local DB credentials
+npm run initializers         # Provision and migrate the local development database
 npm run start               # ts-node-dev on port 3000
 
 # Frontend standalone
@@ -116,9 +119,7 @@ cd web
 npm install
 npm run start               # Vue CLI dev server on port 8080
 
-# Database migrations
-# Via browser: http://localhost:3000/migrate/latest
-# Via CLI:
+# Development database migrations (also run by development Compose boot)
 cd api
 npm run knex -- migrate:latest
 
@@ -139,8 +140,9 @@ cd web && npm run lint
 - **Engine**: Microsoft SQL Server (not PostgreSQL) — use T-SQL syntax
 - **Query builder**: Knex.js (no raw ORM, use Knex methods)
 - **Connection config**: Environment variables `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`, `DB_PORT` (default 1433)
-- **Dev credentials**: SA password `1m5ecure!` (in docker-compose.dev.yml)
-- **Dev and test databases are shared** — avoid tests that mutate state
+- **Dev database**: SQL Server 2019 RTM-GDR container pinned to match production (YHIS_PROD 15.0.2210.4)
+- **Dev credentials**: SA password `1m5ecure!`, database `yhsi_development` (owned by docker-compose.development.yml)
+- **Test database**: `dev test` runs in the `test_api` service against `yhsi_test`
 
 ## Key Patterns
 

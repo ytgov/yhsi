@@ -2,36 +2,28 @@
 
 ## Developing in this Repository
 
-Writing code and developing in this application requires running three services:
+Requires Docker. The `dev` helper (`bin/dev`) wraps `docker compose -f docker-compose.development.yml`.
 
-- A local Microsoft SQL Server (2019 Linux) database running in Docker
-- The server-side Node.js application written in TypeScript: `/api`
-- The Vue.js and Vuetify based front-end: `/web`
+1. Copy `api/.env.sample` to `api/.env.development` and fill in the sign-in settings. Database
+   settings come from `docker-compose.development.yml` and override any `DB_*` values in that file.
 
----
-
-1. Create a the `yhsi_sqlvolume` volume in docker to hold the app database.
-
-   ```bash
-   docker volume create yhsi_sqlvolume
-   ```
-
-2. Boot the three app services:
+2. Build and boot:
 
    ```bash
    dev build
    dev up
-
-   # Or
-   docker compose -f docker-compose.development.yml build
-   docker compose -f docker-compose.development.yml up
    ```
 
-3. Run the database migrations by going to <http://localhost:3000/migrate/latest>
+   | Service    | Address                                                                        |
+   | ---------- | ------------------------------------------------------------------------------ |
+   | Web        | <http://localhost:8080>                                                        |
+   | API        | <http://localhost:3000>                                                        |
+   | SQL Server | `localhost,1433`, user `sa`, password `1m5ecure!`, database `yhsi_development` |
 
-4. Create a new user account and log in to <http://localhost:8080>.
+   On boot the API creates the database and runs the migrations in `api/db/migrations`. The
+   database runs SQL Server 2019 RTM-GDR to match production.
 
-5. Once you are logged in, open a database console with `dev sqlcmd` and run the following command to give your user admin permissions:
+3. Sign up at <http://localhost:8080>, then make yourself an administrator with `dev sqlcmd`:
 
    ```sql
    UPDATE [Security].[User]
@@ -44,55 +36,51 @@ Writing code and developing in this application requires running three services:
    GO
    ```
 
-### Legacy Development Setup
+4. Optional: load sample places.
 
-To run the database locally, you must have Docker installed as well as Docker Compose, then run the following command from the root directory:
+   ```bash
+   dev run -e SEED_SAMPLE_PLACES=true api npm run knex -- seed:run --specific=02_places-seeds.ts
+   ```
 
-```
-docker-compose -f docker-compose.dev.yml up -d
-```
+API and web code reload automatically on change.
 
-This command will start SQL Server and bind it to your local machine's port 1433. When it starts the first time, the database will be empty. To load it with data, you must obtain a database backup and put it into `/db/backups/yhsi.bak` then run the follow commands:
+### Working Against a Restored Backup
 
-```
-dev exec db bash
+Startup refuses to migrate a database without migration history, so a restored backup runs
+outside the Docker app services:
 
-# or
-docker compose -f docker-compose.development.yml exec db bash
-```
+1. Put the backup at `db/backups/yhsi.bak`, then start SQL Server and restore it:
 
-This connects you to the running SQL Server container. Once in, run the following commands to create and restore the database from the backup:
+   ```bash
+   docker compose -f docker-compose.dev.yml up -d
+   docker compose -f docker-compose.dev.yml exec sql /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '1m5ecure!' -C \
+     -Q "RESTORE DATABASE YHSI FROM DISK = N'/backups/yhsi.bak' WITH FILE = 1"
+   ```
 
-```
-cd /opt/mssql-tools/bin
-./sqlcmd -U sa -s localhost -P 1m5ecure! -Q "RESTORE DATABASE YHSI FROM DISK = N'/backups/yhsi.bak' WITH FILE = 1"
-```
+2. Set `DB_NAME=YHSI` and the other `DB_*` values in `api/.env.development`, then run each app in its
+   own terminal:
 
-You will now have a local database with data ready for the API. To run the API, run the following commands:
+   ```bash
+   cd api && npm install && npm run start
+   cd web && npm install && npm run start
+   ```
 
-```
-cd api
-npm install
-cp .env .env.development
-```
+### Running Production Locally
 
-You must then edit the `.env.development` file with the appropriate values for the local database and authentication before starting the Node.js API with:
+`docker-compose.yml` builds the production image (API serving the compiled web app) and runs it
+against a local SQL Server, as project `yhsi-production`. Sign-in settings come from the root
+`.env`; Compose sets the database settings and the `http://localhost:3000` URLs. Production boot
+never migrates, so create the database once with the compiled initializers:
 
-```
-npm run start
-```
-
-The API will bind to your local machines port 3000 and be available at <http://localhost:3000>
-
-Last to start is the the Vue.js web front-end. To run this, open a second terminal window at this directory and run the following commands:
-
-```
-cd web
-npm install
-npm run start
+```bash
+docker compose build
+docker compose up -d db
+docker compose run --rm app node dist/initializers/index.js
+docker compose up -d app
 ```
 
-You will now have the Vue CLI server hosting the application at <http://localhost:8080> and you can begin editing the API or front-end code. **All changes to the files in the `api` and `web` will automatically reload theie respective applications.**
+Set `HOST_PORT` in the root `.env` to serve on another port. Stop the development stack first; both
+publish port 1433.
 
 ## Linting and Formatting
 
@@ -109,31 +97,7 @@ Linting reports issues without rewriting files. Pass the files you want to forma
 
 ## Local Testing
 
-Currently there is very minimal support for testing.
-Only `api` has a test suite.
-**The development and test databases are shared, so don't write tests that change database state yet.**
-
-To boot the test suite go to the top level of the app and run:
-
-```
-bin/dev test up
-
-# or if you don't have ruby
-docker-compose -f docker-cmpose.test.yml up
-
-# or if you don't have docker
-cd api
-npm install
-npm run test
-```
-
-The `bin/dev test` command supports the full suite of "dev" and "docker-compose" commands.
-
-e.g.
-`dev up` will boot the app in development mode.
-`dev test up` will boot the app in test mode.
-`dev down` will stop the app in development mode.
-`dev test down` will stop the app in test mode.
+TODO
 
 ### Helful Git Hooks
 
@@ -169,6 +133,15 @@ exit 0
 Since the database for this system is managed externally, PRODUCTION version only needs to run the API and Web services.
 The `Dockerfile` in this directory builds the Vue.js web front-end, and serves the compiled files via the Node.js API,
 so only one container is required to serve the front-end and back-ends; thus saving resources.
+
+The production image still starts `node ./dist/index.js` directly. `boot-app.sh` exits in
+production, and both Knex commands reject production targets.
+
+Before enabling production migrations, rehearse against a current restored backup. Compare the
+schema with the baseline migrations (`20261127130250` through `20261127130301`), reconcile any
+drift, and record those migrations as applied without running them. Then run compiled migrations
+once per release with a separate database account. Do not enable development database creation or
+seeds in that release step.
 
 On the PRODUCTION server, the application is run via docker-compose, so the code needs to be cloned to the server and
 the appropriate environment variables set using the following commands:

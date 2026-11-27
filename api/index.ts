@@ -62,7 +62,6 @@ import * as config from "./config"
 import { doHealthCheck } from "./utils/healthCheck"
 import { configureAuthentication } from "./routes/auth"
 import { RequiresAuthentication } from "./middleware"
-import { CreateMigrationRoutes } from "./data/migrator"
 
 import * as Sentry from "@sentry/node"
 
@@ -115,8 +114,6 @@ app.use(
     credentials: true,
   })
 )
-
-CreateMigrationRoutes(app)
 
 configureAuthentication(app)
 
