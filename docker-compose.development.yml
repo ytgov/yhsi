@@ -53,28 +53,6 @@ services:
     depends_on:
       - api
 
-  test_api:
-    image: "${COMPOSE_PROJECT_NAME}-api:latest"
-    pull_policy: never
-    command: /bin/true
-    env_file:
-      - ./api/.env.development
-    environment:
-      <<: *default-environment
-      NODE_ENV: test
-      DB_NAME: yhsi_test
-      LOG_LEVEL: "info"
-      DB_HEALTH_CHECK_START_PERIOD_SECONDS: 0
-    tty: true
-    volumes:
-      - ./api:/usr/src/api
-      - ./.gitignore:/usr/src/.gitignore
-      - ./.prettierrc.yaml:/usr/src/.prettierrc.yaml
-    depends_on:
-      - db
-    profiles:
-      - test
-
   db:
     image: mcr.microsoft.com/mssql/server:2019-gdr3-ubuntu-16.04@sha256:104e105950f9faa14897f702e70c178f813e3d3d4446b176a0c31fdb442bcf7c
     user: root
