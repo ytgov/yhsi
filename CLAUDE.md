@@ -62,7 +62,6 @@ Routes (Express routers, input validation via express-validator)
     layouts/            # Layout components
 
 /db
-  create_schema.sql     # Full database schema
   scripts/              # One-off SQL scripts not yet in migrations (normalize_coordinates.sql: pending, unrun)
   backups/              # Database backup mount point
 ```

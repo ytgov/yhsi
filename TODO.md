@@ -58,7 +58,7 @@ This document tracks technical debt, bugs, inconsistencies, and upgrade plans ac
 
 ## 2. Critical: Schema Mismatches
 
-These are discrepancies between the production/test database schema (`db/YHISTEST.sql`) and what the application code assumes.
+These are discrepancies between the production database schema (the Knex baseline migrations in `api/db/migrations/`) and what the application code assumes.
 
 ### 2.1 Boat Schema Tables — Code vs Reality
 
