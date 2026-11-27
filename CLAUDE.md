@@ -13,7 +13,6 @@
 - **Maps**: Leaflet + ESRI ArcGIS (esri-loader)
 - **Monitoring**: Sentry / GlitchTip
 - **Templates**: Pug
-- **Testing**: Mocha + Chai (API only)
 
 ## Architecture
 
@@ -123,10 +122,6 @@ npm run start               # Vue CLI dev server on port 8080
 cd api
 npm run knex -- migrate:latest
 
-# Tests (API only)
-cd api
-npm run test                # Mocha test suite
-
 # Build
 cd api && npm run build     # TypeScript compile + tsc-alias
 cd web && npm run build:web # Vue CLI production build
@@ -142,7 +137,6 @@ cd web && npm run lint
 - **Connection config**: Environment variables `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`, `DB_PORT` (default 1433)
 - **Dev database**: SQL Server 2019 RTM-GDR container pinned to match production (YHIS_PROD 15.0.2210.4)
 - **Dev credentials**: SA password `1m5ecure!`, database `yhsi_development` (owned by docker-compose.development.yml)
-- **Test database**: `dev test` runs in the `test_api` service against `yhsi_test`
 
 ## Key Patterns
 

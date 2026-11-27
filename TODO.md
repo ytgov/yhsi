@@ -249,7 +249,6 @@ Four different response wrapper patterns are used across the API:
 | typescript (root) | 4.5.4   | 5.5+     | Major version behind                 |
 | @types/node       | 14.14.5 | 20+      | Severely outdated                    |
 | @types/express    | 4.17.13 | 4.17.21+ | 3+ years behind                      |
-| mocha             | 9.2.2   | 10+      | Major behind                         |
 
 ### 6.2 Frontend Dependencies
 
