@@ -1,5 +1,6 @@
 {
   "eslint.workingDirectories": ["./api", "./web"],
   "eslint.validate": ["javascript", "typescript", "vue"],
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
   "prettier.prettierPath": "./node_modules/prettier"
 }
