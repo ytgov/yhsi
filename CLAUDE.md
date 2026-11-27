@@ -63,7 +63,7 @@ Routes (Express routers, input validation via express-validator)
 
 /db
   create_schema.sql     # Full database schema
-  scripts/              # Ad-hoc SQL scripts
+  scripts/              # One-off SQL scripts not yet in migrations (normalize_coordinates.sql: pending, unrun)
   backups/              # Database backup mount point
 ```
 
