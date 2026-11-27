@@ -16,10 +16,10 @@ v-select(
 </template>
 
 <script>
-import api from '@/apis/first-nation-association-types-api';
+import api from "@/apis/first-nation-association-types-api"
 
 export default {
-  name: 'FirstNationAssociationTypesSelect',
+  name: "FirstNationAssociationTypesSelect",
   components: {},
   props: {},
   data: () => ({
@@ -29,23 +29,23 @@ export default {
   computed: {},
   watch: {},
   mounted() {
-    this.getFirstNationAssociationTypeOptions();
+    this.getFirstNationAssociationTypeOptions()
   },
   methods: {
     getFirstNationAssociationTypeOptions() {
-      this.loading = true;
+      this.loading = true
       return api
         .getAll()
         .then(({ data }) => {
-          this.firstNationAssociationTypeOptions = data;
-          return data;
+          this.firstNationAssociationTypeOptions = data
+          return data
         })
         .finally(() => {
-          this.loading = false;
-        });
+          this.loading = false
+        })
     },
   },
-};
+}
 </script>
 
 <style scoped></style>

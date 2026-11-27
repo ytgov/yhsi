@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import owners from "../../../controllers/owners";
+import owners from "../../../controllers/owners"
 export default {
   name: "boatsGrid",
   data: () => ({
@@ -39,11 +39,11 @@ export default {
     //table options
     page: 0,
     pageCount: 6,
-    options: { itemsPerPage: 50},
+    options: { itemsPerPage: 50 },
     totalLength: 100,
   }),
   mounted() {
-    this.getDataFromApi();
+    this.getDataFromApi()
   },
   methods: {
     handleClick(value) {
@@ -51,43 +51,43 @@ export default {
       this.$router.push({
         name: "ownerView",
         params: { id: value.id },
-      });
+      })
     },
     async getDataFromApi() {
-      this.loading = true;
-      let { page, itemsPerPage, sortBy, sortDesc } = this.options;
-      page = page > 0 ? page - 1 : 0;
-      itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
-      let textToMatch = this.search;
+      this.loading = true
+      let { page, itemsPerPage, sortBy, sortDesc } = this.options
+      page = page > 0 ? page - 1 : 0
+      itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage
+      let textToMatch = this.search
       let data = await owners.get(
         page,
         itemsPerPage,
         textToMatch,
         sortBy[0],
         sortDesc[0] ? "desc" : "asc"
-      );
+      )
 
-      this.owners = data.body;
-      this.totalLength = data.count;
+      this.owners = data.body
+      this.totalLength = data.count
       //console.log(data);
-      this.$store.commit("boats/setOwners", this.owners);
-      this.$store.commit("boats/setOwnerTableOptions", this.options);
-      this.loading = false;
+      this.$store.commit("boats/setOwners", this.owners)
+      this.$store.commit("boats/setOwnerTableOptions", this.options)
+      this.loading = false
     },
   },
   computed: {
     search() {
-      return this.$store.getters["boats/ownerSearch"];
+      return this.$store.getters["boats/ownerSearch"]
     },
     filteredData() {
       // returns a filtered users array depending on the selected filters
-      return this.owners;
+      return this.owners
     },
   },
   watch: {
     options: {
       handler() {
-        this.getDataFromApi();
+        this.getDataFromApi()
       },
       deep: true,
     },
@@ -97,8 +97,8 @@ export default {
     },
     search(newv, oldv) {
       //this.search = newv;
-      this.getDataFromApi();
+      this.getDataFromApi()
     } /* eslint-enable */,
   },
-};
+}
 </script>

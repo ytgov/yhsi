@@ -1,60 +1,60 @@
 //- template.pug
 
 style
-     include ../styles.css
-    
+  include ../styles.css
+
 table.title-row
-  tbody 
-    tr 
+  tbody
+    tr
       td
         div Airplane crashes information
       td
-        div(style='width:200px;')
+        div(style="width: 200px")
           include ../yukon.svg
 
-div.grid
+.grid
   table.grid-table
     thead
-      tr 
-        td 
-          strong.underline YACSI Number 
-        td 
+      tr
+        td
+          strong.underline YACSI Number
+        td
           strong.underline Crash Date
-        td 
+        td
           strong.underline Aircraft Type
-        td 
+        td
           strong.underline Aircraft Registration
-        td 
+        td
           strong.underline Country of Registration
-        td 
+        td
           strong.underline Registration Type
-        td 
+        td
           strong.underline Location
-        td 
+        td
           strong.underline Remains on Site
-        td 
+        td
           strong.underline Pilot Last Name
-        td 
+        td
           strong.underline Pilot First Name
-        td 
+        td
           strong.underline Souls on Board
-        td 
+        td
           strong.underline Injuries
-        td 
+        td
           strong.underline Fatalities
-    tbody 
+    tbody
       each val in data
-        tr 
-          td #{val.yacsinumber} 
-          td #{val.crashdate} 
-          td #{val.aircrafttype} 
-          td #{val.aircraftregistration} 
-          td #{val.nation} 
-          td #{val.militarycivilian} 
-          td #{val.crashlocation} 
-          td #{val.remainsonsite} 
-          td #{val.pilotfirstname} 
-          td #{val.pilotlastname} 
-          td #{val.soulsonboard}
-          td #{val.injuries}
-          td #{val.fatalities}
+        tr
+          td #{ val.yacsinumber } 
+          td #{ val.crashdate } 
+          td #{ val.aircrafttype } 
+          td #{ val.aircraftregistration } 
+          td #{ val.nation } 
+          td #{ val.militarycivilian } 
+          td #{ val.crashlocation } 
+          td #{ val.remainsonsite } 
+          td #{ val.pilotfirstname } 
+          td #{ val.pilotlastname } 
+          td #{ val.soulsonboard }
+          td #{ val.injuries }
+          td #{ val.fatalities }

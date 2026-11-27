@@ -9,29 +9,29 @@ table.title-row
     tr
       td
         div(style="margin-top: 15px") Yukon Heritage Information System
-        div.item-name #{data.Name}
+        .item-name #{ data.Name }
       td.brand-logo
         include ../yukon.svg
 
-div.section
-  div.section-title General information
-  div.subhead Alias
+.section
+  .section-title General information
+  .subhead Alias
   each val in data.alias
-    div.subfield #{val.Alias}
+    .subfield #{ val.Alias }
   else
-    div.subfield.empty None recorded
-  div.subhead Boats Owned
+    .subfield.empty None recorded
+  .subhead Boats Owned
   each val in data.boats
-    div.subfield #{val.Name}
+    .subfield #{ val.Name }
   else
-    div.subfield.empty None recorded
+    .subfield.empty None recorded
 
-div.section
-  div.section-title History
+.section
+  .section-title History
   each val in data.histories
-    div.subfield
-      | #{val.HistoryText}
+    .subfield
+      | #{ val.HistoryText }
       br
-      em Reference: #{val.Reference}
+      em Reference: #{ val.Reference }
   else
-    div.subfield.empty None recorded
+    .subfield.empty None recorded

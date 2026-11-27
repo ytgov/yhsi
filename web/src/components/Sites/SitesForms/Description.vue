@@ -3,7 +3,12 @@
     <v-card-title style="width: 100%; display: block">
       Description
       <div class="float-right">
-        <v-btn class="my-0" color="primary" @click="saveChanges()">Save</v-btn>
+        <v-btn
+          class="my-0"
+          color="primary"
+          @click="saveChanges()"
+          >Save</v-btn
+        >
       </div>
     </v-card-title>
     <v-divider class="mb-5"></v-divider>
@@ -52,7 +57,10 @@
               </v-row>
             </v-card-text>
           </v-card>
-          <v-btn color="primary" @click="addDescription()">
+          <v-btn
+            color="primary"
+            @click="addDescription()"
+          >
             Add Description
           </v-btn>
         </div>
@@ -62,9 +70,9 @@
 </template>
 
 <script>
-import axios from "axios";
-import store from "../../../store";
-import { PLACE_URL, STATIC_URL } from "../../../urls";
+import axios from "axios"
+import store from "../../../store"
+import { PLACE_URL, STATIC_URL } from "../../../urls"
 /* Important**, field data that was not found on the swaggerhub api docs provided was assumed to be in development, hence, some placeholder variables were created. */
 export default {
   name: "formDescription",
@@ -75,44 +83,44 @@ export default {
     typeOptions: [],
   }),
   created: function () {
-    let id = this.$route.params.id;
-    this.loadedId = id;
+    let id = this.$route.params.id
+    this.loadedId = id
 
     axios
       .get(`${PLACE_URL}/${id}`)
       .then((resp) => {
-        this.fields = resp.data.data;
-        this.descriptions = resp.data.relationships.descriptions.data;
-        store.dispatch("addSiteHistory", resp.data.data);
-        this.$parent.siteName = this.fields.primaryName;
+        this.fields = resp.data.data
+        this.descriptions = resp.data.relationships.descriptions.data
+        store.dispatch("addSiteHistory", resp.data.data)
+        this.$parent.siteName = this.fields.primaryName
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.error(error))
 
     axios.get(`${STATIC_URL}/description-type`).then((resp) => {
-      this.typeOptions = resp.data.data;
-    });
+      this.typeOptions = resp.data.data
+    })
   },
   methods: {
     addDescription() {
-      this.descriptions.push({placeId: this.loadedId, type: 1});
+      this.descriptions.push({ placeId: this.loadedId, type: 1 })
     },
     removeDescription(index) {
-      this.descriptions.splice(index, 1);
+      this.descriptions.splice(index, 1)
     },
     saveChanges() {
       let body = {
         descriptions: this.descriptions,
-      };
+      }
 
       axios
         .put(`${PLACE_URL}/${this.loadedId}/description`, body)
         .then((resp) => {
-          this.$emit("showAPIMessages", resp.data);
+          this.$emit("showAPIMessages", resp.data)
         })
         .catch((err) => {
-          this.$emit("showError", err);
-        });
+          this.$emit("showError", err)
+        })
     },
   },
-};
+}
 </script>

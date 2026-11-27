@@ -1,171 +1,201 @@
 <template>
-	<div>
-		<v-breadcrumbs :items="[
-			{ text: 'Home', to: '/', exact: true },
-			{ text: 'Sites' },
-		]"></v-breadcrumbs>
+  <div>
+    <v-breadcrumbs
+      :items="[{ text: 'Home', to: '/', exact: true }, { text: 'Sites' }]"
+    ></v-breadcrumbs>
 
-		<h1>YHSI Sites</h1>
+    <h1>YHSI Sites</h1>
 
-		<div class="mt-2">
-			<v-card class="default">
-				<v-card-text>
-					<div class="d-flex mb-6">
-						<v-text-field v-model="searchTerm" label="Search" prepend-inner-icon="mdi-magnify"
-							background-color="white" dense outlined clearable hide-details class="mr-5"
-							@keyup="keyUp" />
-						<v-btn class="my-0 mr-2" color="secondary" style="height: 40px"
-							:aria-controls="advancedSearchId" @click="toggleAdvancedSearch">
-							Advanced search
-							<v-icon v-if="isShowingAdvancedSearch">mdi-chevron-up</v-icon>
-							<v-icon v-else>mdi-chevron-down</v-icon>
-						</v-btn>
-						<v-btn v-if="isEditor" color="primary" class="my-0" style="height: 40px" to="/sites/create">
-							Add New Site
-						</v-btn>
-					</div>
+    <div class="mt-2">
+      <v-card class="default">
+        <v-card-text>
+          <div class="d-flex mb-6">
+            <v-text-field
+              v-model="searchTerm"
+              label="Search"
+              prepend-inner-icon="mdi-magnify"
+              background-color="white"
+              dense
+              outlined
+              clearable
+              hide-details
+              class="mr-5"
+              @keyup="keyUp"
+            />
+            <v-btn
+              class="my-0 mr-2"
+              color="secondary"
+              style="height: 40px"
+              :aria-controls="advancedSearchId"
+              @click="toggleAdvancedSearch"
+            >
+              Advanced search
+              <v-icon v-if="isShowingAdvancedSearch">mdi-chevron-up</v-icon>
+              <v-icon v-else>mdi-chevron-down</v-icon>
+            </v-btn>
+            <v-btn
+              v-if="isEditor"
+              color="primary"
+              class="my-0"
+              style="height: 40px"
+              to="/sites/create"
+            >
+              Add New Site
+            </v-btn>
+          </div>
 
-					<AdvancedSearchForm v-show="isShowingAdvancedSearch" :id="advancedSearchId" class="mb-4"
-						:value="advancedSearchQuery" @search="doAdvancedSearch" />
+          <AdvancedSearchForm
+            v-show="isShowingAdvancedSearch"
+            :id="advancedSearchId"
+            class="mb-4"
+            :value="advancedSearchQuery"
+            @search="doAdvancedSearch"
+          />
 
-					<v-data-table dense :items="items" :headers="headers" :options.sync="options" :loading="loading"
-						:server-items-length="totalLength" :footer-props="{ 'items-per-page-options': [20, 50, 100] }"
-						@click:row="goToSiteDetails" class="clickable-row">
-						<template #item.communityId="{ value }">
-							<CommunityCell :community-id="value" />
-						</template>
-					</v-data-table>
-				</v-card-text>
-			</v-card>
-		</div>
-	</div>
+          <v-data-table
+            dense
+            :items="items"
+            :headers="headers"
+            :options.sync="options"
+            :loading="loading"
+            :server-items-length="totalLength"
+            :footer-props="{ 'items-per-page-options': [20, 50, 100] }"
+            @click:row="goToSiteDetails"
+            class="clickable-row"
+          >
+            <template #item.communityId="{ value }">
+              <CommunityCell :community-id="value" />
+            </template>
+          </v-data-table>
+        </v-card-text>
+      </v-card>
+    </div>
+  </div>
 </template>
 
 <script>
-import { cloneDeep, isEqual, uniqueId } from 'lodash';
-import { mapActions, mapGetters } from 'vuex';
+import { cloneDeep, isEqual, uniqueId } from "lodash"
+import { mapActions, mapGetters } from "vuex"
 
-import api from '@/apis/places-api';
+import api from "@/apis/places-api"
 import {
-	parseSitesSearchQuery,
-	rememberSitesSearchQuery,
-	serializeSitesSearchQuery,
-} from '@/utils/sites-search-context';
+  parseSitesSearchQuery,
+  rememberSitesSearchQuery,
+  serializeSitesSearchQuery,
+} from "@/utils/sites-search-context"
 
-import AdvancedSearchForm from '@/components/Sites/sites-table/AdvancedSearchForm';
-import CommunityCell from '@/components/Sites/sites-table/CommunityCell';
+import AdvancedSearchForm from "@/components/Sites/sites-table/AdvancedSearchForm"
+import CommunityCell from "@/components/Sites/sites-table/CommunityCell"
 
 export default {
-	name: 'SitesTable',
-	components: { AdvancedSearchForm, CommunityCell },
-	data: () => ({
-		advancedSearchQuery: {},
-		items: [],
-		loading: false,
-		options: {},
-		page: 1,
-		pageCount: 0,
-		searchTerm: '',
-		isShowingAdvancedSearch: false,
-		totalLength: 0,
-	}),
-	computed: {
-		...mapGetters('places', ['isEditor']),
-		advancedSearchId() {
-			return uniqueId('advanced-search-');
-		},
-		headers() {
-			return [
-				{ text: 'YHSI ID', value: 'yHSIId' },
-				{ text: 'Primary name', value: 'primaryName' },
-				{ text: 'Community', value: 'communityId' },
-				{ text: 'Category', value: 'siteCategories' },
-				{ text: 'Status', value: 'status' },
-			];
-		},
-		searchQuery() {
-			if (!this.searchTerm) return {};
+  name: "SitesTable",
+  components: { AdvancedSearchForm, CommunityCell },
+  data: () => ({
+    advancedSearchQuery: {},
+    items: [],
+    loading: false,
+    options: {},
+    page: 1,
+    pageCount: 0,
+    searchTerm: "",
+    isShowingAdvancedSearch: false,
+    totalLength: 0,
+  }),
+  computed: {
+    ...mapGetters("places", ["isEditor"]),
+    advancedSearchId() {
+      return uniqueId("advanced-search-")
+    },
+    headers() {
+      return [
+        { text: "YHSI ID", value: "yHSIId" },
+        { text: "Primary name", value: "primaryName" },
+        { text: "Community", value: "communityId" },
+        { text: "Category", value: "siteCategories" },
+        { text: "Status", value: "status" },
+      ]
+    },
+    searchQuery() {
+      if (!this.searchTerm) return {}
 
-			// query format is operation: value
-			// operation is a custom operation defined in the back-end
-			return { search: this.searchTerm };
-		},
-	},
-	watch: {
-		options: {
-			handler() {
-				this.doSearch();
-			},
-			deep: true,
-		},
-	},
-	created() {
-		// Restores search term, filters, sorting and page from the URL so
-		// that returning to the table keeps the previous context.
-		const { searchTerm, filters, options, showAdvanced } = parseSitesSearchQuery(
-			this.$route.query
-		);
-		this.searchTerm = searchTerm;
-		this.advancedSearchQuery = filters;
-		this.isShowingAdvancedSearch = showAdvanced;
-		this.options = { ...this.options, ...options };
-	},
-	mounted() {
-		this.initializeCommunities();
-	},
-	methods: {
-		...mapActions({ initializeCommunities: 'communities/initialize' }),
-		goToSiteDetails(value) {
-			this.$router.push(`/sites/${value.id}`);
-		},
-		keyUp(event) {
-			if (event.key == 'Enter') this.doSearch();
-		},
-		doAdvancedSearch(query) {
-			this.advancedSearchQuery = query;
-			this.doSearch();
-		},
-		doSearch() {
-			this.persistSearchContext();
+      // query format is operation: value
+      // operation is a custom operation defined in the back-end
+      return { search: this.searchTerm }
+    },
+  },
+  watch: {
+    options: {
+      handler() {
+        this.doSearch()
+      },
+      deep: true,
+    },
+  },
+  created() {
+    // Restores search term, filters, sorting and page from the URL so
+    // that returning to the table keeps the previous context.
+    const { searchTerm, filters, options, showAdvanced } = parseSitesSearchQuery(this.$route.query)
+    this.searchTerm = searchTerm
+    this.advancedSearchQuery = filters
+    this.isShowingAdvancedSearch = showAdvanced
+    this.options = { ...this.options, ...options }
+  },
+  mounted() {
+    this.initializeCommunities()
+  },
+  methods: {
+    ...mapActions({ initializeCommunities: "communities/initialize" }),
+    goToSiteDetails(value) {
+      this.$router.push(`/sites/${value.id}`)
+    },
+    keyUp(event) {
+      if (event.key == "Enter") this.doSearch()
+    },
+    doAdvancedSearch(query) {
+      this.advancedSearchQuery = query
+      this.doSearch()
+    },
+    doSearch() {
+      this.persistSearchContext()
 
-			const data = cloneDeep(this.options);
-			data.query = { ...this.searchQuery, ...this.advancedSearchQuery };
+      const data = cloneDeep(this.options)
+      data.query = { ...this.searchQuery, ...this.advancedSearchQuery }
 
-			this.loading = true;
-			api
-				.search(data)
-				.then(({ data, meta }) => {
-					this.items = data;
-					this.totalLength = meta.itemCount;
-				})
-				.finally(() => {
-					this.loading = false;
-				});
-		},
-		persistSearchContext() {
-			const query = serializeSitesSearchQuery({
-				searchTerm: this.searchTerm,
-				options: this.options,
-				filters: this.advancedSearchQuery,
-				showAdvanced: this.isShowingAdvancedSearch,
-			});
+      this.loading = true
+      api
+        .search(data)
+        .then(({ data, meta }) => {
+          this.items = data
+          this.totalLength = meta.itemCount
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    persistSearchContext() {
+      const query = serializeSitesSearchQuery({
+        searchTerm: this.searchTerm,
+        options: this.options,
+        filters: this.advancedSearchQuery,
+        showAdvanced: this.isShowingAdvancedSearch,
+      })
 
-			rememberSitesSearchQuery(query);
+      rememberSitesSearchQuery(query)
 
-			if (isEqual(query, this.$route.query)) return;
+      if (isEqual(query, this.$route.query)) return
 
-			// NavigationDuplicated errors are safe to ignore here.
-			this.$router.replace({ query }).catch(() => {});
-		},
-		toggleAdvancedSearch() {
-			if (this.isShowingAdvancedSearch) {
-				this.doSearch();
-			}
-			this.isShowingAdvancedSearch = !this.isShowingAdvancedSearch;
-			this.persistSearchContext();
-		},
-	},
-};
+      // NavigationDuplicated errors are safe to ignore here.
+      this.$router.replace({ query }).catch(() => {})
+    },
+    toggleAdvancedSearch() {
+      if (this.isShowingAdvancedSearch) {
+        this.doSearch()
+      }
+      this.isShowingAdvancedSearch = !this.isShowingAdvancedSearch
+      this.persistSearchContext()
+    },
+  },
+}
 </script>
 
 <style scoped></style>

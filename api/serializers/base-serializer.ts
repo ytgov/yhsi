@@ -1,26 +1,26 @@
-import { pick } from 'lodash';
+import { pick } from "lodash"
 
-import { PlainObject } from '../models';
+import { PlainObject } from "../models"
 
 interface SerializerFunction<Type> {
-	(model: Type): any | undefined;
+  (model: Type): any | undefined
 }
 
 export default abstract class BaseSerializer<Type> {
-	model: Type;
+  model: Type
 
-	constructor(model: Type) {
-		this.model = model;
-	}
+  constructor(model: Type) {
+    this.model = model
+  }
 
-	fields(fields: string[]): PlainObject {
-		return pick(this.model, fields);
-	}
+  fields(fields: string[]): PlainObject {
+    return pick(this.model, fields)
+  }
 
-	field(field: string, func: SerializerFunction<Type>): PlainObject {
-		const value = func(this.model);
-		if (value === undefined) return {};
+  field(field: string, func: SerializerFunction<Type>): PlainObject {
+    const value = func(this.model)
+    if (value === undefined) return {}
 
-		return { [field]: value };
-	}
+    return { [field]: value }
+  }
 }

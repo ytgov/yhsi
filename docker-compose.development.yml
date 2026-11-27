@@ -1,52 +1,70 @@
+x-default-environment: &default-environment
+  TZ: "UTC"
+  NODE_ENV: development
+  DB_HOST: db
+  DB_USER: sa
+  DB_NAME: yhsi_development
+  DB_PASS: &default-db-password "1m5ecure!"
+  DB_PORT: &default-db-port 1433
+  DB_TRUST_SERVER_CERTIFICATE: "true"
+  DB_HEALTH_CHECK_INTERVAL_SECONDS: 5
+  DB_HEALTH_CHECK_TIMEOUT_SECONDS: 10
+  DB_HEALTH_CHECK_RETRIES: 3
+  DB_HEALTH_CHECK_START_PERIOD_SECONDS: 5
+  FRONTEND_URL: "http://localhost:8080"
+
 services:
-  web:
-    build:
-      context: ./web
-      dockerfile: development.Dockerfile
-    environment:
-      NODE_ENV: development
-    tty: true
-    ports:
-      - '8080:8080'
-    volumes:
-      - ./web:/usr/src/web
-    depends_on:
-      - api
-      - db
   api:
     build:
       context: ./api
       dockerfile: development.Dockerfile
+    image: "${COMPOSE_PROJECT_NAME}-api:latest"
     env_file:
       - ./api/.env.development
     environment:
-      NODE_ENV: development
-      DB_HOST: db
-      MAIL_HOST: 'host.docker.internal'
-      TS_NODE_HISTORY: '/tmp/.ts_node_repl_history'
-    tty: true
+      <<: *default-environment
+      TS_NODE_HISTORY: "/tmp/.ts_node_repl_history"
+    tty: true # allows attaching debugger, equivalent of docker exec -t
+    init: true
+    # stdin_open: true # equivalent of docker exec -i
     ports:
-      - '3000:3000'
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-      - 'host.docker.internal:172.17.0.1'
+      - "3000:3000"
     volumes:
       - ./api:/usr/src/api
+      - ./.gitignore:/usr/src/.gitignore
+      - ./.prettierrc.yaml:/usr/src/.prettierrc.yaml
     depends_on:
       - db
-  db:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+      dockerfile: development.Dockerfile
+    image: "${COMPOSE_PROJECT_NAME}-web:latest"
     environment:
-      - 'ACCEPT_EULA=Y'
-      - 'SA_PASSWORD=1m5ecure!'
-      - 'MSSQL_PID=Express'
+      <<: *default-environment
     tty: true
     ports:
-      - '1433:1433'
+      - "8080:8080"
     volumes:
-      - sqlsystem:/var/opt/mssql/
-      - ./db/backups/:/backups
+      - ./web:/usr/src/web
+      - ./.gitignore:/usr/src/.gitignore
+      - ./.prettierrc.yaml:/usr/src/.prettierrc.yaml
+    depends_on:
+      - api
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-gdr3-ubuntu-16.04@sha256:104e105950f9faa14897f702e70c178f813e3d3d4446b176a0c31fdb442bcf7c
+    user: root
+    environment:
+      <<: *default-environment
+      DB_HOST: "localhost"
+      MSSQL_SA_PASSWORD: *default-db-password
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - db_data:/var/opt/mssql/data
 
 volumes:
-  sqlsystem:
+  db_data:

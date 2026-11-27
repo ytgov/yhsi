@@ -1,15 +1,15 @@
-import http from '@/apis/http-client';
+import http from "@/apis/http-client"
 
-const categoryTypesUrl = '/api/category-types';
+const categoryTypesUrl = "/api/category-types"
 
 export default {
-	getAll() {
-		return http
-			.get(categoryTypesUrl)
-			.then((response) => response.data)
-			.catch((error) => {
-				console.error(error);
-				return Promise.reject(error);
-			});
-	},
-};
+  getAll() {
+    return http
+      .get(categoryTypesUrl)
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error(error)
+        return Promise.reject(error)
+      })
+  },
+}

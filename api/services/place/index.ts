@@ -1,2 +1,2 @@
-export { DestroyService } from './destroy-service';
-export { PrintSiteService } from './print-site-service';
+export { DestroyService } from "./destroy-service"
+export { PrintSiteService } from "./print-site-service"

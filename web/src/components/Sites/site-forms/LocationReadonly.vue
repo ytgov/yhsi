@@ -167,13 +167,13 @@ v-card.mb-0(
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex"
 
-import CommunitySelect from '@/components/Sites/site-forms/CommunitySelect';
-import CoordinateDeterminationTypesSelect from '@/components/Sites/site-forms/CoordinateDeterminationTypesSelect';
+import CommunitySelect from "@/components/Sites/site-forms/CommunitySelect"
+import CoordinateDeterminationTypesSelect from "@/components/Sites/site-forms/CoordinateDeterminationTypesSelect"
 
 export default {
-  name: 'Location',
+  name: "Location",
   components: { CommunitySelect, CoordinateDeterminationTypesSelect },
   props: {
     placeId: {
@@ -184,20 +184,20 @@ export default {
   data: () => ({}),
   computed: {
     ...mapGetters({
-      place: 'places/place',
+      place: "places/place",
     }),
     showMapButton() {
       if (this.place.latitude && this.place.longitude) {
-        return true;
+        return true
       }
-      return false;
+      return false
     },
   },
   mounted() {},
   methods: {
     showMap() {
-      this.$refs.map.show(this.place.latitude, this.place.longitude);
+      this.$refs.map.show(this.place.latitude, this.place.longitude)
     },
   },
-};
+}
 </script>

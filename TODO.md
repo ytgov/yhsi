@@ -58,7 +58,7 @@ This document tracks technical debt, bugs, inconsistencies, and upgrade plans ac
 
 ## 2. Critical: Schema Mismatches
 
-These are discrepancies between the production/test database schema (`db/YHISTEST.sql`) and what the application code assumes.
+These are discrepancies between the production database schema (the Knex baseline migrations in `api/db/migrations/`) and what the application code assumes.
 
 ### 2.1 Boat Schema Tables — Code vs Reality
 
@@ -194,12 +194,12 @@ These are discrepancies between the production/test database schema (`db/YHISTES
 
 Four different response wrapper patterns are used across the API:
 
-| Pattern | Example | Used In |
-|---------|---------|---------|
-| `{ count, body }` | `res.send({ count: counter, body: aircrashes })` | aircrash.ts |
-| bare data | `res.send(boat)` | boats.ts |
-| `{ data }` | `res.json({ data: users })` | user-router.ts |
-| `{ messages }` | `res.json({ messages: [{ variant, text }] })` | user-router.ts |
+| Pattern           | Example                                          | Used In        |
+| ----------------- | ------------------------------------------------ | -------------- |
+| `{ count, body }` | `res.send({ count: counter, body: aircrashes })` | aircrash.ts    |
+| bare data         | `res.send(boat)`                                 | boats.ts       |
+| `{ data }`        | `res.json({ data: users })`                      | user-router.ts |
+| `{ messages }`    | `res.json({ messages: [{ variant, text }] })`    | user-router.ts |
 
 - **Fix:** Standardize on a single response envelope (e.g., `{ data, meta?, messages? }`)
 
@@ -238,27 +238,26 @@ Four different response wrapper patterns are used across the API:
 
 ### 6.1 API Dependencies
 
-| Package | Current | Latest | Notes |
-|---------|---------|--------|-------|
-| express | 4.17.1 | 4.21+ | 3+ years of security patches missing |
-| puppeteer | 19.8.0 | 22+ | Multiple majors behind |
-| sharp | 0.30.5 | 0.33+ | Pinned, 18+ months behind |
-| helmet | 5.0.2 | 7+ | Functional but outdated |
-| knex | 1.0.4 | 3+ | Major version behind |
-| typescript (api) | 4.6.3 | 5.5+ | Major version behind |
-| typescript (root) | 4.5.4 | 5.5+ | Major version behind |
-| @types/node | 14.14.5 | 20+ | Severely outdated |
-| @types/express | 4.17.13 | 4.17.21+ | 3+ years behind |
-| mocha | 9.2.2 | 10+ | Major behind |
+| Package           | Current | Latest   | Notes                                |
+| ----------------- | ------- | -------- | ------------------------------------ |
+| express           | 4.17.1  | 4.21+    | 3+ years of security patches missing |
+| puppeteer         | 19.8.0  | 22+      | Multiple majors behind               |
+| sharp             | 0.30.5  | 0.33+    | Pinned, 18+ months behind            |
+| helmet            | 5.0.2   | 7+       | Functional but outdated              |
+| knex              | 1.0.4   | 3+       | Major version behind                 |
+| typescript (api)  | 4.6.3   | 5.5+     | Major version behind                 |
+| typescript (root) | 4.5.4   | 5.5+     | Major version behind                 |
+| @types/node       | 14.14.5 | 20+      | Severely outdated                    |
+| @types/express    | 4.17.13 | 4.17.21+ | 3+ years behind                      |
 
 ### 6.2 Frontend Dependencies
 
-| Package | Current | Latest | Notes |
-|---------|---------|--------|-------|
-| html2canvas | 1.0.0-rc.7 | 1.4+ | RC build in production |
-| jspdf | 2.3.1 | 2.5+ | Minor behind |
-| eslint (web) | 6.7.2 | 9+ | 3 major versions behind |
-| eslint-plugin-vue | 6.2.2 | 9+ | 3 major versions behind |
+| Package           | Current    | Latest | Notes                   |
+| ----------------- | ---------- | ------ | ----------------------- |
+| html2canvas       | 1.0.0-rc.7 | 1.4+   | RC build in production  |
+| jspdf             | 2.3.1      | 2.5+   | Minor behind            |
+| eslint (web)      | 6.7.2      | 9+     | 3 major versions behind |
+| eslint-plugin-vue | 6.2.2      | 9+     | 3 major versions behind |
 
 ### 6.3 ESLint Version Fragmentation
 
@@ -366,6 +365,7 @@ Remove these commented-out blocks:
 **Scope:** Entire `web/` directory — this is the largest single effort
 
 **Phase 1 — Preparation (while still on Vue 2):**
+
 1. Install `@vue/compat` to enable Vue 2.7 compatibility mode
 2. Replace Vuex with Pinia (Pinia supports both Vue 2.7 and Vue 3)
 3. Replace `babel-eslint` with `@babel/eslint-parser`
@@ -374,6 +374,7 @@ Remove these commented-out blocks:
 6. Standardize all components to use consistent Options API patterns
 
 **Phase 2 — Vue 3 Migration:**
+
 1. Upgrade to Vue 3 + `@vue/compat`
 2. Migrate Vue Router 3 → 4
 3. Upgrade Vuetify 2 → 3 (this is the hardest part — significant API changes)
@@ -382,6 +383,7 @@ Remove these commented-out blocks:
 6. Remove `@vue/compat` once all warnings are resolved
 
 **Phase 3 — Modernization:**
+
 1. Adopt Composition API + `<script setup>` for new components
 2. Replace html2canvas + jsPDF with modern alternatives if needed
 3. Upgrade Leaflet / mapping stack
@@ -405,6 +407,7 @@ Remove these commented-out blocks:
 ### 9.5 Dockerfile Modernization
 
 **Current issues with `Dockerfile`:**
+
 - Node 16 base
 - npm 8 pinned
 - Commented-out sharp workaround
@@ -412,6 +415,7 @@ Remove these commented-out blocks:
 - No `.dockerignore` best practices visible
 
 **Target Dockerfile pattern:**
+
 1. Use Node 20 Alpine base
 2. Multi-stage build: build stage (compile TS + Vue) → production stage (minimal runtime)
 3. Remove npm pin

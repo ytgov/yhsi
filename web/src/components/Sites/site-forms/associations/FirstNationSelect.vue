@@ -18,10 +18,10 @@ v-autocomplete(
 </template>
 
 <script>
-import api from '@/apis/first-nations-api';
+import api from "@/apis/first-nations-api"
 
 export default {
-  name: 'FirstNationSelect',
+  name: "FirstNationSelect",
   components: {},
   props: {},
   data: () => ({
@@ -31,23 +31,23 @@ export default {
   computed: {},
   watch: {},
   mounted() {
-    this.getFirstNationsOptions();
+    this.getFirstNationsOptions()
   },
   methods: {
     getFirstNationsOptions() {
-      this.loading = true;
+      this.loading = true
       return api
         .getAll()
         .then(({ data }) => {
-          this.firstNationsOptions = data;
-          return data;
+          this.firstNationsOptions = data
+          return data
         })
         .finally(() => {
-          this.loading = false;
-        });
+          this.loading = false
+        })
     },
   },
-};
+}
 </script>
 
 <style scoped></style>

@@ -9,39 +9,39 @@ table.title-row
     tr
       td
         div(style="margin-top: 15px") Yukon Heritage Information System
-        div.item-name #{data.Surname}, #{data.GivenName}
+        .item-name #{ data.Surname }, #{ data.GivenName }
       td.brand-logo
         include ../yukon.svg
 
-div.section
-  div.section-title Personal information
+.section
+  .section-title Personal information
   table.divided-row
     tbody
       tr
         td
-          div.field
+          .field
             span.label Surname
-            span.value #{data.Surname}
-          div.field
+            span.value #{ data.Surname }
+          .field
             span.label Given Name
-            span.value #{data.GivenName}
-          div.field
+            span.value #{ data.GivenName }
+          .field
             span.label Notes
-            span.value #{data.Notes}
+            span.value #{ data.Notes }
         td
-          div.field
+          .field
             span.label Birth Year
-            span.value #{data.BirthYear}
-          div.field
+            span.value #{ data.BirthYear }
+          .field
             span.label Death Year
-            span.value #{data.DeathYear}
+            span.value #{ data.DeathYear }
 
-div.section
-  div.section-title History
+.section
+  .section-title History
   each val in data.histories
-    div.subfield
-      | #{val.HistoryText}
+    .subfield
+      | #{ val.HistoryText }
       br
-      em Reference: #{val.Reference}
+      em Reference: #{ val.Reference }
   else
-    div.subfield.empty None recorded
+    .subfield.empty None recorded

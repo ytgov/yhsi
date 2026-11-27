@@ -1,124 +1,121 @@
-import express, { Request, Response } from 'express';
-import { ReturnValidationErrors } from '../middleware';
-import { param, query } from 'express-validator';
-import { InterpretiveSiteService } from '../services';
-import { renderFile } from 'pug';
-import { generatePDF } from '../utils/pdf-generator';
+import express, { Request, Response } from "express"
+import { ReturnValidationErrors } from "../middleware"
+import { param, query } from "express-validator"
+import { InterpretiveSiteService } from "../services"
+import { renderFile } from "pug"
+import { generatePDF } from "../utils/pdf-generator"
 const {
-	Parser,
-	transforms: { unwind },
-} = require('json2csv');
-export const inspectionRouter = express.Router();
+  Parser,
+  transforms: { unwind },
+} = require("json2csv")
+export const inspectionRouter = express.Router()
 
-const intSiteService = new InterpretiveSiteService();
+const intSiteService = new InterpretiveSiteService()
 
 // ACTIONS
 
 inspectionRouter.get(
-	'/',
-	[
-		query('sortBy').default('InspectedBy').isString(),
-		query('sort').default('asc').isString(),
-		query('page').default(0).isInt(),
-		query('limit').default(10).isInt({ gt: 0 }),
-	],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { InspectionDate = '', Description = '', InspectedBy = '', sortBy, sort } = req.query;
-		const page = parseInt(req.query.page as string);
-		const limit = parseInt(req.query.limit as string);
-		const offset = page * limit || 0;
-		const data = await intSiteService.doInspectionSearch(page, limit, offset, {
-			InspectionDate,
-			Description,
-			InspectedBy,
-			sortBy,
-			sort,
-		});
+  "/",
+  [
+    query("sortBy").default("InspectedBy").isString(),
+    query("sort").default("asc").isString(),
+    query("page").default(0).isInt(),
+    query("limit").default(10).isInt({ gt: 0 }),
+  ],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { InspectionDate = "", Description = "", InspectedBy = "", sortBy, sort } = req.query
+    const page = parseInt(req.query.page as string)
+    const limit = parseInt(req.query.limit as string)
+    const offset = page * limit || 0
+    const data = await intSiteService.doInspectionSearch(page, limit, offset, {
+      InspectionDate,
+      Description,
+      InspectedBy,
+      sortBy,
+      sort,
+    })
 
-		res.status(200).send(data);
-	}
-);
+    res.status(200).send(data)
+  }
+)
 
 inspectionRouter.get(
-	'/:siteId',
-	[param('siteId').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { siteId } = req.params;
-		const list = await intSiteService.getActionsBySiteId(parseInt(siteId));
+  "/:siteId",
+  [param("siteId").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { siteId } = req.params
+    const list = await intSiteService.getActionsBySiteId(parseInt(siteId))
 
-		if (!list) {
-			res.status(404).send({ message: 'Data not found' });
-			return;
-		}
+    if (!list) {
+      res.status(404).send({ message: "Data not found" })
+      return
+    }
 
-		res.status(200).send(list);
-	}
-);
+    res.status(200).send(list)
+  }
+)
 
-inspectionRouter.post('/', async (req: Request, res: Response) => {
-	const { item = {} } = req.body;
+inspectionRouter.post("/", async (req: Request, res: Response) => {
+  const { item = {} } = req.body
 
-	const resObj = await intSiteService.addAction(item);
-	if (!resObj) {
-		res.status(401).send({ message: 'Conflict' });
-		return;
-	}
+  const resObj = await intSiteService.addAction(item)
+  if (!resObj) {
+    res.status(401).send({ message: "Conflict" })
+    return
+  }
 
-	res.send(resObj);
-});
+  res.send(resObj)
+})
 
-inspectionRouter.put('/:inspectID', async (req: Request, res: Response) => {
-	const {
-		item = {},
-		// assets = [], actions = [], inspections = []
-	} = req.body;
-	const { inspectID } = req.params;
-	const resObj = await intSiteService.modifyInspection(item, parseInt(inspectID));
-	if (!resObj) {
-		res.status(404).send({ message: 'Inspection not found' });
-		return;
-	}
+inspectionRouter.put("/:inspectID", async (req: Request, res: Response) => {
+  const {
+    item = {},
+    // assets = [], actions = [], inspections = []
+  } = req.body
+  const { inspectID } = req.params
+  const resObj = await intSiteService.modifyInspection(item, parseInt(inspectID))
+  if (!resObj) {
+    res.status(404).send({ message: "Inspection not found" })
+    return
+  }
 
-	res.status(200).send(resObj[0]);
-});
-
-inspectionRouter.delete(
-	'/:inspectID',
-	[param('inspectID').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { inspectID } = req.params;
-		const exists = await intSiteService.objExists(
-			{ InspectID: parseInt(inspectID) },
-			'inspections'
-		);
-		if (!exists) {
-			res.status(404).send({ message: 'The inspection does not exist' });
-			return;
-		}
-
-		const resObj = await intSiteService.removeInspection(parseInt(inspectID));
-		res.status(200).json({ data: resObj });
-	}
-);
+  res.status(200).send(resObj[0])
+})
 
 inspectionRouter.delete(
-	'/docs/:id',
-	[param('id').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { id } = req.params;
+  "/:inspectID",
+  [param("inspectID").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { inspectID } = req.params
+    const exists = await intSiteService.objExists({ InspectID: parseInt(inspectID) }, "inspections")
+    if (!exists) {
+      res.status(404).send({ message: "The inspection does not exist" })
+      return
+    }
 
-		const resObj = await intSiteService.removeDocumentByID(parseInt(id));
-		if (!resObj) {
-			res.status(404).send({ message: 'The document does not exist' });
-			return;
-		}
-		res.status(200).json({ data: resObj });
-	}
-);
+    const resObj = await intSiteService.removeInspection(parseInt(inspectID))
+    res.status(200).json({ data: resObj })
+  }
+)
+
+inspectionRouter.delete(
+  "/docs/:id",
+  [param("id").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+
+    const resObj = await intSiteService.removeDocumentByID(parseInt(id))
+    if (!resObj) {
+      res.status(404).send({ message: "The document does not exist" })
+      return
+    }
+    res.status(200).json({ data: resObj })
+  }
+)
 
 //PDF AND EXPORTS
 // NO REQUEST FOR A SINGLE ACTION PRINT
@@ -142,89 +139,89 @@ inspectionRouter.delete(
 // });
 
 inspectionRouter.get(
-	'/docs/:inspectID',
-	[param('inspectID').notEmpty()],
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		const { inspectID } = req.params;
+  "/docs/:inspectID",
+  [param("inspectID").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    const { inspectID } = req.params
 
-		const docs = await intSiteService.getDocumentsByOwnerID({
-			InspectID: inspectID,
-		});
+    const docs = await intSiteService.getDocumentsByOwnerID({
+      InspectID: inspectID,
+    })
 
-		res.status(200).send(docs);
-	}
-);
+    res.status(200).send(docs)
+  }
+)
 
-inspectionRouter.post('/pdf', async (req: Request, res: Response) => {
-	const {
-		ActionDesc = '',
-		ToBeCompleteDate = '',
-		ActionCompleteDate = '',
-		CompletionDesc = '',
-		Priority = '',
-		CreatedBy = '',
-		CreatedDate = '',
-		CompletedBy = '',
-		sortBy,
-		sort,
-		page = 0,
-		limit = 0,
-	} = req.body;
+inspectionRouter.post("/pdf", async (req: Request, res: Response) => {
+  const {
+    ActionDesc = "",
+    ToBeCompleteDate = "",
+    ActionCompleteDate = "",
+    CompletionDesc = "",
+    Priority = "",
+    CreatedBy = "",
+    CreatedDate = "",
+    CompletedBy = "",
+    sortBy,
+    sort,
+    page = 0,
+    limit = 0,
+  } = req.body
 
-	const data = await intSiteService.doActionSearch(page, limit, 0, {
-		ActionDesc,
-		ToBeCompleteDate,
-		ActionCompleteDate,
-		CompletionDesc,
-		Priority,
-		CreatedBy,
-		CreatedDate,
-		CompletedBy,
-		sortBy,
-		sort,
-	});
-	const pdfData = renderFile('./templates/interpretive-sites/actionGrid.pug', {
-		data: data.body,
-	});
+  const data = await intSiteService.doActionSearch(page, limit, 0, {
+    ActionDesc,
+    ToBeCompleteDate,
+    ActionCompleteDate,
+    CompletionDesc,
+    Priority,
+    CreatedBy,
+    CreatedDate,
+    CompletedBy,
+    sortBy,
+    sort,
+  })
+  const pdfData = renderFile("./templates/interpretive-sites/actionGrid.pug", {
+    data: data.body,
+  })
 
-	const pdf = await generatePDF(pdfData);
-	res.setHeader('Content-disposition', 'attachment; filename="actions.html"');
-	res.setHeader('Content-type', 'application/pdf');
-	res.send(pdf);
-});
+  const pdf = await generatePDF(pdfData)
+  res.setHeader("Content-disposition", 'attachment; filename="actions.html"')
+  res.setHeader("Content-type", "application/pdf")
+  res.send(pdf)
+})
 
-inspectionRouter.post('/export', async (req: Request, res: Response) => {
-	const {
-		ActionDesc = '',
-		ToBeCompleteDate = '',
-		ActionCompleteDate = '',
-		CompletionDesc = '',
-		Priority = '',
-		CreatedBy = '',
-		CreatedDate = '',
-		CompletedBy = '',
-		sortBy,
-		sort,
-		page = 0,
-		limit = 0,
-	} = req.body;
+inspectionRouter.post("/export", async (req: Request, res: Response) => {
+  const {
+    ActionDesc = "",
+    ToBeCompleteDate = "",
+    ActionCompleteDate = "",
+    CompletionDesc = "",
+    Priority = "",
+    CreatedBy = "",
+    CreatedDate = "",
+    CompletedBy = "",
+    sortBy,
+    sort,
+    page = 0,
+    limit = 0,
+  } = req.body
 
-	const data = await intSiteService.doActionSearch(page, limit, 0, {
-		ActionDesc,
-		ToBeCompleteDate,
-		ActionCompleteDate,
-		CompletionDesc,
-		Priority,
-		CreatedBy,
-		CreatedDate,
-		CompletedBy,
-		sortBy,
-		sort,
-	});
-	const json2csvParser = new Parser();
+  const data = await intSiteService.doActionSearch(page, limit, 0, {
+    ActionDesc,
+    ToBeCompleteDate,
+    ActionCompleteDate,
+    CompletionDesc,
+    Priority,
+    CreatedBy,
+    CreatedDate,
+    CompletedBy,
+    sortBy,
+    sort,
+  })
+  const json2csvParser = new Parser()
 
-	const csv = json2csvParser.parse(data.body);
-	res.setHeader('Content-Type', 'text/csv');
-	res.attachment('actions.csv').send(csv);
-});
+  const csv = json2csvParser.parse(data.body)
+  res.setHeader("Content-Type", "text/csv")
+  res.attachment("actions.csv").send(csv)
+})

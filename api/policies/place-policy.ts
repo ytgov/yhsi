@@ -1,67 +1,60 @@
-import { isEmpty, intersection } from 'lodash';
+import { isEmpty, intersection } from "lodash"
 
-import { BasePolicy } from '.';
-import { User, Place, UserRoles } from '../models';
+import { BasePolicy } from "."
+import { User, Place, UserRoles } from "../models"
 
 export class PlacePolicy extends BasePolicy<Place> {
-	constructor(user: User, record: Place) {
-		super(user, record);
-	}
+  constructor(user: User, record: Place) {
+    super(user, record)
+  }
 
-	show() {
-		if (this.user.roleList.includes(UserRoles.ADMINISTRATOR)) return true;
-		if (this.user.canAccessAllSites) return true;
+  show() {
+    if (this.user.roleList.includes(UserRoles.ADMINISTRATOR)) return true
+    if (this.user.canAccessAllSites) return true
 
-		if (
-			isEmpty(
-				intersection(this.user.roleList, [
-					UserRoles.SITE_ADMIN,
-					UserRoles.SITE_EDITOR,
-					UserRoles.SITE_VIEWER,
-				])
-			)
-		)
-			return false;
+    if (
+      isEmpty(
+        intersection(this.user.roleList, [
+          UserRoles.SITE_ADMIN,
+          UserRoles.SITE_EDITOR,
+          UserRoles.SITE_VIEWER,
+        ])
+      )
+    )
+      return false
 
-		if (
-			this.record.nTSMapSheet &&
-			this.user.permittedMapSheets.includes(this.record.nTSMapSheet)
-		) {
-			return true;
-		}
+    if (this.record.nTSMapSheet && this.user.permittedMapSheets.includes(this.record.nTSMapSheet)) {
+      return true
+    }
 
-		if (
-			this.record.communityId &&
-			this.user.permittedCommunityIds.includes(this.record.communityId)
-		) {
-			return true;
-		}
+    if (
+      this.record.communityId &&
+      this.user.permittedCommunityIds.includes(this.record.communityId)
+    ) {
+      return true
+    }
 
-		if (
-			this.record.firstNationAssociations &&
-			!isEmpty(
-				intersection(this.user.permittedFirstNationsIds, this.firstNationsIds)
-			)
-		) {
-			return true;
-		}
+    if (
+      this.record.firstNationAssociations &&
+      !isEmpty(intersection(this.user.permittedFirstNationsIds, this.firstNationsIds))
+    ) {
+      return true
+    }
 
-		return false;
-	}
+    return false
+  }
 
-	// Which roles may write at all is settled by authorize() on the route; this
-	// governs which records that role may reach, and the scope rules are the
-	// same ones that decide visibility.
-	update() {
-		return this.show();
-	}
+  // Which roles may write at all is settled by authorize() on the route; this
+  // governs which records that role may reach, and the scope rules are the
+  // same ones that decide visibility.
+  update() {
+    return this.show()
+  }
 
-	// helpers
-	get firstNationsIds(): number[] {
-		return (
-			this.record.firstNationAssociations?.map((f) => f.firstNationId) || []
-		);
-	}
+  // helpers
+  get firstNationsIds(): number[] {
+    return this.record.firstNationAssociations?.map((f) => f.firstNationId) || []
+  }
 }
 
-export default PlacePolicy;
+export default PlacePolicy

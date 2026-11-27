@@ -1,16 +1,14 @@
 import { Knex } from "knex"
 
-import { DB_CONFIG } from "../config"
+import dbMigrationClient from "@/db/db-migration-client"
 
+// Hoists config from db client
 const config: { [key: string]: Knex.Config } = {
   development: {
-    ...DB_CONFIG,
-  },
-  test: {
-    ...DB_CONFIG,
+    ...dbMigrationClient.client.config,
   },
   production: {
-    ...DB_CONFIG,
+    ...dbMigrationClient.client.config,
   },
 }
 
