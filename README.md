@@ -49,11 +49,12 @@ API and web code reload automatically on change.
 Startup refuses to migrate a database without migration history, so a restored backup runs
 outside the Docker app services:
 
-1. Put the backup at `db/backups/yhsi.bak`, then start SQL Server and restore it:
+1. Put a current production backup at `backups/yhsi.bak` (git-ignored), then start SQL Server
+   and restore it:
 
    ```bash
-   docker compose -f docker-compose.dev.yml up -d
-   docker compose -f docker-compose.dev.yml exec sql /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '1m5ecure!' -C \
+   docker compose -f docker-compose.development.yml up -d db
+   docker compose -f docker-compose.development.yml exec db /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '1m5ecure!' -C \
      -Q "RESTORE DATABASE YHSI FROM DISK = N'/backups/yhsi.bak' WITH FILE = 1"
    ```
 

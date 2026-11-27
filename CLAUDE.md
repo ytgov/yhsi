@@ -46,6 +46,7 @@ Routes (Express routers, input validation via express-validator)
     db-migration-client.ts # Knex client for migrations and seeds
     migrations/         # Knex migrations
     seeds/              # Seeds grouped by environment
+    scripts/            # One-off SQL scripts not yet in migrations 
   utils/                # Helpers (PDF, images, spatial)
   @types/               # Custom type definitions
 
@@ -60,11 +61,6 @@ Routes (Express routers, input validation via express-validator)
     router.js           # Vue Router config
     plugins/            # Vuetify setup
     layouts/            # Layout components
-
-/db
-  create_schema.sql     # Full database schema
-  scripts/              # Ad-hoc SQL scripts
-  backups/              # Database backup mount point
 ```
 
 ## Core Business Domains
