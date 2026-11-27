@@ -45,8 +45,7 @@ Routes (Express routers, input validation via express-validator)
   db/
     db-client.ts        # Runtime Knex instance
     db-migration-client.ts # Knex client for migrations and seeds
-    migrations/         # Baseline and subsequent development migrations
-    schema/             # Checked-in SQL Server baseline
+    migrations/         # Knex migrations
     seeds/              # Seeds grouped by environment
   utils/                # Helpers (PDF, images, spatial)
   @types/               # Custom type definitions

@@ -121,9 +121,10 @@ The production image still starts `node ./dist/index.js` directly. `boot-app.sh`
 production, and both Knex commands reject production targets.
 
 Before enabling production migrations, rehearse against a current restored backup. Compare the
-schema with the baseline, reconcile any drift, and record the baseline as applied without
-replaying its `CREATE` statements. Then run compiled migrations once per release with a separate
-database account. Do not enable development database creation or seeds in that release step.
+schema with the baseline migrations (`20261127130250` through `20261127130301`), reconcile any
+drift, and record those migrations as applied without running them. Then run compiled migrations
+once per release with a separate database account. Do not enable development database creation or
+seeds in that release step.
 
 On the PRODUCTION server, the application is run via docker-compose, so the code needs to be cloned to the server and
 the appropriate environment variables set using the following commands:
