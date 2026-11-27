@@ -3,7 +3,6 @@
 
 # Preserve SQL Server batch separators and script encodings.
 db/**/*.sql
-api/db/schema/**/*.sql
 
 # Deprecated fragment, not a standalone JavaScript program.
 web/src/modules/AirplaneCrashes/AirplaneCrashes/deprecated/fromMapLoader.js
