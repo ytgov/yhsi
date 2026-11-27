@@ -65,6 +65,23 @@ outside the Docker app services:
    cd web && npm install && npm run start
    ```
 
+### Running Production Locally
+
+`docker-compose.yml` builds the production image (API serving the compiled web app) and runs it
+against a local SQL Server, as project `yhsi-production`. Sign-in settings come from the root
+`.env`; Compose sets the database settings and the `http://localhost:3000` URLs. Production boot
+never migrates, so create the database once with the compiled initializers:
+
+```bash
+docker compose build
+docker compose up -d db
+docker compose run --rm app node dist/initializers/index.js
+docker compose up -d app
+```
+
+Set `HOST_PORT` in the root `.env` to serve on another port. Stop the development stack first; both
+publish port 1433.
+
 ## Linting and Formatting
 
 Install dependencies in the root, `api`, and `web`. Run these commands from the repository root:
